@@ -17,6 +17,8 @@ import org.apache.commons.io.FileUtils;
 import org.geotools.coverage.grid.io.imageio.geotiff.GeoTiffConstants;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.vfny.geoserver.wcs.WcsException;
+import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
 import org.w3c.dom.Node;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -332,14 +334,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
         
-        assertEquals("application/xml", response.getContentType());
-        // TODO Fix this test
-//        byte[] tiffContents = getBinary(response);
-//        File file = File.createTempFile("exception", "xml", new File("./target"));
-//        FileUtils.writeByteArrayToFile(file, tiffContents);
-//        
-//        String ex=FileUtils.readFileToString(file);
-
+        checkOws20Exception(response, 404, WcsExceptionCode.CompressionNotSupported.toString(), "compression");
      }
     
     @Test 
@@ -466,13 +461,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
         
-        assertEquals("application/xml", response.getContentType());
-        // TODO Fix this test
-//        byte[] tiffContents = getBinary(response);
-//        File file = File.createTempFile("exception", "xml", new File("./target"));
-//        FileUtils.writeByteArrayToFile(file, tiffContents);
-//        
-//        String ex=FileUtils.readFileToString(file);
+        checkOws20Exception(response, 404, WcsExceptionCode.TilingInvalid.toString(), "tilewidth");
      }
     
     @Test 
@@ -500,13 +489,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
         
-        assertEquals("application/xml", response.getContentType());
-        // TODO Fix this test
-//        byte[] tiffContents = getBinary(response);
-//        File file = File.createTempFile("exception", "xml", new File("./target"));
-//        FileUtils.writeByteArrayToFile(file, tiffContents);
-//        
-//        String ex=FileUtils.readFileToString(file);
+        checkOws20Exception(response, 404, WcsExceptionCode.TilingInvalid.toString(), "tileheight");
      }
     
     @Test 

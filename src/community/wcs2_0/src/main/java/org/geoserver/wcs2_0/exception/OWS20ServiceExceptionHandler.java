@@ -47,7 +47,7 @@ public class OWS20ServiceExceptionHandler extends ServiceExceptionHandler {
      * A flag controlling whether the http return code should always be 200.
      * It is required when running CITE tests for WCS2.0, but breaks OWS2 and WCS2 standards.
      */
-    protected boolean force200httpcode = true;
+    public static boolean force200httpcode = Boolean.getBoolean("force200");
 
     /**
      * verbose exception flag controlling whether the exception stack trace will be included in the
@@ -141,8 +141,9 @@ public class OWS20ServiceExceptionHandler extends ServiceExceptionHandler {
                     response.setStatus(ows2ex.getHttpCode());
                 }
 
-                if(force200httpcode)
+                if(force200httpcode) {
                     response.setStatus(200);
+                }
 
                 encoder.encode(report, OWS.ExceptionReport, response.getOutputStream());
 //            }

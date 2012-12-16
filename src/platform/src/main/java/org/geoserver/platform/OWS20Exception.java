@@ -37,23 +37,15 @@ public class OWS20Exception extends ServiceException {
         public final static OWSExceptionCode OptionNotSupported = new OWSExceptionCode("OptionNotSupported", 501, "Not Implemented");
         public final static OWSExceptionCode NoApplicableCode = new OWSExceptionCode("NoApplicableCode", 500, "Not Implemented");   
 
-//        OperationNotSupported(501, "Not Implemented"),
-//        MissingParameterValue(400, "Bad request"),
-//        InvalidParameterValue(400, "Bad request"),
-//        VersionNegotiationFailed(400, "Bad request"),
-//        InvalidUpdateSequence(400, "Bad request"),
-//        OptionNotSupported(501, "Not Implemented"),
-//        NoApplicableCode(500, "Not Implemented"); // code may be overwritten
-        
         private final String exceptionCode;
         private final Integer httpCode;
         private final String httpMessage;
 
-        protected OWSExceptionCode(String exceptionCode) {
+        public OWSExceptionCode(String exceptionCode) {
             this(exceptionCode, null, null);
         }
 
-        protected OWSExceptionCode(String exceptionCode, Integer httpCode) {
+        public OWSExceptionCode(String exceptionCode, Integer httpCode) {
             this(exceptionCode, httpCode, null);
         }
 

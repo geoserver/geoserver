@@ -17,6 +17,7 @@ import java.util.Set;
 
 import javax.media.jai.JAI;
 
+import org.geoserver.platform.OWS20Exception;
 import org.geoserver.platform.ServiceException;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
@@ -124,18 +125,25 @@ public class GeoTIFFCoverageResponseDelegate implements CoverageResponseDelegate
             // ok, the interleaving has been specified, let's see what we got
             final String interleavingS= encondingParameters.get("interleave");
             if(interleavingS.equals("pixel")){
-                
                 // ok we want pixel interleaving, TIFF ImageWriter always writes
                 // with pixel interleaving hence, we are good!
-                
             } else if(interleavingS.equals("band")){
                 // TODO implement this in TIFF Writer, as it is not supported right now
-                throw new WcsException("Banded Interleaving not supported", WcsExceptionCode.InterleavingNotSupported, "band");
+                throw new OWS20Exception("Banded Interleaving not supported", ows20Code(WcsExceptionCode.InterleavingNotSupported), "interleave");
             } else {
-                throw new WcsException("Invalid Interleaving type provided", WcsExceptionCode.InterleavingInvalid, interleavingS);
+                throw new OWS20Exception("Invalid Interleaving type provided", ows20Code(WcsExceptionCode.InterleavingInvalid), "interleave");
             }
         }
         
+    }
+
+    /**
+     * All OWS 2.0 exceptions for the geotiff extension come with a 404 error code
+     * @param code
+     * @return
+     */
+    private OWS20Exception.OWSExceptionCode ows20Code(WcsExceptionCode code) {
+        return new OWS20Exception.OWSExceptionCode(code.toString(), 404);
     }
 
     /**
@@ -174,17 +182,17 @@ public class GeoTIFFCoverageResponseDelegate implements CoverageResponseDelegate
                                 tileDimensions.width=tileW;
                             } else {
                                 // tile width not supported
-                                throw new WcsException(
+                                throw new OWS20Exception(
                                         "Provided tile width is invalid",
-                                        WcsExceptionCode.TilingInvalid,
-                                        tileW_);                            
+                                        ows20Code(WcsExceptionCode.TilingInvalid),
+                                        "tilewidth");                            
                             } 
                         }catch (Exception e) {
                             // tile width not supported
-                            throw new WcsException(
+                            throw new OWS20Exception(
                                     "Provided tile width is invalid",
-                                    WcsExceptionCode.TilingInvalid,
-                                    tileW_);    
+                                    ows20Code(WcsExceptionCode.TilingInvalid),
+                                    "tilewidth");    
                         }
 
                     }
@@ -200,17 +208,17 @@ public class GeoTIFFCoverageResponseDelegate implements CoverageResponseDelegate
                                 tileDimensions.height=tileH;
                             } else {
                                 // tile height not supported
-                                throw new WcsException(
+                                throw new OWS20Exception(
                                         "Provided tile height is invalid",
-                                        WcsExceptionCode.TilingInvalid,
-                                        tileH_);                            
+                                        ows20Code(WcsExceptionCode.TilingInvalid),
+                                        "tileheight");                            
                             } 
                         }catch (Exception e) {
                             // tile height not supported
-                            throw new WcsException(
+                            throw new OWS20Exception(
                                     "Provided tile height is invalid",
-                                    WcsExceptionCode.TilingInvalid,
-                                    tileH_);    
+                                    ows20Code(WcsExceptionCode.TilingInvalid),
+                                    "tileheight");    
                         }
                     }
                     
@@ -256,16 +264,16 @@ public class GeoTIFFCoverageResponseDelegate implements CoverageResponseDelegate
                             wp.setTIFFCompressor(new TIFFLZWCompressor(BaselineTIFFTagSet.PREDICTOR_HORIZONTAL_DIFFERENCING));
                         } else if(predictorS.equals("Floatingpoint")){
                             // NOT SUPPORTED YET
-                            throw new WcsException(
+                            throw new OWS20Exception(
                                     "Floating Point predictor is not supported",
-                                    WcsExceptionCode.PredictorNotSupported,
-                                    "");
+                                    ows20Code(WcsExceptionCode.PredictorNotSupported),
+                                    "compression");
                         } else {
                             // invalid predictor
-                            throw new WcsException(
+                            throw new OWS20Exception(
                                     "Invalid Predictor provided",
-                                    WcsExceptionCode.PredictorInvalid,
-                                    predictorS);
+                                    ows20Code(WcsExceptionCode.PredictorInvalid),
+                                    "compression");
                         }
                     }
                 } else if(compressionS.equals("JPEG")){
@@ -284,17 +292,17 @@ public class GeoTIFFCoverageResponseDelegate implements CoverageResponseDelegate
                                     wp.setCompressionQuality(quality/100.f);
                                 } else {
                                     // invalid quality
-                                    throw new WcsException(
+                                    throw new OWS20Exception(
                                             "Provided quality value for the jpeg compression in invalid",
-                                            WcsExceptionCode.JpegQualityInvalid,
-                                            quality_);
+                                            ows20Code(WcsExceptionCode.JpegQualityInvalid),
+                                            "jpeg_quality");
                                 }  
                             } catch (Exception e) {
                                 // invalid quality
-                                throw new WcsException(
+                                throw new OWS20Exception(
                                         "Provided quality value for the jpeg compression in invalid",
-                                        WcsExceptionCode.JpegQualityInvalid,
-                                        quality_);
+                                        ows20Code(WcsExceptionCode.JpegQualityInvalid),
+                                        "jpeg_quality");
                             }
                         }  
                     }
@@ -309,7 +317,7 @@ public class GeoTIFFCoverageResponseDelegate implements CoverageResponseDelegate
                     wp.setCompressionType("CCITT RLE");  
                 } else {
                     // compression not supported
-                    throw new WcsException("Provided compression does not seem supported",WcsExceptionCode.CompressionNotSupported,compressionS);
+                    throw new OWS20Exception("Provided compression does not seem supported", ows20Code(WcsExceptionCode.CompressionNotSupported), "compression");
                 }
             }
         }

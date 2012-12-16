@@ -16,6 +16,7 @@ import net.opengis.wcs20.Wcs20Factory;
 
 import org.geoserver.ows.kvp.EMFKvpRequestReader;
 import org.geoserver.ows.util.KvpUtils;
+import org.geotools.wcs.v2_0.RangeSubset;
 import org.geotools.wcs.v2_0.Scaling;
 
 /**
@@ -54,6 +55,7 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
         // with the XML, everything else is in GetCoverage
         parseGeoTiffExtension(gc, kvp);
         parseScalingExtension(gc, kvp);
+        parseRangeSubsetExtension(gc, kvp);
 
         return gc;
     }
@@ -73,7 +75,6 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
                 gc.getExtension().getContents().add(item);
             }
         }
-
     }
 
     private void parseScalingExtension(GetCoverageType gc, Map kvp) {
@@ -107,7 +108,17 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
             item.setObjectContent(scaling);
             gc.getExtension().getContents().add(item);
         }
-
+    }
+    
+    private void parseRangeSubsetExtension(GetCoverageType gc, Map kvp) {
+        if(kvp.containsKey("rangesubset")) {
+            ExtensionItemType item = WCS20_FACTORY.createExtensionItemType();
+            item.setNamespace(RangeSubset.NAMESPACE);
+            item.setName("RangeSubset");
+            item.setObjectContent(kvp.get("rangesubset"));
+            gc.getExtension().getContents().add(item);
+        }
+        
     }
 
 }

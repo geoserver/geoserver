@@ -254,6 +254,10 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             element("ows:Profile", "http://www.opengis.net/spec/WCS_protocol-binding_post-xml/1.0");
 
             element("ows:Profile","http://www.opengis.net/spec/WCS_service-extension_scaling/1.0/conf/scaling");
+            element("ows:Profile","http://www.opengis.net/spec/WCS_service-extension_range-subsetting/1.0/conf/record-subsetting");
+            // don't believe we support these
+            // element("ows:Profile","http://www.opengis.net/spec/WCS_service-extension_array-subsetting/1.0/conf/array-subsetting");
+            // element("ows:Profile","http://www.opengis.net/spec/WCS_service-extension_range-subsetting/1.0/conf/nested-subsetting");
             
             // element("ows:Profile","http://www.opengis.net/spec/WCS_coverage-encoding/1.0/conf/coverage-encoding"); // TODO: check specs and URL
             element("ows:Profile","http://www.opengis.net/spec/GMLCOV_geotiff-coverages/1.0/conf/geotiff-coverage");

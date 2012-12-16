@@ -7,6 +7,8 @@ import java.util.Map;
 
 import net.opengis.wcs20.ExtensionItemType;
 import net.opengis.wcs20.GetCoverageType;
+import net.opengis.wcs20.RangeItemType;
+import net.opengis.wcs20.RangeSubsetType;
 import net.opengis.wcs20.ScaleAxisByFactorType;
 import net.opengis.wcs20.ScaleAxisType;
 import net.opengis.wcs20.ScaleByFactorType;
@@ -20,6 +22,7 @@ import org.eclipse.emf.common.util.EList;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geotools.wcs.v2_0.RangeSubset;
 import org.geotools.wcs.v2_0.Scaling;
 import org.junit.Test;
 
@@ -135,6 +138,30 @@ public class GetCoverageKvpTest extends GeoServerSystemTestSupport {
         assertEquals("http://www.opengis.net/def/axis/OGC/1/j", tax.getAxis());
         assertEquals(20.0, tax.getLow(), 0d);        
         assertEquals(30.0, tax.getHigh(), 0d);
+    }
+    
+    @Test
+    public void testExtensionRangeSubset() throws Exception {
+        GetCoverageType gc = parse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
+                "&coverageId=theCoverage&rangesubset=band01,band03:band05,band10,band19:band21");
+        
+        Map<String, Object> extensions = getExtensionsMap(gc);
+        
+        assertEquals(1, extensions.size());
+        RangeSubsetType rangeSubset = (RangeSubsetType) extensions.get(RangeSubset.NAMESPACE + ":RangeSubset");
+        
+        EList<RangeItemType> items = rangeSubset.getRangeItems();
+        assertEquals(4, items.size());
+        RangeItemType i1 = items.get(0);
+        assertEquals("band01", i1.getRangeComponent());
+        RangeItemType i2 = items.get(1);
+        assertEquals("band03", i2.getRangeInterval().getStartComponent());
+        assertEquals("band05", i2.getRangeInterval().getEndComponent());
+        RangeItemType i3 = items.get(2);
+        assertEquals("band10", i3.getRangeComponent());
+        RangeItemType i4 = items.get(3);
+        assertEquals("band19", i4.getRangeInterval().getStartComponent());
+        assertEquals("band21", i4.getRangeInterval().getEndComponent());
     }
     
     private Map<String, Object> getExtensionsMap(GetCoverageType gc) {

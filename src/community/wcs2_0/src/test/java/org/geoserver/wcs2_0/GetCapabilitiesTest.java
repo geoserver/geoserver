@@ -1,32 +1,16 @@
 package org.geoserver.wcs2_0;
 
-import java.util.Date;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import static org.custommonkey.xmlunit.XMLAssert.*;
+
 import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class GetCapabilitiesTest extends WCSTestSupport {
     
-    @BeforeClass
-    public static void bc() {
-        System.out.println("-BeforeClass---> " + new Date());
-    }
-
-    @Before
-    public void b() {
-        System.out.println("-Before---> " + new Date());
-    }
-
-    @Override
-    protected String getLogConfiguration() {
-        return "/DEFAULT_LOGGING.properties";
-    }
-    
     @Test
     public void testBasicKVP() throws Exception {
         Document dom = getAsDOM("wcs?request=GetCapabilities&service=WCS");
-        print(dom);
+        // print(dom);
         
         checkFullCapabilitiesDocument(dom);
     }
@@ -38,7 +22,7 @@ public class GetCapabilitiesTest extends WCSTestSupport {
                 + "xmlns:wcs=\"http://www.opengis.net/wcs/2.0\" "
                 + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/>";
         Document dom = postAsDOM("wcs", request);
-        print(dom);
+        // print(dom);
         
         checkFullCapabilitiesDocument(dom);
     }
@@ -47,5 +31,9 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         checkValidationErrors(dom, WCS20_SCHEMA);
         
         // todo: check all the layers are here, the profiles, and so on
+        
+        // check that we have the crs extension
+        assertXpathEvaluatesTo("1", "count(//ows:ServiceIdentification[ows:Profile='http://www.opengis.net/spec/WCS_service-extension_crs/1.0/conf/crs'])", dom);
+        assertXpathEvaluatesTo("1", "count(//wcs:ServiceMetadata/wcs:Extension[wcscrs:crsSupported = 'http://www.opengis.net/def/crs/EPSG/0/4326'])", dom);
     }
 }

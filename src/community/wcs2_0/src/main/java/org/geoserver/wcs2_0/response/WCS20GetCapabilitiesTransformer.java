@@ -37,6 +37,7 @@ import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geoserver.wcs2_0.WCS20Const;
 import org.geoserver.wcs2_0.util.NCNameResourceCodec;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.geotools.wcs.v2_0.WCS;
 import org.geotools.xml.transform.TransformerBase;
@@ -171,13 +172,13 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
 
             final AttributesImpl attributes = WCS20Const.getDefaultNamespaces();
             attributes.addAttribute("", "version", "version", "", CUR_VERSION);
-
+            attributes.addAttribute("", "xmlns:wcscrs", "xmlns:wcscrs", "", "http://www.opengis.net/wcs/service-extension/crs/1.0");
+            attributes.addAttribute("", "updateSequence", "updateSequence", "", String.valueOf(updateSequence));
+            
             // TODO: add a config to choose the canonical or local schema 
             final String locationDef = WCS.NAMESPACE + " http://schemas.opengis.net/wcs/2.0/wcsGetCapabilities.xsd";  
             // final String locationDef = WCS.NAMESPACE + " " + buildSchemaURL(request.getBaseUrl(), "wcs/2.0/wcsGetCapabilities.xsd");//
             attributes.addAttribute("", "xsi:schemaLocation", "xsi:schemaLocation", "", locationDef);
-            
-            attributes.addAttribute("", "updateSequence", "updateSequence", "", String.valueOf(updateSequence));
 
             start("wcs:Capabilities", attributes);
 
@@ -223,6 +224,15 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
                 }
             }
             
+            // the CRS extension requires us to declare the full list of supported CRS
+            start("wcs:Extension");
+            for (String code : CRS.getSupportedCodes("EPSG")) {
+                if(!code.equals("WGS84(DD)")) {
+                     element("wcscrs:crsSupported", "http://www.opengis.net/def/crs/EPSG/0/" + code);
+                }
+            }
+            end("wcs:Extension");
+            
             end("wcs:ServiceMetadata");
         }
 
@@ -250,10 +260,21 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
 
             element("ows:Profile", "http://www.opengis.net/spec/WCS/2.0/conf/core");
             element("ows:Profile", "http://www.opengis.net/spec/WCS_protocol-binding_get-kvp/1.0"); // requirement #1 in OGC 09-147r1
-            //element("ows:Profile", "http://www.opengis.net/spec/WCS_protocol-binding_get-kvp/1.0/conf/get-kvp"); // sample getCapa in OGC 09-110r4
+            // element("ows:Profile", "http://www.opengis.net/spec/WCS_protocol-binding_get-kvp/1.0/conf/get-kvp"); // sample getCapa in OGC 09-110r4
             element("ows:Profile", "http://www.opengis.net/spec/WCS_protocol-binding_post-xml/1.0");
 
-//            element("ows:Profile","http://www.opengis.net/spec/WCS_coverage-encoding/1.0/conf/coverage-encoding"); // TODO: check specs and URL
+            element("ows:Profile","http://www.opengis.net/spec/WCS_service-extension_scaling/1.0/conf/scaling");
+            element("ows:Profile","http://www.opengis.net/spec/WCS_service-extension_range-subsetting/1.0/conf/record-subsetting");
+            // don't believe we support these
+            // element("ows:Profile","http://www.opengis.net/spec/WCS_service-extension_array-subsetting/1.0/conf/array-subsetting");
+            // element("ows:Profile","http://www.opengis.net/spec/WCS_service-extension_range-subsetting/1.0/conf/nested-subsetting");
+            element("ows:Profile", "http://www.opengis.net/spec/WCS_service-extension_crs/1.0/conf/crs");
+            // don't believe we support this one
+            // element("ows:Profile", "http://www.opengis.net/spec/WCS_service-extension_crs/1.0/conf/crs-discrete-coverage");
+            element("ows:Profile", "http://www.opengis.net/spec/WCS_service-extension_crs/1.0/conf/crs-gridded-coverage");
+            
+            // element("ows:Profile","http://www.opengis.net/spec/WCS_coverage-encoding/1.0/conf/coverage-encoding"); // TODO: check specs and URL
+            element("ows:Profile","http://www.opengis.net/spec/GMLCOV_geotiff-coverages/1.0/conf/geotiff-coverage");
             element("ows:Profile","http://www.opengis.net/spec/WCS_coverage-encoding_geotiff/1.0/"); // TODO: check specs and URL
             element("ows:Profile","http://www.opengis.net/spec/WCS_coverage-encoding_gml/1.0/"); // TODO: check specs and URL
 

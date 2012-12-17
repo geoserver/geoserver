@@ -679,4 +679,27 @@ public class KvpUtils {
                 options.put(entry.getKey(), entry.getValue());
         }
     }
+
+    /**
+     * Extracts the first value for the specified parameter (the kvp can contain either a single
+     * string, or an array of values)
+     * @param kvp
+     * @param param
+     */
+    public static String firstValue(Map kvp, String param) {
+        Object o = kvp.get(param);
+        if(o == null) {
+            return null;
+        } else if(o instanceof String) {
+            return (String) o;
+        } else {
+            String[] values = (String[]) o;
+            if(values.length >= 0) {
+                return values[0];
+            } else {
+                return null;
+            }
+        }
+        
+    }
 }

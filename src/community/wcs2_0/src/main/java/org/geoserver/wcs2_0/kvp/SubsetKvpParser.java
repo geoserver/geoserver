@@ -11,7 +11,7 @@ import net.opengis.wcs20.Wcs20Factory;
 
 import org.geoserver.ows.KvpParser;
 import org.geoserver.platform.OWS20Exception;
-import org.geoserver.wcs2_0.exception.WCS20Exception.WCSExceptionCode;
+import org.geoserver.wcs2_0.exception.WCS20Exception.WCS20ExceptionCode;
 
 /**
  * Parses the WCS 2.0 subset key
@@ -44,7 +44,7 @@ public class SubsetKvpParser extends KvpParser {
 
         if (openIdx == -1 || closeIdx == -1 || closeIdx < value.length() - 1) {
             throw new OWS20Exception("Invalid syntax, dimension [ , crs ] ( intervalOrPoint ) is expected",
-                    WCSExceptionCode.InvalidEncodingSyntax, "subset");
+                    WCS20ExceptionCode.InvalidEncodingSyntax, "subset");
             
         }
 
@@ -61,7 +61,7 @@ public class SubsetKvpParser extends KvpParser {
             crs = dcElements[1];
         } else {
             throw new OWS20Exception("Invalid syntax, dimension [ , crs ] ( intervalOrPoint ) is expected",
-                    WCSExceptionCode.InvalidEncodingSyntax, "subset");
+                    WCS20ExceptionCode.InvalidEncodingSyntax, "subset");
         }
 
         // parse the second part, intervalOrPoint
@@ -89,7 +89,7 @@ public class SubsetKvpParser extends KvpParser {
         } else {
             throw new OWS20Exception("Invalid syntax, dimension [ , crs ] ( intervalOrPoint ) "
                     + "where interval or point has either 1 or two elements",
-                    WCSExceptionCode.InvalidEncodingSyntax, "subset");
+                    WCS20ExceptionCode.InvalidEncodingSyntax, "subset");
         }
     }
 
@@ -102,7 +102,7 @@ public class SubsetKvpParser extends KvpParser {
             } else {
                 throw new OWS20Exception(
                         "Invalid usage of *, it can be used only when specifying an interval",
-                        WCSExceptionCode.InvalidEncodingSyntax, "subset");
+                        WCS20ExceptionCode.InvalidEncodingSyntax, "subset");
             }
         } else if (point.startsWith("\"") && point.endsWith("\"")) {
             point = point.substring(1, point.length() - 1);
@@ -113,7 +113,7 @@ public class SubsetKvpParser extends KvpParser {
             } catch (NumberFormatException e) {
                 throw new OWS20Exception("Invalid point value " + point
                         + ", it is not a number and it's not between double quotes",
-                        WCSExceptionCode.InvalidEncodingSyntax, "subset");
+                        WCS20ExceptionCode.InvalidEncodingSyntax, "subset");
             }
         }
 

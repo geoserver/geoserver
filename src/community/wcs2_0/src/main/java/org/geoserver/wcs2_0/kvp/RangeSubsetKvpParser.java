@@ -66,6 +66,6 @@ public class RangeSubsetKvpParser extends KvpParser {
     protected void throwInvalidSyntaxException() {
         throw new WCS20Exception(
                 "Invalid RangeSubset syntax, expecting a list of band names or band ranges (b1:b2)",
-                WCS20Exception.WCSExceptionCode.InvalidEncodingSyntax, "rangeSubset");
+                WCS20Exception.WCS20ExceptionCode.InvalidEncodingSyntax, "rangeSubset");
     }
 }

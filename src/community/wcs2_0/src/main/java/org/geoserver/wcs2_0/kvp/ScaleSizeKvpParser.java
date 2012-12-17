@@ -53,7 +53,7 @@ public class ScaleSizeKvpParser extends AbstractAxisValueKvpParser<TargetAxisSiz
     protected void throwInvalidSyntaxException(Exception e) {
         WCS20Exception ex = new WCS20Exception(
                 "Invalid ScaleSize syntax, expecting a comma separate list of axisName(size)*",
-                WCS20Exception.WCSExceptionCode.InvalidEncodingSyntax, "scaleSize");
+                WCS20Exception.WCS20ExceptionCode.InvalidEncodingSyntax, "scaleSize");
         if (e != null) {
             ex.initCause(e);
         }

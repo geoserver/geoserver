@@ -1,14 +1,16 @@
 package org.geoserver.wcs2_0;
 
 import static junit.framework.Assert.assertEquals;
-import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
-import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReaderSpi;
 
 import java.io.File;
 
-import javax.imageio.stream.FileImageInputStream;
+import junit.framework.Assert;
 
 import org.apache.commons.io.FileUtils;
+import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.gce.geotiff.GeoTiffReader;
+import org.geotools.referencing.CRS;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -16,7 +18,7 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
  * Testing range subsetting capabilities
  * 
  * @author Simone Giannecchini, GeoSolutions
- *
+ * TODO more tests with a landsat
  */
 public class RangeSubsetExtentionTest extends WCSTestSupport {
 
@@ -32,14 +34,55 @@ public class RangeSubsetExtentionTest extends WCSTestSupport {
         File file = File.createTempFile("bm_gtiff", "bm_gtiff.tiff", new File("./target"));
         FileUtils.writeByteArrayToFile(file, tiffContents);
 
-        // TODO: check the tiff structure is the one requested
-        final TIFFImageReader reader = (TIFFImageReader) new TIFFImageReaderSpi()
-                .createReaderInstance();
-        reader.setInput(new FileImageInputStream(file)); 
-        assertEquals(360, reader.getWidth(0));
-        assertEquals(360, reader.getHeight(0));
-        reader.dispose();           
+        final GeoTiffReader reader = new GeoTiffReader(file);
+        Assert.assertTrue(CRS.equalsIgnoreMetadata(reader.getCrs(), CRS.decode("EPSG:4326",true)));
+        assertEquals(360, reader.getOriginalGridRange().getSpan(0));
+        assertEquals(360, reader.getOriginalGridRange().getSpan(1));
+        final GridCoverage2D coverage = reader.read(null);
+        assertEquals(1, coverage.getSampleDimensions().length);
+        
+        GridCoverage2D sourceCoverage = (GridCoverage2D) this.getCatalog().getCoverageByName("BlueMarble").getGridCoverageReader(null, null).read(null);
+        assertEnvelopeEquals(sourceCoverage, coverage);
+        reader.dispose();  
+        scheduleForCleaning(coverage);
+        scheduleForCleaning(sourceCoverage);   
+    }
+    
+    @Test
+    @Ignore
+    public void testRange() throws Exception {
+        
+        final File xml= new File("./src/test/resources/requestGetCoverageRangeSubsettingInterval.xml");
+        final String request= FileUtils.readFileToString(xml);
+        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+
+        assertEquals("image/tiff", response.getContentType());
+        byte[] tiffContents = getBinary(response);
+        File file = File.createTempFile("bm_gtiff", "bm_gtiff.tiff", new File("./target"));
+        FileUtils.writeByteArrayToFile(file, tiffContents);
+
+        final GeoTiffReader reader = new GeoTiffReader(file);
+        Assert.assertTrue(CRS.equalsIgnoreMetadata(reader.getCrs(), CRS.decode("EPSG:4326",true)));
+        assertEquals(360, reader.getOriginalGridRange().getSpan(0));
+        assertEquals(360, reader.getOriginalGridRange().getSpan(1));
+        final GridCoverage2D coverage = reader.read(null);
+        assertEquals(3, coverage.getSampleDimensions().length);
+        
+        GridCoverage2D sourceCoverage = (GridCoverage2D) this.getCatalog().getCoverageByName("BlueMarble").getGridCoverageReader(null, null).read(null);
+        assertEnvelopeEquals(sourceCoverage, coverage);
+        reader.dispose();  
+        scheduleForCleaning(coverage);
+        scheduleForCleaning(sourceCoverage);   
     }
     
 
+    @Test
+    public void testWrong() throws Exception {
+        
+        final File xml= new File("./src/test/resources/requestGetCoverageWrongRangeSubsetting.xml");
+        final String request= FileUtils.readFileToString(xml);
+        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+
+        assertEquals("application/xml", response.getContentType());
+    }    
 }

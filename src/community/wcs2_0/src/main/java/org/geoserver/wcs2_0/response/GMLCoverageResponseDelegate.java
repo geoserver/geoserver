@@ -78,14 +78,14 @@ public class GMLCoverageResponseDelegate implements CoverageResponseDelegate {
     /** FORMAT_ALIASES */
     private static final List<String> FORMAT_ALIASES = Arrays.asList(FILE_EXTENSION,MIME_TYPE);
     
-    private final static String SRS_STARTER="http://www.opengis.net/def/crs/EPSG/0/";
+    final static String SRS_STARTER="http://www.opengis.net/def/crs/EPSG/0/";
     
     /**
      * 
      * @author Simone Giannecchini, GeoSolutions SAS
      *
      */
-    private static class GMLTransformer extends TransformerBase{
+   private static class GMLTransformer extends TransformerBase{
         
         private EnvelopeAxesLabelsMapper envelopeDimensionsMapper;
         
@@ -327,52 +327,52 @@ public class GMLCoverageResponseDelegate implements CoverageResponseDelegate {
 
                 start("tupleList");
                 // walk through the coverage and spit it out!
-//                final RenderedImage raster= gc2d.getRenderedImage();
-//                final int numBands=raster.getSampleModel().getNumBands();
-//                final int dataType=raster.getSampleModel().getDataType();
-//                final double[] valuesD= new double[numBands];
-//                final int[] valuesI= new int[numBands];
-//                RectIter iterator = RectIterFactory.create(raster, PlanarImage.wrapRenderedImage(raster).getBounds());
-//                
-//                    iterator.startLines();
-//                    while (!iterator.finishedLines()) {
-//                        iterator.startPixels();
-//                        while (!iterator.finishedPixels()) {
-//                            switch (dataType) {
-//                            case DataBuffer.TYPE_BYTE:
-//                            case DataBuffer.TYPE_INT:
-//                            case DataBuffer.TYPE_SHORT:
-//                            case DataBuffer.TYPE_USHORT:
-//                                iterator.getPixel(valuesI);
-//                                for(int i=0;i<numBands;i++){
-//                                    // spit out
-//                                    chars(String.valueOf(valuesI[i]));
-//                                    if(i+1<numBands){
-//                                        chars(",");
-//                                    }
-//                                }
-//                                break;
-//                            case DataBuffer.TYPE_DOUBLE:
-//                            case DataBuffer.TYPE_FLOAT:
-//                                iterator.getPixel(valuesD);
-//                                for(int i=0;i<numBands;i++){
-//                                    // spit out
-//                                    chars(String.valueOf(valuesD[i]));
-//                                    if(i+1<numBands){
-//                                        chars(",");
-//                                    }
-//                                }                           
-//                                break;
-//                            default:
-//                                break;
-//                            }
-//                            // space as sample separator
-//                            chars(" ");
-//                            iterator.nextPixel();
-//                        }
-//                        iterator.nextLine();
-//                        chars("\n");
-//                    }
+                final RenderedImage raster= gc2d.getRenderedImage();
+                final int numBands=raster.getSampleModel().getNumBands();
+                final int dataType=raster.getSampleModel().getDataType();
+                final double[] valuesD= new double[numBands];
+                final int[] valuesI= new int[numBands];
+                RectIter iterator = RectIterFactory.create(raster, PlanarImage.wrapRenderedImage(raster).getBounds());
+                
+                    iterator.startLines();
+                    while (!iterator.finishedLines()) {
+                        iterator.startPixels();
+                        while (!iterator.finishedPixels()) {
+                            switch (dataType) {
+                            case DataBuffer.TYPE_BYTE:
+                            case DataBuffer.TYPE_INT:
+                            case DataBuffer.TYPE_SHORT:
+                            case DataBuffer.TYPE_USHORT:
+                                iterator.getPixel(valuesI);
+                                for(int i=0;i<numBands;i++){
+                                    // spit out
+                                    chars(String.valueOf(valuesI[i]));
+                                    if(i+1<numBands){
+                                        chars(",");
+                                    }
+                                }
+                                break;
+                            case DataBuffer.TYPE_DOUBLE:
+                            case DataBuffer.TYPE_FLOAT:
+                                iterator.getPixel(valuesD);
+                                for(int i=0;i<numBands;i++){
+                                    // spit out
+                                    chars(String.valueOf(valuesD[i]));
+                                    if(i+1<numBands){
+                                        chars(",");
+                                    }
+                                }                           
+                                break;
+                            default:
+                                break;
+                            }
+                            // space as sample separator
+                            chars(" ");
+                            iterator.nextPixel();
+                        }
+                        iterator.nextLine();
+                        chars("\n");
+                    }
 
                 end("tupleList");
                 end("gml:DataBlock");
@@ -417,10 +417,9 @@ public class GMLCoverageResponseDelegate implements CoverageResponseDelegate {
                 final SampleDimension[] bands= gc2d.getSampleDimensions();
                 
                 // handle bands
-                int i=1;
                 for(SampleDimension sd:bands){
                     final AttributesImpl fieldAttr = new AttributesImpl();
-                    fieldAttr.addAttribute("", "name", "name", "", "band"+i++);//sd.getDescription().toString());  // TODO NCNAME?                  
+                    fieldAttr.addAttribute("", "name", "name", "", sd.getDescription().toString());  // TODO NCNAME?  TODO Use Band[i] convention?                
                     start("swe:field",fieldAttr);
                     
                     start("swe:Quantity");
@@ -437,15 +436,16 @@ public class GMLCoverageResponseDelegate implements CoverageResponseDelegate {
                     start("swe:uom",uomAttr);
                     end("swe:uom");
                     
-                    // nil values
-                    handleSampleDimensionNilValues(gc2d,(GridSampleDimension) sd);
-                    
                     // constraint on values
                     start("swe:constraint");
                     start("swe:AllowedValues");
                     handleSampleDimensionRange((GridSampleDimension) sd);// TODO make  this generic
                     end("swe:AllowedValues");
                     end("swe:constraint");
+
+                    // nil values
+                    handleSampleDimensionNilValues(gc2d,(GridSampleDimension) sd);      
+                    
                     end("swe:Quantity");
                     end("swe:field");
                 }
@@ -467,8 +467,8 @@ public class GMLCoverageResponseDelegate implements CoverageResponseDelegate {
                     
                     String nodata = (String)gc2d.getProperties().get("GC_NODATA"); // TODO test me
                     final AttributesImpl nodataAttr = new AttributesImpl();
-                    nodataAttr.addAttribute("", "reason", "reason", "", "");                     
-                    element("swe:nilValue", nodata);
+                    nodataAttr.addAttribute("", "reason", "reason", "", "http://www.opengis.net/def/nil/OGC/0/unknown");                     
+                    element("swe:nilValue", nodata,nodataAttr);
                     // done
                     return;
                     
@@ -479,8 +479,8 @@ public class GMLCoverageResponseDelegate implements CoverageResponseDelegate {
                         
                         for(double nodata:nodataValues){
                             final AttributesImpl nodataAttr = new AttributesImpl();
-                            nodataAttr.addAttribute("", "reason", "reason", "", "");                     
-                            element("swe:nilValue", String.valueOf(nodata));                            
+                            nodataAttr.addAttribute("", "reason", "reason", "", "http://www.opengis.net/def/nil/OGC/0/unknown");                     
+                            element("swe:nilValue", String.valueOf(nodata),nodataAttr);                            
                         }
                         // done
                         return;
@@ -489,8 +489,8 @@ public class GMLCoverageResponseDelegate implements CoverageResponseDelegate {
                         // let's suggest some meaningful value from the data type of the underlying image
                         Number nodata = CoverageUtilities.suggestNoDataValue(gc2d.getRenderedImage().getSampleModel().getDataType());
                         final AttributesImpl nodataAttr = new AttributesImpl();
-                        nodataAttr.addAttribute("", "reason", "reason", "", "");                     
-                        element("swe:nilValue", nodata.toString());
+                        nodataAttr.addAttribute("", "reason", "reason", "", "http://www.opengis.net/def/nil/OGC/0/unknown");                     
+                        element("swe:nilValue", nodata.toString(),nodataAttr);
                     }
                 }
                 
@@ -617,6 +617,7 @@ public class GMLCoverageResponseDelegate implements CoverageResponseDelegate {
 
             
         }
+       
         @Override
         public Translator createTranslator(ContentHandler handler) {
             return new GMLTranslator(handler);

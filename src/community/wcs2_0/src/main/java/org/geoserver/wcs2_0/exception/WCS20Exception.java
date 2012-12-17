@@ -47,6 +47,8 @@ public class WCS20Exception extends OWS20Exception {
         public final static WCS20ExceptionCode InvalidSubsetting = new WCS20ExceptionCode("InvalidSubsetting", 404);
         public final static WCS20ExceptionCode InvalidAxisLabel = new WCS20ExceptionCode("InvalidAxisLabel", 404);
         
+        //RangeSubset extension
+        public final static WCS20ExceptionCode NoSuchField = new WCS20ExceptionCode("NoSuchField", 404);
 
         protected WCS20ExceptionCode(String exceptionCode, Integer httpCode) {
             super(exceptionCode, httpCode);

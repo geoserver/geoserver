@@ -33,7 +33,7 @@ import org.opengis.referencing.cs.CoordinateSystem;
 import org.opengis.referencing.cs.CoordinateSystemAxis;
 
 /**
- * Retain a unique mapping between {@link Envelope} dimensions and their names.
+ * Retain a unique mapping between {@link Envelope} axes and their names.
  * 
  * @author Simone Giannecchini, GeoSolutions
  * TODO caching depending on CRS?

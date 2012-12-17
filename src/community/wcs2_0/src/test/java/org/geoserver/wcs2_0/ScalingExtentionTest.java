@@ -7,8 +7,11 @@ import java.io.File;
 import junit.framework.Assert;
 
 import org.apache.commons.io.FileUtils;
+import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.referencing.CRS;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -19,6 +22,27 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
  *
  */
 public class ScalingExtentionTest extends WCSTestSupport {
+    
+    private GridCoverage2D sourceCoverage;
+    @Before
+    public void setup() throws Exception{
+        // check we can read it as a TIFF and it is similare to the origina one
+        
+        sourceCoverage = (GridCoverage2D) this.getCatalog().getCoverageByName("BlueMarble")
+                .getGridCoverageReader(null, null).read(null);
+
+    }
+    
+    @After
+    public void close(){
+        try{
+            if(sourceCoverage!=null){
+                scheduleForCleaning(sourceCoverage);
+            }
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+    }
 
     @Test
     public void testScaleAxesByFactorXML() throws Exception {
@@ -36,7 +60,12 @@ public class ScalingExtentionTest extends WCSTestSupport {
         Assert.assertTrue(CRS.equalsIgnoreMetadata(reader.getCrs(), CRS.decode("EPSG:4326",true)));
         assertEquals(1260, reader.getOriginalGridRange().getSpan(0));
         assertEquals(1260, reader.getOriginalGridRange().getSpan(1));
-        reader.dispose();        
+        final GridCoverage2D coverage = reader.read(null);
+        Assert.assertNotNull(coverage);
+        assertEnvelopeEquals(sourceCoverage, coverage);
+        reader.dispose();  
+        scheduleForCleaning(coverage);
+        
     } 
     @Test
     public void testScaleToSizeXML() throws Exception {
@@ -55,7 +84,11 @@ public class ScalingExtentionTest extends WCSTestSupport {
         Assert.assertTrue(CRS.equalsIgnoreMetadata(reader.getCrs(), CRS.decode("EPSG:4326",true)));
         assertEquals(1000, reader.getOriginalGridRange().getSpan(0));
         assertEquals(1000, reader.getOriginalGridRange().getSpan(1));
-        reader.dispose();           
+        final GridCoverage2D coverage = reader.read(null);
+        Assert.assertNotNull(coverage);
+        assertEnvelopeEquals(sourceCoverage, coverage);
+        reader.dispose();  
+        scheduleForCleaning(coverage);     
     }
         
     @Test
@@ -74,7 +107,11 @@ public class ScalingExtentionTest extends WCSTestSupport {
         Assert.assertTrue(CRS.equalsIgnoreMetadata(reader.getCrs(), CRS.decode("EPSG:4326",true)));
         assertEquals(200, reader.getOriginalGridRange().getSpan(0));
         assertEquals(300, reader.getOriginalGridRange().getSpan(1));
-        reader.dispose();         
+        final GridCoverage2D coverage = reader.read(null);
+        Assert.assertNotNull(coverage);
+        assertEnvelopeEquals(sourceCoverage, coverage);
+        reader.dispose();  
+        scheduleForCleaning(coverage);  
     } 
     
     @Test
@@ -94,30 +131,10 @@ public class ScalingExtentionTest extends WCSTestSupport {
         Assert.assertTrue(CRS.equalsIgnoreMetadata(reader.getCrs(), CRS.decode("EPSG:4326",true)));
         assertEquals(900, reader.getOriginalGridRange().getSpan(0));
         assertEquals(900, reader.getOriginalGridRange().getSpan(1));
-        reader.dispose();   
+        final GridCoverage2D coverage = reader.read(null);
+        Assert.assertNotNull(coverage);
+        assertEnvelopeEquals(sourceCoverage, coverage);
+        reader.dispose();  
+        scheduleForCleaning(coverage); 
     }
-    
-    // TODO: add tests for range subsetting
-//    <?xml version="1.0" encoding="UTF-8"?>
-//    <wcs:GetCoverage xmlns:wcs="http://www.opengis.net/wcs/2.0"
-//        xmlns:gml="http://www.opengis.net/gml/3.2"
-//        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-//        xmlns:rsub="http://www.opengis.net/wcs/range-subsetting/1.0"
-//        service="WCS" version="2.0.1">
-//        <wcs:CoverageId>C0001</wcs:CoverageId>
-//        <wcs:Extension>    
-//            <rsub:rangeSubset>
-//                <rsub:rangeItem>
-//                    <rsub:rangeComponent>band1</rsub:rangeComponent>
-//                </rsub:rangeItem>    
-//                <rsub:rangeItem>        
-//                    <rsub:rangeInterval>
-//                        <rsub:startComponent>band3</rsub:startComponent>
-//                        <rsub:endComponent>band5</rsub:endComponent>
-//                    </rsub:rangeInterval>
-//                </rsub:rangeItem>        
-//            </rsub:rangeSubset>
-//        </wcs:Extension>
-//    </wcs:GetCoverage>
-
 }

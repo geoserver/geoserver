@@ -8,7 +8,13 @@
     <wcs:Extension>    
         <rsub:rangeSubset>
             <rsub:rangeItem>
-                <rsub:rangeComponent>RED_BAND</rsub:rangeComponent>
+                <rsub:rangeComponent>band1</rsub:rangeComponent>
+            </rsub:rangeItem>    
+            <rsub:rangeItem>        
+                <rsub:rangeInterval>
+                    <rsub:startComponent>band3</rsub:startComponent>
+                    <rsub:endComponent>band5</rsub:endComponent>
+                </rsub:rangeInterval>
             </rsub:rangeItem>        
         </rsub:rangeSubset>
     </wcs:Extension>

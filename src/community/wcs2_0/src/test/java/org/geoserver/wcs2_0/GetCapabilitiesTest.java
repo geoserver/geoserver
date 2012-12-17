@@ -10,7 +10,7 @@ public class GetCapabilitiesTest extends WCSTestSupport {
     @Test
     public void testBasicKVP() throws Exception {
         Document dom = getAsDOM("wcs?request=GetCapabilities&service=WCS");
-        // print(dom);
+        print(dom);
         
         checkFullCapabilitiesDocument(dom);
     }
@@ -35,5 +35,12 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         // check that we have the crs extension
         assertXpathEvaluatesTo("1", "count(//ows:ServiceIdentification[ows:Profile='http://www.opengis.net/spec/WCS_service-extension_crs/1.0/conf/crs'])", dom);
         assertXpathEvaluatesTo("1", "count(//wcs:ServiceMetadata/wcs:Extension[wcscrs:crsSupported = 'http://www.opengis.net/def/crs/EPSG/0/4326'])", dom);
+        
+        // check the interpolation extension
+        assertXpathEvaluatesTo("1", "count(//ows:ServiceIdentification[ows:Profile='http://www.opengis.net/spec/WCS_service-extension_interpolation/1.0/conf/interpolation'])", dom);
+        assertXpathEvaluatesTo("1", "count(//wcs:ServiceMetadata/wcs:Extension[int:interpolationSupported='http://www.opengis.net/def/interpolation/OGC/1/nearest-neighbor'])", dom);
+        assertXpathEvaluatesTo("1", "count(//wcs:ServiceMetadata/wcs:Extension[int:interpolationSupported='http://www.opengis.net/def/interpolation/OGC/1/linear'])", dom);
+        assertXpathEvaluatesTo("1", "count(//wcs:ServiceMetadata/wcs:Extension[int:interpolationSupported='http://www.opengis.net/def/interpolation/OGC/1/cubic'])", dom);
     }
 }
+

@@ -22,7 +22,7 @@ public class GetCapabilitiesTest extends WCSTestSupport {
                 + "xmlns:wcs=\"http://www.opengis.net/wcs/2.0\" "
                 + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/>";
         Document dom = postAsDOM("wcs", request);
-        // print(dom);
+        print(dom);
         
         checkFullCapabilitiesDocument(dom);
     }

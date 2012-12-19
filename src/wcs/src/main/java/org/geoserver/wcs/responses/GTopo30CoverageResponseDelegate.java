@@ -7,7 +7,7 @@ package org.geoserver.wcs.responses;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.ZipOutputStream;
 
@@ -21,30 +21,24 @@ import org.opengis.coverage.grid.GridCoverageWriter;
  * @author Simone Giannecchini, GeoSolutions SAS
  *
  */
-public class GTopo30CoverageResponseDelegate implements CoverageResponseDelegate {
+public class GTopo30CoverageResponseDelegate extends BaseCoverageResponseDelegate implements CoverageResponseDelegate {
 
-    private static final List<String> FORMATS = Arrays.asList("application/gtopo30");
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.vfny.geoserver.wcs.responses.CoverageResponseDelegate#canProduce(java.lang.String)
-     */
-    public boolean canProduce(String outputFormat) {
-        return outputFormat != null
-                && (outputFormat.equalsIgnoreCase("GTopo30") || FORMATS.contains(outputFormat
-                        .toLowerCase()));
-    }
-
-    public String getMimeType(String outputFormat) {
-        if (canProduce(outputFormat))
-            return "application/gtopo30";
-        else
-            return null;
-    }
-  
-    public String getFileExtension(String outputFormat) {
-        return "zip";
+    @SuppressWarnings("serial")
+    public GTopo30CoverageResponseDelegate() {
+        super(
+                Arrays.asList("GTopo30"), //output formats
+                new HashMap<String, String>(){ // file extensions
+                    {
+                        put("GTopo30", "zip");
+                        put("application/gtopo30", "zip");
+                    }
+                },
+                new HashMap<String, String>(){ //mime types
+                    {
+                        put("GTopo30", "application/gtopo30");
+                    }
+                });  
     }
 
     /*
@@ -73,15 +67,4 @@ public class GTopo30CoverageResponseDelegate implements CoverageResponseDelegate
             sourceCoverage.dispose(false);
         }
     }
-	
-	@Override
-	public List<String> getOutputFormats() {
-	    return FORMATS;
-	}
-	
-    @Override
-    public boolean isAvailable() {
-        return true;
-    }
-
 }

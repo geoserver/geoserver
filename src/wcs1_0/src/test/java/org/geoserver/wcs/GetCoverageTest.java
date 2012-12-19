@@ -494,7 +494,7 @@ public class GetCoverageTest extends WCSTestSupport {
     		"  </rangeSubset>\n" + 
     		"  <output>\n" + 
     		"    <crs>EPSG:4326</crs>\n" + 
-    		"    <format>GeoTIFF</format>\n" + 
+    		"    <format>GEOTIFF</format>\n" + 
     		"  </output>\n" + 
     		"</GetCoverage>";
         return request;
@@ -532,7 +532,7 @@ public class GetCoverageTest extends WCSTestSupport {
 		"  </domainSubset>\n" + 
 		"  <output>\n" + 
 		"    <crs>EPSG:4326</crs>\n" + 
-		"    <format>geotiff</format>\n" + 
+		"    <format>GEOTIFF</format>\n" + 
 		"  </output>\n" + 
 		"</GetCoverage>";
         return request;

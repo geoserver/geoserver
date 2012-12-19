@@ -8,12 +8,12 @@ import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.imageio.metadata.IIOMetadataNode;
 import javax.xml.XMLConstants;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Schema;
@@ -29,18 +29,22 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wcs.WCSInfo;
+import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
+import org.geotools.coverage.grid.io.imageio.geotiff.GeoTiffConstants;
 import org.geotools.data.DataUtilities;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.referencing.operation.matrix.XAffineTransform;
 import org.geotools.wcs.v2_0.WCSConfiguration;
 import org.geotools.xml.Parser;
 import org.junit.After;
+import org.junit.Before;
 import org.opengis.coverage.Coverage;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridGeometry;
 import org.opengis.referencing.operation.MathTransform;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
 import org.xml.sax.SAXParseException;
@@ -59,7 +63,9 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
 
     protected static final Schema WCS20_SCHEMA;
     
-    List<GridCoverage> coverages = new ArrayList<GridCoverage>();
+    private final List<GridCoverage> coverages = new ArrayList<GridCoverage>();
+
+    protected GridCoverage2D sourceCoverage;
 
     /**
      * Small value for comparaison of sample values. Since most grid coverage implementations in
@@ -206,6 +212,57 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         for (GridCoverage coverage : coverages) {
             CoverageCleanerCallback.disposeCoverage(coverage);
         }
+    }
+
+    @After
+    public void close(){
+        try{
+            if(sourceCoverage!=null){
+                scheduleForCleaning(sourceCoverage);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Before
+    public void setup() throws Exception{
+        // check we can read it as a TIFF and it is similare to the origina one
+        
+        sourceCoverage = (GridCoverage2D) this.getCatalog().getCoverageByName("BlueMarble")
+                .getGridCoverageReader(null, null).read(null);
+    
+    }
+
+    // TODO: re-enable when we have subsetting support in GetCoverage
+    // @Test
+    // public void testBBoxRequest() throws Exception {
+    // Document dom = getAsDOM("wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=" +
+    // getLayerId(TASMANIA_BM) + "&subset=lon(-10,10)&subset=lat(-20,20)");
+    // print(dom);
+    //
+    // // checkFullCapabilitiesDocument(dom);
+    // }
+    /**
+     * Gets a TIFFField node with the given tag number. This is done by searching for a TIFFField
+     * with attribute number whose value is the specified tag value.
+     * 
+     * @param tag DOCUMENT ME!
+     * 
+     * @return DOCUMENT ME!
+     */
+    static IIOMetadataNode getTiffField(Node rootNode, final int tag) {
+        Node node = rootNode.getFirstChild();
+        if (node != null){
+            node = node.getFirstChild();
+            for (; node != null; node = node.getNextSibling()) {
+                Node number = node.getAttributes().getNamedItem(GeoTiffConstants.NUMBER_ATTRIBUTE);
+                if (number != null && tag == Integer.parseInt(number.getNodeValue())) {
+                    return (IIOMetadataNode) node;
+                }
+            }
+        }
+        return null;
     }
 
     /**

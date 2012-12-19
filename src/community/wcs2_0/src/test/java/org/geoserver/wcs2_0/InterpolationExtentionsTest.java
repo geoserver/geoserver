@@ -9,7 +9,12 @@ import java.io.File;
 
 import javax.imageio.stream.FileImageInputStream;
 
+import junit.framework.Assert;
+
 import org.apache.commons.io.FileUtils;
+import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.gce.geotiff.GeoTiffReader;
+import org.geotools.referencing.CRS;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -39,7 +44,19 @@ public class InterpolationExtentionsTest extends WCSTestSupport {
         reader.setInput(new FileImageInputStream(file)); 
         assertEquals(360, reader.getWidth(0));
         assertEquals(360, reader.getHeight(0));
-        reader.dispose();           
+        reader.dispose();     
+        
+        // now in world coords
+        final GeoTiffReader readerGT = new GeoTiffReader(file);
+        Assert.assertTrue(CRS.equalsIgnoreMetadata(readerGT.getCrs(), CRS.decode("EPSG:4326",true)));
+        assertEquals(360, readerGT.getOriginalGridRange().getSpan(0));
+        assertEquals(360, readerGT.getOriginalGridRange().getSpan(1));
+        final GridCoverage2D coverage = readerGT.read(null);
+        final GridCoverage2D sourceCoverage = (GridCoverage2D) this.getCatalog().getCoverageByName("BlueMarble").getGridCoverageReader(null, null).read(null);
+        assertEnvelopeEquals(sourceCoverage, coverage);
+        readerGT.dispose();  
+        scheduleForCleaning(coverage);
+        scheduleForCleaning(sourceCoverage);  
     }
 
     @Test
@@ -60,7 +77,19 @@ public class InterpolationExtentionsTest extends WCSTestSupport {
         reader.setInput(new FileImageInputStream(file)); 
         assertEquals(360, reader.getWidth(0));
         assertEquals(360, reader.getHeight(0));
-        reader.dispose();           
+        reader.dispose();  
+        
+        // now in world coords
+        final GeoTiffReader readerGT = new GeoTiffReader(file);
+        Assert.assertTrue(CRS.equalsIgnoreMetadata(readerGT.getCrs(), CRS.decode("EPSG:4326",true)));
+        assertEquals(360, readerGT.getOriginalGridRange().getSpan(0));
+        assertEquals(360, readerGT.getOriginalGridRange().getSpan(1));
+        final GridCoverage2D coverage = readerGT.read(null);
+        final GridCoverage2D sourceCoverage = (GridCoverage2D) this.getCatalog().getCoverageByName("BlueMarble").getGridCoverageReader(null, null).read(null);
+        assertEnvelopeEquals(sourceCoverage, coverage);
+        readerGT.dispose();  
+        scheduleForCleaning(coverage);
+        scheduleForCleaning(sourceCoverage);  
     }
     
     @Test
@@ -81,7 +110,19 @@ public class InterpolationExtentionsTest extends WCSTestSupport {
         reader.setInput(new FileImageInputStream(file)); 
         assertEquals(360, reader.getWidth(0));
         assertEquals(360, reader.getHeight(0));
-        reader.dispose();       
+        reader.dispose();   
+        
+        // now in world coords
+        final GeoTiffReader readerGT = new GeoTiffReader(file);
+        Assert.assertTrue(CRS.equalsIgnoreMetadata(readerGT.getCrs(), CRS.decode("EPSG:4326",true)));
+        assertEquals(360, readerGT.getOriginalGridRange().getSpan(0));
+        assertEquals(360, readerGT.getOriginalGridRange().getSpan(1));
+        final GridCoverage2D coverage = readerGT.read(null);
+        final GridCoverage2D sourceCoverage = (GridCoverage2D) this.getCatalog().getCoverageByName("BlueMarble").getGridCoverageReader(null, null).read(null);
+        assertEnvelopeEquals(sourceCoverage, coverage);
+        readerGT.dispose();  
+        scheduleForCleaning(coverage);
+        scheduleForCleaning(sourceCoverage);  
     }
 
     @Test

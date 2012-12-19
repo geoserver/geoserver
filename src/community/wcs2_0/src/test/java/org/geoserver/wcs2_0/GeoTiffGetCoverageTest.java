@@ -13,12 +13,15 @@ import java.io.File;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.FileImageInputStream;
 
+import junit.framework.Assert;
+
 import org.apache.commons.io.FileUtils;
-import org.geotools.coverage.grid.io.imageio.geotiff.GeoTiffConstants;
+import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.gce.geotiff.GeoTiffReader;
+import org.geotools.referencing.CRS;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
-import org.w3c.dom.Node;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
@@ -49,12 +52,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
         
         assertEquals("application/xml", response.getContentType());
-        // TODO Fix this test
-//        byte[] tiffContents = getBinary(response);
-//        File file = File.createTempFile("exception", "xml", new File("./target"));
-//        FileUtils.writeByteArrayToFile(file, tiffContents);
-//        
-//        String ex=FileUtils.readFileToString(file);
+        checkOws20Exception(response, 404, "JpegQualityInvalid", "105");
 
      }
 
@@ -131,7 +129,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
 //        System.out.println(IIOMetadataDumper.getMetadata());        
         assertNotNull(metadata);
         IIOMetadataNode root = (IIOMetadataNode)reader.getImageMetadata(0).getAsTree(TIFFImageMetadata.nativeMetadataFormatName);
-        IIOMetadataNode field = getTiffField(root, BaselineTIFFTagSet.TAG_COMPRESSION);
+        IIOMetadataNode field = WCSTestSupport.getTiffField(root, BaselineTIFFTagSet.TAG_COMPRESSION);
         assertNotNull(field);
         assertEquals("LZW", field.getFirstChild().getFirstChild().getAttributes().item(1).getNodeValue());
         assertEquals("5", field.getFirstChild().getFirstChild().getAttributes().item(0).getNodeValue());
@@ -144,6 +142,18 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         
         // clean up
         reader.dispose();
+        
+        // now in world coords
+        final GeoTiffReader readerGT = new GeoTiffReader(file);
+        Assert.assertTrue(CRS.equalsIgnoreMetadata(readerGT.getCrs(), CRS.decode("EPSG:4326",true)));
+        assertEquals(360, readerGT.getOriginalGridRange().getSpan(0));
+        assertEquals(360, readerGT.getOriginalGridRange().getSpan(1));
+        final GridCoverage2D coverage = readerGT.read(null);
+        final GridCoverage2D sourceCoverage = (GridCoverage2D) this.getCatalog().getCoverageByName("BlueMarble").getGridCoverageReader(null, null).read(null);
+        assertEnvelopeEquals(sourceCoverage, coverage);
+        readerGT.dispose();  
+        scheduleForCleaning(coverage);
+        scheduleForCleaning(sourceCoverage);  
      }
 
     @Test 
@@ -185,7 +195,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
 //        System.out.println(IIOMetadataDumper.getMetadata());        
         assertNotNull(metadata);
         IIOMetadataNode root = (IIOMetadataNode)reader.getImageMetadata(0).getAsTree(TIFFImageMetadata.nativeMetadataFormatName);
-        IIOMetadataNode field = getTiffField(root, BaselineTIFFTagSet.TAG_COMPRESSION);
+        IIOMetadataNode field = WCSTestSupport.getTiffField(root, BaselineTIFFTagSet.TAG_COMPRESSION);
         assertNotNull(field);
         assertEquals("Deflate", field.getFirstChild().getFirstChild().getAttributes().item(1).getNodeValue());
         assertEquals("32946", field.getFirstChild().getFirstChild().getAttributes().item(0).getNodeValue());
@@ -198,6 +208,18 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         
         // clean up
         reader.dispose();
+        
+        // now in world coords
+        final GeoTiffReader readerGT = new GeoTiffReader(file);
+        Assert.assertTrue(CRS.equalsIgnoreMetadata(readerGT.getCrs(), CRS.decode("EPSG:4326",true)));
+        assertEquals(360, readerGT.getOriginalGridRange().getSpan(0));
+        assertEquals(360, readerGT.getOriginalGridRange().getSpan(1));
+        final GridCoverage2D coverage = readerGT.read(null);
+        final GridCoverage2D sourceCoverage = (GridCoverage2D) this.getCatalog().getCoverageByName("BlueMarble").getGridCoverageReader(null, null).read(null);
+        assertEnvelopeEquals(sourceCoverage, coverage);
+        readerGT.dispose();  
+        scheduleForCleaning(coverage);
+        scheduleForCleaning(sourceCoverage);  
 
      }
     
@@ -241,7 +263,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
 //        System.out.println(IIOMetadataDumper.getMetadata());        
         assertNotNull(metadata);
         IIOMetadataNode root = (IIOMetadataNode)reader.getImageMetadata(0).getAsTree(TIFFImageMetadata.nativeMetadataFormatName);
-        IIOMetadataNode field = getTiffField(root, BaselineTIFFTagSet.TAG_COMPRESSION);
+        IIOMetadataNode field = WCSTestSupport.getTiffField(root, BaselineTIFFTagSet.TAG_COMPRESSION);
         assertNotNull(field);
         assertEquals("Deflate", field.getFirstChild().getFirstChild().getAttributes().item(1).getNodeValue());
         assertEquals("32946", field.getFirstChild().getFirstChild().getAttributes().item(0).getNodeValue());
@@ -254,6 +276,18 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         
         // clean up
         reader.dispose();
+        
+        // now in world coords
+        final GeoTiffReader readerGT = new GeoTiffReader(file);
+        Assert.assertTrue(CRS.equalsIgnoreMetadata(readerGT.getCrs(), CRS.decode("EPSG:4326",true)));
+        assertEquals(360, readerGT.getOriginalGridRange().getSpan(0));
+        assertEquals(360, readerGT.getOriginalGridRange().getSpan(1));
+        final GridCoverage2D coverage = readerGT.read(null);
+        final GridCoverage2D sourceCoverage = (GridCoverage2D) this.getCatalog().getCoverageByName("BlueMarble").getGridCoverageReader(null, null).read(null);
+        assertEnvelopeEquals(sourceCoverage, coverage);
+        readerGT.dispose();  
+        scheduleForCleaning(coverage);
+        scheduleForCleaning(sourceCoverage);  
      }
     
     @Test 
@@ -296,7 +330,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
 //        System.out.println(IIOMetadataDumper.getMetadata());        
         assertNotNull(metadata);
         IIOMetadataNode root = (IIOMetadataNode)reader.getImageMetadata(0).getAsTree(TIFFImageMetadata.nativeMetadataFormatName);
-        IIOMetadataNode field = getTiffField(root, BaselineTIFFTagSet.TAG_COMPRESSION);
+        IIOMetadataNode field = WCSTestSupport.getTiffField(root, BaselineTIFFTagSet.TAG_COMPRESSION);
         assertNotNull(field);
         assertEquals("PackBits", field.getFirstChild().getFirstChild().getAttributes().item(1).getNodeValue());
         assertEquals("32773", field.getFirstChild().getFirstChild().getAttributes().item(0).getNodeValue());
@@ -309,6 +343,18 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         
         // clean up
         reader.dispose();
+        
+        // now in world coords
+        final GeoTiffReader readerGT = new GeoTiffReader(file);
+        Assert.assertTrue(CRS.equalsIgnoreMetadata(readerGT.getCrs(), CRS.decode("EPSG:4326",true)));
+        assertEquals(360, readerGT.getOriginalGridRange().getSpan(0));
+        assertEquals(360, readerGT.getOriginalGridRange().getSpan(1));
+        final GridCoverage2D coverage = readerGT.read(null);
+        final GridCoverage2D sourceCoverage = (GridCoverage2D) this.getCatalog().getCoverageByName("BlueMarble").getGridCoverageReader(null, null).read(null);
+        assertEnvelopeEquals(sourceCoverage, coverage);
+        readerGT.dispose();  
+        scheduleForCleaning(coverage);
+        scheduleForCleaning(sourceCoverage);  
      }
     
     @Test 
@@ -334,7 +380,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
         
-        checkOws20Exception(response, 404, WcsExceptionCode.CompressionNotSupported.toString(), "compression");
+        checkOws20Exception(response, 404, WcsExceptionCode.CompressionInvalid.toString(), "OUCH");
      }
     
     @Test 
@@ -374,7 +420,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         final TIFFImageMetadata metadata=(TIFFImageMetadata) reader.getImageMetadata(0);
         assertNotNull(metadata);
         IIOMetadataNode root = (IIOMetadataNode)reader.getImageMetadata(0).getAsTree(TIFFImageMetadata.nativeMetadataFormatName);
-        IIOMetadataNode field = getTiffField(root, BaselineTIFFTagSet.TAG_COMPRESSION);
+        IIOMetadataNode field = WCSTestSupport.getTiffField(root, BaselineTIFFTagSet.TAG_COMPRESSION);
         assertNotNull(field);
         assertEquals("JPEG", field.getFirstChild().getFirstChild().getAttributes().item(1).getNodeValue());
         assertEquals("7", field.getFirstChild().getFirstChild().getAttributes().item(0).getNodeValue());
@@ -387,6 +433,18 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         
         // clean up
         reader.dispose();
+        
+        // now in world coords
+        final GeoTiffReader readerGT = new GeoTiffReader(file);
+        Assert.assertTrue(CRS.equalsIgnoreMetadata(readerGT.getCrs(), CRS.decode("EPSG:4326",true)));
+        assertEquals(360, readerGT.getOriginalGridRange().getSpan(0));
+        assertEquals(360, readerGT.getOriginalGridRange().getSpan(1));
+        final GridCoverage2D coverage = readerGT.read(null);
+        final GridCoverage2D sourceCoverage = (GridCoverage2D) this.getCatalog().getCoverageByName("BlueMarble").getGridCoverageReader(null, null).read(null);
+        assertEnvelopeEquals(sourceCoverage, coverage);
+        readerGT.dispose();  
+        scheduleForCleaning(coverage);
+        scheduleForCleaning(sourceCoverage);  
      }
     
     @Test 
@@ -434,6 +492,18 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         
         // clean up
         reader.dispose();
+        
+        // now in world coords
+        final GeoTiffReader readerGT = new GeoTiffReader(file);
+        Assert.assertTrue(CRS.equalsIgnoreMetadata(readerGT.getCrs(), CRS.decode("EPSG:4326",true)));
+        assertEquals(360, readerGT.getOriginalGridRange().getSpan(0));
+        assertEquals(360, readerGT.getOriginalGridRange().getSpan(1));
+        final GridCoverage2D coverage = readerGT.read(null);
+        final GridCoverage2D sourceCoverage = (GridCoverage2D) this.getCatalog().getCoverageByName("BlueMarble").getGridCoverageReader(null, null).read(null);
+        assertEnvelopeEquals(sourceCoverage, coverage);
+        readerGT.dispose();  
+        scheduleForCleaning(coverage);
+        scheduleForCleaning(sourceCoverage);  
      }
     
     @Test 
@@ -461,7 +531,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
         
-        checkOws20Exception(response, 404, WcsExceptionCode.TilingInvalid.toString(), "tilewidth");
+        checkOws20Exception(response, 404, WcsExceptionCode.TilingInvalid.toString(), "13");
      }
     
     @Test 
@@ -489,7 +559,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
         
-        checkOws20Exception(response, 404, WcsExceptionCode.TilingInvalid.toString(), "tileheight");
+        checkOws20Exception(response, 404, WcsExceptionCode.TilingInvalid.toString(), "25");
      }
     
     @Test 
@@ -539,6 +609,18 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         
         // clean up
         reader.dispose();
+        
+        // now in world coords
+        final GeoTiffReader readerGT = new GeoTiffReader(file);
+        Assert.assertTrue(CRS.equalsIgnoreMetadata(readerGT.getCrs(), CRS.decode("EPSG:4326",true)));
+        assertEquals(360, readerGT.getOriginalGridRange().getSpan(0));
+        assertEquals(360, readerGT.getOriginalGridRange().getSpan(1));
+        final GridCoverage2D coverage = readerGT.read(null);
+        final GridCoverage2D sourceCoverage = (GridCoverage2D) this.getCatalog().getCoverageByName("BlueMarble").getGridCoverageReader(null, null).read(null);
+        assertEnvelopeEquals(sourceCoverage, coverage);
+        readerGT.dispose();  
+        scheduleForCleaning(coverage);
+        scheduleForCleaning(sourceCoverage);  
     }
     
     @Test 
@@ -567,45 +649,37 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
         
         assertEquals("application/xml", response.getContentType());
-        // TODO Fix this test
-//        byte[] tiffContents = getBinary(response);
-//        File file = File.createTempFile("exception", "xml", new File("./target"));
-//        FileUtils.writeByteArrayToFile(file, tiffContents);
-//        
-//        String ex=FileUtils.readFileToString(file);
+        checkOws20Exception(response, 404, "InterleavingNotSupported", "band");
+
     }
-
-
     
+    @Test 
+    public void testGeotiffExtensionInterleavingWrong() throws Exception {
 
-    // TODO: re-enable when we have subsetting support in GetCoverage
-    // @Test
-    // public void testBBoxRequest() throws Exception {
-    // Document dom = getAsDOM("wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=" +
-    // getLayerId(TASMANIA_BM) + "&subset=lon(-10,10)&subset=lat(-20,20)");
-    // print(dom);
-    //
-    // // checkFullCapabilitiesDocument(dom);
-    // }
-    /**
-     * Gets a TIFFField node with the given tag number. This is done by searching for a TIFFField
-     * with attribute number whose value is the specified tag value.
-     * 
-     * @param tag DOCUMENT ME!
-     * 
-     * @return DOCUMENT ME!
-     */
-    private IIOMetadataNode getTiffField(Node rootNode, final int tag) {
-        Node node = rootNode.getFirstChild();
-        if (node != null){
-            node = node.getFirstChild();
-            for (; node != null; node = node.getNextSibling()) {
-                Node number = node.getAttributes().getNamedItem(GeoTiffConstants.NUMBER_ATTRIBUTE);
-                if (number != null && tag == Integer.parseInt(number.getNodeValue())) {
-                    return (IIOMetadataNode) node;
-                }
-            }
-        }
-        return null;
+        String request =  "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
+        "<wcs:GetCoverage\n" + 
+        "  xmlns:wcs=\"http://www.opengis.net/wcs/2.0\"\n" + 
+        "  xmlns:wcsgeotiff=\"http://www.opengis.net/wcs/geotiff/1.0\"\n" + 
+        "  xmlns:gml=\"http://www.opengis.net/gml/3.2\"\n" + 
+        "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" + 
+        "  xsi:schemaLocation=\"http://www.opengis.net/wcs/2.0 \n" + 
+        "  http://schemas.opengis.net/wcs/2.0/wcsAll.xsd \n" + 
+        "  http://www.opengis.net/wcs/geotiff/1.0 \n" + 
+        "  http://schemas.opengis.net/wcs/geotiff/1.0/wcsGeotiff.xsd\"\n" + 
+        "  service=\"WCS\"\n" + 
+        "  version=\"2.0.1\">\n" + 
+        "  <wcs:Extension>\n" + 
+        "    <wcsgeotiff:compression>None</wcsgeotiff:compression>\n" + 
+        "    <wcsgeotiff:interleave>fake</wcsgeotiff:interleave>\n" + 
+        "  </wcs:Extension>\n" + 
+        "  <wcs:CoverageId>wcs__BlueMarble</wcs:CoverageId>\n" + 
+        "  <wcs:format>image/tiff</wcs:format>\n" + 
+        "</wcs:GetCoverage>";
+
+        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+        
+        assertEquals("application/xml", response.getContentType());
+        checkOws20Exception(response, 404, "InterleavingInvalid", "fake");
+
     }
 }

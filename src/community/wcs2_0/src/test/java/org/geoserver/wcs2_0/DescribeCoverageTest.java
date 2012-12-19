@@ -1,11 +1,18 @@
 package org.geoserver.wcs2_0;
 
+import java.io.File;
 import java.util.Date;
+
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.*;
 import org.w3c.dom.Document;
+
+import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class DescribeCoverageTest extends WCSTestSupport {
 
@@ -38,13 +45,11 @@ public class DescribeCoverageTest extends WCSTestSupport {
     
     @Test
     public void testDescribeCoveragePOST() throws Exception {
-        String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
-        		"<wcs:DescribeCoverage xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'\n" + 
-        		"  xmlns:wcs='http://www.opengis.net/wcs/2.0' xmlns:gml='http://www.opengis.net/gml/3.2'\n" + 
-        		"  xsi:schemaLocation='http://www.opengis.net/wcs/2.0 http://schemas.opengis.net/wcs/2.0/wcsAll.xsd'\n" + 
-        		"  service=\"WCS\" version=\"2.0.1\">\n" + 
-        		"  <wcs:CoverageId>wcs__BlueMarble</wcs:CoverageId>\n" + 
-        		"</wcs:DescribeCoverage>";
+        final File xml= new File("./src/test/resources/testDescribeCoverage.xml");
+        final String request= FileUtils.readFileToString(xml);
+        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+
+        assertEquals("application/xml", response.getContentType());
         
         Document dom = postAsDOM("wcs", request);
         assertNotNull(dom);

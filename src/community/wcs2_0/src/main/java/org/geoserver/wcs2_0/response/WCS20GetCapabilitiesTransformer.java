@@ -4,8 +4,10 @@
  */
 package org.geoserver.wcs2_0.response;
 
-import static org.apache.commons.lang.StringUtils.*;
-import static org.geoserver.ows.util.ResponseUtils.*;
+import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.geoserver.ows.util.ResponseUtils.appendQueryString;
+import static org.geoserver.ows.util.ResponseUtils.buildURL;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -22,7 +24,6 @@ import java.util.logging.Logger;
 
 import net.opengis.wcs20.GetCapabilitiesType;
 
-import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
@@ -49,7 +50,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
 /**
- *
+ * Transformer for GetCapabilities
+ * TODO review
  * @author Emanuele Tajariol (etj) - GeoSolutions
  */
 public class WCS20GetCapabilitiesTransformer extends TransformerBase {
@@ -60,8 +62,6 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
     protected static final String CUR_VERSION = WCS20Const.V20x;
 
     private WCSInfo wcs;
-
-    private Catalog catalog;
 
     private final boolean skipMisconfigured;
 
@@ -83,7 +83,6 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
 
     public WCS20GetCapabilitiesTransformer(GeoServer gs, CoverageResponseDelegateFinder responseFactory) {
         this.wcs = gs.getService(WCSInfo.class);
-        this.catalog = gs.getCatalog();
         this.skipMisconfigured = ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS.equals(
                 gs.getGlobal().getResourceErrorHandling());
         this.responseFactory = responseFactory;

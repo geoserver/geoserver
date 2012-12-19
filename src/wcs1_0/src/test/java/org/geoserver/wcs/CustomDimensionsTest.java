@@ -97,7 +97,7 @@ public class CustomDimensionsTest extends CoverageTestSupport {
                 "  </rangeSubset>\n" + 
                 "  <output>\n" + 
                 "    <crs>EPSG:4326</crs>\n" + 
-                "    <format>GeoTIFF</format>\n" + 
+                "    <format>GEOTIFF</format>\n" + 
                 "  </output>\n" + 
                 "</GetCoverage>";
         return request;

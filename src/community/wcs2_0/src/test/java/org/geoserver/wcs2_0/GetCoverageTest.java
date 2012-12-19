@@ -70,12 +70,12 @@ public class GetCoverageTest extends WCSTestSupport {
             try{
                 readerTarget.dispose();
             } catch (Exception e) {
-                // TODO: handle exception
+                e.printStackTrace();
             }
             try{
                 scheduleForCleaning(targetCoverage);
             } catch (Exception e) {
-                // TODO: handle exception
+                e.printStackTrace();
             }
         }
     }
@@ -114,12 +114,12 @@ public class GetCoverageTest extends WCSTestSupport {
             try{
                 readerTarget.dispose();
             } catch (Exception e) {
-                // TODO: handle exception
+                e.printStackTrace();
             }
             try{
                 scheduleForCleaning(targetCoverage);
             } catch (Exception e) {
-                // TODO: handle exception
+                e.printStackTrace();
             }
         }
     }
@@ -147,17 +147,17 @@ public class GetCoverageTest extends WCSTestSupport {
             try{
                 readerTarget.dispose();
             } catch (Exception e) {
-                // TODO: handle exception
+                e.printStackTrace();
             }
             try{
                 scheduleForCleaning(targetCoverage);
             } catch (Exception e) {
-                // TODO: handle exception
+                e.printStackTrace();
             }
             try{
                 scheduleForCleaning(sourceCoverage);
             } catch (Exception e) {
-                // TODO: handle exception
+                e.printStackTrace();
             }
         }
     }
@@ -188,17 +188,17 @@ public class GetCoverageTest extends WCSTestSupport {
             try{
                 readerTarget.dispose();
             } catch (Exception e) {
-                // TODO: handle exception
+                e.printStackTrace();
             }
             try{
                 scheduleForCleaning(targetCoverage);
             } catch (Exception e) {
-                // TODO: handle exception
+                e.printStackTrace();
             }
             try{
                 scheduleForCleaning(sourceCoverage);
             } catch (Exception e) {
-                // TODO: handle exception
+                e.printStackTrace();
             }
         }
     }
@@ -242,12 +242,12 @@ public class GetCoverageTest extends WCSTestSupport {
             try{
                 readerTarget.dispose();
             } catch (Exception e) {
-                // TODO: handle exception
+                e.printStackTrace();
             }
             try{
                 scheduleForCleaning(targetCoverage);
             } catch (Exception e) {
-                // TODO: handle exception
+                e.printStackTrace();
             }
         }
     }
@@ -286,12 +286,12 @@ public class GetCoverageTest extends WCSTestSupport {
             try{
                 readerTarget.dispose();
             } catch (Exception e) {
-                // TODO: handle exception
+                e.printStackTrace();
             }
             try{
                 scheduleForCleaning(targetCoverage);
             } catch (Exception e) {
-                // TODO: handle exception
+                e.printStackTrace();
             }
         }
     }
@@ -342,12 +342,12 @@ public class GetCoverageTest extends WCSTestSupport {
             try{
                 readerTarget.dispose();
             } catch (Exception e) {
-                // TODO: handle exception
+                e.printStackTrace();
             }
             try{
                 scheduleForCleaning(targetCoverage);
             } catch (Exception e) {
-                // TODO: handle exception
+                e.printStackTrace();
             }
         }
     }
@@ -387,12 +387,12 @@ public class GetCoverageTest extends WCSTestSupport {
             try{
                 readerTarget.dispose();
             } catch (Exception e) {
-                // TODO: handle exception
+                e.printStackTrace();
             }
             try{
                 scheduleForCleaning(targetCoverage);
             } catch (Exception e) {
-                // TODO: handle exception
+                e.printStackTrace();
             }
         }
     }

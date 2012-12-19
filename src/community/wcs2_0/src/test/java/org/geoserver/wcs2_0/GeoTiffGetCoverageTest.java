@@ -17,7 +17,6 @@ import org.apache.commons.io.FileUtils;
 import org.geotools.coverage.grid.io.imageio.geotiff.GeoTiffConstants;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.vfny.geoserver.wcs.WcsException;
 import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
 import org.w3c.dom.Node;
 
@@ -258,6 +257,7 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
      }
     
     @Test 
+    @Ignore
     public void testGeotiffExtensionCompressionPackBits() throws Exception {
         String request =  "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
                         "<wcs:GetCoverage\n" + 

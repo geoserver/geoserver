@@ -90,14 +90,14 @@ public class CRSExtentionTest extends WCSTestSupport {
             final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
             
             final GeneralEnvelope expectedEnvelope= new GeneralEnvelope(
-                    new double[]{1.6308305401213994E7,-5543147.203861462},
-                    new double[]{1.6475284637403902E7,-5311971.846945147});    
+                    new double[]{1.6308305401213994E7,-5388389.272818998},
+                    new double[]{1.636396514661063E7,-5311971.846945147});    
             expectedEnvelope.setCoordinateReferenceSystem(targetCRS);
 
             final double scale = getScale(targetCoverage);
             assertEnvelopeEquals(expectedEnvelope,scale,(GeneralEnvelope) targetCoverage.getEnvelope(),scale);
-            assertEquals(gridRange.getSpan(0), 360);
-            assertEquals(gridRange.getSpan(1), 360);
+            assertEquals(gridRange.getSpan(0), 120);
+            assertEquals(gridRange.getSpan(1), 120);
             
         } finally {
             try{

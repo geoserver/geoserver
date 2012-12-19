@@ -173,6 +173,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             final AttributesImpl attributes = WCS20Const.getDefaultNamespaces();
             attributes.addAttribute("", "version", "version", "", CUR_VERSION);
             attributes.addAttribute("", "xmlns:wcscrs", "xmlns:wcscrs", "", "http://www.opengis.net/wcs/service-extension/crs/1.0");
+            attributes.addAttribute("", "xmlns:int", "xmlns:int", "", "http://www.opengis.net/WCS_service-extension_interpolation/1.0");
             attributes.addAttribute("", "updateSequence", "updateSequence", "", String.valueOf(updateSequence));
             
             // TODO: add a config to choose the canonical or local schema 
@@ -226,11 +227,16 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             
             // the CRS extension requires us to declare the full list of supported CRS
             start("wcs:Extension");
+            // add the supported CRS
             for (String code : CRS.getSupportedCodes("EPSG")) {
                 if(!code.equals("WGS84(DD)")) {
                      element("wcscrs:crsSupported", "http://www.opengis.net/def/crs/EPSG/0/" + code);
                 }
             }
+            // add the supported interpolation methods
+            element("int:interpolationSupported", "http://www.opengis.net/def/interpolation/OGC/1/nearest-neighbor");
+            element("int:interpolationSupported", "http://www.opengis.net/def/interpolation/OGC/1/linear");
+            element("int:interpolationSupported", "http://www.opengis.net/def/interpolation/OGC/1/cubic");
             end("wcs:Extension");
             
             end("wcs:ServiceMetadata");
@@ -277,6 +283,12 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             element("ows:Profile","http://www.opengis.net/spec/GMLCOV_geotiff-coverages/1.0/conf/geotiff-coverage");
             element("ows:Profile","http://www.opengis.net/spec/WCS_coverage-encoding_geotiff/1.0/"); // TODO: check specs and URL
             element("ows:Profile","http://www.opengis.net/spec/WCS_coverage-encoding_gml/1.0/"); // TODO: check specs and URL
+            
+            
+            element("ows:Profile", "http://www.opengis.net/spec/WCS_service-extension_interpolation/1.0/conf/interpolation");
+            element("ows:Profile","http://www.opengis.net/spec/WCS_service-extension_interpolation/1.0/conf/nearest-neighbor");
+            element("ows:Profile","http://www.opengis.net/spec/WCS_service-extension_interpolation/1.0/conf/linear");
+            element("ows:Profile","http://www.opengis.net/spec/WCS_service-extension_interpolation/1.0/conf/cubic");
 
             String fees = wcs.getFees();
             if ( isBlank(fees)) {

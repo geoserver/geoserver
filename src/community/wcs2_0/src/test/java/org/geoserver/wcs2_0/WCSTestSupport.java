@@ -157,6 +157,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         namespaces.put("wcscrs", "http://www.opengis.net/wcs/service-extension/crs/1.0");
         namespaces.put("ows", "http://www.opengis.net/ows/2.0");
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
+        namespaces.put("int", "http://www.opengis.net/WCS_service-extension_interpolation/1.0");
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
         xpath = XMLUnit.newXpathEngine();
 

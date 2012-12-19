@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
+
+import org.apache.commons.io.IOUtils;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
@@ -70,11 +72,15 @@ public final class CustomFormat extends AbstractGridFormat {
             File propertiesFile = new File(dir, "datastore.properties");
             if (propertiesFile.exists()) {
                 Properties props = new Properties();
+                FileInputStream fis = null;
                 try {
-                    props.load(new FileInputStream(propertiesFile));
+                    fis = new FileInputStream(propertiesFile);
+                    props.load(fis);
                     return TYPE_NAME.equalsIgnoreCase(props.getProperty("type"));
                 } catch (IOException e) {
                     e.printStackTrace();
+                } finally {
+                    IOUtils.closeQuietly(fis);
                 }
             }
         }

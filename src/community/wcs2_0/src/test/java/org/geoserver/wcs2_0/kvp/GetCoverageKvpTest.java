@@ -7,6 +7,7 @@ import java.util.Map;
 
 import net.opengis.wcs20.ExtensionItemType;
 import net.opengis.wcs20.GetCoverageType;
+import net.opengis.wcs20.InterpolationType;
 import net.opengis.wcs20.RangeItemType;
 import net.opengis.wcs20.RangeSubsetType;
 import net.opengis.wcs20.ScaleAxisByFactorType;
@@ -175,6 +176,28 @@ public class GetCoverageKvpTest extends GeoServerSystemTestSupport {
         assertEquals(2, extensions.size());
         assertEquals("http://www.opengis.net/def/crs/EPSG/0/4326", extensions.get("http://www.opengis.net/wcs/service-extension/crs/1.0:subsettingCrs"));
         assertEquals("http://www.opengis.net/def/crs/EPSG/0/32632", extensions.get("http://www.opengis.net/wcs/service-extension/crs/1.0:outputCrs"));
+    }
+    
+    @Test
+    public void testExtensionInterpolationLinear() throws Exception {
+        GetCoverageType gc = parse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
+                "&coverageId=theCoverage&interpolation=http://www.opengis.net/def/interpolation/OGC/1/linear");
+        
+        Map<String, Object> extensions = getExtensionsMap(gc);
+        
+        InterpolationType interp = (InterpolationType) extensions.get("http://www.opengis.net/WCS_service-extension_interpolation/1.0:Interpolation");
+        assertEquals("http://www.opengis.net/def/interpolation/OGC/1/linear", interp.getInterpolationMethod().getInterpolationMethod());
+    }
+    
+    @Test
+    public void testExtensionInterpolationMixed() throws Exception {
+        GetCoverageType gc = parse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
+                "&coverageId=theCoverage&interpolation=http://www.opengis.net/def/interpolation/OGC/1/linear");
+        
+        Map<String, Object> extensions = getExtensionsMap(gc);
+        
+        InterpolationType interp = (InterpolationType) extensions.get("http://www.opengis.net/WCS_service-extension_interpolation/1.0:Interpolation");
+        assertEquals("http://www.opengis.net/def/interpolation/OGC/1/linear", interp.getInterpolationMethod().getInterpolationMethod());
     }
     
     private Map<String, Object> getExtensionsMap(GetCoverageType gc) {

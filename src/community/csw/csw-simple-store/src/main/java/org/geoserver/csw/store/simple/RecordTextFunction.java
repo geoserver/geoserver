@@ -4,6 +4,9 @@
  */
 package org.geoserver.csw.store.simple;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geotools.filter.FunctionExpressionImpl;
 import org.geotools.filter.capability.FunctionNameImpl;
@@ -13,7 +16,7 @@ import org.opengis.feature.Property;
 import org.opengis.filter.capability.FunctionName;
 
 /**
- * Concatenates the contents of all SimpleLiteral attributes into a single large string
+ * Collects the contents of all SimpleLiteral attributes into a collection
  * 
  * @author Andrea Aime - GeoSolutions
  */
@@ -28,15 +31,15 @@ public class RecordTextFunction extends FunctionExpressionImpl {
     public Object evaluate(Object object) {
         Feature feature = (Feature) object;
 
-        StringBuilder sb = new StringBuilder();
+        List<Object> list = new ArrayList<Object>(feature.getProperties().size());
         for (Property p : feature.getProperties()) {
             if (p.getDescriptor().getType() == CSWRecordDescriptor.SIMPLE_LITERAL) {
                 Object value = ((ComplexAttribute) p).getProperty("value").getValue();
-                sb.append(value).append(" ");
+                list.add(value);
             }
         }
 
-        return sb.toString();
+        return list;
     }
 
 }

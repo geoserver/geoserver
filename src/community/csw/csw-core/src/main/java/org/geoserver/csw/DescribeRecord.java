@@ -16,10 +16,11 @@ import javax.xml.namespace.QName;
 
 import net.opengis.cat.csw20.DescribeRecordType;
 
+import org.geoserver.csw.records.RecordDescriptor;
 import org.geoserver.csw.store.CatalogStore;
 import org.geoserver.platform.ServiceException;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.AttributeDescriptor;
 
 /**
  * Runs the DescribeRecord request
@@ -35,6 +36,11 @@ public class DescribeRecord {
      * support, for the moment here is a set of different ways to refer to XML schema
      */
     static final Set<String> SUPPORTED_SCHEMA_LANGUAGES = new HashSet<String>() {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -7972590028331744087L;
+
         {
             add("XMLSCHEMA");
             add("http://www.w3.org/2001/XMLSchema");
@@ -50,6 +56,14 @@ public class DescribeRecord {
         this.csw = csw;
         this.store = store;
     }
+    
+    public static AttributeDescriptor[] getFeatureDescriptors(RecordDescriptor[] rds) {
+        AttributeDescriptor[] attds = new AttributeDescriptor[rds.length];
+        for (int i=0; i<rds.length; i++) {
+            attds[i] = rds[i].getFeatureDescriptor();
+        }
+        return attds;
+    }
 
     /**
      * Returns the requested feature types
@@ -57,7 +71,7 @@ public class DescribeRecord {
      * @param request
      * @return
      */
-    public FeatureType[] run(DescribeRecordType request) {
+    public AttributeDescriptor[] run(DescribeRecordType request) {
         try {
             // check we are not asked for a schema language we do not support
             if(request.getSchemaLanguage() != null 
@@ -68,17 +82,19 @@ public class DescribeRecord {
             
             if (request.getTypeName() == null || request.getTypeName().isEmpty()) {
                 // return all the ones we have
-                return store.getRecordSchemas();
+                return getFeatureDescriptors(store.getRecordDescriptors());
             } else {
-                List<FeatureType> result = new ArrayList<FeatureType>();
-                Set<QName> requested = new HashSet(request.getTypeName());
-                FeatureType[] schemas = store.getRecordSchemas();
-                for (FeatureType featureType : schemas) {
+                List<AttributeDescriptor> result = new ArrayList<AttributeDescriptor>();
+                Set<String> requested = new HashSet();
+                for (QName name : request.getTypeName()) {
+                    requested.add(name.getLocalPart());
+                }
+                AttributeDescriptor[] descriptors = getFeatureDescriptors(store.getRecordDescriptors());
+                for (AttributeDescriptor descriptor : descriptors) {
                     // convert the feature type name to a QName and check if it was requested
-                    QName typeName = new QName(featureType.getName().getNamespaceURI(), featureType
-                            .getName().getLocalPart());
+                    String typeName = descriptor.getName().getLocalPart();
                     if (requested.remove(typeName)) {
-                        result.add(featureType);
+                        result.add(descriptor);
                     }
                 }
 
@@ -88,7 +104,7 @@ public class DescribeRecord {
                     LOGGER.log(Level.FINE, "Failed to locate feature types " + requested + ", ignoring them");
                 }
                 
-                return (FeatureType[]) result.toArray(new FeatureType[result.size()]);
+                return result.toArray(new AttributeDescriptor[result.size()]);
             }
         } catch (IOException e) {
             throw new ServiceException("Failed to retrieve the feature type schemas",

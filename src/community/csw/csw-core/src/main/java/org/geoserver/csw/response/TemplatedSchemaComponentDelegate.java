@@ -18,7 +18,7 @@ import org.apache.commons.io.IOUtils;
 import org.geoserver.config.GeoServer;
 import org.geoserver.csw.CSWInfo;
 import org.geotools.feature.NameImpl;
-import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.Name;
 
 /**
@@ -44,15 +44,17 @@ public class TemplatedSchemaComponentDelegate implements SchemaComponentDelegate
     }
 
     @Override
-    public boolean canHandle(FeatureType schema) {
-        return typeName.equals(schema.getName());
+    public boolean canHandle(AttributeDescriptor descriptor) {
+        return typeName.equals(descriptor.getName());
     }
 
     @Override
-    public void writeSchemaComponent(DescribeRecordType request, Writer bw, FeatureType schema) throws IOException {
-        if(!canHandle(schema)) {
-            throw new IllegalArgumentException("Cannot handle schema " + schema.getName());
+    public void writeSchemaComponent(DescribeRecordType request, Writer bw, AttributeDescriptor descriptor) throws IOException {
+        if(!canHandle(descriptor)) {
+            throw new IllegalArgumentException("Cannot handle schema " + descriptor.getName());
         }
+        
+        //FeatureType schema = (FeatureType) descriptor.getType();
         
         // find the root of the schema location
         CSWInfo csw = gs.getService(CSWInfo.class);

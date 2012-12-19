@@ -33,7 +33,7 @@ public class GetRepositoryItemKvpRequestReaderTest extends TestCase {
     protected void setUp() throws Exception {
         geoServerImpl = new GeoServerImpl();
         List<String> operations = new ArrayList<String>();
-        csw = new Service("csw", new DefaultCatalogService(geoServerImpl), new Version("2.0.2"), operations); 
+        csw = new Service("csw", new DefaultWebCatalogService(geoServerImpl), new Version("2.0.2"), operations); 
 
         params = new HashMap<String, String>();
     }

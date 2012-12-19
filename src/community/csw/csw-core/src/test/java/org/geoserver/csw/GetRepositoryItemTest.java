@@ -12,7 +12,7 @@ import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-public class GetRepositoryItemTest extends CSWTestSupport {
+public class GetRepositoryItemTest extends CSWSimpleTestSupport {
 
     @Test 
     public void testGetMissingId() throws Exception {

@@ -26,7 +26,6 @@ import org.geotools.data.Query;
 import org.geotools.data.Transaction;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
-import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
@@ -73,22 +72,22 @@ public class GetRecordById {
             }
                 
             FeatureCollection records = null;
-       
-			// time to run the queries if we are not in hits mode
-			
-			List<FeatureCollection> results = new ArrayList<FeatureCollection>();
-			for (int i = 0; i < queries.size() ; i++) {
-				results.add(store.getRecords(queries.get(i), Transaction.AUTO_COMMIT));
-			}
 
-			if (results.size() == 1) {
-				records = results.get(0);
-			} else if (results.size() > 1) {
-				records = new CompositeFeatureCollection(results);
-			}
-			            
+            // time to run the queries if we are not in hits mode
+
+            List<FeatureCollection> results = new ArrayList<FeatureCollection>();
+            for (int i = 0; i < queries.size(); i++) {
+                results.add(store.getRecords(queries.get(i), Transaction.AUTO_COMMIT, null));
+            }
+
+            if (results.size() == 1) {
+                records = results.get(0);
+            } else if (results.size() > 1) {
+                records = new CompositeFeatureCollection(results);
+            }
+
             ElementSetType elementSet = getElementSetName(request);
-            
+
             CSWRecordsResult result = new CSWRecordsResult(elementSet, 
                     request.getOutputSchema(), numberOfRecordsMatched, numberOfRecordsMatched, 0, timestamp, records);
             return result;
@@ -106,19 +105,9 @@ public class GetRecordById {
         }
         return elementSet;
     }
-
-    private Set<Name> getSupportedTypes() throws IOException {
-        Set<Name> result = new HashSet<Name>();
-        for (FeatureType ft : store.getRecordSchemas()) {
-            result.add(ft.getName());
-        }
-
-        return result;
-    }
-    
+   
     private List<Query> toGtQueries(RecordDescriptor rd, EList<URI> ids) throws IOException {
         // prepare to build the queries
-        Set<Name> supportedTypes = getSupportedTypes();
         
         Set<FeatureId> fids = new HashSet<FeatureId>();
         for (URI id: ids) {
@@ -127,29 +116,23 @@ public class GetRecordById {
         
         Filter filter = FF.id(fids);
                 
-        // build one query per id
-        List<Query> result = new ArrayList<Query>();
-        for (Name typeName : getSupportedTypes() ) {
-            if (!supportedTypes.contains(typeName)) {
-                throw new ServiceException("Unsupported record type " + typeName,
-                        ServiceException.INVALID_PARAMETER_VALUE, "typeNames");
-            }
-                                   
-            Query q = new Query(typeName.getLocalPart());
-            q.setFilter(filter);            
-            
-            // perform some necessary query adjustments
-            Query adapted = rd.adaptQuery(q);     
-            
-            // the specification demands that we throw an error if a spatial operator
-            // is used against a non spatial property
-            if(q.getFilter() != null) {
-                q.getFilter().accept(new SpatialFilterChecker(rd.getFeatureType()), null);
-            }
-            
-            result.add(adapted);
-        }
+        // build one query       
         
+        Name typeName = rd.getFeatureDescriptor().getName();
+        Query q = new Query(typeName.getLocalPart());
+        q.setFilter(filter);
+
+        // perform some necessary query adjustments
+        Query adapted = rd.adaptQuery(q);
+
+        // the specification demands that we throw an error if a spatial operator
+        // is used against a non spatial property
+        if (q.getFilter() != null) {
+            q.getFilter().accept(new SpatialFilterChecker(rd.getFeatureType()), null);
+        }
+    
+        List<Query> result = new ArrayList<Query>();
+        result.add(adapted);
         
         return result;
     }

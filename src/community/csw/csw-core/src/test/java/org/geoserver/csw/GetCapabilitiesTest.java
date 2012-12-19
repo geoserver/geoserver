@@ -30,7 +30,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXParseException;
 
-public class GetCapabilitiesTest extends CSWTestSupport {
+public class GetCapabilitiesTest extends CSWSimpleTestSupport {
 
     static XpathEngine xpath = XMLUnit.newXpathEngine();
 
@@ -109,7 +109,7 @@ public class GetCapabilitiesTest extends CSWTestSupport {
     @Test 
     public void testGetBasic() throws Exception {
         Document dom = getAsDOM(BASEPATH + "?service=csw&version=2.0.2&request=GetCapabilities");
-        // print(dom);
+        print(dom);
         checkValidationErrors(dom);
 
         // basic check on local name
@@ -140,7 +140,7 @@ public class GetCapabilitiesTest extends CSWTestSupport {
     @Test 
     public void testPostBasic() throws Exception {
         Document dom = postAsDOM(BASEPATH + "?service=csw&version=2.0.2&request=GetCapabilities");
-        // print(dom);
+        //print(dom);
         checkValidationErrors(dom);
 
         // basic check on local name

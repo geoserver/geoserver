@@ -24,7 +24,7 @@ import org.geotools.csw.CSW;
 public class CSWRecordsResponse extends AbstractRecordsResponse {
 
     public CSWRecordsResponse(GeoServer gs) {
-        super(CSWRecordDescriptor.RECORD, CSW.NAMESPACE, gs);
+        super(CSWRecordDescriptor.RECORD_TYPE, CSW.NAMESPACE, gs);
     }
 
     protected void transformResponse(OutputStream output, CSWRecordsResult result,

@@ -77,7 +77,7 @@ public class RecordsTest extends TestCase {
     private void assertBBox(Feature f, ReferencedEnvelope... envelopes) throws Exception {
         Property p = f.getProperty(CSWRecordDescriptor.RECORD_BBOX_NAME);
         MultiPolygon geometry = (MultiPolygon) p.getValue();
-        List<ReferencedEnvelope> featureEnvelopes = (List<ReferencedEnvelope>) p.getUserData().get(CSWRecordDescriptor.ORIGINAL_BBOXES);
+        List<ReferencedEnvelope> featureEnvelopes = (List<ReferencedEnvelope>) p.getUserData().get(GenericRecordBuilder.ORIGINAL_BBOXES);
         ReferencedEnvelope total = null;
         for (int i = 0; i < envelopes.length; i++) {
             assertEquals(envelopes[i], featureEnvelopes.get(i));

@@ -19,11 +19,11 @@ import org.geoserver.platform.ServiceException;
  */
 public class GetRepositoryItemKvpRequestReader extends KvpRequestReader {
 
-    private Service csw;
+    //private Service csw;
 
     public GetRepositoryItemKvpRequestReader(Service csw) {
         super(GetRepositoryItemType.class);
-        this.csw = csw;
+        //this.csw = csw;
     }
 
     @Override

@@ -6,12 +6,9 @@ package org.geoserver.csw;
 
 import static junit.framework.Assert.*;
 import static org.custommonkey.xmlunit.XMLAssert.*;
-
 import java.util.HashMap;
 import java.util.Map;
-
 import net.opengis.cat.csw20.GetDomainType;
-
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -25,7 +22,7 @@ import org.geotools.xlink.XLINK;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-public class GetDomainTest extends CSWTestSupport {
+public class GetDomainTest extends CSWSimpleTestSupport {
 
     static XpathEngine xpath = XMLUnit.newXpathEngine();
 
@@ -109,7 +106,7 @@ public class GetDomainTest extends CSWTestSupport {
     public void testGETReaderProperty() throws Exception {
         Document dom = getAsDOM(BASEPATH
                 + "?service=csw&version=2.0.2&request=GetDomain&propertyName=dc:title");
-        // print(dom);
+        print(dom);
         //checkValidationErrors(dom);
         
         assertXpathEvaluatesTo("dc:title", "/csw:GetDomainResponse/csw:DomainValues/csw:PropertyName", dom);

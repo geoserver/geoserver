@@ -4,13 +4,10 @@
  */
 package org.geoserver.csw.feature;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
-
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.collection.DelegateFeatureIterator;
@@ -30,6 +27,8 @@ import org.opengis.feature.type.FeatureType;
  */
 public abstract class AbstractFeatureCollection<T extends FeatureType, F extends Feature> implements
         FeatureCollection<T, F> {
+	    
+	    
     /**
      * id used when serialized to gml
      */
@@ -47,7 +46,7 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
     //
     @SuppressWarnings("unchecked")
     public FeatureIterator<F> features() {
-        FeatureIterator iter = new DelegateFeatureIterator(this, openIterator());
+        FeatureIterator iter = new DelegateFeatureIterator(openIterator());
         getOpenIterators().add(iter);
         return iter;
     }
@@ -286,10 +285,10 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T[] toArray(T[] a) {
+    public <T2> T2[] toArray(T2[] a) {
         int size = size();
         if (a.length < size) {
-            a = (T[]) java.lang.reflect.Array.newInstance(a.getClass().getComponentType(), size);
+            a = (T2[]) java.lang.reflect.Array.newInstance(a.getClass().getComponentType(), size);
         }
         Iterator<F> it = iterator();
         try {

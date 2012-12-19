@@ -9,7 +9,7 @@ import java.io.Writer;
 
 import net.opengis.cat.csw20.DescribeRecordType;
 
-import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.AttributeDescriptor;
 
 /**
  * Builds a portion of the DescribeRecord output, writing on the output a csw:SchemaComponent
@@ -26,7 +26,7 @@ public interface SchemaComponentDelegate {
      * @param schema
      * @return
      */
-    public boolean canHandle(FeatureType schema);
+    public boolean canHandle(AttributeDescriptor descriptor);
 
     /**
      * Write on the output stream the csw:SchemaComponent section, assuming the
@@ -36,5 +36,5 @@ public interface SchemaComponentDelegate {
      * @param store
      * @throws IOException
      */
-    public void writeSchemaComponent(DescribeRecordType request, Writer writer, FeatureType schema) throws IOException;
+    public void writeSchemaComponent(DescribeRecordType request, Writer writer, AttributeDescriptor descriptor) throws IOException;
 }

@@ -6,7 +6,6 @@ package org.geoserver.csw;
 
 import static org.junit.Assert.fail;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -19,11 +18,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
-import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.csw.CSW;
 import org.geotools.csw.CSWConfiguration;
@@ -60,15 +57,6 @@ public abstract class CSWTestSupport extends GeoServerSystemTestSupport {
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
     };
     
-    @Override
-    protected void setUpTestData(SystemTestData testData) throws Exception {
-        // copy all records into the data directory
-        File root = testData.getDataDirectoryRoot();
-        File catalog = new File(root, "catalog");
-        File records = new File("./src/test/resources/org/geoserver/csw/records");
-        FileUtils.copyDirectory(records, catalog);
-    }
-
     protected String root() {
         return "csw?";
     }

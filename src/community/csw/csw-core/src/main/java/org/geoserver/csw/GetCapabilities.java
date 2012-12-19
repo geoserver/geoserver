@@ -41,7 +41,7 @@ import net.opengis.ows10.TelephoneType;
 
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.config.ContactInfo;
-import org.geoserver.csw.records.CSWRecordDescriptor;
+import org.geoserver.csw.records.RecordDescriptor;
 import org.geoserver.csw.store.CatalogStore;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.RequestUtils;
@@ -54,7 +54,6 @@ import org.geotools.filter.capability.SpatialCapabiltiesImpl;
 import org.geotools.filter.capability.SpatialOperatorsImpl;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.EMFUtils;
-import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.capability.ArithmeticOperators;
@@ -596,25 +595,27 @@ public class GetCapabilities {
         
         // the additional queriables based on the store
         try {
-            for(FeatureType ft : store.getRecordSchemas()) {
-                // TODO: encode the ISO additional queriables too
-                if(ft.equals(CSWRecordDescriptor.RECORD)) {
-                    List<Name> queriables = store.getCapabilities().getQueriables(ft.getName());
-                    if(queriables != null && queriables.size() > 0) {
-                        DomainType dt = owsf.createDomainType();
-                        dt.setName("SupportedDublinCoreQueryables");
+            for(RecordDescriptor rd : store.getRecordDescriptors()) {               
+                List<Name> queriables = store.getCapabilities().getQueriables(rd.getFeatureDescriptor().getName() );
+                if(queriables != null && queriables.size() > 0) {
+                    DomainType dt = owsf.createDomainType();
+                    dt.setName(rd.getQueryablesDescription());                    
+                    NamespaceSupport nss = rd.getNamespaceSupport();
                         
-                        for (Name q : queriables) {
-                            NamespaceSupport nss = CSWRecordDescriptor.NAMESPACES;
-                            String prefix = nss.getPrefix(q.getNamespaceURI());
-                            dt.getValue().add(prefix + ":" + q.getLocalPart());
-                        }
-                        
-                        getRecords.getConstraint().add(dt);
-                    }
+                    for (Name q : queriables) {                       
+                        String prefix = nss.getPrefix(q.getNamespaceURI());
+                        dt.getValue().add(prefix==null? q.getLocalPart() : prefix + ":" + q.getLocalPart());
+                    }                        
+                    getRecords.getConstraint().add(dt);
                 }
                 
             }
+            
+            DomainType dt = owsf.createDomainType();
+            dt.setName("XPathQueryables");
+            dt.getValue().add("allowed");
+            getRecords.getConstraint().add(dt);
+            
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Failed to encode getRecords additional queriables", e);
         }
@@ -716,19 +717,18 @@ public class GetCapabilities {
         // The domain queriables list from the catalog store
         try {
             Set<String> summary = new HashSet<String>();
-            for(FeatureType ft : store.getRecordSchemas()) {
-                    List<Name> queriables = store.getCapabilities().getDomainQueriables(ft.getName());
-                    
-                    if(queriables != null && queriables.size() > 0) {
-                        for (Name q : queriables) {
-                            NamespaceSupport nss = CSWRecordDescriptor.NAMESPACES;
-                            String prefix = nss.getPrefix(q.getNamespaceURI());
-                            summary.add(prefix + ":" + q.getLocalPart());
-                        }
-                        
-                        
+            for (RecordDescriptor rd : store.getRecordDescriptors()) {
+                List<Name> queriables = store.getCapabilities().getDomainQueriables(rd.getFeatureDescriptor().getName());
+
+                if (queriables != null && queriables.size() > 0) {
+                    NamespaceSupport nss = rd.getNamespaceSupport();
+                    for (Name q : queriables) {                        
+                        String prefix = nss.getPrefix(q.getNamespaceURI());
+                        summary.add(prefix==null? q.getLocalPart() : prefix + ":" + q.getLocalPart());
                     }
+
                 }
+            }
                 
             if(summary.size() > 0) {
                 List<String> sorted = new ArrayList<String>(summary);

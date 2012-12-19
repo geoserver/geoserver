@@ -6,11 +6,11 @@ package org.geoserver.csw.response;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import net.opengis.cat.csw20.RequestBaseType;
 
 import org.geoserver.csw.records.CSWRecordDescriptor;
+import org.geoserver.csw.records.GenericRecordBuilder;
 import org.geoserver.platform.ServiceException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
@@ -37,7 +37,7 @@ public class CSWRecordTransformer extends AbstractRecordTransformer {
     private static final AttributeDescriptor DC_TITLE = CSWRecordDescriptor.getDescriptor("title");
 
     public CSWRecordTransformer(RequestBaseType request, boolean canonicalSchemaLocation) {
-        super(request, canonicalSchemaLocation);
+        super(request, canonicalSchemaLocation, CSWRecordDescriptor.NAMESPACES);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class CSWRecordTransformer extends AbstractRecordTransformer {
         public void encode(CSWRecordsResult response, Feature f) {
             String element = "csw:" + getRecordElement(response);
             start(element);
-            Set<Name> elements = getElements(response);
+            List<Name> elements = getElements(response);
             
             // encode all elements besides bbox
             if(elements != null && ! element.isEmpty()) {
@@ -89,7 +89,8 @@ public class CSWRecordTransformer extends AbstractRecordTransformer {
                 Property bboxes = f.getProperty(CSWRecordDescriptor.RECORD_BBOX_NAME);
                 if(bboxes != null) {
                     // grab the original bounding boxes from the user data (the geometry is an aggregate)
-                    List<ReferencedEnvelope> originalBoxes = (List<ReferencedEnvelope>) bboxes.getUserData().get(CSWRecordDescriptor.ORIGINAL_BBOXES);
+                    List<ReferencedEnvelope> originalBoxes = (List<ReferencedEnvelope>) bboxes
+                            .getUserData().get(GenericRecordBuilder.ORIGINAL_BBOXES);
                     for (ReferencedEnvelope re : originalBoxes) {
                         try {
                             ReferencedEnvelope wgs84re = re.transform(
@@ -110,6 +111,7 @@ public class CSWRecordTransformer extends AbstractRecordTransformer {
                             throw new ServiceException("Failed to encode the current record: " + f,
                                     e);
                         }
+
                     }
                 }
 
@@ -130,8 +132,8 @@ public class CSWRecordTransformer extends AbstractRecordTransformer {
 
         private void encodeSimpleLiteral(Property p) {
             ComplexAttribute sl = (ComplexAttribute) p;
-            String scheme = (String) sl.getProperty("scheme").getValue();
-            String value = (String) sl.getProperty("value").getValue();
+            String scheme = sl.getProperty("scheme") == null ? null : (String) sl.getProperty("scheme").getValue();
+            String value = sl.getProperty("value") == null? "" : (String) sl.getProperty("value").getValue();
             Name dn = p.getDescriptor().getName();
             String name = dn.getLocalPart();
             String prefix = CSWRecordDescriptor.NAMESPACES.getPrefix(dn.getNamespaceURI());
@@ -155,7 +157,7 @@ public class CSWRecordTransformer extends AbstractRecordTransformer {
             }
         }
 
-        private Set<Name> getElements(CSWRecordsResult response) {
+        private List<Name> getElements(CSWRecordsResult response) {
             switch (response.getElementSet()) {
             case BRIEF:
                 return CSWRecordDescriptor.BRIEF_ELEMENTS;

@@ -31,7 +31,7 @@ class RecordsFeatureCollection extends AbstractFeatureCollection<FeatureType, Fe
     int offset;
 
     public RecordsFeatureCollection(File root, int offset) {
-        super(CSWRecordDescriptor.RECORD);
+        super(CSWRecordDescriptor.RECORD_TYPE);
         this.root = root;
         this.offset = offset;
     }

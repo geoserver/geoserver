@@ -21,7 +21,7 @@ import org.geoserver.ows.Response;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
-import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.AttributeDescriptor;
 
 /**
  * Encodes the DescribeRecord response
@@ -33,7 +33,7 @@ public class DescribeRecordResponse extends Response {
     private GeoServer gs;
 
     public DescribeRecordResponse(GeoServer gs) {
-        super(FeatureType[].class, "application/xml");
+        super(AttributeDescriptor[].class, "application/xml");
         this.gs = gs;
     }
 
@@ -45,7 +45,7 @@ public class DescribeRecordResponse extends Response {
     @Override
     public void write(Object value, OutputStream output, Operation operation) throws IOException,
             ServiceException {
-        FeatureType[] featureTypes = (FeatureType[]) value;
+        AttributeDescriptor[] descriptors = (AttributeDescriptor[]) value;
 
         Writer writer = new OutputStreamWriter(output, Charset.forName("UTF-8"));
 
@@ -70,10 +70,10 @@ public class DescribeRecordResponse extends Response {
                 .extensions(SchemaComponentDelegate.class);
 
         // write out all the schemas
-        for (FeatureType featureType : featureTypes) {
+        for (AttributeDescriptor descriptor : descriptors) {
             for (SchemaComponentDelegate delegate : delegates) {
-                if (delegate.canHandle(featureType)) {
-                    delegate.writeSchemaComponent(request, writer, featureType);
+                if (delegate.canHandle(descriptor)) {
+                    delegate.writeSchemaComponent(request, writer, descriptor);
                     break;
                 }
             }

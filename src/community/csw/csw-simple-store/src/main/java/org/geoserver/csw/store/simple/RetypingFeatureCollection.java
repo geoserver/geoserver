@@ -21,7 +21,7 @@ import org.opengis.filter.sort.SortBy;
  * 
  * @author Andrea Aime - GeoSolutions
  */
-class RetypingFeatureCollection extends AbstractFeatureCollection<FeatureType, Feature> {
+public class RetypingFeatureCollection extends AbstractFeatureCollection<FeatureType, Feature> {
     
     FeatureCollection delegate;
     List<PropertyName> properties;

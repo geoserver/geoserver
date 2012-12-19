@@ -5,6 +5,7 @@
 package org.geoserver.csw.response;
 
 import java.io.IOException;
+import java.util.Enumeration;
 
 import net.opengis.cat.csw20.ElementSetType;
 import net.opengis.cat.csw20.GetRecordByIdType;
@@ -13,14 +14,12 @@ import net.opengis.cat.csw20.RequestBaseType;
 import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geoserver.platform.ServiceException;
 import org.geotools.csw.CSW;
-import org.geotools.csw.DC;
-import org.geotools.csw.DCT;
-import org.geotools.ows.OWS;
 import org.geotools.util.Converters;
 import org.opengis.feature.Feature;
 import org.opengis.feature.FeatureVisitor;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
+import org.xml.sax.helpers.NamespaceSupport;
 
 /**
  * Encodes a FeatureCollection containing {@link CSWRecordDescriptor#RECORD} features into the specified
@@ -29,9 +28,12 @@ import org.xml.sax.helpers.AttributesImpl;
  * @author Andrea Aime - GeoSolutions
  */
 public abstract class AbstractRecordTransformer extends AbstractCSWTransformer {
+    
+    protected NamespaceSupport ns;
 
-    public AbstractRecordTransformer(RequestBaseType request, boolean canonicalSchemaLocation) {
+    public AbstractRecordTransformer(RequestBaseType request, boolean canonicalSchemaLocation, NamespaceSupport ns) {
         super(request, canonicalSchemaLocation);
+        this.ns = ns;
     }
     
     /**
@@ -40,7 +42,7 @@ public abstract class AbstractRecordTransformer extends AbstractCSWTransformer {
      */
     public abstract boolean canHandleRespose(CSWRecordsResult response);
 
-    abstract class AbstractRecordTranslator extends AbstractCSWTranslator {
+    protected abstract class AbstractRecordTranslator extends AbstractCSWTranslator {
 
         public AbstractRecordTranslator(ContentHandler handler) {
             super(handler);
@@ -51,10 +53,12 @@ public abstract class AbstractRecordTransformer extends AbstractCSWTransformer {
             final CSWRecordsResult response = (CSWRecordsResult) o;
 
             AttributesImpl attributes = new AttributesImpl();
-            addAttribute(attributes, "xmlns:csw", CSW.NAMESPACE);
-            addAttribute(attributes, "xmlns:dc", DC.NAMESPACE);
-            addAttribute(attributes, "xmlns:dct", DCT.NAMESPACE);
-            addAttribute(attributes, "xmlns:ows", OWS.NAMESPACE);
+            Enumeration declaredPrefixes = ns.getDeclaredPrefixes();
+            while (declaredPrefixes.hasMoreElements()) {
+                String prefix = (String) declaredPrefixes.nextElement();
+                String uri = ns.getURI(prefix);
+                addAttribute(attributes, prefix==""? "xmlns" : "xmlns:" + prefix, uri);     
+            }
             addAttribute(attributes, "xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
 
             if(request instanceof GetRecordByIdType) {
@@ -113,7 +117,7 @@ public abstract class AbstractRecordTransformer extends AbstractCSWTransformer {
                         public void visit(Feature feature) {
                             encode(response, feature);
                         }
-                    }, null);
+                    }, new LoggingProgressListener());
                 } catch (IOException e) {
                     throw new ServiceException("Failed to encoder records", e);
                 }

@@ -5,6 +5,8 @@
 package org.geoserver.csw;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -29,12 +31,11 @@ import org.geotools.data.Transaction;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
-import org.opengis.feature.type.FeatureType;
+import org.geotools.feature.type.Types;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.PropertyName;
-import org.xml.sax.helpers.NamespaceSupport;
 
 /**
  * Runs the GetRecords request
@@ -95,6 +96,9 @@ public class GetRecords {
                 counts[i] = store.getRecordsCount(queries.get(i), Transaction.AUTO_COMMIT);
                 numberOfRecordsMatched += counts[i];
             }
+            
+
+            ElementSetType elementSet = getElementSet(cswQuery);
     
             int numberOfRecordsReturned = 0;
             int nextRecord = 0;
@@ -112,7 +116,7 @@ public class GetRecords {
     
                 // time to run the queries if we are not in hits mode
                 if(resultType == ResultType.RESULTS) {
-                    if(resultType != resultType.HITS) {
+                    if(resultType != ResultType.HITS) {
                         List<FeatureCollection> results = new ArrayList<FeatureCollection>();
                         for (int i = 0; i < queries.size() && maxRecords > 0; i++) {
                             Query q = queries.get(i);
@@ -135,7 +139,7 @@ public class GetRecords {
                                 continue;
                             }
                             
-                            results.add(store.getRecords(q, Transaction.AUTO_COMMIT));
+                            results.add(store.getRecords(q, Transaction.AUTO_COMMIT, elementSet));
                         }
                         
                         if(results.size() == 1) {
@@ -152,7 +156,6 @@ public class GetRecords {
                 numberOfRecordsReturned = 0;
             }
             
-            ElementSetType elementSet = getElementSet(cswQuery);
             CSWRecordsResult result = new CSWRecordsResult(elementSet, 
                     request.getOutputSchema(), numberOfRecordsMatched, numberOfRecordsReturned, nextRecord, timestamp, records);
             return result;
@@ -185,6 +188,9 @@ public class GetRecords {
             q.setFilter(filter);
             q.setProperties(getPropertyNames(rd, query));
             q.setSortBy(query.getSortBy());
+            try {
+                q.setNamespace(new URI(typeName.getNamespaceURI()));
+            } catch (URISyntaxException e) { }
             
             // perform some necessary query adjustments
             Query adapted = rd.adaptQuery(q);     
@@ -207,27 +213,18 @@ public class GetRecords {
             // turn the QName into PropertyName. We don't do any verification cause the
             // elements in the actual feature could be parts of substitution groups 
             // of the elements in the feature's schema
-            NamespaceSupport namespaces = rd.getNamespaceSupport();
             List<PropertyName> result = new ArrayList<PropertyName>();
             for (QName qn : query.getElementName()) {
-                String ns = qn.getNamespaceURI();
-                String localName = qn.getLocalPart();
-                PropertyName property = buildPropertyName(rd, namespaces, ns, localName);
-                result.add(property);
+                result.add(store.translateProperty(rd, Types.toTypeName(qn)));
             }
             return result;
         } else {
             ElementSetType elementSet = getElementSet(query);
-            Set<Name> properties = rd.getPropertiesForElementSet(elementSet);
+            List<Name> properties = rd.getPropertiesForElementSet(elementSet);
             if(properties != null) {
-                // turn the names into PropertyName
-                NamespaceSupport namespaces = rd.getNamespaceSupport();
                 List<PropertyName> result = new ArrayList<PropertyName>();
-                for (Name name : properties) {
-                    String ns = name.getNamespaceURI();
-                    String localName = name.getLocalPart();
-                    PropertyName property = buildPropertyName(rd, namespaces, ns, localName);
-                    result.add(property);
+                for (Name pn : properties) {
+                    result.add(store.translateProperty(rd, pn));
                 }
                 return result;
             } else {
@@ -249,29 +246,10 @@ public class GetRecords {
         return elementSet;
     }
 
-    private PropertyName buildPropertyName(RecordDescriptor rd, NamespaceSupport namespaces,
-            String ns, String localName) {
-        // if we don't a namespace use the default one for that record
-        if(ns == null) {
-            ns = rd.getFeatureType().getName().getNamespaceURI();
-        }
-        String prefix = namespaces.getPrefix(ns);
-        // build the xpath with the prefix, or not if we don't have one
-        String xpath;
-        if(prefix != null && !"".equals(prefix)) {
-            xpath = prefix + ":" + localName;
-        } else {
-            xpath = localName;
-        }
-        
-        PropertyName property = FF.property(xpath, namespaces);
-        return property;
-    }
-
     private Set<Name> getSupportedTypes() throws IOException {
         Set<Name> result = new HashSet<Name>();
-        for (FeatureType ft : store.getRecordSchemas()) {
-            result.add(ft.getName());
+        for (RecordDescriptor rd : store.getRecordDescriptors()) {
+            result.add(rd.getFeatureDescriptor().getName());
         }
 
         return result;

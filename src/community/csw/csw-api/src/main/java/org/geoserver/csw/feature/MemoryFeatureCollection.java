@@ -14,7 +14,6 @@ import java.util.List;
 
 import org.geoserver.csw.feature.sort.ComplexComparatorFactory;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.FeatureIterator;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;

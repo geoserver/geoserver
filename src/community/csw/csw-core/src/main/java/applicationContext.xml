@@ -18,7 +18,7 @@
     
     <bean id="cswService" class="org.springframework.aop.framework.ProxyFactoryBean">
       <property name="proxyInterfaces">
-        <value>org.geoserver.csw.CatalogService</value>
+        <value>org.geoserver.csw.WebCatalogService</value>
       </property>
       <property name="interceptorNames">
         <list>
@@ -49,7 +49,7 @@
     </bean>
     
     <!-- CSW Service -->
-    <bean id="cswServiceTarget" class="org.geoserver.csw.DefaultCatalogService">
+    <bean id="cswServiceTarget" class="org.geoserver.csw.DefaultWebCatalogService">
         <constructor-arg ref="geoServer" />
     </bean>
     
@@ -154,6 +154,10 @@
       <constructor-arg index="0" ref="geoServer"/>
     </bean>
     
+    <bean id="cswMetaDataResponse-2.0.2" class="org.geoserver.csw.response.MetaDataResponse">
+      <constructor-arg index="0" ref="geoServer"/>
+    </bean>
+    
     <!-- SchemaComponent delegates -->
     <bean id="cswRecordSchemaComponentDelegate" class="org.geoserver.csw.response.TemplatedSchemaComponentDelegate">
         <constructor-arg index="0" ref="geoServer"/>
@@ -162,8 +166,16 @@
         <constructor-arg index="3" value="CSWRecordSchemaComponent.xml"/>
     </bean>   
     
+    <bean id="msRecordSchemaComponentDelegate" class="org.geoserver.csw.response.TemplatedSchemaComponentDelegate">
+        <constructor-arg index="0" ref="geoServer"/>
+        <constructor-arg index="1" value="http://www.isotc211.org/2005/gmd"/>
+        <constructor-arg index="2" value="MD_Metadata"/>
+        <constructor-arg index="3" value="MDRecordSchemaComponent.xml"/>
+    </bean>   
+    
     <!-- The record descriptors -->
     <bean id="cswRecordDescriptor" class="org.geoserver.csw.records.CSWRecordDescriptor"/>
+    <bean id="mdRecordDescriptor" class="org.geoserver.csw.records.iso.MetaDataDescriptor"/>
     
     <!-- http url mapping -->
     <bean id="cswURLMapping" 
@@ -187,6 +199,11 @@
     <bean id="cswCiteComplianceHack" class="org.geoserver.ows.CiteComplianceHack">
       <constructor-arg ref="geoServer"/>
           <constructor-arg value="org.geoserver.csw.CSWInfo"/>
+    </bean>
+    
+    <!--  Store -->
+    <bean id="gsInternalCatalogStore" class="org.geoserver.csw.store.internal.GeoServerInternalCatalogStore">
+      	<constructor-arg ref="geoServer"/>
     </bean>
       
 </beans>

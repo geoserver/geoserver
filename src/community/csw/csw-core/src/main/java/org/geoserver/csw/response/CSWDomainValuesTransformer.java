@@ -29,7 +29,7 @@ public class CSWDomainValuesTransformer extends AbstractRecordTransformer {
     static final String CSW_ROOT_LOCATION = "http://schemas.opengis.net/csw/2.0.2/";
 
     public CSWDomainValuesTransformer(RequestBaseType request, boolean canonicalSchemaLocation) {
-        super(request, canonicalSchemaLocation);
+        super(request, canonicalSchemaLocation, null);
     }
 
     @Override

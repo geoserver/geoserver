@@ -26,7 +26,7 @@ import org.w3c.dom.Document;
  * @author Niels Charlier
  *
  */
-public class GetRecordByIdTest extends CSWTestSupport {
+public class GetRecordByIdTest extends CSWSimpleTestSupport {
 
     @Test 
     public void testKVPReader() throws Exception {

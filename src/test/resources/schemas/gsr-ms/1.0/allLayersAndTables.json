@@ -1,0 +1,19 @@
+{
+	"$schema":"http://json-schema.org/draft-03/schema#",
+	
+	"title":"all layers and tables resource",
+	"type":"object",
+	
+	"properties":{
+		"layers":{
+			"title":"layers",
+			"type":"array",
+			"items":{
+ 			 "$ref":"../../gsr/1.0/layerOrTable.json"}},
+		"tables":{
+			"title":"tables",
+			"type":"array",
+			"items":{
+ 			 "$ref":"../../gsr/1.0/layerOrTable.json"}}
+	}
+}

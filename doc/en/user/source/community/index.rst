@@ -26,3 +26,4 @@ officially part of the GeoServer releases. They are however built along with the
    scripting/index
    spatialite/index
    xslt/index
+   csw/index

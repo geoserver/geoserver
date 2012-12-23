@@ -61,26 +61,26 @@ The anchor point values  are specified relative to the bounding box of the label
 The bottom left of the box is (0, 0), the top left is (1, 1), and the middle is (0.5, 0.5).
 The (X,Y) location of the anchor point inside the label's bounding box is placed at the label point.
 
-.. figure:: img/label_bbox.gif
+.. figure:: img/label_bbox.png
    :align: center
 
 
 The following examples show how changing the anchor point affects the position of labels:
 
 
-.. figure:: img/point_x0y0_5.gif	
+.. figure:: img/point_x0y0_5.png	
 
 *X=0, Y=0.5 - (default) places the label to the right of the label point* 	
 
-.. figure:: img/point_x0_5y0_5.gif
+.. figure:: img/point_x0_5y0_5.png
 
 *X=0.5, Y=0.5 - places the centre of the label at the label point*
 
-.. figure:: img/point_x15y0_5.gif
+.. figure:: img/point_x15y0_5.png
 
 *X=1, Y=0.5 - places the label to the left of the label point*	
 
-.. figure:: img/point_x0_5y0.gif
+.. figure:: img/point_x0_5y0.png
 
 *X=0.5, Y=0 - places the label horizontally centred above the label point*
 
@@ -107,12 +107,12 @@ The element syntax is:
 
 Examples:
 
-.. figure:: img/point_x0y0_5_displacex10.gif
+.. figure:: img/point_x0y0_5_displacex10.png
    :align: center
 	
 *Displacement of X=10 pixels (compare with default anchor point of (X=0, Y=0.5) shown above)*	
 
-.. figure:: img/point_x0y1_displacey10.gif
+.. figure:: img/point_x0y1_displacey10.png
    :align: center
 
 *Displacement of Y=-10 pixels (compare with anchor point (X= 0.5, Y=1.0) - not shown)*
@@ -131,19 +131,19 @@ The optional ``<Rotation>`` element specifies that labels should be rotated cloc
 
 The examples below show how the rotation interacts with anchor points and displacements.
   
-.. figure:: img/rot1.gif
+.. figure:: img/rot1.png
 
 *45 degree rotation* 	
 
-.. figure:: img/rot2.gif
+.. figure:: img/rot2.png
 
 *45 degree rotation with anchor point (X=0.5, Y=0.5)*
 	
-.. figure:: img/rot3.gif
+.. figure:: img/rot3.png
 	
 *45 degree rotation with 40-pixel X displacement* 	
 
-.. figure:: img/rot4.gif
+.. figure:: img/rot4.png
 
 *45 degree rotation with 40-pixel Y displacement with anchor point (X=0.5, Y=0.5)*
 
@@ -177,11 +177,11 @@ A positive value displaces upwards, a negative value downwards.
 
 Examples:
 
-.. figure:: img/lp_1.gif
+.. figure:: img/lp_1.png
 	
 *PerpendicularOffset = 0 (default)*	
 
-.. figure:: img/lp_2.gif
+.. figure:: img/lp_2.png
 
 *PerpendicularOffset = 10*
 
@@ -249,7 +249,7 @@ For example, take the following dataset of cities::
    Newark      |     280,123
    New York    |   8,107,916
 
-.. figure:: img/priority_all.gif
+.. figure:: img/priority_all.png
    :align: center
 
 *City locations (large scale map)*
@@ -266,7 +266,7 @@ To do this we include the following code in the ``<TextSymbolizer>``:
   
 This ensures that at small scales New York is labeled in preference to the less populated cities: 
 
-.. figure:: img/priority_some.gif
+.. figure:: img/priority_some.png
    :align: center
 
 *City locations (small scale map)*
@@ -276,7 +276,7 @@ making it difficult to interpret the map.
 At scales showing many features, 
 priority labeling is essential to ensure that larger cities are more visible than smaller cities.
 
-.. figure:: img/priority_lots.gif
+.. figure:: img/priority_lots.png
    :align: center
 
 
@@ -322,14 +322,14 @@ not a label for every block of "Main Street."
 When the ``group`` option is off (the default), grouping is not performed and every block feature is labeled 
 (subject to label deconfliction):
 
-.. figure:: img/group_not.gif
+.. figure:: img/group_not.png
    :align: center
 
 When the ``group`` option is used, geometries with the same label are grouped together 
 and the label position is determined from the entire group.
 This produces a much less cluttered map:
 
-.. figure:: img/group_yes.gif
+.. figure:: img/group_yes.png
    :align: center
 
 
@@ -349,17 +349,17 @@ The value supplied for the option is a positive or negative size in pixels.
 
 Using the default value of 0, the bounding box of a label cannot overlap the bounding box of another label:
 
-.. figure:: img/space_0.gif
+.. figure:: img/space_0.png
    :align: center
 
 With a negative spaceAround value, overlapping is allowed:
 
-.. figure:: img/space_neg.gif
+.. figure:: img/space_neg.png
    :align: center
 
 With a positive ``spaceAround`` value of 10, each label will be 20 pixels apart from each other:
 
-.. figure:: img/space_10.gif
+.. figure:: img/space_10.png
    :align: center
 
 

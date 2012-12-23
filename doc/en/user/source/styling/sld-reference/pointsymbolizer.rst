@@ -105,7 +105,7 @@ The ``<ExternalGraphic>`` element has the sub-elements:
      - Yes
      - The MIME type of the image format.  
        Most standard web image formats are supported.  
-       Common MIME types are ``image/png``, ``image/jpeg``, ``image/gif``, and ``image/svg+xml``  
+       Common MIME types are ``image/png``, ``image/jpeg``, ``image.png``, and ``image/svg+xml``  
 
 Mark
 ^^^^
@@ -176,8 +176,8 @@ The next example uses an external graphic loaded from the file system:
       <Graphic>
         <ExternalGraphic>
           <OnlineResource xlink:type="simple" 
-                          xlink:href="file:///var/www/htdocs/sun.gif" />
-          <Format>image/gif</Format>
+                          xlink:href="file:///var/www/htdocs/sun.png" />
+          <Format>image.png</Format>
         </ExternalGraphic>
       </Graphic>
     </PointSymbolizer>

@@ -57,11 +57,13 @@ import org.geotools.filter.IllegalFilterException;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.TransformedDirectPosition;
+import org.geotools.geometry.jts.GeometryCoordinateSequenceTransformer;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.WMSLayer;
 import org.geotools.parameter.Parameter;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.renderer.lite.MetaBufferEstimator;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.resources.geometry.XRectangle2D;
@@ -94,6 +96,7 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
@@ -450,8 +453,35 @@ public class GetFeatureInfo {
         Polygon pixelRect = getEnvelopeFilter(x, y, width, height, bbox, radius);
         if ((requestedCRS != null) && !CRS.equalsIgnoreMetadata(dataCRS, requestedCRS)) {
             try {
-                MathTransform transform = CRS.findMathTransform(requestedCRS, dataCRS, true);
-                pixelRect = (Polygon) JTS.transform(pixelRect, transform); // reprojected
+            	if( dataCRS.getCoordinateSystem().getDimension() >= 3 ){
+            		// two stage transform
+	                MathTransform transform1 = CRS.findMathTransform(requestedCRS, DefaultGeographicCRS.WGS84, true);
+	                Polygon polygon = (Polygon) JTS.transform(pixelRect, transform1); // reprojected
+	                LinearRing ring = (LinearRing) polygon.getBoundary();
+	                
+	                GeometryFactory gf = new GeometryFactory();
+	                
+	                CoordinateSequence copy = gf.getCoordinateSequenceFactory().create( ring.getCoordinateSequence().size(), 3 );
+	                for( int index=0; index < ring.getCoordinateSequence().size(); index++ ){
+	                	double ordinateX = ring.getCoordinateSequence().getOrdinate(index,  0 );
+	                	double ordinateY = ring.getCoordinateSequence().getOrdinate(index,  1 );
+						copy.setOrdinate( index, 0, ordinateX);
+						copy.setOrdinate( index, 1, ordinateY);
+	                	copy.setOrdinate( index, 2, 0.0 ); // sealevel
+	                }
+	                LinearRing copyRing = gf.createLinearRing( copy );
+	                Polygon copyPolygon = gf.createPolygon( copyRing,  null );
+	                MathTransform transform = CRS.findMathTransform(DefaultGeographicCRS.WGS84_3D, dataCRS, true);
+//	                GeometryCoordinateSequenceTransformer transformer = new GeometryCoordinateSequenceTransformer();
+//	                transformer.setMathTransform(transform);
+//	                transformer.setCoordinateReferenceSystem( dataCRS );
+//	                pixelRect = (Polygon) transformer.transform(polygon);
+	                pixelRect = (Polygon) JTS.transform(copyPolygon, transform);
+            	}
+            	else {
+	                MathTransform transform = CRS.findMathTransform(requestedCRS, dataCRS, true);
+	                pixelRect = (Polygon) JTS.transform(pixelRect, transform); // reprojected
+            	}
             } catch (MismatchedDimensionException e) {
                 LOGGER.severe(e.getLocalizedMessage());
             } catch (TransformException e) {

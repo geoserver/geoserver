@@ -170,7 +170,8 @@ public class RequestUtils {
         // supports, the server shall return an Exception with 
         // exceptionCode="VersionNegotiationFailed"
         if(negotiated == null)
-            throw new ServiceException("Could not find any matching version", "VersionNegotiationFailed");
+            throw new ServiceException("Could not find any matching version " 
+                    + acceptedList + " in supported list: " + acceptedList, "VersionNegotiationFailed");
         
         return negotiated.toString();
     }

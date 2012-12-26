@@ -1,358 +1,380 @@
 .. _wfs_reference: 
 
 WFS reference
-============= 
+=============
 
-Introduction
------------- 
+The `Web Feature Service <http://www.opengeospatial.org/standards/wfs>`_ (WFS) is a standard created by the Open Geospatial Consortium (OGC) for creating, modifying and exchanging vector format geographic information on the Internet using HTTP. A WFS encodes and transfers information in Geography Markup Language (GML), a subset of XML. 
 
-The `Web Feature Service <http://www.opengeospatial.org/standards/wfs>`_ (WFS) is a standard created by the OGC that refers to the sending and receiving of geospatial data through HTTP. WFS encodes and transfers information in Geography Markup Language, a subset of XML. The current version of WFS is 1.1.0. GeoServer supports both version 1.1.0 (the default since GeoServer 1.6.0) and version 1.0.0. There are differences between these two formats, some more subtle than others, and this will be noted where differences arise. The current version of WFS is 1.1. WFS version 1.0 is still used in places, and we will note where there are differences. However, the syntax will often remain the same. 
+The current version of WFS is **2.0.0**. GeoServer supports versions 2.0.0, 1.1.0, and 1.0.0. Although there are some important differences between the versions, the request syntax often remains the same.
 
-An important distinction must be made between WFS and :ref:`wms`, which refers to the sending and receiving of geographic 
-information after it has been rendered as a digital image. 
+A related OGC specification, the :ref:`wms`, defines the standard for exchanging geographic information in digital image format.
 
 Benefits of WFS
---------------- 
+---------------
 
-One can think of WFS as the "source code" to the maps that one would 
-ordinarily view (via WMS). WFS leads to greater transparency and 
-openness in mapping applications. Instead of merely being able to look 
-at a picture of the map, as the provider wants the user to see, the 
-power is in the hands of the user to determine how to visualize (style) 
-the raw geographic and attribute data. The data can also be downloaded, 
-further analyzed, and combined with other data. The transactional 
-capabilities of WFS allow for collaborative mapping applications. In 
-short, WFS is what enables open spatial data. 
+The WFS standard defines the framework for providing access to, and supporting transactions on, discrete geographic features in a manner that is independent of the underlying data source. Through a combination of discovery, query, locking, and transaction operations, users have access to the source spatial and attribute data in a manner that allows them to interrogate, style, edit (create, update, and delete), and download individual features. The transactional capabilities of WFS also support the development and deployment of collaborative mapping applications. 
 
 Operations
----------- 
+----------
 
-WFS can perform the following operations: 
+All versions of WFS support the these operations: 
 
 .. list-table::
    :widths: 20 80
+   :header-rows: 1
 
-   * - **Operation**
-     - **Description**
+   * - Operation
+     - Description
    * - ``GetCapabilities``
-     - Retrieves a list of the server's data, as well as valid WFS operations and parameters
+     - Generates a metadata document describing a WFS service provided by server  as well as valid WFS operations and parameters
    * - ``DescribeFeatureType``
-     - Retrieves information and attributes about a particular dataset
+     - Returns a description of feature types supported by a WFS service 
    * - ``GetFeature``
-     - Retrieves the actual data, including geometry and attribute values
+     - Returns a selection of features from a data source including geometry and attribute values
    * - ``LockFeature``
-     - Prevents a feature type from being edited
+     - Prevents a feature from being edited through a persistent feature lock
    * - ``Transaction`` 
-     - Edits existing featuretypes by creating, updating, and deleting. 
-   * - ``GetGMLObject`` 
-     - *(Version 1.1.0 only)* - Retrieves element instances by traversing XLinks that refer to their XML IDs.
+     - Edits existing feature types by creating, updating, and deleting 
 
-The supported values for exceptions are:
+The following operations are available in **version 2.0.0 only**:
 
 .. list-table::
-   :widths: 15 35 50
-   
-   * - **Format**
-     - **Syntax**
-     - **Notes**
-   * - XML
-     - ``EXCEPTIONS=text/xml``
-     - Xml output. (The default format)
-   * - JSON
-     - ``EXCEPTIONS=application/json``
-     - Simple Json representation.
-   * - JSONP
-     - ``EXCEPTIONS=text/javascript``
-     - Return a JsonP in the form: paddingOutput(...jsonp...). See :ref:`wms_vendor_parameters` to change the callback name.
+   :widths: 20 80
+   :header-rows: 1
 
-A WFS server that supports **transactions** is sometimes known as a WFS-T.  **GeoServer fully supports transactions.**
+   * - Operation
+     - Description
+   * - ``GetPropertyValue``
+     - Retrieves the value of a feature property or part of the value of a complex feature property from the data store for a set of features identified using a query expression
+   * - ``GetFeatureWithLock``
+     - Returns a selection of features and also applies a lock on those features
+   * - ``CreateStoredQuery``
+     - Create a stored query on the WFS server
+   * - ``DropStoredQuery``
+     - Deletes a stored query from the WFS server
+   * - ``ListStoredQueries``
+     - Returns a list of the stored queries on a WFS server
+   * - ``DescribeStoredQueries``
+     - Returns a metadata document describing the stored queries on a WFS server
+
+The following operations are available in **version 1.1.0 only**:
+
+.. list-table::
+   :widths: 20 80
+   :header-rows: 1
+
+   * - Operation
+     - Description
+   * - ``GetGMLObject``
+     - Retrieves features and elements by ID from a WFS 
+
+.. note:: In the examples that follow, the fictional URL ``http://www.example.com/wfs`` is used for illustration. To test the examples, substitute the address of a valid WFS. Also, although the request would normally be defined on one line with no breaks, breaks are added for clarity in the examples provided. 
 
 .. _wfs_getcap:
 
 GetCapabilities
----------------
+~~~~~~~~~~~~~~~
 
+The **GetCapabilities** operation is a request to a WFS server for a list of the operations and services, or *capabilities*, supported by that server.
 
-The **GetCapabilities** operation is a request to a WFS server for a list of what operations and services ("capabilities") are being offered by that server. 
+To issue a GET request using HTTP::
 
-A typical GetCapabilities request would look like this (at URL ``http://www.example.com/wfs``):
-
-Using a GET request (standard HTTP):
-
-.. code-block:: xml
- 
    http://www.example.com/wfs?
-   service=wfs&
-   version=1.1.0&
-   request=GetCapabilities
+     service=wfs&
+     version=1.1.0&
+     request=GetCapabilities
 	  
-The equivalent using POST:
+The equivalent request using POST:
 	
 .. code-block:: xml 
 
    <GetCapabilities
-   service="WFS"
-   xmlns="http://www.opengis.net/wfs"
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   xsi:schemaLocation="http://www.opengis.net/wfs 			
-   http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"/>
+    service="WFS"
+    xmlns="http://www.opengis.net/wfs"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.opengis.net/wfs 			
+    http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"/>
 	
-GET requests are simplest to decode, so we will discuss them in detail, but the POST requests are analogous.  (The actual requests would be all on one line, with no line breaks, but our convention here is to break lines for clarity.)  Here there are three parameters being passed to our WFS server, ``service=wfs``, ``version=1.1.0``, and ``request=GetCapabilities``.  At a bare minimum, it is required that a WFS request have these three parameters (service, version, and request).  GeoServer relaxes these requirements (setting the default version if omitted), but "officially" they are mandatory, so they should always be included.  The *service* key tells the WFS server that a WFS request is forthcoming.  The *version* key refers to which version of WFS is being requested.  Note that there are only two version numbers officially supported:  "1.0.0" and "1.1.0".  Supplying a value like "1" or "1.1" will likely return an error.  The *request* key is where the actual GetCapabilities operation is specified.
+GET requests are simplest to decode, but the POST requests are equivalent. 
 
-The Capabilities document that is returned is a long and complex chunk of XML, but very important, and so it is worth taking a closer look.  (The 1.0.0 Capabilities document is very different from the 1.1.0 document discussed here, so beware.)  There are five main components we will be discussing (other components are beyond the scope of this document.):
+The parameters for GetCapabilities are:
+
+.. list-table::
+   :widths: 20 20 60
+   :header-rows: 1
+   
+   * - Parameter
+     - Required?
+     - Description
+
+   * - ``service``
+     - Yes
+     - Service name—Value is ``WFS``  
+   * - ``version``
+     - Yes
+     - Service version—Value is the current version number. The full version number must be supplied ("1.1.0", "1.0.0"), not the abbreviated form ("1" or "1.1").
+   * - ``request``
+     - Yes
+     - Operation name—Value is ``GetCapabilities``
+
+Although all of the above parameters are technically required as per the specification, GeoServer will provide default values if any parameters are omitted from a request.
+
+The GetCapabilities response is a lengthy XML document, the format of which is different for each of the supported versions. There are five main components in a GetCapabilities document:
 
 .. list-table::
    :widths: 20 80
-   
-   * - **ServiceIdentification**
-     - This section contains basic "header" information such as the Name and ServiceType.  The ServiceType mentions which version(s) of WFS are supported.
-   * - **ServiceProvider**
-     - This section provides contact information about the company behind the WFS server, including telephone, website, and email.
-   * - **OperationsMetadata**
-     - This section describes the operations that the WFS server recognizes and the parameters for each operation.  A WFS server can be set up not to respond to all aforementioned operations.
-   * - **FeatureTypeList**
-     - This section lists the available featuretypes.  They are listed in the form "namespace:featuretype".  Also, the default projection of the featuretype is listed here, along with the resultant bounding box for the data in that projection.
-   * - **Filter_Capabilities**
-     - This section lists filters available in which to request the data.  SpatialOperators (Equals, Touches), ComparisonOperators (LessThan, GreaterThan), and other functions are all listed here.  These filters are not defined in the Capabilities document, but most of them (like the ones mentioned here) are self-evident.
+   :header-rows: 1
+
+   * - Component
+     - Description
+   * - ``ServiceIdentification``
+     - Contains basic header information for the request such as the ``Title`` and ``ServiceType``. The ``ServiceType`` indicates which version(s) of WFS are supported.
+   * - ``ServiceProvider``
+     - Provides contact information about the company publishing the WFS service, including telephone, website, and email.
+   * - ``OperationsMetadata``
+     - Describes the operations that the WFS server supports and the parameters for each operation. A WFS server may be configured not to respond to the operations listed above.
+   * - ``FeatureTypeList``
+     - Lists the feature types published by a WFS server. Feature types are listed in the form ``namespace:featuretype``. The default projection of the feature type is also listed, along with the bounding box for the data in the stated projection.
+   * - ``Filter_Capabilities``
+     - Lists the filters, or expressions, that are available to form query predicates, for example, ``SpatialOperators`` (such as ``Equals``, ``Touches``) and ``ComparisonOperators`` (such as ``LessThan``, ``GreaterThan``). The filters themselves are not included in the GetCapabilities document.
+
+.. _wfs_dft:
 
 DescribeFeatureType
--------------------
+~~~~~~~~~~~~~~~~~~~
 
-The purpose of the **DescribeFeatureType** is to request information about an individual featuretype before requesting the actual data.  Specifically, **DescribeFeatureType** will request a list of features and attributes for the given featuretype, or list the featuretypes available.
+**DescribeFeatureType** requests information about an individual feature type before requesting the actual data. Specifically, the operation will request a list of features and attributes for the given feature type, or list the feature types available.
 
-The standard parameters for the DescribeFeatureType operation are:
+The parameters for DescribeFeatureType are:
 
 .. list-table::
-   :widths: 20 10 70
+   :widths: 20 20 60
+   :header-rows: 1
    
-   * - **Parameter**
-     - **Required?**
-     - **Description**
+   * - Parameter
+     - Required?
+     - Description
    * - ``service``
      - Yes
-     - Service name. Value is ``WFS``.
+     - Service name—Value is ``WFS``
    * - ``version``
      - Yes
-     - Service version. Value is ``1.1.0``.
+     - Service version—Value is the current version number
    * - ``request``
      - Yes
-     - Operation name. Value is ``DescribeFeatureType``.
-   * - ``typeName``
+     - Operation name—Value is ``DescribeFeatureType``
+   * - ``typeNames``
      - Yes
-     - The name of the feature type to describe.
+     - Name of the feature type to describe
    * - ``exceptions``
      - No
-     - Format in which to report exceptions.
-       The default value is ``application/vnd.ogc.se_xml``.
+     - Format for reporting exceptions—default value is ``application/vnd.ogc.se_xml``
+   * - ``outputFormat``
+     - No
+     - Defines the scheme description language used to describe feature types
 
-Let's say we want a list of featuretypes.  The appropriate GET request would be:
-
-.. code-block:: xml 
-
-   http://www.example.com/wfs?
-      service=wfs&
-      version=1.1.0&
-      request=DescribeFeatureType
-
-Note again the three required fields (``service``, ``version``, and ``request``).  This will return the list of featuretypes, sorted by namespace.
-
-If we wanted information about a specific featuretype, the GET request would be:
-
-.. code-block:: xml 
+To return a list of feature types, the GET request would be as follows. This request will return the list of feature types, sorted by namespace::
 
    http://www.example.com/wfs?
-      service=wfs&
-      version=1.1.0&
-      request=DescribeFeatureType&
-      typeName=namespace:featuretype
+     service=wfs&
+     version=2.0.0&
+     request=DescribeFeatureType
 
-The only difference between the two requests is the addition of ``typeName=namespace:featuretype``, where ``featuretype`` is the name of the featuretype and ``namespace`` is the name of the namespace that featuretype is contained in.
+To list information about a specific feature type called ``namespace:featuretype``, the GET request would be::
 
-.. code-block:: xml 
-
-   http://localhost:8080/geoserver/wfs?
-      REQUEST=DescribeFeatureType&SERVICE=WFS&VERSION=1.1.0
-      &EXCEPTIONS=application/json
-      &outputFormat=text/javascript
-      &typeName=sf:roads
-
-Here is the result (if the JsonP format is enabled):
-
-.. code-block:: xml 
-
-   parseResponse(
-   {
-      elementFormDefault: "qualified",
-      targetNamespace: "http://www.openplans.org/spearfish",
-      targetPrefix: "sf",
-      featureTypes: [
-         {
-         typeName: "roads",
-         properties: [
-            {
-            name: "the_geom",
-            maxOccurs: 1,
-            minOccurs: 0,
-            nillable: true,
-            type: "gml:MultiLineString",
-            localType: "MultiLineString"
-            },
-            {
-            name: "cat",
-            maxOccurs: 1,
-            minOccurs: 0,
-            nillable: true,
-            type: "xsd:int",
-            localType: "int"
-            },
-            {
-            name: "label",
-            maxOccurs: 1,
-            minOccurs: 0,
-            nillable: true,
-            type: "xsd:string",
-            localType: "string"
-            }
-         ]
-         }
-      ]
-   }
-   )
+   http://www.example.com/wfs?
+     service=wfs&
+     version=2.0.0&
+     request=DescribeFeatureType&
+     typeName=namespace:featuretype
 
 .. _wfs_getfeature:
 
 GetFeature
-----------
+~~~~~~~~~~
 
-The **GetFeature** operation requests the actual spatial data.  This is the "source code" spoken about previously.  More so than the other operations, it is complex and powerful.  Obviously, not all of its abilities will be discussed here.
+The **GetFeature** operation returns a selection of features from the data source. 
 
-The simplest way to run a **GetFeature** command is without any arguments.
+This request will execute a GetFeature request for a given layer ``namespace:featuretype``::
 
-.. code-block:: xml 
+   http://www.example.com/wfs?
+     service=wfs&
+     version=2.0.0&
+     request=GetFeature&
+     typeName=namespace:featuretype
+
+Executing this command will return the geometries for all features in given a feature type, potentially a large amount of data. To limit the output you can restrict the GetFeature request to a single feature by including an additional parameter, ``featureID`` and providing the ID of a specific feature. In this case, the GET request would be::
+
+   http://www.example.com/wfs?
+     service=wfs&
+     version=2.0.0&
+     request=GetFeature&
+     typeName=namespace:featuretype&
+     featureID=feature
+
+If the ID of the feature is unknown but you still want to limit the amount of features returned, use the ``maxFeatures`` parameter. In the example below, ``N`` represents the number of features to return::
+
+   http://www.example.com/wfs?
+     service=wfs&
+     version=2.0.0&
+     request=GetFeature&
+     typeName=namespace:featuretype&
+     maxFeatures=N
+
+Exactly which N features will be returned depends in the internal structure of the data. However, you can sort the returned selection based on an attribute value. In the following example, an attribute is included in the request using the ``sortBy=attribute`` parameter (replace ``attribute`` with the attribute you wish to sort by)::
 
    http://www.example.com/wfs?
       service=wfs&
-      version=1.1.0&
-      request=GetFeature&
-      typeName=namespace:featuretype
-
-This syntax should be familiar from previous examples.  The only difference is the ``request=GetFeature.``
-
-It is not recommended to run this command in a web browser, as this will return the geometries for all features in a featuretype.  This can be a great deal of data.  One way to limit the output is to specify a feature.  In this case, the GET request would be:
-
-.. code-block:: xml 
-
-   http://www.example.com/wfs?
-      service=wfs&
-      version=1.1.0&
-      request=GetFeature&
-      typeName=namespace:featuretype&
-      featureID=feature
-
-Here there is the additional parameter of ``featureID=feature.``  Replace ``feature`` with the ID of the feature you wish to retrieve.
-
-If the name of the feature is unknown, or if you wish to limit the amount of features returned, there is the ``maxFeatures`` parameter.
-
-.. code-block:: xml 
-
-   http://www.example.com/wfs?
-      service=wfs&
-      version=1.1.0&
-      request=GetFeature&
-      typeName=namespace:featuretype&
-      maxFeatures=N
-
-In the above example, ``N`` is the number of features to return.
-
-A question that may arise at this point is how the WFS server knows which N Features to return.  The bad news is that it depends on the internal structure of the data, which may not be arranged in a very helpful way.  The good news is that it is possible to sort the features based on an attribute, via the following syntax.  (This is new as of 1.1.0.)
-
-.. code-block:: xml
-
-   http://www.example.com/wfs?
-      service=wfs&
-      version=1.1.0&
+      version=2.0.0&
       request=GetFeature&
       typeName=namespace:featuretype&
       maxFeatures=N&
-      sortBy=property
+      sortBy=attribute
 
-In the above example, ``sortBy=property`` determines the sort.  Replace ``property`` with the attribute you wish to sort by.  The default is to sort ascending.  Some WFS servers require sort order to be specified, even if ascending.  If so, append a ``+A`` to the request.  To sort descending, add a ``+D`` to the request, like so:
-
-.. code-block:: xml
+The default sort operation is to sort in ascending order. Some WFS servers require the sort order to be specified, even if an ascending order sort if required. In this case, append a ``+A`` to the request. Conversely, add a ``+D`` to the request to sort in descending order as follows::
 
    http://www.example.com/wfs?
-      service=wfs&
-      version=1.1.0&
-      request=GetFeature&
-      typeName=namespace:featuretype&
-      maxFeatures=N&
-      sortBy=property+D
+     service=wfs&
+     version=2.0.0&
+     request=GetFeature&
+     typeName=namespace:featuretype&
+     maxFeatures=N&
+     sortBy=attribute+D
 
-It is not necessary to to use ``sortBy`` with ``maxFeatures``, but they can often complement each other.
+There is no obligation to use ``sortBy`` with ``maxFeatures`` in a GetFeature request, but they can be used together to manage the returned selection of features more effectively.
 
-To narrow the search not by feature, but instead by an attribute, use the ``propertyName`` key in the form ``propertyName=property.``  You can specify a single property, or multiple properties separated by commas.  For a single property from all features, use the following:
-
-.. code-block:: xml
+To restrict a GetFeature request by attribute rather than feature, use the ``propertyName`` key in the form ``propertyName=attribute``. You can specify a single attribute, or multiple attributes separated by commas. To search for a single attribute in all features, the following request would be required::
 
    http://www.example.com/wfs?
-      service=wfs&
-      version=1.1.0&
-      request=GetFeature&
-      typeName=namespace:featuretype&
-      propertyName=property
+     service=wfs&
+     version=2.0.0&
+     request=GetFeature&
+     typeName=namespace:featuretype&
+     propertyName=attribute
 
-For a single property from just one feature:
-
-.. code-block:: xml
+For a single property from just one feature, use both ``featureID`` and ``propertyName``::
 
    http://www.example.com/wfs?
-      service=wfs&
-      version=1.1.0&
-      request=GetFeature&
-      typeName=namespace:featuretype&
-      featureID=feature&
-      propertyName=property
+     service=wfs&
+     version=2.0.0&
+     request=GetFeature&
+     typeName=namespace:featuretype&
+     featureID=feature&
+     propertyName=attribute
 
-Or more than one property from a feature:
-
-.. code-block:: xml
+For more than one property from a single feature, use a comma-seaprated list of values for ``propertyName``::
 
    http://www.example.com/wfs?
-      service=wfs&
-      version=1.1.0&
-      request=GetFeature&
-      typeName=namespace:featuretype&
-      featureID=feature&
-      propertyName=property1,property2
+     service=wfs&
+     version=2.0.0&
+     request=GetFeature&
+     typeName=namespace:featuretype&
+     featureID=feature&
+     propertyName=attribute1,attribute2
 
-All of these permutations so far have centered around parameters of a non-spatial nature, but it is also possible to query for features based on geometry.  While there are very limited tools available in a GET request for spatial queries (much more are available in POST requests using filters) one of the most important can be used.  This is known as the "bounding box" or BBOX.  The BBOX allows us to ask for only such features that are contained (or partially contained) inside a box of the coordinates we specify.  The form of the bbox query is ``bbox=a1,b1,a2,b2``where ``a``, ``b``, ``c``, and ``d`` refer to coordinates.
+While the above permutations for a GetFeature request focused on non-spatial parameters, it is also possible to query for features based on geometry. While there are limited options available in a GET request for spatial queries (more are available in POST requests using filters), filtering by bounding box (BBOX) is supported.
 
-Notice that the syntax wasn't ``bbox=x1,y1,x2,y2`` or ``bbox=y1,x1,y2,x1``.  The reason the coordinate-free ``a,b`` syntax was used above is because the order depends on the coordinate system used.  To specify the coordinate system, append ``srsName=CRS`` to the WFS request, where ``CRS`` is the coordinate reference system.  As for which corners of the bounding box to specify (bottom left / top right or bottom right / top left), that appears to not matter, as long as the bottom is first.  So the full request for returning features based on bounding box would look like this:  
+The BBOX parameter allows you to search for features that are contained (or partially contained) inside a box of user-defined coordinates. The format of the BBOX parameter is ``bbox=a1,b1,a2,b2``where ``a1``, ``b1``, ``a2``, and ``b2`` represent the coordinate values. The order of coordinates passed to the BBOX parameter depends on the coordinate system used. (This is why the coordinate syntax isn't represented with ``x`` or ``y``.) To specify the coordinate system, append ``srsName=CRS`` to the WFS request, where ``CRS`` is the Coordinate Reference System you wish to use.
 
-.. code-block:: xml
+As for which corners of the bounding box to specify, the only requirement is for a bottom corner (left or right) to be provided first. For example, bottom left and top right, or bottom right and top left.
+
+An example request involving returning features based on bounding box would be in the following format::  
 
    http://www.example.com/wfs?
-      service=wfs&
-      version=1.1.0&
-      request=GetFeature&
-      typeName=namespace:featuretype&
-      bbox=a1,b1,a2,b2
+     service=wfs&
+     version=2.0.0&
+     request=GetFeature&
+     typeName=namespace:featuretype&
+     srsName=CRS
+     bbox=a1,b1,a2,b2
 
-
-
-Transaction
------------
-
-The **Transaction** operation performs edits of actual data that is exposed by the WFS.  A transaction can add, modify and remove features.  Each transaction consists of zero or more Insert, Update and Delete elements.  Each element is performed in order.  In GeoServer every transaction is 'atomic', meaning that if any of the elements fails then the data is left unchanged.
-
-More information on the syntax of transactions can be found in the WFS specification, and in the GeoServer sample requests.  
 
 LockFeature
------------
+~~~~~~~~~~~
 
-The **LockFeature** operation is theoretically useful in conjunction with transactions, so users can 'lock' an area of the map that they are editing, to ensure that other users don't edit it.  In practice no widely used clients support the LockFeature operation.  
+A **LockFeature** operation provides a long-term feature locking mechanism to ensure consistency in edit transactions. If one client fetches a feature and makes some changes before submitting it back to the WFS, locks prevent other clients from making any changes to the same feature, ensuring a transaction that can be serialized. If a WFS server supports this operation, it will be reported in the server's GetCapabilities response.
+
+In practice, few clients support this operation.
+
+.. _wfs_wfst:
+
+Transaction
+~~~~~~~~~~~
+
+The **Transaction** operation can create, modify, and delete features published by a WFS. Each transaction will consist of zero or more Insert, Update, and Delete elements, with each transaction element performed in order. Every GeoServer transaction is *atomic*, meaning that if any of the elements fail, the transaction is abandoned and the data is unaltered. A WFS server that supports **transactions** is sometimes known as a WFS-T server. **GeoServer fully supports transactions.** 
+
+More information on the syntax of transactions can be found in the `WFS specification <http://www.opengeospatial.org/standards/wfs>`_ and in the :ref:`GeoServer sample requests <webadmin_demos>`.
 
 GetGMLObject
-------------
+~~~~~~~~~~~~
 
-**GetGMLObject** is another operation that is little used in practical client applications.  It only really makes sense in situations that require :ref:`app-schema.complex-features`.  It allows clients to extract just a portion of the nested properties.  
+.. note:: This operation is valid for **WFS version 1.1.0 only**.
+
+A **GetGMLObject** operation accepts the identifier of a GML object (feature or geometry) and returns that object. This operation is relevant only in situations that require :ref:`app-schema.complex-features` by allowing clients to extract just a portion of the nested properties of a complex feature. As a result, this operation is not widely used by client applications.
+
+
+GetPropertyValue
+~~~~~~~~~~~~~~~~
+
+.. note:: This operation is valid for **WFS version 2.0.0 only**.
+
+A **GetPropertyValue** operation retrieves the value of a feature property, or part of the value of a complex feature property, from a data source for a given set of features identified by a query.
+
+
+GetFeatureWithLock
+~~~~~~~~~~~~~~~~~~
+
+.. note:: This operation is valid for **WFS version 2.0.0 only**.
+
+A **GetFeatureWithLock** operation is similar to a **GetFeature** operation, except that when the set of features are returned from the WFS server, the features are also locked in anticipation of a subsequent transaction operation.
+
+
+CreateStoredQuery 
+~~~~~~~~~~~~~~~~~
+
+.. note:: This operation is valid for **WFS version 2.0.0 only**.
+
+A **CreateStoredQuery** operation creates a stored query on the WFS server. The definition of the stored query is encoded in the ``StoredQueryDefinition`` parameter and is given an ID for a reference. 
+
+DropStoredQuery
+~~~~~~~~~~~~~~~
+
+.. note:: This operation is valid for **WFS version 2.0.0 only**.
+
+A **DropStoredQuery** operation drops a stored query previous created by a CreateStoredQuery operation. The request accepts the ID of the query to drop.
+
+ListStoredQueries
+~~~~~~~~~~~~~~~~~
+
+.. note:: This operation is valid for **WFS version 2.0.0 only**.
+
+A **ListStoredQueries** operation returns a list of the stored queries currently maintained by the WFS server.
+
+DescribeStoredQueries
+~~~~~~~~~~~~~~~~~~~~~
+
+.. note:: This operation is valid for **WFS version 2.0.0 only**.
+
+A **DescribeStoredQuery** operation returns detailed metadata about each stored query maintained by the WFS server. A description of an individual query may be requested by providing the ID of the specific query. If no ID is provided, all queries are described.
+
+Exceptions
+----------
+
+WFS also supports a number of formats for reporting exceptions. The supported values for exception reporting are:
+
+.. list-table::
+   :widths: 15 35 50
+   :header-rows: 1
+   
+   * - Format
+     - Syntax
+     - Description
+   * - XML
+     - ``exceptions=text/xml``
+     - *(default)* XML output
+   * - JSON
+     - ``exceptions=application/json``
+     - Simple JSON
+   * - JSONP
+     - ``exceptions=text/javascript``
+     - Returns a JSONP in the form: ``paddingOutput(...jsonp...)``. See :ref:`wms_vendor_parameters` to change the callback name. Note that this format is disabled by default (See :ref:`wms_global_variables`).

@@ -170,10 +170,11 @@ public class GWCTest {
         tileBreeder = mock(TileBreeder.class);
         quotaStore = mock(QuotaStore.class);
         diskQuotaMonitor = mock(DiskQuotaMonitor.class);
+        when(diskQuotaMonitor.getQuotaStore()).thenReturn(quotaStore);
         owsDispatcher = mock(Dispatcher.class);
 
         mediator = new GWC(gwcConfigPersister, storageBroker, tld, gridSetBroker, tileBreeder,
-                quotaStore, diskQuotaMonitor, owsDispatcher, catalog);
+                diskQuotaMonitor, owsDispatcher, catalog);
 
         GWC.set(mediator);
     }

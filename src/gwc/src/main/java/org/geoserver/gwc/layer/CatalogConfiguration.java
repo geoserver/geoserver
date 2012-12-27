@@ -37,6 +37,7 @@ import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.TileLayerDispatcher;
+import org.geowebcache.locks.LockProvider;
 
 import com.google.common.base.Function;
 import com.google.common.base.Objects;

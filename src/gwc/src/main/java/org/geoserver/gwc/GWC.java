@@ -4,12 +4,10 @@
  */
 package org.geoserver.gwc;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Throwables.getRootCause;
-import static com.google.common.base.Throwables.propagate;
-import static org.geowebcache.grid.GridUtil.findBestMatchingGrid;
-import static org.geowebcache.seed.GWCTask.TYPE.TRUNCATE;
+import static com.google.common.base.Preconditions.*;
+import static com.google.common.base.Throwables.*;
+import static org.geowebcache.grid.GridUtil.*;
+import static org.geowebcache.seed.GWCTask.TYPE.*;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -82,6 +80,9 @@ import org.geowebcache.io.ByteArrayResource;
 import org.geowebcache.io.Resource;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.TileLayerDispatcher;
+import org.geowebcache.locks.LockProvider;
+import org.geowebcache.locks.LockProvider.Lock;
+import org.geowebcache.locks.MemoryLockProvider;
 import org.geowebcache.mime.MimeException;
 import org.geowebcache.mime.MimeType;
 import org.geowebcache.seed.GWCTask;
@@ -122,6 +123,8 @@ import com.vividsolutions.jts.geom.Polygon;
  */
 public class GWC implements DisposableBean, InitializingBean {
 
+    private static final String GLOBAL_LOCK_KEY = "global";
+
     /**
      * @see #get()
      */
@@ -140,8 +143,6 @@ public class GWC implements DisposableBean, InitializingBean {
 
     private final TileBreeder tileBreeder;
 
-    private final QuotaStore quotaStore;
-
     private final GWCConfigPersister gwcConfigPersister;
 
     private final Dispatcher owsDispatcher;
@@ -156,10 +157,12 @@ public class GWC implements DisposableBean, InitializingBean {
 
     private final Catalog rawCatalog;
 
+    private ConfigurableLockProvider lockProvider;
+    
     public GWC(final GWCConfigPersister gwcConfigPersister, final StorageBroker sb,
             final TileLayerDispatcher tld, final GridSetBroker gridSetBroker,
-            final TileBreeder tileBreeder, final QuotaStore quotaStore,
-            final DiskQuotaMonitor monitor, final Dispatcher owsDispatcher, final Catalog rawCatalog) {
+            final TileBreeder tileBreeder, final DiskQuotaMonitor monitor, 
+            final Dispatcher owsDispatcher, final Catalog rawCatalog) {
 
         this.gwcConfigPersister = gwcConfigPersister;
         this.tld = tld;
@@ -168,13 +171,40 @@ public class GWC implements DisposableBean, InitializingBean {
         this.tileBreeder = tileBreeder;
         this.monitor = monitor;
         this.owsDispatcher = owsDispatcher;
-        this.quotaStore = quotaStore;
         this.rawCatalog = rawCatalog;
 
         catalogLayerEventListener = new CatalogLayerEventListener(this);
         catalogStyleChangeListener = new CatalogStyleChangeListener(this);
         this.rawCatalog.addListener(catalogLayerEventListener);
         this.rawCatalog.addListener(catalogStyleChangeListener);
+        
+        this.lockProvider = new ConfigurableLockProvider();
+        updateLockProvider(getConfig().getLockProviderName());
+    }
+
+    /**
+     * Updates the configurable lock provider to use the specified bean 
+     * 
+     * @param lockProviderName
+     */
+    private void updateLockProvider(String lockProviderName) {
+        LockProvider delegate = null;
+        if(lockProviderName == null) {
+            delegate = new MemoryLockProvider();
+        } else {
+            Object provider = GeoWebCacheExtensions.bean(lockProviderName);
+            if(provider == null) {
+                throw new RuntimeException("Could not find lock provider " + lockProvider 
+                        + " in the spring application context");
+            } else if(!(provider instanceof LockProvider)) {
+                throw new RuntimeException("Found bean " + lockProvider 
+                        + " in the spring application context, but it was not a LockProvider");
+            } else {
+                delegate = (LockProvider) provider;
+            }
+        }
+    
+        lockProvider.setDelegate(delegate);
     }
 
     public synchronized static GWC get() {
@@ -940,7 +970,7 @@ public class GWC implements DisposableBean, InitializingBean {
             return null;
         }
         try {
-            return quotaStore.getGloballyUsedQuota();
+            return monitor.getGloballyUsedQuota();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -976,7 +1006,7 @@ public class GWC implements DisposableBean, InitializingBean {
                 }
             }
         };
-        quotaStore.accept(visitor);
+        monitor.getQuotaStore().accept(visitor);
         return quota;
     }
 
@@ -1011,7 +1041,7 @@ public class GWC implements DisposableBean, InitializingBean {
             return null;
         }
         try {
-            Quota usedQuotaByLayerName = quotaStore.getUsedQuotaByLayerName(layerName);
+            Quota usedQuotaByLayerName = monitor.getUsedQuotaByLayerName(layerName);
             return usedQuotaByLayerName;
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -1094,7 +1124,7 @@ public class GWC implements DisposableBean, InitializingBean {
     public void layerAdded(String layerName) {
         if (isDiskQuotaAvailable()) {
             try {
-                quotaStore.createLayer(layerName);
+                monitor.getQuotaStore().createLayer(layerName);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -1183,7 +1213,7 @@ public class GWC implements DisposableBean, InitializingBean {
     }
 
     public synchronized void modifyGridSet(final String oldGridSetName, final GridSet newGridSet)
-            throws IllegalArgumentException, IOException {
+            throws IllegalArgumentException, IOException, GeoWebCacheException {
 
         checkNotNull(oldGridSetName);
         checkNotNull(newGridSet);
@@ -1201,12 +1231,13 @@ public class GWC implements DisposableBean, InitializingBean {
         }
 
         Map<TileLayer, GridSubset> affectedLayers = new HashMap<TileLayer, GridSubset>();
+        Lock lock = null;
         try {
+            lock = lockProvider.getLock(GLOBAL_LOCK_KEY);
 
             for (TileLayer layer : getTileLayers()) {
                 GridSubset gridSubet;
                 if (null != (gridSubet = layer.getGridSubset(oldGridSetName))) {
-                    layer.acquireLayerLock();// no more cache fetches until we're done here
                     affectedLayers.put(layer, gridSubet);
                     layer.removeGridSubset(oldGridSetName);
                     if (needsTruncate) {
@@ -1272,8 +1303,8 @@ public class GWC implements DisposableBean, InitializingBean {
                 config.save();
             }
         } finally {
-            for (TileLayer layer : affectedLayers.keySet()) {
-                layer.releaseLayerLock();
+            if(lock != null) {
+                lock.release();
             }
         }
     }
@@ -1586,7 +1617,7 @@ public class GWC implements DisposableBean, InitializingBean {
         }
     }
 
-    public synchronized void removeGridSets(final Set<String> gridsetIds) throws IOException {
+    public synchronized void removeGridSets(final Set<String> gridsetIds) throws IOException, GeoWebCacheException {
         checkNotNull(gridsetIds);
 
         final Set<String> affectedLayers = getLayerNamesForGridSets(gridsetIds);
@@ -1595,8 +1626,10 @@ public class GWC implements DisposableBean, InitializingBean {
 
         for (String layerName : affectedLayers) {
             TileLayer tileLayer = getTileLayerByName(layerName);
-            tileLayer.acquireLayerLock();
+            Lock lock = null; 
             try {
+                lock = lockProvider.getLock("gwc_lock_layer_" + layerName);
+                
                 for (String gridSetId : gridsetIds) {
                     if (tileLayer.getGridSubsets().contains(gridSetId)) {
                         tileLayer.removeGridSubset(gridSetId);
@@ -1613,7 +1646,9 @@ public class GWC implements DisposableBean, InitializingBean {
                     // layer removed? don't care
                 }
             } finally {
-                tileLayer.releaseLayerLock();
+                if(lock != null) {
+                    lock.release();
+                }
             }
         }
 
@@ -1754,5 +1789,9 @@ public class GWC implements DisposableBean, InitializingBean {
         if (c != null) {
             c.reset();
         }
+    }
+
+    public LockProvider getLockProvider() {
+        return lockProvider;
     }
 }

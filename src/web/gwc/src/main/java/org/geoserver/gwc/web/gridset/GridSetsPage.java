@@ -206,7 +206,7 @@ public class GridSetsPage extends GeoServerSecuredPage {
                     GWC gwc = GWC.get();
                     try {
                         gwc.removeGridSets(selectedGridsetIds);
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         getPage().error(e.getMessage());
                         LOGGER.log(Level.WARNING, e.getMessage(), e);
                     }

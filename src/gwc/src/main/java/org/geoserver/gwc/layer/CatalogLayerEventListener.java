@@ -4,9 +4,8 @@
  */
 package org.geoserver.gwc.layer;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
-import static org.geoserver.gwc.GWC.tileLayerName;
+import static com.google.common.base.Preconditions.*;
+import static org.geoserver.gwc.GWC.*;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -35,6 +34,7 @@ import org.geoserver.gwc.config.GWCConfig;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.filter.parameters.StringParameterFilter;
 import org.geowebcache.grid.GridSetBroker;
+import org.geowebcache.locks.LockProvider;
 import org.geowebcache.storage.StorageBroker;
 
 import com.google.common.base.Objects;
@@ -354,6 +354,7 @@ public class CatalogLayerEventListener implements CatalogListener {
 
         if (save) {
             GridSetBroker gridSetBroker = mediator.getGridSetBroker();
+            LockProvider lockProvider = mediator.getLockProvider();
             GeoServerTileLayer tileLayer = new GeoServerTileLayer(li, gridSetBroker, tileLayerInfo);
             mediator.save(tileLayer);
         }
@@ -399,6 +400,7 @@ public class CatalogLayerEventListener implements CatalogListener {
             // notify the mediator of the rename so it changes the name of the layer in GWC without
             // affecting its caches
             GridSetBroker gridSetBroker = mediator.getGridSetBroker();
+            LockProvider lockProvider = mediator.getLockProvider();
 
             final GeoServerTileLayer oldTileLayer = (GeoServerTileLayer) mediator
                     .getTileLayerByName(oldLayerName);

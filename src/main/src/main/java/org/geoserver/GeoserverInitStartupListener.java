@@ -97,7 +97,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
         // don't allow the connection to the EPSG database to time out. This is a server app,
         // we can afford keeping the EPSG db always on
         System.setProperty("org.geotools.epsg.factory.timeout", "-1");
-
+        
         // HACK: java.util.prefs are awful. See
         // http://www.allaboutbalance.com/disableprefs. When the site comes
         // back up we should implement their better way of fixing the problem.

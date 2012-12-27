@@ -13,6 +13,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
+import org.geowebcache.GeoWebCacheExtensions;
+import org.geowebcache.locks.LockProvider;
+import org.geowebcache.locks.MemoryLockProvider;
 
 public class GWCConfig implements Cloneable, Serializable {
 
@@ -67,6 +70,8 @@ public class GWCConfig implements Cloneable, Serializable {
      * Default cache formats for non coverage/vector layers (LayerGroups and WMS layers)
      */
     private HashSet<String> defaultOtherCacheFormats;
+    
+    private String lockProviderName;
 
     /**
      * Creates a new GWC config with default values
@@ -324,5 +329,9 @@ public class GWCConfig implements Cloneable, Serializable {
     @Override
     public boolean equals(Object o) {
         return EqualsBuilder.reflectionEquals(this, o);
+    }
+    
+    public String getLockProviderName() {
+        return lockProviderName;
     }
 }

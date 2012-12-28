@@ -947,6 +947,9 @@ public class GWC implements DisposableBean, InitializingBean {
 
     public void saveConfig(GWCConfig gwcConfig) throws IOException {
         gwcConfigPersister.save(gwcConfig);
+        
+        // make sure we switch to the lock provider just configured
+        updateLockProvider(gwcConfig.getLockProviderName());
     }
 
     public void saveDiskQuotaConfig(DiskQuotaConfig config) {

@@ -4,7 +4,7 @@
  */
 package org.geoserver.gwc.config;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.*;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -13,9 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
-import org.geowebcache.GeoWebCacheExtensions;
 import org.geowebcache.locks.LockProvider;
-import org.geowebcache.locks.MemoryLockProvider;
 
 public class GWCConfig implements Cloneable, Serializable {
 
@@ -333,5 +331,15 @@ public class GWCConfig implements Cloneable, Serializable {
     
     public String getLockProviderName() {
         return lockProviderName;
+    }
+    
+    /**
+     * Sets the name of the {@link LockProvider} Spring bean to be used as the lock provider
+     * for this GWC instance
+     * 
+     * @param lockProviderName
+     */
+    public void setLockProviderName(String lockProviderName) {
+        this.lockProviderName = lockProviderName;
     }
 }

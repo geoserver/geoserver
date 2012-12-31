@@ -43,6 +43,9 @@ public class JAIInitializer implements GeoServerInitializer {
             @Override
             public void handlePostGlobalChange(GeoServerInfo global) {
                 // No need to handle that change too
+                if(global.getJAI().getTileCache() == null) {
+                    initJAI(global.getJAI());
+                }
             }
         });
     }

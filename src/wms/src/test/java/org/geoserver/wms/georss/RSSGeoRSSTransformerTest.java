@@ -24,7 +24,6 @@ import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
 import org.geotools.map.FeatureLayer;
-import org.geotools.map.Layer;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.w3c.dom.Document;
@@ -41,6 +40,25 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
      */
     public static Test suite() {
         return new OneTimeTestSetup(new RSSGeoRSSTransformerTest());
+    }
+
+    public void testChannelDescription() throws Exception {
+        WMSMapContent map = new WMSMapContent(createGetMapRequest(MockData.BASIC_POLYGONS));
+        map.addLayer(createMapLayer(MockData.BASIC_POLYGONS));
+        map.layers().get(0).getUserData().put("abstract", "Test Abstract");
+
+        Document document;
+        try {
+            document = getRSSResponse(map, AtomGeoRSSTransformer.GeometryEncoding.LATLONG);
+        } finally {
+            map.dispose();
+        }
+        Element element = document.getDocumentElement();
+        assertEquals("rss", element.getNodeName());
+
+        Element channel = (Element) element.getElementsByTagName("channel").item(0);
+        NodeList description = channel.getElementsByTagName("description");
+        assertEquals("Test Abstract", description.item(0).getChildNodes().item(0).getNodeValue());
     }
 
     public void testLatLongInternal() throws Exception {

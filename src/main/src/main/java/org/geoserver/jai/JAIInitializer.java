@@ -43,11 +43,6 @@ public class JAIInitializer implements GeoServerInitializer {
                     initJAI(global.getJAI() );
                 }
             }
-            
-            @Override
-            public void handlePostGlobalChange(GeoServerInfo global) {
-                // No need to handle that change too
-            }
         });
     }
 

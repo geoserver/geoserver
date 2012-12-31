@@ -331,6 +331,7 @@ public class GetMap {
                 }
                 FeatureLayer featureLayer = new FeatureLayer(source, layerStyle);
                 featureLayer.setTitle(mapLayerInfo.getFeature().getPrefixedName());
+                featureLayer.getUserData().put("abstract", mapLayerInfo.getDescription());
                 
                 // mix the dimension related filter with the layer filter
                 Filter dimensionFilter = wms.getTimeElevationToFilter(times, elevations, mapLayerInfo.getFeature());

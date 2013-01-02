@@ -229,6 +229,31 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         assertEquals(360, range.getSpan(0));
         assertEquals(499, range.getSpan(1));
     }
+    
+    @Test
+    public void testRotated() throws Exception {
+        final String layerId = getLayerId(MockData.ROTATED_CAD);
+
+        // do the request
+        Map<String, Object> raw = baseMap();
+        raw.put("identifier", layerId);
+        raw.put("format", "image/geotiff");
+        raw.put("BoundingBox", "7.7634301664746515,45.14713380418506,7.764350661575157,45.14763319238466,EPSG:4326");
+        GridCoverage[] coverages = executeGetCoverageKvp(raw);
+
+        // System.out.println(coverages[0]);
+
+        // check the envelope
+        Envelope envelope = coverages[0].getEnvelope();
+        // System.out.println(envelope);
+        CoordinateReferenceSystem targetCRS = CRS.decode("urn:x-ogc:def:crs:EPSG:3003");
+        assertEquals(targetCRS, envelope.getCoordinateReferenceSystem());
+
+        // check we did not get a massive raster out
+        GridEnvelope range = coverages[0].getGridGeometry().getGridRange();
+        assertEquals(482, range.getSpan(0));
+        assertEquals(448, range.getSpan(1));
+    }
 
     @Test
     public void testWorkspaceQualified() throws Exception {

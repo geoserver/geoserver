@@ -61,6 +61,7 @@ import org.geotools.gml2.bindings.GML2EncodingUtils;
 import org.geotools.parameter.DefaultParameterDescriptor;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.builder.GridToEnvelopeMapper;
+import org.geotools.referencing.operation.matrix.XAffineTransform;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.referencing.operation.transform.IdentityTransform;
 import org.geotools.util.logging.Logging;
@@ -492,14 +493,22 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
                 pixelSizeY = Math.abs(tx.getScaleY());
                 gridToCRS = new AffineTransform2D(tx);
             } else {
-                Double[] offsets = estimateOffsets(reader, gridCRS, gridToCRS,
-						intersectionEnvelope, reprojectionNeeded);
-                pixelSizeX = Math.abs(offsets[0]);
-                pixelSizeY = Math.abs(offsets[1]);
-                AffineTransform tx = new AffineTransform(offsets[0], 0, 
-                        0, offsets[1], 
-                        0, 0);
-                gridToCRS = new AffineTransform2D(tx); 
+                Double[] offsets = estimateOffsets(reader, gridCRS, gridToCRS, intersectionEnvelope, reprojectionNeeded);
+                if(offsets.length == 2) {
+                    pixelSizeX = Math.abs(offsets[0]);
+                    pixelSizeY = Math.abs(offsets[1]);
+                    AffineTransform tx = new AffineTransform(offsets[0], 0, 
+                            0, offsets[1], 
+                            0, 0);
+                    gridToCRS = new AffineTransform2D(tx);
+                } else {
+                    AffineTransform tx = new AffineTransform(offsets[0], offsets[1], 
+                            offsets[3], offsets[4], 
+                            0, 0);
+                    pixelSizeX = Math.abs(XAffineTransform.getScaleX0(tx));
+                    pixelSizeY = Math.abs(XAffineTransform.getScaleY0(tx));
+                    gridToCRS = new AffineTransform2D(tx);
+                }
             }
 
             /**
@@ -543,50 +552,60 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
 
     }
 
-	private Double[] estimateOffsets(final AbstractGridCoverage2DReader reader,
-			final GridCrsType gridCRS, MathTransform gridToCRS,
-			final GeneralEnvelope intersectionEnvelope,
-			boolean reprojectionNeeded) {
-		Double[] offsets;
-		if (!(gridToCRS instanceof AffineTransform2D)&& !(gridToCRS instanceof IdentityTransform))
-		    throw new WcsException(
-		            "Internal error, the coverage we're playing with does not have an affine transform...");
+    private Double[] estimateOffsets(final AbstractGridCoverage2DReader reader,
+            final GridCrsType gridCRS, MathTransform gridToCRS,
+            final GeneralEnvelope intersectionEnvelope, boolean reprojectionNeeded) {
+        Double[] offsets;
+        if (!(gridToCRS instanceof AffineTransform2D) && !(gridToCRS instanceof IdentityTransform))
+            throw new WcsException(
+                    "Internal error, the coverage we're playing with does not have an affine transform...");
 
-		if(!reprojectionNeeded) {
-		    if(gridCRS != null) {
-    		    if (gridToCRS instanceof IdentityTransform) {
-    		        if (gridCRS.getGridType().equals(GridType.GT2dSimpleGrid.getXmlConstant()) || 
-    		                gridCRS.getGridType().equals(GridType.GT2dGridIn2dCrs.getXmlConstant()))
-    		            offsets = new Double[] { 1.0, -1.0 };
-    		        else
-    		            offsets = new Double[] { 1.0, 0.0, 0.0, 0.0, -1.0, 0.0 };
-    		    } else {
-    		        AffineTransform2D affine = (AffineTransform2D) gridToCRS;
-    		        if (gridCRS.getGridType().equals(GridType.GT2dSimpleGrid.getXmlConstant()) || 
-    		                gridCRS.getGridType().equals(GridType.GT2dGridIn2dCrs.getXmlConstant()))
-    		            offsets = new Double[] { affine.getScaleX(), affine.getScaleY() };
-    		        else
-    		            offsets = new Double[] { affine.getScaleX(), affine.getShearX(), affine.getShearY(), affine.getScaleY() };
-    		    }
-		    } else {
+        if (!reprojectionNeeded) {
+            if (gridCRS != null) {
+                if (gridToCRS instanceof IdentityTransform) {
+                    if (gridCRS.getGridType().equals(GridType.GT2dSimpleGrid.getXmlConstant())
+                            || gridCRS.getGridType().equals(
+                                    GridType.GT2dGridIn2dCrs.getXmlConstant()))
+                        offsets = new Double[] { 1.0, -1.0 };
+                    else
+                        offsets = new Double[] { 1.0, 0.0, 0.0, 0.0, -1.0, 0.0 };
+                } else {
+                    AffineTransform2D affine = (AffineTransform2D) gridToCRS;
+                    if (gridCRS.getGridType().equals(GridType.GT2dSimpleGrid.getXmlConstant())
+                            || gridCRS.getGridType().equals(
+                                    GridType.GT2dGridIn2dCrs.getXmlConstant()))
+                        offsets = new Double[] { affine.getScaleX(), affine.getScaleY() };
+                    else
+                        offsets = new Double[] { affine.getScaleX(), affine.getShearX(),
+                                affine.getShearY(), affine.getScaleY() };
+                }
+            } else {
                 AffineTransform2D at = (AffineTransform2D) gridToCRS;
-                offsets = new Double[] {at.getScaleX(), at.getScaleY()};
-		    }
-		} else {
-			// the input resolution is going to be completed unrelated to the output one
-			// make an estimate assuming we want to keep the output raster with roughly 
-			// the same size as the input one
-		    double teWidth = intersectionEnvelope.getSpan(0);
-			double teHeight = intersectionEnvelope.getSpan(1);
-			
-			double targetRatio = teWidth / teHeight;
-			GridEnvelope gr = reader.getOriginalGridRange();
-			int targetRasterWidth = gr.getSpan(0);
-			int targetRasterHeight = (int) Math.ceil(targetRasterWidth / targetRatio);
-			offsets = new Double[] {teWidth / targetRasterWidth, - teHeight / targetRasterHeight}; 
-		}
-		return offsets;
-	}
+                offsets = new Double[] { at.getScaleX(), at.getShearX(), 0d, at.getShearY(), at.getScaleY(), 0d};
+            }
+        } else {
+            // the input resolution is going to be completed unrelated to the output one
+            // make an estimate assuming we want to keep the output raster with roughly
+            // the same size as the input one
+            double teWidth = intersectionEnvelope.getSpan(0);
+            double teHeight = intersectionEnvelope.getSpan(1);
+
+            double targetRatio = teWidth / teHeight;
+            GridEnvelope gr = reader.getOriginalGridRange();
+            int targetRasterWidth = gr.getSpan(0);
+            int targetRasterHeight = (int) Math.ceil(targetRasterWidth / targetRatio);
+            double scaleX = teWidth / targetRasterWidth;
+            double scaleY = -teHeight / targetRasterHeight;
+
+            if (gridCRS == null ||  gridCRS.getGridType().equals(GridType.GT2dSimpleGrid.getXmlConstant())
+                    || gridCRS.getGridType().equals(GridType.GT2dGridIn2dCrs.getXmlConstant())) {
+                offsets = new Double[] { scaleX, scaleY };
+            } else {
+                offsets = new Double[] { scaleX, 0.0, 0.0, 0.0, scaleY, 0.0 };
+            }
+        }
+        return offsets;
+    }
 
     private void checkDomainSubset(CoverageInfo meta, DomainSubsetType domainSubset, WCSInfo wcs)
             throws Exception {

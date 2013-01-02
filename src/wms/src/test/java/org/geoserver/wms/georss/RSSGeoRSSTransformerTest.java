@@ -36,9 +36,27 @@ import org.xml.sax.SAXException;
 
 public class RSSGeoRSSTransformerTest extends WMSTestSupport {
     FilterFactory ff = CommonFactoryFinder.getFilterFactory(GeoTools.getDefaultHints());
-    
- 
-    @Test 
+
+    @Test
+    public void testChannelDescription() throws Exception {
+        WMSMapContent map = new WMSMapContent(createGetMapRequest(MockData.BASIC_POLYGONS));
+        map.addLayer(createMapLayer(MockData.BASIC_POLYGONS));
+        map.layers().get(0).getUserData().put("abstract", "Test Abstract");
+
+        Document document;
+        try {
+            document = getRSSResponse(map, AtomGeoRSSTransformer.GeometryEncoding.LATLONG);
+        } finally {
+            map.dispose();
+        }
+        Element element = document.getDocumentElement();
+        assertEquals("rss", element.getNodeName());
+
+        Element channel = (Element) element.getElementsByTagName("channel").item(0);
+        NodeList description = channel.getElementsByTagName("description");
+        assertEquals("Test Abstract", description.item(0).getChildNodes().item(0).getNodeValue());
+    }
+
     public void testLatLongInternal() throws Exception {
         WMSMapContent map = new WMSMapContent(createGetMapRequest(MockData.BASIC_POLYGONS));
         map.addLayer(createMapLayer(MockData.BASIC_POLYGONS));

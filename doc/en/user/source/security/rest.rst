@@ -20,7 +20,7 @@ The following syntax defines access control rules for RESTful services (paramete
 
 The parameters are:
 
-* **uriPattern**—:ref:`ant pattern <ant_patterns>` that matches a set of request URIs
+* **uriPattern**—:ref:`ant pattern <sec_rest_ant_patterns>` that matches a set of request URIs
 * **method**—HTTP request method, one of ``GET``, ``POST``, ``PUT``, ``POST``, ``DELETE``, or ``HEAD``
 * **role**—Name of a predefined role. The wildcard '* is used to indicate the permission is applied to all users, including anonymous users.
 
@@ -29,7 +29,7 @@ The parameters are:
    * URI patterns should account for the first component of the rest path, usually ``rest`` or ``api``
    * Method and role lists should **not** contain any spaces
 
-.. _ant_patterns:
+.. _sec_rest_ant_patterns:
 
 Ant patterns
 ~~~~~~~~~~~~

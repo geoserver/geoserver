@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 
 import org.geoserver.ows.KvpParser;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.ServiceException;
 import org.geotools.util.Version;
 
 /**
@@ -390,9 +391,9 @@ public class KvpUtils {
         Collection parsers = GeoServerExtensions.extensions(KvpParser.class);
        
         //strip out parsers which do not match current service/request/version
-        String service = (String) kvp.get( "service" );
-        String version = (String) kvp.get( "version" );
-        String request = (String) kvp.get( "request" );
+        String service = KvpUtils.getSingleValue(kvp, "service");
+        String version = KvpUtils.getSingleValue(kvp, "version");
+        String request = KvpUtils.getSingleValue(kvp, "request");
         for (Iterator p = parsers.iterator(); p.hasNext(); ) {
             KvpParser parser = (KvpParser) p.next();
             
@@ -491,6 +492,37 @@ public class KvpUtils {
         return errors;
     }
     
+    /**
+     * Returns a single value for the specified key, or throws an exception if multiple different
+     * values are found
+     * 
+     * @param kvp
+     * @param key
+     * @return
+     */
+    public static String getSingleValue(Map kvp, String key) {
+        Object value = kvp.get(key);
+        if(value == null) {
+            return null;
+        } else if(value instanceof String) {
+            return (String) value;
+        } else {
+            String[] strings = (String[]) value;
+            if(strings.length == 0) {
+                return null;
+            }
+            String result = strings[0];
+            for (int i = 1; i < strings.length; i++) {
+                if(!result.equals(strings[i])) {
+                    throw new ServiceException("Single value expected for request parameter " 
+                            + key + " but instead found: " + Arrays.toString(strings));
+                }
+            }
+            
+            return result;
+        }
+    }
+
     /**
      * Parses the parameters in the path query string. Normally this is done by the
      * servlet container but in a few cases (testing for example) we need to emulate the container

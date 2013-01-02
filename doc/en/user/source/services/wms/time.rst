@@ -138,7 +138,7 @@ Examples
    * - The month of September 2002
      - ``2002-09``
      - ``2002-09-01T00:00:00.0Z/2002-10-01T23:59:59.999Z``
-   * - The day of December 25, 2010::
+   * - The day of December 25, 2010
      - ``2010-12-25``
      - ``2010-12-25T00:00:00.0Z/2010-12-25T23:59:59.999Z``
 
@@ -156,7 +156,7 @@ In this case, GeoServer effectively expands the start and end times as described
    * - The months of September through December 2002
      - ``2002-09/2002-12``
      - ``2002-09-01T00:00:00.0Z/2002-12-31T23:59:59.999Z``
-   * - 12pm through 6pm, December 25, 2010::
+   * - 12pm through 6pm, December 25, 2010
      - ``2010-12-25T12/2010-12-25T18``
      - ``2010-12-25T12:00:00.0Z/2010-12-25T18:59:59.999Z``
 
@@ -177,11 +177,11 @@ Examples
    * - Description
      - List notation
      - Range notation
-   * - Noon every day for the week of August 12-18, 2012::
+   * - Noon every day for the week of August 12-18, 2012
      - ``TIME=2012-08-12T12:00:00.0Z,2012-08-13T12:00:00.0Z,2012-08-14T12:00:00.0Z,2012-08-15T12:00:00.0Z,2012-08-16T12:00:00.0Z,2012-08-17T12:00:00.0Z,2012-08-18T12:00:00.0Z``
      - ``TIME=2012-08-12T12:00:00.0Z/2012-08-18:T12:00:00.0Z/P1D``
-   * - Midnight on the first of September, October, and November 1999::
-     - ``TIME=1999-09-01T00:00:00.0Z,1999-10-01T00:00:00.0Z,1999-11-01T00:00:00.0Z
+   * - Midnight on the first of September, October, and November 1999
+     - ``TIME=1999-09-01T00:00:00.0Z,1999-10-01T00:00:00.0Z,1999-11-01T00:00:00.0Z``
      - ``TIME=1999-09-01T00:00:00.0Z/1999-11-01T00:00:00.0Z/P1M``
 
 .. note::

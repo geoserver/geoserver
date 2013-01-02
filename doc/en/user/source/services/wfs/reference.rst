@@ -68,7 +68,7 @@ The following operations are available in **version 1.1.0 only**:
    * - ``GetGMLObject``
      - Retrieves features and elements by ID from a WFS 
 
-.. note:: In the examples that follow, the fictional URL ``http://www.example.com/wfs`` is used for illustration. To test the examples, substitute the address of a valid WFS. Also, although the request would normally be defined on one line with no breaks, breaks are added for clarity in the examples provided. 
+.. note:: In the examples that follow, the fictional URL ``http://example.com/geoserver/wfs`` is used for illustration. To test the examples, substitute the address of a valid WFS. Also, although the request would normally be defined on one line with no breaks, breaks are added for clarity in the examples provided. 
 
 .. _wfs_getcap:
 
@@ -79,7 +79,7 @@ The **GetCapabilities** operation is a request to a WFS server for a list of the
 
 To issue a GET request using HTTP::
 
-   http://www.example.com/wfs?
+   http://example.com/geoserver/wfs?
      service=wfs&
      version=1.1.0&
      request=GetCapabilities
@@ -175,14 +175,14 @@ The parameters for DescribeFeatureType are:
 
 To return a list of feature types, the GET request would be as follows. This request will return the list of feature types, sorted by namespace::
 
-   http://www.example.com/wfs?
+   http://example.com/geoserver/wfs?
      service=wfs&
      version=2.0.0&
      request=DescribeFeatureType
 
 To list information about a specific feature type called ``namespace:featuretype``, the GET request would be::
 
-   http://www.example.com/wfs?
+   http://example.com/geoserver/wfs?
      service=wfs&
      version=2.0.0&
      request=DescribeFeatureType&
@@ -197,7 +197,7 @@ The **GetFeature** operation returns a selection of features from the data sourc
 
 This request will execute a GetFeature request for a given layer ``namespace:featuretype``::
 
-   http://www.example.com/wfs?
+   http://example.com/geoserver/wfs?
      service=wfs&
      version=2.0.0&
      request=GetFeature&
@@ -205,7 +205,7 @@ This request will execute a GetFeature request for a given layer ``namespace:fea
 
 Executing this command will return the geometries for all features in given a feature type, potentially a large amount of data. To limit the output you can restrict the GetFeature request to a single feature by including an additional parameter, ``featureID`` and providing the ID of a specific feature. In this case, the GET request would be::
 
-   http://www.example.com/wfs?
+   http://example.com/geoserver/wfs?
      service=wfs&
      version=2.0.0&
      request=GetFeature&
@@ -214,7 +214,7 @@ Executing this command will return the geometries for all features in given a fe
 
 If the ID of the feature is unknown but you still want to limit the amount of features returned, use the ``maxFeatures`` parameter. In the example below, ``N`` represents the number of features to return::
 
-   http://www.example.com/wfs?
+   http://example.com/geoserver/wfs?
      service=wfs&
      version=2.0.0&
      request=GetFeature&
@@ -223,7 +223,7 @@ If the ID of the feature is unknown but you still want to limit the amount of fe
 
 Exactly which N features will be returned depends in the internal structure of the data. However, you can sort the returned selection based on an attribute value. In the following example, an attribute is included in the request using the ``sortBy=attribute`` parameter (replace ``attribute`` with the attribute you wish to sort by)::
 
-   http://www.example.com/wfs?
+   http://example.com/geoserver/wfs?
       service=wfs&
       version=2.0.0&
       request=GetFeature&
@@ -233,7 +233,7 @@ Exactly which N features will be returned depends in the internal structure of t
 
 The default sort operation is to sort in ascending order. Some WFS servers require the sort order to be specified, even if an ascending order sort if required. In this case, append a ``+A`` to the request. Conversely, add a ``+D`` to the request to sort in descending order as follows::
 
-   http://www.example.com/wfs?
+   http://example.com/geoserver/wfs?
      service=wfs&
      version=2.0.0&
      request=GetFeature&
@@ -245,7 +245,7 @@ There is no obligation to use ``sortBy`` with ``maxFeatures`` in a GetFeature re
 
 To restrict a GetFeature request by attribute rather than feature, use the ``propertyName`` key in the form ``propertyName=attribute``. You can specify a single attribute, or multiple attributes separated by commas. To search for a single attribute in all features, the following request would be required::
 
-   http://www.example.com/wfs?
+   http://example.com/geoserver/wfs?
      service=wfs&
      version=2.0.0&
      request=GetFeature&
@@ -254,7 +254,7 @@ To restrict a GetFeature request by attribute rather than feature, use the ``pro
 
 For a single property from just one feature, use both ``featureID`` and ``propertyName``::
 
-   http://www.example.com/wfs?
+   http://example.com/geoserver/wfs?
      service=wfs&
      version=2.0.0&
      request=GetFeature&
@@ -264,7 +264,7 @@ For a single property from just one feature, use both ``featureID`` and ``proper
 
 For more than one property from a single feature, use a comma-seaprated list of values for ``propertyName``::
 
-   http://www.example.com/wfs?
+   http://example.com/geoserver/wfs?
      service=wfs&
      version=2.0.0&
      request=GetFeature&
@@ -280,7 +280,7 @@ As for which corners of the bounding box to specify, the only requirement is for
 
 An example request involving returning features based on bounding box would be in the following format::  
 
-   http://www.example.com/wfs?
+   http://example.com/geoserver/wfs?
      service=wfs&
      version=2.0.0&
      request=GetFeature&
@@ -296,6 +296,7 @@ A **LockFeature** operation provides a long-term feature locking mechanism to en
 
 In practice, few clients support this operation.
 
+
 .. _wfs_wfst:
 
 Transaction
@@ -304,6 +305,7 @@ Transaction
 The **Transaction** operation can create, modify, and delete features published by a WFS. Each transaction will consist of zero or more Insert, Update, and Delete elements, with each transaction element performed in order. Every GeoServer transaction is *atomic*, meaning that if any of the elements fail, the transaction is abandoned and the data is unaltered. A WFS server that supports **transactions** is sometimes known as a WFS-T server. **GeoServer fully supports transactions.** 
 
 More information on the syntax of transactions can be found in the `WFS specification <http://www.opengeospatial.org/standards/wfs>`_ and in the :ref:`GeoServer sample requests <webadmin_demos>`.
+
 
 GetGMLObject
 ~~~~~~~~~~~~
@@ -320,6 +322,29 @@ GetPropertyValue
 
 A **GetPropertyValue** operation retrieves the value of a feature property, or part of the value of a complex feature property, from a data source for a given set of features identified by a query.
 
+This example retrieves the geographic content only of the features in the ``topp:states`` layer::
+
+  http://example.com/geoserver/wfs?
+    service=wfs&
+    version=2.0.0&
+    request=GetPropertyValue&
+    typeNames=topp:states&
+    valueReference=the_geom
+
+The same example in a POST request:
+
+.. code-block:: xml
+
+   <wfs:GetPropertyValue service='WFS' version='2.0.0'
+    xmlns:topp='http://www.openplans.org/topp'
+    xmlns:fes='http://www.opengis.net/fes/2.0'
+    xmlns:wfs='http://www.opengis.net/wfs/2.0'
+    valueReference='the_geom'>
+     <wfs:Query typeNames='topp:states'/>
+   </wfs:GetPropertyValue>
+
+To retrieve value for a different attribute, alter the ``valueReference`` parameter.
+
 
 GetFeatureWithLock
 ~~~~~~~~~~~~~~~~~~
@@ -328,13 +353,56 @@ GetFeatureWithLock
 
 A **GetFeatureWithLock** operation is similar to a **GetFeature** operation, except that when the set of features are returned from the WFS server, the features are also locked in anticipation of a subsequent transaction operation.
 
+This POST example retrieves the features of the ``topp:states`` layer, but in addition locks those features for five minutes.
+
+.. code-block:: xml
+
+   <wfs:GetFeatureWithLock service='WFS' version='2.0.0'
+    handle='GetFeatureWithLock-tc1' expiry='5' resultType='results'
+    xmlns:topp='http://www.openplans.org/topp'
+    xmlns:fes='http://www.opengis.net/fes/2.0'
+    xmlns:wfs='http://www.opengis.net/wfs/2.0'
+    valueReference='the_geom'>
+     <wfs:Query typeNames='topp:states'/>
+   </wfs:GetFeatureWithLock>
+
+To adjust the lock time, alter the ``expiry`` parameter.
+
 
 CreateStoredQuery 
 ~~~~~~~~~~~~~~~~~
 
 .. note:: This operation is valid for **WFS version 2.0.0 only**.
 
-A **CreateStoredQuery** operation creates a stored query on the WFS server. The definition of the stored query is encoded in the ``StoredQueryDefinition`` parameter and is given an ID for a reference. 
+A **CreateStoredQuery** operation creates a stored query on the WFS server. The definition of the stored query is encoded in the ``StoredQueryDefinition`` parameter and is given an ID for a reference.
+
+This POST example creates a new stored query (called "myStoredQuery") that filters the ``topp:states`` layer to those features that are within a given area of interest (``${AreaOfInterest}``):
+
+.. code-block:: xml
+
+   <wfs:CreateStoredQuery service='WFS' version='2.0.0'
+    xmlns:wfs='http://www.opengis.net/wfs/2.0'
+    xmlns:fes='http://www.opengis.org/fes/2.0'
+    xmlns:gml='http://www.opengis.net/gml/3.2'
+    xmlns:myns='http://www.someserver.com/myns'
+    xmlns:topp='http://www.openplans.org/topp'>
+     <wfs:StoredQueryDefinition id='myStoredQuery'>
+       <wfs:Parameter name='AreaOfInterest' type='gml:Polygon'/>
+       <wfs:QueryExpressionText
+        returnFeatureTypes='topp:states'
+        language='urn:ogc:def:queryLanguage:OGC-WFS::WFS_QueryExpression'
+        isPrivate='false'>
+         <wfs:Query typeNames='topp:states'>
+           <fes:Filter>
+             <fes:Within>
+               <fes:ValueReference>the_geom</fes:ValueReference>
+                ${AreaOfInterest}
+             </fes:Within>
+           </fes:Filter>
+         </wfs:Query>
+       </wfs:QueryExpressionText>
+     </wfs:StoredQueryDefinition>
+   </wfs:CreateStoredQuery>
 
 DropStoredQuery
 ~~~~~~~~~~~~~~~
@@ -343,6 +411,21 @@ DropStoredQuery
 
 A **DropStoredQuery** operation drops a stored query previous created by a CreateStoredQuery operation. The request accepts the ID of the query to drop.
 
+This example will drop a stored query with an ID of ``myStoredQuery``::
+
+  http://example.com/geoserver/wfs?
+    request=DropStoredQuery&
+    storedQuery_Id=myStoredQuery
+
+The same example in a POST request:
+
+.. code-block:: xml
+
+  <wfs:DropStoredQuery
+   xmlns:wfs='http://www.opengis.net/wfs/2.0'
+   service='WFS' id='myStoredQuery'/>
+
+
 ListStoredQueries
 ~~~~~~~~~~~~~~~~~
 
@@ -350,12 +433,45 @@ ListStoredQueries
 
 A **ListStoredQueries** operation returns a list of the stored queries currently maintained by the WFS server.
 
+This example lists all stored queries on the server::
+
+  http://example.com/geoserver/wfs?
+    request=ListStoredQueries&
+    service=wfs&
+    version=2.0.0
+
+The same example in a POST request:
+
+.. code-block:: xml
+
+   <wfs:ListStoredQueries service='WFS'
+    version='2.0.0'
+    xmlns:wfs='http://www.opengis.net/wfs/2.0'/>
+
+
 DescribeStoredQueries
 ~~~~~~~~~~~~~~~~~~~~~
 
 .. note:: This operation is valid for **WFS version 2.0.0 only**.
 
 A **DescribeStoredQuery** operation returns detailed metadata about each stored query maintained by the WFS server. A description of an individual query may be requested by providing the ID of the specific query. If no ID is provided, all queries are described.
+
+
+This example describes the exsting stored query with an ID of ``urn:ogc:def:query:OGC-WFS::GetFeatureById`` 
+
+  http://example.com/geoserver/wfs?
+    request=DescribeStoredQueries&
+    storedQuery_Id=urn:ogc:def:query:OGC-WFS::GetFeatureById
+
+The same example in a POST request:
+
+.. code-block:: xml
+
+   <wfs:DescribeStoredQueries
+    xmlns:wfs='http://www.opengis.net/wfs/2.0'
+    service='WFS'>
+     <wfs:StoredQueryId>urn:ogc:def:query:OGC-WFS::GetFeatureById</wfs:StoredQueryId>
+   </wfs:DescribeStoredQueries>
 
 Exceptions
 ----------

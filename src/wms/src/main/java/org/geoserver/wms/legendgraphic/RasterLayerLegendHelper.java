@@ -70,7 +70,8 @@ public class RasterLayerLegendHelper {
     private Color bgColor;
 
     private ColorMapLegendCreator cMapLegendCreator;
-
+    
+    
     /**
      * Constructor for a RasterLayerLegendHelper.
      * 
@@ -78,15 +79,18 @@ public class RasterLayerLegendHelper {
      * It takes a {@link GetLegendGraphicRequest} object in order to do its magic.
      * 
      * @param request
-     *            the {@link GetLegendGraphicRequest} for which we want to builda legend
+     *            the {@link GetLegendGraphicRequest} for which we want to build a legend
+     * @param style the {@link Style} for which we want to build a legend
+     * @param rule the {@link Rule} to use for rendering
      */
-    public RasterLayerLegendHelper(final GetLegendGraphicRequest request) {
+    public RasterLayerLegendHelper(final GetLegendGraphicRequest request,Style style,String ruleName) {
         PackagedUtils.ensureNotNull(request, "The provided GetLegendGraphicRequest is null");
-        parseRequest(request);
+        
+        parseRequest(request,style,ruleName);
     }
 
     @SuppressWarnings("unchecked")
-    private void parseRequest(final GetLegendGraphicRequest request) {
+    private void parseRequest(final GetLegendGraphicRequest request,Style gt2Style,String ruleName) {
         // get the requested layer
         // and check that it is actually a grid
         // final FeatureType layer = request.getLayer();
@@ -95,13 +99,12 @@ public class RasterLayerLegendHelper {
         // if(!found)
         // throw new IllegalArgumentException("Unable to create legend for non raster style");
 
-        // get the style and its rules
-        final Style gt2Style = request.getStyle();
+        
         final FeatureTypeStyle[] ftStyles = gt2Style.getFeatureTypeStyles();
         final double scaleDenominator = request.getScale();
 
         final Rule[] applicableRules;
-        String ruleName = request.getRule();
+        
         if (ruleName != null) {
             Rule rule = LegendUtils.getRule(ftStyles, ruleName);
             if (rule == null) {

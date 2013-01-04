@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ServiceException;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.arcgrid.ArcGridWriter;
@@ -25,8 +26,9 @@ import org.geotools.gce.arcgrid.ArcGridWriter;
 public class AscCoverageResponseDelegate extends BaseCoverageResponseDelegate implements CoverageResponseDelegate {
 
     @SuppressWarnings("serial")
-    public AscCoverageResponseDelegate() {
+    public AscCoverageResponseDelegate(GeoServer geoserver) {
         super(
+                geoserver,
                 Arrays.asList("ArcGrid","ArcGrid-GZIP"), //output formats
                 new HashMap<String, String>(){ // file extensions
                     {

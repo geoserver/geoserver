@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ServiceException;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.image.WorldImageWriter;
@@ -30,8 +31,9 @@ import org.opengis.parameter.ParameterValueGroup;
 public class IMGCoverageResponseDelegate extends BaseCoverageResponseDelegate implements CoverageResponseDelegate {
 
     @SuppressWarnings("serial")
-    public IMGCoverageResponseDelegate() {
+    public IMGCoverageResponseDelegate(GeoServer geoserver) {
         super(
+                geoserver,
                 Arrays.asList("png", "jpeg", "JPEG", "PNG"), //output formats
                 new HashMap<String, String>(){ // file extensions
                     {

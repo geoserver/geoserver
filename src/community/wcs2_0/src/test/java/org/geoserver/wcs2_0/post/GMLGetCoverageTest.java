@@ -1,9 +1,10 @@
-package org.geoserver.wcs2_0;
+package org.geoserver.wcs2_0.post;
 
 import static junit.framework.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
 
+import org.geoserver.wcs2_0.WCSTestSupport;
 import org.geoserver.wcs2_0.response.GMLCoverageResponseDelegate;
 import org.junit.Test;
 import org.w3c.dom.Document;

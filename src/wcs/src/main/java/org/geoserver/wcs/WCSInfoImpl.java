@@ -19,6 +19,8 @@ public class WCSInfoImpl extends ServiceInfoImpl implements WCSInfo {
 
     boolean gmlPrefixing;
     
+    private boolean latLon=false;
+    
     long maxInputMemory = -1;
     
     long maxOutputMemory = -1;
@@ -80,6 +82,17 @@ public class WCSInfoImpl extends ServiceInfoImpl implements WCSInfo {
 
     public static long getSerialversionuid() {
         return serialVersionUID;
+    }
+
+    @Override
+    public void setLatLon(boolean latLon) {
+        this.latLon=latLon;
+        
+    }
+
+    @Override
+    public boolean getLatLon() {
+        return latLon;
     }
 
 }

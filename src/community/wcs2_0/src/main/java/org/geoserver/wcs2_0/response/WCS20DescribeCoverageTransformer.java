@@ -22,6 +22,7 @@ import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
+import org.geoserver.wcs2_0.GetCoverage;
 import org.geoserver.wcs2_0.WCS20Const;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
@@ -38,7 +39,6 @@ import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
-import org.geotools.resources.coverage.CoverageUtilities;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.transform.Translator;
 import org.opengis.coverage.SampleDimension;
@@ -47,7 +47,6 @@ import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.cs.CoordinateSystem;
 import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
 import org.vfny.geoserver.wcs.WcsException;
@@ -177,7 +176,7 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
                     throw new IllegalStateException("Unable to lookup epsg code for this CRS:"
                             + crs);
                 }
-                final String srsName = GMLCoverageResponseDelegate.SRS_STARTER + EPSGCode;
+                final String srsName = GetCoverage.SRS_STARTER + EPSGCode;
                 // handle axes swap for geographic crs
                 final boolean axisSwap = CRS.getAxisOrder(crs).equals(AxisOrder.EAST_NORTH);
 

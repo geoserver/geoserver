@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.map.CaseInsensitiveMap;
+import org.geoserver.config.GeoServer;
 import org.geotools.util.Utilities;
 
 /**
@@ -40,16 +41,21 @@ public abstract class BaseCoverageResponseDelegate implements CoverageResponseDe
     
     /** MIME Types for this {@link CoverageResponseDelegate}.*/
     private final CaseInsensitiveMap mimeTypes;
+
+    /** The current geoserver instance.*/
+    protected final GeoServer geoserver;
     
     /**
      * Constructor for this {@link BaseCoverageResponseDelegate};
      * 
+     * @param geoserver the {@link GeoServer} instance to get options from
      * @param outputFormats Output formats for this {@link CoverageResponseDelegate}
      * @param fileExtensions File extensions for this {@link CoverageResponseDelegate}
      * @param mimeTypes MIME Types for this {@link CoverageResponseDelegate}
      */
-    public BaseCoverageResponseDelegate(List<String> outputFormats,Map<String,String> fileExtensions,Map<String,String> mimeTypes){
+    public BaseCoverageResponseDelegate(GeoServer geoserver, List<String> outputFormats,Map<String,String> fileExtensions,Map<String,String> mimeTypes){
         Utilities.ensureNonNull("outputFormats", outputFormats);
+        Utilities.ensureNonNull("GeoServer", geoserver);
         Utilities.ensureNonNull("fileExtensions", fileExtensions);
         Utilities.ensureNonNull("mimeTypes", mimeTypes);
         if(outputFormats.isEmpty()){
@@ -64,6 +70,7 @@ public abstract class BaseCoverageResponseDelegate implements CoverageResponseDe
         this.mimeTypes= new CaseInsensitiveMap(new HashMap<String, String>(mimeTypes));
         this.outputFormats= new ArrayList<String>(outputFormats);
         this.fileExtensions= new CaseInsensitiveMap(fileExtensions);
+        this.geoserver=geoserver;
         
     }
 

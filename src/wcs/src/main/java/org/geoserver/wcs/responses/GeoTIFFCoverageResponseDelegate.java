@@ -15,8 +15,10 @@ import java.util.Map;
 
 import javax.media.jai.JAI;
 
+import org.geoserver.config.GeoServer;
 import org.geoserver.platform.OWS20Exception;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wcs.WCSInfo;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
@@ -48,8 +50,9 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
 
 
     @SuppressWarnings("serial")
-    public GeoTIFFCoverageResponseDelegate() {
+    public GeoTIFFCoverageResponseDelegate(GeoServer geoserver) {
         super(
+                geoserver,
                 Arrays.asList("tif","tiff","geotiff","TIFF", "GEOTIFF","image/geotiff"), //output formats
                 new HashMap<String, String>(){ // file extensions
                     {
@@ -93,6 +96,10 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
 
         final ParameterValueGroup writerParams = GEOTIF_FORMAT.getWriteParameters();
         writerParams.parameter(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString()).setValue(wp);
+        
+        if(geoserver.getService(WCSInfo.class).getLatLon()){
+            writerParams.parameter(GeoTiffFormat.RETAIN_AXES_ORDER.getName().toString()).setValue(true);
+        }
 
         // write down
         GeoTiffWriter writer = (GeoTiffWriter) GEOTIF_FORMAT.getWriter(output);

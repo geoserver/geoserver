@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.media.jai.BorderExtender;
@@ -54,6 +55,7 @@ import org.geoserver.wcs2_0.exception.WCS20Exception.WCS20ExceptionCode;
 import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
 import org.geoserver.wcs2_0.util.NCNameResourceCodec;
 import org.geoserver.wcs2_0.util.RequestUtils;
+import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
@@ -65,6 +67,8 @@ import org.geotools.factory.GeoTools;
 import org.geotools.factory.Hints;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.ReferencingFactoryFinder;
+import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.resources.coverage.CoverageUtilities;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
@@ -76,6 +80,7 @@ import org.opengis.geometry.Envelope;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CRSAuthorityFactory;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.PixelInCell;
 import org.vfny.geoserver.util.WCSUtils;
@@ -488,11 +493,24 @@ public class GetCoverage {
     
     /** Utility class to map envelope dimension*/
     private EnvelopeAxesLabelsMapper envelopeDimensionsMapper;
+    private CRSAuthorityFactory lonLatCRSFactory;
+    private CRSAuthorityFactory latLonCRSFactory;
+    public final static String SRS_STARTER="http://www.opengis.net/def/crs/EPSG/0/";
 
     public GetCoverage(WCSInfo serviceInfo, Catalog catalog, EnvelopeAxesLabelsMapper envelopeDimensionsMapper) {
         this.wcs = serviceInfo;
         this.catalog = catalog;
         this.envelopeDimensionsMapper=envelopeDimensionsMapper;
+        
+        Hints hints = GeoTools.getDefaultHints().clone();
+        hints.add(new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER,Boolean.TRUE));
+        hints.add(new Hints(Hints.FORCE_AXIS_ORDER_HONORING, "http-uri"));
+        lonLatCRSFactory = ReferencingFactoryFinder.getCRSAuthorityFactory("http://www.opengis.net/def", hints); 
+        
+        hints.add(new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER,Boolean.FALSE));
+        hints.add(new Hints(Hints.FORCE_AXIS_ORDER_HONORING, "http-uri"));
+        latLonCRSFactory = ReferencingFactoryFinder.getCRSAuthorityFactory("http://www.opengis.net/def", hints); 
+        
     }
 
     public GridCoverage run(GetCoverageType request) {
@@ -526,6 +544,7 @@ public class GetCoverage {
             // get CRS extension values
             final CoordinateReferenceSystem subsettingCRS=extractSubsettingCRS(reader,extensions);
             final CoordinateReferenceSystem outputCRS=extractOutputCRS(reader,extensions);
+            final boolean enforceLatLonAxesOrder=requestingLatLonAxesOrder(outputCRS);
             // extract subsetting
             final GeneralEnvelope subset=extractSubsettingEnvelope(reader,request,subsettingCRS);
             
@@ -567,6 +586,11 @@ public class GetCoverage {
             //
             // reproject the output coverage to an eventual outputCrs
             coverage=handleReprojection(coverage,outputCRS,spatialInterpolation,hints);
+            
+            // axes swap management
+            if(enforceLatLonAxesOrder){
+                coverage = enforceLatLongOrder(coverage, hints, outputCRS);
+            }
 
         } catch(Exception e) {
             throw new WCS20Exception("Failed to read the coverage " + request.getCoverageId(), e);
@@ -578,6 +602,70 @@ public class GetCoverage {
         }
         
         return coverage;
+    }
+
+    /**
+     * @param coverage
+     * @param hints
+     * @param outputCRS
+     * @return
+     * @throws Exception
+     */
+    private GridCoverage2D enforceLatLongOrder(GridCoverage2D coverage, final Hints hints,
+            final CoordinateReferenceSystem outputCRS) throws Exception {
+        final Integer epsgCode = CRS.lookupEpsgCode(outputCRS, false);
+        if(epsgCode!=null&& epsgCode>0){
+            // final CRS
+            CoordinateReferenceSystem finalCRS = latLonCRSFactory.createCoordinateReferenceSystem(SRS_STARTER+epsgCode);
+            if(CRS.getAxisOrder(outputCRS).equals(CRS.getAxisOrder(finalCRS))){
+                return coverage;
+            }
+            
+            // get g2w and swap axes
+            final AffineTransform g2w= new AffineTransform((AffineTransform2D) coverage.getGridGeometry().getGridToCRS2D());
+            g2w.preConcatenate(CoverageUtilities.AXES_SWAP);
+            
+            // rework the transformation
+            final GridGeometry2D finalGG= new GridGeometry2D(
+                    coverage.getGridGeometry().getGridRange(), 
+                    PixelInCell.CELL_CENTER, 
+                    new AffineTransform2D(g2w), 
+                    finalCRS, 
+                    hints);
+            
+            // recreate the coverage
+            coverage=CoverageFactoryFinder.getGridCoverageFactory(hints).create(
+                    coverage.getName(),
+                    coverage.getRenderedImage(),
+                    finalGG,
+                    coverage.getSampleDimensions(),
+                    new GridCoverage[]{coverage},
+                    coverage.getProperties()
+                    );
+        }
+        return coverage;
+    }
+
+    /**
+     * This utility method tells me whether or not we should do a final reverse on the axis of the data.
+     * 
+     * @param outputCRS the final {@link CoordinateReferenceSystem} for the data as per the request 
+     * 
+     * @return <code>tue</code> in case we need to swap axes, <code>false</code> otherwise.
+     */
+    private boolean requestingLatLonAxesOrder(CoordinateReferenceSystem outputCRS) {
+       
+        try {
+            final Integer epsgCode = CRS.lookupEpsgCode(outputCRS, false);
+            if(epsgCode!=null&& epsgCode>0){
+                CoordinateReferenceSystem originalCRS = latLonCRSFactory.createCoordinateReferenceSystem(SRS_STARTER+epsgCode);
+                return !CRS.getAxisOrder(originalCRS).equals(CRS.getAxisOrder(outputCRS));
+            }
+        } catch (FactoryException e) {
+            LOGGER.log(Level.INFO, e.getMessage(), e);
+            return false;
+        }
+        return false;
     }
 
     /**
@@ -776,24 +864,15 @@ public class GetCoverage {
             }
 
             // instantiate
-            final int lastSlash = crsName.lastIndexOf("/");
-            // error no valid URI
-            // TODO improve checs
-            if (lastSlash < 0) {
-                throw new WCS20Exception("Invalid " + (subsettingCRS ? "subsetting" : "output")
-                        + " CRS", WCS20Exception.WCS20ExceptionCode.NotACrs, crsName);
-            }
-            crsName = crsName.substring(lastSlash + 1, crsName.length());
-            // instantiate
             try {
-                return CRS.decode("EPSG:" + crsName, false); // notice the usage of boolean param
+                return lonLatCRSFactory.createCoordinateReferenceSystem(crsName);
             } catch (Exception e) {
                 final WCS20Exception exception = new WCS20Exception("Invalid "
                         + (subsettingCRS ? "subsetting" : "output") + " CRS",
                         WCS20Exception.WCS20ExceptionCode.NotACrs, crsName);
                 exception.initCause(e);
                 throw exception;
-            }
+            }        
 
         }
         return reader.getCrs();

@@ -1,4 +1,4 @@
-package org.geoserver.wcs2_0;
+package org.geoserver.wcs2_0.post;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -7,9 +7,12 @@ import java.io.File;
 import junit.framework.Assert;
 
 import org.apache.commons.io.FileUtils;
+import org.geoserver.wcs2_0.WCSTestSupport;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.referencing.CRS;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -21,6 +24,27 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
  */
 public class ScalingExtentionTest extends WCSTestSupport {
     
+    private GridCoverage2D sourceCoverage;
+    @Before
+    public void setup() throws Exception{
+        // check we can read it as a TIFF and it is similare to the origina one
+        
+        sourceCoverage = (GridCoverage2D) this.getCatalog().getCoverageByName("BlueMarble")
+                .getGridCoverageReader(null, null).read(null);
+
+    }
+    
+    @After
+    public void close(){
+        try{
+            if(sourceCoverage!=null){
+                scheduleForCleaning(sourceCoverage);
+            }
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+    }
+
     @Test
     public void testScaleAxesByFactorXML() throws Exception {
         final File xml= new File("./src/test/resources/requestGetCoverageScaleAxesByFactor.xml");

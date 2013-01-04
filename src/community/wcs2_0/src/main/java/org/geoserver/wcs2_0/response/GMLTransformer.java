@@ -27,6 +27,7 @@ import javax.media.jai.PlanarImage;
 import javax.media.jai.iterator.RectIter;
 import javax.media.jai.iterator.RectIterFactory;
 
+import org.geoserver.wcs2_0.GetCoverage;
 import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.TypeMap;
@@ -100,7 +101,7 @@ class GMLTransformer extends TransformerBase {
             if (EPSGCode == null) {
                 throw new IllegalStateException("Unable to lookup epsg code for this CRS:" + crs);
             }
-            final String srsName = GMLCoverageResponseDelegate.SRS_STARTER + EPSGCode;
+            final String srsName = GetCoverage.SRS_STARTER + EPSGCode;
             // handle axes swap for geographic crs
             final boolean axisSwap = CRS.getAxisOrder(crs).equals(AxisOrder.EAST_NORTH);
 

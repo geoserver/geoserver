@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.ZipOutputStream;
 
+import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ServiceException;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.gtopo30.GTopo30Writer;
@@ -25,8 +26,9 @@ public class GTopo30CoverageResponseDelegate extends BaseCoverageResponseDelegat
 
 
     @SuppressWarnings("serial")
-    public GTopo30CoverageResponseDelegate() {
+    public GTopo30CoverageResponseDelegate(GeoServer geoserver) {
         super(
+                geoserver,
                 Arrays.asList("GTopo30"), //output formats
                 new HashMap<String, String>(){ // file extensions
                     {

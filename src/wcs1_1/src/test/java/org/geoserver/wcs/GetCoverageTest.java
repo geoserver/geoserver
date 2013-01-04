@@ -252,7 +252,7 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         // check we did not get a massive raster out
         GridEnvelope range = coverages[0].getGridGeometry().getGridRange();
         assertEquals(482, range.getSpan(0));
-        assertEquals(448, range.getSpan(1));
+        assertEquals(447, range.getSpan(1));
     }
 
     @Test

@@ -1,4 +1,4 @@
-package org.geoserver.wcs2_0;
+package org.geoserver.wcs2_0.post;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -7,6 +7,8 @@ import java.io.File;
 import junit.framework.Assert;
 
 import org.apache.commons.io.FileUtils;
+import org.geoserver.wcs2_0.GetCoverage;
+import org.geoserver.wcs2_0.WCSTestSupport;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.geometry.GeneralEnvelope;
@@ -24,13 +26,6 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
  */
 public class GetCoverageTest extends WCSTestSupport {
 
-    @Test
-    public void testGetMissingCoverage() throws Exception {
-        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=notThereBaby");
-
-        checkOws20Exception(response, 404, "NoSuchCoverage", "coverageId");
-    }
-    
     /**
      * Trimming only on Longitude
      * 
@@ -70,12 +65,12 @@ public class GetCoverageTest extends WCSTestSupport {
             try{
                 readerTarget.dispose();
             } catch (Exception e) {
-                e.printStackTrace();
+                // TODO: handle exception
             }
             try{
                 scheduleForCleaning(targetCoverage);
             } catch (Exception e) {
-                e.printStackTrace();
+                // TODO: handle exception
             }
         }
     }
@@ -114,50 +109,12 @@ public class GetCoverageTest extends WCSTestSupport {
             try{
                 readerTarget.dispose();
             } catch (Exception e) {
-                e.printStackTrace();
+                // TODO: handle exception
             }
             try{
                 scheduleForCleaning(targetCoverage);
             } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-    
-    @Test
-    public void testGetFullCoverageKVP() throws Exception {
-        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=wcs__BlueMarble");
-        
-        assertEquals("image/tiff", response.getContentType());
-        byte[] tiffContents = getBinary(response);
-        File file = new File("./target/bm_full.tiff");
-        FileUtils.writeByteArrayToFile(file, tiffContents);
-        
-        GeoTiffReader readerTarget = new GeoTiffReader(file);
-        GridCoverage2D targetCoverage = null, sourceCoverage=null;
-        try {
-            targetCoverage = readerTarget.read(null);
-            sourceCoverage=(GridCoverage2D) this.getCatalog().getCoverageByName("BlueMarble").getGridCoverageReader(null, null).read(null);
-            
-            // checks
-            assertEquals(sourceCoverage.getGridGeometry().getGridRange(), targetCoverage.getGridGeometry().getGridRange());
-            assertEquals(sourceCoverage.getCoordinateReferenceSystem(), targetCoverage.getCoordinateReferenceSystem());
-            assertEquals(sourceCoverage.getEnvelope(), targetCoverage.getEnvelope());
-        } finally {
-            try{
-                readerTarget.dispose();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            try{
-                scheduleForCleaning(targetCoverage);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            try{
-                scheduleForCleaning(sourceCoverage);
-            } catch (Exception e) {
-                e.printStackTrace();
+                // TODO: handle exception
             }
         }
     }
@@ -188,17 +145,17 @@ public class GetCoverageTest extends WCSTestSupport {
             try{
                 readerTarget.dispose();
             } catch (Exception e) {
-                e.printStackTrace();
+                // TODO: handle exception
             }
             try{
                 scheduleForCleaning(targetCoverage);
             } catch (Exception e) {
-                e.printStackTrace();
+                // TODO: handle exception
             }
             try{
                 scheduleForCleaning(sourceCoverage);
             } catch (Exception e) {
-                e.printStackTrace();
+                // TODO: handle exception
             }
         }
     }
@@ -242,12 +199,12 @@ public class GetCoverageTest extends WCSTestSupport {
             try{
                 readerTarget.dispose();
             } catch (Exception e) {
-                e.printStackTrace();
+                // TODO: handle exception
             }
             try{
                 scheduleForCleaning(targetCoverage);
             } catch (Exception e) {
-                e.printStackTrace();
+                // TODO: handle exception
             }
         }
     }
@@ -286,12 +243,12 @@ public class GetCoverageTest extends WCSTestSupport {
             try{
                 readerTarget.dispose();
             } catch (Exception e) {
-                e.printStackTrace();
+                // TODO: handle exception
             }
             try{
                 scheduleForCleaning(targetCoverage);
             } catch (Exception e) {
-                e.printStackTrace();
+                // TODO: handle exception
             }
         }
     }
@@ -342,12 +299,12 @@ public class GetCoverageTest extends WCSTestSupport {
             try{
                 readerTarget.dispose();
             } catch (Exception e) {
-                e.printStackTrace();
+                // TODO: handle exception
             }
             try{
                 scheduleForCleaning(targetCoverage);
             } catch (Exception e) {
-                e.printStackTrace();
+                // TODO: handle exception
             }
         }
     }
@@ -387,12 +344,12 @@ public class GetCoverageTest extends WCSTestSupport {
             try{
                 readerTarget.dispose();
             } catch (Exception e) {
-                e.printStackTrace();
+                // TODO: handle exception
             }
             try{
                 scheduleForCleaning(targetCoverage);
             } catch (Exception e) {
-                e.printStackTrace();
+                // TODO: handle exception
             }
         }
     }

@@ -19,12 +19,14 @@ package org.geoserver.wcs2_0.response;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.transform.TransformerException;
 
+import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wcs.responses.BaseCoverageResponseDelegate;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
 import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -36,7 +38,7 @@ import org.vfny.geoserver.wcs.WcsException;
  * @author Simone Giannecchini, GeoSolutions SAS
  *
  */
-public class GMLCoverageResponseDelegate implements CoverageResponseDelegate {
+public class GMLCoverageResponseDelegate extends BaseCoverageResponseDelegate implements CoverageResponseDelegate {
 
     /** FILE_EXTENSION */
     private static final String FILE_EXTENSION = "gml";
@@ -44,35 +46,30 @@ public class GMLCoverageResponseDelegate implements CoverageResponseDelegate {
     /** MIME_TYPE */
     private static final String MIME_TYPE = "application/gml+xml";
     
-    /** FORMAT_ALIASES */
-    private static final List<String> FORMAT_ALIASES = Arrays.asList(FILE_EXTENSION,MIME_TYPE);
-    
-    final static String SRS_STARTER="http://www.opengis.net/def/crs/EPSG/0/";
-    
     /** Can be used to map dimensions name to indexes*/
     private EnvelopeAxesLabelsMapper envelopeDimensionsMapper;
     
 
 
-    public GMLCoverageResponseDelegate(EnvelopeAxesLabelsMapper envelopeDimensionsMapper) {
+    @SuppressWarnings("serial")
+    public GMLCoverageResponseDelegate(EnvelopeAxesLabelsMapper envelopeDimensionsMapper, GeoServer geoserver) {
+        super(
+                geoserver,
+                Arrays.asList(FILE_EXTENSION,MIME_TYPE), //output formats
+                new HashMap<String, String>(){ // file extensions
+                    {
+                        put(MIME_TYPE, FILE_EXTENSION);
+                        put(FILE_EXTENSION, FILE_EXTENSION);
+                    }
+                },
+                new HashMap<String, String>(){ //mime types
+                    {
+                        put(MIME_TYPE, MIME_TYPE);
+                        put(FILE_EXTENSION, MIME_TYPE);
+                    }
+                });  
         this.envelopeDimensionsMapper=envelopeDimensionsMapper;
-        
-    }
-
-    @Override
-    public boolean canProduce(String outputFormat) {
-        return FORMAT_ALIASES.contains(outputFormat);
-    }
-
-    @Override
-    public String getMimeType(String outputFormat) {
-        return MIME_TYPE;
-    }
-
-    @Override
-    public String getFileExtension(String outputFormat) {
-        return FILE_EXTENSION;
-    }
+    }    
 
     @Override
     public void encode(GridCoverage2D coverage, String outputFormat,
@@ -88,16 +85,6 @@ public class GMLCoverageResponseDelegate implements CoverageResponseDelegate {
             new WcsException(e);
         }
 
-    }
-
-    @Override
-    public List<String> getOutputFormats() {
-        return FORMAT_ALIASES;
-    }
-
-    @Override
-    public boolean isAvailable() {
-        return true;
     }
 
 }

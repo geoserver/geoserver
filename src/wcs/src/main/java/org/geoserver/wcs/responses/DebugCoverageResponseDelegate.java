@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ServiceException;
 import org.geotools.coverage.grid.GridCoverage2D;
 
@@ -28,8 +29,9 @@ public class DebugCoverageResponseDelegate extends BaseCoverageResponseDelegate 
 
     
     @SuppressWarnings("serial")
-    public DebugCoverageResponseDelegate() {
+    public DebugCoverageResponseDelegate(GeoServer geoserver) {
         super(
+                geoserver,
                 Arrays.asList("DEBUG","text/debug"), //output formats
                 new HashMap<String, String>(){ // file extensions
                     {

@@ -4,6 +4,8 @@
  */
 package org.geoserver.wcs2_0;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+
 import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.net.URL;
@@ -29,7 +31,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wcs.WCSInfo;
-import org.geotools.coverage.grid.GridCoverage2D;
+import org.geoserver.wcs2_0.WCS20Const;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.imageio.geotiff.GeoTiffConstants;
 import org.geotools.data.DataUtilities;
@@ -38,7 +40,6 @@ import org.geotools.referencing.operation.matrix.XAffineTransform;
 import org.geotools.wcs.v2_0.WCSConfiguration;
 import org.geotools.xml.Parser;
 import org.junit.After;
-import org.junit.Before;
 import org.opengis.coverage.Coverage;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridGeometry;
@@ -63,9 +64,10 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
 
     protected static final Schema WCS20_SCHEMA;
     
-    private final List<GridCoverage> coverages = new ArrayList<GridCoverage>();
+    List<GridCoverage> coverages = new ArrayList<GridCoverage>();
+    
+    protected final static String VERSION=WCS20Const.CUR_VERSION;
 
-    protected GridCoverage2D sourceCoverage;
 
     /**
      * Small value for comparaison of sample values. Since most grid coverage implementations in
@@ -214,24 +216,20 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         }
     }
 
-    @After
-    public void close(){
-        try{
-            if(sourceCoverage!=null){
-                scheduleForCleaning(sourceCoverage);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Before
-    public void setup() throws Exception{
-        // check we can read it as a TIFF and it is similare to the origina one
+    protected void checkFullCapabilitiesDocument(Document dom) throws Exception {
+        checkValidationErrors(dom, WCS20_SCHEMA);
         
-        sourceCoverage = (GridCoverage2D) this.getCatalog().getCoverageByName("BlueMarble")
-                .getGridCoverageReader(null, null).read(null);
-    
+        // todo: check all the layers are here, the profiles, and so on
+        
+        // check that we have the crs extension
+        assertXpathEvaluatesTo("1", "count(//ows:ServiceIdentification[ows:Profile='http://www.opengis.net/spec/WCS_service-extension_crs/1.0/conf/crs'])", dom);
+        assertXpathEvaluatesTo("1", "count(//wcs:ServiceMetadata/wcs:Extension[wcscrs:crsSupported = 'http://www.opengis.net/def/crs/EPSG/0/4326'])", dom);
+        
+        // check the interpolation extension
+        assertXpathEvaluatesTo("1", "count(//ows:ServiceIdentification[ows:Profile='http://www.opengis.net/spec/WCS_service-extension_interpolation/1.0/conf/interpolation'])", dom);
+        assertXpathEvaluatesTo("1", "count(//wcs:ServiceMetadata/wcs:Extension[int:interpolationSupported='http://www.opengis.net/def/interpolation/OGC/1/nearest-neighbor'])", dom);
+        assertXpathEvaluatesTo("1", "count(//wcs:ServiceMetadata/wcs:Extension[int:interpolationSupported='http://www.opengis.net/def/interpolation/OGC/1/linear'])", dom);
+        assertXpathEvaluatesTo("1", "count(//wcs:ServiceMetadata/wcs:Extension[int:interpolationSupported='http://www.opengis.net/def/interpolation/OGC/1/cubic'])", dom);
     }
 
     // TODO: re-enable when we have subsetting support in GetCoverage
@@ -251,7 +249,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
      * 
      * @return DOCUMENT ME!
      */
-    static IIOMetadataNode getTiffField(Node rootNode, final int tag) {
+    protected IIOMetadataNode getTiffField(Node rootNode, final int tag) {
         Node node = rootNode.getFirstChild();
         if (node != null){
             node = node.getFirstChild();
@@ -265,6 +263,11 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         return null;
     }
 
+    @Override
+    protected String getLogConfiguration() {
+        return "/DEFAULT_LOGGING.properties";
+    }
+
     /**
      * Compares the envelopes of two coverages for equality using the smallest
      * scale factor of their "grid to world" transform as the tolerance.
@@ -272,14 +275,14 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
      * @param expected The coverage having the expected envelope.
      * @param actual   The coverage having the actual envelope.
      */
-    static void assertEnvelopeEquals(Coverage expected, Coverage actual) {
+    protected static void assertEnvelopeEquals(Coverage expected, Coverage actual) {
         final double scaleA = getScale(expected);
         final double scaleB = getScale(actual);
     
         assertEnvelopeEquals((GeneralEnvelope)expected.getEnvelope(),scaleA,(GeneralEnvelope)actual.getEnvelope(),scaleB);
     }
 
-    static void assertEnvelopeEquals(GeneralEnvelope expected,double scaleExpected, GeneralEnvelope actual,double scaleActual) {
+    protected static void assertEnvelopeEquals(GeneralEnvelope expected,double scaleExpected, GeneralEnvelope actual,double scaleActual) {
         final double tolerance;
         if (scaleExpected <= scaleActual) {
             tolerance = scaleExpected*1E-1;
@@ -300,7 +303,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
      * @return The "grid to CRS" affine transform of the given coverage, or {@code null}
      *         if none or if the transform is not affine.
      */
-    static AffineTransform getAffineTransform(final Coverage coverage) {
+    protected static AffineTransform getAffineTransform(final Coverage coverage) {
         if (coverage instanceof GridCoverage) {
             final GridGeometry geometry = ((GridCoverage) coverage).getGridGeometry();
             if (geometry != null) {
@@ -324,7 +327,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
      * @param  coverage The coverage for which to get the "grid to CRS" scale, or {@code null}.
      * @return The "grid to CRS" scale, or {@code NaN} if none or if the transform is not affine.
      */
-    static double getScale(final Coverage coverage) {
+    protected static double getScale(final Coverage coverage) {
         final AffineTransform gridToCRS = getAffineTransform(coverage);
         return (gridToCRS != null) ? XAffineTransform.getScale(gridToCRS) : Double.NaN;
     }

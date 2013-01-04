@@ -6,6 +6,7 @@ package org.geoserver.gwc.web.diskquota;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
@@ -18,15 +19,17 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.gwc.GWC;
+import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geotools.image.io.ImageIOExt;
 import org.geowebcache.diskquota.DiskQuotaConfig;
+import org.geowebcache.diskquota.jdbc.JDBCConfiguration;
 import org.geowebcache.diskquota.storage.StorageUnit;
 
 public class DiskQuotaSettingsPage extends GeoServerSecuredPage {
 
-    public DiskQuotaSettingsPage() {
+    public DiskQuotaSettingsPage() throws Exception {
         GWC gwc = getGWC();
 
         final boolean diskQuotaModuleDisabled = gwc.getDiskQuotaConfig() == null;
@@ -34,10 +37,25 @@ public class DiskQuotaSettingsPage extends GeoServerSecuredPage {
         // use a dettached copy of dq config to support the tabbed pane
         final DiskQuotaConfig diskQuotaConfig;
         if (diskQuotaModuleDisabled) {
-            diskQuotaConfig = new DiskQuotaConfig();// fake
+            diskQuotaConfig = new DiskQuotaConfig(); // fake
             diskQuotaConfig.setDefaults();
         } else {
             diskQuotaConfig = gwc.getDiskQuotaConfig().clone();
+        }
+        
+        // same as above, but we don't need to create a copy of the JDBC quota config since
+        // that config is just used to instantiate the quota store, and then gets promptly discarted
+        final JDBCConfiguration jdbcQuotaConfiguration;
+        if(gwc.getJDBCDiskQuotaConfig() == null) {
+            jdbcQuotaConfiguration = new JDBCConfiguration();
+            JDBCConfiguration.ConnectionPoolConfiguration configuration = new JDBCConfiguration.ConnectionPoolConfiguration();
+            configuration.setMinConnections(1);
+            configuration.setMaxConnections(10);
+            configuration.setConnectionTimeout(10000);
+            configuration.setMaxOpenPreparedStatements(50);
+            jdbcQuotaConfiguration.setConnectionPool(configuration);
+        } else {
+            jdbcQuotaConfiguration = gwc.getJDBCDiskQuotaConfig();
         }
 
         final Form<Map<String, Serializable>> form;
@@ -45,9 +63,10 @@ public class DiskQuotaSettingsPage extends GeoServerSecuredPage {
         add(form);
 
         final IModel<DiskQuotaConfig> diskQuotaModel = new Model<DiskQuotaConfig>(diskQuotaConfig);
+        final IModel<JDBCConfiguration> jdbcQuotaModel = new Model<JDBCConfiguration>(jdbcQuotaConfiguration);
 
         final DiskQuotaConfigPanel diskQuotaConfigPanel = new DiskQuotaConfigPanel(
-                "diskQuotaPanel", diskQuotaModel);
+                "diskQuotaPanel", diskQuotaModel, jdbcQuotaModel);
         
         if (diskQuotaModuleDisabled) {
             diskQuotaConfigPanel.setEnabled(false);
@@ -79,8 +98,25 @@ public class DiskQuotaSettingsPage extends GeoServerSecuredPage {
                         return;
                     }
                     DiskQuotaConfig dqConfig = diskQuotaModel.getObject();
+                    JDBCConfiguration jdbcConfig = jdbcQuotaModel.getObject();
+                    if(dqConfig.getQuotaStore() != null && dqConfig.getQuotaStore().equals("JDBC")) {
+                        try {
+                            gwc.testQuotaConfiguration(jdbcConfig);
+                        } catch(Exception e) {
+                            LOGGER.log(Level.SEVERE, "Error instantiating the JDBC configuration", e);
+                            error("Failure occurred while saving the JDBC configuration" 
+                                    + e.getMessage() + " (see the logs for a full stack trace)");
+                        }
+                    }
+                    
                     dqConfig.getGlobalQuota().setValue(chosenQuota.doubleValue(), chosenUnit);
-                    gwc.saveDiskQuotaConfig(dqConfig);
+                    try {
+                        gwc.saveDiskQuotaConfig(dqConfig, jdbcConfig);
+                    } catch(Exception e) {
+                        LOGGER.log(Level.SEVERE, "Failed to save the JDBC configuration", e);
+                        error("Failure occurred while saving the JDBC configuration" 
+                                + e.getMessage() + " (see the logs for a full stack trace)");
+                    }
                 }
 
                 doReturn();

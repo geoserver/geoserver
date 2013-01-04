@@ -8,10 +8,8 @@
     <constructor-arg ref="gwcAppCtx" />
     <constructor-arg ref="gwcTLDispatcher" />
   </bean>
-  
-  <bean id="gsDefaultQuotaStoreInitializer" class="org.geoserver.gwc.DefaultQuotaStoreInitializer"/>
 
-  <bean id="DiskQuotaStoreProvider" class="org.geowebcache.diskquota.QuotaStoreProvider" depends-on="gsDefaultQuotaStoreInitializer">
+  <bean id="DiskQuotaStoreProvider" class="org.geoserver.gwc.ConfigurableQuotaStoreProvider">
       <constructor-arg ref="DiskQuotaConfigLoader" />
   </bean>
 
@@ -59,5 +57,10 @@
   </bean>
 
   <bean id="jdbcQuotaStoreFactory" class="org.geowebcache.diskquota.jdbc.JDBCQuotaStoreFactory"/>
+  
+    <!-- The SQL dialects -->
+  <bean id="H2QuotaDialect" class="org.geowebcache.diskquota.jdbc.H2Dialect"/>
+  <bean id="PostgreSQLQuotaDialect" class="org.geowebcache.diskquota.jdbc.PostgreSQLDialect"/>
+  <bean id="OracleQuotaDialect" class="org.geowebcache.diskquota.jdbc.OracleDialect"/>
   
 </beans>

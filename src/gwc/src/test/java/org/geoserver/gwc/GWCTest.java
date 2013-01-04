@@ -78,6 +78,7 @@ import org.geowebcache.mime.MimeType;
 import org.geowebcache.seed.GWCTask;
 import org.geowebcache.seed.TileBreeder;
 import org.geowebcache.service.Service;
+import org.geowebcache.storage.DefaultStorageFinder;
 import org.geowebcache.storage.StorageBroker;
 import org.geowebcache.storage.StorageException;
 import org.junit.After;
@@ -142,6 +143,8 @@ public class GWCTest {
 
     GeoServerTileLayer tileLayerGroup;
 
+    private DefaultStorageFinder storageFinder;
+
     @Before
     public void setUp() throws Exception {
         catalog = mock(Catalog.class);
@@ -172,9 +175,11 @@ public class GWCTest {
         diskQuotaMonitor = mock(DiskQuotaMonitor.class);
         when(diskQuotaMonitor.getQuotaStore()).thenReturn(quotaStore);
         owsDispatcher = mock(Dispatcher.class);
+        
+        storageFinder = mock(DefaultStorageFinder.class);
 
         mediator = new GWC(gwcConfigPersister, storageBroker, tld, gridSetBroker, tileBreeder,
-                diskQuotaMonitor, owsDispatcher, catalog);
+                diskQuotaMonitor, owsDispatcher, catalog, storageFinder);
 
         GWC.set(mediator);
     }

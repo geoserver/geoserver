@@ -457,7 +457,7 @@ DescribeStoredQueries
 A **DescribeStoredQuery** operation returns detailed metadata about each stored query maintained by the WFS server. A description of an individual query may be requested by providing the ID of the specific query. If no ID is provided, all queries are described.
 
 
-This example describes the exsting stored query with an ID of ``urn:ogc:def:query:OGC-WFS::GetFeatureById`` 
+This example describes the exsting stored query with an ID of ``urn:ogc:def:query:OGC-WFS::GetFeatureById``::
 
   http://example.com/geoserver/wfs?
     request=DescribeStoredQueries&

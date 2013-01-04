@@ -6,6 +6,8 @@ package org.geoserver.catalog.rest;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -13,6 +15,7 @@ import java.util.logging.Level;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.rest.RestletException;
 import org.geoserver.rest.format.MediaTypes;
+import org.geoserver.rest.util.IOUtils;
 import org.geoserver.rest.util.RESTUtils;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -83,10 +86,24 @@ public class FreemarkerTemplateResource extends StoreFileResource {
                 LOGGER.info("PUT file: mimetype=" + mediaType + ", path=" + directory.getAbsolutePath());
             }
             
-            return RESTUtils.handleBinUpload(getAttribute("template") + "." + MEDIATYPE_FTL_EXTENSION, directory, getRequest());
+            return handleBinUpload(getAttribute("template") + "." + MEDIATYPE_FTL_EXTENSION, directory, getRequest());
         } catch (IOException e) {
             throw new RestletException(e.getMessage(), Status.SERVER_ERROR_INTERNAL, e);
         }
+    }
+    
+    private File handleBinUpload(String fileName, File directory, Request request) throws IOException {
+        final File newFile = new File(directory, fileName);
+        if (newFile.exists()) {
+            newFile.delete();
+        }
+
+        final ReadableByteChannel source = request.getEntity().getChannel();
+        final FileChannel outputChannel = IOUtils.getOuputChannel(newFile);
+        IOUtils.copyChannel(1024 * 1024, source, outputChannel);
+        IOUtils.closeQuietly(source);
+        IOUtils.closeQuietly(outputChannel);
+        return newFile;
     }
     
     private File getTemplateFile() {

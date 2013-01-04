@@ -11,6 +11,8 @@ import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
 import org.geoserver.catalog.rest.CatalogRESTTestSupport;
+import org.geoserver.config.CoverageAccessInfo.QueueType;
+import org.geoserver.config.GeoServerInfo;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -21,6 +23,13 @@ public class GlobalSettingsTest extends CatalogRESTTestSupport {
 
     @Before
     public void revertSettings() {
+        GeoServerInfo global = getGeoServer().getGlobal();       
+        global.getJAI().setAllowInterpolation(false);
+        global.getJAI().setMemoryThreshold(0.75d);
+        global.getJAI().setTilePriority(5);
+        global.getCoverageAccess().setQueueType(QueueType.UNBOUNDED);
+        getGeoServer().save(global);
+        
         revertSettings(null);
     }
     

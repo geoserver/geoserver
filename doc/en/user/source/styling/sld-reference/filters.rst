@@ -4,9 +4,10 @@ Filters
 =======
 
 A *filter* is the mechanism in SLD for specifying conditions. 
-Similar in nature to a "WHERE" clause in SQL, 
-filters are used within :ref:`sld_reference_rules` to determine which styles should be applied to which features in a data set.
+They are similar in functionality to the SQL "WHERE" clause.
+Filters are used within :ref:`sld_reference_rules` to determine which styles should be applied to which features in a data set.
 The filter language used by SLD follows the `OGC Filter Encoding standard <http://www.opengeospatial.org/standards/filter>`_.
+It is described in detail in the :ref:`filter_fe_reference`.
 
 A filter condition is specified by using a **comparison operator** or a **spatial operator**,
 or two or more of these combined by **logical operators**.
@@ -204,7 +205,7 @@ Examples
 
 Filter Expressions
 ------------------
-
+ 
 Filter expressions allow performing computation on data values.
 The following elements can be used to form expressions.
 

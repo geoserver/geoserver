@@ -4,9 +4,9 @@
  */
 package org.geoserver.inspire.web;
 
-import static org.geoserver.inspire.wms.InspireMetadata.LANGUAGE;
-import static org.geoserver.inspire.wms.InspireMetadata.SERVICE_METADATA_TYPE;
-import static org.geoserver.inspire.wms.InspireMetadata.SERVICE_METADATA_URL;
+import static org.geoserver.inspire.InspireMetadata.LANGUAGE;
+import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_TYPE;
+import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_URL;
 
 import java.util.ArrayList;
 import java.util.HashMap;

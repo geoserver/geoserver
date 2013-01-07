@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.inspire.wms;
+package org.geoserver.inspire;
 
 public enum InspireMetadata {
     LANGUAGE("inspire.language"), SERVICE_METADATA_URL("inspire.metadataURL"), SERVICE_METADATA_TYPE(

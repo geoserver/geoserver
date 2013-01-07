@@ -8,6 +8,8 @@ import static org.geoserver.inspire.wms.WMSExtendedCapabilitiesProvider.NAMESPAC
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import org.geoserver.inspire.InspireMetadata;
+import org.geoserver.test.GeoServerTestSupport;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wms.WMSInfo;
 import org.junit.Test;

@@ -83,7 +83,7 @@ public class FreemarkerTemplateResource extends StoreFileResource {
                 LOGGER.info("PUT file: mimetype=" + mediaType + ", path=" + directory.getAbsolutePath());
             }
             
-            return RESTUtils.handleBinUpload(getAttribute("template") + "." + MEDIATYPE_FTL_EXTENSION, directory, getRequest());
+            return RESTUtils.handleBinUpload(getAttribute("template") + "." + MEDIATYPE_FTL_EXTENSION, directory, false, getRequest());
         } catch (IOException e) {
             throw new RestletException(e.getMessage(), Status.SERVER_ERROR_INTERNAL, e);
         }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org.  All rights reserved.
+/* Copyright (c) 2001 - 2013 TOPP - www.openplans.org.  All rights reserved.
  * This code is licensed under the GPL 2.0 license, availible at the root
  * application directory.
  */
@@ -84,9 +84,12 @@ public class RESTUtils {
         final File dir = GeoserverDataDirectory.findCreateConfigDir("data");
         return handleBinUpload( datasetName + "." + extension, dir, request );
     }
-    
+
     /**
-     * Reads content from the body of a request and writes it to a file.
+     * Reads content from the body of a request and writes it to a file in the given directory.
+     * 
+     * If the file already exists, the directory content will be deleted recursively 
+     * before creating the new file.
      * 
      * @param fileName The name of the file to write out.
      * @param directory The directory to write the file to.
@@ -96,13 +99,32 @@ public class RESTUtils {
      * 
      * @throws IOException Any I/O errors that occur.
      * 
+     * @deprecated use {@link #handleBinUpload(String, File, boolean, Request)}.
+     */
+    public static File handleBinUpload(String fileName, File directory, Request request)
+            throws IOException {
+        return handleBinUpload(fileName, directory, true, request);
+    }
+    
+    /**
+     * Reads content from the body of a request and writes it to a file.
+     * 
+     * @param fileName The name of the file to write out.
+     * @param directory The directory to write the file to.
+     * @param deleteDirectoryContent Delete directory content if the file already exists.
+     * @param request The request.
+     * 
+     * @return The file object representing the newly written file.
+     * 
+     * @throws IOException Any I/O errors that occur.
+     * 
      * TODO: move this to IOUtils.
      */
-    public static File handleBinUpload(String fileName, File directory, Request request ) 
+    public static File handleBinUpload(String fileName, File directory, boolean deleteDirectoryContent, Request request) 
         throws IOException {
         
         final File newFile = new File(directory, fileName);
-        if (newFile.exists()) {
+        if (deleteDirectoryContent && newFile.exists()) {
         	FileUtils.cleanDirectory(directory);
         }
         

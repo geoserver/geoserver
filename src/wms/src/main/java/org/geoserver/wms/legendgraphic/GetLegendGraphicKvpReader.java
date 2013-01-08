@@ -151,6 +151,9 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
             } catch (Exception te) {
                 throw new ServiceException("Can't obtain the schema for the required layer.", te);
             }
+        } else {
+            layers.add(null);
+            request.setLayers(layers);
         }
 
         if (request.getFormat() == null) {
@@ -334,8 +337,13 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                 sldStyles.add(getStyleFromLayer((LayerInfo)infoObj));
             } else if(infoObj instanceof LayerGroupInfo) {
                 LayerGroupInfo layerGroupInfo=(LayerGroupInfo)infoObj;
-                for(LayerInfo layerInfo : layerGroupInfo.getLayers()) {
-                    sldStyles.add(getStyleFromLayer(layerInfo));
+                for(int count=0;count<layerGroupInfo.getLayers().size();count++) {
+                    if(count<layerGroupInfo.getStyles().size() && layerGroupInfo.getStyles().get(count) != null) {
+                        sldStyles.add(layerGroupInfo.getStyles().get(count).getStyle());
+                    } else {
+                        LayerInfo layerInfo = layerGroupInfo.getLayers().get(count);
+                        sldStyles.add(getStyleFromLayer(layerInfo));
+                    }
                 }
             }
         }

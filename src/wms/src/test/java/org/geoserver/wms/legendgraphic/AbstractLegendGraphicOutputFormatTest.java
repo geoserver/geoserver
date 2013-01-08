@@ -5,19 +5,17 @@
 package org.geoserver.wms.legendgraphic;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
-import javax.imageio.ImageIO;
 import javax.media.jai.PlanarImage;
 import javax.xml.namespace.QName;
 
@@ -262,6 +260,61 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         assertPixel(image, 10, 90+titleHeight*2, new Color(0,0,0));
         
         assertPixel(image, 10, 110+titleHeight*2, new Color(224,64,0));
+        
+    }
+    
+    /**
+     * Tests that with forceTitles option off no title is rendered
+     */
+    @org.junit.Test
+    public void testForceTitlesOff() throws Exception {        
+        
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+        Map<String,String> options = new HashMap<String,String>();
+        options.put("forceTitles", "off");
+        req.setLegendOptions(options);
+        FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName(
+                MockData.ROAD_SEGMENTS.getNamespaceURI(), MockData.ROAD_SEGMENTS.getLocalPart());
+        List<FeatureType> layers=new ArrayList<FeatureType>();
+        layers.add(ftInfo.getFeatureType());
+        
+        req.setLayers(layers);
+        Style style = getCatalog().getStyleByName(
+                MockData.ROAD_SEGMENTS.getLocalPart()).getStyle();
+        req.setStyle(style);
+        
+        this.legendProducer.buildLegendGraphic(req);
+
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+
+        // was the legend painted?
+        assertNotBlank("testMultipleLayers", image, LegendUtils.DEFAULT_BG_COLOR);
+        int height=image.getHeight();
+        
+        layers.add(ftInfo.getFeatureType());
+        this.legendProducer.buildLegendGraphic(req);
+
+        image = this.legendProducer.buildLegendGraphic(req);        
+        
+        // was the legend painted?
+        assertNotBlank("testForceTitlesOff", image, LegendUtils.DEFAULT_BG_COLOR);
+        
+        
+        assertEquals(2*height,image.getHeight());
+                
+        // first layer
+        assertPixel(image, 10, 10, new Color(192,160,0));
+        
+        assertPixel(image, 10, 30, new Color(0,0,0));
+        
+        assertPixel(image, 10, 50, new Color(224,64,0));
+                
+        // same colors for the second layer
+        assertPixel(image, 10, 70, new Color(192,160,0));
+        
+        assertPixel(image, 10, 90, new Color(0,0,0));
+        
+        assertPixel(image, 10, 110, new Color(224,64,0));
         
     }
     

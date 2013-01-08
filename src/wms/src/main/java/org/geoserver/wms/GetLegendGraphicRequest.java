@@ -269,6 +269,9 @@ public class GetLegendGraphicRequest extends WMSRequest {
      * rendering. Anything of the following works: "yes", "true", "1". Anything else means false.
      * <li><code>forceLabels</code>: "on" means labels will always be drawn, even if only one rule
      * is available. "off" means labels will never be drawn, even if multiple rules are available.
+     * <li><code>forceTitles</code>: "on" means layer titles for layergroups will always be drawn, 
+     * even if only one layer is available. "off" means titles will never be drawn, even if multiple
+     * layers are available.
      * </ul>
      * </p>
      * 

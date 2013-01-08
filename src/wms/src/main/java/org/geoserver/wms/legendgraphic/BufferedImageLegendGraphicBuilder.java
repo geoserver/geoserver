@@ -159,6 +159,16 @@ public class BufferedImageLegendGraphicBuilder {
             }
         }
         
+        boolean forceTitlesOn = false;
+        boolean forceTitlesOff = false;
+        if (request.getLegendOptions().get("forceTitles") instanceof String) {
+            String forceTitlesOpt = (String) request.getLegendOptions().get("forceTitles");
+            if (forceTitlesOpt.equalsIgnoreCase("on")) {
+                forceTitlesOn = true;
+            } else if (forceTitlesOpt.equalsIgnoreCase("off")) {
+                forceTitlesOff = true;
+            }
+        }
         
         for(int pos=0; pos<layers.size();pos++) {
             // current layer
@@ -218,10 +228,10 @@ public class BufferedImageLegendGraphicBuilder {
             boolean strict = request.isStrict();
             
             final boolean transparent = request.isTransparent();
-            
+            RenderedImage titleImage=null;
             // if we have more than one layer, we put a title on top of each layer legend
-            if(layers.size() > 1 && !forceLabelsOff) {
-                layersImages.add(getLayerTitle(layer,  w, h, transparent, request));
+            if(layers.size() > 1 && !forceTitlesOff) {
+                titleImage=getLayerTitle(layer,  w, h, transparent, request);
             }
             
             final boolean buildRasterLegend = (!strict && layer == null && LegendUtils
@@ -229,6 +239,9 @@ public class BufferedImageLegendGraphicBuilder {
             if (buildRasterLegend) {
                 final RasterLayerLegendHelper rasterLegendHelper = new RasterLayerLegendHelper(request,gt2Style,ruleName);
                 final BufferedImage image = rasterLegendHelper.getLegend();
+                if(image != null && titleImage != null) {
+                    layersImages.add(titleImage);
+                }
                 layersImages.add(image);
             } else {
                 
@@ -296,7 +309,10 @@ public class BufferedImageLegendGraphicBuilder {
                             }
                         }
                     }
-                    
+                    if(image != null && titleImage != null) {
+                        layersImages.add(titleImage);
+                        titleImage = null;
+                    }
                     legendsStack.add(image);
                     graphics.dispose();
                 }
@@ -305,12 +321,18 @@ public class BufferedImageLegendGraphicBuilder {
                 // this.legendGraphic = scaleImage(mergeLegends(legendsStack), request);
                 BufferedImage image = mergeLegends(legendsStack, applicableRules, request, 
                         forceLabelsOn, forceLabelsOff);
-                layersImages.add(image);
+                if(image != null) {
+                    layersImages.add(image);
+                }
             }
             
         }
         // all legend graphics are merged if we have a layer group
-        return mergeLegends(layersImages,null,request, forceLabelsOn, forceLabelsOff);
+        BufferedImage finalLegend = mergeLegends(layersImages,null,request, forceLabelsOn, forceLabelsOff);
+        if(finalLegend == null) {
+            throw new IllegalArgumentException("no legend passed");
+        }
+        return finalLegend;
     }
     
     /**
@@ -394,7 +416,7 @@ public class BufferedImageLegendGraphicBuilder {
         
 
         if (imageStack.size() == 0) {
-            throw new IllegalArgumentException("No legend graphics passed");
+            return null;
         }
 
         final BufferedImage finalLegend;

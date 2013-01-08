@@ -6,7 +6,6 @@ package org.geoserver.wcs2_0.response;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.measure.unit.Unit;
@@ -16,9 +15,7 @@ import net.opengis.wcs20.DescribeCoverageType;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
@@ -27,28 +24,17 @@ import org.geoserver.wcs2_0.WCS20Const;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
 import org.geoserver.wcs2_0.util.NCNameResourceCodec;
+import org.geoserver.wcs2_0.util.RequestUtils;
 import org.geoserver.wcs2_0.util.StringUtils;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.coverage.grid.GridEnvelope2D;
-import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
-import org.geotools.coverage.grid.io.AbstractGridFormat;
-import org.geotools.factory.GeoTools;
-import org.geotools.gce.imagemosaic.ImageMosaicFormat;
-import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.transform.Translator;
 import org.opengis.coverage.SampleDimension;
-import org.opengis.coverage.grid.Format;
-import org.opengis.coverage.grid.GridEnvelope;
-import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.datum.PixelInCell;
-import org.opengis.referencing.operation.MathTransform;
 import org.vfny.geoserver.wcs.WcsException;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
@@ -139,8 +125,7 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
                 try {
                     handleCoverageDescription(ci);
                 } catch (Exception e) {
-                    throw new RuntimeException(
-                            "Unexpected error occurred during describe coverage xml encoding", e);
+                    throw new RuntimeException("Unexpected error occurred during describe coverage xml encoding", e);
                 }
             }
             end("wcs:CoverageDescriptions");
@@ -155,7 +140,7 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
             // read a small portion of the underlying coverage
             GridCoverage2D gc2d = null;
             try {
-                gc2d = readSampleGridCoverage(ci);
+                gc2d = RequestUtils.readSampleGridCoverage(ci);
                 if (gc2d == null) {
                     throw new WCS20Exception("Unable to read sample coverage for " + ci.getName());
                 }
@@ -230,71 +215,9 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
             }
         }
 
-        /**
-         * @param ci
-         * @return
-         */
-        private GridCoverage2D readSampleGridCoverage(CoverageInfo ci)throws Exception {
-            
-            // get a reader for this coverage
-            final CoverageStoreInfo store = (CoverageStoreInfo) ci.getStore();
-            final AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) catalog
-                    .getResourcePool().getGridCoverageReader(store, GeoTools.getDefaultHints());
-
-            if (reader == null)
-                throw new Exception("Unable to acquire a reader for this coverage with format: "
-                        + store.getFormat().getName());
-
-            // /////////////////////////////////////////////////////////////////////
-            //
-            // Now reading a fake small GridCoverage just to retrieve meta
-            // information about bands:
-            //
-            // - calculating a new envelope which is just 5x5 pixels
-            // - if it's a mosaic, limit the number of tiles we're going to read to one 
-            //   (with time and elevation there might be hundreds of superimposed tiles)
-            // - reading the GridCoverage subset
-            //
-            // /////////////////////////////////////////////////////////////////////
-
-            final GeneralEnvelope originalEnvelope = reader.getOriginalEnvelope();
-            final GridEnvelope originalRange = reader.getOriginalGridRange();            
-            final Format coverageFormat = reader.getFormat();
-            final GridCoverage2D gc;
-
-            final ParameterValueGroup readParams = coverageFormat.getReadParameters();
-            final Map parameters = CoverageUtils.getParametersKVP(readParams);
-            final int minX = originalRange.getLow(0);
-            final int minY = originalRange.getLow(1);
-            final int width = originalRange.getSpan(0);
-            final int height = originalRange.getSpan(1);
-            final int maxX = minX + (width <= 5 ? width : 5);
-            final int maxY = minY + (height <= 5 ? height : 5);
-
-            // we have to be sure that we are working against a valid grid range.
-            final GridEnvelope2D testRange = new GridEnvelope2D(minX, minY, maxX, maxY);
-
-            // build the corresponding envelope
-            final MathTransform gridToWorldCorner = reader.getOriginalGridToWorld(PixelInCell.CELL_CORNER);
-            final GeneralEnvelope testEnvelope = CRS.transform(gridToWorldCorner, new GeneralEnvelope(testRange.getBounds()));
-            testEnvelope.setCoordinateReferenceSystem(originalEnvelope.getCoordinateReferenceSystem());
-
-            
-            // make sure mosaics with many superimposed tiles won't blow up with 
-            // a "too many open files" exception
-            String maxAllowedTiles = ImageMosaicFormat.MAX_ALLOWED_TILES.getName().toString();
-            if(parameters.keySet().contains(maxAllowedTiles)) {
-                parameters.put(maxAllowedTiles, 1);
-            }
-            parameters.put(AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString(), new GridGeometry2D(testRange, testEnvelope));
-
-            // try to read this coverage
-            return (GridCoverage2D) reader.read(CoverageUtils.getParameters(readParams, parameters, true));          
-        }
-
         private void handleServiceParameters(CoverageInfo ci) {
             start("wcs:ServiceParameters");
-            element("wcs:CoverageSubtype", "GridCoverage");
+            element("wcs:CoverageSubtype", "RectifiedGridCoverage");
             element("wcs:nativeFormat", ci.getNativeFormat());
             end("wcs:ServiceParameters");
         }

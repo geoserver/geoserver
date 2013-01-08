@@ -9,30 +9,44 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.media.jai.Interpolation;
 
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.platform.OWS20Exception;
 import org.geoserver.platform.ServiceException;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.factory.GeoTools;
 import org.geotools.factory.Hints;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
+import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.parameter.Parameter;
+import org.geotools.referencing.CRS;
+import org.geotools.util.DefaultProgressListener;
 import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
+import org.opengis.coverage.grid.Format;
+import org.opengis.coverage.grid.GridCoverageReader;
+import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.coverage.grid.GridGeometry;
 import org.opengis.geometry.BoundingBox;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.parameter.ParameterValue;
+import org.opengis.parameter.ParameterValueGroup;
+import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
 
 
@@ -264,5 +278,66 @@ public class RequestUtils {
         pv.setValue(value);
         readParametersClone[readParameters.length] = pv;
         return readParametersClone;
+    }
+    
+    /**
+     * This utility method can be used to read a small sample {@link GridCoverage2D} for inspection 
+     * from the specified {@link CoverageInfo}.
+     * 
+     * @param ci the {@link CoverageInfo} that contains the description of the GeoServer coverage to read from.
+     * @return
+     */
+    static public GridCoverage2D readSampleGridCoverage(CoverageInfo ci)throws Exception {
+        
+        // get a reader for this coverage
+        final CoverageStoreInfo store = (CoverageStoreInfo) ci.getStore();
+        final GridCoverageReader reader_ = ci.getGridCoverageReader(new DefaultProgressListener(), GeoTools.getDefaultHints());
+        if (reader_ == null)
+            throw new Exception("Unable to acquire a reader for this coverage with format: "
+                    + store.getFormat().getName());
+        final AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) reader_;
+        
+        //
+        // Now reading a fake small GridCoverage just to retrieve meta
+        // information about bands:
+        //
+        // - calculating a new envelope which is just 5x5 pixels
+        // - if it's a mosaic, limit the number of tiles we're going to read to one 
+        //   (with time and elevation there might be hundreds of superimposed tiles)
+        // - reading the GridCoverage subset
+        //
+
+        final GeneralEnvelope originalEnvelope = reader.getOriginalEnvelope();
+        final GridEnvelope originalRange = reader.getOriginalGridRange();            
+        final Format coverageFormat = reader.getFormat();
+
+        final ParameterValueGroup readParams = coverageFormat.getReadParameters();
+        final Map parameters = CoverageUtils.getParametersKVP(readParams);
+        final int minX = originalRange.getLow(0);
+        final int minY = originalRange.getLow(1);
+        final int width = originalRange.getSpan(0);
+        final int height = originalRange.getSpan(1);
+        final int maxX = minX + (width <= 5 ? width : 5);
+        final int maxY = minY + (height <= 5 ? height : 5);
+
+        // we have to be sure that we are working against a valid grid range.
+        final GridEnvelope2D testRange = new GridEnvelope2D(minX, minY, maxX, maxY);
+
+        // build the corresponding envelope
+        final MathTransform gridToWorldCorner = reader.getOriginalGridToWorld(PixelInCell.CELL_CORNER);
+        final GeneralEnvelope testEnvelope = CRS.transform(gridToWorldCorner, new GeneralEnvelope(testRange.getBounds()));
+        testEnvelope.setCoordinateReferenceSystem(originalEnvelope.getCoordinateReferenceSystem());
+
+        
+        // make sure mosaics with many superimposed tiles won't blow up with 
+        // a "too many open files" exception
+        String maxAllowedTiles = ImageMosaicFormat.MAX_ALLOWED_TILES.getName().toString();
+        if(parameters.keySet().contains(maxAllowedTiles)) {
+            parameters.put(maxAllowedTiles, 1);
+        }
+        parameters.put(AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString(), new GridGeometry2D(testRange, testEnvelope));
+
+        // try to read this coverage
+        return (GridCoverage2D) reader.read(CoverageUtils.getParameters(readParams, parameters, true));          
     }
 }

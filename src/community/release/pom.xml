@@ -49,6 +49,16 @@
      <version>${project.version}</version>
    </dependency>
    <dependency>
+     <groupId>org.geoserver.script</groupId>
+     <artifactId>script-js</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.script</groupId>
+     <artifactId>script-groovy</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>dbconfig</artifactId>
      <version>${project.version}</version>

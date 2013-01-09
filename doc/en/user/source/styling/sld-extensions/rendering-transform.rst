@@ -60,7 +60,7 @@ Usage
 -----
 
 Rendering Transformations are invoked by adding the ``<Transformation>`` element 
-to a ``<FeastureTypeStyle>`` element in an SLD document.
+to a ``<FeatureTypeStyle>`` element in an SLD document.
 This element specifies the name of the transformation process, 
 and usually includes parameter values controlling the operation of the transformation.
 

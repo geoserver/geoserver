@@ -72,6 +72,7 @@ import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.GeneralParameterValue;
+import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.parameter.ParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -801,8 +802,11 @@ public class WMS implements ApplicationContextAware {
         ReaderDimensionsAccessor dimensions = new ReaderDimensionsAccessor(reader);
         // pass down time
         final DimensionInfo timeInfo = metadata.get(ResourceInfo.TIME, DimensionInfo.class);
-        final List<GeneralParameterDescriptor> parameterDescriptors = readParametersDescriptor
-                .getDescriptor().descriptors();
+        // add the descriptors for custom dimensions 
+        final List<GeneralParameterDescriptor> parameterDescriptors = 
+                new ArrayList<GeneralParameterDescriptor>(readParametersDescriptor.getDescriptor().descriptors());
+        Set<ParameterDescriptor<List>> dynamicParameters = reader.getDynamicParameters();
+        parameterDescriptors.addAll(dynamicParameters);
         if (timeInfo != null && timeInfo.isEnabled()) {
             // handle "current"
             List<Object> fixedTimes = new ArrayList<Object>(times);
@@ -853,24 +857,54 @@ public class WMS implements ApplicationContextAware {
         
         // custom dimensions
         final Map<String, String> rawKvpMap = request.getRawKvp();
+        List<String> customDomains = new ArrayList(dimensions.getCustomDomains());
         if (rawKvpMap != null) {
             for (Map.Entry<String, String> kvp : rawKvpMap.entrySet()) {
                 String name = kvp.getKey();
                 if (name.regionMatches(true, 0, "dim_", 0, 4)) {
                     name = name.substring(4);
-                    final DimensionInfo customInfo = metadata.get(ResourceInfo.CUSTOM_DIMENSION_PREFIX + name,
-                            DimensionInfo.class);
-                    if (dimensions.hasDomain(name) && customInfo != null && customInfo.isEnabled()) {
-                        final ArrayList<String> val = new ArrayList<String>(1);
-                        val.add(kvp.getValue());
-                        readParameters = CoverageUtils.mergeParameter(
-                            parameterDescriptors, readParameters, val, name);
+                    name = caseInsensitiveLookup(customDomains, name);
+                    if(name != null) {
+                        // remove it so that we don't have to set the default value
+                        customDomains.remove(name);
+                        final DimensionInfo customInfo = metadata.get(ResourceInfo.CUSTOM_DIMENSION_PREFIX + name,
+                                DimensionInfo.class);
+                        if (dimensions.hasDomain(name) && customInfo != null && customInfo.isEnabled()) {
+                            final ArrayList<String> val = new ArrayList<String>(1);
+                            val.add(kvp.getValue());
+                            readParameters = CoverageUtils.mergeParameter(
+                                parameterDescriptors, readParameters, val, name);
+                        }
                     }
+                }
+            }
+        }
+        
+        // see if we have any custom domain for which we have to set the default value
+        if(!customDomains.isEmpty()) {
+            for (String name : customDomains) {
+                final DimensionInfo customInfo = metadata.get(ResourceInfo.CUSTOM_DIMENSION_PREFIX + name,
+                        DimensionInfo.class);
+                if (customInfo != null && customInfo.isEnabled()) {
+                    final ArrayList<String> val = new ArrayList<String>(1);
+                    val.add(dimensions.getCustomDomainDefaultValue(name));
+                    readParameters = CoverageUtils.mergeParameter(
+                        parameterDescriptors, readParameters, val, name);
                 }
             }
         }
 
         return readParameters;
+    }
+
+    private String caseInsensitiveLookup(List<String> names, String name) {
+        for (String s : names) {
+            if(name.equalsIgnoreCase(s)) {
+                return s;
+            }
+        }
+        
+        return null;
     }
 
     public Collection<RenderedImageMapResponse> getAvailableMapResponses() {

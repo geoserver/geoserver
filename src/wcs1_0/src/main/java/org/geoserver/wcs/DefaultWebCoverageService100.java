@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.media.jai.Interpolation;
@@ -64,6 +65,7 @@ import org.opengis.filter.Filter;
 import org.opengis.geometry.Envelope;
 import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.GeneralParameterValue;
+import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.parameter.ParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
@@ -307,8 +309,10 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
              * reading parameters. If it is the case, one can adds it to the request. If an
              * exception is thrown, we have nothing to do.
              */
-            final List<GeneralParameterDescriptor> parameterDescriptors = readParametersDescriptor
-                    .getDescriptor().descriptors();
+            final List<GeneralParameterDescriptor> parameterDescriptors = new ArrayList<GeneralParameterDescriptor>(
+                    readParametersDescriptor.getDescriptor().descriptors());
+            Set<ParameterDescriptor<List>> dynamicParameters = reader.getDynamicParameters();
+            parameterDescriptors.addAll(dynamicParameters);
 
             //
             // TIME
@@ -413,7 +417,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                                             .getSingleValue().get(s)).getValue());
                                 }
                                 readParameters = CoverageUtils.mergeParameter(parameterDescriptors,
-                                        readParameters, dimValues, axisName.toUpperCase());
+                                        readParameters, dimValues, axisName);
                             }
                         }
                     }

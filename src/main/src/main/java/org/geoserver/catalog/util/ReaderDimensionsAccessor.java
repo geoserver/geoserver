@@ -10,6 +10,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.logging.Logger;
 
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.util.logging.Logging;
+import org.opengis.parameter.ParameterDescriptor;
 
 /**
  * Centralizes the metadata extraction and parsing used to read dimension informations out of a
@@ -187,13 +189,30 @@ public class ReaderDimensionsAccessor {
      * @return
      */
     public List<String> getCustomDomains() {
-        Set<String> names = new HashSet<String>(Arrays.asList(reader.getMetadataNames()));
+        String[] nameArray = reader.getMetadataNames();
+        if(nameArray == null || nameArray.length == 0) {
+            return Collections.emptyList();
+        }
+        Set<String> names = new HashSet<String>(Arrays.asList(nameArray));
         TreeSet<String> result = new TreeSet<String>();
         for (String name : names) {
             if(name.startsWith("HAS_") && name.endsWith("_DOMAIN")) {
                 String dimension = name.substring(4, name.length() - 7);
-                if(names.contains(dimension + "_DOMAIN")) {
+                if(names.contains(dimension + "_DOMAIN") 
+                        && !"TIME".equals(dimension) && !"ELEVATION".equals(dimension)) {
                     result.add(dimension);
+                }
+            }
+        }
+        
+        // some readers can handle dynamic dimensions, and in that case
+        // the case of the dimension might not be the same (HAS_* is all uppercase)
+        if(reader.getDynamicParameters() != null) {
+            for (ParameterDescriptor<List> pv : reader.getDynamicParameters()) {
+                String code = pv.getName().getCode();
+                if(result.contains(code.toUpperCase())) {
+                    result.remove(code.toUpperCase());
+                    result.add(code);
                 }
             }
         }
@@ -212,12 +231,33 @@ public class ReaderDimensionsAccessor {
      * Returns the full set of values for the given dimension
      */
     public TreeSet<String> getDomain(String name) {
-        String[] values = reader.getMetadataValue(name + "_DOMAIN").split(",");
+        String[] values = reader.getMetadataValue(name.toUpperCase() + "_DOMAIN").split(",");
         TreeSet<String> valueSet = new TreeSet<String>();
         for (String val : values) {
             valueSet.add(val);
         }
         return valueSet;
+    }
+    
+    /**
+     * Extracts the custom domain lowest value (using String sorting)
+     * @return
+     */
+    public String getCustomDomainDefaultValue(String name) {
+        // see if we have an optimize way to get the minimum
+        String minimum = reader.getMetadataValue(name.toUpperCase() + "_MINIMUM");
+        if(minimum != null) {
+            return minimum;
+        }
+        
+        // ok, get the full domain then
+        TreeSet<String> domain = getDomain(name);
+        if(domain.isEmpty()) {
+            return null;
+        } else {
+            return domain.first();
+        }
+        
     }
 
     /**

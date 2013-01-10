@@ -16,7 +16,6 @@ import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
-import org.geoserver.catalog.testreader.CustomFormat;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wcs.test.CoverageTestSupport;
@@ -96,7 +95,7 @@ public class DynamicDimensionsTest extends CoverageTestSupport {
                 "  </rangeSubset>\n" + 
                 "  <output>\n" + 
                 "    <crs>EPSG:4326</crs>\n" + 
-                "    <format>GeoTIFF</format>\n" + 
+                "    <format>GEOTIFF</format>\n" + 
                 "  </output>\n" + 
                 "</GetCoverage>";
         return request;

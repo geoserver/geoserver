@@ -1,14 +1,17 @@
 package org.geoserver.wcs2_0;
 
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.media.jai.BorderExtender;
 import javax.media.jai.Interpolation;
 import javax.media.jai.InterpolationNearest;
 import javax.media.jai.JAI;
@@ -52,6 +55,7 @@ import org.geoserver.wcs2_0.exception.WCS20Exception.WCS20ExceptionCode;
 import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
 import org.geoserver.wcs2_0.util.NCNameResourceCodec;
 import org.geoserver.wcs2_0.util.RequestUtils;
+import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
@@ -59,11 +63,12 @@ import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.processing.CoverageProcessor;
-import org.geotools.coverage.processing.Operations;
 import org.geotools.factory.GeoTools;
 import org.geotools.factory.Hints;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.ReferencingFactoryFinder;
+import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.resources.coverage.CoverageUtilities;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
@@ -75,6 +80,7 @@ import org.opengis.geometry.Envelope;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CRSAuthorityFactory;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.PixelInCell;
 import org.vfny.geoserver.util.WCSUtils;
@@ -90,7 +96,7 @@ public class GetCoverage {
     /** Logger.*/
     private Logger LOGGER= Logging.getLogger(GetCoverage.class);
     
-    public enum InterpolationPolicy{
+    private enum InterpolationPolicy{
         linear("http://www.opengis.net/def/interpolation/OGC/1/linear") {
             @Override
             public Interpolation getInterpolation() {
@@ -168,7 +174,10 @@ public class GetCoverage {
         DoNothing{
 
             @Override
-            public GridCoverage2D scale(GridCoverage2D sourceGC, ScalingType scaling,Interpolation interpolation) {
+            public GridCoverage2D scale(GridCoverage2D sourceGC, ScalingType scaling,Interpolation interpolation,Hints hints) {
+                Utilities.ensureNonNull("sourceGC", sourceGC);
+                Utilities.ensureNonNull("ScalingType", scaling);
+                Utilities.ensureNonNull("Interpolation", interpolation);                
                 return sourceGC;
             }
             
@@ -176,7 +185,10 @@ public class GetCoverage {
         ScaleByFactor{
 
             @Override
-            public GridCoverage2D scale(GridCoverage2D sourceGC, ScalingType scaling,Interpolation interpolation) {
+            public GridCoverage2D scale(GridCoverage2D sourceGC, ScalingType scaling,Interpolation interpolation,Hints hints) {
+                Utilities.ensureNonNull("sourceGC", sourceGC);
+                Utilities.ensureNonNull("ScalingType", scaling);
+                
                 // get scale factor
                 final ScaleByFactorType scaleByFactorType = scaling.getScaleByFactor();
                 double scaleFactor=scaleByFactorType.getScaleFactor();
@@ -188,11 +200,32 @@ public class GetCoverage {
                 
                 // return coverage unchanged if we don't scale
                 if(scaleFactor==1){
-                    return sourceGC;
+                    // NO SCALING do we need interpolation?
+                    if(interpolation instanceof InterpolationNearest){
+                        return sourceGC;
+                    } else {
+                        // interpolate coverage if requested and not nearest!!!!         
+                        final Operation operation = CoverageProcessor.getInstance().getOperation("Warp");
+                        final ParameterValueGroup parameters = operation.getParameters();
+                        parameters.parameter("Source").setValue(sourceGC);
+                        parameters.parameter("warp").setValue(new WarpAffine(AffineTransform.getScaleInstance(1, 1)));//identity
+                        parameters.parameter("interpolation").setValue(interpolation);
+                        parameters.parameter( "backgroundValues").setValue(CoverageUtilities.getBackgroundValues(sourceGC));// TODO check and improve
+                        return (GridCoverage2D) CoverageProcessor.getInstance(hints).doOperation(parameters,hints);
+                    }      
                 }
                 
                 // checks
-                return (GridCoverage2D)Operations.DEFAULT.scale(sourceGC, scaleFactor, scaleFactor, 0, 0, interpolation!=null?interpolation:InterpolationPolicy.getDefaultPolicy().getInterpolation());
+                // scale
+                final Operation operation = CoverageProcessor.getInstance().getOperation("Scale");
+                final ParameterValueGroup parameters = operation.getParameters();
+                parameters.parameter("Source").setValue(sourceGC);
+                parameters.parameter("interpolation").setValue(interpolation!=null?interpolation:InterpolationPolicy.getDefaultPolicy().getInterpolation());
+                parameters.parameter( "xScale").setValue(scaleFactor);
+                parameters.parameter( "yScale").setValue(scaleFactor);
+                parameters.parameter( "xTrans").setValue(0.0);
+                parameters.parameter( "yTrans").setValue(0.0);
+                return (GridCoverage2D) CoverageProcessor.getInstance(hints).doOperation(parameters,hints);   
             }
             
         },
@@ -204,7 +237,7 @@ public class GetCoverage {
              * 
              */
             @Override
-            public GridCoverage2D scale(GridCoverage2D sourceGC, ScalingType scaling, Interpolation interpolation) {
+            public GridCoverage2D scale(GridCoverage2D sourceGC, ScalingType scaling, Interpolation interpolation,Hints hints) {
                 // get scale size
                 final ScaleToSizeType scaleType = scaling.getScaleToSize();
                 final EList<TargetAxisSizeType> targetAxisSizeElements = scaleType.getTargetAxisSize();
@@ -233,18 +266,30 @@ public class GetCoverage {
                 // unscale
                 final GridEnvelope2D sourceGE=sourceGC.getGridGeometry().getGridRange2D();
                 if(sizeY==sourceGE.width&& sizeX==sourceGE.height){
-                    return sourceGC;
+                    // NO SCALING do we need interpolation?
+                    if(interpolation instanceof InterpolationNearest){
+                        return sourceGC;
+                    } else {
+                        // interpolate coverage if requested and not nearest!!!!         
+                        final Operation operation = CoverageProcessor.getInstance().getOperation("Warp");
+                        final ParameterValueGroup parameters = operation.getParameters();
+                        parameters.parameter("Source").setValue(sourceGC);
+                        parameters.parameter("warp").setValue(new WarpAffine(AffineTransform.getScaleInstance(1, 1)));//identity
+                        parameters.parameter("interpolation").setValue(interpolation);
+                        parameters.parameter( "backgroundValues").setValue(CoverageUtilities.getBackgroundValues(sourceGC));// TODO check and improve
+                        return (GridCoverage2D) CoverageProcessor.getInstance().doOperation(parameters,hints);
+                    }                 
                 }
                 
                 // create final warp
-                final Warp warp= new  WarpAffine(AffineTransform.getScaleInstance(sourceGE.width/sizeX, sourceGE.height/sizeY));// TODO check
+                final Warp warp= new  WarpAffine(AffineTransform.getScaleInstance(sourceGE.width/sizeX, sourceGE.height/sizeY));
                 // impose final 
                 final ImageLayout2 layout = new ImageLayout2(
                         sourceGE.x,
                         sourceGE.y,
                         sizeX,
                         sizeY);
-                final Hints hints= new Hints(JAI.KEY_IMAGE_LAYOUT, layout);                
+                hints.add(new Hints(JAI.KEY_IMAGE_LAYOUT, layout));                
                 final Operation operation = CoverageProcessor.getInstance().getOperation("Warp");
                 final ParameterValueGroup parameters = operation.getParameters();
                 parameters.parameter("Source").setValue(sourceGC);
@@ -258,7 +303,10 @@ public class GetCoverage {
         ScaleToExtent{
 
             @Override
-            public GridCoverage2D scale(GridCoverage2D sourceGC, ScalingType scaling, Interpolation interpolation) {
+            public GridCoverage2D scale(GridCoverage2D sourceGC, ScalingType scaling, Interpolation interpolation,Hints hints) {
+                Utilities.ensureNonNull("sourceGC", sourceGC);
+                Utilities.ensureNonNull("ScalingType", scaling);
+                
                 // parse area
                 final ScaleToExtentType scaleType = scaling.getScaleToExtent();
                 final EList<TargetAxisExtentType> targetAxisExtentElements = scaleType.getTargetAxisExtent();
@@ -299,7 +347,19 @@ public class GetCoverage {
                 final Rectangle destinationRectangle= new Rectangle(minx, miny,maxx-minx+1, maxy-miny+1);
                 // UNSCALE
                 if(destinationRectangle.equals(sourceGE)){
-                    return sourceGC;
+                    // NO SCALING do we need interpolation?
+                    if(interpolation instanceof InterpolationNearest){
+                        return sourceGC;
+                    } else {
+                        // interpolate coverage if requested and not nearest!!!!         
+                        final Operation operation = CoverageProcessor.getInstance().getOperation("Warp");
+                        final ParameterValueGroup parameters = operation.getParameters();
+                        parameters.parameter("Source").setValue(sourceGC);
+                        parameters.parameter("warp").setValue(new WarpAffine(AffineTransform.getScaleInstance(1, 1)));//identity
+                        parameters.parameter("interpolation").setValue(interpolation);
+                        parameters.parameter( "backgroundValues").setValue(CoverageUtilities.getBackgroundValues(sourceGC));// TODO check and improve
+                        return (GridCoverage2D) CoverageProcessor.getInstance(hints).doOperation(parameters,hints);
+                    }      
                 }
                 
                 // create final warp
@@ -312,7 +372,7 @@ public class GetCoverage {
                         destinationRectangle.y,
                         destinationRectangle.width,
                         destinationRectangle.height);
-                final Hints hints= new Hints(JAI.KEY_IMAGE_LAYOUT, layout);
+                hints.add(new Hints(JAI.KEY_IMAGE_LAYOUT, layout));
                 
                 final Operation operation = CoverageProcessor.getInstance().getOperation("Warp");
                 final ParameterValueGroup parameters = operation.getParameters();
@@ -327,7 +387,10 @@ public class GetCoverage {
         ScaleAxesByFactor{
 
             @Override
-            public GridCoverage2D scale(GridCoverage2D sourceGC, ScalingType scaling,Interpolation interpolation) {
+            public GridCoverage2D scale(GridCoverage2D sourceGC, ScalingType scaling,Interpolation interpolation,Hints hints) {
+                Utilities.ensureNonNull("sourceGC", sourceGC);
+                Utilities.ensureNonNull("ScalingType", scaling);
+                
                 // TODO dimension management
                 
                 // get scale factor
@@ -364,22 +427,44 @@ public class GetCoverage {
                 
                 // unscale
                 if(scaleFactorX==1.0&& scaleFactorY==1.0){
-                    return sourceGC;
-                }
-                
-                return (GridCoverage2D) Operations.DEFAULT.scale(sourceGC, scaleFactorX, scaleFactorY, 0, 0,interpolation!=null?interpolation:InterpolationPolicy.getDefaultPolicy().getInterpolation());
+                    // NO SCALING do we need interpolation?
+                    if(interpolation instanceof InterpolationNearest){
+                        return sourceGC;
+                    } else {
+                        // interpolate coverage if requested and not nearest!!!!         
+                        final Operation operation = CoverageProcessor.getInstance().getOperation("Warp");
+                        final ParameterValueGroup parameters = operation.getParameters();
+                        parameters.parameter("Source").setValue(sourceGC);
+                        parameters.parameter("warp").setValue(new WarpAffine(AffineTransform.getScaleInstance(1, 1)));//identity
+                        parameters.parameter("interpolation").setValue(interpolation);
+                        parameters.parameter( "backgroundValues").setValue(CoverageUtilities.getBackgroundValues(sourceGC));// TODO check and improve
+                        return (GridCoverage2D) CoverageProcessor.getInstance(hints).doOperation(parameters,hints);
+                    }      
+                }  
+
+                // scale
+                final Operation operation = CoverageProcessor.getInstance().getOperation("Scale");
+                final ParameterValueGroup parameters = operation.getParameters();
+                parameters.parameter("Source").setValue(sourceGC);
+                parameters.parameter("interpolation").setValue(interpolation!=null?interpolation:InterpolationPolicy.getDefaultPolicy().getInterpolation());
+                parameters.parameter( "xScale").setValue(scaleFactorX);
+                parameters.parameter( "yScale").setValue(scaleFactorY);
+                parameters.parameter( "xTrans").setValue(0.0);
+                parameters.parameter( "yTrans").setValue(0.0);
+                return (GridCoverage2D) CoverageProcessor.getInstance(hints).doOperation(parameters,hints);         
             }
             
         };
         /**
-         * @param scaling 
-         * @param interpolation 
-         * @param sourceGG
-         * @param width 
-         * @param origin 
-         * @param returnValue
+         * Scale the provided {@link GridCoverage2D} according to the provided {@link ScalingType} and the provided {@link Interpolation} and {@link Hints}.
+         * 
+         * @param sourceGC the {@link GridCoverage2D} to scale.
+         * @param scaling the instance of {@link ScalingType} that contains he type of scaling to perform.
+         * @param interpolation the {@link Interpolation} to use. In case it is <code>null</code> we will use the {@link InterpolationPolicy} default value.
+         * @param hints {@link Hints} to use during this operation.
+         * @return a scaled version of the input {@link GridCoverage2D}. It cam be subsampled or oversampled, it depends on the {@link ScalingType} content.
          */
-        abstract public GridCoverage2D scale(GridCoverage2D sourceGC, ScalingType scaling, Interpolation interpolation) ;
+        abstract public GridCoverage2D scale(GridCoverage2D sourceGC, ScalingType scaling, Interpolation interpolation, Hints hints) ;
         
 
         public static ScalingPolicy getPolicy(ScalingType scaling) {
@@ -408,11 +493,24 @@ public class GetCoverage {
     
     /** Utility class to map envelope dimension*/
     private EnvelopeAxesLabelsMapper envelopeDimensionsMapper;
+    private CRSAuthorityFactory lonLatCRSFactory;
+    private CRSAuthorityFactory latLonCRSFactory;
+    public final static String SRS_STARTER="http://www.opengis.net/def/crs/EPSG/0/";
 
     public GetCoverage(WCSInfo serviceInfo, Catalog catalog, EnvelopeAxesLabelsMapper envelopeDimensionsMapper) {
         this.wcs = serviceInfo;
         this.catalog = catalog;
         this.envelopeDimensionsMapper=envelopeDimensionsMapper;
+        
+        Hints hints = GeoTools.getDefaultHints().clone();
+        hints.add(new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER,Boolean.TRUE));
+        hints.add(new Hints(Hints.FORCE_AXIS_ORDER_HONORING, "http-uri"));
+        lonLatCRSFactory = ReferencingFactoryFinder.getCRSAuthorityFactory("http://www.opengis.net/def", hints); 
+        
+        hints.add(new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER,Boolean.FALSE));
+        hints.add(new Hints(Hints.FORCE_AXIS_ORDER_HONORING, "http-uri"));
+        latLonCRSFactory = ReferencingFactoryFinder.getCRSAuthorityFactory("http://www.opengis.net/def", hints); 
+        
     }
 
     public GridCoverage run(GetCoverageType request) {
@@ -420,13 +518,13 @@ public class GetCoverage {
         //
         // get the coverage info from the catalog or throw an exception if we don't find it
         //
-        LayerInfo linfo = NCNameResourceCodec.getCoverage(catalog, request.getCoverageId());
+        final LayerInfo linfo = NCNameResourceCodec.getCoverage(catalog, request.getCoverageId());
         if(linfo == null) {
             throw new WCS20Exception("Could not locate coverage " + request.getCoverageId(), 
                     WCS20Exception.WCS20ExceptionCode.NoSuchCoverage, "coverageId");
         } 
         
-        CoverageInfo cinfo = (CoverageInfo) linfo.getResource();
+        final CoverageInfo cinfo = (CoverageInfo) linfo.getResource();
         GridCoverage2D coverage = null;
         try {
 
@@ -434,6 +532,8 @@ public class GetCoverage {
             // here I find if I can use overviews and do subsampling
             final Hints hints = GeoTools.getDefaultHints();
             hints.add(WCSUtils.getReaderHints(wcs));
+            hints.add(new RenderingHints(JAI.KEY_BORDER_EXTENDER,BorderExtender.createInstance(BorderExtender.BORDER_COPY)));
+//            hints.add(new RenderingHints(JAI.KEY_REPLACE_INDEX_COLOR_MODEL,Boolean.FALSE));// TODO
 
             // get a reader for this coverage
             final AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) cinfo.getGridCoverageReader(null, hints);
@@ -444,6 +544,7 @@ public class GetCoverage {
             // get CRS extension values
             final CoordinateReferenceSystem subsettingCRS=extractSubsettingCRS(reader,extensions);
             final CoordinateReferenceSystem outputCRS=extractOutputCRS(reader,extensions);
+            final boolean enforceLatLonAxesOrder=requestingLatLonAxesOrder(outputCRS);
             // extract subsetting
             final GeneralEnvelope subset=extractSubsettingEnvelope(reader,request,subsettingCRS);
             
@@ -468,10 +569,10 @@ public class GetCoverage {
             }
             
             // handle range subsetting
-            coverage=handleRangeSubsettingExtension(coverage,extensions);
+            coverage=handleRangeSubsettingExtension(coverage,extensions,hints);
             
             // subsetting, is not really an extension
-            coverage=handleSubsettingExtension(coverage,subset);
+            coverage=handleSubsettingExtension(coverage,subset,hints);
             
             // scaling extension
             //
@@ -479,12 +580,17 @@ public class GetCoverage {
             // TODO we should handle the case where higher order interpolation
             // is requested without a proper scaling by performing a scale by 1
             // with interpolation or something similar
-            coverage=handleScaling(coverage,extensions,spatialInterpolation);
+            coverage=handleScaling(coverage,extensions,spatialInterpolation,hints);
             
             // reprojection
             //
             // reproject the output coverage to an eventual outputCrs
-            coverage=handleReprojection(coverage,outputCRS,spatialInterpolation);
+            coverage=handleReprojection(coverage,outputCRS,spatialInterpolation,hints);
+            
+            // axes swap management
+            if(enforceLatLonAxesOrder){
+                coverage = enforceLatLongOrder(coverage, hints, outputCRS);
+            }
 
         } catch(Exception e) {
             throw new WCS20Exception("Failed to read the coverage " + request.getCoverageId(), e);
@@ -496,6 +602,70 @@ public class GetCoverage {
         }
         
         return coverage;
+    }
+
+    /**
+     * @param coverage
+     * @param hints
+     * @param outputCRS
+     * @return
+     * @throws Exception
+     */
+    private GridCoverage2D enforceLatLongOrder(GridCoverage2D coverage, final Hints hints,
+            final CoordinateReferenceSystem outputCRS) throws Exception {
+        final Integer epsgCode = CRS.lookupEpsgCode(outputCRS, false);
+        if(epsgCode!=null&& epsgCode>0){
+            // final CRS
+            CoordinateReferenceSystem finalCRS = latLonCRSFactory.createCoordinateReferenceSystem(SRS_STARTER+epsgCode);
+            if(CRS.getAxisOrder(outputCRS).equals(CRS.getAxisOrder(finalCRS))){
+                return coverage;
+            }
+            
+            // get g2w and swap axes
+            final AffineTransform g2w= new AffineTransform((AffineTransform2D) coverage.getGridGeometry().getGridToCRS2D());
+            g2w.preConcatenate(CoverageUtilities.AXES_SWAP);
+            
+            // rework the transformation
+            final GridGeometry2D finalGG= new GridGeometry2D(
+                    coverage.getGridGeometry().getGridRange(), 
+                    PixelInCell.CELL_CENTER, 
+                    new AffineTransform2D(g2w), 
+                    finalCRS, 
+                    hints);
+            
+            // recreate the coverage
+            coverage=CoverageFactoryFinder.getGridCoverageFactory(hints).create(
+                    coverage.getName(),
+                    coverage.getRenderedImage(),
+                    finalGG,
+                    coverage.getSampleDimensions(),
+                    new GridCoverage[]{coverage},
+                    coverage.getProperties()
+                    );
+        }
+        return coverage;
+    }
+
+    /**
+     * This utility method tells me whether or not we should do a final reverse on the axis of the data.
+     * 
+     * @param outputCRS the final {@link CoordinateReferenceSystem} for the data as per the request 
+     * 
+     * @return <code>tue</code> in case we need to swap axes, <code>false</code> otherwise.
+     */
+    private boolean requestingLatLonAxesOrder(CoordinateReferenceSystem outputCRS) {
+       
+        try {
+            final Integer epsgCode = CRS.lookupEpsgCode(outputCRS, false);
+            if(epsgCode!=null&& epsgCode>0){
+                CoordinateReferenceSystem originalCRS = latLonCRSFactory.createCoordinateReferenceSystem(SRS_STARTER+epsgCode);
+                return !CRS.getAxisOrder(originalCRS).equals(CRS.getAxisOrder(outputCRS));
+            }
+        } catch (FactoryException e) {
+            LOGGER.log(Level.INFO, e.getMessage(), e);
+            return false;
+        }
+        return false;
     }
 
     /**
@@ -694,24 +864,15 @@ public class GetCoverage {
             }
 
             // instantiate
-            final int lastSlash = crsName.lastIndexOf("/");
-            // error no valid URI
-            // TODO improve checs
-            if (lastSlash < 0) {
-                throw new WCS20Exception("Invalid " + (subsettingCRS ? "subsetting" : "output")
-                        + " CRS", WCS20Exception.WCS20ExceptionCode.NotACrs, crsName);
-            }
-            crsName = crsName.substring(lastSlash + 1, crsName.length());
-            // instantiate
             try {
-                return CRS.decode("EPSG:" + crsName, false); // notice the usage of boolean param
+                return lonLatCRSFactory.createCoordinateReferenceSystem(crsName);
             } catch (Exception e) {
                 final WCS20Exception exception = new WCS20Exception("Invalid "
                         + (subsettingCRS ? "subsetting" : "output") + " CRS",
                         WCS20Exception.WCS20ExceptionCode.NotACrs, crsName);
                 exception.initCause(e);
                 throw exception;
-            }
+            }        
 
         }
         return reader.getCrs();
@@ -839,9 +1000,10 @@ public class GetCoverage {
      * @param coverage
      * @param outputCRS
      * @param spatialInterpolation 
+     * @param hints 
      * @return
      */
-    private GridCoverage2D handleReprojection(GridCoverage2D coverage, CoordinateReferenceSystem outputCRS, Interpolation spatialInterpolation) {
+    private GridCoverage2D handleReprojection(GridCoverage2D coverage, CoordinateReferenceSystem outputCRS, Interpolation spatialInterpolation, Hints hints) {
         // checks
         Utilities.ensureNonNull("interpolation", spatialInterpolation);
         // check the two crs tosee if we really need to do anything
@@ -849,18 +1011,26 @@ public class GetCoverage {
             return coverage;
         }
 
-        // resample
-        return (GridCoverage2D) Operations.DEFAULT.resample(coverage, outputCRS,null,spatialInterpolation);
+        // reproject
+        final CoverageProcessor processor=hints==null?CoverageProcessor.getInstance():CoverageProcessor.getInstance(hints);
+        final Operation operation = processor.getOperation("Resample");
+        final ParameterValueGroup parameters = operation.getParameters();
+        parameters.parameter("Source").setValue(coverage);
+        parameters.parameter("CoordinateReferenceSystem").setValue(outputCRS);
+        parameters.parameter("GridGeometry").setValue(null);
+        parameters.parameter("InterpolationType").setValue(spatialInterpolation);
+        return (GridCoverage2D) processor.doOperation(parameters);
     }
 
     /**
      * @param coverage
      * @param extensions
+     * @param hints 
      * @return
      */
     private GridCoverage2D handleRangeSubsettingExtension(
             GridCoverage2D coverage,
-            Map<String, ExtensionItemType> extensions) {
+            Map<String, ExtensionItemType> extensions, Hints hints) {
         // preparation
          final List<String> returnValue=new ArrayList<String>();  
     
@@ -891,14 +1061,10 @@ public class GetCoverage {
                 final RangeIntervalType rangeInterval = rangeItem.getRangeInterval();
                 final String startRangeComponent=rangeInterval.getStartComponent();     
                 final String endRangeComponent=rangeInterval.getEndComponent();
-                if(bandsNames.contains(startRangeComponent)){
-                    returnValue.add(startRangeComponent);
-                } else {
+                if(!bandsNames.contains(startRangeComponent)){
                     throw new WCS20Exception("Invalid Band Name",WCS20Exception.WCS20ExceptionCode.NoSuchField,rangeComponent);
                 }
-                if(bandsNames.contains(endRangeComponent)){
-                    returnValue.add(endRangeComponent);
-                } else {
+                if(!bandsNames.contains(endRangeComponent)){
                     throw new WCS20Exception("Invalid Band Name",WCS20Exception.WCS20ExceptionCode.NoSuchField,rangeComponent);
                 }                
                 
@@ -951,11 +1117,13 @@ public class GetCoverage {
      * @param request
      * @param subsettingCRS 
      * @param subset 
+     * @param hints 
      * @return
      */
     private GridCoverage2D handleSubsettingExtension(
             GridCoverage2D coverage, 
-            GeneralEnvelope subset) {
+            GeneralEnvelope subset,
+            Hints hints) {
 
         if(subset!=null){
             return WCSUtils.crop(coverage, subset); // TODO I hate this classes that do it all
@@ -969,7 +1137,7 @@ public class GetCoverage {
      * @param extensions2
      * @return
      */
-    private GridCoverage2D handleScaling(GridCoverage2D coverage, Map<String, ExtensionItemType> extensions, Interpolation spatialInterpolation) {
+    private GridCoverage2D handleScaling(GridCoverage2D coverage, Map<String, ExtensionItemType> extensions, Interpolation spatialInterpolation, Hints hints) {
         // checks
         Utilities.ensureNonNull("interpolation", spatialInterpolation);
         
@@ -979,9 +1147,14 @@ public class GetCoverage {
             if(spatialInterpolation instanceof InterpolationNearest){
                 return coverage;
             } else {
-                // TODO handle this case properly
-                // interpolate coverage if requested and not nearest!!!!
-                return coverage;
+                // interpolate coverage if requested and not nearest!!!!         
+                final Operation operation = CoverageProcessor.getInstance().getOperation("Warp");
+                final ParameterValueGroup parameters = operation.getParameters();
+                parameters.parameter("Source").setValue(coverage);
+                parameters.parameter("warp").setValue(new WarpAffine(AffineTransform.getScaleInstance(1, 1)));//identity
+                parameters.parameter("interpolation").setValue(spatialInterpolation!=null?spatialInterpolation:InterpolationPolicy.getDefaultPolicy().getInterpolation());
+                parameters.parameter( "backgroundValues").setValue(CoverageUtilities.getBackgroundValues(coverage));// TODO check and improve
+                return (GridCoverage2D) CoverageProcessor.getInstance().doOperation(parameters,hints);
             }
         }
         
@@ -997,7 +1170,7 @@ public class GetCoverage {
 
         // instantiate enum
         final ScalingPolicy scalingPolicy = ScalingPolicy.getPolicy(scaling);
-        return scalingPolicy.scale(coverage, scaling, spatialInterpolation);
+        return scalingPolicy.scale(coverage, scaling, spatialInterpolation,hints);
 
     }
 

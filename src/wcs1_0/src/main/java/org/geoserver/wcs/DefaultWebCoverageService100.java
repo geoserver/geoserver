@@ -441,7 +441,9 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             //
             coverage = (GridCoverage2D) reader.read(readParameters);
             if ((coverage == null) || !(coverage instanceof GridCoverage2D)) {
-                throw new IOException("The requested coverage could not be found.");
+                throw new IOException("No raster data found in the request (it may be that " +
+                		"the request bbox is outside of the coverage area, or that the filters used " +
+                		"match no portions of it.");
             }
 
             // double check what we have loaded

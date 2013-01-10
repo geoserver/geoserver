@@ -134,7 +134,6 @@ public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
                 + "&GridBaseCRS=urn:ogc:def:crs:EPSG:4326";
         ensureTiffFormat(getAsServletResponse(requestBase + "&format=geotiff"));
         ensureTiffFormat(getAsServletResponse(requestBase + "&format=image/geotiff"));
-        ensureTiffFormat(getAsServletResponse(requestBase + "&format=GEotIFF"));
         ensureTiffFormat(getAsServletResponse(requestBase
                 + "&format=image/tiff"));
     }

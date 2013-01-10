@@ -1,7 +1,8 @@
 package org.geoserver.wcs2_0.kvp;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,20 +21,28 @@ import net.opengis.wcs20.TargetAxisExtentType;
 import net.opengis.wcs20.TargetAxisSizeType;
 
 import org.apache.commons.collections.map.CaseInsensitiveMap;
+import org.apache.commons.io.FileUtils;
 import org.eclipse.emf.common.util.EList;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.util.KvpUtils;
-import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.wcs.WCSInfo;
+import org.geoserver.wcs2_0.WCSTestSupport;
+import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.factory.Hints;
+import org.geotools.gce.geotiff.GeoTiffReader;
+import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.CRS.AxisOrder;
+import org.geotools.referencing.operation.transform.AffineTransform2D;
+import org.geotools.resources.CRSUtilities;
+import org.geotools.resources.coverage.CoverageUtilities;
 import org.geotools.wcs.v2_0.RangeSubset;
 import org.geotools.wcs.v2_0.Scaling;
 import org.junit.Test;
 
-public class GetCoverageKvpTest extends GeoServerSystemTestSupport {
-    
-    @Override
-    protected void setUpTestData(SystemTestData testData) throws Exception {
-        // don't need any data
-    }
+import com.mockrunner.mock.web.MockHttpServletResponse;
+
+public class GetCoverageKvpTest extends WCSTestSupport {
 
     private GetCoverageType parse(String url) throws Exception {
         Map<String, Object> rawKvp = new CaseInsensitiveMap(KvpUtils.parseQueryString(url));
@@ -208,6 +217,105 @@ public class GetCoverageKvpTest extends GeoServerSystemTestSupport {
             extensions.put(item.getNamespace() + ":" + item.getName(), value);
         }
         return extensions;
+    }
+    @Test
+    public void testGetFullCoverageKVP() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=wcs__BlueMarble");
+        
+        assertEquals("image/tiff", response.getContentType());
+        byte[] tiffContents = getBinary(response);
+        File file = new File("./target/bm_full.tiff");
+        FileUtils.writeByteArrayToFile(file, tiffContents);
+        
+        GeoTiffReader readerTarget = new GeoTiffReader(file);
+        GridCoverage2D targetCoverage = null, sourceCoverage=null;
+        try {
+            targetCoverage = readerTarget.read(null);
+            sourceCoverage=(GridCoverage2D) this.getCatalog().getCoverageByName("BlueMarble").getGridCoverageReader(null, null).read(null);
+            
+            // checks
+            assertEquals(sourceCoverage.getGridGeometry().getGridRange(), targetCoverage.getGridGeometry().getGridRange());
+            assertEquals(sourceCoverage.getCoordinateReferenceSystem(), targetCoverage.getCoordinateReferenceSystem());
+            assertEquals(sourceCoverage.getEnvelope(), targetCoverage.getEnvelope());
+        } finally {
+            try{
+                readerTarget.dispose();
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+            try{
+                scheduleForCleaning(targetCoverage);
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+            try{
+                scheduleForCleaning(sourceCoverage);
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+        }
+    }
+
+    @Test
+    public void testGetFullCoverageLatLon() throws Exception {
+        // impose latlon retaining
+        final WCSInfo wcsInfo = getWCS();
+        final boolean oldLatLon=wcsInfo.getLatLon();
+        wcsInfo.setLatLon(true);
+        getGeoServer().save(wcsInfo);
+        
+        // execute
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=wcs__BlueMarble");
+        
+        assertEquals("image/tiff", response.getContentType());
+        byte[] tiffContents = getBinary(response);
+        File file = new File("./target/bm_full.tiff");
+        FileUtils.writeByteArrayToFile(file, tiffContents);
+        
+        final Hints hints= new Hints();
+        hints.put(Hints.FORCE_AXIS_ORDER_HONORING, "EPSG");
+        hints.put(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.FALSE);
+        GeoTiffReader readerTarget = new GeoTiffReader(file,hints);
+        GridCoverage2D targetCoverage = null, sourceCoverage=null;
+        try {
+            targetCoverage = readerTarget.read(null);
+            sourceCoverage=(GridCoverage2D) this.getCatalog().getCoverageByName("BlueMarble").getGridCoverageReader(null, null).read(null);
+            
+            // checks
+            assertEquals(sourceCoverage.getGridGeometry().getGridRange(), targetCoverage.getGridGeometry().getGridRange());
+            assertEquals(CRS.getAxisOrder(targetCoverage.getCoordinateReferenceSystem()),AxisOrder.NORTH_EAST);
+            
+            final GeneralEnvelope transformedEnvelope=CRS.transform((AffineTransform2D)CoverageUtilities.AXES_SWAP,targetCoverage.getEnvelope());
+            transformedEnvelope.setCoordinateReferenceSystem(sourceCoverage.getCoordinateReferenceSystem());
+            assertEquals(sourceCoverage.getEnvelope(), transformedEnvelope);
+        } finally {
+            // reinforce old settings
+            wcsInfo.setLatLon(oldLatLon);
+            getGeoServer().save(wcsInfo);
+            
+            try{
+                readerTarget.dispose();
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+            try{
+                scheduleForCleaning(targetCoverage);
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+            try{
+                scheduleForCleaning(sourceCoverage);
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+        }
+    }
+    
+    @Test
+    public void testGetMissingCoverage() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=notThereBaby");
+    
+        checkOws20Exception(response, 404, "NoSuchCoverage", "coverageId");
     }
 
     

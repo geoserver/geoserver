@@ -1,9 +1,10 @@
-package org.geoserver.wcs2_0.util;
+package org.geoserver.wcs2_0;
 
 import java.util.List;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.wcs2_0.util.NCNameResourceCodec;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import static org.junit.Assert.*;

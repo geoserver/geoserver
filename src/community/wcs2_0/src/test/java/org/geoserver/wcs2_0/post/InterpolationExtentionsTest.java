@@ -1,4 +1,4 @@
-package org.geoserver.wcs2_0;
+package org.geoserver.wcs2_0.post;
 
 import static junit.framework.Assert.assertEquals;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
@@ -10,6 +10,7 @@ import java.io.File;
 import javax.imageio.stream.FileImageInputStream;
 
 import org.apache.commons.io.FileUtils;
+import org.geoserver.wcs2_0.WCSTestSupport;
 import org.junit.Test;
 import org.w3c.dom.Document;
 

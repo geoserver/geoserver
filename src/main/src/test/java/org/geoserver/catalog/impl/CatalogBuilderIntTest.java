@@ -32,9 +32,13 @@ import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.gce.geotiff.GeoTiffWriter;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.opengis.geometry.MismatchedDimensionException;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
 
 @Category(SystemTest.class)
 public class CatalogBuilderIntTest extends GeoServerSystemTestSupport {
@@ -103,7 +107,7 @@ public class CatalogBuilderIntTest extends GeoServerSystemTestSupport {
         }
     }
 
-    private void createTimeMosaic(File mosaic, int fileCount) throws IOException, FileNotFoundException {
+    private void createTimeMosaic(File mosaic, int fileCount) throws Exception {
         if(mosaic.exists()) {
             if(mosaic.isDirectory()) {
                 FileUtils.deleteDirectory(mosaic);
@@ -112,15 +116,17 @@ public class CatalogBuilderIntTest extends GeoServerSystemTestSupport {
             }
         }
         mosaic.mkdir();
+        System.out.println(mosaic.getAbsolutePath());
         
         // build the reference coverage into a byte array
         GridCoverageFactory factory = new GridCoverageFactory();
         BufferedImage bi = new BufferedImage(10, 10, BufferedImage.TYPE_4BYTE_ABGR);
-        ReferencedEnvelope envelope = new ReferencedEnvelope(0, 10, 0, 10, DefaultGeographicCRS.WGS84);
+        ReferencedEnvelope envelope = new ReferencedEnvelope(0, 10, 0, 10, CRS.decode("EPSG:4326"));
         GridCoverage2D test = factory.create("test", bi, envelope);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         GeoTiffWriter writer = new GeoTiffWriter(bos);
         writer.write(test, null);
+        writer.dispose();
         
         // create the lot of files
         byte[] bytes = bos.toByteArray();

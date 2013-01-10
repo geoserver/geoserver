@@ -29,6 +29,7 @@ public class WcsException extends ServiceException {
         InvalidUpdateSequence, 
         CurrentUpdateSequence,
         CompressionNotSupported,
+        CompressionInvalid,
         JpegQualityInvalid,
         TilingInvalid, 
         PredictorNotSupported, 

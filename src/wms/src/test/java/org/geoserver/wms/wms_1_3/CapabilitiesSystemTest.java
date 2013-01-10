@@ -113,6 +113,7 @@ public class CapabilitiesSystemTest extends WMSTestSupport {
     @Test
     public void testValidateCapabilitiesXML() throws Exception {
         Document dom = getAsDOM("ows?service=WMS&version=1.3.0&request=GetCapabilities");
+        print(dom);
         SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
         URL schemaLocation = getClass().getResource(
                 "/schemas/wms/1.3.0/capabilities_1_3_0.xsd");

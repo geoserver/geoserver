@@ -1,4 +1,4 @@
-package org.geoserver.wcs2_0;
+package org.geoserver.wcs2_0.post;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -7,6 +7,7 @@ import java.io.File;
 import junit.framework.Assert;
 
 import org.apache.commons.io.FileUtils;
+import org.geoserver.wcs2_0.WCSTestSupport;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.referencing.CRS;

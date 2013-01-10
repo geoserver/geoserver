@@ -119,8 +119,7 @@
 
 
   <bean id="GMLCoverageResponseDelegate" class="org.geoserver.wcs2_0.response.GMLCoverageResponseDelegate">
-      <constructor-arg index="0">
-        <ref local="envelopeDimensionsMapper" />
-    </constructor-arg>
+      <constructor-arg ref="envelopeDimensionsMapper" />
+      <constructor-arg ref="geoServer"/>
   </bean>
 </beans>

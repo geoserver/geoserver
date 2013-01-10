@@ -6,11 +6,13 @@ package org.geoserver.wcs.web;
 
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.web.wicket.KeywordsEditor;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class WCSAdminPageTest extends GeoServerWicketCoverageTestSupport {
 
     @Test
+    @Ignore
     public void test() throws Exception {
         login();
         WCSInfo wcs = getGeoServerApplication().getGeoServer().getService(WCSInfo.class);

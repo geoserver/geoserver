@@ -7,67 +7,47 @@ package org.geoserver.wcs.responses;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ServiceException;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.arcgrid.ArcGridWriter;
 
 /**
- * DOCUMENT ME!
+ * {@link CoverageResponseDelegate} implementation for Ascii Grids
  * 
  * @author $Author: Alessio Fabiani (alessio.fabiani@gmail.com) $ (last modification)
  * @author $Author: Simone Giannecchini (simboss1@gmail.com) $ (last modification)
  */
-public class AscCoverageResponseDelegate implements CoverageResponseDelegate {
+public class AscCoverageResponseDelegate extends BaseCoverageResponseDelegate implements CoverageResponseDelegate {
 
-    private static final List<String> FORMATS = Arrays.asList(
-            "application/arcgrid", "application/arcgrid;gzipped=\"true\"");
-
-    public AscCoverageResponseDelegate() {
-    }
-
-    public boolean canProduce(String outputFormat) {
-        return outputFormat != null
-                && ("ArcGrid".equalsIgnoreCase(outputFormat)
-                        || isOutputCompressed(outputFormat) || FORMATS
-                        .contains(outputFormat.toLowerCase()));
-    }
-
-    public String getMimeFormatFor(String outputFormat) {
-        if ("ArcGrid".equalsIgnoreCase(outputFormat))
-            return "application/arcgrid";
-        else if (isOutputCompressed(outputFormat))
-            return "application/arcgrid;gzipped=\"true\"";
-        else if (FORMATS.contains(outputFormat))
-            return outputFormat;
-        else
-            return null;
-    }
-
-    public String getMimeType(String outputFormat) {
-        return isOutputCompressed(outputFormat) ? "application/x-gzip" : "text/plain";
+    @SuppressWarnings("serial")
+    public AscCoverageResponseDelegate(GeoServer geoserver) {
+        super(
+                geoserver,
+                Arrays.asList("ArcGrid","ArcGrid-GZIP"), //output formats
+                new HashMap<String, String>(){ // file extensions
+                    {
+                        put("ArcGrid", "asc");
+                        put("ArcGrid-GZIP", "asc.gz");
+                        put("text/plain", "asc");
+                        put("application/x-gzip", "ArcGrid-GZIP");
+                    }
+                },
+                new HashMap<String, String>(){ //mime types
+                    {
+                        put("ArcGrid", "text/plain");
+                        put("ArcGrid-GZIP", "application/x-gzip");
+                    }
+                });
     }
 
     private boolean isOutputCompressed(String outputFormat) {
         return "ArcGrid-GZIP".equalsIgnoreCase(outputFormat) || "application/arcgrid;gzipped=\"true\"".equals(outputFormat);
-    }
-
-    /**
-     * DOCUMENT ME!
-     * 
-     * @return DOCUMENT ME!
-     */
-    public String getContentEncoding() {
-        // return compressOutput ? "gzip" : null;
-        return null;
-    }
-
-    public String getFileExtension(String outputFormat) {
-        return isOutputCompressed(outputFormat) ? "asc.gz" : "asc";
     }
 
     public void encode(GridCoverage2D sourceCoverage, String outputFormat,  Map<String,String> econdingParameters,OutputStream output) throws ServiceException, IOException {
@@ -104,17 +84,7 @@ public class AscCoverageResponseDelegate implements CoverageResponseDelegate {
         	if(gzipOut!=null)
         		IOUtils.closeQuietly(gzipOut);
         	
-            sourceCoverage.dispose(false);
+            sourceCoverage.dispose(true);
 		}
-    }
-
-    @Override
-    public List<String> getOutputFormats() {
-        return FORMATS;
-    }
-    
-    @Override
-    public boolean isAvailable() {
-        return true;
     }
 }

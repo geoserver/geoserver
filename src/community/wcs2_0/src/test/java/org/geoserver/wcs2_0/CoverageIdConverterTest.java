@@ -17,16 +17,15 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.geoserver.wcs2_0.util;
+package org.geoserver.wcs2_0;
+
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
+
+import org.geoserver.wcs2_0.util.NCNameResourceCodec;
 import org.geotools.util.MapEntry;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *

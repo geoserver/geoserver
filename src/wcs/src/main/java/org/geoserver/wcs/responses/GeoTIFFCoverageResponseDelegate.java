@@ -10,15 +10,15 @@ import java.awt.Dimension;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import javax.media.jai.JAI;
 
+import org.geoserver.config.GeoServer;
 import org.geoserver.platform.OWS20Exception;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wcs.WCSInfo;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
@@ -39,34 +39,42 @@ import com.sun.media.imageio.plugins.tiff.BaselineTIFFTagSet;
  * @author $Author: Alessio Fabiani (alessio.fabiani@gmail.com) $ (last modification)
  * @author Simone Giannecchini, GeoSolutions SAS
  */
-public class GeoTIFFCoverageResponseDelegate implements CoverageResponseDelegate {
+public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegate implements CoverageResponseDelegate {
 
     /** DEFAULT_JPEG_COMPRESSION_QUALITY */
     private static final float DEFAULT_JPEG_COMPRESSION_QUALITY = 0.75f;
 
-    private static final Set<String> FORMATS = new HashSet<String>(Arrays.asList("image/tiff","image/geotiff"));
-
 	private static final GeoTiffFormat GEOTIF_FORMAT = new GeoTiffFormat();
+	
+        public static final String GEOTIFF_CONTENT_TYPE = "image/tiff";
 
-	public static final String GEOTIFF_CONTENT_TYPE = "image/tiff";
 
-    public GeoTIFFCoverageResponseDelegate() {
-    }
-
-    public boolean canProduce(String outputFormat) {
-        return outputFormat != null
-                && (outputFormat.equalsIgnoreCase("geotiff") || FORMATS.contains(outputFormat.toLowerCase()));
-    }
-
-    public String getMimeType(String outputFormat) {
-        if (canProduce(outputFormat))
-            return "image/tiff";
-        else
-            return null;
-    }
-
-    public String getFileExtension(String outputFormat) {
-        return "tif";
+    @SuppressWarnings("serial")
+    public GeoTIFFCoverageResponseDelegate(GeoServer geoserver) {
+        super(
+                geoserver,
+                Arrays.asList("tif","tiff","geotiff","TIFF", "GEOTIFF","image/geotiff"), //output formats
+                new HashMap<String, String>(){ // file extensions
+                    {
+                        put("tiff", "tif");
+                        put("tiff", "tif");
+                        put("geotiff", "tif");
+                        put("TIFF", "tif");
+                        put("GEOTIFF", "tif");
+                        put("image/geotiff", "tif");    
+                        put("image/tiff", "tif"); 
+                    }
+                },
+                new HashMap<String, String>(){ //mime types
+                    {
+                        put("tiff", "image/tiff");
+                        put("tif", "image/tiff");
+                        put("geotiff", "image/tiff");
+                        put("TIFF", "image/tiff");
+                        put("GEOTIFF", "image/tiff");
+                        put("image/geotiff", "image/tiff");                        
+                    }
+                });        
     }
 
     public void encode(GridCoverage2D sourceCoverage, String outputFormat, Map<String,String> econdingParameters, OutputStream output) throws ServiceException, IOException {
@@ -88,6 +96,10 @@ public class GeoTIFFCoverageResponseDelegate implements CoverageResponseDelegate
 
         final ParameterValueGroup writerParams = GEOTIF_FORMAT.getWriteParameters();
         writerParams.parameter(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString()).setValue(wp);
+        
+        if(geoserver.getService(WCSInfo.class).getLatLon()){
+            writerParams.parameter(GeoTiffFormat.RETAIN_AXES_ORDER.getName().toString()).setValue(true);
+        }
 
         // write down
         GeoTiffWriter writer = (GeoTiffWriter) GEOTIF_FORMAT.getWriter(output);
@@ -129,9 +141,9 @@ public class GeoTIFFCoverageResponseDelegate implements CoverageResponseDelegate
                 // with pixel interleaving hence, we are good!
             } else if(interleavingS.equals("band")){
                 // TODO implement this in TIFF Writer, as it is not supported right now
-                throw new OWS20Exception("Banded Interleaving not supported", ows20Code(WcsExceptionCode.InterleavingNotSupported), "interleave");
+                throw new OWS20Exception("Banded Interleaving not supported", ows20Code(WcsExceptionCode.InterleavingNotSupported), interleavingS);
             } else {
-                throw new OWS20Exception("Invalid Interleaving type provided", ows20Code(WcsExceptionCode.InterleavingInvalid), "interleave");
+                throw new OWS20Exception("Invalid Interleaving type provided", ows20Code(WcsExceptionCode.InterleavingInvalid), interleavingS);
             }
         }
         
@@ -185,14 +197,14 @@ public class GeoTIFFCoverageResponseDelegate implements CoverageResponseDelegate
                                 throw new OWS20Exception(
                                         "Provided tile width is invalid",
                                         ows20Code(WcsExceptionCode.TilingInvalid),
-                                        "tilewidth");                            
+                                        Integer.toString(tileW));                            
                             } 
                         }catch (Exception e) {
                             // tile width not supported
                             throw new OWS20Exception(
                                     "Provided tile width is invalid",
                                     ows20Code(WcsExceptionCode.TilingInvalid),
-                                    "tilewidth");    
+                                    tileW_);    
                         }
 
                     }
@@ -211,14 +223,14 @@ public class GeoTIFFCoverageResponseDelegate implements CoverageResponseDelegate
                                 throw new OWS20Exception(
                                         "Provided tile height is invalid",
                                         ows20Code(WcsExceptionCode.TilingInvalid),
-                                        "tileheight");                            
+                                        Integer.toString(tileH));                            
                             } 
                         }catch (Exception e) {
                             // tile height not supported
                             throw new OWS20Exception(
                                     "Provided tile height is invalid",
                                     ows20Code(WcsExceptionCode.TilingInvalid),
-                                    "tileheight");    
+                                    tileH_);    
                         }
                     }
                     
@@ -267,13 +279,13 @@ public class GeoTIFFCoverageResponseDelegate implements CoverageResponseDelegate
                             throw new OWS20Exception(
                                     "Floating Point predictor is not supported",
                                     ows20Code(WcsExceptionCode.PredictorNotSupported),
-                                    "compression");
+                                    predictorS);
                         } else {
                             // invalid predictor
                             throw new OWS20Exception(
                                     "Invalid Predictor provided",
                                     ows20Code(WcsExceptionCode.PredictorInvalid),
-                                    "compression");
+                                    predictorS);
                         }
                     }
                 } else if(compressionS.equals("JPEG")){
@@ -295,14 +307,14 @@ public class GeoTIFFCoverageResponseDelegate implements CoverageResponseDelegate
                                     throw new OWS20Exception(
                                             "Provided quality value for the jpeg compression in invalid",
                                             ows20Code(WcsExceptionCode.JpegQualityInvalid),
-                                            "jpeg_quality");
+                                            quality_);
                                 }  
                             } catch (Exception e) {
                                 // invalid quality
                                 throw new OWS20Exception(
                                         "Provided quality value for the jpeg compression in invalid",
                                         ows20Code(WcsExceptionCode.JpegQualityInvalid),
-                                        "jpeg_quality");
+                                        quality_);
                             }
                         }  
                     }
@@ -317,20 +329,10 @@ public class GeoTIFFCoverageResponseDelegate implements CoverageResponseDelegate
                     wp.setCompressionType("CCITT RLE");  
                 } else {
                     // compression not supported
-                    throw new OWS20Exception("Provided compression does not seem supported", ows20Code(WcsExceptionCode.CompressionNotSupported), "compression");
+                    throw new OWS20Exception("Provided compression does not seem supported", ows20Code(WcsExceptionCode.CompressionInvalid), compressionS);
                 }
             }
         }
-    }
-    
-    @Override
-    public List<String> getOutputFormats() {
-        return Arrays.asList("image/tiff");
-    }
-    
-    @Override
-    public boolean isAvailable() {
-        return true;
     }
 
 }

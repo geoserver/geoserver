@@ -7,9 +7,10 @@ package org.geoserver.wcs.responses;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
+import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ServiceException;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.image.WorldImageWriter;
@@ -27,44 +28,31 @@ import org.opengis.parameter.ParameterValueGroup;
  * @author $Author: Alessio Fabiani (alessio.fabiani@gmail.com) $ (last modification)
  * @author $Author: Simone Giannecchini (simboss1@gmail.com) $ (last modification)
  */
-public class IMGCoverageResponseDelegate implements CoverageResponseDelegate {
+public class IMGCoverageResponseDelegate extends BaseCoverageResponseDelegate implements CoverageResponseDelegate {
 
-    private static final List<String> FORMATS = Arrays.asList("image/bmp",
-            "image/gif","image/png", "image/jpeg");
-
-    public IMGCoverageResponseDelegate() {
-    }
-
-    public boolean canProduce(String outputFormat) {
-        return outputFormat != null
-                && (FORMATS.contains(outputFormat.toLowerCase()) || FORMATS.contains("image/"
-                        + outputFormat.toLowerCase()));
-    }
-
-    public String getMimeType(String outputFormat) {
-        if (!canProduce(outputFormat))
-            return null;
-
-        if (FORMATS.contains(outputFormat.toLowerCase())) {
-            return outputFormat;
-        }
-        String mime = "image/" + outputFormat.toLowerCase();
-        if (FORMATS.contains(mime)) {
-            return mime;
-        }
-
-        return null;
-    }
-
-    public String getFileExtension(String outputFormat) {
-        String contentType = getMimeType(outputFormat);
-        if(contentType == null) {
-            return "img";
-        } else {
-            // extract the extension from the content type
-            int idx = contentType.indexOf("/");
-            return contentType.substring(idx + 1);
-        }
+    @SuppressWarnings("serial")
+    public IMGCoverageResponseDelegate(GeoServer geoserver) {
+        super(
+                geoserver,
+                Arrays.asList("png", "jpeg", "JPEG", "PNG"), //output formats
+                new HashMap<String, String>(){ // file extensions
+                    {
+                        put("png", "png");
+                        put("jpeg", "jpeg");
+                        put("JPEG", "jpeg");
+                        put("PNG", "png");
+                        put("image/png", "png");
+                        put("image/jpeg", "jpeg");                       
+                    }
+                },
+                new HashMap<String, String>(){ //mime types
+                    {
+                        put("png", "image/png");
+                        put("jpeg", "image/jpeg");
+                        put("PNG", "image/png");
+                        put("JPEG", "image/jpeg");                        
+                    }
+                });
     }
 
 	public void encode(GridCoverage2D sourceCoverage, String outputFormat, Map<String,String> econdingParameters, OutputStream output) throws ServiceException, IOException {
@@ -95,19 +83,8 @@ public class IMGCoverageResponseDelegate implements CoverageResponseDelegate {
             } catch (Throwable e) {
                 // eat me
             }
-            sourceCoverage.dispose(false);
+            sourceCoverage.dispose(true);
         }
 
     }
-	
-	@Override
-	public List<String> getOutputFormats() {
-	    return FORMATS;
-	}
-	
-    @Override
-    public boolean isAvailable() {
-        return true;
-    }
-
 }

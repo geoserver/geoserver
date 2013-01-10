@@ -10,8 +10,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
+
 import net.opengis.wcs20.GetCapabilitiesType;
-import org.geoserver.catalog.Catalog;
+
 import org.geoserver.platform.OWS20Exception;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.response.WCSCapsTransformer;
@@ -31,7 +32,6 @@ public class GetCapabilities {
     protected Logger LOGGER = Logging.getLogger(DefaultWebCoverageService20.class);
     
     private WCSInfo wcs;
-    private Catalog catalog;
     private CoverageResponseDelegateFinder responseFactory;
 
     public static final List<String> PROVIDED_VERSIONS =
@@ -41,14 +41,12 @@ public class GetCapabilities {
                 WCS20Const.V111,
                 WCS20Const.V110));
 
-    public GetCapabilities(WCSInfo wcs, Catalog catalog, CoverageResponseDelegateFinder responseFactory) {
+    public GetCapabilities(WCSInfo wcs, CoverageResponseDelegateFinder responseFactory) {
         this.wcs = wcs;
-        this.catalog = catalog;
         this.responseFactory = responseFactory;
     }
 
     TransformerBase run(GetCapabilitiesType request) throws WCS20Exception {
-//        String acceptedVersion = request.getAcceptVersions() == null ? null : request.getAcceptVersions().getVersion();
         List<String> acceptedVersions = request.getAcceptVersions() == null ? null : request.getAcceptVersions().getVersion();
 
         String negotiatedVersion = RequestUtils.getVersionOws20(PROVIDED_VERSIONS, acceptedVersions);

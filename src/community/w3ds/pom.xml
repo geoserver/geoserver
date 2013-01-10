@@ -10,6 +10,7 @@
     <version>2.3-SNAPSHOT</version>
   </parent>
 
+  <groupId>org.geoserver.community</groupId>
   <artifactId>w3ds</artifactId>
   <packaging>jar</packaging>
   <name>Web 3D Service</name>

@@ -233,5 +233,11 @@
         <module>wcs2_0</module>
       </modules>
     </profile>
+    <profile>
+      <id>w3ds</id>
+      <modules>
+        <module>w3ds</module>
+      </modules>
+    </profile>
   </profiles>
 </project>

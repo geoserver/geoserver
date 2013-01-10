@@ -48,7 +48,7 @@ public class Ogr2OgrConfigurator implements ApplicationListener {
         this(format, 1000);
     }
 
-    private void loadConfiguration() {
+    protected void loadConfiguration() {
         // start with the default configuration, override if we can load the file
         OgrConfiguration configuration = OgrConfiguration.DEFAULT;
         try {

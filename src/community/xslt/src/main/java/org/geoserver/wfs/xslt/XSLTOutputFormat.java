@@ -309,4 +309,9 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat implements Appli
             executor = null;
         }
     }
+    
+    @Override
+    public List<String> getCapabilitiesElementNames() {
+        return getAllCapabilitiesElementNames();
+    }
 }

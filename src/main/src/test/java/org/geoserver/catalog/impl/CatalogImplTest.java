@@ -1781,8 +1781,9 @@ public class CatalogImplTest {
 
     @Test
     public void testLayerGroupTitle() {
+        addLayer();
         LayerGroupInfo lg2 = catalog.getFactory().createLayerGroup();
-        lg2.setWorkspace(catalog.getDefaultWorkspace());
+        //lg2.setWorkspace(catalog.getDefaultWorkspace());
         lg2.setName("layerGroup2");
         lg2.setTitle("layerGroup2 title");
         lg2.getLayers().add(l);
@@ -1803,8 +1804,9 @@ public class CatalogImplTest {
     
     @Test
     public void testLayerGroupAbstract() {
+        addLayer();
         LayerGroupInfo lg2 = catalog.getFactory().createLayerGroup();
-        lg2.setWorkspace(catalog.getDefaultWorkspace());
+        //lg2.setWorkspace(catalog.getDefaultWorkspace());
         lg2.setName("layerGroup2");
         lg2.setAbstract("layerGroup2 abstract");
         lg2.getLayers().add(l);

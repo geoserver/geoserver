@@ -77,7 +77,7 @@ public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
         Stopwatch sw = new Stopwatch().start();
         loadCatalogInternal(catalog, xp);
         sw.stop();
-        System.err.println("Loaded catalog in " + sw.toString());
+        //System.err.println("Loaded catalog in " + sw.toString());
     }
 
     private void loadCatalogInternal(Catalog catalog, XStreamPersister xp) throws Exception {
@@ -118,7 +118,7 @@ public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
     }
 
     private boolean checkPropertiesFileInitialized() throws IOException, SQLException {
-        File propsFile = new File(resourceLoader.getBaseDirectory(), CONFIG_FILE);
+        File propsFile = new File(getBaseDir(), CONFIG_FILE);
         final boolean previouslyConfigured = propsFile.exists();
 
         if (!previouslyConfigured) {
@@ -158,15 +158,12 @@ public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
         return importCatalog;
     }
 
-    private void createDefaultConfig(File propsFile) {
+    private void createDefaultConfig(File propsFile) throws IOException {
         try {
             propsFile.createNewFile();
         } catch (Exception e) {
-            LOGGER.log(
-                    Level.WARNING,
-                    "Can't create file "
-                            + new File(resourceLoader.getBaseDirectory(), CONFIG_FILE)
-                                    .getAbsolutePath(), e);
+            LOGGER.log(Level.WARNING,
+                "Can't create file " + new File(getBaseDir(), CONFIG_FILE).getAbsolutePath(), e);
             return;
         }
 
@@ -209,17 +206,25 @@ public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
      * 
      */
     private void copyScripts() throws IOException {
-        final File scriptsDir = resourceLoader.findOrCreateDirectory("jdbcconfig_scripts");
+        final File scriptsDir = getScriptDir();
         Class<?> scope = JDBCGeoServerLoader.class;
         for (String scriptName : SCRIPTS) {
             File target = new File(scriptsDir, scriptName);
             resourceLoader.copyFromClassPath(scriptName, target, scope);
         }
 
-        final File baseDirectory = resourceLoader.getBaseDirectory();
+        final File baseDirectory = getBaseDir();
         for (String sampleConfig : SAMPLE_CONFIGS) {
             File target = new File(baseDirectory, sampleConfig);
             resourceLoader.copyFromClassPath(sampleConfig, target);
         }
+    }
+
+    File getBaseDir() throws IOException {
+        return resourceLoader.findOrCreateDirectory("jdbcconfig");
+    }
+
+    File getScriptDir() throws IOException {
+        return resourceLoader.findOrCreateDirectory("jdbcconfig", "scripts");
     }
 }

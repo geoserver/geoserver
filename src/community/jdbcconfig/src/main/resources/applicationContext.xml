@@ -24,7 +24,7 @@
     <property name="locations">
       <list>
         <value>classpath:/jdbcconfig.properties</value>
-        <value>file:///${GEOSERVER_DATA_DIR}/jdbcconfig.properties</value>
+        <value>file:///${GEOSERVER_DATA_DIR}/jdbcconfig/jdbcconfig.properties</value>
       </list>
     </property>
   </bean>

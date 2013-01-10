@@ -9,7 +9,7 @@
 # for the next start up to avoid trying to re-import the catalog configuration.
 importCatalog=true
 runInitScript=true
-initScript=${GEOSERVER_DATA_DIR}/jdbcconfig_scripts/initdb.h2.sql
+initScript=${GEOSERVER_DATA_DIR}/jdbcconfig/scripts/initdb.h2.sql
 driverClass=org.h2.Driver
 jdbcUrl=jdbc:h2:file:${GEOSERVER_DATA_DIR}/jdbcconfig/catalog;AUTO_SERVER=TRUE
 username=sa

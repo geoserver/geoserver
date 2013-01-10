@@ -1313,33 +1313,45 @@ public class CatalogBuilder {
     /**
      * Calculates the bounds of a layer group specifying a particular crs.
      */
-    public void calculateLayerGroupBounds(LayerGroupInfo lg, CoordinateReferenceSystem crs)
+    public void calculateLayerGroupBounds(LayerGroupInfo layerGroup, CoordinateReferenceSystem crs)
             throws Exception {
-
-        if (lg.getLayers().isEmpty()) {
-            return;
+        List<LayerInfo> layers = layerGroup.getLayers();
+        if (layerGroup.getRootLayer() != null) {
+            layers = new ArrayList<LayerInfo>(layers);
+            layers.add(layerGroup.getRootLayer());
         }
-
-        LayerInfo l = lg.getLayers().get(0);
+        
+        if (layers.isEmpty()) {
+            return;
+        }        
+        
+        LayerInfo l = layers.get(0);
         ReferencedEnvelope bounds = transform(l.getResource().getLatLonBoundingBox(), crs);
 
-        for (int i = 1; i < lg.getLayers().size(); i++) {
-            l = lg.getLayers().get(i);
+        for (int i = 1; i < layers.size(); i++) {
+            l = layers.get(i);
             bounds.expandToInclude(transform(l.getResource().getLatLonBoundingBox(), crs));
         }
-        lg.setBounds(bounds);
+        
+        layerGroup.setBounds(bounds);
     }
 
     /**
      * Calculates the bounds of a layer group by aggregating the bounds of each layer. TODO: move
      * this method to a utility class, it should not be on a builder.
      */
-    public void calculateLayerGroupBounds(LayerGroupInfo lg) throws Exception {
-        if (lg.getLayers().isEmpty()) {
+    public void calculateLayerGroupBounds(LayerGroupInfo layerGroup) throws Exception {
+        List<LayerInfo> layers = layerGroup.getLayers();
+        if (layerGroup.getRootLayer() != null) {
+            layers = new ArrayList<LayerInfo>(layers);
+            layers.add(layerGroup.getRootLayer());
+        }        
+        
+        if (layers.isEmpty()) {
             return;
         }
-
-        LayerInfo l = lg.getLayers().get(0);
+        
+        LayerInfo l = layers.get(0);
         ReferencedEnvelope bounds = l.getResource().boundingBox();
         boolean latlon = false;
         if (bounds == null) {
@@ -1352,8 +1364,8 @@ public class CatalogBuilder {
                     "Could not calculate bounds from layer with no bounds, " + l.getName());
         }
 
-        for (int i = 1; i < lg.getLayers().size(); i++) {
-            l = lg.getLayers().get(i);
+        for (int i = 1; i < layers.size(); i++) {
+            l = layers.get(i);
 
             ReferencedEnvelope re;
             if (latlon) {
@@ -1370,7 +1382,7 @@ public class CatalogBuilder {
             bounds.expandToInclude(re);
         }
 
-        lg.setBounds(bounds);
+        layerGroup.setBounds(bounds);
     }
 
     /**

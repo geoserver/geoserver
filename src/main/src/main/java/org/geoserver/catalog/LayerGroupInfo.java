@@ -19,6 +19,52 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 public interface LayerGroupInfo extends CatalogInfo {
 
     /**
+     * Enumeration for type of layer group.
+     */
+    public enum Type {
+        SINGLE {
+            public String getName() {
+                return "Single";
+            }
+            
+            public Integer getCode() {
+                return 0;
+            }
+        },
+        NAMED {
+            public String getName() {
+                return "Named Tree";
+            }
+                        
+            public Integer getCode() {
+                return 1;
+            }
+        },
+        CONTAINER {
+            public String getName() {
+                return "Container Tree";
+            }
+                                    
+            public Integer getCode() {
+                return 2;
+            }
+
+        },
+        EO {
+            public String getName() {
+                return "Earth Observation Tree";
+            }
+                            
+            public Integer getCode() {
+                return 3;
+            }
+        };
+
+        public abstract String getName();
+        public abstract Integer getCode();
+    }
+	
+    /**
      * The name of the layer group.
      */
     String getName();
@@ -27,6 +73,16 @@ public interface LayerGroupInfo extends CatalogInfo {
      * Sets the name of the layer group.
      */
     void setName( String name );
+    
+    /**
+     * The type of the layer group.
+     */
+    Type getType();
+
+    /**
+     * Sets the type of the layer group.
+     */
+    void setType( Type type );    
     
     /**
      * The title of the layer group.
@@ -71,6 +127,26 @@ public interface LayerGroupInfo extends CatalogInfo {
     String prefixedName();
 
     /**
+     * Get root layer.
+     */
+    LayerInfo getRootLayer();
+    
+    /**
+     * Set root layer.
+     */
+    void setRootLayer(LayerInfo rootLayer);
+    
+    /**
+     * Get root layer style.
+     */
+    StyleInfo getRootLayerStyle();
+
+    /**
+     * Set root layer style.
+     */
+    void setRootLayerStyle(StyleInfo style);
+    
+    /**
      * The layers in the group.
      */
     List<LayerInfo> getLayers();
@@ -82,6 +158,19 @@ public interface LayerGroupInfo extends CatalogInfo {
      * </p>
      */
     List<StyleInfo> getStyles();
+
+    /**
+     * The layers that should be rendered.
+     */
+    List<LayerInfo> renderingLayers();
+    
+    /**
+     * The styles for the layers that should be rendered.
+     * <p>
+     * This list is a 1-1 correspondence to {@link #renderingLayers()}.
+     * </p>
+     */
+    List<StyleInfo> renderingStyles();
     
     /**
      * The bounds for the base map.

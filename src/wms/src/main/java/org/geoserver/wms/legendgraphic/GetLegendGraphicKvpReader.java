@@ -166,6 +166,18 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
 
         try {
             parseOptionalParameters(request, infoObject, rawKvp);
+            
+            if (layers.size() != request.getStyles().size()) {
+                String msg = layers.size() + " layers requested, but found " + request.getStyles().size()
+                        + " styles specified. ";
+                throw new ServiceException(msg, getClass().getName());
+            }
+            
+            if (request.getRules().size()>0 && layers.size() != request.getRules().size()) {
+                String msg = layers.size() + " layers requested, but found " + request.getRules().size()
+                        + " rules specified. ";
+                throw new ServiceException(msg, getClass().getName());
+            }
         } catch (IOException e) {
             throw new ServiceException(e);
         }
@@ -284,7 +296,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
     private void parseStyleAndRule(GetLegendGraphicRequest req, Object infoObj, Map rawKvp)
             throws IOException {
         // gets the list of styles requested
-        String listOfStyles=(String) rawKvp.get("STYLE");
+        String listOfStyles = (String) rawKvp.get("STYLE");
         if(listOfStyles == null) {
             listOfStyles = "";
         }
@@ -313,7 +325,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
             }
             addStylesFrom(sldStyles,styleNames,parseSldBody(sldBody));
             
-        } else if (styleNames.size()>0) {
+        } else if (styleNames.size() > 0) {
             if (LOGGER.isLoggable(Level.FINER)) {
                 LOGGER.finer("taking style from STYLE parameter");
             }
@@ -321,10 +333,11 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
             for(String styleName : styleNames) {
                 // if we have a layer group and no style is specified
                 // use the default one for the layer in the current position
-                if(styleName.equals("") && infoObj instanceof LayerGroupInfo) {
-                    LayerGroupInfo layerGroupInfo=(LayerGroupInfo)infoObj;
-                    if(pos<layerGroupInfo.getLayers().size()) {
-                        sldStyles.add(getStyleFromLayer(layerGroupInfo.getLayers().get(pos)));
+                if (styleName.equals("") && infoObj instanceof LayerGroupInfo) {
+                    LayerGroupInfo layerGroupInfo = (LayerGroupInfo) infoObj;
+                    if (pos < layerGroupInfo.getLayers().size()) {
+                        sldStyles.add(getStyleFromLayer(layerGroupInfo.getLayers()
+                                .get(pos)));
                     }
                 } else {
                     sldStyles.add(wms.getStyleByName(styleName));
@@ -337,9 +350,11 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                 sldStyles.add(getStyleFromLayer((LayerInfo)infoObj));
             } else if(infoObj instanceof LayerGroupInfo) {
                 LayerGroupInfo layerGroupInfo=(LayerGroupInfo)infoObj;
-                for(int count=0;count<layerGroupInfo.getLayers().size();count++) {
-                    if(count<layerGroupInfo.getStyles().size() && layerGroupInfo.getStyles().get(count) != null) {
-                        sldStyles.add(layerGroupInfo.getStyles().get(count).getStyle());
+                for (int count = 0; count < layerGroupInfo.getLayers().size(); count++) {
+                    if (count < layerGroupInfo.getStyles().size()
+                            && layerGroupInfo.getStyles().get(count) != null) {
+                        sldStyles.add(layerGroupInfo.getStyles().get(count)
+                                .getStyle());
                     } else {
                         LayerInfo layerInfo = layerGroupInfo.getLayers().get(count);
                         sldStyles.add(getStyleFromLayer(layerInfo));

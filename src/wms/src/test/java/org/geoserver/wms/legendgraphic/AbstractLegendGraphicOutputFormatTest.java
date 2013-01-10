@@ -8,7 +8,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +31,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.GetLegendGraphic;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.WMSTestSupport;
+import org.geoserver.wms.map.ImageUtils;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.resources.coverage.FeatureUtilities;
@@ -208,19 +213,22 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
      * Tests that the legend graphic is produced for multiple layers
      */
     @org.junit.Test
-    public void testMultipleLayers() throws Exception {
-        int titleHeight=16;
-        
+    public void testMultipleLayers() throws Exception {              
         GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+        
+        int titleHeight = getTitleHeight(req);
+        
         FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName(
                 MockData.ROAD_SEGMENTS.getNamespaceURI(), MockData.ROAD_SEGMENTS.getLocalPart());
         List<FeatureType> layers=new ArrayList<FeatureType>();
         layers.add(ftInfo.getFeatureType());
         
         req.setLayers(layers);
-        Style style = getCatalog().getStyleByName(
-                MockData.ROAD_SEGMENTS.getLocalPart()).getStyle();
-        req.setStyle(style);
+        
+        List<Style> styles=new ArrayList<Style>();
+        styles.add(getCatalog().getStyleByName(
+                MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
+        req.setStyles(styles);
         
         this.legendProducer.buildLegendGraphic(req);
 
@@ -231,6 +239,8 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         int height=image.getHeight();
         
         layers.add(ftInfo.getFeatureType());
+        styles.add(getCatalog().getStyleByName(
+                MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
         this.legendProducer.buildLegendGraphic(req);
 
         image = this.legendProducer.buildLegendGraphic(req);        
@@ -263,6 +273,7 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         
     }
     
+    
     /**
      * Tests that with forceTitles option off no title is rendered
      */
@@ -279,9 +290,11 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         layers.add(ftInfo.getFeatureType());
         
         req.setLayers(layers);
-        Style style = getCatalog().getStyleByName(
-                MockData.ROAD_SEGMENTS.getLocalPart()).getStyle();
-        req.setStyle(style);
+        
+        List<Style> styles = new ArrayList<Style>();
+        styles.add(getCatalog().getStyleByName(
+                MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
+        req.setStyles(styles);
         
         this.legendProducer.buildLegendGraphic(req);
 
@@ -292,6 +305,8 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         int height=image.getHeight();
         
         layers.add(ftInfo.getFeatureType());
+        styles.add(getCatalog().getStyleByName(
+                MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
         this.legendProducer.buildLegendGraphic(req);
 
         image = this.legendProducer.buildLegendGraphic(req);        
@@ -323,10 +338,11 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
      * with different style for each layer.
      */
     @org.junit.Test
-    public void testMultipleLayersWithStyles() throws Exception {
-        int titleHeight=16;
-        
+    public void testMultipleLayersWithDifferentStyles() throws Exception {        
         GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+        
+        int titleHeight = getTitleHeight(req);
+        
         FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName(
                 MockData.ROAD_SEGMENTS.getNamespaceURI(), MockData.ROAD_SEGMENTS.getLocalPart());
         List<FeatureType> layers=new ArrayList<FeatureType>();
@@ -359,5 +375,28 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         // different color (style) for the second layer
         assertPixel(image, 10, 70+titleHeight*2, new Color(64,64,192));
 
+    }
+    
+    private int getTitleHeight(GetLegendGraphicRequest req) {    
+        final BufferedImage image = ImageUtils.createImage(req.getWidth(),
+                req.getHeight(), (IndexColorModel) null, req.isTransparent());
+        return getRenderedLabel(image, "TESTTITLE", req).getHeight();
+    }
+    
+    private BufferedImage getRenderedLabel(BufferedImage image, String label,
+            GetLegendGraphicRequest request) {
+        Font labelFont = LegendUtils.getLabelFont(request);
+        boolean useAA = LegendUtils.isFontAntiAliasing(request);
+    
+        final Graphics2D graphics = image.createGraphics();
+        graphics.setFont(labelFont);
+        if (useAA) {
+            graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON);
+        } else {
+            graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_OFF);
+        }
+        return LegendUtils.renderLabel(label, graphics, request);
     }
 }

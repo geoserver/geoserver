@@ -170,37 +170,26 @@ public class BufferedImageLegendGraphicBuilder {
             }
         }
         
-        for(int pos=0; pos<layers.size();pos++) {
+        for (int pos = 0; pos < layers.size(); pos++) {
             // current layer
             FeatureType layer=layers.get(pos);
             
             // style and rule to use for the current layer
-            Style gt2Style = null;
+            Style gt2Style = styles.get(pos);
             String ruleName = null;
             
-            // get style corresponding to the layer index in request
-            // or the last one if styles are less than layers
-            // in number
-            if(pos<styles.size()) {
-                gt2Style = styles.get(pos);
-            } else {
-                gt2Style = styles.get(styles.size()-1);
-            }
             if (gt2Style == null) {
                 throw new NullPointerException("request.getStyle()");
             }
-            // get rule corresponding to the layer index in request
-            // or the last one if rules are less than layers
-            // in number
-            if(pos<rules.size()) {
+                        
+            // get rule corresponding to the layer index
+            if(rules.size() > 0) {
                 ruleName = rules.get(pos);
-            } else if(rules.size()>0){
-                ruleName = rules.get(rules.size()-1);
             }
             // normalize to null for NO RULE
             if(ruleName != null && ruleName.equals("")) {
                 ruleName = null;
-            }            
+            }
             
             // width and height, we might have to rescale those in case of DPI usage
             int w = request.getWidth();

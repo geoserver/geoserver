@@ -12,7 +12,7 @@ Importing modules
 
 See the Eclipse section of the :ref:`maven_guide`.
 
-Running and debugging 
+Running and debugging
 ---------------------
 
 Run or debug the class ``org.geoserver.web.Start`` in the ``web-app`` 
@@ -99,6 +99,26 @@ resources can be tested under Jetty for later deployment under Tomcat.
 See also the tutorial `Setting up a JNDI connection pool with Tomcat
 <http://docs.geoserver.org/stable/en/user/tutorials/tomcat-jndi/tomcat-jndi.html>`_
 in the GeoServer User Manual.
+
+Starting Jetty with an open SSL port
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The SSL port used ``8843``. 
+
+  #. Open the ``Arguments`` panel of the ``Start`` configuration. 
+  #. Specify the ``-Dssl.hostname`` parameter, setting it to the full qualified host name of the box 
+     running Jetty.  
+
+     .. image:: ssl.jpeg
+     
+On first time startup, a key store is created in ``<home directory>/.geoserver/keystore.jks``. 
+The password is **changeit** and the key store contains a self signed certificate for the host name
+passed in the ``ssl.hostname`` parameter.
+
+Test the SSL connection by opening a browser and entering  
+**https://ux-desktop03.mc-home.local:8843/geoserver**. The browser should complain about the self 
+singed certificate which does not hurt for test and development setups. 
+
 
 Eclipse preferences
 -------------------

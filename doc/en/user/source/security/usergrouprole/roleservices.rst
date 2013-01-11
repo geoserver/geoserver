@@ -20,7 +20,7 @@ By default, GeoServer supports two types of role services:
 
 .. _sec_rolesystem_mapping:
 
-Mapping roles to system roles   
+Mapping roles to system roles
 -----------------------------
 
 To assign the system role ``ROLE_ADMINISTRATOR`` to a user or to a group, a new role with a different name must be created and mapped to the ``ROLE_ADMINISTRATOR`` role. The same holds true for the system role ``ROLE_GROUP_ADMIN``. The mapping is stored in the service's ``config.xml`` file.
@@ -51,7 +51,7 @@ This service represents the user database as XML, and corresponds to this :downl
 
 .. note:: 
 
-   The XML role file, :file:`roles.xml`, is located in  the GeoServer data directory, ``security/role/<name>/roles.xml``, where``<name>`` is the name of the role service.
+   The XML role file, :file:`roles.xml`, is located in  the GeoServer data directory, ``security/role/<name>/roles.xml``, where ``<name>`` is the name of the role service.
 
 The service is configured to map the local role ``ADMIN`` to the system role ``ROLE_ADMINISTRATOR``. Additionally, ``GROUP_ADMIN`` is mapped to ``ROLE_GROUP_ADMIN``. The mapping is stored the ``config.xml`` file of each role service. 
 
@@ -75,6 +75,78 @@ The following provides an illustration of the ``roles.xml`` that ships with the 
 This configuration contains two roles named ``ADMIN`` and ``GROUP_ADMIN``. The role ``ADMIN`` is assigned to the ``admin`` user. Since the ``ADMIN`` role is mapped to the system role ``ROLE_ADMINISTRATOR``, the role calculation assigns both roles to the ``admin`` user.
 
 For further information, please refer to :ref:`configuring a role service <webadmin_sec_roleservices>` in the :ref:`web_admin`.
+
+
+.. _sec_rolesystem_rolej2ee:
+
+J2EE role service
+-----------------
+
+The J2EE role service parses roles from the ``WEB-INF/web.xml`` file. As a consequence, this service is a read only role service. 
+Roles are extracted from the following XML elements: 
+
+``<security-role>``
+^^^^^^^^^^^^^^^^^^^
+
+   .. code-block:: xml
+   
+      <security-role>
+         <role-name>role1</role-name>
+      </security-role>
+      <security-role>
+         <role-name>role2</role-name>
+      </security-role>  
+      <security-role>
+         <role-name>employee</role-name>
+      </security-role>
+      
+   Roles retrieved:
+    
+   * ``role1``
+   * ``role2``
+   * ``employee`` 
+
+``<security-constraint>``
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+   .. code-block:: xml
+   
+       <security-constraint>
+          <web-resource-collection>
+              <web-resource-name>Protected Area</web-resource-name>
+              <url-pattern>/jsp/security/protected/*</url-pattern>
+              <http-method>PUT</http-method>
+              <http-method>DELETE</http-method>
+              <http-method>GET</http-method>
+              <http-method>POST</http-method>
+          </web-resource-collection>
+          <auth-constraint>
+              <role-name>role1</role-name>
+              <role-name>employee</role-name>
+          </auth-constraint>
+      </security-constraint>
+      
+   Roles retrieved:
+    
+   * ``role1``
+   * ``employee`` 
+      
+
+``<security-role-ref>``
+^^^^^^^^^^^^^^^^^^^^^^^   
+   
+   .. code-block:: xml
+      
+       <security-role-ref>
+           <role-name>MGR</role-name>
+           <!-- role name used in code -->
+           <role-link>employee</role-link>
+         </security-role-ref>      
+      
+
+   Roles retrieved:
+    
+   * ``MGR``
 
 
 .. _sec_rolesystem_rolejdbc:

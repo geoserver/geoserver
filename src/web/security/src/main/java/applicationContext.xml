@@ -172,6 +172,15 @@
         <property name="descriptionKey" value="XMLRoleServicePanel.description"/>
     </bean>
     
+    <!-- J2EE role service panel infos -->
+    <bean id="j2eeRoleServicePanelInfo" class="org.geoserver.security.web.role.J2eeRoleServicePanelInfo">
+        <property name="id" value="security.j2eeRoleService" />
+        <property name="shortTitleKey" value="J2eeRoleServicePanel.short"/>
+        <property name="titleKey" value="J2eeRoleServicePanel.title"/>
+        <property name="descriptionKey" value="J2eeRoleServicePanel.description"/>
+    </bean>
+    
+    
     <!-- master password provider panel infos -->
     <bean id="urlMasterPasswordProviderPanelInfo" class="org.geoserver.security.web.passwd.URLMasterPasswordProviderPanelInfo">
         <property name="id" value="security.urlMasterPasswordProvider" />

@@ -6,13 +6,8 @@
 package org.geoserver.service.rest;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.geoserver.catalog.AuthorityURLInfo;
-import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.rest.AbstractCatalogResource;
 import org.geoserver.config.GeoServer;
@@ -23,12 +18,8 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.rest.RestletException;
 import org.geoserver.wcs.WCSInfo;
-import org.geoserver.wfs.GMLInfo;
-import org.geoserver.wfs.GMLInfoImpl;
 import org.geoserver.wfs.WFSInfo;
-import org.geoserver.wfs.WFSInfoImpl;
 import org.geoserver.wms.WMSInfo;
-import org.geoserver.wms.WMSInfoImpl;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -160,30 +151,15 @@ public class ServiceSettingsResource extends AbstractCatalogResource {
     }
 
     private void addDefaultsIfMissing(ServiceInfo serviceInfo) {
-        if (serviceInfo instanceof WMSInfoImpl) {
-            WMSInfoImpl wmsInfo = (WMSInfoImpl) serviceInfo;
-            if (wmsInfo.getAuthorityURLs() == null) {
-                List<AuthorityURLInfo> authorityURLS = new ArrayList<AuthorityURLInfo>();
-                wmsInfo.setAuthorityURLs(authorityURLS);
-            }
-            if (wmsInfo.getIdentifiers() == null) {
-                List<LayerIdentifierInfo> identifiers = new ArrayList<LayerIdentifierInfo>();
-                wmsInfo.setIdentifiers(identifiers);
-            }
-            if (wmsInfo.getSRS() == null) {
-                List<String> srsList = new ArrayList<String>();
-                wmsInfo.setSRS(srsList);
-            }
-        } else if (serviceInfo instanceof WFSInfoImpl) {
-            WFSInfoImpl wfsInfo = (WFSInfoImpl) serviceInfo;
-            if (wfsInfo.getGML() == null) {
-                GMLInfoImpl gml3Info = new GMLInfoImpl();
-                gml3Info.setOverrideGMLAttributes(true);
-                Map<WFSInfo.Version, GMLInfo> gml = new HashMap<WFSInfo.Version, GMLInfo>();
-                wfsInfo.setGML(gml);
-                wfsInfo.getGML().put(WFSInfo.Version.V_11, gml3Info);
-                wfsInfo.getGML().put(WFSInfo.Version.V_10, gml3Info);
-                wfsInfo.getGML().put(WFSInfo.Version.V_20, gml3Info);
+        if(serviceInfo == null) {
+            return;
+        }
+        
+        List<XStreamServiceLoader> loaders = GeoServerExtensions.extensions(XStreamServiceLoader.class);
+        
+        for (XStreamServiceLoader loader : loaders) {
+            if(loader.getClass().isAssignableFrom(serviceInfo.getClass())) {
+                loader.initializeService(serviceInfo);
             }
         }
     }

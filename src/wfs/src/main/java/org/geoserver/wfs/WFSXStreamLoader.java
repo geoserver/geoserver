@@ -4,6 +4,8 @@
  */
 package org.geoserver.wfs;
 
+import java.util.HashMap;
+
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamServiceLoader;
@@ -67,14 +69,27 @@ public class WFSXStreamLoader extends XStreamServiceLoader<WFSInfo> {
         if (!service.getVersions().contains(WFSInfo.Version.V_20.getVersion())) {
             service.getVersions().add(WFSInfo.Version.V_20.getVersion());
         }
-
+        
         //set the defaults for GMLInfo if they are not set
+        if(service.getGML() == null) {
+            ((WFSInfoImpl) service).setGML(new HashMap<WFSInfo.Version, GMLInfo>());           
+        }
         GMLInfo gml = service.getGML().get(WFSInfo.Version.V_10);
-        if (gml.getOverrideGMLAttributes() == null) {
+        if(gml == null) {
+            gml = new GMLInfoImpl();
+            gml.setOverrideGMLAttributes(false);
+            gml.setSrsNameStyle(SrsNameStyle.URL);
+            service.getGML().put(WFSInfo.Version.V_10, gml);
+        } else if (gml.getOverrideGMLAttributes() == null) {
             gml.setOverrideGMLAttributes(true);
         }
         gml = service.getGML().get(WFSInfo.Version.V_11);
-        if (gml.getOverrideGMLAttributes() == null) {
+        if(gml == null) {
+            gml = new GMLInfoImpl();
+            gml.setOverrideGMLAttributes(false);
+            gml.setSrsNameStyle(SrsNameStyle.URN);
+            service.getGML().put(WFSInfo.Version.V_11, gml);
+        } else if (gml.getOverrideGMLAttributes() == null) {
             gml.setOverrideGMLAttributes(false);
         }
         gml = service.getGML().get(WFSInfo.Version.V_20);

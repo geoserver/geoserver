@@ -6,13 +6,15 @@
 # The importCatalog configuration option tells GeoServer whether to import the current catalog from the file system
 # to the database or not. If set to true, it will be imported and the config option will be set the value 'false'
 # for the next start up to avoid trying to re-import the catalog configuration.
-importCatalog=true
-runInitScript=false
+initdb=false
 initScript=${GEOSERVER_DATA_DIR}/jdbcconfig/scripts/initdb.postgres.sql
-driverClass=org.postgresql.Driver
+import=true
+
 jdbcUrl=jdbc:postgresql://localhost:5432/gscatalog
+driverClassName=org.postgresql.Driver
 username=postgres
 password=
+
 idleConnectionTestPeriodInMinutes=1
 idleMaxAgeInMinutes=4
 maxConnectionsPerPartition=18

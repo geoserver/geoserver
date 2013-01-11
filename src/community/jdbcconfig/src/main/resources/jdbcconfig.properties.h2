@@ -7,13 +7,16 @@
 # The importCatalog configuration option tells GeoServer whether to import the current catalog from the file system
 # to the database or not. If set to true, it will be imported and the config option will be set the value 'false'
 # for the next start up to avoid trying to re-import the catalog configuration.
-importCatalog=true
-runInitScript=true
+
+initdb=true
 initScript=${GEOSERVER_DATA_DIR}/jdbcconfig/scripts/initdb.h2.sql
-driverClass=org.h2.Driver
+import=true
+
 jdbcUrl=jdbc:h2:file:${GEOSERVER_DATA_DIR}/jdbcconfig/catalog;AUTO_SERVER=TRUE
+driverClassName=org.h2.Driver
 username=sa
 password=
+
 idleConnectionTestPeriodInMinutes=1
 idleMaxAgeInMinutes=4
 maxConnectionsPerPartition=18

@@ -4,46 +4,33 @@
  */
 package org.geoserver.wms.web;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.regex.Pattern;
 
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.form.CheckBox;
-import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
-import org.apache.wicket.markup.html.form.RadioChoice;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.util.convert.IConverter;
-import org.apache.wicket.util.value.AttributeMap;
-import org.apache.wicket.util.value.IValueMap;
-import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.validator.AbstractValidator;
 import org.apache.wicket.validation.validator.MinimumValidator;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.FileExistsValidator;
 import org.geoserver.web.wicket.LiveCollectionModel;
+import org.geoserver.web.wicket.SRSListTextArea;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSInfo.WMSInterpolation;
 import org.geoserver.wms.WatermarkInfo.Position;
 import org.geoserver.wms.web.publish.LayerAuthoritiesAndIdentifiersPanel;
-import org.geotools.referencing.CRS;
 
 /**
  * Edits the WMS service details 
@@ -83,15 +70,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         form.add(authAndIds);
 
         // limited srs list
-        TextArea srsList = new TextArea("srs", LiveCollectionModel.list(new PropertyModel(info, "sRS"))) {
-            @Override
-            public IConverter getConverter(Class type) {
-                return new SRSListConverter();
-            }
-                
-        };
-        srsList.add(new SRSListValidator());
-        srsList.setType(List.class);
+        TextArea srsList = new SRSListTextArea("srs", LiveCollectionModel.list(new PropertyModel(info, "sRS")));
         form.add(srsList);
 
         form.add(new CheckBox("bBOXForEachCRS"));
@@ -223,47 +202,5 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         
     }
     
-    private static class SRSListConverter implements IConverter {
-            static final Pattern COMMA_SEPARATED = Pattern.compile("\\s*,\\s*", Pattern.MULTILINE); 
-            
-            public String convertToString(Object value, Locale locale) {
-                List<String> srsList = (List<String>) value;
-                if(srsList.isEmpty())
-                    return "";
-                    
-                StringBuffer sb = new StringBuffer();
-                for (String srs : srsList) {
-                    sb.append(srs).append(", ");
-                }
-                sb.setLength(sb.length() - 2);
-                return sb.toString();
-            }
-            
-            public Object convertToObject(String value, Locale locale) {
-                if(value == null || value.trim().equals(""))
-                    return Collections.emptyList();
-                return new ArrayList<String>(Arrays.asList(COMMA_SEPARATED.split(value)));
-            }
-    }
     
-    private static class SRSListValidator extends AbstractValidator {
-
-        @Override
-        protected void onValidate(IValidatable validatable) {
-            List<String> srsList = (List<String>) validatable.getValue();
-            List<String> invalid = new ArrayList<String>();
-            for (String srs : srsList) {
-                try {
-                    CRS.decode("EPSG:" + srs);
-                } catch(Exception e) {
-                    invalid.add(srs);
-                }
-            }
-            
-            if(invalid.size() > 0)
-                error(validatable, "WMSAdminPage.unknownEPSGCodes", Collections.singletonMap("codes", invalid.toString()));
-            
-        }
-        
-    }
 }

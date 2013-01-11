@@ -10,7 +10,7 @@
 			key="subsampling">subsampling</wicket:message></label></li>
 		<li><label><wicket:message key="overviewPolicy">overview</wicket:message></label>
 		<select wicket:id="overviewPolicy" class="field"></select></li>
-		<li><input class="latLonOrder"></input> <label class="choice"><wicket:message
+		<li><input wicket:id="latLon" type="checkbox"></input> <label class="choice"><wicket:message
 			key="latLonOrder">subsampling</wicket:message></label></li>		
 	</ul>
 	</fieldset>
@@ -27,6 +27,18 @@
 	</ul>
 	</fieldset>
 	</li>
+	<li>
+      <fieldset>
+        <legend>
+          <span><wicket:message key="limitedSRSList">LimitedSRSlist</wicket:message></span>
+        </legend>
+        <ul>
+          <li>
+            <textarea class="input textarea" rows="10" cols="30" wicket:id="srs"></textarea>
+          </li>
+        </ul>
+      </fieldset>
+    </li>
 </wicket:extend>
 </body>
 </html>

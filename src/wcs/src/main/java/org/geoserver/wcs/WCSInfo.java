@@ -90,6 +90,6 @@ public interface WCSInfo extends ServiceInfo {
      * 
      * @return <code>true</code> for lat-lon order, <code>false</code> otherwise.
      */
-    public boolean getLatLon();
+    public boolean isLatLon();
     
 }

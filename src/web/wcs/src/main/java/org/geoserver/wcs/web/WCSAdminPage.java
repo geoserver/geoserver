@@ -51,7 +51,7 @@ public class WCSAdminPage extends BaseServiceAdminPage<WCSInfo> {
         form.add(maxOutputMemory);
         
         // lat-lon VS lon-lat
-        form.add(new CheckBox("LatLonOrder"));
+        form.add(new CheckBox("latLonOrder"));
         
     }
 

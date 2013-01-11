@@ -19,7 +19,7 @@ public class WCSInfoImpl extends ServiceInfoImpl implements WCSInfo {
 
     boolean gmlPrefixing;
     
-    private boolean latLon=false;
+    private boolean latLon = false;
     
     long maxInputMemory = -1;
     
@@ -91,7 +91,7 @@ public class WCSInfoImpl extends ServiceInfoImpl implements WCSInfo {
     }
 
     @Override
-    public boolean getLatLon() {
+    public boolean isLatLon() {
         return latLon;
     }
 

@@ -4,13 +4,12 @@
  */
 package org.geoserver.monitor.ows.wms;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.geoserver.monitor.MonitorConfig;
 import org.geoserver.monitor.ows.RequestObjectHandler;
 import org.geoserver.ows.util.OwsUtils;
-
 import org.opengis.feature.type.FeatureType;
 
 public class GetLegendGraphicHandler extends RequestObjectHandler {
@@ -21,9 +20,13 @@ public class GetLegendGraphicHandler extends RequestObjectHandler {
 
     @Override
     protected List<String> getLayers(Object request) {
-        FeatureType type = (FeatureType) OwsUtils.get(request, "layer");
-        if (type != null) {
-            return Arrays.asList(type.getName().toString());
+        List<FeatureType> types = (List<FeatureType>) OwsUtils.get(request, "layers");
+        if (types != null) {
+            List<String> result = new ArrayList<String>();
+            for (FeatureType ft : types) {
+                result.add(ft.getName().toString());
+            }
+            return result;
         }
         return null;
     }

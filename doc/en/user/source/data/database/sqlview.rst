@@ -127,12 +127,12 @@ If the values contain semicolons or commas these must be escaped with a backslas
 For example, the ``popstates`` SQL View layer can be displayed by invoking the :ref:`layerpreview`.
 Initially no parameter values are supplied, so the defaults are used and all the states are displayed, 
 
-To display all states having more than 20 million inhabitatants the following parameter is added to the ``GetMap`` request: ``&viewparams=low:20000000``
+To display all states having more than 20 million inhabitants the following parameter is added to the ``GetMap`` request: ``&viewparams=low:20000000``
 
 .. figure:: images/sqlview-20millions.png
    :align: center
 
-To display all states having between 2 and 5 millions inhabitatants the view parameters are: ``&viewparams=low:2000000;high:5000000``
+To display all states having between 2 and 5 millions inhabitants the view parameters are: ``&viewparams=low:2000000;high:5000000``
 
 .. figure:: images/sqlview-2m-5m.png
    :align: center
@@ -163,7 +163,7 @@ since this will be checked by the database SQL parser.
 For example:
 
   * ``^[\d\.\+-eE]+$`` checks that a parameter value contains valid characters for floating-point numbers (including scientific notation), but does not check that the value is actually a valid number
-  * ``[^;']+`` checks that a parameter value does not contain quotes or semicolumn.  This prevents common SQL injection attacks, but otherwise does not impose much limitation on the actual value
+  * ``[^;']+`` checks that a parameter value does not contain quotes or semicolons.  This prevents common SQL injection attacks, but otherwise does not impose much limitation on the actual value
 
 Resources for Validation Regular expressions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

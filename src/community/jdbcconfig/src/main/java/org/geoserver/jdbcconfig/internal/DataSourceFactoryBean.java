@@ -30,7 +30,16 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Disposabl
         BasicDataSource dataSource = new BasicDataSource();
 
         dataSource.setUrl(config.getJdbcUrl());
-        dataSource.setDriverClassName(get(config, "driverClassName", String.class, true, null));
+
+        String driverClassName = get(config, "driverClassName", String.class, true, null);
+        try {
+            Class.forName(driverClassName);
+        }
+        catch(Exception e) {
+            throw new RuntimeException("Error loading jdbc driver class: " + driverClassName, e);
+        }
+        
+        dataSource.setDriverClassName(driverClassName);
         dataSource.setUsername(get(config, "username", String.class, false, null));
         dataSource.setPassword(get(config, "password", String.class, false, null));
 

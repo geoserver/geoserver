@@ -6,6 +6,7 @@ package org.geoserver.jdbcconfig;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.geoserver.catalog.Catalog;
@@ -14,11 +15,14 @@ import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.DefaultGeoServerLoader;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerFacade;
+import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.jdbcconfig.catalog.JDBCCatalogFacade;
 import org.geoserver.jdbcconfig.internal.ConfigDatabase;
 import org.geoserver.jdbcconfig.internal.JDBCConfigProperties;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.util.logging.Logging;
 
@@ -94,6 +98,16 @@ public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
         }
         if (geoServer.getLogging() == null) {
             geoServer.setLogging(geoServer.getFactory().createLogging());
+        }
+
+        //also ensure we have a service configuration for every service we know about
+        final List<XStreamServiceLoader> loaders = 
+            GeoServerExtensions.extensions( XStreamServiceLoader.class );
+        for (XStreamServiceLoader l : loaders) {
+            ServiceInfo s = geoServer.getService(l.getServiceClass());
+            if (s == null) {
+                geoServer.add(l.create(geoServer));
+            }
         }
     }
 

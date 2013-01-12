@@ -27,24 +27,6 @@
 
   <tx:annotation-driven transaction-manager="txManager" />
 
-  <!--jdbc:initialize-database data-source="jdbcConfigDataSource" enabled="true" ignore-failures="NONE"> <jdbc:script location="file:///${GEOSERVER_DATA_DIR}/jdbcconfig.properties"/> 
-    </jdbc:initialize-database -->
-
-  <!-- BoneCP configuration -->
-  <!--bean id="jdbcConfigProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
-    <property name="ignoreResourceNotFound" value="true" />
-    <property name="locations">
-      <list>
-        <value>classpath:/jdbcconfig.properties</value>
-        <value>file:///${GEOSERVER_DATA_DIR}/jdbcconfig/jdbcconfig.properties</value>
-      </list>
-    </property>
-  </bean-->
-
-  <!--bean id="jdbcConfigPoolingDataSource" class="com.jolbox.bonecp.BoneCPDataSource" destroy-method="close">
-    <property name="properties" ref="jdbcConfigProperties" />
-  </bean-->
-
   <bean id="jdbcPersistenceBinding" class="org.geoserver.jdbcconfig.internal.XStreamInfoSerialBinding">
     <constructor-arg ref="xstreamPersisterFactory" />
   </bean>

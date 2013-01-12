@@ -21,11 +21,6 @@
       <artifactId>spring-jdbc</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.jolbox</groupId>
-      <artifactId>bonecp</artifactId>
-      <version>0.7.1.RELEASE</version>
-    </dependency>
-    <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
       <scope>provided</scope>

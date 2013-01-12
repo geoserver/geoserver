@@ -115,6 +115,7 @@
    
 
   <bean id="xmlSecurityProvider" class="org.geoserver.security.xml.XMLSecurityProvider"/>
+  <bean id="j2eeSecurityProvider" class="org.geoserver.security.impl.J2eeSecurityProvider"/>
   <bean id="basicAuthSecurityProvider" class="org.geoserver.security.filter.GeoServerBasicAuthenticationProvider"/>
   <bean id="digestAuthSecurityProvider" class="org.geoserver.security.filter.GeoServerDigestAuthenticationProvider"/>
   <bean id="roleFilterProvider" class="org.geoserver.security.filter.GeoServerRoleProvider"/>

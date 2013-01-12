@@ -97,7 +97,7 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
         final ParameterValueGroup writerParams = GEOTIF_FORMAT.getWriteParameters();
         writerParams.parameter(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString()).setValue(wp);
         
-        if(geoserver.getService(WCSInfo.class).getLatLon()){
+        if(geoserver.getService(WCSInfo.class).isLatLon()){
             writerParams.parameter(GeoTiffFormat.RETAIN_AXES_ORDER.getName().toString()).setValue(true);
         }
 

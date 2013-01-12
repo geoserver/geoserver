@@ -165,7 +165,7 @@ public class ConfigDatabase {
         LOGGER.info("Initialization SQL script run sucessfully");
     }
 
-    DbMappings getDbMappings() {
+    public DbMappings getDbMappings() {
         return dbMappings;
     }
 

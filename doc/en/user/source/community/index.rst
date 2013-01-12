@@ -20,7 +20,6 @@ officially part of the GeoServer releases. They are however built along with the
    dxf/index
    dds/index
    inspire/index
-   monitoring/index
    printing/index
    python/index
    scripting/index

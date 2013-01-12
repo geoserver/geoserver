@@ -11,6 +11,7 @@ import static org.geoserver.ows.util.ResponseUtils.buildURL;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -228,11 +229,18 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             // the CRS extension requires us to declare the full list of supported CRS
             start("wcs:Extension");
             // add the supported CRS
-            for (String code : CRS.getSupportedCodes("EPSG")) {
+            Collection<String> codes;
+            if(wcs.getSRS() == null || wcs.getSRS().isEmpty()) {
+                codes = CRS.getSupportedCodes("EPSG");
+            } else {
+                codes = wcs.getSRS();
+            }
+            for (String code : codes) {
                 if(!code.equals("WGS84(DD)")) {
                      element("wcscrs:crsSupported", "http://www.opengis.net/def/crs/EPSG/0/" + code);
                 }
             }
+
             // add the supported interpolation methods
             element("int:interpolationSupported", "http://www.opengis.net/def/interpolation/OGC/1/nearest-neighbor");
             element("int:interpolationSupported", "http://www.opengis.net/def/interpolation/OGC/1/linear");

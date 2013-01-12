@@ -57,6 +57,9 @@ public class WCSXStreamLoader extends XStreamServiceLoader<WCSInfo> {
         if(!service.getVersions().contains(v201)) {
             service.getVersions().add(v201);
         }
+        if(service.getSRS() == null) {
+            ((WCSInfoImpl) service).setSRS(new ArrayList<String>());
+        }
         return service;
     }
 

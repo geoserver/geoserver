@@ -1,0 +1,21 @@
+<assembly>
+  <id>monitor-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>monitor-core-*.jar</include>
+        <include>jfreechart-*jar</include>
+        <include>jcommon-*jar</include>
+        <include>wicket-datetime-*.jar</include>
+        <include>poi-*.jar</include>
+        <include>joda-time-*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

@@ -109,7 +109,6 @@ public class GeoServerHomePage extends GeoServerBasePage {
             add(f);
             
             sw.stop();
-            System.err.println("Loaded catalogLinks in " + sw.toString());//TODO: remove
         } else {
             Label placeHolder = new Label("catalogLinks");
             placeHolder.setVisible(false);

@@ -260,7 +260,7 @@ public class GetCoverageKvpTest extends WCSTestSupport {
     public void testGetFullCoverageLatLon() throws Exception {
         // impose latlon retaining
         final WCSInfo wcsInfo = getWCS();
-        final boolean oldLatLon=wcsInfo.getLatLon();
+        final boolean oldLatLon=wcsInfo.isLatLon();
         wcsInfo.setLatLon(true);
         getGeoServer().save(wcsInfo);
         

@@ -21,5 +21,6 @@ see the :ref:`data_vector`, :ref:`data_raster`, and :ref:`data_database` section
    querylayer/index
    styler
    wps/index
+   monitoring/index
 
 

@@ -500,9 +500,11 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                     Map dupes = new HashMap();
                     for (Iterator i = featureProducers.iterator(); i.hasNext();) {
                         WFSGetFeatureOutputFormat format = (WFSGetFeatureOutputFormat) i.next();
-                        if (!dupes.containsKey(format.getCapabilitiesElementName())) {
-                            element(format.getCapabilitiesElementName(), null);
-                            dupes.put(format.getCapabilitiesElementName(), new Object());
+                        for (String name : format.getCapabilitiesElementNames()) {
+                            if (!dupes.containsKey(name)) {
+                                element(name, null);
+                                dupes.put(name, new Object());
+                            }
                         }
                     }
                 }

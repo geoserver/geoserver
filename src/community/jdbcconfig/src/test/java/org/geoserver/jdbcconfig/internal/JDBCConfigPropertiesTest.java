@@ -1,6 +1,7 @@
 package org.geoserver.jdbcconfig.internal;
 
 import static org.junit.Assert.*;
+import static org.geoserver.jdbcconfig.JDBCConfigTestSupport.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -20,10 +21,7 @@ public class JDBCConfigPropertiesTest {
 
     @Before
     public void setUp() throws IOException {
-        File f = File.createTempFile("jdbcconfig", "data", new File("target"));
-        f.delete();
-        f.mkdirs();
-        loader = new GeoServerResourceLoader(f);
+        loader = new GeoServerResourceLoader(createTempDir());
     }
 
     @After

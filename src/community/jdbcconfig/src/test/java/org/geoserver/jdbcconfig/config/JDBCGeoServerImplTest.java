@@ -8,20 +8,20 @@ import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.GeoServerFacade;
 import org.geoserver.config.GeoServerImplTest;
 import org.geoserver.config.impl.GeoServerImpl;
+import org.geoserver.jdbcconfig.JDBCConfigTestSupport;
 import org.geoserver.jdbcconfig.catalog.JDBCCatalogFacade;
 import org.geoserver.jdbcconfig.internal.ConfigDatabase;
-import org.geoserver.jdbcconfig.internal.JdbcConfigTestSupport;
 import org.junit.After;
 
 public class JDBCGeoServerImplTest extends GeoServerImplTest {
 
     private GeoServerFacade facade;
 
-    private JdbcConfigTestSupport testSupport;
+    private JDBCConfigTestSupport testSupport;
 
     @Override
     public void setUp() throws Exception {
-        testSupport = new JdbcConfigTestSupport();
+        testSupport = new JDBCConfigTestSupport();
         testSupport.setUp();
 
         ConfigDatabase configDb = testSupport.getDatabase();

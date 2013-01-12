@@ -110,7 +110,7 @@ public class DbMappings {
      */
     public void initDb(final NamedParameterJdbcOperations template) {
 
-        LOGGER.info("Initializing Catalog and Config database");
+        LOGGER.fine("Initializing Catalog and Config database");
 
         ClassMappings[] classMsappings = ClassMappings.values();
 

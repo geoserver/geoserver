@@ -2,10 +2,9 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.jdbcconfig.internal;
+package org.geoserver.jdbcconfig;
 
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.when;
+import static org.easymock.classextension.EasyMock.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
+import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
@@ -24,17 +24,29 @@ import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.jdbcconfig.JDBCGeoServerLoader;
+import org.geoserver.jdbcconfig.internal.ConfigDatabase;
+import org.geoserver.jdbcconfig.internal.DbMappings;
+import org.geoserver.jdbcconfig.internal.XStreamInfoSerialBinding;
 import org.geoserver.platform.GeoServerExtensions;
-import org.mockito.Mockito;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.springframework.context.ApplicationContext;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.web.context.WebApplicationContext;
+import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
 
-public class JdbcConfigTestSupport {
+public class JDBCConfigTestSupport {
+
+    public static File createTempDir() throws IOException {
+        File f = File.createTempFile("jdbcconfig", "data", new File("target"));
+        f.delete();
+        f.mkdirs();
+        return f;
+    }
 
     // String driver = "org.postgresql.Driver";
     //
@@ -46,11 +58,15 @@ public class JdbcConfigTestSupport {
 
     String driver = "org.h2.Driver";
 
-    String connectionUrl = "jdbc:h2:file:target/jdbcconfig/test";
+    String connectionUrl = "jdbc:h2:file:${DATA_DIR}/test";
 
     String initScriptName = "initdb.h2.sql";
 
     String dropScriptName = "dropdb.h2.sql";
+
+    private WebApplicationContext appContext;
+
+    private GeoServerResourceLoader resourceLoader;
 
     private CatalogImpl catalog;
 
@@ -60,23 +76,26 @@ public class JdbcConfigTestSupport {
 
     public void setUp() throws Exception {
         ConfigDatabase.LOGGER.setLevel(Level.FINER);
+
+        resourceLoader = new GeoServerResourceLoader(createTempDir());
+        GeoserverDataDirectory.loader = resourceLoader;
+
         // just to avoid hundreds of warnings in the logs about extension lookups with no app
         // context set
-        WebApplicationContext applicationContext = Mockito.mock(WebApplicationContext.class);
-        new GeoServerExtensions().setApplicationContext(applicationContext);
-        when(applicationContext.getBeansOfType((Class) anyObject())).thenReturn(
-                Collections.EMPTY_MAP);
-        when(applicationContext.getBeanNamesForType((Class) anyObject())).thenReturn(
-                new String[] {});
-        //
+        appContext = createNiceMock(WebApplicationContext.class);
+        new GeoServerExtensions().setApplicationContext(appContext);
 
-        final File testDbDir = new File("target", "jdbcconfig");
-        FileUtils.deleteDirectory(testDbDir);
-        testDbDir.mkdirs();
+        configureAppContext(appContext);
+        replay(appContext);
+
+//        final File testDbDir = new File("target", "jdbcconfig");
+//        FileUtils.deleteDirectory(testDbDir);
+//        testDbDir.mkdirs();
 
         dataSource = new BasicDataSource();
         dataSource.setDriverClassName(driver);
-        dataSource.setUrl(connectionUrl);
+        dataSource.setUrl(connectionUrl.replace("${DATA_DIR}",
+            resourceLoader.getBaseDirectory().getAbsolutePath()));
         dataSource.setUsername("postgres");
         dataSource.setPassword("geo123");
 
@@ -104,6 +123,18 @@ public class JdbcConfigTestSupport {
         configDb.initDb(null);
     }
 
+    protected void configureAppContext(WebApplicationContext appContext) {
+        expect(appContext.getBeansOfType((Class) anyObject()))
+            .andReturn(Collections.EMPTY_MAP).anyTimes();
+        expect(appContext.getBeanNamesForType((Class) anyObject()))
+            .andReturn(new String[] {}).anyTimes();
+
+        ServletContext servletContext = createNiceMock(ServletContext.class);
+        replay(servletContext);
+
+        expect(appContext.getServletContext()).andReturn(servletContext);
+    }
+
     public void tearDown() throws Exception {
         if (dataSource != null) {
             dropDb(dataSource);
@@ -117,6 +148,14 @@ public class JdbcConfigTestSupport {
                 dataSource.close();
             }
         }
+    }
+
+    public GeoServerResourceLoader getResourceLoader() {
+        return resourceLoader;
+    }
+
+    public WebApplicationContext getApplicationContext() {
+        return appContext;
     }
 
     public ConfigDatabase getDatabase() {

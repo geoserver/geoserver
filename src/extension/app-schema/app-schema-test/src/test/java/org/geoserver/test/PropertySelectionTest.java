@@ -128,7 +128,7 @@ public class PropertySelectionTest extends AbstractAppSchemaTestSupport {
 
         // test exception refering to missing column
         assertTrue(evaluate("//ows:ExceptionText", doc)
-                .endsWith("No value for xpath: DOESNT_EXIST"));
+                .contains("Could not find working property accessor for attribute (DOESNT_EXIST)"));
 
     }
 

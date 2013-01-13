@@ -5,13 +5,17 @@
 package org.geoserver.gwc;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import org.geotools.util.logging.Logging;
 import org.geowebcache.config.ConfigurationException;
 import org.geowebcache.diskquota.ConfigLoader;
 import org.geowebcache.diskquota.DiskQuotaConfig;
 import org.geowebcache.diskquota.QuotaStore;
 import org.geowebcache.diskquota.QuotaStoreProvider;
 import org.geowebcache.diskquota.jdbc.JDBCQuotaStoreFactory;
+import org.geowebcache.diskquota.storage.TilePageCalculator;
 
 /**
  * A quota store whose store is a {@link ConfigurableQuotaStore} whose delegate can be reloaded by
@@ -21,9 +25,15 @@ import org.geowebcache.diskquota.jdbc.JDBCQuotaStoreFactory;
  * 
  */
 public class ConfigurableQuotaStoreProvider extends QuotaStoreProvider {
-
-    public ConfigurableQuotaStoreProvider(ConfigLoader loader) {
+    
+    static final Logger LOGGER = Logging.getLogger(ConfigurableQuotaStoreProvider.class);
+    
+    Exception exception;
+    TilePageCalculator calculator;
+    
+    public ConfigurableQuotaStoreProvider(ConfigLoader loader, TilePageCalculator calculator) {
         super(loader);
+        this.calculator = calculator;
     }
     
     @Override
@@ -37,14 +47,31 @@ public class ConfigurableQuotaStoreProvider extends QuotaStoreProvider {
             quotaStoreName = JDBCQuotaStoreFactory.H2_STORE;
         }
 
-        QuotaStore store = getQuotaStoreByName(quotaStoreName);
+        QuotaStore store  = null;
+        try {
+            store = getQuotaStoreByName(quotaStoreName);
+            exception = null;
+        } catch(Exception e) {
+            LOGGER.log(Level.SEVERE, "Failed to get a quota store, " +
+            		"the GeoWebCache disk quota subsystem will stop working now", e);
+            this.exception = e;
+            store = new DummyQuotaStore(calculator);
+        }
+        
         if (this.store == null) {
             this.store = new ConfigurableQuotaStore(store);
         } else {
             ((ConfigurableQuotaStore) this.store).setStore(store);
         }
+
     }
-    
-     
+
+    /**
+     * The exception occurred during the last attempt to load the quota store, if any
+     * @return
+     */
+    public Exception getException() {
+        return exception;
+    }
 
 }

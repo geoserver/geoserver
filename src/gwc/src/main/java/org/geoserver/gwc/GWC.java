@@ -1860,7 +1860,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         JDBCQuotaStoreFactory factory = GeoServerExtensions.bean(JDBCQuotaStoreFactory.class);
         QuotaStore qs = null;
         try {
-            qs = factory.getQuotaStore(applicationContext, "JDBC");
+            qs = factory.getJDBCStore(applicationContext, jdbcConfiguration);
         } finally {
             if(qs != null) {
                 try {

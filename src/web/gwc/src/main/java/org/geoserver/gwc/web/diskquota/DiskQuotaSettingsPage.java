@@ -18,10 +18,12 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.geoserver.gwc.ConfigurableQuotaStoreProvider;
 import org.geoserver.gwc.GWC;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
+import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.image.io.ImageIOExt;
 import org.geowebcache.diskquota.DiskQuotaConfig;
 import org.geowebcache.diskquota.jdbc.JDBCConfiguration;
@@ -33,6 +35,14 @@ public class DiskQuotaSettingsPage extends GeoServerSecuredPage {
         GWC gwc = getGWC();
 
         final boolean diskQuotaModuleDisabled = gwc.getDiskQuotaConfig() == null;
+        
+        // get the quota store config, show an error message in case the quota
+        // store loading failed
+        ConfigurableQuotaStoreProvider provider = GeoServerApplication.get().getBeanOfType(ConfigurableQuotaStoreProvider.class);
+        if(provider.getException() != null) {
+            ParamResourceModel rm = new ParamResourceModel("GWC.diskQuotaLoadFailed", null, provider.getException().getMessage());
+            error(rm.getString());
+        }
 
         // use a dettached copy of dq config to support the tabbed pane
         final DiskQuotaConfig diskQuotaConfig;
@@ -106,6 +116,7 @@ public class DiskQuotaSettingsPage extends GeoServerSecuredPage {
                             LOGGER.log(Level.SEVERE, "Error instantiating the JDBC configuration", e);
                             error("Failure occurred while saving the JDBC configuration" 
                                     + e.getMessage() + " (see the logs for a full stack trace)");
+                            return;
                         }
                     }
                     
@@ -116,6 +127,7 @@ public class DiskQuotaSettingsPage extends GeoServerSecuredPage {
                         LOGGER.log(Level.SEVERE, "Failed to save the JDBC configuration", e);
                         error("Failure occurred while saving the JDBC configuration" 
                                 + e.getMessage() + " (see the logs for a full stack trace)");
+                        return;
                     }
                 }
 

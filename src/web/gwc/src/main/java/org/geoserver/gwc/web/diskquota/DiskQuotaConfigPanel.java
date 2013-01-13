@@ -35,6 +35,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.gwc.GWC;
 import org.geoserver.web.GeoServerApplication;
+import org.geoserver.web.wicket.LocalizedChoiceRenderer;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.diskquota.DiskQuotaConfig;
 import org.geowebcache.diskquota.ExpirationPolicy;
@@ -118,7 +119,8 @@ public class DiskQuotaConfigPanel extends Panel {
         if(diskQuotaModel.getObject().getQuotaStore() == null) {
             storeNameModel.setObject(JDBCQuotaStoreFactory.H2_STORE);
         }
-        final DropDownChoice<String> quotaStoreChooser = new DropDownChoice<String>("diskQuotaStore", storeNameModel, storeNames);
+        final DropDownChoice<String> quotaStoreChooser = new DropDownChoice<String>("diskQuotaStore", storeNameModel, storeNames,
+                new LocalizedChoiceRenderer(this));
         quotaStoreChooser.setOutputMarkupId(true);
         quotaStoreContainer.add(quotaStoreChooser);
         
@@ -151,7 +153,8 @@ public class DiskQuotaConfigPanel extends Panel {
         } else {
             connectionTypeModel.setObject("JNDI");
         }
-        final DropDownChoice<String> connectionTypeChooser = new DropDownChoice<String>("connectionTypeChooser", connectionTypeModel, connectionTypes);
+        final DropDownChoice<String> connectionTypeChooser = new DropDownChoice<String>("connectionTypeChooser", 
+                connectionTypeModel, connectionTypes, new LocalizedChoiceRenderer(this));
         connectionTypeChooser.setOutputMarkupId(true);
         jdbcContainer.add(connectionTypeChooser);
         

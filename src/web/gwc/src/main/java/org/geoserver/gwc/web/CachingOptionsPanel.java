@@ -30,6 +30,7 @@ import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.web.GeoServerApplication;
+import org.geoserver.web.wicket.LocalizedChoiceRenderer;
 import org.geowebcache.locks.LockProvider;
 import org.springframework.context.ApplicationContext;
 
@@ -77,7 +78,7 @@ public class CachingOptionsPanel extends Panel {
         List<String> lockProviderChoices = new ArrayList<String>(Arrays.asList(lockProviders));
         Collections.sort(lockProviderChoices); // make sure we get a stable listing order
         DropDownChoice<String> lockProviderChoice = new DropDownChoice<String>("lockProvider", lockProviderModel,
-                lockProviderChoices);
+                lockProviderChoices, new LocalizedChoiceRenderer(this));
         configs.add(lockProviderChoice);
 
 

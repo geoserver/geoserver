@@ -118,7 +118,6 @@ public class GetCoverageTest extends WCSTestSupport {
             }
         }
     }
-    
     @Test
     public void testGetFullCoverageXML() throws Exception {
         final File xml= new File("./src/test/resources/requestGetFullCoverage.xml");
@@ -158,6 +157,32 @@ public class GetCoverageTest extends WCSTestSupport {
                 // TODO: handle exception
             }
         }
+    }
+    @Test
+    public void testInputLimits() throws Exception {
+        final File xml= new File("./src/test/resources/requestGetFullCoverage.xml");
+        final String request= FileUtils.readFileToString(xml);
+        // set limits
+        setInputLimit(1);
+        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+        
+        System.out.println(new String(this.getBinary(response)));
+        assertEquals("application/xml", response.getContentType());
+        // reset imits
+        setInputLimit(-1);
+       
+    }
+    @Test
+    public void testOutputLimits() throws Exception {
+        final File xml= new File("./src/test/resources/requestGetFullCoverage.xml");
+        final String request= FileUtils.readFileToString(xml);        // set limits
+        // set output limits
+        setOutputLimit(1);
+        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+        
+        assertEquals("application/xml", response.getContentType());
+        // reset imits
+        setOutputLimit(-1);
     }
 
     /**

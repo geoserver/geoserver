@@ -17,6 +17,7 @@ import java.util.Map;
 
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -27,6 +28,7 @@ import org.apache.xerces.dom.DOMInputImpl;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wcs.CoverageCleanerCallback;
@@ -150,12 +152,14 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         testData.setUpDefaultRasterLayers();
         testData.setUpWcs10RasterLayers();
         testData.setUpWcs11RasterLayers();
+        
+        // multiband tiff
+        testData.setUpRasterLayer(new QName(SystemTestData.WCS_URI, "multiband",SystemTestData.WCS_PREFIX), "multiband.tif", null);
+        
     }
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
-          // System.out.println("---- WCSTestSupport::doSetup ---> " + new Date());
-//        System.out.println("---- GeoServerBaseTestSupport::setUpLogging --->  " + new Date());
 
         super.onSetUp(testData);
 
@@ -166,10 +170,11 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         namespaces.put("ows", "http://www.opengis.net/ows/2.0");
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         namespaces.put("int", "http://www.opengis.net/WCS_service-extension_interpolation/1.0");
+        namespaces.put("gmlcov", "http://www.opengis.net/gmlcov/1.0");
+        namespaces.put("swe", "http://www.opengis.net/swe/2.0");
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
         xpath = XMLUnit.newXpathEngine();
 
-        // System.out.println("---- WCSTestSupport::doSetup ---< " + new Date());
     }
 
     @Override
@@ -232,15 +237,6 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         assertXpathEvaluatesTo("1", "count(//wcs:ServiceMetadata/wcs:Extension[int:interpolationSupported='http://www.opengis.net/def/interpolation/OGC/1/cubic'])", dom);
     }
 
-    // TODO: re-enable when we have subsetting support in GetCoverage
-    // @Test
-    // public void testBBoxRequest() throws Exception {
-    // Document dom = getAsDOM("wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=" +
-    // getLayerId(TASMANIA_BM) + "&subset=lon(-10,10)&subset=lat(-20,20)");
-    // print(dom);
-    //
-    // // checkFullCapabilitiesDocument(dom);
-    // }
     /**
      * Gets a TIFFField node with the given tag number. This is done by searching for a TIFFField
      * with attribute number whose value is the specified tag value.
@@ -266,6 +262,20 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
     @Override
     protected String getLogConfiguration() {
         return "/DEFAULT_LOGGING.properties";
+    }
+
+    protected void setInputLimit(int kbytes) {
+        GeoServer gs = getGeoServer();
+        WCSInfo info = gs.getService(WCSInfo.class);
+        info.setMaxInputMemory(kbytes);
+        gs.save(info);
+    }
+
+    protected void setOutputLimit(int kbytes) {
+        GeoServer gs = getGeoServer();
+        WCSInfo info = gs.getService(WCSInfo.class);
+        info.setMaxOutputMemory(kbytes);
+        gs.save(info);
     }
 
     /**

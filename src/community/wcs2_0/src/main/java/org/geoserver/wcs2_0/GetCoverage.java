@@ -70,11 +70,13 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.ReferencingFactoryFinder;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.resources.coverage.CoverageUtilities;
+import org.geotools.util.DefaultProgressListener;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
 import org.jaitools.imageutils.ImageLayout2;
 import org.opengis.coverage.SampleDimension;
 import org.opengis.coverage.grid.GridCoverage;
+import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.coverage.processing.Operation;
 import org.opengis.geometry.Envelope;
 import org.opengis.parameter.GeneralParameterValue;
@@ -174,7 +176,7 @@ public class GetCoverage {
         DoNothing{
 
             @Override
-            public GridCoverage2D scale(GridCoverage2D sourceGC, ScalingType scaling,Interpolation interpolation,Hints hints) {
+            public GridCoverage2D scale(GridCoverage2D sourceGC, ScalingType scaling,Interpolation interpolation,Hints hints, WCSInfo wcsinfo) {
                 Utilities.ensureNonNull("sourceGC", sourceGC);
                 Utilities.ensureNonNull("ScalingType", scaling);
                 Utilities.ensureNonNull("Interpolation", interpolation);                
@@ -185,7 +187,7 @@ public class GetCoverage {
         ScaleByFactor{
 
             @Override
-            public GridCoverage2D scale(GridCoverage2D sourceGC, ScalingType scaling,Interpolation interpolation,Hints hints) {
+            public GridCoverage2D scale(GridCoverage2D sourceGC, ScalingType scaling,Interpolation interpolation,Hints hints, WCSInfo wcsinfo) {
                 Utilities.ensureNonNull("sourceGC", sourceGC);
                 Utilities.ensureNonNull("ScalingType", scaling);
                 
@@ -214,9 +216,21 @@ public class GetCoverage {
                         return (GridCoverage2D) CoverageProcessor.getInstance(hints).doOperation(parameters,hints);
                     }      
                 }
+
+                // ==== check limits
+                final GridGeometry2D gridGeometry = sourceGC.getGridGeometry();
+                final GridEnvelope gridRange = gridGeometry.getGridRange();
+                WCSUtils.checkOutputLimits(
+                        wcsinfo, 
+                        new GridEnvelope2D(
+                                0,
+                                0,
+                                (int)(gridRange.getSpan(gridGeometry.gridDimensionX)*scaleFactor),
+                                (int)(gridRange.getSpan(gridGeometry.gridDimensionY)*scaleFactor)), 
+                        sourceGC.getRenderedImage().getSampleModel());
                 
-                // checks
-                // scale
+
+                // === scale
                 final Operation operation = CoverageProcessor.getInstance().getOperation("Scale");
                 final ParameterValueGroup parameters = operation.getParameters();
                 parameters.parameter("Source").setValue(sourceGC);
@@ -234,10 +248,11 @@ public class GetCoverage {
             /**
              * In this case we must retain the lower bounds by scale the size, hence {@link ScaleDescriptor} JAI operation 
              * cannot be used. Same goes for {@link AffineDescriptor}, the only real option is {@link WarpDescriptor}.
+             * @param wcsinfo 
              * 
              */
             @Override
-            public GridCoverage2D scale(GridCoverage2D sourceGC, ScalingType scaling, Interpolation interpolation,Hints hints) {
+            public GridCoverage2D scale(GridCoverage2D sourceGC, ScalingType scaling, Interpolation interpolation,Hints hints, WCSInfo wcsinfo) {
                 // get scale size
                 final ScaleToSizeType scaleType = scaling.getScaleToSize();
                 final EList<TargetAxisSizeType> targetAxisSizeElements = scaleType.getTargetAxisSize();
@@ -263,7 +278,7 @@ public class GetCoverage {
                     throw new WCS20Exception("Invalid target size", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, Integer.toString(sizeY));
                 }
                 
-                // unscale
+                // scale
                 final GridEnvelope2D sourceGE=sourceGC.getGridGeometry().getGridRange2D();
                 if(sizeY==sourceGE.width&& sizeX==sourceGE.height){
                     // NO SCALING do we need interpolation?
@@ -280,6 +295,9 @@ public class GetCoverage {
                         return (GridCoverage2D) CoverageProcessor.getInstance().doOperation(parameters,hints);
                     }                 
                 }
+                
+                // === enforce output limits
+                WCSUtils.checkOutputLimits(wcsinfo, new GridEnvelope2D(0,0,sizeX,sizeY), sourceGC.getRenderedImage().getSampleModel());
                 
                 // create final warp
                 final Warp warp= new  WarpAffine(AffineTransform.getScaleInstance(sourceGE.width/sizeX, sourceGE.height/sizeY));
@@ -303,7 +321,7 @@ public class GetCoverage {
         ScaleToExtent{
 
             @Override
-            public GridCoverage2D scale(GridCoverage2D sourceGC, ScalingType scaling, Interpolation interpolation,Hints hints) {
+            public GridCoverage2D scale(GridCoverage2D sourceGC, ScalingType scaling, Interpolation interpolation,Hints hints, WCSInfo wcsinfo) {
                 Utilities.ensureNonNull("sourceGC", sourceGC);
                 Utilities.ensureNonNull("ScalingType", scaling);
                 
@@ -362,6 +380,11 @@ public class GetCoverage {
                     }      
                 }
                 
+                // === enforce output limits
+                WCSUtils.checkOutputLimits(
+                        wcsinfo, 
+                        new GridEnvelope2D(destinationRectangle), sourceGC.getRenderedImage().getSampleModel());
+                
                 // create final warp
                 final Warp warp= new  WarpAffine(AffineTransform.getScaleInstance(
                         sourceGE.width/destinationRectangle.width, 
@@ -387,7 +410,7 @@ public class GetCoverage {
         ScaleAxesByFactor{
 
             @Override
-            public GridCoverage2D scale(GridCoverage2D sourceGC, ScalingType scaling,Interpolation interpolation,Hints hints) {
+            public GridCoverage2D scale(GridCoverage2D sourceGC, ScalingType scaling,Interpolation interpolation,Hints hints, WCSInfo wcsinfo) {
                 Utilities.ensureNonNull("sourceGC", sourceGC);
                 Utilities.ensureNonNull("ScalingType", scaling);
                 
@@ -442,6 +465,19 @@ public class GetCoverage {
                     }      
                 }  
 
+
+                // ==== check limits
+                final GridGeometry2D gridGeometry = sourceGC.getGridGeometry();
+                final GridEnvelope gridRange = gridGeometry.getGridRange();
+                WCSUtils.checkOutputLimits(
+                        wcsinfo, 
+                        new GridEnvelope2D(
+                                0,
+                                0,
+                                (int)(gridRange.getSpan(gridGeometry.gridDimensionX)*scaleFactorX),
+                                (int)(gridRange.getSpan(gridGeometry.gridDimensionY)*scaleFactorY)), 
+                        sourceGC.getRenderedImage().getSampleModel());
+                
                 // scale
                 final Operation operation = CoverageProcessor.getInstance().getOperation("Scale");
                 final ParameterValueGroup parameters = operation.getParameters();
@@ -462,9 +498,10 @@ public class GetCoverage {
          * @param scaling the instance of {@link ScalingType} that contains he type of scaling to perform.
          * @param interpolation the {@link Interpolation} to use. In case it is <code>null</code> we will use the {@link InterpolationPolicy} default value.
          * @param hints {@link Hints} to use during this operation.
+         * @param wcsinfo the current instance of {@link WCSInfo} that contains wcs config for GeoServer
          * @return a scaled version of the input {@link GridCoverage2D}. It cam be subsampled or oversampled, it depends on the {@link ScalingType} content.
          */
-        abstract public GridCoverage2D scale(GridCoverage2D sourceGC, ScalingType scaling, Interpolation interpolation, Hints hints) ;
+        abstract public GridCoverage2D scale(GridCoverage2D sourceGC, ScalingType scaling, Interpolation interpolation, Hints hints, WCSInfo wcsinfo) ;
         
 
         public static ScalingPolicy getPolicy(ScalingType scaling) {
@@ -527,29 +564,36 @@ public class GetCoverage {
         final CoverageInfo cinfo = (CoverageInfo) linfo.getResource();
         GridCoverage2D coverage = null;
         try {
+            
+            // === extract all extensions for later usage
+            Map<String, ExtensionItemType> extensions = extractExtensions(coverage,request);
 
-            // hints
+            // === prepare the hints to use
             // here I find if I can use overviews and do subsampling
             final Hints hints = GeoTools.getDefaultHints();
             hints.add(WCSUtils.getReaderHints(wcs));
             hints.add(new RenderingHints(JAI.KEY_BORDER_EXTENDER,BorderExtender.createInstance(BorderExtender.BORDER_COPY)));
-//            hints.add(new RenderingHints(JAI.KEY_REPLACE_INDEX_COLOR_MODEL,Boolean.FALSE));// TODO
+//            hints.add(new RenderingHints(JAI.KEY_REPLACE_INDEX_COLOR_MODEL,Boolean.FALSE));// TODO check interpolation
 
+            //
+            //
             // get a reader for this coverage
-            final AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) cinfo.getGridCoverageReader(null, hints);
+            final AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) cinfo.getGridCoverageReader(
+                    new DefaultProgressListener(), 
+                    hints);
             
-            // extract all extensions for later usage
-            Map<String, ExtensionItemType> extensions = extractExtensions(coverage,request);
-           
-            // get CRS extension values
+            //
+            // Extract CRS values for relative extension
+            //
             final CoordinateReferenceSystem subsettingCRS=extractSubsettingCRS(reader,extensions);
             final CoordinateReferenceSystem outputCRS=extractOutputCRS(reader,extensions);
             final boolean enforceLatLonAxesOrder=requestingLatLonAxesOrder(outputCRS);
             // extract subsetting
             final GeneralEnvelope subset=extractSubsettingEnvelope(reader,request,subsettingCRS);
+            assert subset!=null&&!subset.isEmpty();
             
             //
-            // handle interpolation extension 
+            // Handle interpolation extension 
             //
             // notice that for the moment we support only homogeneous interpolation on the 2D axis
             final Map<String,InterpolationPolicy> axesInterpolations=extractInterpolation(reader,extensions);
@@ -557,6 +601,8 @@ public class GetCoverage {
             // TODO time interpolation
             assert spatialInterpolation!=null;
             
+            
+            //
             // we setup the params to force the usage of imageread and to make it use
             // the right overview and so on
             // we really try to subset before reading with a grid geometry
@@ -568,30 +614,41 @@ public class GetCoverage {
                 throw new IllegalStateException("Unable to read a coverage for the current request"+request.toString());
             }
             
+            //
             // handle range subsetting
+            //        
             coverage=handleRangeSubsettingExtension(coverage,extensions,hints);
+          
             
+            //
             // subsetting, is not really an extension
+            //
             coverage=handleSubsettingExtension(coverage,subset,hints);
             
+            //
             // scaling extension
             //
             // scaling is done in raster space with eventual interpolation
-            // TODO we should handle the case where higher order interpolation
-            // is requested without a proper scaling by performing a scale by 1
-            // with interpolation or something similar
             coverage=handleScaling(coverage,extensions,spatialInterpolation,hints);
             
+            
+            //
             // reprojection
             //
             // reproject the output coverage to an eventual outputCrs
             coverage=handleReprojection(coverage,outputCRS,spatialInterpolation,hints);
-            
+
+            //
             // axes swap management
+            //
             if(enforceLatLonAxesOrder){
                 coverage = enforceLatLongOrder(coverage, hints, outputCRS);
             }
-
+            
+            // 
+            // Output limits checks
+            // We need to enforce them once again as it might be that no scaling or rangesubsetting is requested
+            WCSUtils.checkOutputLimits(wcs, coverage.getGridGeometry().getGridRange2D(), coverage.getRenderedImage().getSampleModel());
         } catch(Exception e) {
             throw new WCS20Exception("Failed to read the coverage " + request.getCoverageId(), e);
         } finally {
@@ -695,14 +752,15 @@ public class GetCoverage {
     }
 
     /**
+     * This method is responsible for reading 
      * @param cinfo
-     * @param outputCRS 
-     * @param subset 
-     * @param spatialInterpolation 
-     * @param reader 
-     * @param hints 
+     * @param spatialInterpolation
+     * @param subset
+     * @param outputCRS
+     * @param reader
+     * @param hints
      * @return
-     * @throws IOException 
+     * @throws Exception
      */
     private GridCoverage2D readCoverage(
             CoverageInfo cinfo, 
@@ -713,6 +771,7 @@ public class GetCoverage {
             Hints hints) throws Exception {
         // checks
         Utilities.ensureNonNull("interpolation", spatialInterpolation);
+
         
         //
         // check if we need to reproject the subset envelope back to coverageCRS
@@ -761,7 +820,8 @@ public class GetCoverage {
                 Boolean.FALSE, 
                 AbstractGridFormat.USE_JAI_IMAGEREAD);     
         
-        
+
+        GridCoverage2D coverage=null;
         //
         // kk, now build a good GG to read the smallest available area for the following operations
         //
@@ -773,14 +833,7 @@ public class GetCoverage {
                     PixelInCell.CELL_CENTER,
                     reader.getOriginalGridToWorld(PixelInCell.CELL_CENTER),
                     subset,
-                    hints);
-            
-            return RequestUtils.readBestCoverage(
-                    reader, 
-                    readParameters, 
-                    readGG,
-                    spatialInterpolation,
-                    hints);            
+                    hints);           
             
         }else{
             
@@ -794,9 +847,6 @@ public class GetCoverage {
             Rectangle rasterRange = CRS.transform(
                     reader.getOriginalGridToWorld(PixelInCell.CELL_CORNER).inverse(),
                     subset).toRectangle2D().getBounds();
-//            rasterRange.setSize(
-//                    (int)(rasterRange.width*1.1), 
-//                    (int)(rasterRange.height*1.1));
             rasterRange.setBounds(rasterRange.x-10, rasterRange.y-10, rasterRange.width+20, rasterRange.height+20);
             rasterRange=rasterRange.intersection(( GridEnvelope2D)reader.getOriginalGridRange());// make sure we are in it
             
@@ -806,14 +856,27 @@ public class GetCoverage {
                     PixelInCell.CELL_CENTER,
                     reader.getOriginalGridToWorld(PixelInCell.CELL_CENTER),
                     coverageCRS,
-                    hints);
-            
-            return RequestUtils.readBestCoverage(reader, 
-                    readParameters,  
-                    readGG, 
-                    spatialInterpolation,
                     hints);            
         }
+        
+        
+
+        // === read
+        // check limits
+        WCSUtils.checkInputLimits(wcs,cinfo,reader,readGG);
+        coverage= RequestUtils.readBestCoverage(
+                reader, 
+                readParameters,  
+                readGG, 
+                spatialInterpolation,
+                hints);
+        // check limits again
+        if(coverage!=null){
+            WCSUtils.checkInputLimits(wcs, coverage);
+        }
+        
+        // return
+        return coverage;
 
     }
 
@@ -1023,14 +1086,23 @@ public class GetCoverage {
     }
 
     /**
-     * @param coverage
-     * @param extensions
-     * @param hints 
-     * @return
+     * This method is responsible for performing the RangeSubsetting operation
+     * which can be used to subset of actually remix or even duplicate bands
+     * from the input source coverage.
+     * 
+     * <p>
+     * The method tries to enforce the WCS Resource Limits specified at config time.
+     * 
+     * @param coverage the {@link GridCoverage2D} to work on
+     * @param extensions the list of WCS extension to look for the the RangeSubset one
+     * @param hints an instance of {@link Hints} to use for the operations.
+     * @return a new instance of {@link GridCoverage2D} or the source one in case no operation was needed.
+     * 
      */
     private GridCoverage2D handleRangeSubsettingExtension(
             GridCoverage2D coverage,
-            Map<String, ExtensionItemType> extensions, Hints hints) {
+            Map<String, ExtensionItemType> extensions, 
+            Hints hints) {
         // preparation
          final List<String> returnValue=new ArrayList<String>();  
     
@@ -1109,6 +1181,14 @@ public class GetCoverage {
         for(String bandName:returnValue){
             indexes[i++]=bandsNames.indexOf(bandName);// I am assuming there is no duplication in band names which is ok I believe
         }
+        
+        // === enforce limits
+        if(coverage.getNumSampleDimensions()<indexes.length){
+            // ok we are enlarging the number of bands, let's check the final size
+            WCSUtils.checkOutputLimits(wcs, coverage,indexes);
+        }
+
+        // create output
         return (GridCoverage2D) WCSUtils.bandSelect(coverage, indexes);
     }
 
@@ -1132,10 +1212,27 @@ public class GetCoverage {
     }
 
     /**
-     * @param coverage
-     * @param spatialInterpolation 
-     * @param extensions2
-     * @return
+     * This method is responsible for handling the scaling WCS extension.
+     * 
+     * <p>
+     * Scaling can be used to scale a {@link GridCoverage2D} in different ways. An user can 
+     * decide to use either an uniform scale factor on each axes or by specifying a specific one 
+     * on each of them.
+     * Alternatively, an user can decide to specify the target size on each axes.
+     * 
+     * <p>
+     * In case no scaling is in place but an higher order interpolation is required, scale is performed anyway
+     * to respect such interpolation.
+     * 
+     * <p>
+     * This method tries to enforce the WCS resource limits if they are set
+     * 
+     * @param coverage the input {@link GridCoverage2D}
+     * @param spatialInterpolation the requested {@link Interpolation}
+     * @param extensions the list of WCS extensions to draw info from
+     * @param hints an instance of {@link Hints} to apply
+     * @return a scaled version of the input {@link GridCoverage2D} according to what is specified in the list of extensions. It might be the source coverage itself if
+     * no operations where to be applied.
      */
     private GridCoverage2D handleScaling(GridCoverage2D coverage, Map<String, ExtensionItemType> extensions, Interpolation spatialInterpolation, Hints hints) {
         // checks
@@ -1170,7 +1267,7 @@ public class GetCoverage {
 
         // instantiate enum
         final ScalingPolicy scalingPolicy = ScalingPolicy.getPolicy(scaling);
-        return scalingPolicy.scale(coverage, scaling, spatialInterpolation,hints);
+        return scalingPolicy.scale(coverage, scaling, spatialInterpolation,hints,wcs);
 
     }
 

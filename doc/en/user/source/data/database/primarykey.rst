@@ -10,7 +10,7 @@ All spatial database data stores (PostGIS, Oracle, MySQL and so on) normally der
 
 Common conventions rely on finding auto-increment columns (PostGIS) or finding a sequence that is named after a specific convention such as ``<table>_<column>_SEQUENCE`` (Oracle case). 
 
-In case none of the above is found normally the store will fall back on generating random feature IDs at each new request, making the table unsuitable for feauture ID based searches and transactions.
+In case none of the above is found normally the store will fall back on generating random feature IDs at each new request, making the table unsuitable for feature ID based searches and transactions.
 
 Metadata table description
 --------------------------
@@ -42,7 +42,7 @@ The following table describes the meaning of each column in the metadata table.
    * - :guilabel:`table_name`
      - Name of the table to be published
    * - :guilabel:`pk_column`
-     - Name of a column used to form the feauture IDs
+     - Name of a column used to form the feature IDs
    * - :guilabel:`pk_column_idx`
      - Index of the column in a multi-column key. In case multi column keys are needed multiple records with the same table schema and table name will be used.
    * - :guilabel:`pk_policy`

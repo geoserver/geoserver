@@ -59,6 +59,28 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     protected List<LayerIdentifierInfo> identifiers = new ArrayList<LayerIdentifierInfo>(2);
     
     public LayerGroupInfoImpl() {
+        init();
+    }
+    
+    /**
+     * Initialize layer group after creation or deserialization.
+     */
+    public void init() {
+        if (mode == null) {
+            mode = Mode.SINGLE;
+        }
+        
+        if (layers == null) {
+            layers = new ArrayList<LayerInfo>();
+        }
+        
+        if (styles == null) {
+            styles = new ArrayList<StyleInfo>();
+        }
+
+        if (metadata == null) {
+            metadata = new MetadataMap();
+        }
     }
     
     @Override

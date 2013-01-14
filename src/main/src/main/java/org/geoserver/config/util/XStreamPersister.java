@@ -1742,6 +1742,8 @@ public class XStreamPersister {
 
             LayerGroupInfoImpl lgi = (LayerGroupInfoImpl) super
                     .doUnmarshal(result, reader, context);
+            lgi.init();
+            
             MetadataMap metadata = lgi.getMetadata();
             
             /**

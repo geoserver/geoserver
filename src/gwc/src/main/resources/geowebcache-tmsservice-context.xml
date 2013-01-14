@@ -10,8 +10,8 @@
 	<constructor-arg ref="gwcTLDispatcher"/>
 	<constructor-arg ref="gwcGridSetBroker"/>
 	<constructor-arg ref="gwcRuntimeStats"/>
-	<!-- Optionally you can set the base URL for the service -->
-	<!-- <property name="baseURL" value="http://localhost:8080/geowebcache" /> -->
+    <constructor-arg ref="gwcURLMangler"/>
+    <constructor-arg ref="geowebcacheDispatcher"/>
   </bean>
   <bean id="gwcServiceTMSProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
     <property name="targetName">

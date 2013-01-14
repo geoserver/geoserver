@@ -80,14 +80,17 @@ public class MockCreator implements Callback {
         final Catalog catalog = createMock(Catalog.class);
         expect(catalog.getFactory()).andReturn(new CatalogFactoryImpl(catalog)).anyTimes();
         expect(catalog.getResourceLoader()).andReturn(loader).anyTimes();
-        
+
+        catalog.removeListeners((Class)EasyMock.anyObject());
+        expectLastCall().anyTimes();
+
         catalog.addListener((CatalogListener) EasyMock.anyObject());
         expectLastCall().anyTimes();
         
         expect(catalog.getResourcePool()).andAnswer(new IAnswer<ResourcePool>() {
             @Override
             public ResourcePool answer() throws Throwable {
-                return new ResourcePool(catalog);
+                return ResourcePool.create(catalog);
             }
         }).anyTimes();
     

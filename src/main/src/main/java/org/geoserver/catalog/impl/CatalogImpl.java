@@ -104,7 +104,7 @@ public class CatalogImpl implements Catalog {
 
     public CatalogImpl() {
         facade = new DefaultCatalogFacade(this);
-        resourcePool = new ResourcePool(this);
+        resourcePool = ResourcePool.create(this);
     }
     
     public CatalogFacade getFacade() {
@@ -1448,7 +1448,7 @@ public class CatalogImpl implements Catalog {
         }
         
         if ( resourcePool == null ) {
-            resourcePool = new ResourcePool(this);
+            resourcePool = ResourcePool.create(this);
         }
     }
     

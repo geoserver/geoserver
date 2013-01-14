@@ -14,6 +14,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.feature.NameImpl;
 import org.geotools.styling.Style;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
@@ -110,7 +111,7 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
                 allParameters, allParameters);
 
         // the style names Ponds is declared in third position on the sld doc
-        Style selectedStyle = request.getStyle();
+        Style selectedStyle = request.getStyles().get(0);
         assertNotNull(selectedStyle);
         assertEquals("Ponds", selectedStyle.getName());
 
@@ -120,7 +121,7 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
         request = requestReader.read(new GetLegendGraphicRequest(), allParameters, allParameters);
 
         // the style names Ponds is declared in third position on the sld doc
-        selectedStyle = request.getStyle();
+        selectedStyle = request.getStyles().get(0);
         assertNotNull(selectedStyle);
         assertEquals("Lakes", selectedStyle.getName());
     }
@@ -158,5 +159,42 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
         allParameters.remove("LAYER");
         request = requestReader.read(new GetLegendGraphicRequest(), allParameters, allParameters);
         assertFalse(request.isStrict());
+    }
+    
+    public void testLayerGroup() throws Exception {
+        GetLegendGraphicRequest request;
+        
+        request = requestReader.read(new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
+        assertTrue(request.getLayers().size() == 1);
+        
+        requiredParameters.put("LAYER", "nature");
+        request = requestReader.read(new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
+        assertTrue(request.getLayers().size() > 1);
+    }
+    
+    public void testStylesForLayerGroup() throws Exception {
+        GetLegendGraphicRequest request;
+               
+        requiredParameters.put("LAYER", "nature");
+        requiredParameters.put("STYLE", "style1,style2");
+        request = requestReader.read(new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
+        assertTrue(request.getStyles().size() == 2);
+    }
+    
+    public void testRulesForLayerGroup() throws Exception {
+        GetLegendGraphicRequest request;
+               
+        requiredParameters.put("LAYER", "nature");
+        requiredParameters.put("RULE", "rule1,rule2");
+        request = requestReader.read(new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
+        assertTrue(request.getRules().size() == 2);
+    }
+    
+    public void testLabelsForLayerGroup() throws Exception {
+        GetLegendGraphicRequest request;
+               
+        requiredParameters.put("LAYER", "nature");
+        request = requestReader.read(new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
+        assertNotNull(request.getTitle(new NameImpl("http://www.opengis.net/cite","Lakes")));
     }
 }

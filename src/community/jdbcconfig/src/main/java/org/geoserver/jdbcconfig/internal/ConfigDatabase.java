@@ -48,8 +48,11 @@ import org.geoserver.catalog.impl.StoreInfoImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.impl.CoverageAccessInfoImpl;
+import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.impl.GeoServerInfoImpl;
 import org.geoserver.config.impl.JAIInfoImpl;
 import org.geoserver.ows.util.OwsUtils;
@@ -95,6 +98,8 @@ public class ConfigDatabase {
     private DbMappings dbMappings;
 
     private CatalogImpl catalog;
+
+    private GeoServer geoServer;
 
     private NamedParameterJdbcOperations template;
 
@@ -178,6 +183,14 @@ public class ConfigDatabase {
         return this.catalog;
     }
 
+    public void setGeoServer(GeoServer geoServer) {
+        this.geoServer = geoServer;
+    }
+
+    public GeoServer getGeoServer() {
+        return geoServer;
+    }
+    
     public <T extends CatalogInfo> int count(final Class<T> of, final Filter filter) {
 
         QueryBuilder<T> sqlBuilder = QueryBuilder.forCount(of, dbMappings).filter(filter);
@@ -887,6 +900,9 @@ public class ConfigDatabase {
                 if (global.getJAI() == null) {
                     global.setJAI(new JAIInfoImpl());
                 }
+            }
+            if (info instanceof ServiceInfo) {
+                ((ServiceInfo)info).setGeoServer(geoServer);
             }
 
             return info;

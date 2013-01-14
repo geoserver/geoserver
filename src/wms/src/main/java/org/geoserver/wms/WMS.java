@@ -21,6 +21,7 @@ import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
@@ -30,6 +31,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
@@ -771,9 +773,15 @@ public class WMS implements ApplicationContextAware {
     }
 
     public boolean isQueryable(LayerGroupInfo layerGroup) {
-        for (LayerInfo layer : layerGroup.getLayers()) {
-            if (!isQueryable(layer)) {
-                return false;
+        for (PublishedInfo published : layerGroup.getLayers()) {
+            if (published instanceof LayerInfo) {
+                if (!isQueryable((LayerInfo) published)) {
+                    return false;
+                }
+            } else {
+                if (!isQueryable((LayerGroupInfo) published)) {
+                    return false;
+                }
             }
         }
         return true;

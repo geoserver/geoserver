@@ -4,7 +4,10 @@
  */
 package org.geoserver.security.impl;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,6 +21,7 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -30,9 +34,9 @@ import org.geotools.data.FeatureStore;
 import org.geotools.factory.Hints;
 import org.junit.Before;
 import org.opengis.util.ProgressListener;
+import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.authentication.TestingAuthenticationToken;
 
 
 public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
@@ -210,7 +214,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         expect(layerGroup.getName()).andReturn(name).anyTimes();
         expect(layerGroup.getMode()).andReturn(type).anyTimes();
         expect(layerGroup.getRootLayer()).andReturn(rootLayer).anyTimes();
-        expect(layerGroup.getLayers()).andReturn(Arrays.asList(layer)).anyTimes();
+        expect(layerGroup.getLayers()).andReturn(new ArrayList<PublishedInfo>(Arrays.asList(layer))).anyTimes();
         expect(layerGroup.getStyles()).andReturn(Arrays.asList(style)).anyTimes();
         expect(layerGroup.getWorkspace()).andReturn(ws).anyTimes();
         replay(layerGroup);

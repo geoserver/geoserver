@@ -25,6 +25,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml2.bindings.GML2EncodingUtils;
 import org.geotools.util.logging.Logging;
 
+import com.google.common.collect.Iterables;
 import com.vividsolutions.jts.geom.Envelope;
 
 /**
@@ -164,7 +165,7 @@ public class PreviewLayer {
         if (layerInfo != null) {
             layers.add(new MapLayerInfo(layerInfo));
         } else {
-            for (LayerInfo l : groupInfo.layers()) {
+            for (LayerInfo l : Iterables.filter(groupInfo.getLayers(), LayerInfo.class)) {
                 layers.add(new MapLayerInfo(l));
             }
         }

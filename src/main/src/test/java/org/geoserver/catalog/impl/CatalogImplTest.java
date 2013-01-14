@@ -61,6 +61,7 @@ import org.opengis.filter.MultiValuedFilter.MatchAction;
 import org.opengis.filter.sort.SortBy;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -1967,8 +1968,8 @@ public class CatalogImplTest {
         lg2.setMode(LayerGroupInfo.Mode.EO);
         assertEquals(1, lg2.layers().size());
         assertEquals(1, lg2.styles().size());
-        assertEquals(l, lg2.layers().get(0));
-        assertEquals(s, lg2.styles().get(0));        
+        assertEquals(l, lg2.layers().iterator().next());
+        assertEquals(s, lg2.styles().iterator().next());        
     }
     
     static class TestListener implements CatalogListener {

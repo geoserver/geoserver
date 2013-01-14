@@ -23,15 +23,17 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.web.data.layergroup.AbstractLayerGroupPage.LayerGroupListPanel;
 import org.geoserver.web.data.layergroup.AbstractLayerGroupPage.LayerListPanel;
 import org.geoserver.web.data.layergroup.AbstractLayerGroupPage.StyleListPanel;
 import org.geoserver.web.wicket.GeoServerDataProvider;
+import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
-import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 
 /**
  * Allows to edit the list of layers contained in a layer group
@@ -49,7 +51,7 @@ public class LayerGroupEntryPanel extends Panel {
         
         items = new ArrayList<LayerGroupEntry>();
         for ( int i = 0; i < layerGroup.getLayers().size(); i++ ) {
-            LayerInfo layer = layerGroup.getLayers().get( i );
+            PublishedInfo layer = layerGroup.getLayers().get( i );
             StyleInfo style = layerGroup.getStyles().get( i );
             items.add( new LayerGroupEntry( layer, style ) );
         }
@@ -84,7 +86,7 @@ public class LayerGroupEntryPanel extends Panel {
         }.setFilterable( false ));
         layerTable.setOutputMarkupId( true );
         
-        add( new AjaxLink( "add" ) {
+        add( new AjaxLink( "addLayer" ) {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 popupWindow.setInitialHeight( 375 );
@@ -106,6 +108,28 @@ public class LayerGroupEntryPanel extends Panel {
                 popupWindow.show(target);
             }
         });
+        
+        add( new AjaxLink( "addLayerGroup" ) {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                popupWindow.setInitialHeight( 375 );
+                popupWindow.setInitialWidth( 525 );
+                popupWindow.setTitle(new ParamResourceModel("chooseLayerGroup", this));
+                popupWindow.setContent( new LayerGroupListPanel(popupWindow.getContentId()) {
+                    @Override
+                    protected void handleLayerGroup(LayerGroupInfo layerGroup, AjaxRequestTarget target) {
+                        popupWindow.close( target );
+                        
+                        entryProvider.getItems().add(
+                            new LayerGroupEntry( layerGroup, null ) );
+                        
+                        target.addComponent( layerTable );
+                    }
+                });
+                
+                popupWindow.show(target);
+            }
+        });        
     }
     
     public List<LayerGroupEntry> getEntries() {
@@ -114,7 +138,7 @@ public class LayerGroupEntryPanel extends Panel {
     
     Component layerLink(String id, IModel itemModel) {
         LayerGroupEntry entry = (LayerGroupEntry) itemModel.getObject();
-        return new Label( id, entry.getLayer().getResource().getPrefixedName() );
+        return new Label( id, entry.getLayer().prefixedName());
     }
     
     Component defaultStyleCheckbox(String id, IModel itemModel) {
@@ -138,15 +162,16 @@ public class LayerGroupEntryPanel extends Panel {
     Component styleLink(String id, final IModel itemModel) {
         // decide if the style is the default and the current style name
         LayerGroupEntry entry = (LayerGroupEntry) itemModel.getObject();
-        String styleName;
+        String styleName = null;
         boolean defaultStyle = true;
         if(entry.getStyle() != null) {
             styleName = entry.getStyle().getName();
             defaultStyle = false;
-        } else if(entry.getLayer().getDefaultStyle() != null) {
-            styleName = entry.getLayer().getDefaultStyle().getName();
-        } else {
-            styleName = null;
+        } else if(entry.getLayer() instanceof LayerInfo) {
+            LayerInfo layer = (LayerInfo) entry.getLayer();
+            if (layer.getDefaultStyle() != null) {
+                styleName = layer.getDefaultStyle().getName();
+            }
         }
             
         // build and returns the link, but disable it if the style is the default

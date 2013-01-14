@@ -323,18 +323,20 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
 
                     if (o instanceof LayerGroupInfo) {
                         LayerGroupInfo groupInfo = (LayerGroupInfo) o;
-                        for (int j = 0; j < groupInfo.styles().size(); j++) {
-                            StyleInfo si = groupInfo.styles().get(j);
+                        List<LayerInfo> layers = groupInfo.layers();
+                        List<StyleInfo> styles = groupInfo.styles();
+                        for (int j = 0; j < styles.size(); j++) {
+                            StyleInfo si = styles.get(j);
                             if (si != null){
                                 newStyles.add(si.getStyle());
                             } else {
-                                LayerInfo layer = groupInfo.layers().get(j);
+                                LayerInfo layer = layers.get(j);
                                 newStyles.add(getDefaultStyle(layer));
                             }
                         }
                         // expand the filter on the layer group to all its sublayers
                         if (filters != null) {
-                            for (int j = 0; j < groupInfo.layers().size(); j++) {
+                            for (int j = 0; j < layers.size(); j++) {
                                 newFilters.add(getFilter(filters, i));
                             }
                         }
@@ -729,10 +731,12 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
                 } else {
                     if (wms.getLayerGroupByName(layerName) != null) {
                         LayerGroupInfo group = wms.getLayerGroupByName(layerName);
-                        for (int i = 0; i < group.layers().size(); i++) {
-                            LayerInfo layer = group.layers().get(i);
+                        List<LayerInfo> groupLayers = group.layers();
+                        List<StyleInfo> groupStyles = group.styles();
+                        for (int i = 0; i < groupLayers.size(); i++) {
+                            LayerInfo layer = groupLayers.get(i);
                             layers.add(new MapLayerInfo(layer));
-                            StyleInfo style = group.styles().get(i);
+                            StyleInfo style = groupStyles.get(i);
                             if (style != null) {
                                 styles.add(style.getStyle());
                             } else {

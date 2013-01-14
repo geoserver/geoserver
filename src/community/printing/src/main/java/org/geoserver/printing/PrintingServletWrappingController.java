@@ -1,7 +1,3 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, available at the root
- * application directory.
- */
 package org.geoserver.printing;
 
 import java.io.File;
@@ -26,6 +22,8 @@ import org.vfny.geoserver.global.GeoserverDataDirectory;
 public class PrintingServletWrappingController extends
 ServletWrappingController {
 
+    private static final String DEFAULT_CONFIG_FILENAME = "default-config.yaml";
+
     private static final String CREATE_URL = "/create.json";
     private static final String INFO_URL = "/info.json";
 
@@ -33,8 +31,6 @@ ServletWrappingController {
 
     private String configPropOrig;
     private Properties initParametersOrig;
-
-    private String configPropActual;
 
     @Override
     public void setInitParameters(Properties initParameters) {
@@ -44,7 +40,6 @@ ServletWrappingController {
 
         initParameters = setConfig(initParameters, this.configPropOrig);
         this.initParametersOrig = initParameters;
-        this.configPropActual = this.configPropOrig;
 
         super.setInitParameters(initParameters);
     }
@@ -52,13 +47,17 @@ ServletWrappingController {
     private Properties setConfig(Properties initParameters, String configProp) {
       try {
           File dir = GeoserverDataDirectory.findCreateConfigDir("printing");
-          File qualifiedConfig = new File(dir, configProp);
-          if (!qualifiedConfig.exists()) {
-              InputStream conf = getClass().getResourceAsStream("default-config.yaml");
+          String qualifiedConfigFilename = new File(configProp).getName();
+          File qualifiedConfig = new File(dir, qualifiedConfigFilename);
+          if (!qualifiedConfig.exists() && DEFAULT_CONFIG_FILENAME.equals(configProp)) {
+              // just copy the default config, if it does not exist
+              InputStream conf = getClass().getResourceAsStream(DEFAULT_CONFIG_FILENAME);
               IOUtils.copy(conf, qualifiedConfig);
           }
           if (!qualifiedConfig.canRead()) {
-              LOG.warning("Printing module missing its configuration.  Any actions it takes will fail.");
+              LOG.warning("Printing module missing its configuration '"
+                  + qualifiedConfig.getCanonicalPath()
+                  + "'.  Any actions it takes will fail.");
               return initParameters;
           }
           initParameters.setProperty("config", qualifiedConfig.getCanonicalPath());
@@ -86,13 +85,10 @@ ServletWrappingController {
               // use original configuration
               configProp = this.configPropOrig;
           }
-          if (!configProp.equals(configPropActual)) {
-              // change initParameters
-              initParameters = setConfig(initParameters, configProp);
-              super.setInitParameters(initParameters);
-              super.afterPropertiesSet();
-              this.configPropActual = configProp;
-          }
+          // set initParameters
+          initParameters = setConfig(initParameters, configProp);
+          super.setInitParameters(initParameters);
+          super.afterPropertiesSet();
       }
       return super.handleRequestInternal(request, response);
     }

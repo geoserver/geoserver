@@ -95,8 +95,6 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
             request.setTransparent(true);
             request.setScale(scaleDenominator);
             request.setStyle(layer.getStyle());
-            request.setWidth((int) Math.ceil(GetLegendGraphicRequest.DEFAULT_WIDTH * scaleFactor));
-            request.setHeight((int) Math.ceil(GetLegendGraphicRequest.DEFAULT_HEIGHT * scaleFactor));
 
             Map legendOptions = new CaseInsensitiveMap(options);
             legendOptions.putAll(mapContext.getRequest().getFormatOptions());

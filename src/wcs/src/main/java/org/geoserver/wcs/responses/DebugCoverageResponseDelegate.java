@@ -11,10 +11,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ServiceException;
 import org.geotools.coverage.grid.GridCoverage2D;
 
@@ -25,32 +25,30 @@ import org.geotools.coverage.grid.GridCoverage2D;
  * @author Andrea Aime - TOPP
  * 
  */
-public class DebugCoverageResponseDelegate implements CoverageResponseDelegate {
+public class DebugCoverageResponseDelegate extends BaseCoverageResponseDelegate implements CoverageResponseDelegate {
 
-    private static final List<String> FORMATS = Arrays.asList("text/debug");
+    
+    @SuppressWarnings("serial")
+    public DebugCoverageResponseDelegate(GeoServer geoserver) {
+        super(
+                geoserver,
+                Arrays.asList("DEBUG","text/debug"), //output formats
+                new HashMap<String, String>(){ // file extensions
+                    {
+                        put("DEBUG", "txt");
+                        put("text/debug", "txt");
+                        put("text/plain", "txt");
+                    }
+                },
+                new HashMap<String, String>(){ //mime types
+                    {
+                        put("DEBUG", "text/plain");
+                        put("text/debug", "text/plain");
+                    }
+                });  
+    }    
 
-    public boolean canProduce(String outputFormat) {
-        return outputFormat != null
-                && (outputFormat.equalsIgnoreCase("DEBUG") || FORMATS.contains(outputFormat
-                        .toLowerCase()));
-    }
-
-    public String getMimeType(String outputFormat) {
-        return "text/plain";
-    }
-
-    public String getFileExtension(String outputFormat) {
-        return "txt";
-    }
-
-    public String getMimeFormatFor(String outputFormat) {
-        if (canProduce(outputFormat))
-            return "text/debug";
-        else
-            return null;
-    }
-
-    public void encode(GridCoverage2D coverage, String outputFormat, OutputStream output) throws ServiceException, IOException {
+    public void encode(GridCoverage2D coverage, String outputFormat,  Map<String,String> econdingParameters,OutputStream output) throws ServiceException, IOException {
         PrintStream ps = new PrintStream(output);
         ps.println("Grid bounds: " + coverage.getEnvelope());
         ps.println("Grid CRS: " + coverage.getCoordinateReferenceSystem());
@@ -81,16 +79,5 @@ public class DebugCoverageResponseDelegate implements CoverageResponseDelegate {
         
         coverage.dispose(false);
     }
-    
-    @Override
-    public List<String> getOutputFormats() {
-        return FORMATS;
-    }
-    
-    @Override
-    public boolean isAvailable() {
-        return true;
-    }
-
 
 }

@@ -7,9 +7,17 @@ package org.geoserver.wms.legendgraphic;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.media.jai.PlanarImage;
@@ -23,6 +31,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.GetLegendGraphic;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.WMSTestSupport;
+import org.geoserver.wms.map.ImageUtils;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.resources.coverage.FeatureUtilities;
@@ -33,6 +42,7 @@ import org.geotools.util.logging.Logging;
 import org.junit.After;
 import org.junit.Before;
 import org.opengis.coverage.grid.GridCoverage;
+import org.opengis.feature.type.FeatureType;
 
 
 /**
@@ -139,33 +149,33 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
         try {
-	        SimpleFeatureCollection feature;
-	        feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
-	        req.setLayer(feature.getSchema());
-	        req.setStyle(multipleRulesStyle);
-	        req.setLegendOptions(new HashMap());
-	
-	        final int HEIGHT_HINT = 30;
-	        req.setHeight(HEIGHT_HINT);
-	
-	        // use default values for the rest of parameters
-	        this.legendProducer.buildLegendGraphic(req);
-	
-	        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
-	
-	        // was the legend painted?
-	        assertNotBlank("testRainfall", image, LegendUtils.DEFAULT_BG_COLOR);
-	
-	        // was the legend painted?
-	        assertNotBlank("testRainfall", image, LegendUtils.DEFAULT_BG_COLOR);
+            SimpleFeatureCollection feature;
+            feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            req.setLayer(feature.getSchema());
+            req.setStyle(multipleRulesStyle);
+            req.setLegendOptions(new HashMap());
+            
+            final int HEIGHT_HINT = 30;
+            req.setHeight(HEIGHT_HINT);
+            
+            // use default values for the rest of parameters
+            this.legendProducer.buildLegendGraphic(req);
+
+            BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+
+            // was the legend painted?
+            assertNotBlank("testRainfall", image, LegendUtils.DEFAULT_BG_COLOR);
+            
+            // was the legend painted?
+            assertNotBlank("testRainfall", image, LegendUtils.DEFAULT_BG_COLOR);
         } finally {
-        	RenderedImage ri = coverage.getRenderedImage();
-        	if(coverage instanceof GridCoverage2D) {
-        		((GridCoverage2D) coverage).dispose(true);
-        	}
-        	if(ri instanceof PlanarImage) {
-        		ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
-        	}
+            RenderedImage ri = coverage.getRenderedImage();
+            if(coverage instanceof GridCoverage2D) {
+                ((GridCoverage2D) coverage).dispose(true);
+            }
+            if(ri instanceof PlanarImage) {
+                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            }
         }
 
     }
@@ -198,5 +208,195 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         // was the legend painted?
         assertNotBlank("testRainfall", image, LegendUtils.DEFAULT_BG_COLOR);
 
+    }
+    /**
+     * Tests that the legend graphic is produced for multiple layers
+     */
+    @org.junit.Test
+    public void testMultipleLayers() throws Exception {              
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+        
+        int titleHeight = getTitleHeight(req);
+        
+        FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName(
+                MockData.ROAD_SEGMENTS.getNamespaceURI(), MockData.ROAD_SEGMENTS.getLocalPart());
+        List<FeatureType> layers=new ArrayList<FeatureType>();
+        layers.add(ftInfo.getFeatureType());
+        
+        req.setLayers(layers);
+        
+        List<Style> styles=new ArrayList<Style>();
+        styles.add(getCatalog().getStyleByName(
+                MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
+        req.setStyles(styles);
+        
+        this.legendProducer.buildLegendGraphic(req);
+
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+
+        // was the legend painted?
+        assertNotBlank("testMultipleLayers", image, LegendUtils.DEFAULT_BG_COLOR);
+        int height=image.getHeight();
+        
+        layers.add(ftInfo.getFeatureType());
+        styles.add(getCatalog().getStyleByName(
+                MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
+        this.legendProducer.buildLegendGraphic(req);
+
+        image = this.legendProducer.buildLegendGraphic(req);        
+        
+        // was the legend painted?
+        assertNotBlank("testMultipleLayers", image, LegendUtils.DEFAULT_BG_COLOR);
+        // with 2 layers we should have a legend at least 2 times taller (title + 2 layers)
+        
+        assertEquals(2*(height+titleHeight),image.getHeight());
+        
+        // first title
+        assertPixel(image, 1, titleHeight/2, new Color(0,0,0));
+        
+        // first layer
+        assertPixel(image, 10, 10+titleHeight, new Color(192,160,0));
+        
+        assertPixel(image, 10, 30+titleHeight, new Color(0,0,0));
+        
+        assertPixel(image, 10, 50+titleHeight, new Color(224,64,0));
+        
+        // second title
+        assertPixel(image, 1, 60+titleHeight+titleHeight/2, new Color(0,0,0));
+        
+        // same colors for the second layer
+        assertPixel(image, 10, 70+titleHeight*2, new Color(192,160,0));
+        
+        assertPixel(image, 10, 90+titleHeight*2, new Color(0,0,0));
+        
+        assertPixel(image, 10, 110+titleHeight*2, new Color(224,64,0));
+        
+    }
+    
+    
+    /**
+     * Tests that with forceTitles option off no title is rendered
+     */
+    @org.junit.Test
+    public void testForceTitlesOff() throws Exception {        
+        
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+        Map<String,String> options = new HashMap<String,String>();
+        options.put("forceTitles", "off");
+        req.setLegendOptions(options);
+        FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName(
+                MockData.ROAD_SEGMENTS.getNamespaceURI(), MockData.ROAD_SEGMENTS.getLocalPart());
+        List<FeatureType> layers=new ArrayList<FeatureType>();
+        layers.add(ftInfo.getFeatureType());
+        
+        req.setLayers(layers);
+        
+        List<Style> styles = new ArrayList<Style>();
+        styles.add(getCatalog().getStyleByName(
+                MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
+        req.setStyles(styles);
+        
+        this.legendProducer.buildLegendGraphic(req);
+
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+
+        // was the legend painted?
+        assertNotBlank("testMultipleLayers", image, LegendUtils.DEFAULT_BG_COLOR);
+        int height=image.getHeight();
+        
+        layers.add(ftInfo.getFeatureType());
+        styles.add(getCatalog().getStyleByName(
+                MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
+        this.legendProducer.buildLegendGraphic(req);
+
+        image = this.legendProducer.buildLegendGraphic(req);        
+        
+        // was the legend painted?
+        assertNotBlank("testForceTitlesOff", image, LegendUtils.DEFAULT_BG_COLOR);
+        
+        
+        assertEquals(2*height,image.getHeight());
+                
+        // first layer
+        assertPixel(image, 10, 10, new Color(192,160,0));
+        
+        assertPixel(image, 10, 30, new Color(0,0,0));
+        
+        assertPixel(image, 10, 50, new Color(224,64,0));
+                
+        // same colors for the second layer
+        assertPixel(image, 10, 70, new Color(192,160,0));
+        
+        assertPixel(image, 10, 90, new Color(0,0,0));
+        
+        assertPixel(image, 10, 110, new Color(224,64,0));
+        
+    }
+    
+    /**
+     * Tests that the legend graphic is produced for multiple layers
+     * with different style for each layer.
+     */
+    @org.junit.Test
+    public void testMultipleLayersWithDifferentStyles() throws Exception {        
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+        
+        int titleHeight = getTitleHeight(req);
+        
+        FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName(
+                MockData.ROAD_SEGMENTS.getNamespaceURI(), MockData.ROAD_SEGMENTS.getLocalPart());
+        List<FeatureType> layers=new ArrayList<FeatureType>();
+        layers.add(ftInfo.getFeatureType());
+        layers.add(ftInfo.getFeatureType());
+        req.setLayers(layers);
+        
+        List<Style> styles=new ArrayList<Style>();
+        Style style1= getCatalog().getStyleByName(
+                MockData.ROAD_SEGMENTS.getLocalPart()).getStyle();
+        styles.add(style1);
+        
+        Style style2= getCatalog().getStyleByName(
+                MockData.LAKES.getLocalPart()).getStyle();
+        styles.add(style2);
+        req.setStyles(styles);
+        
+        this.legendProducer.buildLegendGraphic(req);
+
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+
+        
+        // first layer
+        assertPixel(image, 10, 10+titleHeight, new Color(192,160,0));
+        
+        assertPixel(image, 10, 30+titleHeight, new Color(0,0,0));
+        
+        assertPixel(image, 10, 50+titleHeight, new Color(224,64,0));
+        
+        // different color (style) for the second layer
+        assertPixel(image, 10, 70+titleHeight*2, new Color(64,64,192));
+
+    }
+    
+    private int getTitleHeight(GetLegendGraphicRequest req) {    
+        final BufferedImage image = ImageUtils.createImage(req.getWidth(),
+                req.getHeight(), (IndexColorModel) null, req.isTransparent());
+        return getRenderedLabel(image, "TESTTITLE", req).getHeight();
+    }
+    
+    private BufferedImage getRenderedLabel(BufferedImage image, String label,
+            GetLegendGraphicRequest request) {
+        Font labelFont = LegendUtils.getLabelFont(request);
+        boolean useAA = LegendUtils.isFontAntiAliasing(request);
+    
+        final Graphics2D graphics = image.createGraphics();
+        graphics.setFont(labelFont);
+        if (useAA) {
+            graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON);
+        } else {
+            graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_OFF);
+        }
+        return LegendUtils.renderLabel(label, graphics, request);
     }
 }

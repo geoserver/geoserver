@@ -39,13 +39,18 @@
      <version>${project.version}</version>
    </dependency>
    <dependency>
-     <groupId>org.geoserver.community</groupId>
-     <artifactId>monitoring</artifactId>
+     <groupId>org.geoserver.script</groupId>
+     <artifactId>script-py</artifactId>
      <version>${project.version}</version>
    </dependency>
    <dependency>
      <groupId>org.geoserver.script</groupId>
-     <artifactId>script-py</artifactId>
+     <artifactId>script-js</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.script</groupId>
+     <artifactId>script-groovy</artifactId>
      <version>${project.version}</version>
    </dependency>
    <dependency>

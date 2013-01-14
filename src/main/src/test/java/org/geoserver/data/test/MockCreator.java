@@ -47,7 +47,12 @@ import org.geoserver.security.MasterPasswordProvider;
 import org.geoserver.security.config.PasswordPolicyConfig;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
 import org.geoserver.security.config.SecurityFilterConfig;
+import org.geoserver.security.config.SecurityInterceptorFilterConfig;
 import org.geoserver.security.config.SecurityUserGroupServiceConfig;
+import org.geoserver.security.filter.GeoServerAnonymousAuthenticationFilter;
+import org.geoserver.security.filter.GeoServerBasicAuthenticationFilter;
+import org.geoserver.security.filter.GeoServerRoleFilter;
+import org.geoserver.security.filter.GeoServerUserNamePasswordAuthenticationFilter;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.GeoServerUserGroup;
@@ -231,9 +236,30 @@ public class MockCreator implements Callback {
         expect(secMgr.getAuthenticationProviders()).andReturn(Arrays.asList(authProvider)).anyTimes();
     
         //security filters
-        SecurityFilterConfig filterConfig = createNiceMock(SecurityFilterConfig.class); 
+        SecurityInterceptorFilterConfig filterConfig = createNiceMock(SecurityInterceptorFilterConfig.class);        
         expect(secMgr.loadFilterConfig(
             GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR)).andReturn(filterConfig).anyTimes();
+        
+        GeoServerAnonymousAuthenticationFilter authFilter = createNiceMock(GeoServerAnonymousAuthenticationFilter.class);
+        expect(authFilter.applicableForServices()).andReturn(true).anyTimes();
+        expect(authFilter.applicableForHtml()).andReturn(true).anyTimes();
+        expect(secMgr.loadFilter(
+                GeoServerSecurityFilterChain.ANONYMOUS_FILTER)).andReturn(authFilter).anyTimes();
+        
+        GeoServerRoleFilter roleFilter = createNiceMock(GeoServerRoleFilter.class);
+        expect(secMgr.loadFilter(
+                GeoServerSecurityFilterChain.ROLE_FILTER)).andReturn(roleFilter).anyTimes();
+
+        GeoServerUserNamePasswordAuthenticationFilter formFilter = createNiceMock(GeoServerUserNamePasswordAuthenticationFilter.class);
+        expect(formFilter.applicableForHtml()).andReturn(true).anyTimes();
+        expect(secMgr.loadFilter(
+                GeoServerSecurityFilterChain.FORM_LOGIN_FILTER)).andReturn(formFilter).anyTimes();
+
+        GeoServerBasicAuthenticationFilter basicFilter = createNiceMock(GeoServerBasicAuthenticationFilter.class);
+        expect(basicFilter.applicableForServices()).andReturn(true).anyTimes();
+        expect(secMgr.loadFilter(
+                GeoServerSecurityFilterChain.BASIC_AUTH_FILTER)).andReturn(basicFilter).anyTimes();
+
     
         //password encoders
         expect(secMgr.loadPasswordEncoder(GeoServerEmptyPasswordEncoder.class)).andAnswer(
@@ -348,7 +374,7 @@ public class MockCreator implements Callback {
         
         replay(keyStoreProvider, masterPasswdProvider, ugStore, ugConfig, roleStore, authProvider, 
             authProviderConfig, filterConfig, passwdValidator, masterPasswdPolicyConfig, appContext, 
-            secMgr);
+            secMgr,roleFilter,formFilter,authFilter,basicFilter);
         return secMgr;
     }
     

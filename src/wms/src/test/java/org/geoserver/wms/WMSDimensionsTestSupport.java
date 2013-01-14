@@ -54,23 +54,6 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
         getCatalog().save(teEmpty);
     }
     
-//    @Override
-//    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-//        // add vector data set with time and elevation
-//    	dataDirectory.addStyle("TimeElevation", getClass().getResource("../TimeElevation.sld"));
-//        dataDirectory.addPropertiesType(V_TIME_ELEVATION, getClass().getResource("../TimeElevation.properties"), 
-//        		Collections.singletonMap(MockData.KEY_STYLE, "TimeElevation"));
-//        dataDirectory.addPropertiesType(V_TIME_ELEVATION_EMPTY, getClass().getResource("../TimeElevationEmpty.properties"),
-//                Collections.singletonMap(MockData.KEY_STYLE, "TimeElevation"));
-//        
-//        // add a raster mosaic with time and elevation
-//        URL style = getClass().getResource("../temperature.sld");
-//        String styleName = "temperature";
-//        dataDirectory.addStyle(styleName, style);
-//        dataDirectory.addCoverageFromZip(WATTEMP, TestData.class.getResource("watertemp.zip"),
-//                        null, styleName);
-//    }
-    
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);

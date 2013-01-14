@@ -8,15 +8,16 @@ import javax.sql.DataSource;
 
 import junit.framework.TestCase;
 
+import org.geoserver.jdbcconfig.JDBCConfigTestSupport;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 public class DbMappingsTest extends TestCase {
 
-    private JdbcConfigTestSupport testSupport;
+    private JDBCConfigTestSupport testSupport;
 
     @Override
     protected void setUp() throws Exception {
-        testSupport = new JdbcConfigTestSupport();
+        testSupport = new JDBCConfigTestSupport();
         testSupport.setUp();
     }
 

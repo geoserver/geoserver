@@ -11,4 +11,23 @@ package org.geoserver.security.filter;
  * @author Justin Deoliveira, OpenGeo
  */
 public interface GeoServerAuthenticationFilter {
+    
+    /**
+     * returns <code>true</code> if the filter is
+     * applicable for GUI logins. Such a filter 
+     * can be put into a chain doing authentication for
+     * a web interface.  
+     * 
+     * @return
+     */
+    public boolean applicableForHtml ();
+    /**
+     * returns <code>true</code> if the filter is applicable
+     * for services (NO GUI). Such a filter can be put into
+     * a chain doing authentication for  services.
+     * 
+     * @return
+     */
+    public boolean applicableForServices ();
+    
 }

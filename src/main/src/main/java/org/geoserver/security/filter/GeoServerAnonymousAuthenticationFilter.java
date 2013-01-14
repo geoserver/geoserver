@@ -70,4 +70,22 @@ public class GeoServerAnonymousAuthenticationFilter extends GeoServerSecurityFil
         Assert.notNull(authenticationDetailsSource, "AuthenticationDetailsSource required");
         this.authenticationDetailsSource = authenticationDetailsSource;
     }
+
+
+    /**
+     * @see org.geoserver.security.filter.GeoServerAuthenticationFilter#applicableForHtml()
+     */
+    @Override
+    public boolean applicableForHtml() {
+        return true;
+    }
+
+
+    /**
+     * @see org.geoserver.security.filter.GeoServerAuthenticationFilter#applicableForServices()
+     */
+    @Override
+    public boolean applicableForServices() {
+        return true;
+    }
 }

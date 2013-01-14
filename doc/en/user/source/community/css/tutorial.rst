@@ -8,7 +8,7 @@ What you need before starting this tutorial:
 * An installed copy of GeoServer 2.0 or greater.
   See :doc:`/installation/index` if you have not already installed GeoServer.
 * The states layer from the `default GeoServer configuration
-  <http://svn.codehaus.org/geoserver/trunk/data/release/data/shapefiles/>`_
+  <https://github.com/geoserver/geoserver/tree/master/data/release/data/shapefiles>`_
 * The CSS plugin installed.
   See :doc:`/community/css/install` if you have not already installed the plugin.
 

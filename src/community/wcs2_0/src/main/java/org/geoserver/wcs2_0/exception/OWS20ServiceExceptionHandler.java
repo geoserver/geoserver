@@ -5,8 +5,6 @@
 package org.geoserver.wcs2_0.exception;
 
 import java.io.ByteArrayOutputStream;
-import static org.geoserver.ows.util.ResponseUtils.baseURL;
-import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -24,6 +22,7 @@ import org.geoserver.ows.Request;
 import org.geoserver.ows.ServiceExceptionHandler;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.OWS20Exception;
+import org.geoserver.platform.OWS20Exception.OWSExceptionCode;
 
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
@@ -44,6 +43,12 @@ import org.geotools.xml.Encoder;
  *
  */
 public class OWS20ServiceExceptionHandler extends ServiceExceptionHandler {
+    /**
+     * A flag controlling whether the http return code should always be 200.
+     * It is required when running CITE tests for WCS2.0, but breaks OWS2 and WCS2 standards.
+     */
+    public static boolean force200httpcode = Boolean.getBoolean("force200");
+
     /**
      * verbose exception flag controlling whether the exception stack trace will be included in the
      * encoded ows exception report
@@ -85,6 +90,8 @@ public class OWS20ServiceExceptionHandler extends ServiceExceptionHandler {
      * Writes out an OWS ExceptionReport document.
      */
     public void handleServiceException(ServiceException exception, Request request) {
+        LOGGER.warning("OWS20SEH: handling " + exception);
+
         String version = null;
         if (useServiceVersion && request.getServiceDescriptor() != null) {
             version = request.getServiceDescriptor().getVersion().toString();
@@ -104,7 +111,14 @@ public class OWS20ServiceExceptionHandler extends ServiceExceptionHandler {
         } else if ( exception.getCause() != null && exception.getCause() instanceof OWS20Exception) {
             ows2ex = (OWS20Exception)exception.getCause();
         } else {
-            ows2ex = null;
+            // try to infer if it's a standard exception
+            String code = exception.getCode();
+            OWSExceptionCode exCode = OWS20Exception.OWSExceptionCode.getByCode(code);
+            if(exCode != null) {
+                ows2ex = new OWS20Exception(exception.getMessage(), exception, exCode, exception.getLocator());
+            } else {
+                ows2ex = new OWS20Exception(exception.getMessage(), exception, OWSExceptionCode.NoApplicableCode, exception.getLocator());
+            }
         }
 
         //response.setCharacterEncoding( "UTF-8" );
@@ -116,17 +130,23 @@ public class OWS20ServiceExceptionHandler extends ServiceExceptionHandler {
         encoder.setLineWidth(60);
         encoder.setOmitXMLDeclaration(request.isSOAP());
         
-        String schemaLocation = buildSchemaURL(baseURL(request.getHttpRequest()), "ows/2.0/owsAll.xsd");
+        // String schemaLocation = buildSchemaURL(baseURL(request.getHttpRequest()), "ows/2.0/owsAll.xsd");
+        String schemaLocation = "http://schemas.opengis.net/ows/2.0/owsExceptionReport.xsd";
         encoder.setSchemaLocation(OWS.NAMESPACE, schemaLocation);
 
         try {
 
-            if(ows2ex != null) {
+//            if(ows2ex != null) {
                 if(ows2ex.getHttpCode() != null) {
                     response.setStatus(ows2ex.getHttpCode());
                 }
+
+                if(force200httpcode) {
+                    response.setStatus(200);
+                }
+
                 encoder.encode(report, OWS.ExceptionReport, response.getOutputStream());
-            }
+//            }
 
         } catch (Exception ex) {
             //throw new RuntimeException(ex);

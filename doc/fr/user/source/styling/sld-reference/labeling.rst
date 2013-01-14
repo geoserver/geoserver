@@ -72,7 +72,7 @@ AnchorPoint
 
 The anchor point determines where the label is placed relative to the label point. These measurements are relative to the bounding box of the label. The (x,y) location inside the label's bounding box (specified by the AnchorPoint) is placed at the label point.
 
-.. figure:: img/label_bbox.gif
+.. figure:: img/label_bbox.png
    :align: center
 
 The anchor point is defined relative to the label's bounding box. The bottom left is (0,0), the top left is (1,1), and the middle is (0.5,0.5).
@@ -93,19 +93,19 @@ The anchor point is defined relative to the label's bounding box. The bottom lef
 By changing the values, you can control where the label is placed.
 	
 	
-.. figure:: img/point_x0y0_5.gif	
+.. figure:: img/point_x0y0_5.png	
 
 (x=0,y=0.5) DEFAULT - place the label to the right of the label point 	
 
-.. figure:: img/point_x0_5y0_5.gif
+.. figure:: img/point_x0_5y0_5.png
 
 (x=0.5,y=0.5) - place the centre of the label at the label point
 
-.. figure:: img/point_x15y0_5.gif
+.. figure:: img/point_x15y0_5.png
 
 (x=1,y=0.5) - place the label to the left of the label point 	
 
-.. figure:: img/point_x0_5y0.gif
+.. figure:: img/point_x0_5y0.png
 
 (x=0.5,y=0) - place the label centered above the label point
 
@@ -129,12 +129,12 @@ Displacement allows fine control of the placement of the label. The displacement
   </PointPlacement>
 
 
-.. figure:: img/point_x0y0_5_displacex10.gif
+.. figure:: img/point_x0y0_5_displacex10.png
    :align: center
 	
 displacement of x=10 pixels, compare with anchor point (x=0,y=0.5) above 	
 
-.. figure:: img/point_x0y1_displacey10.gif
+.. figure:: img/point_x0y1_displacey10.png
    :align: center
 
 displacement of y=-10 pixels, compare with anchor point (x=0.5,y=1.0) not shown
@@ -151,19 +151,19 @@ Rotation is simple - it rotates the label clockwise the number of degrees you sp
     45
   </Rotation>
 
-.. figure:: img/rot1.gif
+.. figure:: img/rot1.png
 
 simple 45 degrees rotation 	
 
-.. figure:: img/rot2.gif
+.. figure:: img/rot2.png
 
 45 degrees rotation with anchor point (x=0.5,y=0.5)
 	
-.. figure:: img/rot3.gif
+.. figure:: img/rot3.png
 	
 45 degrees with 40 pixel X displacement 	
 
-.. figure:: img/rot4.gif
+.. figure:: img/rot4.png
 
 45 degrees rotation with 40 pixel Y displacement with anchor point (x=0.5,y=0.5)
 
@@ -200,12 +200,12 @@ This is very similiar to the DisplacementY option (see above).
     </LinePlacement>
   </LabelPlacement>
 
-.. figure:: img/lp_1.gif
+.. figure:: img/lp_1.png
 	
 
 PerpendicularOffset=0 	
 
-.. figure:: img/lp_2.gif
+.. figure:: img/lp_2.png
 
 
 PerpendicularOffset=10 pixels
@@ -274,19 +274,19 @@ In our TextSymbolizer we can put an Expression to retreive or calculate the prio
   </Priority>
 
 
-.. figure:: img/priority_all.gif
+.. figure:: img/priority_all.png
    :align: center
 
 
 Location of the cities (see population data above)
 
-.. figure:: img/priority_some.gif
+.. figure:: img/priority_some.png
    :align: center
 
 
 New York is labeled in preference to the less populated cities. Without priority labeling, "Yonkers" could be labeled in preference to New York, making a difficult to interpret map.
 
-.. figure:: img/priority_lots.gif
+.. figure:: img/priority_lots.png
    :align: center
 
 Notice that larger cities are more readily named than smaller cities.
@@ -300,12 +300,12 @@ Sometimes you will have a set of related features that you only want a single la
 
 Roads data is an obvious example - you only want a single label for all of "main street", not a label for every piece of "main street."
 
-.. figure:: img/group_not.gif
+.. figure:: img/group_not.png
    :align: center
 
 When the grouping option is off (default), grouping is not performed and each geometry is labeled (space permitting).
 
-.. figure:: img/group_yes.gif
+.. figure:: img/group_yes.png
    :align: center
 
 With the grouping option on, all the geometries with the same label are grouped together and the label position is determined from ALL the geometries.
@@ -340,17 +340,17 @@ By default geoserver will not put labels "on top of each other". By using the sp
  
   <VendorOption name="spaceAround">10</VendorOption>
 
-.. figure:: img/space_0.gif
+.. figure:: img/space_0.png
    :align: center
 
 Default behavior ("0") - the bounding box of a label cannot overlap the bounding box of another label.
 
-.. figure:: img/space_neg.gif
+.. figure:: img/space_neg.png
    :align: center
 
 With a negative spaceAround value, overlapping is allowed.
 
-.. figure:: img/space_10.gif
+.. figure:: img/space_10.png
    :align: center
 
 With a spaceAround value of 10 for all TextSymbolizers, each label will be 20 pixels apart from each other (see below).

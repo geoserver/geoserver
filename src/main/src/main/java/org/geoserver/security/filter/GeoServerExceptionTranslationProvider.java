@@ -6,6 +6,7 @@
 package org.geoserver.security.filter;
 
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.security.config.ExceptionTranslationFilterConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 
 /**
@@ -18,7 +19,7 @@ public class GeoServerExceptionTranslationProvider extends AbstractFilterProvide
     @Override
     public void configure(XStreamPersister xp) {
         super.configure(xp);
-        xp.getXStream().alias("exceptionTranslation", GeoServerExceptionTranslationFilter.class);
+        xp.getXStream().alias("exceptionTranslation", ExceptionTranslationFilterConfig.class);
     }
 
     @Override

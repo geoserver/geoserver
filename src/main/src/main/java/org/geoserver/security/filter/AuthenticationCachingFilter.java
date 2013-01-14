@@ -36,6 +36,12 @@ public interface AuthenticationCachingFilter {
      * As an example, the derived information could be
      * an md5 checksum of the credentials 
      * 
+     * If there is an already existing HTTP Session, 
+     * this method should return <code>null</code>
+     * 
+     * If the HTTP request attribute named GeoServerSecurityContextPersistenceFilter.ALLOWSESSIONCREATION_ATTR
+     * is true, this method should return <code>null</code>
+     * 
      * @param request
      * @return
      */

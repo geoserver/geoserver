@@ -18,12 +18,15 @@ import org.geotools.xml.transform.TransformerBase;
 
  */
 public class WCS20DescribeCoverageResponse extends Response {
+    /** MIME_TYPE */
+    private static final String MIME_TYPE = "application/xml";
+
     public WCS20DescribeCoverageResponse() {
         super(WCS20DescribeCoverageTransformer.class);
     }
 
     public String getMimeType(Object value, Operation operation) {
-        return "application/xml";
+        return MIME_TYPE;
     }
 
     public void write(Object value, OutputStream output, Operation operation)

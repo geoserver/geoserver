@@ -4,13 +4,15 @@
  */
 package org.geoserver.wms;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.Name;
 
 /**
  * Holds the parsed parameters for a GetLegendGraphic WMS request.
@@ -24,10 +26,10 @@ import org.opengis.feature.type.FeatureType;
  *  <tr><td><b>Parameter</b></td><td><b>Required</b></td><td><b>Description</b></td></tr>
  *  <tr><td>VERSION </td><td>Required </td><td>Version as required by OGC interfaces.</td></tr>
  *  <tr><td>REQUEST </td><td>Required </td><td>Value must be  GetLegendRequest . </td></tr>
- *  <tr><td>LAYER </td><td>Required </td><td>Layer for which to produce legend graphic. </td></tr>
- *  <tr><td>STYLE </td><td>Optional </td><td>Style of layer for which to produce legend graphic. If not present, the default style is selected. The style may be any valid style available for a layer, including non-SLD internally-defined styles.</td></tr>
+ *  <tr><td>LAYER </td><td>Required </td><td>Layer for which to produce legend graphic. A layergroup can be specified, too. In this case, STYLE and RULE parameters can have multiple values (separated by commas), one for each of the group layers.</td></tr>
+ *  <tr><td>STYLE </td><td>Optional </td><td>Style of layer for which to produce legend graphic. If not present, the default style is selected. The style may be any valid style available for a layer, including non-SLD internally-defined styles. A list of styles separated by commas can be used to specify styles for single layers of a layergroup. To override default style only for some layers leave empty the not overridden ones in the list (ex. style1,,style3,style4 to use default style for layer 2).</td></tr>
  *  <tr><td>FEATURETYPE </td><td>Optional </td><td>Feature type for which to produce the legend graphic. This is not needed if the layer has only a single feature type. </td></tr>
- *  <tr><td>RULE </td><td>Optional </td><td>Rule of style to produce legend graphic for, if applicable. In the case that a style has multiple rules but no specific rule is selected, then the map server is obligated to produce a graphic that is representative of all of the rules of the style.</td></tr>
+ *  <tr><td>RULE </td><td>Optional </td><td>Rule of style to produce legend graphic for, if applicable. In the case that a style has multiple rules but no specific rule is selected, then the map server is obligated to produce a graphic that is representative of all of the rules of the style. A list of rules separated by commas can be used to specify rules for single layers of a layergroup. To specify rule only for some layers leave empty the not overridden ones in the list (ex. rule1,,rule3,rule4 to not specify rule for layer 2).</td></tr>
  *  <tr><td>SCALE </td><td>Optional </td><td>In the case that a RULE is not specified for a style, this parameter may assist the server in selecting a more appropriate representative graphic by eliminating internal rules that are outof- scope. This value is a standardized scale denominator, defined in Section 10.2</td></tr>
  *  <tr><td>SLD </td><td>Optional </td><td>This parameter specifies a reference to an external SLD document. It works in the same way as the SLD= parameter of the WMS GetMap operation. </td></tr>
  *  <tr><td>SLD_BODY </td><td>Optional </td><td>This parameter allows an SLD document to be included directly in an HTTP-GET request. It works in the same way as the SLD_BODY= parameter of the WMS GetMap operation.</td></tr>
@@ -78,16 +80,19 @@ public class GetLegendGraphicRequest extends WMSRequest {
      */
     public static final String DEFAULT_FORMAT = "image/png";
 
-    /** The featuretype of the requested LAYER */
-    private FeatureType layer;
+    /** The featuretype(s) of the requested LAYER(s) */
+    private List<FeatureType> layers=new ArrayList<FeatureType>();
+    
+    /** The featuretype name -> title association map */
+    private Map<Name,String> titles=new HashMap<Name,String>();
 
     /**
-     * The Style object for styling the legend graphic, or layer's default if not provided. This
+     * The Style object(s) for styling the legend graphic, or layer's default if not provided. This
      * style can be aquired by evaluating the STYLE parameter, which provides one of the layer's
      * named styles, the SLD parameter, which provides a URL for an external SLD document, or the
      * SLD_BODY parameter, which provides the SLD body in the request body.
      */
-    private Style style;
+    private List<Style> styles=new ArrayList<Style>();
 
     /**
      * should hold FEATURETYPE parameter value, though not used by now, since GeoServer WMS still
@@ -96,8 +101,8 @@ public class GetLegendGraphicRequest extends WMSRequest {
      */
     private String featureType;
 
-    /** holds RULE parameter value, or <code>null</code> if not provided */
-    private String rule;
+    /** holds RULE parameter value(s), or <code>null</code> if not provided */
+    private List<String> rules=new ArrayList<String>();
 
     /**
      * holds the standarized scale denominator passed as the SCALE parameter value, or
@@ -179,20 +184,38 @@ public class GetLegendGraphicRequest extends WMSRequest {
         this.height = height;
     }
 
-    public FeatureType getLayer() {
-        return layer;
+    public List<FeatureType> getLayers() {
+        return layers;
     }
 
+    public void setLayers(List<FeatureType> layers) {
+        this.layers = layers;
+    }
+    
+    public void setTitle(Name featureTypeName,String title) {
+        titles.put(featureTypeName, title);
+    }
+    
+    public String getTitle(Name featureTypeName) {
+        return titles.get(featureTypeName);
+    }
+    
     public void setLayer(FeatureType layer) {
-        this.layer = layer;
+    	this.layers.clear();
+    	this.layers.add(layer);
     }
 
-    public String getRule() {
-        return rule;
+    public List<String> getRules() {
+        return rules;
     }
 
+    public void setRules(List<String> rules) {
+        this.rules = rules;
+    }
+    
     public void setRule(String rule) {
-        this.rule = rule;
+        this.rules.clear();
+        this.rules.add(rule);
     }
 
     public double getScale() {
@@ -203,12 +226,17 @@ public class GetLegendGraphicRequest extends WMSRequest {
         this.scale = scale;
     }
 
-    public Style getStyle() {
-        return style;
+    public List<Style> getStyles() {
+        return styles;
     }
 
+    public void setStyles(List<Style> styles) {
+        this.styles = styles;
+    }
+    
     public void setStyle(Style style) {
-        this.style = style;
+    	this.styles.clear();
+        this.styles.add(style);
     }
 
     public int getWidth() {
@@ -241,6 +269,9 @@ public class GetLegendGraphicRequest extends WMSRequest {
      * rendering. Anything of the following works: "yes", "true", "1". Anything else means false.
      * <li><code>forceLabels</code>: "on" means labels will always be drawn, even if only one rule
      * is available. "off" means labels will never be drawn, even if multiple rules are available.
+     * <li><code>forceTitles</code>: "on" means layer titles for layergroups will always be drawn, 
+     * even if only one layer is available. "off" means titles will never be drawn, even if multiple
+     * layers are available.
      * </ul>
      * </p>
      * 

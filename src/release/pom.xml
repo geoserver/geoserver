@@ -211,6 +211,16 @@
    <version>${project.version}</version>
   </dependency>
   <dependency>
+   <groupId>org.geoserver.extension</groupId>
+   <artifactId>monitor-core</artifactId>
+   <version>${project.version}</version>
+  </dependency>
+  <dependency>
+   <groupId>org.geoserver.extension</groupId>
+   <artifactId>monitor-hibernate</artifactId>
+   <version>${project.version}</version>
+  </dependency>
+  <dependency>
    <groupId>org.geoserver.security</groupId>
    <artifactId>sec-cas</artifactId>
    <version>${project.version}</version>

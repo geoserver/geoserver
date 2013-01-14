@@ -11,6 +11,13 @@ import javax.servlet.http.HttpSessionListener;
 
 import org.jasig.cas.client.session.SessionMappingStorage;
 
+/**
+ * Removes HTTP sessions recorded by CAS for
+ * a single sign out configuration
+ * 
+ * @author christian
+ *
+ */
 public class SingleSignOutHttpSessionListener implements HttpSessionListener {
 
     private SessionMappingStorage sessionMappingStorage;

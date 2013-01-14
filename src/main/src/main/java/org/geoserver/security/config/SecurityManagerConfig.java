@@ -25,7 +25,6 @@ public class SecurityManagerConfig implements SecurityConfig {
 
     private String roleServiceName;
     private List<String> authProviderNames = new ArrayList<String>();
-    private Boolean anonymousAuth = Boolean.TRUE;
     private String configPasswordEncrypterName;
     private boolean encryptingUrlParams;
 
@@ -39,7 +38,6 @@ public class SecurityManagerConfig implements SecurityConfig {
         this.roleServiceName = config.getRoleServiceName();
         this.authProviderNames = config.getAuthProviderNames() != null ? 
             new ArrayList<String>(config.getAuthProviderNames()) : null;
-        this.anonymousAuth = config.isAnonymousAuth();
         this.filterChain = config.getFilterChain() != null ? 
             new GeoServerSecurityFilterChain(config.getFilterChain()) : null;
         this.rememberMeService = new RememberMeServicesConfig(config.getRememberMeService());
@@ -51,7 +49,6 @@ public class SecurityManagerConfig implements SecurityConfig {
 
     private Object readResolve() {
         authProviderNames = authProviderNames != null ? authProviderNames : new ArrayList<String>();
-        anonymousAuth = anonymousAuth != null ? anonymousAuth : Boolean.TRUE;
         filterChain = filterChain != null ? filterChain : new GeoServerSecurityFilterChain();
         rememberMeService = rememberMeService != null ? rememberMeService : new RememberMeServicesConfig();
         return this;
@@ -72,20 +69,6 @@ public class SecurityManagerConfig implements SecurityConfig {
      */
     public List<String> getAuthProviderNames() {
         return authProviderNames;
-    }
-
-    /**
-     * Flag determining if anonymous authentication is active.
-     */
-    public Boolean isAnonymousAuth() {
-        return anonymousAuth;
-    }
-
-    /**
-     * Sets flag determining if anonymous authentication is active.
-     */
-    public void setAnonymousAuth(Boolean anonymousAuth) {
-        this.anonymousAuth = anonymousAuth;
     }
 
     /**

@@ -26,6 +26,7 @@ import org.geoserver.catalog.Info;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
+import org.geoserver.jdbcconfig.JDBCConfigTestSupport;
 
 /**
  * @author groldan
@@ -33,13 +34,13 @@ import org.geoserver.catalog.impl.WorkspaceInfoImpl;
  */
 public class ConfigDatabaseTest extends TestCase {
 
-    private JdbcConfigTestSupport testSupport;
+    private JDBCConfigTestSupport testSupport;
 
     private ConfigDatabase database;
 
     @Override
     protected void setUp() throws Exception {
-        testSupport = new JdbcConfigTestSupport();
+        testSupport = new JDBCConfigTestSupport();
         testSupport.setUp();
         database = testSupport.getDatabase();
     }

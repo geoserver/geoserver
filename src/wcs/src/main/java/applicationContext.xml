@@ -44,11 +44,21 @@
     
     <!-- The coverage response delegates and their factory -->
     <bean id="coverageResponseDelegateFactory" class="org.geoserver.wcs.responses.CoverageResponseDelegateFinder"/>
-    <bean id="ascCoverageResponseDelegate" class="org.geoserver.wcs.responses.AscCoverageResponseDelegate"/>
-    <bean id="geotiffCoverageResponseDelegate" class="org.geoserver.wcs.responses.GeoTIFFCoverageResponseDelegate"/>
-    <bean id="GTopo30CoverageResponseDelegate" class="org.geoserver.wcs.responses.GTopo30CoverageResponseDelegate"/>
-    <bean id="imgCoverageResponseDelegate" class="org.geoserver.wcs.responses.IMGCoverageResponseDelegate"/>
-    <bean id="debugCoverageResponseDelegate" class="org.geoserver.wcs.responses.DebugCoverageResponseDelegate"/>
+    <bean id="ascCoverageResponseDelegate" class="org.geoserver.wcs.responses.AscCoverageResponseDelegate">
+		<constructor-arg ref="geoServer"/>
+	</bean>
+    <bean id="geotiffCoverageResponseDelegate" class="org.geoserver.wcs.responses.GeoTIFFCoverageResponseDelegate">
+		<constructor-arg ref="geoServer"/>
+	</bean>
+    <bean id="GTopo30CoverageResponseDelegate" class="org.geoserver.wcs.responses.GTopo30CoverageResponseDelegate">
+		<constructor-arg ref="geoServer"/>
+	</bean>
+    <bean id="imgCoverageResponseDelegate" class="org.geoserver.wcs.responses.IMGCoverageResponseDelegate">
+		<constructor-arg ref="geoServer"/>
+	</bean>
+    <bean id="debugCoverageResponseDelegate" class="org.geoserver.wcs.responses.DebugCoverageResponseDelegate">
+		<constructor-arg ref="geoServer"/>
+	</bean>
     
     <!-- disposes of all coverages created during GetCoverage calls -->
     <bean id="coverageCleaner" class="org.geoserver.wcs.CoverageCleanerCallback"/>

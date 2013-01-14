@@ -36,8 +36,9 @@
           <descriptor>release/ext-css.xml</descriptor>
           <descriptor>release/ext-ftp.xml</descriptor>
           <descriptor>release/ext-printing.xml</descriptor>
-          <descriptor>release/ext-monitor.xml</descriptor>
           <descriptor>release/ext-python.xml</descriptor>
+          <descriptor>release/ext-groovy.xml</descriptor>
+          <descriptor>release/ext-javascript.xml</descriptor>
           <descriptor>release/ext-spatialite.xml</descriptor>
           <descriptor>release/ext-dbconfig.xml</descriptor>
           <descriptor>release/ext-inspire.xml</descriptor>
@@ -122,7 +123,6 @@
         <module>printing</module>
         <module>release</module>
         <module>ftp</module>
-        <module>monitoring</module>
         <module>spatialite</module>
         <module>dbconfig</module>
         <module>inspire</module>
@@ -148,12 +148,6 @@
       <id>ftp</id>
       <modules>
         <module>ftp</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>monitoring</id>
-      <modules>
-        <module>monitoring</module>
       </modules>
     </profile>
     <profile>
@@ -229,6 +223,12 @@
       </activation> 
       <modules>
         <module>wcs2_0</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>w3ds</id>
+      <modules>
+        <module>w3ds</module>
       </modules>
     </profile>
   </profiles>

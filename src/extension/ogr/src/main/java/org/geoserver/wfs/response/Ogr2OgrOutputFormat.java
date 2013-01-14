@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,7 +20,6 @@ import java.util.zip.ZipOutputStream;
 
 import javax.xml.namespace.QName;
 
-import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.QueryType;
 
@@ -36,7 +36,6 @@ import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.data.store.EmptyFeatureCollection;
-import org.geotools.feature.FeatureTypes;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.gml.producer.FeatureTransformer;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -376,6 +375,11 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat {
         }
         
         return file; 
+    }
+    
+    @Override
+    public List<String> getCapabilitiesElementNames() {
+        return getAllCapabilitiesElementNames();
     }
 
 }

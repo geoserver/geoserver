@@ -21,8 +21,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Handler;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
@@ -30,10 +28,9 @@ import javax.servlet.ServletResponse;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.io.FileUtils;
-import org.geoserver.catalog.Catalog;
-import org.apache.commons.logging.impl.Log4JLogger;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
@@ -44,8 +41,6 @@ import org.geoserver.wms.GetMap;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.junit.Test;
-import org.geotools.util.logging.Log4JLoggerFactory;
-import org.geotools.util.logging.Logging;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -643,5 +638,33 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals(0, color[2]);
         assertEquals(255, color[3]);
     }
-
+    
+    @Test
+    public void testLayoutLegendStyleTitleDPI() throws Exception {
+        // set the title to null
+        FeatureTypeInfo states = getCatalog().getFeatureTypeByName("states");
+        states.setTitle(null);
+        getCatalog().save(states);
+        
+        // add the layout to the data dir
+        File layouts = getDataDirectory().findOrCreateDir("layouts");
+        URL layout = GetMapIntegrationTest.class.getResource("test-layout-sldtitle.xml");
+        FileUtils.copyURLToFile(layout, new File(layouts, "test-layout-sldtitle.xml"));
+    
+        int dpi = 90 * 2;
+        int width = 550 * 2;
+        int height = 250 * 2;
+    
+        // get a map with the layout, it used to NPE
+        BufferedImage image = getAsImage("wms?bbox=" + bbox
+                + "&styles=Population&layers=" + layers + "&Format=image/png" + "&request=GetMap"
+                + "&width=" + width + "&height=" + height + "&srs=EPSG:4326&format_options=layout:test-layout-sldtitle;dpi:"+dpi, "image/png");
+        // RenderedImageBrowser.showChain(image);
+    
+        // check the pixels that should be in the legend
+        assertPixel(image, 15, 67, Color.RED);
+        assertPixel(image, 15, 107, Color.GREEN);
+        assertPixel(image, 15, 147, Color.BLUE);
+    }
+    
 }

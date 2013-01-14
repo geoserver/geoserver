@@ -444,10 +444,10 @@ public class Dispatcher extends AbstractController {
         //check kvp
         if (req.getKvp() != null) {
 
-            req.setService(normalize((String) req.getKvp().get("service")));
-            req.setVersion(normalizeVersion(normalize((String) req.getKvp().get("version"))));
-            req.setRequest(normalize((String) req.getKvp().get("request")));
-            req.setOutputFormat(normalize((String) req.getKvp().get("outputFormat")));
+            req.setService(normalize(KvpUtils.getSingleValue(req.getKvp(), "service")));
+            req.setVersion(normalizeVersion(normalize(KvpUtils.getSingleValue(req.getKvp(), "version"))));
+            req.setRequest(normalize(KvpUtils.getSingleValue(req.getKvp(), "request")));
+            req.setOutputFormat(normalize(KvpUtils.getSingleValue(req.getKvp(), "outputFormat")));
         } 
         //check the body
         if (req.getInput() != null) {

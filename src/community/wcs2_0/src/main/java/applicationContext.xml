@@ -12,6 +12,7 @@
   <bean id="wcs20ServiceTarget" class="org.geoserver.wcs2_0.DefaultWebCoverageService20">
     <constructor-arg ref="geoServer" />
     <constructor-arg ref="coverageResponseDelegateFactory"/>
+    <constructor-arg ref="envelopeDimensionsMapper"/>
   </bean>
 <!--  
     <bean id="wcsLogger" class="org.geoserver.ows.util.EMFLogger">
@@ -74,6 +75,22 @@
 
   <!-- GetCoverage -->
   <bean id="wcs20subsetKvpParser" class="org.geoserver.wcs2_0.kvp.SubsetKvpParser"/>
+  <bean id="wcs20scaleFactorKvpParser" class="org.geoserver.ows.kvp.DoubleKvpParser">
+     <constructor-arg value="scalefactor"/>
+  </bean>
+  <bean id="wcs20scaleAxesKvpParser" class="org.geoserver.wcs2_0.kvp.ScaleAxesKvpParser"/>
+  <bean id="wcs20scaleSizeKvpParser" class="org.geoserver.wcs2_0.kvp.ScaleSizeKvpParser"/>
+  <bean id="wcs20scaleExtentKvpParser" class="org.geoserver.wcs2_0.kvp.ScaleExtentKvpParser"/>
+  <bean id="wcs20interpolationKvpParser" class="org.geoserver.wcs2_0.kvp.InterpolationKvpParser"/>
+  <bean id="wcs20rangeSubsetKvpParser" class="org.geoserver.wcs2_0.kvp.RangeSubsetKvpParser">
+    <property name="service" value="WCS"/>
+    <property name="version" value="2.0.0"/>
+  </bean>
+  <bean id="wcs201rangeSubsetKvpParser" class="org.geoserver.wcs2_0.kvp.RangeSubsetKvpParser">
+    <property name="service" value="WCS"/>
+    <property name="version" value="2.0.1"/>
+  </bean>
+  
   
   <bean id="wcs20getCoverageKvpParser" class="org.geoserver.wcs2_0.kvp.WCS20GetCoverageRequestReader"/>
   
@@ -96,5 +113,13 @@
       </list>
     </constructor-arg>
   </bean>
+  
+  <!--  Envelope dimensions mapper util class-->
+  <bean id="envelopeDimensionsMapper" class="org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper"/> 
 
+
+  <bean id="GMLCoverageResponseDelegate" class="org.geoserver.wcs2_0.response.GMLCoverageResponseDelegate">
+      <constructor-arg ref="envelopeDimensionsMapper" />
+      <constructor-arg ref="geoServer"/>
+  </bean>
 </beans>

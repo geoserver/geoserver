@@ -26,6 +26,7 @@ import org.geoserver.security.GeoServerSecurityTestSupport;
 import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
+import org.geoserver.security.filter.GeoServerAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
 import org.geoserver.test.SystemTest;
 import org.junit.Test;
@@ -68,13 +69,23 @@ public class RememberMeTest extends GeoServerSecurityTestSupport {
             getClass().getResource(getClass().getSimpleName() + "-context.xml").toString());
     }
 
-    static class AuthCapturingFilter extends GeoServerSecurityFilter {
+    static class AuthCapturingFilter extends GeoServerSecurityFilter implements GeoServerAuthenticationFilter {
         @Override
         public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
                 throws IOException, ServletException {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             request.setAttribute("auth", auth);
             chain.doFilter(request, response);
+        }
+
+        @Override
+        public boolean applicableForHtml() {
+            return true;
+        }
+
+        @Override
+        public boolean applicableForServices() {
+            return true;
         }
     }
 
@@ -160,4 +171,6 @@ public class RememberMeTest extends GeoServerSecurityTestSupport {
     void assertLoginFailed(MockHttpServletResponse resp) {
         assertTrue(resp.getHeader("Location").endsWith("GeoServerLoginPage&error=true"));
     }
+    
+
 }

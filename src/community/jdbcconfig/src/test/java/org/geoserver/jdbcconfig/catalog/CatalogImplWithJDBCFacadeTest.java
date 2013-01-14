@@ -6,19 +6,20 @@ package org.geoserver.jdbcconfig.catalog;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.impl.CatalogImpl;
+import org.geoserver.jdbcconfig.JDBCConfigTestSupport;
 import org.geoserver.jdbcconfig.internal.ConfigDatabase;
-import org.geoserver.jdbcconfig.internal.JdbcConfigTestSupport;
+import org.junit.After;
 
 public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.CatalogImplTest {
 
     private JDBCCatalogFacade facade;
 
-    private JdbcConfigTestSupport testSupport;
+    private JDBCConfigTestSupport testSupport;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.GET_LAYER_BY_ID_WITH_CONCURRENT_ADD_TEST_COUNT = 10;
-        testSupport = new JdbcConfigTestSupport();
+        testSupport = new JDBCConfigTestSupport();
         testSupport.setUp();
 
         ConfigDatabase configDb = testSupport.getDatabase();
@@ -27,9 +28,8 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
         super.setUp();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
         facade.dispose();
 //        testSupport.tearDown();
     }

@@ -61,26 +61,26 @@ The anchor point values  are specified relative to the bounding box of the label
 The bottom left of the box is (0, 0), the top left is (1, 1), and the middle is (0.5, 0.5).
 The (X,Y) location of the anchor point inside the label's bounding box is placed at the label point.
 
-.. figure:: img/label_bbox.gif
+.. figure:: img/label_bbox.png
    :align: center
 
 
 The following examples show how changing the anchor point affects the position of labels:
 
 
-.. figure:: img/point_x0y0_5.gif	
+.. figure:: img/point_x0y0_5.png	
 
 *X=0, Y=0.5 - (default) places the label to the right of the label point* 	
 
-.. figure:: img/point_x0_5y0_5.gif
+.. figure:: img/point_x0_5y0_5.png
 
 *X=0.5, Y=0.5 - places the centre of the label at the label point*
 
-.. figure:: img/point_x15y0_5.gif
+.. figure:: img/point_x15y0_5.png
 
 *X=1, Y=0.5 - places the label to the left of the label point*	
 
-.. figure:: img/point_x0_5y0.gif
+.. figure:: img/point_x0_5y0.png
 
 *X=0.5, Y=0 - places the label horizontally centred above the label point*
 
@@ -107,12 +107,12 @@ The element syntax is:
 
 Examples:
 
-.. figure:: img/point_x0y0_5_displacex10.gif
+.. figure:: img/point_x0y0_5_displacex10.png
    :align: center
 	
 *Displacement of X=10 pixels (compare with default anchor point of (X=0, Y=0.5) shown above)*	
 
-.. figure:: img/point_x0y1_displacey10.gif
+.. figure:: img/point_x0y1_displacey10.png
    :align: center
 
 *Displacement of Y=-10 pixels (compare with anchor point (X= 0.5, Y=1.0) - not shown)*
@@ -131,19 +131,19 @@ The optional ``<Rotation>`` element specifies that labels should be rotated cloc
 
 The examples below show how the rotation interacts with anchor points and displacements.
   
-.. figure:: img/rot1.gif
+.. figure:: img/rot1.png
 
 *45 degree rotation* 	
 
-.. figure:: img/rot2.gif
+.. figure:: img/rot2.png
 
 *45 degree rotation with anchor point (X=0.5, Y=0.5)*
 	
-.. figure:: img/rot3.gif
+.. figure:: img/rot3.png
 	
 *45 degree rotation with 40-pixel X displacement* 	
 
-.. figure:: img/rot4.gif
+.. figure:: img/rot4.png
 
 *45 degree rotation with 40-pixel Y displacement with anchor point (X=0.5, Y=0.5)*
 
@@ -177,11 +177,11 @@ A positive value displaces upwards, a negative value downwards.
 
 Examples:
 
-.. figure:: img/lp_1.gif
+.. figure:: img/lp_1.png
 	
 *PerpendicularOffset = 0 (default)*	
 
-.. figure:: img/lp_2.gif
+.. figure:: img/lp_2.png
 
 *PerpendicularOffset = 10*
 
@@ -249,7 +249,7 @@ For example, take the following dataset of cities::
    Newark      |     280,123
    New York    |   8,107,916
 
-.. figure:: img/priority_all.gif
+.. figure:: img/priority_all.png
    :align: center
 
 *City locations (large scale map)*
@@ -266,7 +266,7 @@ To do this we include the following code in the ``<TextSymbolizer>``:
   
 This ensures that at small scales New York is labeled in preference to the less populated cities: 
 
-.. figure:: img/priority_some.gif
+.. figure:: img/priority_some.png
    :align: center
 
 *City locations (small scale map)*
@@ -276,7 +276,7 @@ making it difficult to interpret the map.
 At scales showing many features, 
 priority labeling is essential to ensure that larger cities are more visible than smaller cities.
 
-.. figure:: img/priority_lots.gif
+.. figure:: img/priority_lots.png
    :align: center
 
 
@@ -308,7 +308,8 @@ according to the following rules:
    * - Polygon Set
      - Polygons are clipped to the view rectangle, and the largest polygon is used.
 
-
+If desired the labeller can be forced to label every element in a group by specifying the :ref:`labeling_all_group` option.
+     
 .. warning::  
    Be careful that the labels truly indicate features that should be grouped together. 
    For example, grouping on city name alone might end up creating a group
@@ -321,14 +322,14 @@ not a label for every block of "Main Street."
 When the ``group`` option is off (the default), grouping is not performed and every block feature is labeled 
 (subject to label deconfliction):
 
-.. figure:: img/group_not.gif
+.. figure:: img/group_not.png
    :align: center
 
 When the ``group`` option is used, geometries with the same label are grouped together 
 and the label position is determined from the entire group.
 This produces a much less cluttered map:
 
-.. figure:: img/group_yes.gif
+.. figure:: img/group_yes.png
    :align: center
 
 
@@ -348,17 +349,17 @@ The value supplied for the option is a positive or negative size in pixels.
 
 Using the default value of 0, the bounding box of a label cannot overlap the bounding box of another label:
 
-.. figure:: img/space_0.gif
+.. figure:: img/space_0.png
    :align: center
 
 With a negative spaceAround value, overlapping is allowed:
 
-.. figure:: img/space_neg.gif
+.. figure:: img/space_neg.png
    :align: center
 
 With a positive ``spaceAround`` value of 10, each label will be 20 pixels apart from each other:
 
-.. figure:: img/space_10.gif
+.. figure:: img/space_10.png
    :align: center
 
 
@@ -376,7 +377,7 @@ Two labels in the first symbolizer ("5") will each be 5 pixels apart from each o
 followLine
 ^^^^^^^^^^
 
-The **followLine** option forces a label to follow the curve of the line. To use this option add the following to the ``<TextSymbolizer>``.
+The ``followLine`` option forces a label to follow the curve of the line. To use this option add the following to the ``<TextSymbolizer>``.
 
 .. code-block:: xml
   
@@ -395,9 +396,11 @@ It is required to use ``<LinePlacement>`` along with this option to ensure that 
 maxDisplacement
 ^^^^^^^^^^^^^^^
 
-The **maxDisplacement** option controls the displacement of the label along a line. Normally GeoServer would label a line at its center point only, provided the location is not busy with another label, and not label it at all otherwise. When set, the labeller will search for another location within **maxDisplacement** pixels from the pre-computed label point.
+The ``maxDisplacement`` option controls the displacement of the label along a line. 
+Normally GeoServer labels a line at its center point only, provided the location is not occupied by another label, and not label it at all otherwise. 
+When this option is enabled the labeller will attempt to avoid conflict by using an alternate location within **maxDisplacement** pixels from the pre-computed label point.
 
-When used in conjunction with **repeat**, the value for **maxDisplacement** should always be lower than the value for repeat.
+If used in conjunction with :ref:`labeling_repeat`, the value for ``maxDisplacement`` should always be **lower** than the value for ``repeat``.
 
 .. code-block:: xml
 
@@ -408,7 +411,9 @@ When used in conjunction with **repeat**, the value for **maxDisplacement** shou
 repeat
 ^^^^^^
 
-The **repeat** option determines how often GeoServer labels a line. Normally GeoServer would label each line only once, regardless of their length. Specify a positive value to make it draw the label every **repeat** pixels.
+The ``repeat`` option determines how often GeoServer labels a line. 
+Normally GeoServer labels each line only once, regardless of length. 
+Specifying a positive value for this option makes the labeller attempt to draw the label every **repeat** pixels.
 
 .. code-block:: xml
 
@@ -420,7 +425,8 @@ The **repeat** option determines how often GeoServer labels a line. Normally Geo
 labelAllGroup
 ^^^^^^^^^^^^^
 
-The **labelAllGroup** option makes sure that all of the segments in a line group are labeled instead of just the longest one.
+The ``labelAllGroup`` option can be used in conjunction with the ``group`` option (see :ref:`labeling_group`).
+It causes *all* of the disjoint paths in a line group to be labeled, not just the longest one.
 
 .. code-block:: xml
 
@@ -431,7 +437,7 @@ The **labelAllGroup** option makes sure that all of the segments in a line group
 maxAngleDelta
 ^^^^^^^^^^^^^
 
-Designed to use used in conjuection with **followLine**, the **maxAngleDelta** option sets the maximum angle, in degrees, between two subsequent characters in a curved label. Large angles create either visually disconnected words or overlapping characters. It is advised not to use angles larger than 30.
+When used in conjunction with :ref:`labeling_follow_line`, the ``maxAngleDelta`` option sets the maximum angle, in degrees, between two subsequent characters in a curved label. Large angles create either visually disconnected words or overlapping characters. It is advised not to use angles larger than 30.
 
 .. code-block:: xml
 
@@ -442,7 +448,7 @@ Designed to use used in conjuection with **followLine**, the **maxAngleDelta** o
 autoWrap
 ^^^^^^^^
 
-The **autoWrap** option wraps labels when they exceed the given value, given in pixels. Make sure to give a dimension wide enough to accommodate the longest word other wise this option will split words over multiple lines.
+The ``autoWrap`` option wraps labels when they exceed the given value, given in pixels. Make sure to give a dimension wide enough to accommodate the longest word other wise this option will split words over multiple lines.
 
 .. code-block:: xml
 
@@ -455,7 +461,7 @@ forceLeftToRight
 
 The labeller always tries to draw labels so that they can be read, meaning the label does not always follow the line orientation, but sometimes it's flipped 180° instead to allow for normal reading. This may get in the way if the label is a directional arrow, and you're trying to show one way directions (assuming the geometry is oriented along the one way, and that you have a flag to discern one ways from streets with both circulations).
 
-The following setting disables label flipping, making the label always follow the natural orientation of the line being labelled:
+The ``forceLeftToRight`` option can be set to ``false`` to disable label flipping, making the label always follow the inherent orientation of the line being labelled:
 
 .. code-block:: xml
 
@@ -466,7 +472,9 @@ The following setting disables label flipping, making the label always follow th
 conflictResolution
 ^^^^^^^^^^^^^^^^^^
 
-By default labels are subjected to conflict resolution, meaning the renderer will not allow any label to overlap with a label that has been drawn already. Setting this parameter to false pull the label out of the conflict resolution game, meaning the label will be drawn even if it overlaps with other labels, and other labels drawn after it won't mind overlapping with it.
+By default labels are subject to **conflict resolution**, meaning the renderer will not allow any label to overlap with a label that has been already drawn. 
+Setting the ``conflictResolution`` option to ``false`` causes this label to bypass conflict resolution.
+This means the label will be drawn even if it overlaps with other labels, and other labels drawn after it may overlap it.
 
 .. code-block:: xml
 

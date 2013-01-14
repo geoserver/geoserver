@@ -14,6 +14,7 @@ Filters can be used in several contexts in GeoServer:
    :maxdepth: 1
 
    syntax/
+   filter_reference
    ecql_reference
    function
    function_reference

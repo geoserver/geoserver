@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpSession;
 
+import org.geoserver.security.filter.GeoServerSecurityContextPersistenceFilter;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -78,10 +79,13 @@ public class SessionDebugFilter implements Filter {
             }
 
             // ok, no session but the caller really wants one,
+            // check for the hint passed by the GeoServerSecurityContextPersistenceFilter and
             // signal the issue in the logs
 
+            Boolean allow =  (Boolean) getAttribute(GeoServerSecurityContextPersistenceFilter.ALLOWSESSIONCREATION_ATTR);
+                        
             // are we creating the session in the web ui?
-            if (getPathInfo().startsWith("/web")) {
+            if (getPathInfo().startsWith("/web") || Boolean.TRUE.equals(allow)) {
                 if(LOGGER.isLoggable(Level.FINE)) {
                     Exception e = new Exception("Full stack trace for the session creation path");
                     e.fillInStackTrace();

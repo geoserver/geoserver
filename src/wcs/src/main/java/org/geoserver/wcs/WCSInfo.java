@@ -4,6 +4,8 @@
  */
 package org.geoserver.wcs;
 
+import java.util.List;
+
 import org.geoserver.config.ServiceInfo;
 import org.geotools.coverage.grid.io.OverviewPolicy;
 
@@ -73,4 +75,28 @@ public interface WCSInfo extends ServiceInfo {
      * Enableds/disables the use of subsampling during the coverage reads
      */
     public void setSubsamplingEnabled(boolean enabled);
+    
+    /**
+     * Allows users to request data in lat-lon order.
+     * 
+     * <p>
+     * Default to <code>false</code>.
+     * 
+     * @param latLon <code>true</code> for lat-lon order, <code>false</code> otherwise.
+     * 
+     */
+    public void setLatLon(boolean latLon);
+    
+    /**
+     * Tells me whether we should spit out data in lat-lon or lon-lat order.
+     * 
+     * @return <code>true</code> for lat-lon order, <code>false</code> otherwise.
+     */
+    public boolean isLatLon();
+    
+    /**
+     * The srs's that the wcs service supports (not all versions of WCS support this)
+     */
+    List<String> getSRS();
+    
 }

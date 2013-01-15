@@ -27,6 +27,7 @@ import org.opengis.coverage.grid.GridCoverage;
  * Default implementation of the Web Coverage Service 2.0
  * 
  * @author Emanuele Tajariol (etj) - GeoSolutions
+ * @author Simone Giannecchini, GeoSolutions
  */
 public class DefaultWebCoverageService20 implements WebCoverageService20 {
 

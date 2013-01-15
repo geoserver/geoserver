@@ -91,7 +91,7 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
         
         add(form);
         
-        rootLayerPanel = new RootLayerEntryPanel("rootLayer", form);
+        rootLayerPanel = new RootLayerEntryPanel("rootLayer", form, layerGroup.getWorkspace());
         updateRootLayerPanel(layerGroup.getMode());
         
         TextField name = new TextField("name");

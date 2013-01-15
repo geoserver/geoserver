@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.data.layergroup;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -17,6 +18,7 @@ import org.apache.wicket.util.convert.IConverter;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.layergroup.AbstractLayerGroupPage.LayerListPanel;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -29,7 +31,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 public class RootLayerEntryPanel extends Panel {
 
     @SuppressWarnings({ "rawtypes" })
-    public RootLayerEntryPanel(String id, final Form form) {
+    public RootLayerEntryPanel(String id, final Form form, WorkspaceInfo workspace) {
         super(id);
         
         setOutputMarkupId(true);
@@ -43,9 +45,23 @@ public class RootLayerEntryPanel extends Panel {
         rootLayerField.setOutputMarkupId(true);
         rootLayerField.setRequired(true);
         add(rootLayerField);
+
+        // global styles
+        List<StyleInfo> globalStyles = new ArrayList<StyleInfo>();
+        List<StyleInfo> allStyles = GeoServerApplication.get().getCatalog().getStyles();
+        for (StyleInfo s : allStyles) {
+            if (s.getWorkspace() == null) {
+                globalStyles.add(s);
+            }
+        }
         
-        // TODO getStylesByWorkspace?
-        List<StyleInfo> styles = GeoServerApplication.get().getCatalog().getStyles();
+        // available styles
+        List<StyleInfo> styles = new ArrayList<StyleInfo>();
+        styles.addAll(globalStyles);
+        if (workspace != null) {
+            styles.addAll(GeoServerApplication.get().getCatalog().getStylesByWorkspace(workspace));
+        }
+        
         DropDownChoice<StyleInfo> styleField = new DropDownChoice<StyleInfo>("rootLayerStyle", styles) {
             @Override
             public IConverter getConverter(Class<?> type) { 

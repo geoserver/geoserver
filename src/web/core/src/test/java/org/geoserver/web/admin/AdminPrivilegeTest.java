@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.RequestCycle;
 import org.apache.wicket.Component.IVisitor;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -37,6 +38,7 @@ import org.geoserver.security.AdminRequest;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.UnauthorizedPage;
 import org.geoserver.web.data.layer.LayerPage;
+import org.geoserver.web.data.layer.SQLViewNewPage;
 import org.geoserver.web.data.layergroup.LayerGroupEditPage;
 import org.geoserver.web.data.layergroup.LayerGroupNewPage;
 import org.geoserver.web.data.layergroup.LayerGroupPage;
@@ -299,5 +301,19 @@ public class AdminPrivilegeTest extends GeoServerWicketTestSupport {
         assertFalse(tester.getComponentFromLastRenderedPage("form:workspace").isEnabled());
         assertNull(tester.getComponentFromLastRenderedPage("form:save"));
         assertTrue(tester.getComponentFromLastRenderedPage("form:cancel").isEnabled());
+    }
+
+    public void testSqlViewNewPageAsWorkspaceAdmin() throws Exception {
+        loginAsCite();
+
+        PageParameters pp = new PageParameters();
+        pp.put(SQLViewNewPage.WORKSPACE, "cite");
+
+        //not a jdbc datastore obviously but we don't need one to simply test that the 
+        // page will render with worksapce admin privilieges
+        pp.put(SQLViewNewPage.DATASTORE, "cite");
+
+        new SQLViewNewPage(pp);
+        assertFalse(UnauthorizedPage.class.equals(RequestCycle.get().getResponsePageClass()));
     }
 }

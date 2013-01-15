@@ -65,6 +65,7 @@ public class MemoryUserGroupService extends AbstractUserGroupService {
             helper.groupMap =(TreeMap<String,GeoServerUserGroup>) oin.readObject();
             helper.user_groupMap = (TreeMap<GeoServerUser,SortedSet<GeoServerUserGroup>>)oin.readObject();
             helper.group_userMap = (TreeMap<GeoServerUserGroup,SortedSet<GeoServerUser>>)oin.readObject();
+            helper.propertyMap = (TreeMap<String,SortedSet<GeoServerUser>>)oin.readObject();
         } catch (ClassNotFoundException e) {
             throw new IOException(e);
         }

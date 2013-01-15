@@ -158,6 +158,70 @@ public interface GeoServerUserGroupService extends GeoServerSecurityService,User
      * @return the number of groups
      */
     int getGroupCount() throws IOException;
+    
+    
+    
+    /**
+     * Returns a set of {@link GeoServerUser} objects
+     * having the specified property
+     * 
+     * @param propname
+     * @return
+     * @throws IOException
+     */
+    SortedSet<GeoServerUser> getUsersHavingProperty(String propname) throws IOException;
+    
+    /**
+     * Returns the number of {@link GeoServerUser} objects
+     * having the specified property
+     *
+     * @param propname
+     * @return
+     * @throws IOException
+     */
+    int getUserCountHavingProperty(String propname) throws IOException;
 
+    /**
+     * 
+     * Returns a set of {@link GeoServerUser} objects NOT
+     * having the specified property
+     * 
+     * @param propname
+     * @return
+     * @throws IOException
+     */
+    SortedSet<GeoServerUser> getUsersNotHavingProperty(String propname) throws IOException;
+    
+    /**
+     * Returns the number of {@link GeoServerUser} objects NOT
+     * having the specified property
+     * 
+     * @param propname
+     * @return
+     * @throws IOException
+     */
+    int getUserCountNotHavingProperty(String propname) throws IOException;
+
+    /**
+     * Returns a set of {@link GeoServerUser} objects 
+     * having the property with the specified value 
+     * 
+     * @param propname
+     * @param propvalue
+     * @return
+     * @throws IOException
+     */
+    SortedSet<GeoServerUser> getUsersHavingPropertyValue(String propname,String propvalue) throws IOException;
+    
+    /**
+     * Returns the number of {@link GeoServerUser} objects 
+     * having the property with the specified value 
+     * 
+     * @param propname
+     * @param propvalue
+     * @return
+     * @throws IOException
+     */
+    int getUserCountHavingPropertyValue(String propname,String propvalue) throws IOException;
 
 }

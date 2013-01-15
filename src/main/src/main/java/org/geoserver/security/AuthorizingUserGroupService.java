@@ -128,24 +128,24 @@ public abstract class AuthorizingUserGroupService implements GeoServerUserGroupS
 
     @Override
     public SortedSet<GeoServerUser> getUsers() throws IOException {
-        return filterUsers(new TreeSet(delegate.getUsers()));
+        return filterUsers(new TreeSet<GeoServerUser>(delegate.getUsers()));
     }
 
     @Override
     public SortedSet<GeoServerUserGroup> getUserGroups() throws IOException {
-        return filterGroups(new TreeSet(delegate.getUserGroups()));
+        return filterGroups(new TreeSet<GeoServerUserGroup>(delegate.getUserGroups()));
     }
 
     @Override
     public SortedSet<GeoServerUser> getUsersForGroup(GeoServerUserGroup group)
             throws IOException {
-        return filterUsers(new TreeSet(delegate.getUsersForGroup(group)));
+        return filterUsers(new TreeSet<GeoServerUser>(delegate.getUsersForGroup(group)));
     }
 
     @Override
     public SortedSet<GeoServerUserGroup> getGroupsForUser(GeoServerUser user)
             throws IOException {
-        return filterGroups(new TreeSet(delegate.getGroupsForUser(user)));
+        return filterGroups(new TreeSet<GeoServerUserGroup>(delegate.getGroupsForUser(user)));
     }
 
     @Override
@@ -250,6 +250,43 @@ public abstract class AuthorizingUserGroupService implements GeoServerUserGroupS
     public boolean isModified() {
         return delegateAsStore().isModified(); 
     }
+    
+    
+    @Override
+    public SortedSet<GeoServerUser> getUsersHavingProperty(String propname) throws IOException {
+         return filterUsers(new TreeSet<GeoServerUser>(delegate.getUsersHavingProperty(propname)));
+    }
+    
+    @Override
+    public int getUserCountHavingProperty(String propname) throws IOException {
+          return getUsersHavingProperty(propname).size();
+    }
+
+    @Override
+    public SortedSet<GeoServerUser> getUsersNotHavingProperty(String propname) throws IOException {
+         return filterUsers(new TreeSet<GeoServerUser>(delegate.getUsersNotHavingProperty(propname)));
+    }
+
+    @Override
+    public int getUserCountNotHavingProperty(String propname) throws IOException {
+         return getUsersNotHavingProperty(propname).size();
+    }
+
+    @Override
+    public SortedSet<GeoServerUser> getUsersHavingPropertyValue(String propname, String propvalue)
+            throws IOException {
+         return filterUsers(new TreeSet<GeoServerUser>(delegate.getUsersHavingPropertyValue(propname, propvalue)));
+    }
+
+    @Override
+    public int getUserCountHavingPropertyValue(String propname, String propvalue)
+            throws IOException {
+         return getUsersHavingPropertyValue(propname, propvalue).size();
+    }
+
+
+    
+    
 
     protected abstract GeoServerUser filterUser(GeoServerUser user);
 

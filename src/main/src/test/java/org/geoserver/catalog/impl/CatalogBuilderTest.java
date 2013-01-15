@@ -24,7 +24,6 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.data.test.MockData;
@@ -210,7 +209,35 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         assertNotNull(group.getBounds());
         assertEquals(fti.getNativeBoundingBox(), group.getBounds());
     }
+
+    public void testLayerGroupEoBounds() throws Exception {
+        Catalog cat = getCatalog();
         
+        CatalogBuilder cb = new CatalogBuilder(cat);
+        
+        cb.setStore(cat.getDataStoreByName(MockData.LINES.getPrefix()));
+        FeatureTypeInfo fti = cb.buildFeatureType(toName(MockData.LINES));        
+        cb.setupBounds(fti);
+        
+        LayerInfo layer = cat.getFactory().createLayer();
+        layer.setResource(fti);
+        layer.setName(fti.getName());
+        layer.setEnabled(true);
+        layer.setType(LayerInfo.Type.VECTOR);
+        
+        LayerGroupInfo group = cat.getFactory().createLayerGroup();
+        group.setName("group_EO");
+        group.setRootLayer(layer);
+        
+        assertNull(group.getBounds());
+
+        // force bounds computation
+        cb.calculateLayerGroupBounds(group);
+        
+        assertNotNull(group.getBounds());
+        assertEquals(fti.getNativeBoundingBox(), group.getBounds());
+    }
+    
     /**
      * Tests we can build properly the WMS store and the WMS layer
      * 

@@ -38,6 +38,7 @@ import org.geoserver.security.AdminRequest;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.UnauthorizedPage;
 import org.geoserver.web.data.layer.LayerPage;
+import org.geoserver.web.data.layer.NewFeatureTypePage;
 import org.geoserver.web.data.layer.SQLViewNewPage;
 import org.geoserver.web.data.layergroup.LayerGroupEditPage;
 import org.geoserver.web.data.layergroup.LayerGroupNewPage;
@@ -314,6 +315,20 @@ public class AdminPrivilegeTest extends GeoServerWicketTestSupport {
         pp.put(SQLViewNewPage.DATASTORE, "cite");
 
         new SQLViewNewPage(pp);
+        assertFalse(UnauthorizedPage.class.equals(RequestCycle.get().getResponsePageClass()));
+    }
+
+    public void testCreateNewFeatureTypePageAsWorkspaceAdmin() throws Exception {
+        loginAsCite();
+
+        PageParameters pp = new PageParameters();
+        pp.put(NewFeatureTypePage.WORKSPACE, "cite");
+
+        //not a jdbc datastore obviously but we don't need one to simply test that the 
+        // page will render with worksapce admin privilieges
+        pp.put(NewFeatureTypePage.DATASTORE, "cite");
+
+        new NewFeatureTypePage(pp);
         assertFalse(UnauthorizedPage.class.equals(RequestCycle.get().getResponsePageClass()));
     }
 }

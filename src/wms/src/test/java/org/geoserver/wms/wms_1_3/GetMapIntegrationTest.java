@@ -5,6 +5,7 @@
 package org.geoserver.wms.wms_1_3;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -19,6 +20,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.WMSTestSupport;
 import org.junit.Test;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
@@ -286,6 +288,14 @@ public class GetMapIntegrationTest extends WMSTestSupport {
             // this group is not meant to be called directly so we should get an exception
             MockHttpServletResponse resp = getAsServletResponse(url);
             assertEquals("text/xml", resp.getContentType());
+            
+            Document dom = getAsDOM(url);
+            assertEquals("ServiceExceptionReport", dom.getDocumentElement().getNodeName()); 
+            
+            Element serviceException = (Element) dom.getDocumentElement().getElementsByTagName("ServiceException").item(0);
+            assertEquals("LayerNotDefined", serviceException.getAttribute("code"));
+            assertEquals("layers", serviceException.getAttribute("locator"));
+            assertEquals("Could not find layer " + group.getName(), serviceException.getTextContent().trim());
         } finally {
             catalog.remove(group);
         }

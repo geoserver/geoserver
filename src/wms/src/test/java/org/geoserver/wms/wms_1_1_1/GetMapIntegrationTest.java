@@ -45,6 +45,7 @@ import org.geoserver.wms.WMSTestSupport;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.junit.Test;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
@@ -725,6 +726,14 @@ public class GetMapIntegrationTest extends WMSTestSupport {
             // this group is not meant to be called directly so we should get an exception
             MockHttpServletResponse resp = getAsServletResponse(url);
             assertEquals("application/vnd.ogc.se_xml", resp.getContentType());
+            
+            Document dom = getAsDOM(url);
+            assertEquals("ServiceExceptionReport", dom.getDocumentElement().getNodeName()); 
+            
+            Element serviceException = (Element) dom.getDocumentElement().getElementsByTagName("ServiceException").item(0);
+            assertEquals("LayerNotDefined", serviceException.getAttribute("code"));
+            assertEquals("layers", serviceException.getAttribute("locator"));
+            assertEquals("Could not find layer " + group.getName(), serviceException.getTextContent().trim());                        
         } finally {
             catalog.remove(group);
         }

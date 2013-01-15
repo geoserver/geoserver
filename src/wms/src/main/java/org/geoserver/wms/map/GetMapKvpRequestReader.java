@@ -1236,9 +1236,9 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
                 layersOrGroups.add(layerInfo);
             } else {
                 LayerGroupInfo layerGroup = wms.getLayerGroupByName(layerName);
-                if (layerGroup == null) {
-                    throw new ServiceException("Could not find layer " + layerName,
-                            "LayerNotDefined");
+                if (layerGroup == null || LayerGroupInfo.Mode.CONTAINER.equals(layerGroup.getMode())) {
+                    throw new ServiceException("Could not find layer " + layerName, 
+                            "LayerNotDefined", "layers");
                 }
                 layersOrGroups.add(layerGroup);
             }

@@ -8,6 +8,8 @@
 # to the database or not. If set to true, it will be imported and the config option will be set the value 'false'
 # for the next start up to avoid trying to re-import the catalog configuration.
 
+enabled=true
+
 initdb=true
 initScript=${GEOSERVER_DATA_DIR}/jdbcconfig/scripts/initdb.h2.sql
 import=true

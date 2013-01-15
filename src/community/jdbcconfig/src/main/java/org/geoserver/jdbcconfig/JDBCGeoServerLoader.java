@@ -47,6 +47,11 @@ public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
 
     public void setCatalogFacade(CatalogFacade catalogFacade) throws IOException {
         this.catalogFacade = catalogFacade;
+
+        if (!config.isEnabled()) {
+            return;
+        }
+
         ConfigDatabase configDatabase = ((JDBCCatalogFacade) catalogFacade).getConfigDatabase();
 
         URL initScript = config.isInitDb() ? config.getInitScript() : null;
@@ -62,6 +67,11 @@ public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
 
     @Override
     protected void loadCatalog(Catalog catalog, XStreamPersister xp) throws Exception {
+        if (!config.isEnabled()) {
+            super.loadCatalog(catalog, xp);
+            return;
+        }
+
         Stopwatch sw = new Stopwatch().start();
         loadCatalogInternal(catalog, xp);
         sw.stop();
@@ -81,6 +91,11 @@ public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
 
     @Override
     protected void loadGeoServer(GeoServer geoServer, XStreamPersister xp) throws Exception {
+        if (!config.isEnabled()) {
+            super.loadGeoServer(geoServer, xp);
+            return;
+        }
+
         ((GeoServerImpl) geoServer).setFacade(geoServerFacade);
 
         // if this is the first time loading up with bdb je configuration, migrate from old

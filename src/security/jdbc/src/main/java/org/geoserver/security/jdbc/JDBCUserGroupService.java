@@ -40,6 +40,7 @@ import org.geoserver.security.password.PasswordEncodingType;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.util.StringUtils;
 
 /**
  * JDBC implementation of {@link GeoServerUserGroupService}
@@ -51,6 +52,11 @@ public  class JDBCUserGroupService extends AbstractJDBCService implements GeoSer
     
     final static String DEFAULT_DML_FILE="usersdml.xml";
     final static String DEFAULT_DDL_FILE="usersddl.xml";
+    
+    protected SortedSet<GeoServerUser> emptyUsers;
+    protected SortedSet<GeoServerUserGroup> emptyGroups;
+    
+
 
     /** logger */
     static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.security.jdbc");
@@ -60,6 +66,8 @@ public  class JDBCUserGroupService extends AbstractJDBCService implements GeoSer
     protected String passwordEncoderName,passwordValidatorName;
     
     public JDBCUserGroupService() throws IOException{
+        emptyUsers=Collections.unmodifiableSortedSet(new TreeSet<GeoServerUser>());
+        emptyGroups=Collections.unmodifiableSortedSet(new TreeSet<GeoServerUserGroup>());
     }
 
     @Override
@@ -136,7 +144,7 @@ public  class JDBCUserGroupService extends AbstractJDBCService implements GeoSer
     protected  String[] getOrderedNamesForCreate() {
         return new String[] {
             "users.create","userprops.create","groups.create","groupmembers.create",
-            "groupmembers.indexcreate"                
+            "groupmembers.indexcreate","userprops.indexcreate1","userprops.indexcreate2"                
         };        
     }
     /**
@@ -506,6 +514,239 @@ public  class JDBCUserGroupService extends AbstractJDBCService implements GeoSer
     protected String userNotFoundMessage(String username) {
         return "User  "+username + 
                 " not found in usergroupservice: "+getName();
+    }
+
+    @Override
+    public SortedSet<GeoServerUser> getUsersHavingProperty(String propname) throws IOException {
+        if (StringUtils.hasLength(propname)==false)
+            return emptyUsers;
+        
+        Connection con=null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        Map<String,GeoServerUser> map = new HashMap<String,GeoServerUser>();
+        try {
+            con = getConnection();
+            ps = getDMLStatement("user.usersHavingProperty",con);
+            ps.setString(1, propname);
+            rs = ps.executeQuery();
+            while (rs.next()) {                
+                String username = rs.getString(1);
+                String password = rs.getString(2);
+                String enabledString = rs.getString(3);
+                boolean isEnabled= convertFromString(enabledString);
+                GeoServerUser u = createUserObject(username,password, isEnabled);                
+                map.put(username, u);
+            }
+            
+            ps.close();
+            rs.close();
+            
+            ps = getDMLStatement("userprops.usersHavingProperty",con);
+            ps.setString(1, propname);
+            rs = ps.executeQuery();
+            while (rs.next()) {    
+                String useName = rs.getString(1);
+                String propName = rs.getString(2);
+                Object propValue = rs.getString(3);
+                GeoServerUser u = map.get(useName);
+                if (u!=null) {
+                    u.getProperties().put(propName, propValue==null ? "" : propValue);
+                }
+            }
+        } catch (SQLException ex) {
+            throw new IOException(ex);
+        } finally {
+            closeFinally(con, ps, rs);
+        }
+                                        
+        SortedSet<GeoServerUser> users = new TreeSet<GeoServerUser>();
+        users.addAll(map.values());
+        return Collections.unmodifiableSortedSet(users);
+    }
+
+    @Override
+    public int getUserCountHavingProperty(String propname) throws IOException {
+        if (StringUtils.hasLength(propname)==false)
+            return 0;
+        
+        Connection con=null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        int count;
+        try {
+            con = getConnection();
+            ps = getDMLStatement("userprops.userCountHavingProperty",con);
+            ps.setString(1, propname);
+            rs = ps.executeQuery();            
+            rs.next();               
+            count=rs.getInt(1);
+        } catch (SQLException ex) {
+            throw new IOException(ex);
+        } finally {
+            closeFinally(con, ps, rs);
+        }
+        return count;
+    }
+
+    @Override
+    public SortedSet<GeoServerUser> getUsersNotHavingProperty(String propname) throws IOException {
+        if (StringUtils.hasLength(propname)==false)
+            return emptyUsers;
+        
+        Connection con=null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        Map<String,GeoServerUser> map = new HashMap<String,GeoServerUser>();
+        try {
+            con = getConnection();
+            ps = getDMLStatement("user.usersNotHavingProperty",con);
+            ps.setString(1, propname);
+            rs = ps.executeQuery();
+            while (rs.next()) {                
+                String username = rs.getString(1);
+                String password = rs.getString(2);
+                String enabledString = rs.getString(3);
+                boolean isEnabled= convertFromString(enabledString);
+                GeoServerUser u = createUserObject(username,password, isEnabled);                
+                map.put(username, u);
+            }
+            
+            ps.close();
+            rs.close();
+            
+            ps = getDMLStatement("userprops.usersNotHavingProperty",con);
+            ps.setString(1, propname);
+            rs = ps.executeQuery();
+            while (rs.next()) {    
+                String useName = rs.getString(1);
+                String propName = rs.getString(2);
+                Object propValue = rs.getString(3);
+                GeoServerUser u = map.get(useName);
+                if (u!=null) {
+                    u.getProperties().put(propName, propValue==null ? "" : propValue);
+                }
+            }
+        } catch (SQLException ex) {
+            throw new IOException(ex);
+        } finally {
+            closeFinally(con, ps, rs);
+        }
+                                        
+        SortedSet<GeoServerUser> users = new TreeSet<GeoServerUser>();
+        users.addAll(map.values());
+        return Collections.unmodifiableSortedSet(users);
+    }
+
+    @Override
+    public int getUserCountNotHavingProperty(String propname) throws IOException {
+        if (StringUtils.hasLength(propname)==false)
+            return getUserCount();
+        
+        Connection con=null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        int count;
+        try {
+            con = getConnection();
+            ps = getDMLStatement("userprops.userCountNotHavingProperty",con);
+            ps.setString(1, propname);
+            rs = ps.executeQuery();            
+            rs.next();               
+            count=rs.getInt(1);
+        } catch (SQLException ex) {
+            throw new IOException(ex);
+        } finally {
+            closeFinally(con, ps, rs);
+        }
+        return count;
+    }
+
+    @Override
+    public SortedSet<GeoServerUser> getUsersHavingPropertyValue(String propname, String propvalue)
+            throws IOException {
+        
+        if (StringUtils.hasLength(propname)==false)
+            return emptyUsers;
+        
+        if (StringUtils.hasLength(propvalue)==false)
+            return emptyUsers;
+        
+        Connection con=null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        Map<String,GeoServerUser> map = new HashMap<String,GeoServerUser>();
+        try {
+            con = getConnection();
+            ps = getDMLStatement("user.usersHavingPropertyValue",con);
+            ps.setString(1,propname);
+            ps.setString(2,propvalue);
+            rs = ps.executeQuery();
+            while (rs.next()) {                
+                String username = rs.getString(1);
+                String password = rs.getString(2);
+                String enabledString = rs.getString(3);
+                boolean isEnabled= convertFromString(enabledString);
+                GeoServerUser u = createUserObject(username,password, isEnabled);                
+                map.put(username, u);
+            }
+            
+            ps.close();
+            rs.close();
+            
+            ps = getDMLStatement("userprops.usersHavingPropertyValue",con);
+            ps.setString(1, propname);
+            ps.setString(2,propvalue);
+            rs = ps.executeQuery();
+            while (rs.next()) {    
+                String useName = rs.getString(1);
+                String propName = rs.getString(2);
+                Object propValue = rs.getString(3);
+                GeoServerUser u = map.get(useName);
+                if (u!=null) {
+                    u.getProperties().put(propName, propValue==null ? "" : propValue);
+                }
+            }
+        } catch (SQLException ex) {
+            throw new IOException(ex);
+        } finally {
+            closeFinally(con, ps, rs);
+        }
+                                        
+        SortedSet<GeoServerUser> users = new TreeSet<GeoServerUser>();
+        users.addAll(map.values());
+        return Collections.unmodifiableSortedSet(users);
+    }
+
+    @Override
+    public int getUserCountHavingPropertyValue(String propname, String propvalue)
+            throws IOException {
+        
+        if (StringUtils.hasLength(propname)==false)
+            return 0;
+        
+        if (StringUtils.hasLength(propvalue)==false)
+            return 0;
+        
+        Connection con=null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        int count;
+        try {
+            con = getConnection();
+            ps = getDMLStatement("userprops.userCountHavingPropertyValue",con);
+            ps.setString(1, propname);
+            ps.setString(2, propvalue);
+            rs = ps.executeQuery();            
+            rs.next();               
+            count=rs.getInt(1);
+        } catch (SQLException ex) {
+            throw new IOException(ex);
+        } finally {
+            closeFinally(con, ps, rs);
+        }
+        return count;        
+        
     }
 
 }

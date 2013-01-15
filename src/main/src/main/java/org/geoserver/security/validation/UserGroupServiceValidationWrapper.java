@@ -236,6 +236,39 @@ public class UserGroupServiceValidationWrapper extends AbstractSecurityValidator
     public int getGroupCount() throws IOException {
         return service.getGroupCount();
     }
+    
+    @Override
+    public SortedSet<GeoServerUser> getUsersHavingProperty(String propname) throws IOException {
+         return service.getUsersHavingProperty(propname);
+    }
+    
+    @Override
+    public int getUserCountHavingProperty(String propname) throws IOException {
+          return service.getUserCountHavingProperty(propname);
+    }
+
+    @Override
+    public SortedSet<GeoServerUser> getUsersNotHavingProperty(String propname) throws IOException {
+         return service.getUsersNotHavingProperty(propname);
+    }
+
+    @Override
+    public int getUserCountNotHavingProperty(String propname) throws IOException {
+         return service.getUserCountNotHavingProperty(propname);
+    }
+
+    @Override
+    public SortedSet<GeoServerUser> getUsersHavingPropertyValue(String propname, String propvalue)
+            throws IOException {
+         return service.getUsersHavingPropertyValue(propname, propvalue);
+    }
+
+    @Override
+    public int getUserCountHavingPropertyValue(String propname, String propvalue)
+            throws IOException {
+         return service.getUserCountHavingPropertyValue(propname, propvalue);
+    }
+
         
     /**
      * Helper method for creating a proper

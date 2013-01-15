@@ -213,6 +213,37 @@ public abstract class AbstractUserGroupService extends AbstractGeoServerSecurity
     public int getGroupCount() throws IOException {
         return helper.getGroupCount();
     }
+    
+    @Override
+    public SortedSet<GeoServerUser> getUsersHavingProperty(String propname) throws IOException {
+         return helper.getUsersHavingProperty(propname);
+    }
+    
+    @Override
+    public int getUserCountHavingProperty(String propname) throws IOException {
+          return helper.getUserCountHavingProperty(propname);
+    }
 
+    @Override
+    public SortedSet<GeoServerUser> getUsersNotHavingProperty(String propname) throws IOException {
+         return helper.getUsersNotHavingProperty(propname);
+    }
+
+    @Override
+    public int getUserCountNotHavingProperty(String propname) throws IOException {
+         return helper.getUserCountNotHavingProperty(propname);
+    }
+
+    @Override
+    public SortedSet<GeoServerUser> getUsersHavingPropertyValue(String propname, String propvalue)
+            throws IOException {
+         return helper.getUsersHavingPropertyValue(propname, propvalue);
+    }
+
+    @Override
+    public int getUserCountHavingPropertyValue(String propname, String propvalue)
+            throws IOException {
+         return helper.getUserCountHavingPropertyValue(propname, propvalue);
+    }
 
 }

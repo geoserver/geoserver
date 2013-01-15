@@ -21,7 +21,7 @@ public class AuthenticationKeyMangler implements URLMangler {
         if (authentication instanceof KeyAuthenticationToken) {
             KeyAuthenticationToken kat = (KeyAuthenticationToken) authentication;
             String key = (String) kat.getCredentials();
-            kvp.put(KeyAuthenticationToken.KEY, key);
+            kvp.put(kat.getAuthKeyParamName(), key);
         }
 
     }

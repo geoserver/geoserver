@@ -37,6 +37,7 @@ import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.validator.AbstractValidator;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.store.StorePage;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
@@ -570,4 +571,8 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
         }
     }
     
+    @Override
+    protected ComponentAuthorizer getPageAuthorizer() {
+        return ComponentAuthorizer.WORKSPACE_ADMIN;
+    }
 }

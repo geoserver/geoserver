@@ -57,6 +57,7 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
     @Override
     public void setGeoServer(GeoServer geoServer) {
         this.geoServer = geoServer;
+        this.db.setGeoServer(geoServer);
     }
 
     @Override
@@ -133,6 +134,7 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
     @Override
     public void add(ServiceInfo service) {
         setId(service, ServiceInfo.class);
+        service.setGeoServer(geoServer);
         db.add(service);
     }
 

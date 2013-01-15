@@ -7,6 +7,7 @@ package org.geoserver.security.impl;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,6 +33,7 @@ import org.geotools.util.logging.Logging;
 import org.springframework.util.StringUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
@@ -293,6 +295,14 @@ public class GeoServerJ2eeRoleService extends AbstractGeoServerSecurityService
             InputSource inputSource = new InputSource(new FileInputStream(file));
 
             xmlReader.setContentHandler(handler);
+            // suppress validation
+            xmlReader.setEntityResolver(new EntityResolver() {                
+                @Override
+                public InputSource resolveEntity(String publicId, String systemId) throws SAXException,
+                        IOException {
+                    return new InputSource(new StringReader(""));
+                }
+            });
             xmlReader.parse(inputSource);
           } catch (SAXException e) {
             throw new IOException(e);

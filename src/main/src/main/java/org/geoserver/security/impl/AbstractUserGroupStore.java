@@ -191,8 +191,27 @@ public abstract class AbstractUserGroupStore  implements GeoServerUserGroupStore
         
         preparePassword(user);
         helper.userMap.put(user.getUsername(), user);
+        addUserToPropertyMap(user);
         setModified(true);
     }
+    
+    protected void addUserToPropertyMap(GeoServerUser user) {
+        for (Object key : user.getProperties().keySet()) {            
+            SortedSet<GeoServerUser> users = helper.propertyMap.get(key);
+            if (users==null) {
+                users = new TreeSet<GeoServerUser>();
+                helper.propertyMap.put((String) key, users);
+            }
+            users.add(user);
+        }        
+    }
+    
+    protected void removeUserFromPropertyMap(GeoServerUser user) {
+        for (SortedSet<GeoServerUser> users : helper.propertyMap.values()) {
+            users.remove(user);
+        }
+    }
+
     
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverUserGroupStore#addGroup(org.geoserver.security.impl.GeoserverUserGroup)
@@ -218,6 +237,8 @@ public abstract class AbstractUserGroupStore  implements GeoServerUserGroupStore
        }
        preparePassword(user);     
        helper.userMap.put(user.getUsername(), user);
+       removeUserFromPropertyMap(user);
+       addUserToPropertyMap(user);
        setModified(true);
     }
     
@@ -250,8 +271,10 @@ public abstract class AbstractUserGroupStore  implements GeoServerUserGroupStore
         }
         
         boolean retValue = helper.userMap.remove(user.getUsername()) != null;
-        if (retValue)
+        if (retValue) {
             setModified(true);
+            removeUserFromPropertyMap(user);
+        }
         return retValue;
     }
     
@@ -398,6 +421,7 @@ public abstract class AbstractUserGroupStore  implements GeoServerUserGroupStore
         oout.writeObject(service.helper.groupMap);
         oout.writeObject(service.helper.user_groupMap);
         oout.writeObject(service.helper.group_userMap);
+        oout.writeObject(service.helper.propertyMap);
         byte[] bytes =out.toByteArray();
         oout.close();            
 
@@ -409,6 +433,7 @@ public abstract class AbstractUserGroupStore  implements GeoServerUserGroupStore
             helper.groupMap =(TreeMap<String,GeoServerUserGroup>) oin.readObject();
             helper.user_groupMap = (TreeMap<GeoServerUser,SortedSet<GeoServerUserGroup>>)oin.readObject();
             helper.group_userMap = (TreeMap<GeoServerUserGroup,SortedSet<GeoServerUser>>)oin.readObject();
+            helper.propertyMap = (TreeMap<String,SortedSet<GeoServerUser>>)oin.readObject();
         } catch (ClassNotFoundException e) {
             throw new IOException(e);
         }
@@ -447,6 +472,38 @@ public abstract class AbstractUserGroupStore  implements GeoServerUserGroupStore
 
     public int getGroupCount() throws IOException {
         return helper.getGroupCount();
+    }
+
+    @Override
+    public SortedSet<GeoServerUser> getUsersHavingProperty(String propname) throws IOException {
+         return helper.getUsersHavingProperty(propname);
+    }
+    
+    @Override
+    public int getUserCountHavingProperty(String propname) throws IOException {
+          return helper.getUserCountHavingProperty(propname);
+    }
+
+    @Override
+    public SortedSet<GeoServerUser> getUsersNotHavingProperty(String propname) throws IOException {
+         return helper.getUsersNotHavingProperty(propname);
+    }
+
+    @Override
+    public int getUserCountNotHavingProperty(String propname) throws IOException {
+         return helper.getUserCountNotHavingProperty(propname);
+    }
+
+    @Override
+    public SortedSet<GeoServerUser> getUsersHavingPropertyValue(String propname, String propvalue)
+            throws IOException {
+         return helper.getUsersHavingPropertyValue(propname, propvalue);
+    }
+
+    @Override
+    public int getUserCountHavingPropertyValue(String propname, String propvalue)
+            throws IOException {
+         return helper.getUserCountHavingPropertyValue(propname, propvalue);
     }
 
 }

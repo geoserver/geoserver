@@ -405,6 +405,48 @@ public abstract class AbstractSecurityServiceTest extends GeoServerSystemTestSup
 
         assertEquals(1,userGroupService.getGroupsForUser(groupAdminUser).size());
         assertTrue(userGroupService.getGroupsForUser(groupAdminUser).contains(group2));
+        
+        assertEquals(0,userGroupService.getUserCountHavingProperty("unknown"));
+        assertEquals(userGroupService.getUserCount(),
+                userGroupService.getUserCountNotHavingProperty("unknown"));
+        assertEquals(0,userGroupService.getUserCountHavingPropertyValue("tel","123"));
+
+        assertEquals(1,userGroupService.getUserCountHavingProperty("tel"));
+        assertEquals(userGroupService.getUserCount()-1,
+                userGroupService.getUserCountNotHavingProperty("tel"));
+        assertEquals(1,userGroupService.getUserCountHavingPropertyValue("tel","12-34-38"));
+
+        assertEquals(0,userGroupService.getUsersHavingProperty("unknown").size());
+        assertEquals(userGroupService.getUserCount(),
+                userGroupService.getUsersNotHavingProperty("unknown").size());
+        // check if properties are loaded too
+        for (GeoServerUser user : userGroupService.getUsersNotHavingProperty("unknown") ) {
+            if (user2.getUsername().equals(user.getUsername())) {
+                assertEquals(2,user.getProperties().size());
+                assertEquals(user.getProperties().getProperty("mail"),"user2@gmx.com");
+                assertEquals(user.getProperties().getProperty("tel"),"12-34-38");                
+            } else {
+                assertEquals(0,user.getProperties().size());
+            }
+        }        
+        assertEquals(0,userGroupService.getUsersHavingPropertyValue("tel","123").size());
+
+        assertEquals(1,userGroupService.getUsersHavingProperty("mail").size());
+        user2=userGroupService.getUsersHavingProperty("mail").first();
+        assertEquals(user2.getProperties().getProperty("mail"),"user2@gmx.com");
+        assertEquals(user2.getProperties().getProperty("tel"),"12-34-38");                
+
+        assertEquals(userGroupService.getUserCount()-1
+                ,userGroupService.getUsersNotHavingProperty("mail").size());
+        for (GeoServerUser user : userGroupService.getUsersNotHavingProperty("mail") ) {
+                assertEquals(0,user.getProperties().size());
+        }        
+        
+        assertEquals(1,userGroupService.getUsersHavingPropertyValue("tel","12-34-38").size());
+        user2=userGroupService.getUsersHavingPropertyValue("tel","12-34-38").first();
+        assertEquals(user2.getProperties().getProperty("mail"),"user2@gmx.com");
+        assertEquals(user2.getProperties().getProperty("tel"),"12-34-38");                                    
+        
     }
     protected void checkValuesModified(GeoServerUserGroupService userGroupService) throws IOException {
         GeoServerUser disableduser = userGroupService.getUserByUsername("disableduser");
@@ -427,6 +469,13 @@ public abstract class AbstractSecurityServiceTest extends GeoServerSystemTestSup
         assertTrue(userGroupService.getUsersForGroup(group1).contains(user1));
     
         assertEquals(0,userGroupService.getGroupsForUser(user2).size());
+        
+        assertEquals(0,userGroupService.getUsersHavingProperty("mail").size());
+        assertEquals(0,userGroupService.getUsersHavingPropertyValue("tel","12-34-38").size());
+        assertEquals(1,userGroupService.getUsersHavingPropertyValue("tel","11-22-33").size());
+        user2=userGroupService.getUsersHavingPropertyValue("tel","11-22-33").first();
+        assertEquals("11-22-33", user2.getProperties().getProperty("tel"));
+        
     }
     protected void checkValuesRemoved(GeoServerUserGroupService userGroupService) throws IOException {
         
@@ -452,6 +501,10 @@ public abstract class AbstractSecurityServiceTest extends GeoServerSystemTestSup
         assertEquals(0, userGroupService.getGroupsForUser(disableduser).size());
         assertEquals(1, userGroupService.getUsersForGroup(group1).size());
         assertTrue(userGroupService.getUsersForGroup(group1).contains(user1));
+        
+        assertEquals(0,userGroupService.getUsersHavingProperty("mail").size());
+        assertEquals(0,userGroupService.getUsersHavingPropertyValue("tel","11-22-33").size());
+
     }
     public void insertValues(GeoServerUserGroupStore userGroupStore) throws Exception {
                 

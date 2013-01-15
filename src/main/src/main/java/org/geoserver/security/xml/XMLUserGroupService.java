@@ -184,6 +184,12 @@ public class XMLUserGroupService extends AbstractUserGroupService {
                 user.getProperties().clear();       // set properties
                 for (Object key: userProps.keySet()) {
                     user.getProperties().put(key, userProps.get(key));
+                    SortedSet<GeoServerUser> propUsers = helper.propertyMap.get(key);
+                    if (propUsers==null) {
+                        propUsers=new TreeSet<GeoServerUser>();
+                        helper.propertyMap.put((String)key, propUsers);
+                    }
+                    propUsers.add(user);
                 }
             }
                         

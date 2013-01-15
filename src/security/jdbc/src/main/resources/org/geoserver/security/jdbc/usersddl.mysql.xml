@@ -24,5 +24,14 @@
   <entry key="userprops.drop">drop table user_props</entry>
   <entry key="groups.drop">drop table groups</entry>
   <entry key="groupmembers.drop">drop table group_members</entry>
+  
+  <!-- since GeoServer version 2.3.0 -->  
+  <entry key="userprops.indexcreate1">
+	create index user_props_idx1 on user_props(propname,propvalue)
+  </entry>  
+    <entry key="userprops.indexcreate2">
+	create index user_props_idx2 on user_props(propname,username)
+  </entry>
+  <!--  end GeoServer version 2.3.0 -->
 	  
 </properties>

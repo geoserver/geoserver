@@ -51,7 +51,7 @@ public class JDBCConfigPropertiesFactoryBean extends PropertiesFactoryBean {
     @Override
     protected Properties createProperties() throws IOException {
         JDBCConfigProperties config = loadConfig();
-        if (config.isImport()) {
+        if (config.isInitDb()) {
             //copy over script files
             copyScriptsToDataDir();
         }

@@ -15,6 +15,7 @@ import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
@@ -64,7 +65,7 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
     EnvelopePanel envelopePanel;
     LayerGroupEntryPanel lgEntryPanel;
     String layerGroupId;
-    protected RootLayerEntryPanel rootLayerPanel;
+    protected RootLayerEntryPanel rootLayerPanel;    
     private ListView<LayerGroupConfigurationPanelInfo> extensionPanels;
     
     /**
@@ -90,8 +91,14 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
         };
         
         add(form);
+
+        final WebMarkupContainer rootLayerPanelContainer = new WebMarkupContainer("rootLayerContainer");
+        rootLayerPanelContainer.setOutputMarkupId(true);
+        form.add(rootLayerPanelContainer);        
         
         rootLayerPanel = new RootLayerEntryPanel("rootLayer", form, layerGroup.getWorkspace());
+        rootLayerPanelContainer.add(rootLayerPanel);
+
         updateRootLayerPanel(layerGroup.getMode());
         
         TextField name = new TextField("name");
@@ -108,7 +115,7 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
             protected void onUpdate(AjaxRequestTarget target) {
                 LayerGroupInfo.Mode mode = modeChoice.getModelObject();
                 updateRootLayerPanel(mode);
-                target.addComponent(rootLayerPanel);
+                target.addComponent(rootLayerPanelContainer);
             }
         });
         
@@ -166,8 +173,6 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
             }
         });
         
-        form.add(rootLayerPanel);        
-        
         form.add(lgEntryPanel = new LayerGroupEntryPanel( "layers", layerGroup ));
         
         //Add panels contributed through extension point
@@ -178,7 +183,8 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
     }
 
     private void updateRootLayerPanel(LayerGroupInfo.Mode mode) {
-        rootLayerPanel.setEnabled(LayerGroupInfo.Mode.EO.equals(mode));     
+        rootLayerPanel.setEnabled(LayerGroupInfo.Mode.EO.equals(mode));   
+        rootLayerPanel.setVisible(LayerGroupInfo.Mode.EO.equals(mode));
     }    
     
     private ListView<LayerGroupConfigurationPanelInfo> extensionPanels() {

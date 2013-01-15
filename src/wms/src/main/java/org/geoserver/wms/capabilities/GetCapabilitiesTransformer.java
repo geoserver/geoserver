@@ -1026,7 +1026,6 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                         layersAlreadyProcessed.add(layer);
                     }
                 }
-                // TODO style?     
                 
                 // the layer style is not provided since the group does just have
                 // one possibility, the lack of styles that will make it use

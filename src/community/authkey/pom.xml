@@ -32,6 +32,12 @@
       <version>${project.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.geoserver.web</groupId>
+      <artifactId>web-security</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
 
     <!-- Tests -->
     <dependency>
@@ -72,5 +78,19 @@
       <artifactId>xmlunit</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.easymock</groupId>
+      <artifactId>easymock</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.easymock</groupId>
+      <artifactId>easymockclassextension</artifactId>
+   </dependency>
+
   </dependencies>
 </project>

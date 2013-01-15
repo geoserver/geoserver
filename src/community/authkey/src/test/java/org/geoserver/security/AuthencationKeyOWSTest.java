@@ -4,26 +4,31 @@
  */
 package org.geoserver.security;
 
-import static junit.framework.Assert.*;
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.Arrays;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.UUID;
 
-import org.apache.commons.io.FileUtils;
+import javax.servlet.Filter;
+
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.config.GeoServer;
+import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.security.config.SecurityManagerConfig;
+import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wms.WMSInfo;
 import org.junit.Test;
@@ -35,48 +40,13 @@ public class AuthencationKeyOWSTest extends GeoServerSystemTestSupport {
 
     private static String citeKey;
 
-
-    @Override
-    protected void onSetUp(SystemTestData testData) throws Exception {
-        super.onSetUp(testData);
-
-        Map<String, String> namespaces = new HashMap<String, String>();
-        namespaces.put("wms", "http://www.opengis.net/wms");
-        namespaces.put("ows", "http://www.opengis.net/ows");
-        namespaces.put("xlink", "http://www.w3.org/1999/xlink");
-        namespaces.put("ogc", "http://www.opengis.net/ogc");
-        namespaces.put("", "http://www.opengis.net/ogc");
-        namespaces.put("wfs", "http://www.opengis.net/wfs");
-        namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
-        getTestData().registerNamespaces(namespaces);
-        XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
-
-        // setup limited srs
-        GeoServer gs = getGeoServer();
-        WMSInfo wms = gs.getService(WMSInfo.class);
-        wms.getSRS().add("EPSG:4326");
-        gs.save(wms);
-    }
-
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
-        
-        // remove the default security dir
-        File security = new File(testData.getDataDirectoryRoot(), "security");
-        FileUtils.deleteDirectory(security);
-
-        // setup some users
-        security.mkdir();
-
-        File users = new File(security, "users.properties");
-        Properties props = new Properties();
-        props.put("admin", "geoserver,ROLE_ADMINISTRATOR");
-        props.put("cite", "cite,cite");
-        props.store(new FileOutputStream(users), "");
-
         // setup their data access rights
         // namespace.layer.permission=role[,role2,...]
+        File security = new File(testData.getDataDirectoryRoot(), "security");
+        Properties props = new Properties();
         File layers = new File(security, "layers.properties");
         props = new Properties();
         props.put("mode", "hidden");
@@ -87,15 +57,86 @@ public class AuthencationKeyOWSTest extends GeoServerSystemTestSupport {
         props.put("cite.*.w", "cite");
         props.store(new FileOutputStream(layers), "");
 
-        // setup the authentication keys
-        File authkeys = new File(security, PropertyAuthenticationKeyMapper.AUTHKEYS_FILE);
-        props = new Properties();
-        adminKey = UUID.randomUUID().toString();
-        citeKey = UUID.randomUUID().toString();
-        props.put(adminKey, "admin");
-        props.put(citeKey, "cite");
-        props.store(new FileOutputStream(authkeys), "");
     }
+    
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+
+
+        
+        Map<String, String> namespaces = new HashMap<String, String>();
+        namespaces.put("wms", "http://www.opengis.net/wms");
+        namespaces.put("ows", "http://www.opengis.net/ows");
+        namespaces.put("xlink", "http://www.w3.org/1999/xlink");
+        namespaces.put("ogc", "http://www.opengis.net/ogc");
+        namespaces.put("", "http://www.opengis.net/ogc");
+        namespaces.put("wfs", "http://www.opengis.net/wfs");
+        namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+        CiteTestData.registerNamespaces(namespaces);
+        XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
+
+        // setup limited srs
+        GeoServer gs = getGeoServer();
+        WMSInfo wms = gs.getService(WMSInfo.class);
+        wms.getSRS().add("EPSG:4326");
+        gs.save(wms);
+        
+        GeoServerUserGroupService service = getSecurityManager().loadUserGroupService("default");
+        GeoServerUserGroupStore store  = service.createStore();
+        store.load();
+        store.addUser(store.createUserObject("cite","cite",true));
+        store.store();
+
+        GeoServerRoleService rservice = getSecurityManager().loadRoleService("default");
+        GeoServerRoleStore rstore  = rservice.createStore();
+        rstore.load();
+        GeoServerRole no_one=rstore.createRoleObject("NO_ONE");
+        rstore.addRole(no_one);
+        GeoServerRole rcite=rstore.createRoleObject("cite");
+        rstore.addRole(rcite);
+        rstore.associateRoleToUser(rstore.createRoleObject("cite"), "cite");
+        rstore.store();
+
+                
+        
+        String authKeyUrlParam = "authkey";
+        String filterName = "testAuthKeyFilter1";
+        
+        AuthenticationKeyFilterConfig config = new AuthenticationKeyFilterConfig();         
+        config.setClassName(GeoServerAuthenticationKeyFilter.class.getName());                
+        config.setName(filterName);        
+        config.setUserGroupServiceName("default");
+        config.setAuthKeyParamName(authKeyUrlParam);
+        config.setAuthKeyMapperName("propertyMapper");                 
+        getSecurityManager().saveFilter(config);
+
+        SecurityManagerConfig mconfig = getSecurityManager().getSecurityConfig();
+        GeoServerSecurityFilterChain filterChain = mconfig.getFilterChain();
+        VariableFilterChain chain = (VariableFilterChain)filterChain.getRequestChainByName("default");
+        chain.getFilterNames().add(0,filterName);
+        getSecurityManager().saveSecurityConfig(mconfig);
+
+        GeoServerAuthenticationKeyFilter authKeyFilter =  (GeoServerAuthenticationKeyFilter)
+                getSecurityManager().loadFilter(filterName);
+        PropertyAuthenticationKeyMapper mapper = (PropertyAuthenticationKeyMapper)
+                authKeyFilter.getMapper();
+        mapper.synchronize();
+        
+        for (Entry<Object,Object> entry: mapper.authKeyProps.entrySet()) {
+            if ("admin".equals(entry.getValue()))
+                adminKey=(String)entry.getKey();
+            if ("cite".equals(entry.getValue()))
+                citeKey=(String)entry.getKey();
+        }
+        if (adminKey==null)
+            throw new RuntimeException ("Missing admin key");
+        if (citeKey==null)
+            throw new RuntimeException ("Missing cite key");
+
+        
+    }
+
 
     /**
      * Enable the Spring Security authentication filters, we want the test to be complete and
@@ -103,17 +144,26 @@ public class AuthencationKeyOWSTest extends GeoServerSystemTestSupport {
      */
     @Override
     protected List<javax.servlet.Filter> getFilters() {
-        javax.servlet.Filter springSecurityFilters = (javax.servlet.Filter) GeoServerExtensions
-                .bean("filterChainProxy");
-        javax.servlet.Filter authKeyFilter = (javax.servlet.Filter) GeoServerExtensions
-                .bean("authKeyFilter");
-        return Arrays.asList(springSecurityFilters, authKeyFilter);
+        
+        SecurityManagerConfig mconfig = getSecurityManager().getSecurityConfig();
+        GeoServerSecurityFilterChain filterChain = mconfig.getFilterChain();
+        VariableFilterChain chain = (VariableFilterChain)filterChain.getRequestChainByName("default");
+        List<Filter> result = new ArrayList<Filter>();
+        for (String filterName : chain.getCompiledFilterNames()) {
+            try {
+                result.add(getSecurityManager().loadFilter(filterName));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return result;
     }
 
     @Test
     public void testAnonymousCapabilities() throws Exception {
+                
         Document doc = getAsDOM("wms?request=GetCapabilities&version=1.1.0");
-        // print(doc);
+        //print(doc);
 
         // check we have the sf layers, but not the cite ones not the cdf ones
         XpathEngine engine = XMLUnit.newXpathEngine();
@@ -128,7 +178,7 @@ public class AuthencationKeyOWSTest extends GeoServerSystemTestSupport {
     @Test
     public void testAdminCapabilities() throws Exception {
         Document doc = getAsDOM("wms?request=GetCapabilities&version=1.1.0&authkey=" + adminKey);
-        // print(doc);
+        //print(doc);
 
         // check we have all the layers
         XpathEngine engine = XMLUnit.newXpathEngine();
@@ -147,7 +197,7 @@ public class AuthencationKeyOWSTest extends GeoServerSystemTestSupport {
     @Test
     public void testCiteCapabilities() throws Exception {
         Document doc = getAsDOM("wms?request=GetCapabilities&version=1.1.0&authkey=" + citeKey);
-        // print(doc);
+        //print(doc);
 
         // check we have the sf and cite layers, but not cdf
         XpathEngine engine = XMLUnit.newXpathEngine();

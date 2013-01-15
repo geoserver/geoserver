@@ -24,6 +24,7 @@ import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
@@ -287,6 +288,11 @@ public class NewFeatureTypePage extends GeoServerSecuredPage {
         }
 
         return upDown;
+    }
+
+    @Override
+    protected ComponentAuthorizer getPageAuthorizer() {
+        return ComponentAuthorizer.WORKSPACE_ADMIN;
     }
 
     /**

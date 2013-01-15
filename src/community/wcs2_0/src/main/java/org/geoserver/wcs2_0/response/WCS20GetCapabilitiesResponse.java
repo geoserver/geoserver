@@ -35,7 +35,7 @@ public class WCS20GetCapabilitiesResponse extends Response {
     public boolean canHandle(Operation operation) {
 
         return "GetCapabilities".equalsIgnoreCase(operation.getId()) && 
-                operation.getService().getId().equals("wcs") &&
+                operation.getService().getId().equals(WCS20Const.SERVICE_NAME) &&
                 ( operation.getService().getVersion().toString().equals(WCS20Const.V20x) ||
                   operation.getService().getVersion().toString().equals(WCS20Const.V20) );
     }

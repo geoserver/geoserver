@@ -18,7 +18,9 @@ public class WCS20Const {
     public static final String V111 = "1.1.1";
     public static final String V110 = "1.1.0";
 
-    static final String CUR_VERSION = WCS20Const.V20x;
+    public static final String CUR_VERSION = WCS20Const.V20x;
+    
+    public static final String SERVICE_NAME = "WCS";
 
     protected static final String URI_WCS = "http://www.opengis.net/wcs/2.0";
 

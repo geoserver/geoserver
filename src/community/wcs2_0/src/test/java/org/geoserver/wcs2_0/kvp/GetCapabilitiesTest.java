@@ -1,5 +1,6 @@
 package org.geoserver.wcs2_0.kvp;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.*;
 
 import org.geoserver.wcs.WCSInfo;
@@ -37,7 +38,11 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         Document dom = getAsDOM("wcs?request=GetCapabilities&service=wCS");
         // print(dom);
         
-        checkFullCapabilitiesDocument(dom);
+        // check that we have the crs extension
+        assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport)", dom);
+        assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport//ows:Exception)", dom);
+        assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport//ows:Exception[@exceptionCode='InvalidParameterValue'])", dom);
+        assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport//ows:Exception[@locator='wCS'])", dom);
     }
     
     @Test

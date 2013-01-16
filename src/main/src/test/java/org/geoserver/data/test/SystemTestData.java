@@ -55,6 +55,7 @@ import org.geotools.data.DataUtilities;
 import org.geotools.data.property.PropertyDataStore;
 import org.geotools.data.property.PropertyDataStoreFactory;
 import org.geotools.feature.NameImpl;
+import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
@@ -741,7 +742,13 @@ public class SystemTestData extends CiteTestData {
             CoverageInfo coverage = null;
             
             try {
-                coverage = builder.buildCoverage(reader, null);
+
+                coverage = builder.buildCoverage(reader,null );
+                // coverage read params
+                if (format instanceof ImageMosaicFormat) {
+                    //  make sure we work in immediate mode
+                    coverage.getParameters().put(AbstractGridFormat.USE_JAI_IMAGEREAD.getName().getCode(), Boolean.FALSE);
+                } 
             } catch (Exception e) {
                 throw new IOException(e);
             }

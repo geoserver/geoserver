@@ -28,10 +28,13 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
+import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.junit.After;
 import org.junit.Test;
+import org.opengis.parameter.ParameterValueGroup;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -176,6 +179,9 @@ public class DynamicDimensionsTest extends WMSTestSupport {
         di.setUnits(units);
         di.setUnitSymbol(unitSymbol);
         info.getMetadata().put(ResourceInfo.CUSTOM_DIMENSION_PREFIX + metadata, di);
+        
+        final Map customParameters = new HashMap();
+        info.getParameters().put(AbstractGridFormat.USE_JAI_IMAGEREAD.getName().toString(), Boolean.FALSE);
         getCatalog().save(info);
     }
     

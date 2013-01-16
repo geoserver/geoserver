@@ -51,7 +51,7 @@ public class MapLayerInfoKvpParser extends KvpParser {
                     throw new ServiceException(layerName + ": no such layer on this server",
                             "LayerNotDefined", getClass().getSimpleName());
                 } else {
-                    for (LayerInfo li : groupInfo.getLayers()) {
+                    for (LayerInfo li : groupInfo.layers()) {
                         layer = new MapLayerInfo(li);
                         layers.add(layer);
                     }

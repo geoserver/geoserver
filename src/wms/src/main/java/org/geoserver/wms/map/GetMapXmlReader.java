@@ -320,7 +320,7 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
                 LayerGroupInfo layerGroup = getWMS().getLayerGroupByName(layerName);
 
                 if (layerGroup != null) {
-                    for (LayerInfo layer : layerGroup.getLayers()) {
+                    for (LayerInfo layer : layerGroup.layers()) {
                         currLayer = new MapLayerInfo(layer);
                         addStyles(wms, getMapRequest, currLayer, styledLayers[i], layers, styles);
                     }

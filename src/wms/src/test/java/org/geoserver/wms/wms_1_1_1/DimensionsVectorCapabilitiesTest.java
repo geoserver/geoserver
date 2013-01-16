@@ -4,13 +4,17 @@
  */
 package org.geoserver.wms.wms_1_1_1;
 
-import static org.junit.Assert.*;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.assertEquals;
 
+import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geoserver.wms.WMSDimensionsTestSupport;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -209,7 +213,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         assertXpathEvaluatesTo("current", "//Layer/Extent/@default", dom);
         assertXpathEvaluatesTo("2011-05-01T00:00:00.000Z/2011-05-04T00:00:00.000Z/P3D", "//Layer/Extent", dom);
     }
-    
+
     @Test
     public void testTimeResolution() throws Exception {
         setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.DISCRETE_INTERVAL, 
@@ -229,5 +233,38 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         assertXpathEvaluatesTo("2011-05-01T00:00:00.000Z/2011-05-04T00:00:00.000Z/P1D", "//Layer/Extent", dom);
     }
     
-    
+    @Test
+    public void testTimeContinuousInEarthObservationRootLayer() throws Exception {
+        setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.CONTINUOUS_INTERVAL, 
+                null, null, null);
+        
+        LayerInfo rootLayer = getCatalog().getLayerByName("TimeElevation");
+        LayerGroupInfo eoProduct = new LayerGroupInfoImpl();
+        eoProduct.setName("EO Sample");
+        eoProduct.setMode(LayerGroupInfo.Mode.EO);
+        eoProduct.setRootLayer(rootLayer);
+        eoProduct.setRootLayerStyle(rootLayer.getDefaultStyle());
+        
+        CatalogBuilder catBuilder = new CatalogBuilder(getCatalog());
+        catBuilder.calculateLayerGroupBounds(eoProduct);
+        
+        eoProduct.getLayers().add(rootLayer);
+        getCatalog().add(eoProduct);
+        try {
+            Document dom = dom(get("wms?request=getCapabilities&version=1.1.1"), false);
+            // print(dom);            
+            
+            // check dimension has been declared
+            assertXpathEvaluatesTo("1", "count(//Layer[Name[text() = 'EO Sample']]/Dimension)", dom);
+            assertXpathEvaluatesTo("time", "//Layer[Name[text() = 'EO Sample']]/Dimension/@name", dom);
+            assertXpathEvaluatesTo("ISO8601", "//Layer[Name[text() = 'EO Sample']]/Dimension/@units", dom);
+            // check we have the extent        
+            assertXpathEvaluatesTo("1", "count(//Layer[Name[text() = 'EO Sample']]/Extent)", dom);
+            assertXpathEvaluatesTo("time", "//Layer[Name[text() = 'EO Sample']]/Extent/@name", dom);
+            assertXpathEvaluatesTo("current", "//Layer[Name[text() = 'EO Sample']]/Extent/@default", dom);
+            assertXpathEvaluatesTo("2011-05-01T00:00:00.000Z/2011-05-04T00:00:00.000Z/P3D", "//Layer[Name[text() = 'EO Sample']]/Extent", dom);
+        } finally {
+            getCatalog().remove(eoProduct);
+        }
+    }
 }

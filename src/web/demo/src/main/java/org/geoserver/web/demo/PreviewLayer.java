@@ -164,7 +164,7 @@ public class PreviewLayer {
         if (layerInfo != null) {
             layers.add(new MapLayerInfo(layerInfo));
         } else {
-            for (LayerInfo l : groupInfo.getLayers()) {
+            for (LayerInfo l : groupInfo.layers()) {
                 layers.add(new MapLayerInfo(l));
             }
         }

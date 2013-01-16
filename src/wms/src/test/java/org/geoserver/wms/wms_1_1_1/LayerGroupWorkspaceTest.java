@@ -110,6 +110,84 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         assertXpathExists("//Layer/Abstract[text() = 'abstract for layer group cite base']", dom);
     }
     
+    @Test
+    public void testSingleLayerGroupInCapabilities() throws Exception {
+        Document dom = getAsDOM("wms?request=getcapabilities&version=1.1.1");
+        
+        // check layer group is present
+        assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'base']", dom);
+
+        // check it doesn't have children Layers
+        assertXpathNotExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Layer", dom);
+        
+        // check its layers are present at the same level
+        assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Lakes']", dom);
+        assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Forests']", dom);        
+    }
+    
+    @Test
+    public void testNamedLayerGroupInCapabilities() throws Exception {    
+        Catalog cat = getCatalog();
+        LayerGroupInfo layerGroup = cat.getLayerGroupByName("base");
+        layerGroup.setMode(LayerGroupInfo.Mode.NAMED);
+        cat.save(layerGroup);
+        Document dom = getAsDOM("wms?request=getcapabilities&version=1.1.1");
+
+        // check layer group is present
+        assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'base']", dom);
+
+        // check its layers are no more present at the same level
+        assertXpathNotExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Lakes']", dom);
+        assertXpathNotExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Forests']", dom);        
+        
+        // check its layers are present as its children
+        assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/Layer[Name[text() = 'base']]/Layer/Name[text() = 'cite:Lakes']", dom);
+        assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/Layer[Name[text() = 'base']]/Layer/Name[text() = 'cite:Forests']", dom);                
+    }
+    
+    @Test
+    public void testContainerLayerGroupInCapabilities() throws Exception {    
+        Catalog cat = getCatalog();
+        LayerGroupInfo layerGroup = cat.getLayerGroupByName("base");
+        layerGroup.setMode(LayerGroupInfo.Mode.CONTAINER);
+        cat.save(layerGroup);
+        Document dom = getAsDOM("wms?request=getcapabilities&version=1.1.1");
+        
+        // check layer group doesn't have a name but eventually a title
+        assertXpathNotExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'base']", dom);
+        assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Title[text() = 'title for layer group base default']", dom);
+
+        // check its layers are no more present at the same level
+        assertXpathNotExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Lakes']", dom);
+        assertXpathNotExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Forests']", dom);        
+        
+        // check its layers are present as its children
+        assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/Layer[Title[text() = 'title for layer group base default']]/Layer/Name[text() = 'cite:Lakes']", dom);
+        assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/Layer[Title[text() = 'title for layer group base default']]/Layer/Name[text() = 'cite:Forests']", dom);                
+    }
+
+    @Test
+    public void testEoLayerGroupInCapabilities() throws Exception {    
+        Catalog cat = getCatalog();
+        LayerGroupInfo layerGroup = cat.getLayerGroupByName("base");
+        layerGroup.setMode(LayerGroupInfo.Mode.EO);
+        layerGroup.setRootLayer(layer(cat, MockData.BUILDINGS));
+        layerGroup.setRootLayerStyle(cat.getStyleByName("Buildings"));
+        cat.save(layerGroup);
+        Document dom = getAsDOM("wms?request=getcapabilities&version=1.1.1");
+        
+        // check layer group exists
+        assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'base']", dom);
+
+        // check its layers are no more present at the same level
+        assertXpathNotExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Lakes']", dom);
+        assertXpathNotExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Forests']", dom);        
+        
+        // check its layers are present as its children
+        assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/Layer[Name[text() = 'base']]/Layer/Name[text() = 'cite:Lakes']", dom);
+        assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/Layer[Name[text() = 'base']]/Layer/Name[text() = 'cite:Forests']", dom);                
+    }    
+    
     @Test 
     public void testWorkspaceCapabilities() throws Exception {
         Document dom = getAsDOM("sf/wms?request=getcapabilities&version=1.1.1");

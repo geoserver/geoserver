@@ -22,6 +22,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Keyword;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
@@ -164,6 +165,79 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         assertTrue(built.getNativeBoundingBox().getHeight() > 0);
     }
 
+    @Test
+    public void testEmptyLayerGroupBounds() throws Exception {
+        Catalog cat = getCatalog();        
+        
+        LayerGroupInfo group = cat.getFactory().createLayerGroup();
+        group.setName("empty_group");
+        
+        assertNull(group.getBounds());
+
+        // force bounds computation
+        CatalogBuilder cb = new CatalogBuilder(cat);        
+        cb.calculateLayerGroupBounds(group);
+        
+        assertNull(group.getBounds());        
+    }
+    
+    @Test
+    public void testLayerGroupBounds() throws Exception {
+        Catalog cat = getCatalog();
+        
+        CatalogBuilder cb = new CatalogBuilder(cat);
+        
+        cb.setStore(cat.getDataStoreByName(MockData.LINES.getPrefix()));
+        FeatureTypeInfo fti = cb.buildFeatureType(toName(MockData.LINES));        
+        cb.setupBounds(fti);
+        
+        LayerInfo layer = cat.getFactory().createLayer();
+        layer.setResource(fti);
+        layer.setName(fti.getName());
+        layer.setEnabled(true);
+        layer.setType(LayerInfo.Type.VECTOR);
+        
+        LayerGroupInfo group = cat.getFactory().createLayerGroup();
+        group.setName("group");
+        group.getLayers().add(layer);
+        
+        assertNull(group.getBounds());
+
+        // force bounds computation
+        cb.calculateLayerGroupBounds(group);
+        
+        assertNotNull(group.getBounds());
+        assertEquals(fti.getNativeBoundingBox(), group.getBounds());
+    }
+
+    public void testLayerGroupEoBounds() throws Exception {
+        Catalog cat = getCatalog();
+        
+        CatalogBuilder cb = new CatalogBuilder(cat);
+        
+        cb.setStore(cat.getDataStoreByName(MockData.LINES.getPrefix()));
+        FeatureTypeInfo fti = cb.buildFeatureType(toName(MockData.LINES));        
+        cb.setupBounds(fti);
+        
+        LayerInfo layer = cat.getFactory().createLayer();
+        layer.setResource(fti);
+        layer.setName(fti.getName());
+        layer.setEnabled(true);
+        layer.setType(LayerInfo.Type.VECTOR);
+        
+        LayerGroupInfo group = cat.getFactory().createLayerGroup();
+        group.setName("group_EO");
+        group.setRootLayer(layer);
+        
+        assertNull(group.getBounds());
+
+        // force bounds computation
+        cb.calculateLayerGroupBounds(group);
+        
+        assertNotNull(group.getBounds());
+        assertEquals(fti.getNativeBoundingBox(), group.getBounds());
+    }
+    
     /**
      * Tests we can build properly the WMS store and the WMS layer
      * 

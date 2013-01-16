@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 TOPP - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -19,6 +19,64 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 public interface LayerGroupInfo extends CatalogInfo {
 
     /**
+     * Enumeration for mode of layer group.
+     */
+    public enum Mode {
+        /**
+         * The layer group is seen as a single exposed layer with a name.
+         */
+        SINGLE {
+            public String getName() {
+                return "Single";
+            }
+            
+            public Integer getCode() {
+                return 0;
+            }
+        },
+        /**
+         * The layer group retains a Name in the layer tree, but also exposes its nested layers in the capabilities document.
+         */
+        NAMED {
+            public String getName() {
+                return "Named Tree";
+            }
+                        
+            public Integer getCode() {
+                return 1;
+            }
+        },
+        /**
+         * The layer group is exposed in the tree, but does not have a Name element, showing structure but making it impossible to get all the layers at once.
+         */
+        CONTAINER {
+            public String getName() {
+                return "Container Tree";
+            }
+                                    
+            public Integer getCode() {
+                return 2;
+            }
+
+        },
+        /**
+         * A special mode created to manage the earth observation requirements.
+         */
+        EO {
+            public String getName() {
+                return "Earth Observation Tree";
+            }
+                            
+            public Integer getCode() {
+                return 3;
+            }
+        };
+
+        public abstract String getName();
+        public abstract Integer getCode();
+    }
+	
+    /**
      * The name of the layer group.
      */
     String getName();
@@ -27,6 +85,16 @@ public interface LayerGroupInfo extends CatalogInfo {
      * Sets the name of the layer group.
      */
     void setName( String name );
+    
+    /**
+     * Layer group mode.
+     */
+    Mode getMode();
+
+    /**
+     * Sets layer group mode.
+     */
+    void setMode( Mode mode );    
     
     /**
      * The title of the layer group.
@@ -71,6 +139,26 @@ public interface LayerGroupInfo extends CatalogInfo {
     String prefixedName();
 
     /**
+     * Get root layer.
+     */
+    LayerInfo getRootLayer();
+    
+    /**
+     * Set root layer.
+     */
+    void setRootLayer(LayerInfo rootLayer);
+    
+    /**
+     * Get root layer style.
+     */
+    StyleInfo getRootLayerStyle();
+
+    /**
+     * Set root layer style.
+     */
+    void setRootLayerStyle(StyleInfo style);
+    
+    /**
      * The layers in the group.
      */
     List<LayerInfo> getLayers();
@@ -82,6 +170,19 @@ public interface LayerGroupInfo extends CatalogInfo {
      * </p>
      */
     List<StyleInfo> getStyles();
+
+    /**
+     * The layers that should be rendered.
+     */
+    List<LayerInfo> layers();
+    
+    /**
+     * The styles for the layers that should be rendered.
+     * <p>
+     * This list is a 1-1 correspondence to {@link #layers()}.
+     * </p>
+     */
+    List<StyleInfo> styles();
     
     /**
      * The bounds for the base map.

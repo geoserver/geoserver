@@ -31,8 +31,11 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
@@ -42,16 +45,18 @@ import org.geoserver.wms.WMSTestSupport;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.junit.Test;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class GetMapIntegrationTest extends WMSTestSupport {
+    
     String bbox = "-130,24,-66,50";
 
     String styles = "states";
 
     String layers = "sf:states";
-
+    
     public static final String STATES_SLD = "<StyledLayerDescriptor version=\"1.0.0\">"
             + "<UserLayer><Name>sf:states</Name><UserStyle><Name>UserSelection</Name>"
             + "<FeatureTypeStyle><Rule><Filter xmlns:gml=\"http://www.opengis.net/gml\">"
@@ -667,4 +672,91 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertPixel(image, 15, 147, Color.BLUE);
     }
     
+    @Test    
+    public void testLayerGroupSingle() throws Exception {
+        Catalog catalog = getCatalog();
+        LayerGroupInfo group = createLakesPlacesLayerGroup(catalog, LayerGroupInfo.Mode.SINGLE, null);
+        try {
+            String url = "wms?LAYERS="
+                    + group.getName()
+                    + "&STYLES=&FORMAT=image%2Fpng"
+                    + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=0.0000,-0.0020,0.0035,0.0010";
+            BufferedImage image = getAsImage(url, "image/png");
+
+            assertPixel(image, 150, 160, Color.WHITE);
+            // places
+            assertPixel(image, 180, 16, COLOR_PLACES_GRAY);
+            // lakes
+            assertPixel(image, 90, 200, COLOR_LAKES_BLUE);
+        } finally {
+            catalog.remove(group);
+        }        
+    }
+
+    @Test    
+    public void testLayerGroupNamed() throws Exception {
+        Catalog catalog = getCatalog();
+        LayerGroupInfo group = createLakesPlacesLayerGroup(catalog, LayerGroupInfo.Mode.NAMED, null);
+        try {
+            String url = "wms?LAYERS="
+                    + group.getName()
+                    + "&STYLES=&FORMAT=image%2Fpng"
+                    + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=0.0000,-0.0020,0.0035,0.0010";
+            BufferedImage image = getAsImage(url, "image/png");
+
+            assertPixel(image, 150, 160, Color.WHITE);
+            // places
+            assertPixel(image, 180, 16, COLOR_PLACES_GRAY);
+            // lakes
+            assertPixel(image, 90, 200, COLOR_LAKES_BLUE);
+        } finally {
+            catalog.remove(group);
+        }               
+    }
+
+    @Test
+    public void testLayerGroupContainer() throws Exception {
+        Catalog catalog = getCatalog();
+        LayerGroupInfo group = createLakesPlacesLayerGroup(catalog, LayerGroupInfo.Mode.CONTAINER, null);
+        try {
+            String url = "wms?LAYERS="
+                    + group.getName()
+                    + "&STYLES=&FORMAT=image%2Fpng"
+                    + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=0.0000,-0.0020,0.0035,0.0010";
+            // this group is not meant to be called directly so we should get an exception
+            MockHttpServletResponse resp = getAsServletResponse(url);
+            assertEquals("application/vnd.ogc.se_xml", resp.getContentType());
+            
+            Document dom = getAsDOM(url);
+            assertEquals("ServiceExceptionReport", dom.getDocumentElement().getNodeName()); 
+            
+            Element serviceException = (Element) dom.getDocumentElement().getElementsByTagName("ServiceException").item(0);
+            assertEquals("LayerNotDefined", serviceException.getAttribute("code"));
+            assertEquals("layers", serviceException.getAttribute("locator"));
+            assertEquals("Could not find layer " + group.getName(), serviceException.getTextContent().trim());                        
+        } finally {
+            catalog.remove(group);
+        }
+    }
+    
+    @Test
+    public void testLayerGroupModeEo() throws Exception {
+        Catalog catalog = getCatalog();
+        LayerGroupInfo group = createLakesPlacesLayerGroup(catalog, LayerGroupInfo.Mode.EO, catalog.getLayerByName(getLayerId(MockData.LAKES)));
+        try {
+            String url = "wms?LAYERS="
+                    + group.getName()
+                    + "&STYLES=&FORMAT=image%2Fpng"
+                    + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=0.0000,-0.0020,0.0035,0.0010";
+            BufferedImage image = getAsImage(url, "image/png");
+            
+            assertPixel(image, 150, 160, Color.WHITE);
+            // no places
+            assertPixel(image, 180, 16, Color.WHITE);
+            // lakes
+            assertPixel(image, 90, 200, COLOR_LAKES_BLUE);
+        } finally {
+            catalog.remove(group);
+        }
+    }   
 }

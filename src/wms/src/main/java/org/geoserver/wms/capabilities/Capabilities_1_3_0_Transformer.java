@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org.  All rights reserved.
+/* Copyright (c) 2001 - 2012 TOPP - www.openplans.org.  All rights reserved.
  * This code is licensed under the GPL 2.0 license, availible at the root
  * application directory.
  */
@@ -651,24 +651,18 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             // handle identifiers
             handleLayerIdentifiers(serviceInfo.getIdentifiers());
 
-            // now encode each layer individually
-            SortBy layerOrder = asc("name");
-            layers = catalog.list(LayerInfo.class, filter, null, null, layerOrder);
-            try {
-                handleLayerTree(layers);
-            } finally {
-                layers.close();
-            }
-
+            Set<LayerInfo> layersAlreadyProcessed = new HashSet<LayerInfo>();
+            
+            // encode layer groups
             CloseableIterator<LayerGroupInfo> layerGroups;
             {
                 final Filter lgFilter = Predicates.acceptAll();
                 SortBy layerGroupOrder = asc("name");
                 layerGroups = catalog.list(LayerGroupInfo.class, lgFilter, null, null,
                         layerGroupOrder);
-            }
+            }            
             try {
-                handleLayerGroups(layerGroups);
+                layersAlreadyProcessed = handleLayerGroups(layerGroups);
             } catch (FactoryException e) {
                 throw new RuntimeException("Can't obtain Envelope of Layer-Groups: "
                         + e.getMessage(), e);
@@ -677,6 +671,15 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                         + e.getMessage(), e);
             }finally{
                 layerGroups.close();
+            }            
+            
+            // now encode each layer individually
+            SortBy layerOrder = asc("name");
+            layers = catalog.list(LayerInfo.class, filter, null, null, layerOrder);
+            try {
+                handleLayerTree(layers, layersAlreadyProcessed);
+            } finally {
+                layers.close();
             }
 
             end("Layer");
@@ -777,7 +780,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 new ReferencedEnvelope(latlonBbox, DefaultGeographicCRS.WGS84), null, null);
         }
 
-        private void handleLayerTree(final Iterator<LayerInfo> layers) {
+        private void handleLayerTree(final Iterator<LayerInfo> layers, Set<LayerInfo> layersAlreadyProcessed) {
             // Build a LayerTree only for the layers that have a wms path set. Process the ones that
             // don't first
             LayerTree nestedLayers = new LayerTree();
@@ -785,7 +788,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             //handle non nested layers
             while (layers.hasNext()) {
                 LayerInfo layer = layers.next();
-                if(!isExposable(layer)){
+                if(layersAlreadyProcessed.contains(layer) || !isExposable(layer)){
                     continue;
                 }
                 final String path = layer.getPath();
@@ -982,10 +985,12 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             }
         }
         
-        protected void handleLayerGroups(Iterator<LayerGroupInfo> layerGroups) throws FactoryException,
+        protected Set<LayerInfo> handleLayerGroups(Iterator<LayerGroupInfo> layerGroups) throws FactoryException,
                 TransformException {
+            Set<LayerInfo> layersAlreadyProcessed = new HashSet<LayerInfo>();
+            
             if (layerGroups == null) {
-                return;
+                return layersAlreadyProcessed;
             }
 
             while ( layerGroups.hasNext() ) {
@@ -996,7 +1001,10 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 boolean queryable = wmsConfig.isQueryable(layerGroup);
                 qatts.addAttribute("", "queryable", "queryable", "", queryable ? "1" : "0");
                 start("Layer", qatts);
-                element("Name", layerName);
+                
+                if (!LayerGroupInfo.Mode.CONTAINER.equals(layerGroup.getMode())) {
+                    element("Name", layerName);
+                }
                 
                 if (StringUtils.isEmpty(layerGroup.getTitle())) {
                     element("Title", layerName);                    
@@ -1022,6 +1030,19 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 handleGeographicBoundingBox(latLonBounds);
                 handleBBox(layerGroupBounds, authority);
 
+                if (LayerGroupInfo.Mode.EO.equals(layerGroup.getMode())) {
+                    LayerInfo rootLayer = layerGroup.getRootLayer();
+                    
+                    // handle dimensions
+                    if (rootLayer.getType() == Type.VECTOR) {
+                        dimensionHelper.handleVectorLayerDimensions(rootLayer);
+                    } else if (rootLayer.getType() == Type.RASTER) {
+                        dimensionHelper.handleRasterLayerDimensions(rootLayer);
+                    }
+                    
+                    layersAlreadyProcessed.add(layerGroup.getRootLayer());
+                }                
+                
                 // handle AuthorityURL
                 handleAuthorityURL(layerGroup.getAuthorityURLs());
                 
@@ -1038,6 +1059,13 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                     }
                 }
                 handleMetadataList(aggregatedLinks);
+
+                if (!LayerGroupInfo.Mode.SINGLE.equals(layerGroup.getMode())) {
+                    for (LayerInfo layer : layers) {
+                        handleLayer(layer);
+                        layersAlreadyProcessed.add(layer);
+                    }
+                }
                 
                 // the layer style is not provided since the group does just have
                 // one possibility, the lack of styles that will make it use
@@ -1045,6 +1073,8 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
                 end("Layer");
             }
+            
+            return layersAlreadyProcessed;
         }
 
         protected void handleAttribution(LayerInfo layer) {

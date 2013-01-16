@@ -675,7 +675,7 @@ public class CatalogImpl implements Catalog {
     public void remove(LayerInfo layer) {
         //ensure no references to the layer
         for ( LayerGroupInfo lg : facade.getLayerGroups() ) {
-            if ( lg.getLayers().contains( layer ) ) {
+            if ( lg.getLayers().contains( layer ) || layer.equals( lg.getRootLayer() ) ) {
                 String msg = "Unable to delete layer referenced by layer group '"+lg.getName()+"'";
                 throw new IllegalArgumentException( msg );
             }
@@ -805,16 +805,42 @@ public class CatalogImpl implements Catalog {
         //if the layer group has a workspace assigned, ensure that every resource in that layer
         // group lives within the same workspace
         if (ws != null) {
-            for (LayerInfo l : layerGroup.getLayers()) {
+            List<LayerInfo> layers = layerGroup.getLayers();
+            if (layerGroup.getRootLayer() != null) {
+                layers = new ArrayList<LayerInfo>(layers);
+                layers.add(layerGroup.getRootLayer());
+            }
+            
+            for (LayerInfo l : layers) {
                 ResourceInfo r = l.getResource();
                 if (!ws.equals(r.getStore().getWorkspace())) {
                     throw new IllegalArgumentException("Layer group within a workspace (" + 
                         ws.getName() + ") can not contain resoures from other workspace: " + 
                         r.getStore().getWorkspace().getName());
-                }
-                
+                }                
             }
         }
+        
+        if (layerGroup.getMode() == null) {
+            throw new IllegalArgumentException("Layer group mode must not be null");
+        } else if (LayerGroupInfo.Mode.EO.equals(layerGroup.getMode())) {
+            if (layerGroup.getRootLayer() == null) {
+                throw new IllegalArgumentException("Layer group in mode " + LayerGroupInfo.Mode.EO.getName() + " must have a root layer"); 
+            }
+            
+            if (layerGroup.getRootLayerStyle() == null) {
+                throw new IllegalArgumentException("Layer group in mode " + LayerGroupInfo.Mode.EO.getName() + " must have a root layer style");                 
+            }
+        } else {
+            if (layerGroup.getRootLayer() != null) {
+                throw new IllegalArgumentException("Layer group in mode " + layerGroup.getMode().getName() + " must not have a root layer"); 
+            }
+            
+            if (layerGroup.getRootLayerStyle() != null) {
+                throw new IllegalArgumentException("Layer group in mode " + layerGroup.getMode().getName() + " must not have a root layer style");                 
+            }            
+        }
+        
         return postValidate(layerGroup, isNew);
    }
     
@@ -1247,6 +1273,13 @@ public class CatalogImpl implements Catalog {
             }
         }
 
+        for ( LayerGroupInfo lg : facade.getLayerGroups() ) {
+            if ( lg.getStyles().contains( style ) || style.equals( lg.getRootLayerStyle() ) ) {
+                String msg = "Unable to delete style referenced by layer group '"+lg.getName()+"'";
+                throw new IllegalArgumentException( msg );
+            }
+        }
+        
         facade.remove(style);
         removed(style);
     }

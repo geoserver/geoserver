@@ -4,13 +4,19 @@
  */
 package org.geoserver.config.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -26,6 +32,7 @@ import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -49,6 +56,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.wkt.Formattable;
 import org.geotools.referencing.wkt.UnformattableObjectException;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -594,6 +602,67 @@ public class XStreamPersisterTest {
         assertEquals( s, l.getDefaultStyle() );
         //assertNotNull( l.getStyles() );
         
+    }
+    
+    @Test
+    public void testLayerGroupInfo() throws Exception {
+        Catalog catalog = new CatalogImpl();
+        CatalogFactory cFactory = catalog.getFactory();
+        
+        LayerGroupInfo group1 = cFactory.createLayerGroup();
+        group1.setName("foo");
+        group1.setTitle("foo title");
+        group1.setAbstract("foo abstract");
+        group1.setMode(LayerGroupInfo.Mode.NAMED);
+
+        ByteArrayOutputStream out = out();
+        persister.save(group1, out);
+
+        // print(in(out));
+        
+        ByteArrayInputStream in = in(out);
+        
+        LayerGroupInfo group2 = persister.load(in, LayerGroupInfo.class);
+        assertEquals(group1.getName(), group2.getName());
+        assertEquals(group1.getTitle(), group2.getTitle());
+        assertEquals(group1.getAbstract(), group2.getAbstract());
+        assertEquals(group1.getMode(), group2.getMode());
+        
+        Document dom = dom(in(out));
+        assertEquals("layerGroup", dom.getDocumentElement().getNodeName());
+    }    
+    
+    @Test
+    public void testLegacyLayerGroupWithoutMode() throws Exception {
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+        "<layerGroup>\n" +
+          "<name>foo</name>\n" +
+          "<title>foo title</title>\n" +
+          "<abstractTxt>foo abstract</abstractTxt>\n" +
+          "<layers>\n" +
+          "<layer>\n" +
+          "<id>LayerInfoImpl--570ae188:124761b8d78:-7fb0</id>\n" +
+          "</layer>\n" +
+          "</layers>\n" +
+          "<styles>\n" +
+          "<style/>\n" +
+          "</styles>\n" +
+          "<bounds>\n" +
+          "<minx>589425.9342365642</minx>\n" +
+          "<maxx>609518.6719560538</maxx>\n" +
+          "<miny>4913959.224611808</miny>\n" +
+          "<maxy>4928082.949945881</maxy>\n" +
+          "<crs class=\"projected\">EPSG:26713</crs>\n" +
+          "</bounds>\n" +
+          "</layerGroup>\n"; 
+        
+        LayerGroupInfo group = persister.load(new ByteArrayInputStream(xml.getBytes()), LayerGroupInfo.class);
+
+        Assert.assertEquals(LayerGroupInfo.Mode.SINGLE, group.getMode());
+        
+        Catalog catalog = new CatalogImpl();
+        List<RuntimeException> errors = catalog.validate(group, false);
+        Assert.assertTrue(errors == null || errors.size() == 0);
     }
     
     @Test

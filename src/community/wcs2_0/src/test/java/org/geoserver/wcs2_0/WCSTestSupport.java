@@ -153,8 +153,6 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         testData.setUpWcs10RasterLayers();
         testData.setUpWcs11RasterLayers();
         
-        // multiband tiff
-        testData.setUpRasterLayer(new QName(SystemTestData.WCS_URI, "multiband",SystemTestData.WCS_PREFIX), "multiband.tif", null);
         
     }
 

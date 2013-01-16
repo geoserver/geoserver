@@ -78,6 +78,9 @@ import org.springframework.context.ApplicationContext;
  */
 public class SystemTestData extends CiteTestData {
     
+    /** Multiband tiff */
+    private static final QName MULTIBAND = new QName(WCS_URI, "multiband", WCS_PREFIX);
+    
     static final Logger LOGGER = Logging.getLogger(SystemTestData.class);
 
     /**
@@ -153,6 +156,7 @@ public class SystemTestData extends CiteTestData {
         addDefaultRasterLayer(TASMANIA_BM, catalog);
         addDefaultRasterLayer(ROTATED_CAD, catalog);
         addDefaultRasterLayer(WORLD, catalog);
+        addDefaultRasterLayer(MULTIBAND,catalog);
     }
 
     public void setUpWcs10RasterLayers() throws IOException {
@@ -598,6 +602,9 @@ public class SystemTestData extends CiteTestData {
         }
         else if (name.equals(WORLD)) {
             addRasterLayer(name, "world.tiff", null, catalog);
+        }
+        else if (name.equals(MULTIBAND)) {
+            addRasterLayer(name, "multiband.tiff", null, catalog);
         }
         else {
             throw new IllegalArgumentException("Unknown default raster layer: " + name);

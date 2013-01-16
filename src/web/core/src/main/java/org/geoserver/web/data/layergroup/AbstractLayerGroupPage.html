@@ -8,13 +8,6 @@
          <input wicket:id="name" id="name" class="text"></input>
        </li>
        <li>
-         <label for="mode"><wicket:message key="mode">Mode</wicket:message></label>
-         <select wicket:id="mode"></select>
-       </li>
-	   <li wicket:id="rootLayerContainer">
-	   	 <div wicket:id="rootLayer"></div>
-	   </li>              
-       <li>
          <label for="title"><wicket:message key="layerGroupTitle">Title</wicket:message></label>
          <input wicket:id="title" id="title" class="text"></input>
        </li>
@@ -33,6 +26,13 @@
        <li>
          <input wicket:id="generateBounds" type="submit" wicket:message="value:generateBounds"></input>
        </li>
+       <li>
+         <label for="mode"><wicket:message key="mode">Mode</wicket:message></label>
+         <select wicket:id="mode"></select>
+       </li>
+	   <li wicket:id="rootLayerContainer">
+	   	 <div wicket:id="rootLayer"></div>
+	   </li>                     
        <li>
          <div wicket:id="layers"></div>
        </li>

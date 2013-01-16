@@ -22,6 +22,6 @@ public class LayerInfoConverter implements IConverter {
     @Override
     public String convertToString(Object obj, Locale locale) {
         if (obj == null) return "";
-        else return ((LayerInfo) obj).getName();
+        else return ((LayerInfo) obj).prefixedName();
     } 
 }

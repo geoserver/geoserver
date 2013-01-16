@@ -1,0 +1,134 @@
+{
+about: {
+resource: [
+{
+@name: "activation-1.1",
+Manifest-Version: 1,
+Specification-Title: "JavaBeans(TM) Activation Framework Specification",
+Specification-Version: 1.1,
+Ant-Version: "Apache Ant 1.6.5",
+Specification-Vendor: "Sun Microsystems, Inc.",
+Implementation-Version: 1.1,
+Extension-Name: "javax.activation",
+Implementation-Vendor: "Sun Microsystems, Inc.",
+Implementation-Vendor-Id: "com.sun",
+Implementation-Title: "Sun Java System Application Server",
+Created-By: "1.5.0_06-b03 (Sun Microsystems Inc.)"
+},
+{
+@name: "aopalliance-1.0",
+Manifest-Version: 1,
+Ant-Version: "Apache Ant 1.5.4 ",
+Created-By: "1.4.2_01-b06 (Sun Microsystems Inc.)"
+},
+{
+@name: "batik-anim-1.7",
+Manifest-Version: 1,
+Build-Id: "20080103-095140-EST (cam [Linux 2.6.22-1-486 i386, Java 1.4.2_12-b03])",
+Ant-Version: "Apache Ant 1.6.5",
+Implementation-Version: "1.7+r608262",
+Implementation-Vendor: "The Apache Software Foundation (http://xmlgraphics.apache.org/batik/)",
+Implementation-Title: "Batik animation",
+Created-By: "1.4.2_12-b03 (Sun Microsystems Inc.)"
+},
+{
+@name: "batik-awt-util-1.7",
+Manifest-Version: 1,
+Build-Id: "20080103-095140-EST (cam [Linux 2.6.22-1-486 i386, Java 1.4.2_12-b03])",
+Ant-Version: "Apache Ant 1.6.5",
+Implementation-Version: "1.7+r608262",
+Implementation-Vendor: "The Apache Software Foundation (http://xmlgraphics.apache.org/batik/)",
+Implementation-Title: "Batik AWT utility library",
+Created-By: "1.4.2_12-b03 (Sun Microsystems Inc.)"
+},
+{
+@name: "batik-bridge-1.7",
+Manifest-Version: 1,
+Build-Id: "20080103-095140-EST (cam [Linux 2.6.22-1-486 i386, Java 1.4.2_12-b03])",
+Ant-Version: "Apache Ant 1.6.5",
+Implementation-Version: "1.7+r608262",
+Implementation-Vendor: "The Apache Software Foundation (http://xmlgraphics.apache.org/batik/)",
+Implementation-Title: "Batik bridge",
+Created-By: "1.4.2_12-b03 (Sun Microsystems Inc.)"
+},
+{
+@name: "batik-css-1.7",
+Manifest-Version: 1,
+Build-Id: "20080103-095140-EST (cam [Linux 2.6.22-1-486 i386, Java 1.4.2_12-b03])",
+Ant-Version: "Apache Ant 1.6.5",
+Implementation-Version: "1.7+r608262",
+Implementation-Vendor: "The Apache Software Foundation (http://xmlgraphics.apache.org/batik/)",
+Implementation-Title: "Batik CSS engine",
+Created-By: "1.4.2_12-b03 (Sun Microsystems Inc.)"
+},
+{
+@name: "batik-dom-1.7",
+Manifest-Version: 1,
+Build-Id: "20080103-095140-EST (cam [Linux 2.6.22-1-486 i386, Java 1.4.2_12-b03])",
+Ant-Version: "Apache Ant 1.6.5",
+Implementation-Version: "1.7+r608262",
+Implementation-Vendor: "The Apache Software Foundation (http://xmlgraphics.apache.org/batik/)",
+Implementation-Title: "Batik DOM Level 3 implementation",
+Created-By: "1.4.2_12-b03 (Sun Microsystems Inc.)"
+},
+{
+@name: "batik-ext-1.7",
+Manifest-Version: 1,
+Build-Id: "20080103-095140-EST (cam [Linux 2.6.22-1-486 i386, Java 1.4.2_12-b03])",
+Ant-Version: "Apache Ant 1.6.5",
+Implementation-Version: "1.7+r608262",
+Implementation-Vendor: "The Apache Software Foundation (http://xmlgraphics.apache.org/batik/)",
+Implementation-Title: "Batik external code",
+Created-By: "1.4.2_12-b03 (Sun Microsystems Inc.)"
+},
+{
+@name: "batik-gvt-1.7",
+Manifest-Version: 1,
+Build-Id: "20080103-095140-EST (cam [Linux 2.6.22-1-486 i386, Java 1.4.2_12-b03])",
+Ant-Version: "Apache Ant 1.6.5",
+Implementation-Version: "1.7+r608262",
+Implementation-Vendor: "The Apache Software Foundation (http://xmlgraphics.apache.org/batik/)",
+Implementation-Title: "Batik GVT library",
+Created-By: "1.4.2_12-b03 (Sun Microsystems Inc.)"
+},
+{
+@name: "batik-parser-1.7",
+Manifest-Version: 1,
+Build-Id: "20080103-095140-EST (cam [Linux 2.6.22-1-486 i386, Java 1.4.2_12-b03])",
+Ant-Version: "Apache Ant 1.6.5",
+Implementation-Version: "1.7+r608262",
+Implementation-Vendor: "The Apache Software Foundation (http://xmlgraphics.apache.org/batik/)",
+Implementation-Title: "Batik parser library",
+Created-By: "1.4.2_12-b03 (Sun Microsystems Inc.)"
+},
+{
+@name: "batik-script-1.7",
+Manifest-Version: 1,
+Build-Id: "20080103-095140-EST (cam [Linux 2.6.22-1-486 i386, Java 1.4.2_12-b03])",
+Ant-Version: "Apache Ant 1.6.5",
+Implementation-Version: "1.7+r608262",
+Implementation-Vendor: "The Apache Software Foundation (http://xmlgraphics.apache.org/batik/)",
+Implementation-Title: "Batik script library",
+Created-By: "1.4.2_12-b03 (Sun Microsystems Inc.)"
+},
+{
+@name: "batik-svg-dom-1.7",
+Manifest-Version: 1,
+Build-Id: "20080103-095140-EST (cam [Linux 2.6.22-1-486 i386, Java 1.4.2_12-b03])",
+Ant-Version: "Apache Ant 1.6.5",
+Implementation-Version: "1.7+r608262",
+Implementation-Vendor: "The Apache Software Foundation (http://xmlgraphics.apache.org/batik/)",
+Implementation-Title: "Batik SVG DOM implementation",
+Created-By: "1.4.2_12-b03 (Sun Microsystems Inc.)"
+},
+{
+@name: "xstream-1.4.3",
+Manifest-Version: 1,
+Archiver-Version: "Plexus Archiver",
+Built-By: "joehni",
+Build-Jdk: "1.7.0_05",
+Created-By: "Apache Maven"
+}
+]
+}
+}

@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org.  All rights reserved.
+/* Copyright (c) 2001 - 2012 TOPP - www.openplans.org.  All rights reserved.
  * This code is licensed under the GPL 2.0 license, availible at the root
  * application directory.
  */
@@ -645,13 +645,12 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             // handle identifiers
             handleLayerIdentifiers(serviceInfo.getIdentifiers());
 
-            // now encode each layer individually
-            LayerTree featuresLayerTree = new LayerTree(layers);
-            handleLayerTree(featuresLayerTree);
-
+            Set<LayerInfo> layersAlreadyProcessed = new HashSet<LayerInfo>();
+            
+            // encode layer groups
             try {
                 List<LayerGroupInfo> layerGroups = wmsConfig.getLayerGroups();
-                handleLayerGroups(new ArrayList<LayerGroupInfo>(layerGroups));
+                layersAlreadyProcessed = handleLayerGroups(new ArrayList<LayerGroupInfo>(layerGroups));
             } catch (FactoryException e) {
                 throw new RuntimeException("Can't obtain Envelope of Layer-Groups: "
                         + e.getMessage(), e);
@@ -659,6 +658,10 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 throw new RuntimeException("Can't obtain Envelope of Layer-Groups: "
                         + e.getMessage(), e);
             }
+            
+            // now encode each layer individually
+            LayerTree featuresLayerTree = new LayerTree(layers);
+            handleLayerTree(featuresLayerTree, layersAlreadyProcessed);
 
             end("Layer");
         }
@@ -734,10 +737,27 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             handleAdditionalBBox(new ReferencedEnvelope(latlonBbox, DefaultGeographicCRS.WGS84), null, null);
         }
 
+        private boolean isExposable(LayerInfo layer) {
+            boolean wmsExposable = false;
+            if (layer.getType() == Type.RASTER || layer.getType() == Type.WMS) {
+                wmsExposable = true;
+            } else {
+                try {
+                    wmsExposable = layer.getType() == Type.VECTOR
+                            && ((FeatureTypeInfo) layer.getResource()).getFeatureType()
+                                    .getGeometryDescriptor() != null;
+                } catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, "An error occurred trying to determine if"
+                            + " the layer is geometryless", e);
+                }
+            }
+            return wmsExposable;   
+        }
+        
         /**
          * @param layerTree
          */
-        private void handleLayerTree(final LayerTree layerTree) {
+        private void handleLayerTree(final LayerTree layerTree, Set<LayerInfo> layersAlreadyProcessed) {
             final List<LayerInfo> data = new ArrayList<LayerInfo>(layerTree.getData());
             final Collection<LayerTree> children = layerTree.getChildrens();
 
@@ -748,23 +768,9 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             });
 
             for (LayerInfo layer : data) {
-                // no sense in exposing a geometryless layer through wms...
-                boolean wmsExposable = false;
-                if (layer.getType() == Type.RASTER || layer.getType() == Type.WMS) {
-                    wmsExposable = true;
-                } else {
-                    try {
-                        wmsExposable = layer.getType() == Type.VECTOR
-                                && ((FeatureTypeInfo) layer.getResource()).getFeatureType()
-                                        .getGeometryDescriptor() != null;
-                    } catch (Exception e) {
-                        LOGGER.log(Level.SEVERE, "An error occurred trying to determine if"
-                                + " the layer is geometryless", e);
-                    }
-                }
-                
                 // ask for enabled() instead of isEnabled() to account for disabled resource/store
-                if (layer.enabled() && wmsExposable) {
+                // don't expose a geometryless layer through wms
+                if (layer.enabled() && !layersAlreadyProcessed.contains(layer) && isExposable(layer)) {
                     try {
                         mark();
                         handleLayer(layer);
@@ -790,7 +796,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 start("Layer");
                 element("Name", childLayerTree.getName());
                 element("Title", childLayerTree.getName());
-                handleLayerTree(childLayerTree);
+                handleLayerTree(childLayerTree, layersAlreadyProcessed);
                 end("Layer");
             }
         }
@@ -862,9 +868,6 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             }
 
             // handle dimensions
-            String timeMetadata = null;
-            String elevationMetadata = null;
-            
             if (layer.getType() == Type.VECTOR) {
                 dimensionHelper.handleVectorLayerDimensions(layer);
             } else if (layer.getType() == Type.RASTER) {
@@ -934,10 +937,12 @@ public class GetCapabilitiesTransformer extends TransformerBase {
            return srs;
         }
 
-        protected void handleLayerGroups(List<LayerGroupInfo> layerGroups) throws FactoryException,
+        protected Set<LayerInfo> handleLayerGroups(List<LayerGroupInfo> layerGroups) throws FactoryException,
                 TransformException {
+            Set<LayerInfo> layersAlreadyProcessed = new HashSet<LayerInfo>();
+            
             if (layerGroups == null || layerGroups.size() == 0) {
-                return;
+                return layersAlreadyProcessed;
             }
 
             Collections.sort(layerGroups, new Comparator<LayerGroupInfo>() {
@@ -956,7 +961,10 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 // qatts.addAttribute("", "opaque", "opaque", "", "1");
                 // qatts.addAttribute("", "cascaded", "cascaded", "", "1");
                 start("Layer", qatts);
-                element("Name", layerName);
+                
+                if (!LayerGroupInfo.Mode.CONTAINER.equals(layerGroup.getMode())) {
+                    element("Name", layerName);
+                }                
                 
                 if (StringUtils.isEmpty(layerGroup.getTitle())) {
                     element("Title", layerName);                    
@@ -982,6 +990,19 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 handleLatLonBBox(latLonBounds);
                 handleBBox(layerGroupBounds, authority);
 
+                if (LayerGroupInfo.Mode.EO.equals(layerGroup.getMode())) {
+                    LayerInfo rootLayer = layerGroup.getRootLayer();
+                    
+                    // handle dimensions
+                    if (rootLayer.getType() == Type.VECTOR) {
+                        dimensionHelper.handleVectorLayerDimensions(rootLayer);
+                    } else if (rootLayer.getType() == Type.RASTER) {
+                        dimensionHelper.handleRasterLayerDimensions(rootLayer);
+                    }
+                    
+                    layersAlreadyProcessed.add(layerGroup.getRootLayer());
+                }
+                
                 // handle AuthorityURL
                 handleAuthorityURL(layerGroup.getAuthorityURLs());
                 
@@ -999,12 +1020,21 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 }
                 handleMetadataList(aggregatedLinks);
 
+                if (!LayerGroupInfo.Mode.SINGLE.equals(layerGroup.getMode())) {
+                    for (LayerInfo layer : layers) {
+                        handleLayer(layer);
+                        layersAlreadyProcessed.add(layer);
+                    }
+                }
+                
                 // the layer style is not provided since the group does just have
                 // one possibility, the lack of styles that will make it use
                 // the default ones for each layer
 
                 end("Layer");
             }
+            
+            return layersAlreadyProcessed;
         }
 
         protected void handleAttribution(LayerInfo layer) {

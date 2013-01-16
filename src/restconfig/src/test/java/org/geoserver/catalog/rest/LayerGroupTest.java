@@ -6,12 +6,14 @@ package org.geoserver.catalog.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.data.test.SystemTestData;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.junit.Before;
@@ -27,6 +29,8 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         removeLayerGroup(null, "sfLayerGroup");
         removeLayerGroup("sf", "foo");
         removeLayerGroup(null, "newLayerGroup");
+        removeLayerGroup(null, "newLayerGroupWithTypeCONTAINER");
+        removeLayerGroup(null, "newLayerGroupWithTypeEO");
         
         LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
         lg.setName( "sfLayerGroup" );
@@ -141,6 +145,58 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         assertNotNull( lg.getBounds() );
     }
 
+    @Test
+    public void testPostWithTypeContainer() throws Exception {
+        String xml = 
+            "<layerGroup>" + 
+                "<name>newLayerGroupWithTypeCONTAINER</name>" +
+                "<mode>CONTAINER</mode>" + 
+                "<layers>" +
+                  "<layer>Ponds</layer>" +
+                  "<layer>Forests</layer>" +
+                "</layers>" +
+                "<styles>" +
+                  "<style>polygon</style>" +
+                  "<style>point</style>" +
+                "</styles>" +
+              "</layerGroup>";
+        
+        MockHttpServletResponse response = postAsServletResponse("/rest/layergroups", xml);
+        assertEquals(201, response.getStatusCode());
+        
+        LayerGroupInfo lg = catalog.getLayerGroupByName("newLayerGroupWithTypeCONTAINER");
+        assertNotNull(lg);
+        
+        assertEquals(LayerGroupInfo.Mode.CONTAINER, lg.getMode());
+    }  
+    
+    @Test
+    public void testPostWithTypeEO() throws Exception {
+        String xml = 
+            "<layerGroup>" + 
+                "<name>newLayerGroupWithTypeEO</name>" +
+                "<mode>EO</mode>" + 
+                "<rootLayer>Ponds</rootLayer>" + 
+                "<rootLayerStyle>polygon</rootLayerStyle>" + 
+                "<layers>" +
+                  "<layer>Forests</layer>" +
+                "</layers>" +
+                "<styles>" +
+                  "<style>point</style>" +
+                "</styles>" +
+              "</layerGroup>";
+        
+        MockHttpServletResponse response = postAsServletResponse("/rest/layergroups", xml);
+        assertEquals(201, response.getStatusCode());
+        
+        LayerGroupInfo lg = catalog.getLayerGroupByName("newLayerGroupWithTypeEO");
+        assertNotNull(lg);
+        
+        assertEquals(LayerGroupInfo.Mode.EO, lg.getMode());
+        assertEquals("Ponds", lg.getRootLayer().getName());
+        assertEquals("polygon", lg.getRootLayerStyle().getName());
+    }
+    
     @Test
     public void testPostNoStyles() throws Exception {
         

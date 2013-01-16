@@ -1166,7 +1166,7 @@ public class GWC implements DisposableBean, InitializingBean {
             if (!tileLayerExists(tileLayerName)) {
                 continue;
             }
-            for (LayerInfo li : lgi.getLayers()) {
+            for (LayerInfo li : lgi.layers()) {
                 ResourceInfo resource = li.getResource();
                 if (typeInfo.equals(resource)) {
                     affectedLayers.add(tileLayerName);
@@ -1420,8 +1420,8 @@ public class GWC implements DisposableBean, InitializingBean {
 
         for (LayerGroupInfo layerGroup : getLayerGroups()) {
 
-            final List<StyleInfo> explicitLayerGroupStyles = layerGroup.getStyles();
-            final List<LayerInfo> groupLayers = layerGroup.getLayers();
+            final List<StyleInfo> explicitLayerGroupStyles = layerGroup.styles();
+            final List<LayerInfo> groupLayers = layerGroup.layers();
 
             for (int layerN = 0; layerN < groupLayers.size(); layerN++) {
 

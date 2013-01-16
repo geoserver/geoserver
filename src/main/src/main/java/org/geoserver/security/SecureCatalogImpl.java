@@ -607,10 +607,24 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             return null;
         }
 
+        boolean needsWrapping = false;
+        
+        LayerInfo rootLayer = group.getRootLayer();
+        if (LayerGroupInfo.Mode.EO.equals(group.getMode())) {
+            LayerInfo checked = checkAccess(user, rootLayer);
+            if (checked != null) {
+                if (checked != rootLayer) {
+                    needsWrapping = true;
+                    rootLayer = checked;
+                }
+            } else {
+                return null;
+            }
+        }
+        
         // scan thru the layers
         final List<LayerInfo> layers = group.getLayers();
-        ArrayList<LayerInfo> wrapped = new ArrayList<LayerInfo>(layers.size());
-        boolean needsWrapping = false;
+        ArrayList<LayerInfo> wrapped = new ArrayList<LayerInfo>(layers.size());        
         for (LayerInfo layer : layers) {
             LayerInfo checked = checkAccess(user, layer);
             if (checked != null) {
@@ -624,7 +638,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         }
         
         if(needsWrapping)
-            return new SecuredLayerGroupInfo(group, wrapped);
+            return new SecuredLayerGroupInfo(group, rootLayer, wrapped);
         else
             return group;            
     }

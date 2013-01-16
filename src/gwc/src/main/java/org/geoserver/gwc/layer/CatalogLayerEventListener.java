@@ -64,8 +64,8 @@ import com.google.common.collect.Sets;
  * {@link LayerInfo#getName()} (at least until GeoServer separates out data from publication - the
  * famous data/publish split), GWC is instructed to rename the layer preserving the cache and any
  * other information for the layer.</li>
- * <li><b>LayerGroupInfo modified</b>: either the {@link LayerGroupInfo#getLayers() layers} or
- * {@link LayerGroupInfo#getStyles() styles} changed for a {@code LayerGroupInfo}. It's cache is
+ * <li><b>LayerGroupInfo modified</b>: either the {@link LayerGroupInfo#layers() layers} or
+ * {@link LayerGroupInfo#styles() styles} changed for a {@code LayerGroupInfo}. It's cache is
  * truncated.</li>
  * <li><b>LayerInfo default style replaced</b>: a {@code LayerInfo} has been assigned a different
  * {@link LayerInfo#getDefaultStyle() default style}. The corresponding tile layer's cache is

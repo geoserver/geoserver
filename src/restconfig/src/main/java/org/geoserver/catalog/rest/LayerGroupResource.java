@@ -64,6 +64,11 @@ public class LayerGroupResource extends AbstractCatalogResource {
             lg.setWorkspace(catalog.getWorkspaceByName(ws));
         }
 
+        if (lg.getMode() == null) {
+            LOGGER.fine("Setting layer group mode SINGLE");
+            lg.setMode(LayerGroupInfo.Mode.SINGLE);
+        }
+        
         catalog.add( lg );
         return lg.getName();
     }

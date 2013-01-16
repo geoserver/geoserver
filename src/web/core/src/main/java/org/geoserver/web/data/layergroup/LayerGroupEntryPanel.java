@@ -47,7 +47,7 @@ public class LayerGroupEntryPanel extends Panel {
     public LayerGroupEntryPanel( String id, LayerGroupInfo layerGroup ) {
         super( id );
         
-        items = new ArrayList();
+        items = new ArrayList<LayerGroupEntry>();
         for ( int i = 0; i < layerGroup.getLayers().size(); i++ ) {
             LayerInfo layer = layerGroup.getLayers().get( i );
             StyleInfo style = layerGroup.getStyles().get( i );

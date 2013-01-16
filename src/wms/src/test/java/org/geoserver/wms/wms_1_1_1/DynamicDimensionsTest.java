@@ -120,7 +120,6 @@ public class DynamicDimensionsTest extends WMSTestSupport {
                 + "&height=250" + "&srs=EPSG:4326" 
                 + "&DIM_" + DIMENSION_NAME + "=bad_dimension_value");
         BufferedImage image = ImageIO.read(getBinaryInputStream(response));
-        ImageIO.write(image, "PNG", new File("/tmp/test-empty.png"));
         assertTrue(isEmpty(image));
     }
     
@@ -133,7 +132,6 @@ public class DynamicDimensionsTest extends WMSTestSupport {
                 + "&layers=" + LAYERS + "&Format=image/png" + "&request=GetMap" + "&width=550"
                 + "&height=250" + "&srs=EPSG:4326");
         BufferedImage image = ImageIO.read(getBinaryInputStream(response));
-        ImageIO.write(image, "PNG", new File("/tmp/test-default.png"));
         assertFalse(isEmpty(image));
         // this pixel is red-ish with the default value, 020, but black with 100
         assertPixel(image, 337, 177, new Color(255,197,197));
@@ -149,7 +147,6 @@ public class DynamicDimensionsTest extends WMSTestSupport {
                 + "&height=250" + "&srs=EPSG:4326" 
                 + "&DIM_" + DIMENSION_NAME + "=100");
         BufferedImage image = ImageIO.read(getBinaryInputStream(response));
-        ImageIO.write(image, "PNG", new File("/tmp/test-100.png"));
         assertFalse(isEmpty(image));
         // this pixel is red-ish with the default value, 020, but black with 100
         assertPixel(image, 337, 177, Color.BLACK);
@@ -165,7 +162,6 @@ public class DynamicDimensionsTest extends WMSTestSupport {
                 + "&height=250" + "&srs=EPSG:4326" 
                 + "&DIM_wAvElEnGtH=100");
         BufferedImage image = ImageIO.read(getBinaryInputStream(response));
-        ImageIO.write(image, "PNG", new File("/tmp/test-100.png"));
         assertFalse(isEmpty(image));
         // this pixel is red-ish with the default value, 020, but black with 100
         assertPixel(image, 337, 177, Color.BLACK);

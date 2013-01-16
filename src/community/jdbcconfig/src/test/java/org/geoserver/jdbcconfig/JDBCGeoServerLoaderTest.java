@@ -56,6 +56,7 @@ public class JDBCGeoServerLoaderTest {
     @Test
     public void testLoadEmptyNoImport() throws Exception {
         JDBCConfigProperties config = createNiceMock(JDBCConfigProperties.class);
+        expect(config.isEnabled()).andReturn(true).anyTimes();
         expect(config.isInitDb()).andReturn(true).anyTimes();
         expect(config.isImport()).andReturn(false).anyTimes();
         replay(config);

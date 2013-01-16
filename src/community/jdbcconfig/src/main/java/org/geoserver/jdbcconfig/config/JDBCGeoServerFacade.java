@@ -73,7 +73,9 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
             SettingsInfo defaultSettings = geoServer.getFactory().createSettings();
             add(defaultSettings);
             global.setSettings(defaultSettings);
-        }else if(null == global.getSettings().getId()){
+        //JD: disabling this check, global settings should have an id 
+        //}else if(null == global.getSettings().getId()){
+        }else {
             add(global.getSettings());
         }
         if (null == getGlobal()) {

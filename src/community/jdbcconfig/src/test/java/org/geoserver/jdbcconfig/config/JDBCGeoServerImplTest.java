@@ -4,17 +4,21 @@
  */
 package org.geoserver.jdbcconfig.config;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.GeoServerFacade;
 import org.geoserver.config.GeoServerImplTest;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.impl.GeoServerImpl;
+import org.geoserver.config.impl.SettingsInfoImpl;
 import org.geoserver.jdbcconfig.JDBCConfigTestSupport;
 import org.geoserver.jdbcconfig.catalog.JDBCCatalogFacade;
 import org.geoserver.jdbcconfig.internal.ConfigDatabase;
 import org.junit.After;
+import org.junit.Test;
 
 public class JDBCGeoServerImplTest extends GeoServerImplTest {
 
@@ -57,5 +61,16 @@ public class JDBCGeoServerImplTest extends GeoServerImplTest {
         ServiceInfo s = geoServer.getServiceByName( "foo", ServiceInfo.class );
         assertNotNull(s.getGeoServer());
     }
-    
+
+    @Test
+    public void testGlobalSettingsWithId() throws Exception {
+        SettingsInfoImpl settings = new SettingsInfoImpl();
+        settings.setId("settings");
+        
+        GeoServerInfo global = geoServer.getFactory().createGlobal();
+        global.setSettings(settings);
+
+        geoServer.setGlobal(global);
+        assertEquals( global, geoServer.getGlobal() );
+    }
 }

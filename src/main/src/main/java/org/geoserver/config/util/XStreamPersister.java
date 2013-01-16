@@ -47,6 +47,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.LayerGroupInfo.Mode;
 import org.geoserver.catalog.impl.AttributeTypeInfoImpl;
 import org.geoserver.catalog.impl.AttributionInfoImpl;
 import org.geoserver.catalog.impl.AuthorityURL;
@@ -1742,7 +1743,10 @@ public class XStreamPersister {
 
             LayerGroupInfoImpl lgi = (LayerGroupInfoImpl) super
                     .doUnmarshal(result, reader, context);
-            lgi.init();
+            
+            if (lgi.getMode() ==  null) {
+                lgi.setMode(Mode.SINGLE);
+            }
             
             MetadataMap metadata = lgi.getMetadata();
             

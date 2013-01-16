@@ -614,19 +614,21 @@ public class XStreamPersisterTest {
         group1.setTitle("foo title");
         group1.setAbstract("foo abstract");
         group1.setMode(LayerGroupInfo.Mode.NAMED);
-        
+
         ByteArrayOutputStream out = out();
         persister.save(group1, out);
+
+        // print(in(out));
         
         ByteArrayInputStream in = in(out);
         
         LayerGroupInfo group2 = persister.load(in, LayerGroupInfo.class);
-        assertEquals(group1, group2);
+        assertEquals(group1.getName(), group2.getName());
+        assertEquals(group1.getTitle(), group2.getTitle());
+        assertEquals(group1.getAbstract(), group2.getAbstract());
+        assertEquals(group1.getMode(), group2.getMode());
         
         Document dom = dom(in(out));
-        
-        print(in(out));
-        
         assertEquals("layerGroup", dom.getDocumentElement().getNodeName());
     }    
     

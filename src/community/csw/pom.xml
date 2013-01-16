@@ -30,9 +30,9 @@
   </dependencies>
 
   <modules>
-    <module>csw-api</module>
-    <module>csw-core</module>
-    <module>csw-simple-store</module>
+    <module>api</module>
+    <module>core</module>
+    <module>simple-store</module>
   </modules>
 
 </project>

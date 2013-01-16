@@ -64,6 +64,9 @@ public class JDBCConfigTestSupport {
 
     String dropScriptName = "dropdb.h2.sql";
 
+     String dbUser = "postgres";
+     String dbPasswd = "geo123";
+
     private WebApplicationContext appContext;
 
     private GeoServerResourceLoader resourceLoader;
@@ -96,8 +99,8 @@ public class JDBCConfigTestSupport {
         dataSource.setDriverClassName(driver);
         dataSource.setUrl(connectionUrl.replace("${DATA_DIR}",
             resourceLoader.getBaseDirectory().getAbsolutePath()));
-        dataSource.setUsername("postgres");
-        dataSource.setPassword("geo123");
+        dataSource.setUsername(dbUser);
+        dataSource.setPassword(dbPasswd);
 
         dataSource.setMinIdle(3);
         dataSource.setMaxActive(10);

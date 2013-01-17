@@ -121,26 +121,10 @@ The supported format options are:
   For example, to print  a 100x100 image at 300 DPI request a 333x333 image with the DPI value set to 300: ``&width=333&height=333&format_options=dpi:300`` 
 * ``layout``: specifies a layout name to use.  Layouts are used to add decorators such as compasses and legends.  This capability is discussed further in the :ref:`wms_decorations` section.
 * ``quantizer`` ((values = ``octree``, ``mediancut``): controls the color quantizer used to produce PNG8 images. GeoServer 2.2.0 provides two quantizers, a fast RGB quantizer called ``octree`` that does not handle translucency and a slower but more accurate RGBA quantizer called ``mediancut``. By default the first is used on opaque images, whilst the second is enabled if the client asks for a transparent image (``transparent=true``). This vendor parameter can be used to manually force the usage of a particular quantizer.
-
-kmattr
-------
-
-The ``kmattr`` parameter determines whether the KML returned by GeoServer should include clickable attributes or not.  
-This parameter primarily affects Google Earth rendering.  
-The syntax is::
-
-   kmattr=[true|false]
-
-kmscore
--------
-
-The ``kmscore`` parameter sets whether GeoServer should render KML data as vector or raster.  
-This parameter primarily affects Google Earth rendering.  
-The syntax is::
-
-   kmscore=<value>
-
-The possible values for this parameter are between ``0`` (force raster output) and ``100`` (force vector output).
+* ``kmattr`` ((values = ``true``,``false``)): determines whether the KML returned by GeoServer should include clickable attributes or not. This parameter primarily affects Google Earth rendering.  
+* ``legend`` ((values = ``true``,``false``)): KML may add the legend.
+* ``kmscore`` ((values = between ``0`` to force raster output and ``100`` to force vector output)): parameter sets whether GeoServer should render KML data as vector or raster. This parameter primarily affects Google Earth rendering.  
+* ``kmltitle``: parameter sets the KML title.
 
 maxFeatures and startIndex
 --------------------------

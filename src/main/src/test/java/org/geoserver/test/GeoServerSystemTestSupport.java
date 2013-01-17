@@ -1162,7 +1162,22 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             throws Exception {
         return getAsDOM(path, true);
     }
-    
+
+    /**
+     * Executes an ows request using the GET method and returns the result as an 
+     * xml document, with the ability to override the XML document encoding. 
+     * 
+     * @param path The portion of the request after the context, 
+     *   example: 'wms?request=GetMap&version=1.1.1&..."
+     * @param encoding Override for the encoding of the document.
+     * 
+     * @return A result of the request parsed into a dom.
+     * 
+     * @throws Exception
+     */
+    protected Document getAsDOM(final String path, String encoding) throws Exception {
+        return getAsDOM(path, true, encoding);
+    }
     /**
      * Executes a request using the GET method and parses the result as a json object.
      * 
@@ -1212,7 +1227,29 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     throws Exception {
         return dom(get(path), skipDTD);
     }
-    
+
+    /**
+     * Executes an ows request using the GET method and returns the result as an xml document.
+     * 
+     * @param path
+     *                The portion of the request after the context, example:
+     *                'wms?request=GetMap&version=1.1.1&..."
+     * @param skipDTD
+     *                if true, will avoid loading and validating against the response document
+     *                schema or DTD
+     *
+     * @param encoding 
+     *                Overide for the encoding of the document.
+     * 
+     * @return A result of the request parsed into a dom.
+     * 
+     * @throws Exception
+     */
+    protected Document getAsDOM(final String path, final boolean skipDTD, String encoding)
+            throws Exception {
+        return dom(get(path), skipDTD, encoding);
+    }
+
     /**
      * Executes an ows request using the POST method with key value pairs 
      * form encoded, returning the result as a dom.
@@ -1296,8 +1333,20 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * @param skipDTD If true, will skip loading and validating against the associated DTD
      */
     protected Document dom(InputStream input, boolean skipDTD) throws ParserConfigurationException, SAXException, IOException {
+        return dom(input, skipDTD, null);
+    }
+
+    protected Document dom(InputStream stream, boolean skipDTD, String encoding) 
+        throws ParserConfigurationException, SAXException, IOException {
+
+        InputSource input = new InputSource(stream);
+        if (encoding != null) {
+            input.setEncoding(encoding);
+        }
+
         if(skipDTD) {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); 
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            
             factory.setNamespaceAware( true );
             factory.setValidating( false );
            

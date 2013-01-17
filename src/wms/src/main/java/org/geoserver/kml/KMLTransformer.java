@@ -26,6 +26,7 @@ import org.xml.sax.ContentHandler;
  * Transformer to create a KML document from a {@link WMSMapContent}.
  * 
  * @author Justin Deoliveira
+ * @author Carlo Cancellieri - GeoSolutions SAS
  * 
  * @version $Id$
  * @see KMLVectorTransformer
@@ -99,8 +100,14 @@ public class KMLTransformer extends TransformerBase {
 
             // if we have more than one layer ( or a legend was requested ),
             // use the name "GeoServer" to group them
-            boolean group = (layers.size() > 1) || request.getLegend();
-
+            boolean group;
+            Boolean legend = (Boolean) request.getFormatOptions().get("legend");
+            if (legend != null) {
+                group = (layers.size() > 1) || legend.booleanValue();
+            } else {
+                group = (layers.size() > 1);
+            }
+            
             if (group) {
                 StringBuffer sb = new StringBuffer();
                 for (int i = 0; i < layers.size(); i++) {
@@ -139,7 +146,7 @@ public class KMLTransformer extends TransformerBase {
             }
 
             // legend suppoer
-            if (request.getLegend()) {
+            if (legend != null && legend.booleanValue()) {
                 // for every layer specified in the request
                 for (int i = 0; i < layers.size(); i++) {
                     // layer and info

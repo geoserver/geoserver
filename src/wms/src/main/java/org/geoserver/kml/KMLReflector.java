@@ -15,6 +15,8 @@ import org.geoserver.wms.DefaultWebMapService;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
+import org.geoserver.wms.WMSRequest;
+import org.geoserver.wms.WMSRequests;
 import org.geoserver.wms.WebMapService;
 
 /**
@@ -155,7 +157,9 @@ public class KMLReflector {
         Map fo = request.getFormatOptions();
 
         KvpUtils.merge(fo, modeOptions);
-
+        
+        organizeFormatOptionsParams(request.getRawKvp(), fo);
+        
         if (fo.get("kmattr") == null) {
             fo.put("kmattr", wmsConfiguration.getKmlKmAttr());
         }
@@ -202,6 +206,26 @@ public class KMLReflector {
         wmsResponse.setResponseHeader("Content-Disposition", contentDisposition);
 
         return wmsResponse;
+    }
+    
+    
+    /**
+     * Copy all the format_options parameters from the kvp map and put them into the formatOptions map. If a parameter is already present in
+     * formatOption map it will be preserved.
+     * 
+     * @param kvp
+     * @param formatOptions
+     * @throws Exception 
+     */
+    public static void organizeFormatOptionsParams(Map<String, String> kvp,
+            Map<String, Object> formatOptions) throws Exception {
+
+        WMSRequests.mergeEntry(kvp, formatOptions, "legend");
+        WMSRequests.mergeEntry(kvp, formatOptions, "kmscore");
+        WMSRequests.mergeEntry(kvp, formatOptions, "kmattr");
+        WMSRequests.mergeEntry(kvp, formatOptions, "kmltitle");
+//        WMSRequests.mergeEntry(kvp, formatOptions, "superoverlay");
+
     }
 
 }

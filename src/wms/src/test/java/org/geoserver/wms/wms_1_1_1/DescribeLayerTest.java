@@ -15,6 +15,7 @@ import org.geoserver.wms.WMSTestSupport;
 import org.geotools.util.logging.Logging;
 import org.junit.Test;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 public class DescribeLayerTest extends WMSTestSupport {
     
@@ -59,6 +60,8 @@ public class DescribeLayerTest extends WMSTestSupport {
         dom = getAsDOM("sf/wms?service=wms&version=1.1.1&request=DescribeLayer" +
                 "&layers=PrimitiveGeoFeature", true);
         assertEquals("WMS_DescribeLayerResponse", dom.getDocumentElement().getNodeName());
-        
+
+        Element e = (Element) dom.getElementsByTagName("LayerDescription").item(0);
+        assertTrue(e.getAttribute("owsURL").contains("sf/wfs"));
     }
 }

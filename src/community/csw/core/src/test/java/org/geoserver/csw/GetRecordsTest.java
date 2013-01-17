@@ -239,7 +239,7 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
     @Test 
     public void testAllRecordsDefaultElementSet() throws Exception {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results";
-        Document d = getAsDOM(request);
+        Document d = getAsDOM(request, "ISO-8859-1");
         // print(d);
         checkValidationErrors(d, new CSWConfiguration());
         
@@ -256,7 +256,7 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
     @Test 
     public void testAllRecordsBrief() throws Exception {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&elementSetName=brief";
-        Document d = getAsDOM(request);
+        Document d = getAsDOM(request, "ISO-8859-1");
         checkValidationErrors(d, new CSWConfiguration());
         
         // check we have the expected results
@@ -272,7 +272,7 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
     @Test 
     public void testAllRecordsFull() throws Exception {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&elementSetName=full";
-        Document d = getAsDOM(request);
+        Document d = getAsDOM(request, "ISO-8859-1");
         checkValidationErrors(d, new CSWConfiguration());
         
         // check we have the expected results
@@ -386,7 +386,7 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
     @Test 
     public void testSortByIdentifier() throws Exception {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&elementSetName=brief&sortBy=dc:identifier:A";
-        Document d = getAsDOM(request);
+        Document d = getAsDOM(request, "ISO-8859-1");
         checkValidationErrors(d, new CSWConfiguration());
         // print(d);
 

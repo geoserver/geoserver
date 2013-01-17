@@ -105,7 +105,7 @@ public class GetDomainTest extends CSWSimpleTestSupport {
     @Test 
     public void testGETReaderProperty() throws Exception {
         Document dom = getAsDOM(BASEPATH
-                + "?service=csw&version=2.0.2&request=GetDomain&propertyName=dc:title");
+            + "?service=csw&version=2.0.2&request=GetDomain&propertyName=dc:title", "ISO-8859-1");
         print(dom);
         //checkValidationErrors(dom);
         

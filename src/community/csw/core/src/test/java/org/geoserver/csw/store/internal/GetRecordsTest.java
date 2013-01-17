@@ -32,12 +32,14 @@ public class GetRecordsTest extends CSWInternalTestSupport {
     }
 
     @Test
-    public void testAllRecords() throws Exception {
-        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&elementSetName=full";
+    public void testAllRecordsPaged() throws Exception {
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record" +
+            "&resultType=results&elementSetName=full";
+        
         Document d = getAsDOM(request);
-        print(d);
-        checkValidationErrors(d, new CSWConfiguration());
-
+        //print(d);
+        //validateSchema(d.getElementsByTagName("//gmd:MD_MetaData"));
+        
         // we have the right kind of document
         assertXpathEvaluatesTo("1", "count(/csw:GetRecordsResponse)", d);
 
@@ -46,7 +48,26 @@ public class GetRecordsTest extends CSWInternalTestSupport {
         assertXpathEvaluatesTo("29", "//csw:SearchResults/@numberOfRecordsMatched", d);
         assertXpathEvaluatesTo("10", "//csw:SearchResults/@numberOfRecordsReturned", d);
         assertXpathEvaluatesTo("11", "//csw:SearchResults/@nextRecord", d);
-        assertXpathEvaluatesTo("10", "count(//csw:SearchResults/*)", d);
+        assertXpathEvaluatesTo("10", "count(//csw:SearchResults/*)", d);   
+    }
+    
+    @Test
+    public void testAllRecords() throws Exception {
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record" +
+            "&resultType=results&elementSetName=full&maxRecords=100";
+        Document d = getAsDOM(request);
+        //print(d);
+        checkValidationErrors(d, new CSWConfiguration());
+
+        // we have the right kind of document
+        assertXpathEvaluatesTo("1", "count(/csw:GetRecordsResponse)", d);
+
+        // check we have the expected results
+        assertXpathEvaluatesTo("full", "//csw:SearchResults/@elementSet", d);
+        assertXpathEvaluatesTo("29", "//csw:SearchResults/@numberOfRecordsMatched", d);
+        assertXpathEvaluatesTo("29", "//csw:SearchResults/@numberOfRecordsReturned", d);
+        assertXpathEvaluatesTo("0", "//csw:SearchResults/@nextRecord", d);
+        assertXpathEvaluatesTo("29", "count(//csw:SearchResults/*)", d);
 
         // check contents Forests record
         assertXpathEvaluatesTo("abstract about Forests",
@@ -73,7 +94,7 @@ public class GetRecordsTest extends CSWInternalTestSupport {
     public void testAllRecordsWithOffset() throws Exception {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&StartPosition=11&elementSetName=full";
         Document d = getAsDOM(request);
-        print(d);
+        //print(d);
         checkValidationErrors(d, new CSWConfiguration());
 
         // check we have the right kind of document
@@ -91,7 +112,7 @@ public class GetRecordsTest extends CSWInternalTestSupport {
     public void testAllRecordsWithMax() throws Exception {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&StartPosition=11&maxRecords=5&elementSetName=full";
         Document d = getAsDOM(request);
-        print(d);
+        //print(d);
         checkValidationErrors(d, new CSWConfiguration());
 
         // check we have the right kind of document
@@ -109,7 +130,7 @@ public class GetRecordsTest extends CSWInternalTestSupport {
     public void testTitleFilter1() throws Exception {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&elementSetName=brief&constraint=dc:title = 'Forests'";
         Document d = getAsDOM(request);
-        print(d);
+        //print(d);
 
         assertXpathEvaluatesTo("1", "//csw:SearchResults/@numberOfRecordsMatched", d);
         assertXpathEvaluatesTo("1", "//csw:SearchResults/@numberOfRecordsReturned", d);
@@ -121,7 +142,7 @@ public class GetRecordsTest extends CSWInternalTestSupport {
     public void testTitleFilter2() throws Exception {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&elementSetName=brief&constraint=dc:title like 'S%25'";
         Document d = getAsDOM(request);
-        print(d);
+        //print(d);
 
         assertXpathEvaluatesTo("2", "//csw:SearchResults/@numberOfRecordsMatched", d);
         assertXpathEvaluatesTo("2", "//csw:SearchResults/@numberOfRecordsReturned", d);
@@ -135,7 +156,7 @@ public class GetRecordsTest extends CSWInternalTestSupport {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&elementSetName=brief&constraint=AnyText like '%25about B%25'";
         Document d = getAsDOM(request);
         checkValidationErrors(d, new CSWConfiguration());
-        print(d);
+        //print(d);
 
         // basic checks
         assertXpathEvaluatesTo("3", "//csw:SearchResults/@numberOfRecordsMatched", d);
@@ -153,10 +174,10 @@ public class GetRecordsTest extends CSWInternalTestSupport {
     public void testFilterBBox() throws Exception {
 
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results"
-                + "&constraint=BBOX(ows:BoundingBox, -250, -250, -190, -100)";
+                + "&constraint=BBOX(ows:BoundingBox, -250, -250, -190, -100)&maxRecords=100";
         Document d = getAsDOM(request);
         checkValidationErrors(d, new CSWConfiguration());
-        print(d);
+        //print(d);
 
         // basic checks
         //assertXpathEvaluatesTo("15", "//csw:SearchResults/@numberOfRecordsMatched", d);

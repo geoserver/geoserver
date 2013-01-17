@@ -36,8 +36,10 @@ public class GetRecordsTest extends MDTestSupport {
     }
 
     @Test
-    public void testAllRecords() throws Exception {
-        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd";
+    public void testAllRecordsPaged() throws Exception {
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata" +
+            "&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd";
+
         Document d = getAsDOM(request);
         //print(d);
         //validateSchema(d.getElementsByTagName("//gmd:MD_MetaData"));
@@ -50,7 +52,27 @@ public class GetRecordsTest extends MDTestSupport {
         assertXpathEvaluatesTo("29", "//csw:SearchResults/@numberOfRecordsMatched", d);
         assertXpathEvaluatesTo("10", "//csw:SearchResults/@numberOfRecordsReturned", d);
         assertXpathEvaluatesTo("11", "//csw:SearchResults/@nextRecord", d);
-        assertXpathEvaluatesTo("10", "count(//csw:SearchResults/*)", d);
+        assertXpathEvaluatesTo("10", "count(//csw:SearchResults/*)", d);   
+    }
+
+    @Test
+    public void testAllRecords() throws Exception {
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata" +
+            "&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd" +
+            "&maxRecords=100";
+        Document d = getAsDOM(request);
+        //print(d);
+        //validateSchema(d.getElementsByTagName("//gmd:MD_MetaData"));
+        
+        // we have the right kind of document
+        assertXpathEvaluatesTo("1", "count(/csw:GetRecordsResponse)", d);
+
+        // check we have the expected results
+        assertXpathEvaluatesTo("full", "//csw:SearchResults/@elementSet", d);
+        assertXpathEvaluatesTo("29", "//csw:SearchResults/@numberOfRecordsMatched", d);
+        assertXpathEvaluatesTo("29", "//csw:SearchResults/@numberOfRecordsReturned", d);
+        assertXpathEvaluatesTo("0", "//csw:SearchResults/@nextRecord", d);
+        assertXpathEvaluatesTo("29", "count(//csw:SearchResults/*)", d);
 
         // check contents Forests record
         assertXpathEvaluatesTo("abstract about Forests",
@@ -75,7 +97,9 @@ public class GetRecordsTest extends MDTestSupport {
     
     @Test
     public void testAllRecordsBrief() throws Exception {
-        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata&resultType=results&elementSetName=brief&outputSchema=http://www.isotc211.org/2005/gmd";
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata" +
+            "&resultType=results&elementSetName=brief&outputSchema=http://www.isotc211.org/2005/gmd" +
+            "&maxRecords=100";
         Document d = getAsDOM(request);
         //print(d);
         //validateSchema(d.getElementsByTagName("//gmd:MD_MetaData"));
@@ -83,10 +107,10 @@ public class GetRecordsTest extends MDTestSupport {
         // check we have the expected results
         assertXpathEvaluatesTo("brief", "//csw:SearchResults/@elementSet", d);
         assertXpathEvaluatesTo("29", "//csw:SearchResults/@numberOfRecordsMatched", d);
-        assertXpathEvaluatesTo("10", "//csw:SearchResults/@numberOfRecordsReturned", d);
-        assertXpathEvaluatesTo("11", "//csw:SearchResults/@nextRecord", d);
-        assertXpathEvaluatesTo("10", "count(//csw:SearchResults/*)", d);
-       
+        assertXpathEvaluatesTo("29", "//csw:SearchResults/@numberOfRecordsReturned", d);
+        assertXpathEvaluatesTo("0", "//csw:SearchResults/@nextRecord", d);
+        assertXpathEvaluatesTo("29", "count(//csw:SearchResults/*)", d);
+        
         // check contents Forests record
         assertXpathNotExists("//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:abstract/gco:CharacterString", d);
         assertXpathNotExists("//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:descriptiveKeywords/gmd:MD_Keywords/gmd:keyword/gco:CharacterString", d);
@@ -154,9 +178,9 @@ public class GetRecordsTest extends MDTestSupport {
     public void testFilterBBox() throws Exception {
 
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&outputSchema=http://www.isotc211.org/2005/gmd&typeNames=gmd:MD_Metadata&resultType=results"
-                + "&constraint=BBOX(BoundingBox, -250, -250, -190, -100)";
+                + "&constraint=BBOX(BoundingBox, -250, -250, -190, -100)&maxRecords=100";
         Document d = getAsDOM(request);        
-        //print(d);
+        print(d);
         //validateSchema(d.getElementsByTagName("//gmd:MD_MetaData"));
 
         // basic checks

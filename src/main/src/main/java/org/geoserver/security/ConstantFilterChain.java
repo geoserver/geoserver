@@ -25,5 +25,10 @@ public class ConstantFilterChain extends RequestFilterChain {
     public  boolean isConstant() {
         return true; 
     }
+
+    @Override
+    public boolean canBeRemoved() {
+        return false;
+    }
     
 }

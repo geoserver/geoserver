@@ -5,26 +5,25 @@
 <body>
 	<wicket:panel>
 		<ul>
-			<li><label><wicket:message key="requestChain"></wicket:message></label>
-				<select wicket:id="requestChain"></select></li>
+			<li><label><wicket:message key="httpMethod"></wicket:message></label>
+				<select wicket:id="httpMethod"></select></li>
 			<li>
-				<label for="antPatterns" ><wicket:message
-						key="antPatterns"></wicket:message>
+				<label for="urlPath" ><wicket:message
+						key="urlPath"></wicket:message>
 			    </label>			
-				<input id="antPatterns" class="text" type="text" wicket:id="antPatterns" />
-			</li>					
-			<li><input id="disabled" type="checkbox" wicket:id="disabled"
-				class="field checkbox" /> <label for="disabled" class="choice"><wicket:message
-						key="disabled"></wicket:message></label></li>
-			<li><input id="allowSessionCreation" type="checkbox"
-				wicket:id="allowSessionCreation" class="field checkbox" /> <label
-				for="allowSessionCreation" class="choice"><wicket:message
-						key="allowSessionCreation"></wicket:message></label></li>
-			<li><label><wicket:message key="roleFilterChoice"></wicket:message></label>
-				<select wicket:id="roleFilterChoice"></select></li>
-			<li>
-				<div wicket:id="authFilterChain"></div>
+				<input id="urlPath" class="text" type="text" wicket:id="urlPath" />
 			</li>
+			<li>
+              <div class="button-group selfclear">
+                <a wicket:id="chainTest"><span><wicket:message key="chainTest"></wicket:message></span></a>
+            </div>
+            </li>
+            <li>
+                <label for="chainTestResult" ><wicket:message
+                        key="chainTestResult"></wicket:message>
+                </label>            
+                <input id="chainTestResult" class="text" type="text" wicket:id="chainTestResult" />
+            </li>								
 		</ul>
 	</wicket:panel>
 </body>

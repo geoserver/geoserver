@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.SortedSet;
 
-import org.springframework.util.StringUtils;
 
 
 
@@ -21,7 +20,7 @@ import org.springframework.util.StringUtils;
  */
 public abstract class VariableFilterChain extends RequestFilterChain {
 
-    String roleFilterName,interceptorName;
+    String interceptorName;
     /**
      * 
      */
@@ -38,14 +37,6 @@ public abstract class VariableFilterChain extends RequestFilterChain {
         return false;
     }
         
-    public String getRoleFilterName() {
-        return roleFilterName;
-    }
-
-    public void setRoleFilterName(String roleFilterName) {
-        this.roleFilterName = roleFilterName;
-    }
-
     
     /**
      * list the filter names which can be added to this chain
@@ -58,8 +49,6 @@ public abstract class VariableFilterChain extends RequestFilterChain {
 
     @Override
     void createCompiledFilterList(List<String> list) {
-        if (StringUtils.hasLength(getRoleFilterName()))
-                list.add(1, getRoleFilterName());
         list.addAll(getFilterNames());
         list.add(GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER);
         list.add(interceptorName);
@@ -71,10 +60,6 @@ public abstract class VariableFilterChain extends RequestFilterChain {
             return false;
         
         VariableFilterChain other = (VariableFilterChain) obj;
-        if (this.roleFilterName ==null && other.roleFilterName!=null)
-            return false;
-        if (this.roleFilterName !=null && this.roleFilterName.equals(other.roleFilterName)==false)
-            return false;
         if (this.interceptorName ==null && other.interceptorName!=null)
             return false;
         if (this.interceptorName !=null && this.interceptorName.equals(other.interceptorName)==false)
@@ -86,8 +71,7 @@ public abstract class VariableFilterChain extends RequestFilterChain {
     
     @Override
     public int hashCode() {
-        int hash = super.hashCode();
-        hash = hash * ((roleFilterName == null) ? 1 : roleFilterName.hashCode());
+        int hash = super.hashCode();        
         hash = hash * ((interceptorName == null) ? 1 : interceptorName.hashCode());
         return hash;
     }
@@ -101,6 +85,12 @@ public abstract class VariableFilterChain extends RequestFilterChain {
     public void setInterceptorName(String interceptorName) {
         this.interceptorName = interceptorName;
     }
+    
+    @Override
+    public boolean canBeRemoved() {
+        return true;
+    }
+
 
 
 }

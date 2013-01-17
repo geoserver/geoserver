@@ -119,6 +119,7 @@
   <bean id="basicAuthSecurityProvider" class="org.geoserver.security.filter.GeoServerBasicAuthenticationProvider"/>
   <bean id="digestAuthSecurityProvider" class="org.geoserver.security.filter.GeoServerDigestAuthenticationProvider"/>
   <bean id="roleFilterProvider" class="org.geoserver.security.filter.GeoServerRoleProvider"/>
+  <bean id="sslFilterProvider" class="org.geoserver.security.filter.GeoServerSSLProvider"/>  
   <bean id="j2eeAuthSecurityProvider" class="org.geoserver.security.filter.GeoServerJ2eeAuthenticationProvider"/>
   <bean id="requestHeaderFilterProvider" class="org.geoserver.security.filter.GeoServerRequestHeaderAuthenticationProvider"/>
   <bean id="exceptionTranslationFilterProvider" class="org.geoserver.security.filter.GeoServerExceptionTranslationProvider"/>

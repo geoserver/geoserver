@@ -49,6 +49,7 @@ public class GeoServerSecurityFilterChain implements Serializable {
     public static final String SECURITY_CONTEXT_NO_ASC_FILTER = "contextNoAsc";
     
     public static final String ROLE_FILTER = "roleFilter";
+    public static final String SSL_FILTER = "sslFilter";
     
     public static final String FORM_LOGIN_FILTER = "form";
     public static final String FORM_LOGOUT_FILTER = "formLogout";
@@ -205,46 +206,6 @@ public class GeoServerSecurityFilterChain implements Serializable {
         return null;
     }
 
-    public Map<String,List<String>> compileFilterMap() {
-        Map<String,List<String>> filterMap = new LinkedHashMap();
-        
-        for (RequestFilterChain ch : requestChains) {
-            //patterns.addAll(ch.getPatterns());
-            
-            for (String p : ch.getPatterns()) {
-                filterMap.put(p, ch.getCompiledFilterNames());
-            }
-        }
-
-        return filterMap;
-    }
-
-    public void simplify() {
-        int j = 0;
-        for (Iterator<RequestFilterChain> it = requestChains.iterator(); it.hasNext(); j++) {
-            RequestFilterChain requestChain = it.next();
-            RequestFilterChain toMerge = null;
-
-            //look at any previous chain to see if we can merge
-            for (int i = 0; i < j; i++) {
-                RequestFilterChain requestChain2 = requestChains.get(i);
-                if (requestChain2 == requestChain) {
-                    continue;
-                }
-                if (requestChain2.getFilterNames().equals(requestChain.getFilterNames())) {
-                    toMerge = requestChain2;
-                    break;
-                }
-            }
-
-            if (toMerge != null) {
-                toMerge.getPatterns().addAll(requestChain.getPatterns());
-                it.remove();
-                j--;
-            }
-        }
-    
-    }
 
     /**
      * Inserts a filter as the first of the filter list corresponding to the specified pattern.

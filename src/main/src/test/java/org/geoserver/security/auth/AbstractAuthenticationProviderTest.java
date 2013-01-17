@@ -219,8 +219,7 @@ public abstract class AbstractAuthenticationProviderTest extends AbstractSecurit
         RequestFilterChain chain = config.getFilterChain().find(pattern);
         chain.setDisabled(disabled);
         chain.setAllowSessionCreation(allowSessionCreation);
-        if (chain instanceof VariableFilterChain)
-            ((VariableFilterChain) chain).setRoleFilterName(roleFilterName);
+        chain.setRoleFilterName(roleFilterName);
         
         getSecurityManager().saveSecurityConfig(config);
         return;

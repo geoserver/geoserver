@@ -76,6 +76,7 @@ import org.geoserver.security.config.RoleFilterConfig;
 import org.geoserver.security.config.LogoutFilterConfig;
 import org.geoserver.security.config.PasswordPolicyConfig;
 import org.geoserver.security.config.RememberMeAuthenticationFilterConfig;
+import org.geoserver.security.config.SSLFilterConfig;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
 import org.geoserver.security.config.SecurityConfig;
 import org.geoserver.security.config.SecurityContextPersistenceFilterConfig;
@@ -97,6 +98,7 @@ import org.geoserver.security.filter.GeoServerExceptionTranslationFilter;
 import org.geoserver.security.filter.GeoServerLogoutFilter;
 import org.geoserver.security.filter.GeoServerRememberMeAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerRoleFilter;
+import org.geoserver.security.filter.GeoServerSSLFilter;
 import org.geoserver.security.filter.GeoServerSecurityContextPersistenceFilter;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
 import org.geoserver.security.filter.GeoServerSecurityInterceptorFilter;
@@ -1356,11 +1358,13 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      */
     public synchronized void saveSecurityConfig(SecurityManagerConfig config) throws Exception {
         
+        SecurityManagerConfig oldConfig = new SecurityManagerConfig(this.securityConfig);
+        
         SecurityConfigValidator validator = new SecurityConfigValidator(this);
-        validator.validateManagerConfig(config);
+        validator.validateManagerConfig(config,oldConfig);
         
         //save the current config to fall back to                
-        SecurityManagerConfig oldConfig = new SecurityManagerConfig(this.securityConfig);
+        
 
         // The whole try block should run as a transaction, unfortunately
         // this is not possible with files.
@@ -2208,6 +2212,13 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         rfConfig.setHttpResponseHeaderAttrForIncludedRoles(GeoServerRoleFilter.DEFAULT_HEADER_ATTRIBUTE);
         rfConfig.setRoleConverterName(GeoServerRoleFilter.DEFAULT_ROLE_CONVERTER);
         saveFilter(rfConfig);
+        
+        // add ssl filter
+        SSLFilterConfig sslConfig= new SSLFilterConfig();
+        sslConfig.setClassName(GeoServerSSLFilter.class.getName());
+        sslConfig.setName(GeoServerSecurityFilterChain.SSL_FILTER);
+        sslConfig.setSslPort(443);
+        saveFilter(sslConfig);
             
         // set redirect url after successful logout
         if (migratedFrom21== false)
@@ -2904,9 +2915,10 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
                     writer.addAttribute("name", requestChain.getName());
                 }
                 writer.addAttribute("class",requestChain.getClass().getName());
+                if (StringUtils.hasLength( requestChain.getRoleFilterName()))
+                    writer.addAttribute("roleFilterName",requestChain.getRoleFilterName());
+                
                 if (requestChain instanceof VariableFilterChain ) {
-                    if (StringUtils.hasLength( ((VariableFilterChain)requestChain).getRoleFilterName()))
-                        writer.addAttribute("roleFilterName",((VariableFilterChain)requestChain).getRoleFilterName());
                     if (StringUtils.hasLength( ((VariableFilterChain)requestChain).getInterceptorName()))
                         writer.addAttribute("interceptorName",((VariableFilterChain)requestChain).getInterceptorName());
 
@@ -2915,6 +2927,12 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
                 writer.addAttribute("path", sb.toString());
                 writer.addAttribute("disabled", Boolean.toString(requestChain.isDisabled()));
                 writer.addAttribute("allowSessionCreation", Boolean.toString(requestChain.isAllowSessionCreation()));
+                writer.addAttribute("ssl", Boolean.toString(requestChain.isRequireSSL()));
+                writer.addAttribute("matchHTTPMethod", Boolean.toString(requestChain.isMatchHTTPMethod()));
+                if (requestChain.getHttpMethods()!=null && requestChain.getHttpMethods().size()>0) {
+                    writer.addAttribute("httpMethods",
+                            StringUtils.collectionToCommaDelimitedString(requestChain.getHttpMethods()));
+                }
 
                 for (String filterName : requestChain.getFilterNames()) {
                     writer.startNode("filter");
@@ -2943,6 +2961,10 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
                 String disabledString = reader.getAttribute("disabled");
                 String allowSessionCreationString = reader.getAttribute("allowSessionCreation");
                 String interceptorName = reader.getAttribute("interceptorName");
+                String sslString=reader.getAttribute("ssl");
+                String matchHTTPMethodString=reader.getAttribute("matchHTTPMethod");
+                String httpMethodsString=reader.getAttribute("httpMethods");
+                
                 
                 
                 if (name == null) {
@@ -3017,10 +3039,23 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
                 }
                 if (StringUtils.hasLength(allowSessionCreationString)) {
                     requestChain.setAllowSessionCreation(Boolean.parseBoolean(allowSessionCreationString));
+                }                
+                if (StringUtils.hasLength(sslString)) {
+                    requestChain.setRequireSSL(Boolean.parseBoolean(sslString));
+                }
+                if (StringUtils.hasLength(matchHTTPMethodString)) {
+                    requestChain.setMatchHTTPMethod(Boolean.parseBoolean(matchHTTPMethodString));
+                }
+                if (StringUtils.hasLength(httpMethodsString)) {
+                    for (String method : httpMethodsString.split(",")) {
+                        requestChain.getHttpMethods().add(HTTPMethod.fromString(method));
+                    }
                 }
 
-                if (requestChain instanceof VariableFilterChain) {
-                    ((VariableFilterChain)requestChain).setRoleFilterName(roleFilterName);
+
+                requestChain.setRoleFilterName(roleFilterName);
+                
+                if (requestChain instanceof VariableFilterChain) {                    
                     ((VariableFilterChain)requestChain).setInterceptorName(interceptorName);
                 }
                 requestChain.setFilterNames(filterNames);

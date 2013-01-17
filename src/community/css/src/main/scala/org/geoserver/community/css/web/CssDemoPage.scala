@@ -102,8 +102,8 @@ class CssValidator extends IValidator[String] {
 class CssDemoPage(params: PageParameters) extends GeoServerSecuredPage
 with CssDemoConstants
 {
-  val datadir = new GeoServerDataDirectory(getCatalog().getResourceLoader())
-  val styledir = datadir.findStyleDir()
+  def datadir = new GeoServerDataDirectory(getCatalog().getResourceLoader())
+  def styledir = datadir.findStyleDir()
   override def Translator =
     new Translator(Option(styledir).map { _.toURI.toURL })
 

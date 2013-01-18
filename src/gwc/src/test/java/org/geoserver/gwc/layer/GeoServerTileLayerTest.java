@@ -65,6 +65,7 @@ import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.grid.OutsideCoverageException;
 import org.geowebcache.io.Resource;
 import org.geowebcache.layer.meta.LayerMetaInformation;
+import org.geowebcache.locks.MemoryLockProvider;
 import org.geowebcache.mime.MimeType;
 import org.geowebcache.storage.StorageBroker;
 import org.geowebcache.storage.TileObject;
@@ -105,6 +106,8 @@ public class GeoServerTileLayerTest {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void setUp() throws Exception {
         mockGWC = mock(GWC.class);
+        MemoryLockProvider lockProvider = new MemoryLockProvider();
+        when(mockGWC.getLockProvider()).thenReturn(lockProvider);
         GWC.set(mockGWC);
 
         final String layerInfoId = "mock-layer-info";

@@ -1144,3 +1144,23 @@ margin-bottom: 0px;
 margin: 0.2em; /* override blueprint's settings for unordered lists */
 list-style-type: none;
 }
+
+/*-------------
+  Customize Wicket's autocomplete
+  -------------*/
+
+div.wicket-aa {
+    background-color:white;
+    border:1px solid #CCCCCC;
+    color:black;
+}
+div.wicket-aa ul {
+   list-style-image:none;
+   list-style-position:outside;
+   list-style-type:none;
+   margin:0pt;
+   padding:5px;
+}
+div.wicket-aa ul li.selected {
+    background-color:#CCCCCC;
+}

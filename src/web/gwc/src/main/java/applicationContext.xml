@@ -71,4 +71,6 @@
     <property name="descriptionKey" value="LayerGroupCacheOptionsPanel.shortDescription"/>
     <property name="componentClass" value="org.geoserver.gwc.web.layer.LayerGroupCacheOptionsPanel"/>
   </bean>
+  
+  <bean id="diskQuotaWarningProvider" class="org.geoserver.gwc.web.diskquota.DiskQuotaWarningProvider"/>
 </beans>

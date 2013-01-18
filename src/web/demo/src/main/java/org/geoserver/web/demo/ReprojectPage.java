@@ -117,7 +117,8 @@ public class ReprojectPage extends GeoServerBasePage {
             protected void onSubmit(AjaxRequestTarget at, Form<?> form) {
                 Geometry source = sourceGeom.getModelObject();
                 if (source == null) {
-                    error("Source point is not specified");
+                    error(getLocalizer().getString("ReprojectPage.sourcePointNotSpecifiedError", 
+                            ReprojectPage.this, "Source point is not specified"));
                 } else {
                     MathTransform mt = getTransform();
                     if (mt != null) {
@@ -146,7 +147,8 @@ public class ReprojectPage extends GeoServerBasePage {
             protected void onSubmit(AjaxRequestTarget at, Form<?> form) {
                 Geometry target = targetGeom.getModelObject();
                 if (target == null) {
-                    error("Target point is not specified");
+                    error(getLocalizer().getString("ReprojectPage.targetPointNotSpecifiedError", 
+                            ReprojectPage.this, "Target point is not specified"));
                 } else {
                     MathTransform mt = getTransform();
                     if (mt != null) {

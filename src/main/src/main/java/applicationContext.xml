@@ -15,6 +15,9 @@
     <bean id="dataDirectory" class="org.geoserver.config.GeoServerDataDirectory">
        <constructor-arg ref="resourceLoader"/>
     </bean>
+    <bean id="manifestLoader" class="org.geoserver.ManifestLoader">
+       <constructor-arg ref="resourceLoader"/>
+    </bean>
     
     <!-- extensions -->
     <bean id="extensions" class="org.geoserver.platform.GeoServerExtensions"/>

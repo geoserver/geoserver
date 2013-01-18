@@ -32,7 +32,6 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.factory.GeoTools;
 import org.geotools.util.logging.Logging;
-import org.geowebcache.GeoWebCache;
 
 /**
  * @author cancellieri carlo - GeoSolutions SAS
@@ -256,7 +255,7 @@ public class ManifestLoader {
 
         try {
             // prepare the GeoWebCache metadata key
-            String path = GeoWebCache.class.getProtectionDomain().getCodeSource().getLocation()
+            String path = Class.forName("org.geowebcache.GeoWebCache").getProtectionDomain().getCodeSource().getLocation()
                     .toURI().toString();
             path = path + "!/META-INF/MANIFEST.MF";
 

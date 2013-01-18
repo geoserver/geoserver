@@ -60,6 +60,163 @@ A Http request uses a ``status code`` to relay the outcome of the request to the
 client. Different status codes are used for various purposes through out this 
 document. These codes are described in detail by the `http specification <http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html>`_.
 
+About
+-----
+
+GeoServer provide a rest service to expose a snapshot of all the loaded jars into the running instance.
+This will be extremely useful for bug reports and to programmatically keep track of the extensions deployed into the application.
+All the geoserver manifest jar's are marked with the property ''GeoServerModule'' and classified by type {core,extension,community}, so you can use filtering capabilities to search for a set of manifests using regular expression (see :ref:`manifest <about_manifest>`) or a type category (:ref:`key <about_key>`, :ref:`value <about_value>`).
+Use:
+http://localhost:8080/geoserver/rest/about/manifest.xml?key=GeoServerModule&value=extension
+To get all the GeoServer extensions.
+
+http://localhost:8080/geoserver/rest/about/manifest.xml?key=GeoServerModule&value=community
+To get all the GeoServer community.
+ 
+http://localhost:8080/geoserver/rest/about/manifest.xml?key=GeoServerModule&value=core
+To get all the GeoServer core.
+
+Operations
+^^^^^^^^^^
+
+``/about/manifest[.<format>]``
+
+.. list-table::
+   :header-rows: 1
+
+   * - Method
+     - Action
+     - Return Code
+     - Formats
+     - Default Format
+     - Parameters
+   * - GET
+     - List all manifests into the classpath
+     - 200
+     - HTML, XML, JSON
+     - HTML
+     - :ref:`manifest <about_manifest>`, :ref:`key <about_key>`, :ref:`value <about_value>`
+   * - POST
+     - 
+     - 405
+     - 
+     - 
+     -
+   * - PUT
+     - 
+     - 405
+     - 
+     -
+     -
+   * - DELETE
+     -
+     - 405
+     -
+     -
+     -
+
+*Representations*:
+
+NOTE: the following representation are only examples the real response may be different.
+
+- :download:`HTML <representations/manifest_html.txt>`
+- :download:`XML <representations/manifest_xml.txt>`
+- :download:`JSON <representations/manifest_json.txt>`
+
+The model is very simple and is shared between the version and the resource requests to parse both requests.
+
+.. code-block:: xml
+ :linenos:
+ 
+ <about>
+ 	<resource name="{NAME}">
+ 		<{KEY}>{VALUE}</{KEY}>
+ 		...
+ 	</resource>
+ 	...
+ </about>
+
+
+You can customize the results adding a properties file called ``manifest.properties`` into the datadir.
+Here is the default implementation which can be overridden by the one into the datadir.
+
+.. code-block:: xml
+ :linenos:
+
+ # group(1) defines the name attribute of of the resource
+ resourceNameRegex=.+/(.*).(jar|war)
+ # list of properties to exclude from the resource
+ resourceAttributeExclusions=Import-Package,Export-Package,Class-Path,Require-Bundle
+ # list of properties to include into the Version.
+ # [optionally] You can specify a replacement string for a property key:
+ # 	key:replace
+ versionAttributeInclusions=Project-Version:Version,Build-Timestamp,Git-Revision,Specification-Version:Version,Implementation-Version:Git-Revision
+
+
+Note that this configuration should be considered a plus, in most cases this file may not be created at all.
+
+``resourceNameRegex`` - the group number 1 will be used to match the name of the resource (Manifest).
+
+``resourceAttributeExclusions`` - is a comma separed black list can be used to exclude some too verbose parameters leaving the resource properties list open. So users can add their jars (with custom properties) having the complete list of properties.
+
+``versionAttributeInclusions`` - is a comma separed list of properties to include. It also supports renaming properties which is used to align the output of the 'versions' request to the output of the web page. The model uses a map to store attributes so the last attribute found into the manifest file will be used.
+
+.. _about_manifest:
+
+The ``manifest`` parameter is used to filter over resulting resource (manifest) names attribute using java regular expressions.
+
+.. _about_key:
+
+The ``key`` parameter is used to filter over resulting resource (manifest) properties name. It can be combined with the ``value`` parameter.
+
+.. _about_value:
+
+The ``value`` parameter is used to filter over resulting resource (manifest) properties value. It can be combined with the ``key`` parameter.
+
+
+``/about/version[.<format>]``
+
+.. list-table::
+   :header-rows: 1
+
+   * - Method
+     - Action
+     - Return Code
+     - Formats
+     - Default Format
+     - Parameters
+   * - GET
+     - List GeoServer, GeoWebCache and GeoTools manifests
+     - 200
+     - HTML, XML, JSON
+     - HTML
+     - :ref:`manifest <about_manifest>`, :ref:`key <about_key>`, :ref:`value <about_value>`
+   * - POST
+     - 
+     - 405
+     - 
+     - 
+     -
+   * - PUT
+     - 
+     - 405
+     - 
+     -
+     -
+   * - DELETE
+     -
+     - 405
+     -
+     -
+     -
+
+*Representations*:
+
+- :download:`HTML <representations/version_html.txt>`
+- :download:`XML <representations/version_xml.txt>`
+- :download:`JSON <representations/version_json.txt>`
+
+
 Global Settings
 ---------------
 

@@ -9,10 +9,10 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AbstractAutoCompleteTextRenderer;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteSettings;
+import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -46,7 +46,7 @@ public class JDBCConnectionPoolPanel extends Panel {
         TextField<String> user = new TextField<String>("jdbcUser", new PropertyModel<String>(model, "username"));
         add(user);
 
-        TextField<String> password = new TextField<String>("jdbcPassword", new PropertyModel<String>(model, "password"));
+        PasswordTextField password = new PasswordTextField("jdbcPassword", new PropertyModel<String>(model, "password"));
         add(password);
         
         TextField<Integer> minConnections = new TextField<Integer>("jdbcMinConnections", new PropertyModel<Integer>(model, "minConnections"));

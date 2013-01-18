@@ -19,8 +19,42 @@
     </property>
   </bean>
   
+  <!-- If you like to automatically configure GWC from a WMS Getcapabilities document,
+       change the values below. The last constructor-arg lets you specify parameters 
+       that are appended to every WMS request to the backed, for example: 
+       "format_options=regionate_by:auto&amp;bgcolor=0x112233" 
+       
+       You also need to uncomment gwcWMSConfig in the gwcTLDispatcher bean!
+       -->
+  <!--bean id="gwcWMSConfig" class="org.geowebcache.config.GetCapabilitiesConfiguration">
+  	<constructor-arg ref="gwcGridSetBroker">
+    </constructor-arg>
+    <constructor-arg value="http://demo.mapserver.org/cgi-bin/mapserv?map=/osgeo/mapserver/msautotest/world/world.map&amp;SERVICE=WMS&amp;VERSION=1.1.1&amp;REQUEST=GetCapabilities">
+      <description>The URL to the WMS GetCapabilities document, notice &amp; , port is normally 8080</description>
+    </constructor-arg>
+    <constructor-arg value="image/png">
+      <description>The formats to support for all layers read for the above document</description>
+    </constructor-arg>
+    <constructor-arg value="3x3">
+      <description>Metatiling factors, 3x3 is usually a good compromise for vector data</description>
+    </constructor-arg>
+    <constructor-arg value="map=/osgeo/mapserver/msautotest/world/world.map">
+      <description>
+          Vendor parameters, these are appended to every request sent to the backend.
+          If you use MapServer you probably want to set this to "map=name". Leave the value attribute empty if you don't need
+          to add any vendor specific parameter.
+      </description>
+    </constructor-arg>
+    <constructor-arg value="false">
+      <description>Whether to allow cached=false to specificed for certain requests</description>
+    </constructor-arg> 
+  </bean-->
+  
   <!-- For each configuration bean above, add them below to activate -->
-  <bean id="gwcTLDispatcher" class="org.geowebcache.layer.TileLayerDispatcher" depends-on="geoServer">
+  <bean id="gwcTLDispatcher" class="org.geowebcache.layer.TileLayerDispatcher">
+    <description>
+      TileLayerDispatcher serves up TileLayers from the available Configurations in the application context
+    </description>
     <constructor-arg ref="gwcGridSetBroker"/>
   </bean>
   
@@ -28,27 +62,6 @@
   	<constructor-arg ref="gwcAppCtx" />
   </bean>
 
-  <bean id="gwcMetaStore" class="org.geowebcache.storage.metastore.jdbc.JDBCMetaBackend" destroy-method="destroy">
-    <constructor-arg ref="gwcDefaultStorageFinder" />
-    <constructor-arg>
-      <description>Enable connection pooling?</description>
-      <value>TRUE</value>
-    </constructor-arg>
-    <constructor-arg>
-      <description>Max number of connections in the pool</description>
-      <value>150</value>
-    </constructor-arg>
-  </bean>
-  
-  <!-- Static definition of where to put the metastore. 
-       Note that the directory is AUTOMATICALLY CREATED if it does not exist. -->
-  <!-- bean id="gwcMetaStore" class="org.geowebcache.storage.metastore.jdbc.JDBCMetaBackend" destroy-method="destroy">
-    <constructor-arg value="org.h2.Driver" />
-    <constructor-arg value="jdbc:h2:file:/tmp/gwc_metastore/h2_metastore;TRACE_LEVEL_FILE=0" />
-    <constructor-arg value="username" />
-    <constructor-arg value="password" />
-  </bean -->
-  
   <bean id="gwcBlobStore" class="org.geowebcache.storage.blobstore.file.FileBlobStore" destroy-method="destroy">
     <constructor-arg ref="gwcDefaultStorageFinder" />
   </bean>
@@ -59,10 +72,8 @@
     <constructor-arg value="/tmp/gwc_blobstore" />
   </bean -->
   
-  <bean id="gwcStorageBroker" class="org.geowebcache.storage.StorageBroker" destroy-method="destroy">
-    <constructor-arg ref="gwcMetaStore" />
+  <bean id="gwcStorageBroker" class="org.geowebcache.storage.DefaultStorageBroker" destroy-method="destroy">
     <constructor-arg ref="gwcBlobStore" />
-    <property name="verifyFileSize" value="TRUE"/>
   </bean>
   
   
@@ -133,7 +144,20 @@
 
   <bean id="gwcProxyDispatcher"
 	class="org.geowebcache.proxy.ProxyDispatcher"/>
+  
+  <!-- Lock providers -->
+  <bean id="noLock" class="org.geowebcache.locks.NoOpLockProvider"/>
 
   <bean id="gwcURLMangler" class="org.geoserver.gwc.ResponseUtilsURLMangler" />
 
+  <bean id="memoryLock" class="org.geowebcache.locks.MemoryLockProvider"/>
+  
+  <bean id="nioLock" class="org.geowebcache.locks.NIOLockProvider">
+    <constructor-arg ref="gwcDefaultStorageFinder"/>
+  </bean>
+
+  <!-- The tool performing the automatic migration between metastore and fs hashes -->
+  <bean id="metastoreRemover" class="org.geowebcache.storage.MetastoreRemover">
+    <constructor-arg ref="gwcDefaultStorageFinder"/>
+  </bean>
 </beans>

@@ -21,10 +21,10 @@
     <constructor-arg ref="gwcTLDispatcher" />
     <constructor-arg ref="gwcGridSetBroker" />
     <constructor-arg ref="gwcTileBreeder" />
-    <constructor-arg ref="DiskQuotaStore" />
     <constructor-arg ref="DiskQuotaMonitor" />
     <constructor-arg ref="dispatcher" />
     <constructor-arg ref="catalog" />
+    <constructor-arg ref="gwcDefaultStorageFinder"/>
   </bean>
 
   <bean id="gwcWMSExtendedCapabilitiesProvider" class="org.geoserver.gwc.wms.CachingExtendedCapabilitiesProvider">

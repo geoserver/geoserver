@@ -77,7 +77,7 @@
     </dependency>
     <dependency>
       <groupId>org.geowebcache</groupId>
-      <artifactId>gwc-diskquota</artifactId>
+      <artifactId>gwc-diskquota-jdbc</artifactId>
     </dependency>
 
     <!-- test dependencies -->

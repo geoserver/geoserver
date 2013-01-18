@@ -4,10 +4,9 @@
  */
 package org.geoserver.gwc.layer;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
-import static com.google.common.base.Throwables.propagate;
-import static org.geoserver.gwc.GWC.tileLayerName;
+import static com.google.common.base.Preconditions.*;
+import static com.google.common.base.Throwables.*;
+import static org.geoserver.gwc.GWC.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,7 +38,6 @@ import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.RenderedImageMap;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.geotools.util.CanonicalSet;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.config.ConfigurationException;
@@ -55,7 +53,6 @@ import org.geowebcache.grid.GridSubset;
 import org.geowebcache.grid.OutsideCoverageException;
 import org.geowebcache.grid.SRS;
 import org.geowebcache.io.Resource;
-import org.geowebcache.layer.GridLocObj;
 import org.geowebcache.layer.LayerListenerList;
 import org.geowebcache.layer.MetaTile;
 import org.geowebcache.layer.TileLayer;
@@ -63,6 +60,8 @@ import org.geowebcache.layer.TileLayerListener;
 import org.geowebcache.layer.meta.ContactInformation;
 import org.geowebcache.layer.meta.LayerMetaInformation;
 import org.geowebcache.layer.updatesource.UpdateSourceDefinition;
+import org.geowebcache.locks.LockProvider;
+import org.geowebcache.locks.LockProvider.Lock;
 import org.geowebcache.mime.FormatModifier;
 import org.geowebcache.mime.MimeException;
 import org.geowebcache.mime.MimeType;
@@ -94,7 +93,7 @@ public class GeoServerTileLayer extends TileLayer {
     private static LayerListenerList listeners = new LayerListenerList();
 
     private final GridSetBroker gridSetBroker;
-
+    
     public GeoServerTileLayer(final LayerGroupInfo layerGroup, final GWCConfig configDefaults,
             final GridSetBroker gridsets) {
         checkNotNull(layerGroup, "layerGroup");
@@ -142,7 +141,7 @@ public class GeoServerTileLayer extends TileLayer {
         this.layerGroupInfo = null;
         this.info = state;
     }
-
+    
     @Override
     public String getId() {
         return info.getId();
@@ -467,9 +466,6 @@ public class GeoServerTileLayer extends TileLayer {
         }
     }
 
-    private static final CanonicalSet<GridLocObj> META_GRID_LOCKS = CanonicalSet
-            .newInstance(GridLocObj.class);
-
     private ConveyorTile getMetatilingReponse(ConveyorTile tile, final boolean tryCache,
             final int metaX, final int metaY) throws GeoWebCacheException, IOException {
 
@@ -482,9 +478,10 @@ public class GeoServerTileLayer extends TileLayer {
         }
 
         final GeoServerMetaTile metaTile = createMetaTile(tile, metaX, metaY);
-        final GridLocObj metaGridLoc;
-        metaGridLoc = META_GRID_LOCKS.unique(new GridLocObj(metaTile.getMetaGridPos(), 32));
-        synchronized (metaGridLoc) {
+        Lock lock = null;
+        try {
+            /** ****************** Acquire lock ******************* */
+            lock = GWC.get().getLockProvider().getLock(buildLockKey(tile, metaTile));
             // got the lock on the meta tile, try again
             if (tryCache && tryCacheFetch(tile)) {
                 LOGGER.finest("--> " + Thread.currentThread().getName() + " returns cache hit for "
@@ -495,20 +492,51 @@ public class GeoServerTileLayer extends TileLayer {
                         + Arrays.toString(metaTile.getMetaGridPos()) + " on " + metaTile);
                 RenderedImageMap map;
                 try {
+                    long requestTime = System.currentTimeMillis();
                     map = dispatchGetMap(tile, metaTile);
                     checkNotNull(map, "Did not obtain a WebMap from GeoServer's Dispatcher");
                     metaTile.setWebMap(map);
-                    saveTiles(metaTile, tile);
+                    saveTiles(metaTile, tile, requestTime);
                 } catch (Exception e) {
                     throw new GeoWebCacheException("Problem communicating with GeoServer", e);
-                } finally {
-                    META_GRID_LOCKS.remove(metaGridLoc);
-                    metaTile.dispose();
-                }
+                } 
             }
+            /** ****************** Return lock and response ****** */
+        } finally {
+            if(lock != null) {
+                lock.release();
+            }
+            metaTile.dispose();
         }
 
+
         return finalizeTile(tile);
+    }
+    
+    private String buildLockKey(ConveyorTile tile, GeoServerMetaTile metaTile) {
+        StringBuilder metaKey = new StringBuilder();
+        
+        final long[] tileIndex;
+        if(metaTile != null) {
+            tileIndex = metaTile.getMetaGridPos();
+            metaKey.append("gsmeta_");
+        } else {
+            tileIndex = tile.getTileIndex();
+            metaKey.append("tile_");
+        }
+        long x = tileIndex[0];
+        long y = tileIndex[1];
+        long z = tileIndex[2];
+
+        metaKey.append(tile.getLayerId());
+        metaKey.append("_").append(tile.getGridSetId());
+        metaKey.append("_").append(x).append("_").append(y).append("_").append(z);
+        if(tile.getParametersId() != null) {
+            metaKey.append("_").append(tile.getParametersId());
+        }            
+        metaKey.append(".").append(tile.getMimeType().getFileExtension());
+
+        return metaKey.toString();
     }
 
     private RenderedImageMap dispatchGetMap(final ConveyorTile tile, final MetaTile metaTile)
@@ -660,16 +688,6 @@ public class GeoServerTileLayer extends TileLayer {
             metaX = metaY = 1;
         }
         getMetatilingReponse(tile, tryCache, metaX, metaY);
-    }
-
-    @Override
-    public void acquireLayerLock() {
-        // throw new UnsupportedOperationException("not implemented yet");
-    }
-
-    @Override
-    public void releaseLayerLock() {
-        // throw new UnsupportedOperationException("not implemented yet");
     }
 
     /**

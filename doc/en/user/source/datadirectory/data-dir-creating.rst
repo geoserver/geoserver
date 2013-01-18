@@ -9,7 +9,7 @@ If GeoServer is running in **Standalone** mode the data directory is located at 
 
 .. note::
 
-   On Windows systems the ``<installation root>`` is located at ``C:\Program Files\GeoServer 1.7.0``. 
+   On Windows systems the ``<installation root>`` is located at ``C:\Program Files\GeoServer <VERSION>``. 
 
 If GeoServer is running in **Web Archive** mode inside of a servlet container, the data directory is located at ``<web application root>/data``. 
 

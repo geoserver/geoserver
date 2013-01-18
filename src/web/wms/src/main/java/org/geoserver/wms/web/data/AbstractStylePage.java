@@ -4,19 +4,18 @@
  */
 package org.geoserver.wms.web.data;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
+import java.net.URLConnection;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
+import javax.imageio.ImageIO;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.wicket.Component;
@@ -24,17 +23,11 @@ import org.apache.wicket.Session;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.IAjaxCallDecorator;
-import org.apache.wicket.ajax.calldecorator.AjaxCallDecorator;
 import org.apache.wicket.ajax.calldecorator.AjaxPreprocessingCallDecorator;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.FormComponentPanel;
-import org.apache.wicket.markup.html.form.IFormSubmittingComponent;
-import org.apache.wicket.markup.html.form.ListMultipleChoice;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
@@ -44,8 +37,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.lang.Bytes;
-import org.geoserver.catalog.Keyword;
-import org.geoserver.catalog.KeywordInfo;
+import org.apache.wicket.validation.validator.NumberValidator;
+import org.apache.wicket.validation.validator.UrlValidator;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
@@ -58,15 +51,9 @@ import org.geoserver.web.data.workspace.WorkspaceChoiceRenderer;
 import org.geoserver.web.data.workspace.WorkspacesModel;
 import org.geoserver.web.wicket.CodeMirrorEditor;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
-import org.geoserver.web.wicket.LiveCollectionModel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.wms.web.publish.StyleChoiceRenderer;
 import org.geoserver.wms.web.publish.StylesModel;
-import org.geotools.renderer.lite.gridcoverage2d.StyleVisitorAdapter;
-import org.geotools.styling.ExternalGraphic;
-import org.geotools.styling.StyledLayerDescriptor;
-import org.geotools.styling.visitor.DuplicatingStyleVisitor;
-import org.opengis.metadata.citation.OnLineResource;
 import org.xml.sax.SAXParseException;
 
 /**
@@ -99,9 +86,14 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
     }
 
     protected void initUI(StyleInfo style) {
-        IModel<StyleInfo> styleModel = new CompoundPropertyModel(style != null ? 
+        CompoundPropertyModel<StyleInfo> styleModel = new CompoundPropertyModel(style != null ? 
             new StyleDetachableModel(style) : getCatalog().getFactory().createStyle());
         
+        // Make sure the legend object isn't null
+        if (null == styleModel.getObject().getLegend()) {
+            styleModel.getObject().setLegend(getCatalog().getFactory().createLegend());
+        }
+
         styleForm = new Form("form", styleModel) {
             @Override
             protected void onSubmit() {
@@ -130,6 +122,49 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         editor.setOutputMarkupId(true);
         editor.setRequired(true);
         styleForm.add(editor);
+
+        // add the Legend fields
+        final TextField onlineResource = new TextField("onlineResource", styleModel.bind("legend.onlineResource"));
+        onlineResource.add(new UrlValidator());
+        onlineResource.setOutputMarkupId(true);
+        styleForm.add(onlineResource);
+
+        final TextField format = new TextField("format", styleModel.bind("legend.format"));
+        format.setOutputMarkupId(true);
+        styleForm.add(format);
+
+        final TextField width = new TextField("width", styleModel.bind("legend.width"), Integer.class);
+        width.add(NumberValidator.minimum(0));
+        width.setOutputMarkupId(true);
+        styleForm.add(width);
+
+        final TextField height = new TextField("height", styleModel.bind("legend.height"), Integer.class);
+        height.add(NumberValidator.minimum(0));
+        height.setOutputMarkupId(true);
+        styleForm.add(height);
+
+        // add the verify legend image button
+        styleForm.add(new GeoServerAjaxFormLink("verifyImage", styleForm) {
+            @Override
+            public void onClick(AjaxRequestTarget target, Form form) {
+                onlineResource.processInput();
+                if (onlineResource.getModelObject() != null) {
+                    try {
+                        URL url = new URL(onlineResource.getModelObject().toString());
+                        URLConnection conn = url.openConnection();
+                        format.setModelValue(conn.getContentType());
+                        BufferedImage image = ImageIO.read(conn.getInputStream());
+                        width.setModelValue("" + image.getWidth());
+                        height.setModelValue("" + image.getHeight());
+                    } catch (Exception e) {
+                    }
+                }
+
+                target.addComponent(format);
+                target.addComponent(width);
+                target.addComponent(height);
+            }
+        });
 
         if (style != null) {
             try {

@@ -49,6 +49,13 @@ public class StyleNewPage extends AbstractStylePage {
         Catalog catalog = getCatalog();
         StyleInfo s = (StyleInfo) styleForm.getModelObject();
 
+        // make sure the legend is null if there is no URL
+        if (null == s.getLegend()
+                || null == s.getLegend().getOnlineResource()
+                || s.getLegend().getOnlineResource().isEmpty()) {
+            s.setLegend(null);
+        }
+
         // write out the SLD before creating the style
         try {
             if (s.getFilename() == null) {

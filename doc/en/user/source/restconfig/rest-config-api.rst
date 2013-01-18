@@ -60,13 +60,6 @@ A Http request uses a ``status code`` to relay the outcome of the request to the
 client. Different status codes are used for various purposes through out this 
 document. These codes are described in detail by the `http specification <http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html>`_.
 
-Status codes
-------------
-
-A Http request uses a ``status code`` to relay the outcome of the request to the
-client. Different status codes are used for various purposes through out this 
-document. These codes are described in detail by the `http specification <http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html>`_.
-
 About
 -----
 

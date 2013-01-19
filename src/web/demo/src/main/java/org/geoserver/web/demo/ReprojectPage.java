@@ -118,7 +118,7 @@ public class ReprojectPage extends GeoServerBasePage {
                 Geometry source = sourceGeom.getModelObject();
                 if (source == null) {
                     error(getLocalizer().getString("ReprojectPage.sourcePointNotSpecifiedError", 
-                            ReprojectPage.this, "Source point is not specified"));
+                            ReprojectPage.this, "Source Geometry is not specified"));
                 } else {
                     MathTransform mt = getTransform();
                     if (mt != null) {
@@ -148,7 +148,7 @@ public class ReprojectPage extends GeoServerBasePage {
                 Geometry target = targetGeom.getModelObject();
                 if (target == null) {
                     error(getLocalizer().getString("ReprojectPage.targetPointNotSpecifiedError", 
-                            ReprojectPage.this, "Target point is not specified"));
+                            ReprojectPage.this, "Target Geometry is not specified"));
                 } else {
                     MathTransform mt = getTransform();
                     if (mt != null) {

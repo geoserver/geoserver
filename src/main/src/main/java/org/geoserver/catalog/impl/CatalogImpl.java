@@ -4,17 +4,13 @@
  */
 package org.geoserver.catalog.impl;
 
-import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -32,11 +28,12 @@ import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.KeywordInfo;
+import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MapInfo;
-import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StoreInfo;
@@ -55,7 +52,6 @@ import org.geoserver.catalog.event.impl.CatalogModifyEventImpl;
 import org.geoserver.catalog.event.impl.CatalogPostModifyEventImpl;
 import org.geoserver.catalog.event.impl.CatalogRemoveEventImpl;
 import org.geoserver.catalog.util.CloseableIterator;
-import org.geoserver.ows.util.ClassProperties;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -762,7 +758,7 @@ public class CatalogImpl implements Catalog {
         resolve(layerGroup);
         
         if ( layerGroup.getStyles().isEmpty() ) {
-            for ( LayerInfo l : layerGroup.getLayers() ) {
+            for ( PublishedInfo l : layerGroup.getLayers() ) {
                 // default style
                 layerGroup.getStyles().add(null);
             }
@@ -792,7 +788,6 @@ public class CatalogImpl implements Catalog {
             }
         }
 
-        
         if ( layerGroup.getLayers() == null || layerGroup.getLayers().isEmpty() ) {
             throw new IllegalArgumentException( "Layer group must not be empty");
         }
@@ -802,23 +797,16 @@ public class CatalogImpl implements Catalog {
             throw new IllegalArgumentException( "Layer group has different number of styles than layers");
         }
 
-        //if the layer group has a workspace assigned, ensure that every resource in that layer
+        LayerGroupHelper helper = new LayerGroupHelper(layerGroup);
+        Stack<LayerGroupInfo> loopPath = helper.checkLoops();
+        if (loopPath != null) {
+            throw new IllegalArgumentException( "Layer group is in a loop: " + helper.getLoopAsString(loopPath));
+        }
+        
+        // if the layer group has a workspace assigned, ensure that every resource in that layer
         // group lives within the same workspace
         if (ws != null) {
-            List<LayerInfo> layers = layerGroup.getLayers();
-            if (layerGroup.getRootLayer() != null) {
-                layers = new ArrayList<LayerInfo>(layers);
-                layers.add(layerGroup.getRootLayer());
-            }
-            
-            for (LayerInfo l : layers) {
-                ResourceInfo r = l.getResource();
-                if (!ws.equals(r.getStore().getWorkspace())) {
-                    throw new IllegalArgumentException("Layer group within a workspace (" + 
-                        ws.getName() + ") can not contain resoures from other workspace: " + 
-                        r.getStore().getWorkspace().getName());
-                }                
-            }
+            checkLayerGroupResourceIsInWorkspace(layerGroup, ws);
         }
         
         if (layerGroup.getMode() == null) {
@@ -842,7 +830,55 @@ public class CatalogImpl implements Catalog {
         }
         
         return postValidate(layerGroup, isNew);
-   }
+    }
+    
+    private void checkLayerGroupResourceIsInWorkspace(LayerGroupInfo layerGroup, WorkspaceInfo ws) {
+        if (layerGroup == null) return;
+        
+        if (layerGroup.getWorkspace() != null && !ws.equals(layerGroup.getWorkspace())) {
+            throw new IllegalArgumentException("Layer group within a workspace (" + 
+                ws.getName() + ") can not contain resources from other workspace: " + 
+                layerGroup.getWorkspace().getName());
+        }
+        
+        checkLayerGroupResourceIsInWorkspace(layerGroup.getRootLayer(), ws);
+        checkLayerGroupResourceIsInWorkspace(layerGroup.getRootLayerStyle(), ws);
+        
+        for (PublishedInfo p : layerGroup.getLayers()) {
+            if (p instanceof LayerGroupInfo) {
+                checkLayerGroupResourceIsInWorkspace((LayerGroupInfo) p, ws);
+            } else {
+                checkLayerGroupResourceIsInWorkspace((LayerInfo) p, ws);                
+            }
+        }
+        
+        if (layerGroup.getStyles() != null) {
+            for (StyleInfo s : layerGroup.getStyles()) {
+                checkLayerGroupResourceIsInWorkspace(s, ws);
+            }
+        }
+    }
+
+    private void checkLayerGroupResourceIsInWorkspace(StyleInfo style, WorkspaceInfo ws) {
+        if (style == null) return;
+        
+        if (style.getWorkspace() != null && !ws.equals(style.getWorkspace())) {
+            throw new IllegalArgumentException("Layer group within a workspace (" + 
+                ws.getName() + ") can not contain styles from other workspace: " + 
+                style.getWorkspace());
+        }
+    }    
+    
+    private void checkLayerGroupResourceIsInWorkspace(LayerInfo layer, WorkspaceInfo ws) {
+        if (layer == null) return;
+        
+        ResourceInfo r = layer.getResource();
+        if (r.getStore().getWorkspace() != null && !ws.equals(r.getStore().getWorkspace())) {
+            throw new IllegalArgumentException("Layer group within a workspace (" + 
+                ws.getName() + ") can not contain resources from other workspace: " + 
+                r.getStore().getWorkspace().getName());
+        }
+    }
     
     public void remove(LayerGroupInfo layerGroup) {
         facade.remove(layerGroup);

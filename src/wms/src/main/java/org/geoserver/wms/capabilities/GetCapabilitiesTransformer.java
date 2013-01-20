@@ -4,10 +4,7 @@
  */
 package org.geoserver.wms.capabilities;
 
-import static org.geoserver.ows.util.ResponseUtils.appendQueryString;
-import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
-import static org.geoserver.ows.util.ResponseUtils.buildURL;
-import static org.geoserver.ows.util.ResponseUtils.params;
+import static org.geoserver.ows.util.ResponseUtils.*;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -43,6 +40,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LayerInfo.Type;
 import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
@@ -77,6 +75,7 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
+import com.google.common.collect.Iterables;
 import com.vividsolutions.jts.geom.Envelope;
 
 /**
@@ -937,6 +936,96 @@ public class GetCapabilitiesTransformer extends TransformerBase {
            return srs;
         }
 
+       protected void handleLayerGroup(LayerGroupInfo layerGroup, Set<LayerInfo> layersAlreadyProcessed) throws TransformException, FactoryException {
+           //String layerName = layerGroup.getName();
+           String layerName = layerGroup.prefixedName();
+
+           AttributesImpl qatts = new AttributesImpl();
+           boolean queryable = wmsConfig.isQueryable(layerGroup);
+           qatts.addAttribute("", "queryable", "queryable", "", queryable? "1" : "0");
+           // qatts.addAttribute("", "opaque", "opaque", "", "1");
+           // qatts.addAttribute("", "cascaded", "cascaded", "", "1");
+           start("Layer", qatts);
+           
+           if (!LayerGroupInfo.Mode.CONTAINER.equals(layerGroup.getMode())) {
+               element("Name", layerName);
+           }                
+           
+           if (StringUtils.isEmpty(layerGroup.getTitle())) {
+               element("Title", layerName);                    
+           } else {
+               element("Title", layerGroup.getTitle());
+           }
+
+           if (StringUtils.isEmpty(layerGroup.getAbstract())) {
+               element("Abstract", "Layer-Group type layer: " + layerName);
+           } else {
+               element("Abstract", layerGroup.getAbstract());
+           }                
+
+           final ReferencedEnvelope layerGroupBounds = layerGroup.getBounds();
+           final ReferencedEnvelope latLonBounds = layerGroupBounds.transform(
+                   DefaultGeographicCRS.WGS84, true);
+
+           String authority = layerGroupBounds.getCoordinateReferenceSystem().getIdentifiers()
+                   .toArray()[0].toString();
+
+           element("SRS", authority);
+
+           handleLatLonBBox(latLonBounds);
+           handleBBox(layerGroupBounds, authority);
+
+           if (LayerGroupInfo.Mode.EO.equals(layerGroup.getMode())) {
+               LayerInfo rootLayer = layerGroup.getRootLayer();
+               
+               // handle dimensions
+               if (rootLayer.getType() == Type.VECTOR) {
+                   dimensionHelper.handleVectorLayerDimensions(rootLayer);
+               } else if (rootLayer.getType() == Type.RASTER) {
+                   dimensionHelper.handleRasterLayerDimensions(rootLayer);
+               }
+               
+               layersAlreadyProcessed.add(layerGroup.getRootLayer());
+           }
+           
+           // handle AuthorityURL
+           handleAuthorityURL(layerGroup.getAuthorityURLs());
+           
+           // handle identifiers
+           handleLayerIdentifiers(layerGroup.getIdentifiers());
+
+           // Aggregated metadata links (see GEOS-4500)
+           Set<MetadataLinkInfo> aggregatedLinks = new HashSet<MetadataLinkInfo>();
+           for (LayerInfo layer : Iterables.filter(layerGroup.getLayers(), LayerInfo.class)) {
+               List<MetadataLinkInfo> metadataLinks = layer.getResource().getMetadataLinks();
+               if (metadataLinks != null) {
+                   aggregatedLinks.addAll(metadataLinks);
+               }
+           }
+           handleMetadataList(aggregatedLinks);
+
+           // handle children layers and groups
+           if (!LayerGroupInfo.Mode.SINGLE.equals(layerGroup.getMode())) {
+               for (PublishedInfo child : layerGroup.getLayers()) {
+                   if (child instanceof LayerInfo) {
+                       LayerInfo layer = (LayerInfo) child;
+                       if (isExposable(layer)) {
+                           handleLayer((LayerInfo) child);
+                           layersAlreadyProcessed.add((LayerInfo) child);
+                       }
+                   } else {
+                       handleLayerGroup((LayerGroupInfo) child, layersAlreadyProcessed);
+                   }
+               }
+           }           
+           
+           // the layer style is not provided since the group does just have
+           // one possibility, the lack of styles that will make it use
+           // the default ones for each layer
+
+           end("Layer");
+       }
+       
         protected Set<LayerInfo> handleLayerGroups(List<LayerGroupInfo> layerGroups) throws FactoryException,
                 TransformException {
             Set<LayerInfo> layersAlreadyProcessed = new HashSet<LayerInfo>();
@@ -944,97 +1033,34 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             if (layerGroups == null || layerGroups.size() == 0) {
                 return layersAlreadyProcessed;
             }
+            
+            List<LayerGroupInfo> topLevelGropus = filterNestedGroups(layerGroups);
 
-            Collections.sort(layerGroups, new Comparator<LayerGroupInfo>() {
-                public int compare(LayerGroupInfo o1, LayerGroupInfo o2) {
-                    return o1.getName().compareTo(o2.getName());
-                }
-            });
-
-            for (LayerGroupInfo layerGroup : layerGroups) {
-                //String layerName = layerGroup.getName();
-                String layerName = layerGroup.prefixedName();
-
-                AttributesImpl qatts = new AttributesImpl();
-                boolean queryable = wmsConfig.isQueryable(layerGroup);
-                qatts.addAttribute("", "queryable", "queryable", "", queryable? "1" : "0");
-                // qatts.addAttribute("", "opaque", "opaque", "", "1");
-                // qatts.addAttribute("", "cascaded", "cascaded", "", "1");
-                start("Layer", qatts);
-                
-                if (!LayerGroupInfo.Mode.CONTAINER.equals(layerGroup.getMode())) {
-                    element("Name", layerName);
-                }                
-                
-                if (StringUtils.isEmpty(layerGroup.getTitle())) {
-                    element("Title", layerName);                    
-                } else {
-                    element("Title", layerGroup.getTitle());
-                }
-
-                if (StringUtils.isEmpty(layerGroup.getAbstract())) {
-                    element("Abstract", "Layer-Group type layer: " + layerName);
-                } else {
-                    element("Abstract", layerGroup.getAbstract());
-                }                
-
-                final ReferencedEnvelope layerGroupBounds = layerGroup.getBounds();
-                final ReferencedEnvelope latLonBounds = layerGroupBounds.transform(
-                        DefaultGeographicCRS.WGS84, true);
-
-                String authority = layerGroupBounds.getCoordinateReferenceSystem().getIdentifiers()
-                        .toArray()[0].toString();
-
-                element("SRS", authority);
-
-                handleLatLonBBox(latLonBounds);
-                handleBBox(layerGroupBounds, authority);
-
-                if (LayerGroupInfo.Mode.EO.equals(layerGroup.getMode())) {
-                    LayerInfo rootLayer = layerGroup.getRootLayer();
-                    
-                    // handle dimensions
-                    if (rootLayer.getType() == Type.VECTOR) {
-                        dimensionHelper.handleVectorLayerDimensions(rootLayer);
-                    } else if (rootLayer.getType() == Type.RASTER) {
-                        dimensionHelper.handleRasterLayerDimensions(rootLayer);
-                    }
-                    
-                    layersAlreadyProcessed.add(layerGroup.getRootLayer());
-                }
-                
-                // handle AuthorityURL
-                handleAuthorityURL(layerGroup.getAuthorityURLs());
-                
-                // handle identifiers
-                handleLayerIdentifiers(layerGroup.getIdentifiers());
-
-                // Aggregated metadata links (see GEOS-4500)
-                List<LayerInfo> layers = layerGroup.getLayers();
-                Set<MetadataLinkInfo> aggregatedLinks = new HashSet<MetadataLinkInfo>();
-                for (LayerInfo layer : layers) {
-                    List<MetadataLinkInfo> metadataLinks = layer.getResource().getMetadataLinks();
-                    if (metadataLinks != null) {
-                        aggregatedLinks.addAll(metadataLinks);
-                    }
-                }
-                handleMetadataList(aggregatedLinks);
-
-                if (!LayerGroupInfo.Mode.SINGLE.equals(layerGroup.getMode())) {
-                    for (LayerInfo layer : layers) {
-                        handleLayer(layer);
-                        layersAlreadyProcessed.add(layer);
-                    }
-                }
-                
-                // the layer style is not provided since the group does just have
-                // one possibility, the lack of styles that will make it use
-                // the default ones for each layer
-
-                end("Layer");
+            for (LayerGroupInfo layerGroup : topLevelGropus) {
+                handleLayerGroup(layerGroup, layersAlreadyProcessed);
             }
             
             return layersAlreadyProcessed;
+        }
+
+        /**
+         * Returns a list of top level groups, that is, the ones that are not nested within
+         * other layer groups
+         * 
+         * @param allGroups
+         * @return
+         */
+        private List<LayerGroupInfo> filterNestedGroups(List<LayerGroupInfo> allGroups) {
+            LinkedHashSet<LayerGroupInfo> result = new LinkedHashSet<LayerGroupInfo>(allGroups);
+            for (LayerGroupInfo group : allGroups) {
+                for(PublishedInfo pi : group.getLayers()) {
+                    if(pi instanceof LayerGroupInfo) {
+                        result.remove(pi);
+                    }
+                }
+            }
+            
+            return new ArrayList<LayerGroupInfo>(result);
         }
 
         protected void handleAttribution(LayerInfo layer) {

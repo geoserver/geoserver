@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.ows.xml.v1_0.OWS;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapRequest;

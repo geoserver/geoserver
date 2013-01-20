@@ -381,6 +381,56 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
         }
     }
     
+    abstract static class LayerGroupListPanel extends GeoServerTablePanel<LayerGroupInfo> {
+        static Property<LayerGroupInfo> NAME = 
+            new BeanProperty<LayerGroupInfo>("name", "name");
+        
+        static Property<LayerGroupInfo> WORKSPACE = 
+            new BeanProperty<LayerGroupInfo>("workspace", "workspace.name");
+        
+        LayerGroupListPanel( String id ) {
+            super( id, new GeoServerDataProvider<LayerGroupInfo>() {
+
+                @Override
+                protected List<LayerGroupInfo> getItems() {
+                    return getCatalog().getLayerGroups();
+                }
+
+                @Override
+                protected List<Property<LayerGroupInfo>> getProperties() {
+                    return Arrays.asList( NAME, WORKSPACE );
+                }
+
+                public IModel newModel(Object object) {
+                    return new LayerGroupDetachableModel((LayerGroupInfo)object);
+                }
+
+            });
+            getTopPager().setVisible(false);
+        }
+        
+        @Override
+        protected Component getComponentForProperty(String id, final IModel itemModel,
+                Property<LayerGroupInfo> property) {
+            IModel model = property.getModel( itemModel );
+            if ( NAME == property ) {
+                return new SimpleAjaxLink( id, model ) {
+                    @Override
+                    protected void onClick(AjaxRequestTarget target) {
+                        LayerGroupInfo layerGroup = (LayerGroupInfo) itemModel.getObject();
+                        handleLayerGroup( layerGroup, target );
+                    }
+                };
+            }
+            else {
+                return new Label( id, model );
+            }
+        }
+        
+        protected void handleLayerGroup( LayerGroupInfo layerGroup, AjaxRequestTarget target ) {
+        }
+    }    
+    
     class GroupNameValidator extends AbstractValidator {
 
         @Override

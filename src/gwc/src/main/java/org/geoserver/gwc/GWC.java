@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,6 +33,7 @@ import javax.xml.XMLConstants;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -1496,14 +1498,13 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         List<LayerGroupInfo> layerGroups = new ArrayList<LayerGroupInfo>();
 
         for (LayerGroupInfo layerGroup : getLayerGroups()) {
+            LayerGroupHelper helper = new LayerGroupHelper(layerGroup);
+            final Iterator<LayerInfo> groupLayers = helper.allLayers().iterator();
+            final Iterator<StyleInfo> explicitLayerGroupStyles = helper.allStyles().iterator();
 
-            final List<StyleInfo> explicitLayerGroupStyles = layerGroup.styles();
-            final List<LayerInfo> groupLayers = layerGroup.layers();
-
-            for (int layerN = 0; layerN < groupLayers.size(); layerN++) {
-
-                LayerInfo childLayer = groupLayers.get(layerN);
-                StyleInfo assignedLayerStyle = explicitLayerGroupStyles.get(layerN);
+            while (groupLayers.hasNext()) {
+                LayerInfo childLayer = groupLayers.next();
+                StyleInfo assignedLayerStyle = explicitLayerGroupStyles.next();
                 if (assignedLayerStyle == null) {
                     assignedLayerStyle = childLayer.getDefaultStyle();
                 }
@@ -1511,7 +1512,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
                 if (style.equals(assignedLayerStyle)) {
                     layerGroups.add(layerGroup);
                     break;
-                }
+                }                
             }
         }
         return layerGroups;

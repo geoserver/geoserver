@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 TOPP - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -17,6 +17,7 @@ import javax.measure.unit.Unit;
 import javax.media.jai.PlanarImage;
 
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
+import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.catalog.impl.ResourceInfoImpl;
 import org.geoserver.catalog.impl.StoreInfoImpl;
@@ -60,7 +61,6 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.crs.GeographicCRS;
 import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
 
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
@@ -1315,85 +1315,16 @@ public class CatalogBuilder {
      */
     public void calculateLayerGroupBounds(LayerGroupInfo layerGroup, CoordinateReferenceSystem crs)
             throws Exception {
-        List<LayerInfo> layers = layerGroup.getLayers();
-        if (layerGroup.getRootLayer() != null) {
-            layers = new ArrayList<LayerInfo>(layers);
-            layers.add(layerGroup.getRootLayer());
-        }
-        
-        if (layers.isEmpty()) {
-            return;
-        }        
-        
-        LayerInfo l = layers.get(0);
-        ReferencedEnvelope bounds = transform(l.getResource().getLatLonBoundingBox(), crs);
-
-        for (int i = 1; i < layers.size(); i++) {
-            l = layers.get(i);
-            bounds.expandToInclude(transform(l.getResource().getLatLonBoundingBox(), crs));
-        }
-        
-        layerGroup.setBounds(bounds);
+        LayerGroupHelper helper = new LayerGroupHelper(layerGroup);
+        helper.calculateBounds(crs);
     }
 
     /**
-     * Calculates the bounds of a layer group by aggregating the bounds of each layer. TODO: move
-     * this method to a utility class, it should not be on a builder.
+     * Calculates the bounds of a layer group by aggregating the bounds of each layer.
      */
     public void calculateLayerGroupBounds(LayerGroupInfo layerGroup) throws Exception {
-        List<LayerInfo> layers = layerGroup.getLayers();
-        if (layerGroup.getRootLayer() != null) {
-            layers = new ArrayList<LayerInfo>(layers);
-            layers.add(layerGroup.getRootLayer());
-        }        
-        
-        if (layers.isEmpty()) {
-            return;
-        }
-        
-        LayerInfo l = layers.get(0);
-        ReferencedEnvelope bounds = l.getResource().boundingBox();
-        boolean latlon = false;
-        if (bounds == null) {
-            bounds = l.getResource().getLatLonBoundingBox();
-            latlon = true;
-        }
-
-        if (bounds == null) {
-            throw new IllegalArgumentException(
-                    "Could not calculate bounds from layer with no bounds, " + l.getName());
-        }
-
-        for (int i = 1; i < layers.size(); i++) {
-            l = layers.get(i);
-
-            ReferencedEnvelope re;
-            if (latlon) {
-                re = l.getResource().getLatLonBoundingBox();
-            } else {
-                re = l.getResource().boundingBox();
-            }
-
-            re = transform(re, bounds.getCoordinateReferenceSystem());
-            if (re == null) {
-                throw new IllegalArgumentException(
-                        "Could not calculate bounds from layer with no bounds, " + l.getName());
-            }
-            bounds.expandToInclude(re);
-        }
-
-        layerGroup.setBounds(bounds);
-    }
-
-    /**
-     * Helper method for transforming an envelope.
-     */
-    ReferencedEnvelope transform(ReferencedEnvelope e, CoordinateReferenceSystem crs)
-            throws TransformException, FactoryException {
-        if (!CRS.equalsIgnoreMetadata(crs, e.getCoordinateReferenceSystem())) {
-            return e.transform(crs, true);
-        }
-        return e;
+        LayerGroupHelper helper = new LayerGroupHelper(layerGroup);
+        helper.calculateBounds();
     }
 
     //
@@ -1482,9 +1413,22 @@ public class CatalogBuilder {
      * Reattaches a serialized {@link LayerGroupInfo} to the catalog
      */
     public void attach(LayerGroupInfo groupInfo) {
-        for (LayerInfo layer : groupInfo.getLayers()) {
-            attach(layer);
+        if (groupInfo.getRootLayer() != null) {
+            attach(groupInfo.getRootLayer());
         }
+        
+        if (groupInfo.getRootLayerStyle() != null) {
+            attach(groupInfo.getRootLayerStyle());            
+        }
+        
+        for (PublishedInfo p : groupInfo.getLayers()) {
+            if (p instanceof LayerInfo) {
+                attach((LayerInfo) p);
+            } else {
+                attach((LayerGroupInfo) p);                
+            }
+        }
+        
         for (StyleInfo style : groupInfo.getStyles()) {
             if (style != null)
                 attach(style);

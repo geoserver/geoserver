@@ -86,7 +86,7 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         Document dom = getAsDOM( "/rest/layergroups/sfLayerGroup.xml");
         assertEquals( "layerGroup", dom.getDocumentElement().getNodeName() );
         assertXpathEvaluatesTo("sfLayerGroup", "/layerGroup/name", dom );
-        assertXpathEvaluatesTo( "2", "count(//layer)", dom );
+        assertXpathEvaluatesTo( "2", "count(//published)", dom );
         assertXpathEvaluatesTo( "2", "count(//style)", dom );
     }
 

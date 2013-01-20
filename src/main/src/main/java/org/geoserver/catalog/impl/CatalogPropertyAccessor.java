@@ -20,6 +20,7 @@ import java.util.Set;
 
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.Predicates;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.ows.util.OwsUtils;
 import org.geotools.filter.expression.PropertyAccessor;
 import org.geotools.util.Converters;
@@ -148,11 +149,20 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
             }
             value = ((Map<?, ?>) input).get(propName);
         } else {
-            try {
-                value = OwsUtils.get(input, propName);
-            } catch (IllegalArgumentException noSuchProperty) {
-                throw noSuchProperty;
-            }
+        	if ("boundingBox".equalsIgnoreCase(propName) && input instanceof ResourceInfo) {
+        		try {
+					value = ((ResourceInfo) input).boundingBox();
+				} catch (Exception e) {
+	                throw new IllegalArgumentException(e);
+				}
+        	}
+        	else {        	
+	            try {
+	                value = OwsUtils.get(input, propName);
+	            } catch (IllegalArgumentException noSuchProperty) {
+	                throw noSuchProperty;
+	            }
+        	}
         }
 
         return getProperty(value, propertyNames, offset + 1);

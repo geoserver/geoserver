@@ -19,15 +19,14 @@ import net.opengis.cat.csw20.ElementSetType;
 import net.opengis.cat.csw20.GetRecordsType;
 import net.opengis.cat.csw20.QueryType;
 
-import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geoserver.csw.records.RecordDescriptor;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
+import org.geotools.csw.CSW;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.v1_1.OGC;
 import org.geotools.filter.v1_1.OGCConfiguration;
 import org.geotools.xml.Parser;
-import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
 import org.springframework.beans.BeansException;
@@ -52,7 +51,7 @@ public class GetRecordsKvpRequestReader extends CSWKvpRequestReader implements A
      */
     TypeNamesResolver resolver = new TypeNamesResolver();
     
-    HashMap<QName, RecordDescriptor> descriptors;
+    HashMap<String, RecordDescriptor> descriptors;
 
     public GetRecordsKvpRequestReader() {
         super(GetRecordsType.class);
@@ -77,13 +76,13 @@ public class GetRecordsKvpRequestReader extends CSWKvpRequestReader implements A
         }
 
         // parse the query
-        QueryType query = readQuery(kvp);
+        QueryType query = readQuery(kvp, request);
         kvp.put("query", query);
 
         return super.read(request, kvp, rawKvp);
     }
 
-    private QueryType readQuery(Map kvp) throws Exception {
+    private QueryType readQuery(Map kvp, Object request) throws Exception {
         Csw20Factory factory = Csw20Factory.eINSTANCE;
         QueryType query = factory.createQueryType();
 
@@ -95,7 +94,11 @@ public class GetRecordsKvpRequestReader extends CSWKvpRequestReader implements A
         NamespaceSupport namespaces = (NamespaceSupport) kvp.get("namespace");
         if (namespaces == null) {
             // by spec, "NAMSPACE, If not included, all qualified names are in default namespace"
-            namespaces = CSWRecordDescriptor.NAMESPACES;
+            String outputSchema = (String) kvp.get("outputSchema");
+            if (outputSchema == null || descriptors.get(outputSchema) == null) {
+                outputSchema = CSW.NAMESPACE;
+            }
+            namespaces = descriptors.get( outputSchema).getNamespaceSupport();
         }
         List<QName> typeNames = resolver.parseQNames(typeNamesString, namespaces);
         query.setTypeNames(typeNames);
@@ -165,15 +168,13 @@ public class GetRecordsKvpRequestReader extends CSWKvpRequestReader implements A
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        descriptors = new HashMap<QName, RecordDescriptor>();
-        
+        descriptors = new HashMap<String, RecordDescriptor>();
+                        
         // gather all the prefix to namespace associations in the set of records we are going to
         // support, we will use them to qualify the property names in the filters
         List<RecordDescriptor> allDescriptors = GeoServerExtensions.extensions(RecordDescriptor.class, applicationContext);
         for (RecordDescriptor rd : allDescriptors) {
-            Name name = rd.getFeatureType().getName();
-            QName qname = new QName(name.getNamespaceURI(), name.getLocalPart());
-            descriptors.put(qname, rd);
+            descriptors.put(rd.getOutputSchema(), rd);
         }
     }
 

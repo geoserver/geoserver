@@ -25,9 +25,9 @@ public abstract class AbstractCSWTransformer extends TransformerBase {
 
     static final String CSW_ROOT_LOCATION = "http://schemas.opengis.net/csw/2.0.2/";
 
-    RequestBaseType request;
+    protected RequestBaseType request;
 
-    boolean canonicalSchemaLocation;
+    protected boolean canonicalSchemaLocation;
 
     public AbstractCSWTransformer(RequestBaseType request, boolean canonicalSchemaLocation) {
         this.request = request;
@@ -38,7 +38,7 @@ public abstract class AbstractCSWTransformer extends TransformerBase {
         transform(response, writer);
     }
 
-    abstract class AbstractCSWTranslator extends TranslatorSupport {
+    protected abstract class AbstractCSWTranslator extends TranslatorSupport {
 
         public AbstractCSWTranslator(ContentHandler handler) {
             super(handler, null, null);

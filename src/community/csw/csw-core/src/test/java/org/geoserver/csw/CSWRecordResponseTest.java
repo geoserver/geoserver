@@ -187,7 +187,7 @@ public class CSWRecordResponseTest extends TestCase {
         cal.set(Calendar.MONTH, 6);
         cal.set(Calendar.DAY_OF_MONTH, 10);
         cal.set(Calendar.HOUR_OF_DAY, 15);
-        FeatureCollection fc = store.getRecords(Query.ALL, Transaction.AUTO_COMMIT);
+        FeatureCollection fc = store.getRecords(Query.ALL, Transaction.AUTO_COMMIT, null);
         CSWRecordsResult response = new CSWRecordsResult(ElementSetType.BRIEF,
                 "http://www.opengis.net/cat/csw/2.0.2", 100, 12, 13, cal.getTime(), fc);
         return response;

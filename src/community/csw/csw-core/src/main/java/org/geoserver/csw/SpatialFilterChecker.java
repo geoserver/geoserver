@@ -4,19 +4,10 @@
  */
 package org.geoserver.csw;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.xml.namespace.QName;
-
-import org.geoserver.csw.util.QNameResolver;
 import org.geoserver.platform.ServiceException;
-import org.geotools.feature.NameImpl;
 import org.geotools.filter.visitor.DefaultFilterVisitor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
-import org.opengis.feature.type.Name;
-import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.spatial.BBOX;
@@ -42,16 +33,9 @@ import org.opengis.filter.spatial.Within;
 public class SpatialFilterChecker extends DefaultFilterVisitor {
     
     FeatureType schema;
-    QNameResolver resolver = new QNameResolver();
-    Set<Name> geometryProperties = new HashSet<Name>();
     
     public SpatialFilterChecker(FeatureType schema) {
         this.schema = schema;
-        for (PropertyDescriptor pd : schema.getDescriptors()) {
-            if(pd instanceof GeometryDescriptor) {
-                geometryProperties.add(pd.getName());
-            }
-        }
     }
     
     private void checkBinarySpatialOperator(BinarySpatialOperator filter) {
@@ -59,24 +43,12 @@ public class SpatialFilterChecker extends DefaultFilterVisitor {
         verifyGeometryProperty(filter.getExpression2());
     }
 
-    
-
     private void verifyGeometryProperty(Expression expression) {
         if(expression instanceof PropertyName) {
             PropertyName pn = ((PropertyName) expression);
-            String path = pn.getPropertyName();
-            // remove an eventual trailing /
-            if(path.startsWith("/")) {
-                path = path.substring(1);
-            }
-            // csw:Record specific hack...
-            if(path.endsWith("/dc:value")) {
-                path = path.substring(0, path.length() - "/dc:value".length());
-            }
-            QName qualified = resolver.parseQName(path, pn.getNamespaceContext());
-            Name name = new NameImpl(qualified);
-            if(!geometryProperties.contains(name)) {
-                throw new ServiceException("Invalid spatial filter, property " + path + " is not a geometry");
+           
+            if (! (pn.evaluate(schema) instanceof GeometryDescriptor)) {
+                throw new ServiceException("Invalid spatial filter, property " + pn.getPropertyName() + " is not a geometry");
             }
         }
     }

@@ -26,7 +26,7 @@ import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-public class DescribeRecordTest extends CSWTestSupport {
+public class DescribeRecordTest extends CSWSimpleTestSupport {
 
     @Test
     public void testKVPReaderNS() throws Exception {
@@ -116,7 +116,7 @@ public class DescribeRecordTest extends CSWTestSupport {
     public void testBasicGetLocalSchema() throws Exception {
         Document dom = getAsDOM("csw?service=CSW&version=2.0.2&request=DescribeRecord");
         checkValidationErrors(dom);
-        // print(dom);
+        print(dom);
 
         assertCswRecordSchema(dom, false);
         

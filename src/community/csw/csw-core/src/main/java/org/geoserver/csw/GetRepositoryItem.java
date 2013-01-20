@@ -4,11 +4,7 @@
  */
 package org.geoserver.csw;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-
 import org.geoserver.csw.store.CatalogStore;
 import org.geoserver.csw.store.RepositoryItem;
 import org.geoserver.ows.HttpErrorCodeException;

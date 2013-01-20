@@ -106,7 +106,7 @@ class RetypingIterator implements Iterator<Feature>, Closeable {
 
         return builder.buildFeature(original.getIdentifier().getID());
     }
-
+    
     @Override
     public void remove() {
         throw new UnsupportedOperationException();

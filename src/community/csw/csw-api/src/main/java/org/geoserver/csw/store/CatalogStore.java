@@ -7,15 +7,18 @@ package org.geoserver.csw.store;
 import java.io.IOException;
 import java.util.List;
 
+import net.opengis.cat.csw20.ElementSetType;
+
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.csw.records.CSWRecordDescriptor;
+import org.geoserver.csw.records.RecordDescriptor;
 import org.geotools.data.Query;
 import org.geotools.data.Transaction;
 import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
+import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.identity.FeatureId;
 
 /**
@@ -31,13 +34,13 @@ public interface CatalogStore {
     /**
      * Returns the supported record types
      */
-    FeatureType[] getRecordSchemas() throws IOException;
+    RecordDescriptor[] getRecordDescriptors() throws IOException;
 
     /**
      * Queries a specific record type using the GeoTools Query object (which contains type name,
      * attribute selection
      */
-    FeatureCollection getRecords(Query q, Transaction t) throws IOException;
+    FeatureCollection getRecords(Query q, Transaction t, ElementSetType elementSet) throws IOException;
 
     /**
      * Returns the number of records that {@link #getRecords(Query, Transaction)} would return given
@@ -117,5 +120,13 @@ public interface CatalogStore {
      * @return
      */
     CatalogStoreCapabilities getCapabilities();
+    
+    
+    /**
+     * 
+     * @param name
+     * @return
+     */
+    public PropertyName translateProperty(RecordDescriptor rd, Name name) ;
 
 }

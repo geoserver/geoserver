@@ -14,15 +14,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-
 import javax.xml.namespace.QName;
-
 import net.opengis.cat.csw20.ElementSetNameType;
 import net.opengis.cat.csw20.ElementSetType;
 import net.opengis.cat.csw20.GetRecordsType;
 import net.opengis.cat.csw20.QueryType;
 import net.opengis.cat.csw20.ResultType;
-
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.csw.kvp.GetRecordsKvpRequestReader;
@@ -37,7 +34,7 @@ import org.opengis.filter.PropertyIsEqualTo;
 import org.opengis.filter.expression.PropertyName;
 import org.w3c.dom.Document;
 
-public class GetRecordsTest extends CSWTestSupport {
+public class GetRecordsTest extends CSWSimpleTestSupport {
 
     @Test 
     public void testKVPParameterCQL() throws Exception {
@@ -306,7 +303,7 @@ public class GetRecordsTest extends CSWTestSupport {
     public void testTitleFilter() throws Exception {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&elementSetName=brief&constraint=dc:title like '%25ipsum%25'";
         Document d = getAsDOM(request);
-        // print(d);
+        print(d);
 
         assertIpsumRecords(d);
     }

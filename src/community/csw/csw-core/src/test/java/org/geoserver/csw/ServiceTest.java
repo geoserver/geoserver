@@ -14,7 +14,7 @@ import org.junit.Test;
  * 
  * @author Andrea Aime - GeoSolutions
  */
-public class ServiceTest extends CSWTestSupport {
+public class ServiceTest extends CSWSimpleTestSupport {
 
     @Test
     public void testServiceAvailable() {

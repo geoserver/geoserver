@@ -4,11 +4,9 @@
  */
 package org.geoserver.csw.store;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-
-import org.geoserver.csw.records.CSWRecordDescriptor;
+import java.util.Map;
+import org.geoserver.csw.records.RecordDescriptor;
 import org.opengis.feature.type.Name;
 
 /**
@@ -17,6 +15,12 @@ import org.opengis.feature.type.Name;
  * @author Andrea Aime - GeoSolutions
  */
 public class CatalogStoreCapabilities {
+    
+    protected Map<String, RecordDescriptor> descriptors;
+    
+    public CatalogStoreCapabilities (Map<String, RecordDescriptor> descriptors) {
+        this.descriptors = descriptors;
+    }
 
     /**
      * True if the store supports transactions (insert, update, delete), false otherwise
@@ -33,7 +37,7 @@ public class CatalogStoreCapabilities {
      * @return
      */
     public List<Name> getQueriables(Name typeName) {
-        return Collections.emptyList();
+        return descriptors.get(typeName.getLocalPart()).getQueryables();
     }
     
     /**
@@ -42,18 +46,8 @@ public class CatalogStoreCapabilities {
      * @param typeName
      * @return
      */
-    public List<Name> getDomainQueriables(Name typeName) {
-        List<Name> queriables = new ArrayList<Name>();
-        
-        for(Name property : CSWRecordDescriptor.SUMMARY_ELEMENTS)
-        {
-            if (property.equals(typeName))
-            {
-                queriables.add(property);
-            }
-        }
-        
-        return queriables;
+    public List<Name> getDomainQueriables(Name typeName) {        
+        return descriptors.get(typeName.getLocalPart()).getQueryables();
     }
     
     /**
@@ -64,4 +58,5 @@ public class CatalogStoreCapabilities {
     public boolean supportsGetRepositoryItem(Name typeName) {
         return false;
     }
+    
 }

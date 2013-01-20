@@ -4,6 +4,13 @@
  */
 package org.geoserver.csw.store.simple;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,13 +18,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.csw.records.CSWRecordDescriptor;
+import org.geoserver.csw.records.RecordDescriptor;
 import org.geoserver.csw.store.CatalogStoreCapabilities;
 import org.geoserver.csw.store.RepositoryItem;
 import org.geotools.csw.CSW;
@@ -30,18 +36,18 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.NameImpl;
 import org.geotools.filter.SortByImpl;
+import org.junit.Test;
 import org.opengis.feature.Attribute;
 import org.opengis.feature.ComplexAttribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.FeatureVisitor;
-import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
 
-public class SimpleCatalogStoreTest extends TestCase {
+public class SimpleCatalogStoreTest {
     
     static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
@@ -52,15 +58,17 @@ public class SimpleCatalogStoreTest extends TestCase {
         Hints.putSystemDefault(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, true);
     }
     
+    @Test
     public void testCapabilities() throws Exception {
         CatalogStoreCapabilities capabilities = store.getCapabilities();
         assertFalse(capabilities.supportsTransactions());
-        Name cswRecordName = CSWRecordDescriptor.RECORD.getName();
+        Name cswRecordName = CSWRecordDescriptor.RECORD_DESCRIPTOR.getName();
         assertTrue(capabilities.supportsGetRepositoryItem(cswRecordName));
         assertTrue(capabilities.getQueriables(cswRecordName).contains(new NameImpl(CSW.NAMESPACE, "AnyText")));
         assertTrue(capabilities.getDomainQueriables(cswRecordName).contains(new NameImpl(DC.NAMESPACE, "title")));
     }
 
+    @Test
     public void testCreationExceptions() throws IOException {
         try {
             new SimpleCatalogStore(new File("./pom.xml"));
@@ -81,14 +89,16 @@ public class SimpleCatalogStoreTest extends TestCase {
         }
     }
     
+    @Test
     public void testFeatureTypes() throws IOException {
-        FeatureType[] fts = store.getRecordSchemas();
+        RecordDescriptor[] fts = store.getRecordDescriptors();
         assertEquals(1, fts.length);
-        assertEquals(CSWRecordDescriptor.RECORD, fts[0]);
+        assertEquals(CSWRecordDescriptor.RECORD_DESCRIPTOR, fts[0].getFeatureDescriptor());
     }
     
+    @Test
     public void testReadAllRecords() throws IOException {
-        FeatureCollection records = store.getRecords(Query.ALL, Transaction.AUTO_COMMIT);
+        FeatureCollection records = store.getRecords(Query.ALL, Transaction.AUTO_COMMIT, null);
         int fileCount = root.list(new RegexFileFilter("Record_.*\\.xml")).length;
         assertEquals(fileCount, records.size());
         
@@ -125,9 +135,10 @@ public class SimpleCatalogStoreTest extends TestCase {
         return (String) ca.getProperty("scheme").getValue();
     }
 
+    @Test
     public void testElementValueFilter() throws IOException {
         Filter filter = FF.equals(FF.property("dc:identifier/dc:value", CSWRecordDescriptor.NAMESPACES), FF.literal("urn:uuid:1ef30a8b-876d-4828-9246-c37ab4510bbd"));
-        FeatureCollection records = store.getRecords(new Query("Record", filter), Transaction.AUTO_COMMIT);
+        FeatureCollection records = store.getRecords(new Query("Record", filter), Transaction.AUTO_COMMIT, null);
         assertEquals(1, records.size());
         Feature record = (Feature) records.toArray()[0];
         assertEquals("urn:uuid:1ef30a8b-876d-4828-9246-c37ab4510bbd", getSimpleLiteralValue(record, "identifier"));
@@ -135,63 +146,69 @@ public class SimpleCatalogStoreTest extends TestCase {
         assertEquals("Proin sit amet justo. In justo. Aenean adipiscing nulla id tellus.", getSimpleLiteralValue(record, "abstract"));
     }
     
+    @Test
     public void testSpatialFilter() throws IOException {
         Filter filter = FF.bbox("", 60.042, 13.754, 68.410, 17.920, CSWRecordDescriptor.DEFAULT_CRS_NAME);
-        FeatureCollection records = store.getRecords(new Query("Record", filter), Transaction.AUTO_COMMIT);
+        FeatureCollection records = store.getRecords(new Query("Record", filter), Transaction.AUTO_COMMIT, null);
         assertEquals(1, records.size());
         Feature record = (Feature) records.toArray()[0];
         assertEquals("urn:uuid:1ef30a8b-876d-4828-9246-c37ab4510bbd", getSimpleLiteralValue(record, "identifier"));
     }
     
+    @Test
     public void testScheme() throws IOException {
         Filter filter = FF.equals(FF.property("dc:identifier/dc:value", CSWRecordDescriptor.NAMESPACES), FF.literal("urn:uuid:6a3de50b-fa66-4b58-a0e6-ca146fdd18d4"));
-        FeatureCollection records = store.getRecords(new Query("Record", filter), Transaction.AUTO_COMMIT);
+        FeatureCollection records = store.getRecords(new Query("Record", filter), Transaction.AUTO_COMMIT, null);
         assertEquals(1, records.size());
         Feature record = (Feature) records.toArray()[0];
         assertEquals("http://www.digest.org/2.1", getSimpleLiteralScheme(record, "subject"));
     }
     
+    @Test
     public void testSpatialFilterWorld() throws IOException {
         Filter filter = FF.bbox("", -90, -180, 90, 180, CSWRecordDescriptor.DEFAULT_CRS_NAME);
-        FeatureCollection records = store.getRecords(new Query("Record", filter), Transaction.AUTO_COMMIT);
+        FeatureCollection records = store.getRecords(new Query("Record", filter), Transaction.AUTO_COMMIT, null);
         // there are only 3 records with a bbox
         assertEquals(3, records.size());
     }
     
+    @Test
     public void testMaxFeatures() throws IOException {
         Query query = new Query("Record");
         query.setMaxFeatures(2);
         
-        FeatureCollection records = store.getRecords(query, Transaction.AUTO_COMMIT);
+        FeatureCollection records = store.getRecords(query, Transaction.AUTO_COMMIT, null);
         assertEquals(2, records.size());
     }
     
+    @Test
     public void testOffsetFeatures() throws IOException {
         Query queryAll = new Query("Record");
-        FeatureCollection allRecords = store.getRecords(queryAll, Transaction.AUTO_COMMIT);
+        FeatureCollection allRecords = store.getRecords(queryAll, Transaction.AUTO_COMMIT, null);
         int size = allRecords.size();
         assertEquals(12, size);
         
         // with an offset
         Query queryOffset = new Query("Record");
         queryOffset.setStartIndex(1);
-        FeatureCollection offsetRecords = store.getRecords(queryOffset, Transaction.AUTO_COMMIT);
+        FeatureCollection offsetRecords = store.getRecords(queryOffset, Transaction.AUTO_COMMIT, null);
         assertEquals(size - 1, offsetRecords.size());
         
         // paged one, but towards the end so that we won't get a full page
         Query queryPaged = new Query("Record");
         queryPaged.setStartIndex(10);
         queryPaged.setMaxFeatures(3);
-        FeatureCollection pagedRecords = store.getRecords(queryPaged, Transaction.AUTO_COMMIT);
+        FeatureCollection pagedRecords = store.getRecords(queryPaged, Transaction.AUTO_COMMIT, null);
         assertEquals(2, pagedRecords.size());
     }
     
+    @Test
     public void testSortAscend() throws IOException {
         Query queryImage = new Query("Record");
         queryImage.setFilter(FF.equals(FF.property("dc:type/dc:value", CSWRecordDescriptor.NAMESPACES), FF.literal("http://purl.org/dc/dcmitype/Image")));
         queryImage.setSortBy(new SortBy[] {new SortByImpl(FF.property("dc:title/dc:value", CSWRecordDescriptor.NAMESPACES), SortOrder.ASCENDING)});
         
-        FeatureCollection records = store.getRecords(queryImage, Transaction.AUTO_COMMIT);
+        FeatureCollection records = store.getRecords(queryImage, Transaction.AUTO_COMMIT, null);
         // there are only 3 records with Image type
         assertEquals(3, records.size());
         
@@ -203,12 +220,13 @@ public class SimpleCatalogStoreTest extends TestCase {
         assertEquals("Vestibulum massa purus", values.get(2));
     }
     
+    @Test
     public void testSortDescend() throws IOException {
         Query queryImage = new Query("Record");
         queryImage.setFilter(FF.equals(FF.property("dc:type/dc:value", CSWRecordDescriptor.NAMESPACES), FF.literal("http://purl.org/dc/dcmitype/Image")));
         queryImage.setSortBy(new SortBy[] {new SortByImpl(FF.property("dc:title/dc:value", CSWRecordDescriptor.NAMESPACES), SortOrder.DESCENDING)});
         
-        FeatureCollection records = store.getRecords(queryImage, Transaction.AUTO_COMMIT);
+        FeatureCollection records = store.getRecords(queryImage, Transaction.AUTO_COMMIT, null);
         // there are only 3 records with Image type
         assertEquals(3, records.size());
         
@@ -220,11 +238,12 @@ public class SimpleCatalogStoreTest extends TestCase {
         assertEquals("Lorem ipsum", values.get(2));
     }
     
+    @Test
     public void testSortNatural() throws IOException {
         Query queryImage = new Query("Record");
         queryImage.setSortBy(new SortBy[] {SortBy.NATURAL_ORDER});
         
-        FeatureCollection records = store.getRecords(queryImage, Transaction.AUTO_COMMIT);
+        FeatureCollection records = store.getRecords(queryImage, Transaction.AUTO_COMMIT, null);
         assertEquals(12, records.size());
         
         // check they were sorted
@@ -249,6 +268,7 @@ public class SimpleCatalogStoreTest extends TestCase {
         return values;
     }
     
+    @Test
     public void testLimitAttributes() throws IOException {
         Query query = new Query("Record");
         Filter typeDataset = FF.equals(FF.property("dc:type/dc:value", CSWRecordDescriptor.NAMESPACES), FF.literal("http://purl.org/dc/dcmitype/Dataset"));
@@ -257,7 +277,7 @@ public class SimpleCatalogStoreTest extends TestCase {
         // select some properties we did not use for filtering and sorting
         query.setProperties(Arrays.asList(FF.property("dc:identifier", CSWRecordDescriptor.NAMESPACES)));
         
-        FeatureCollection records = store.getRecords(query, Transaction.AUTO_COMMIT);    
+        FeatureCollection records = store.getRecords(query, Transaction.AUTO_COMMIT, null);    
         assertEquals(3, records.size());
         
         // check the properties and collect their identifier
@@ -283,6 +303,7 @@ public class SimpleCatalogStoreTest extends TestCase {
         assertEquals("urn:uuid:94bc9c83-97f6-4b40-9eb8-a8e8787a5c63", values.get(2));
     }
     
+    @Test
     public void testGetDomain() throws IOException {
         Name name = new NameImpl(DC.NAMESPACE, "type");
         CloseableIterator<String> domain = store.getDomain(new NameImpl(CSW.NAMESPACE, "Record"), name);
@@ -295,6 +316,7 @@ public class SimpleCatalogStoreTest extends TestCase {
         domain.close();
     }
     
+    @Test
     public void testGetRepositoryItem() throws IOException {
         RepositoryItem item = store.getRepositoryItem("foo");
         assertNull(item);

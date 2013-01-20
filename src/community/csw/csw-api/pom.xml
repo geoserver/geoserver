@@ -44,9 +44,24 @@
         <version>${gt.version}</version>
     </dependency>
     <dependency>
-        <groupId>org.geotools</groupId>
-        <artifactId>gt-app-schema</artifactId>
-        <version>${gt.version}</version>
-    </dependency>
+	<groupId>org.geotools</groupId>
+	<artifactId>gt-complex</artifactId>
+	<version>${gt.version}</version>
+     </dependency>
+     <dependency>
+	  <groupId>org.geotools.schemas</groupId>
+	  <artifactId>ows-1.0</artifactId>
+	  <version>1.0.0-2</version>
+     </dependency>
+     <dependency>
+	  <groupId>org.geotools.schemas</groupId>
+	  <artifactId>filter-1.1</artifactId>
+	  <version>1.1.1-2</version>
+     </dependency>
+     <dependency>
+	  <groupId>org.geotools.schemas</groupId>
+	  <artifactId>gml-3.2</artifactId>
+	  <version>3.2.1-1</version>
+     </dependency>
   </dependencies>
 </project>

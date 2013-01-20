@@ -7,8 +7,8 @@ package org.geoserver.gwc;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LayerInfo.Type;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
@@ -66,7 +66,7 @@ public class GWCTestHelpers {
         return layer;
     }
 
-    public static LayerGroupInfoImpl mockGroup(String name, LayerInfo... layers) {
+    public static LayerGroupInfoImpl mockGroup(String name, PublishedInfo ... layers) {
         LayerGroupInfoImpl lg = new LayerGroupInfoImpl();
         lg.setId("id-" + name);
         lg.setName(name);

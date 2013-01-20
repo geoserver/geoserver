@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 TOPP - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -9,13 +9,16 @@ import java.util.List;
 
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.CatalogVisitor;
+import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+
 
 public class LayerGroupInfoImpl implements LayerGroupInfo {
 
@@ -37,8 +40,15 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     protected String path;
     protected LayerInfo rootLayer;
     protected StyleInfo rootLayerStyle;
+    
+    /**
+     * This property is here for compatibility purpose, in 2.3.x series it has been replaced by 'publishables'
+     */
     protected List<LayerInfo> layers = new ArrayList<LayerInfo>();
+    
+    protected List<PublishedInfo> publishables = new ArrayList<PublishedInfo>();
     protected List<StyleInfo> styles = new ArrayList<StyleInfo>();
+    
     protected ReferencedEnvelope bounds;
     protected MetadataMap metadata = new MetadataMap();
 
@@ -61,11 +71,11 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     
     public LayerGroupInfoImpl() {
         mode = Mode.SINGLE;
-        layers = new ArrayList<LayerInfo>();
+        publishables = new ArrayList<PublishedInfo>();        
         styles = new ArrayList<StyleInfo>();
         metadata = new MetadataMap();
     }
-    
+
     
     @Override
     public String getId() {
@@ -166,40 +176,26 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     }
     
     @Override
-    public List<LayerInfo> getLayers() {
-        return layers;
-    }
-
-    public void setLayers(List<LayerInfo> layers) {
-        this.layers = layers;
+    public List<PublishedInfo> getLayers() {
+        return publishables;
     }
     
-    @Override
-    public List<LayerInfo> layers() {
-        switch (getMode()) {
-        case CONTAINER:
-            throw new UnsupportedOperationException("LayerGroup mode " + Mode.CONTAINER.getName() + " can not be rendered");
-        case EO:
-            List<LayerInfo> rootLayerList = new ArrayList<LayerInfo>(1);
-            rootLayerList.add(getRootLayer());
-            return rootLayerList;
-        default:
-            return getLayers();
+    public void setLayers(List<PublishedInfo> publishables) {
+        this.publishables = publishables;
+    }
+    
+    /**
+     * Used after deserialization. 
+     * It converts 'layers' property content, used until 2.3.x, to 'publishables' property content.
+     */
+    public void convertLegacyLayers() {
+        if (layers != null && publishables == null) {
+            publishables = new ArrayList<PublishedInfo>();
+            for (LayerInfo layer : layers) {
+                publishables.add(layer);
+            }            
+            layers = null;
         }
-    }
-    
-    @Override
-    public List<StyleInfo> styles() {
-        switch (getMode()) {
-        case CONTAINER:
-            throw new UnsupportedOperationException("LayerGroup mode " + Mode.CONTAINER.getName() + " can not be rendered");
-        case EO:
-            List<StyleInfo> rootLayerStyleList = new ArrayList<StyleInfo>(1);
-            rootLayerStyleList.add(getRootLayerStyle());
-            return rootLayerStyleList;
-        default:
-            return getStyles();
-        }        
     }
     
     @Override
@@ -209,6 +205,18 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     
     public void setStyles(List<StyleInfo> styles) {
         this.styles = styles;
+    }    
+    
+    @Override
+    public List<LayerInfo> layers() {
+        LayerGroupHelper helper = new LayerGroupHelper(this);
+        return helper.allLayersForRendering();
+    }
+    
+    @Override    
+    public List<StyleInfo> styles() {
+        LayerGroupHelper helper = new LayerGroupHelper(this);
+        return helper.allStylesForRendering();
     }
     
     @Override
@@ -241,7 +249,7 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
         int result = 1;
         result = prime * result + ((bounds == null) ? 0 : bounds.hashCode());
         result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + ((layers == null) ? 0 : layers.hashCode());
+        result = prime * result + ((publishables == null) ? 0 : publishables.hashCode());
         result = prime * result + ((metadata == null) ? 0 : metadata.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((mode == null) ? 0 : mode.hashCode());
@@ -276,10 +284,10 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
                 return false;
         } else if (!id.equals(other.getId()))
             return false;
-        if (layers == null) {
+        if (publishables == null) {
             if (other.getLayers() != null)
                 return false;
-        } else if (!layers.equals(other.getLayers()))
+        } else if (!publishables.equals(other.getLayers()))
             return false;
         if (metadata == null) {
             if (other.getMetadata() != null)
@@ -361,8 +369,8 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     
     public void setIdentifiers(List<LayerIdentifierInfo> identifiers){
         this.identifiers = identifiers;
-    }
-
+    }   
+    
     @Override
     public String toString() {
         return new StringBuilder(getClass().getSimpleName()).append('[').append(name).append(']')

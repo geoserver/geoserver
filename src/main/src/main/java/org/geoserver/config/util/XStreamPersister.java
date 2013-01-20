@@ -36,18 +36,19 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerGroupInfo.Mode;
 import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.LayerGroupInfo.Mode;
 import org.geoserver.catalog.impl.AttributeTypeInfoImpl;
 import org.geoserver.catalog.impl.AttributionInfoImpl;
 import org.geoserver.catalog.impl.AuthorityURL;
@@ -114,6 +115,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.ConversionException;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.SingleValueConverterWrapper;
@@ -293,6 +295,7 @@ public class XStreamPersister {
         xs.alias( "attribute", AttributeTypeInfo.class );
         xs.alias( "layer", LayerInfo.class);
         xs.alias( "layerGroup", LayerGroupInfo.class);
+        xs.alias( "published", PublishedInfo.class);
         xs.alias( "gridGeometry", GridGeometry2D.class);
         xs.alias( "projected", DefaultProjectedCRS.class);
         xs.alias( "attribution", AttributionInfo.class );
@@ -392,6 +395,7 @@ public class XStreamPersister {
         xs.registerLocalConverter(impl(LayerGroupInfo.class), "rootLayer", new ReferenceConverter(LayerInfo.class));
         xs.registerLocalConverter(impl(LayerGroupInfo.class), "rootLayerStyle", new ReferenceConverter(StyleInfo.class));        
         xs.registerLocalConverter(impl(LayerGroupInfo.class), "layers", new ReferenceCollectionConverter( LayerInfo.class ));
+        xs.registerLocalConverter(impl(LayerGroupInfo.class), "publishables", new ReferenceCollectionConverter( PublishedInfo.class, LayerInfo.class, LayerGroupInfo.class ));
         xs.registerLocalConverter(impl(LayerGroupInfo.class), "styles", new ReferenceCollectionConverter( StyleInfo.class ));
         xs.registerLocalConverter(impl(LayerGroupInfo.class), "metadata", new MetadataMapConverter() );
         
@@ -995,10 +999,17 @@ public class XStreamPersister {
     }
     class ReferenceCollectionConverter extends LaxCollectionConverter {
         Class clazz;
+        Class[] subclasses;
 
         public ReferenceCollectionConverter(Class clazz) {
             super( getXStream().getMapper() );
             this.clazz = clazz;
+        }
+        
+        public ReferenceCollectionConverter(Class clazz, Class... subclasses) {
+            super( getXStream().getMapper() );
+            this.clazz = clazz;
+            this.subclasses = subclasses;
         }
 
         @Override
@@ -1012,15 +1023,39 @@ public class XStreamPersister {
                 elementName = cam.serializedClass( item.getClass() );
             }
             writer.startNode(elementName);
-            if(item != null)
+            if(item != null) {
+                if(subclasses != null) {
+                    Class theClass = null;
+                    for (Class clazz : subclasses) {
+                        if(clazz.isInstance(item)) {
+                            theClass = clazz;
+                            break;
+                        }
+                    }
+                    if(theClass == null) {
+                        throw new ConversionException("Unexpected item " 
+                                + item + " whose type is not among: " + subclasses);
+                    }
+                    String typeName = cam.serializedClass( theClass );
+                    writer.addAttribute("type", typeName);
+                }
+                
                 context.convertAnother( item, new ReferenceConverter( clazz ) );
+            }
             writer.endNode();
         }
         
         @Override
         protected Object readItem(HierarchicalStreamReader reader,
                 UnmarshallingContext context, Object current) {
-            return context.convertAnother( current, clazz, new ReferenceConverter( clazz ) );
+            Class theClass = clazz;
+            if(subclasses != null) {
+                String attribute = reader.getAttribute("type");
+                if(attribute != null) {
+                    theClass = mapper().realClass(attribute);
+                }
+            }
+            return context.convertAnother( current, theClass, new ReferenceConverter( theClass ) );
         }
     }
     /**
@@ -1747,6 +1782,8 @@ public class XStreamPersister {
             if (lgi.getMode() ==  null) {
                 lgi.setMode(Mode.SINGLE);
             }
+            
+            lgi.convertLegacyLayers();
             
             MetadataMap metadata = lgi.getMetadata();
             

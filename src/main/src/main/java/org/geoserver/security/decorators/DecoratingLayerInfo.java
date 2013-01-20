@@ -153,4 +153,24 @@ public class DecoratingLayerInfo extends AbstractDecorator<LayerInfo> implements
     public List<LayerIdentifierInfo> getIdentifiers() {
         return delegate.getIdentifiers();
     }
+
+    @Override
+    public String getTitle() {
+        return delegate.getTitle();
+    }
+
+    @Override
+    public void setTitle(String title) {
+        delegate.setTitle(title);
+    }
+
+    @Override
+    public String getAbstract() {
+        return delegate.getAbstract();
+    }
+
+    @Override
+    public void setAbstract(String abstractTxt) {
+        delegate.setAbstract(abstractTxt);
+    }
 }

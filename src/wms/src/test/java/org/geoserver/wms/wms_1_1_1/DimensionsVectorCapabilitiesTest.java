@@ -252,7 +252,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         getCatalog().add(eoProduct);
         try {
             Document dom = dom(get("wms?request=getCapabilities&version=1.1.1"), false);
-            // print(dom);            
+            print(dom);            
             
             // check dimension has been declared
             assertXpathEvaluatesTo("1", "count(//Layer[Name[text() = 'EO Sample']]/Dimension)", dom);

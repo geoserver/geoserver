@@ -8,11 +8,12 @@ import java.util.List;
 
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
 
 public class SecuredLayerGroupInfo extends DecoratingLayerGroupInfo {
 
     private LayerInfo rootLayer;
-    private List<LayerInfo> layers;
+    private List<PublishedInfo> layers;
 
     /**
      * Overrides the layer group layer list with the one provided (which is
@@ -22,7 +23,7 @@ public class SecuredLayerGroupInfo extends DecoratingLayerGroupInfo {
      * @param delegate
      * @param layers
      */
-    public SecuredLayerGroupInfo(LayerGroupInfo delegate, LayerInfo rootLayer, List<LayerInfo> layers) {
+    public SecuredLayerGroupInfo(LayerGroupInfo delegate, LayerInfo rootLayer, List<PublishedInfo> layers) {
         super(delegate);
         this.rootLayer = rootLayer;
         this.layers = layers;
@@ -34,8 +35,7 @@ public class SecuredLayerGroupInfo extends DecoratingLayerGroupInfo {
     }
     
     @Override
-    public List<LayerInfo> getLayers() {
+    public List<PublishedInfo> getLayers() {
         return layers;
     }
-
 }

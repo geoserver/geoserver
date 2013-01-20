@@ -904,7 +904,11 @@ public class SystemTestData extends CiteTestData {
     
     @Override
     public void tearDown() throws Exception {
-        FileUtils.deleteDirectory(data);
+        try {
+            FileUtils.deleteDirectory(data);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     
     @Override

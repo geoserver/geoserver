@@ -85,7 +85,7 @@ public class DefaultWebFeatureService implements WebFeatureService, ApplicationC
      */
     public TransformerBase getCapabilities(GetCapabilitiesType request)
         throws WFSException {
-        return new GetCapabilities(getServiceInfo(), catalog)
+        return new GetCapabilities(getServiceInfo(), catalog, WFSExtensions.findExtendedCapabilitiesProviders(context))
             .run(new GetCapabilitiesRequest.WFS11(request));
     }
     

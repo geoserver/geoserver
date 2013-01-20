@@ -7,19 +7,29 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
-  <bean id="wmsExtendedCapsProvider" class="org.geoserver.inspire.wms.WMSExtendedCapabilitiesProvider">
+  <bean id="inspireWmsExtendedCapsProvider" class="org.geoserver.inspire.wms.WMSExtendedCapabilitiesProvider">
   </bean>
   
-  <bean id="inspireInitializer" class="org.geoserver.inspire.wms.InspireInitializer">
+  <bean id="inspireWfsExtendedCapsProvider" class="org.geoserver.inspire.wfs.WFSExtendedCapabilitiesProvider">
+  </bean>
+  
+  <bean id="inspireInitializer" class="org.geoserver.inspire.InspireInitializer">
     <description>GeoServerInitializer implementation to make sure inspire resources are available. For example, the
-      schemas are copied to a publicaly accessible location inside the data directory, etc.</description>
+      schemas are copied to a publicly accessible location inside the data directory, etc.</description>
   </bean>
   
-  <bean id="inspireAdminPanel" class="org.geoserver.web.services.AdminPagePanelInfo">
+  <bean id="inspireWmsAdminPanel" class="org.geoserver.web.services.AdminPagePanelInfo">
       <description>This bean adds the necessary form fields to Geoserver admin interface</description>
-    <property name="id" value="inspireAdminPanel"/>
+    <property name="id" value="inspireWmsAdminPanel"/>
     <property name="titleKey" value="inspire"/>
     <property name="componentClass" value="org.geoserver.inspire.web.InspireAdminPanel"/>
     <property name="serviceClass" value="org.geoserver.wms.WMSInfo"/>
+  </bean>
+  <bean id="inspireWfsAdminPanel" class="org.geoserver.web.services.AdminPagePanelInfo">
+      <description>This bean adds the necessary form fields to Geoserver admin interface</description>
+    <property name="id" value="inspireWfsAdminPanel"/>
+    <property name="titleKey" value="inspire"/>
+    <property name="componentClass" value="org.geoserver.inspire.web.InspireAdminPanel"/>
+    <property name="serviceClass" value="org.geoserver.wfs.WFSInfo"/>
   </bean>
 </beans>

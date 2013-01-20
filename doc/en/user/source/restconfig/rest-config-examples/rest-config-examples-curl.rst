@@ -8,6 +8,172 @@ utility, which is a handy command line tool for executing HTTP requests and
 transferring files. Though cURL is used the examples apply to any HTTP-capable
 tool or library.
 
+Get Version
+-----------
+
+To get the vesion of the main components::
+
+	curl -u admin:geoserver -XGET -H 'Accept: text/xml' http://localhost:8080/geoserver/rest/about/version.xml
+
+.. code-block:: xml
+
+	<about>
+	 <resource name="GeoServer">
+	  <Build-Timestamp>11-Dec-2012 17:55</Build-Timestamp>
+	  <Git-Revision>e66f8da85521f73d0fd00b71331069a5f49f7865</Git-Revision>
+	  <Version>2.3-SNAPSHOT</Version>
+	 </resource>
+	 <resource name="GeoTools">
+	  <Build-Timestamp>04-Dec-2012 02:31</Build-Timestamp>
+	  <Git-Revision>380a2b8545ee9221f1f2d38a4f10ef77a23bccae</Git-Revision>
+	  <Version>9-SNAPSHOT</Version>
+	 </resource>
+	 <resource name="GeoWebCache">
+	  <Git-Revision>2a534f91f6b99e5120a9eaa5db62df771dd01688</Git-Revision>
+	  <Version>1.3-SNAPSHOT</Version>
+	 </resource>
+	</about>
+
+Get Manifest
+------------
+
+Can be used to retrieve all the manifests files collected by the ClassLoader.
+
+Filtering over resource name
+============================
+
+You can filter over resulting resources (manifest) names attribute using regular expressions::
+
+	curl -u admin:geoserver -XGET -H 'Accept: text/xml' http://localhost:8080/geoserver/rest/about/manifest.xml?manifest=gwc-.*
+
+Will get only resources with the ``name`` attribute matching 'gwc-.*'
+
+.. code-block:: xml
+
+	<about>
+	  <resource name="gwc-2.3-SNAPSHOT.jar">
+		<GeoServerModule>core</GeoServerModule>
+		<Iteration-Name></Iteration-Name>
+		<Specification-Title>GeoWebCache (GWC) Module</Specification-Title>
+		<Archiver-Version>Plexus Archiver</Archiver-Version>
+		<Specification-Version>2.3-SNAPSHOT</Specification-Version>
+		<Specification-Vendor>The Open Planning Project</Specification-Vendor>
+		<Application-Name></Application-Name>
+		<Implementation-Version>2.3-SNAPSHOT</Implementation-Version>
+		<Implementation-Vendor-Id>org.geoserver</Implementation-Vendor-Id>
+		<Build-Jdk>1.6.0_31</Build-Jdk>
+		<Created-By>Apache Maven</Created-By>
+		<Implementation-Title>GeoWebCache (GWC) Module</Implementation-Title>
+		<Manifest-Version>1.0</Manifest-Version>
+		<Built-By>cancellieri</Built-By>
+		<Build-Timestamp>10-Dec-2012 15:44</Build-Timestamp>
+		<Git-Revision>273093e75b5611efda139cb93bdf850a6dd6ac3a</Git-Revision>
+		<Implementation-Vendor>The Open Planning Project</Implementation-Vendor>
+		<Project-Version>2.3-SNAPSHOT</Project-Version>
+	  </resource>
+	   ...
+	  <resource name="gwc-wmts-1.3-20121121.201712-111.jar">
+		<Manifest-Version>1.0</Manifest-Version>
+		<Specification-Title>org.geowebcache</Specification-Title>
+		<Archiver-Version>Plexus Archiver</Archiver-Version>
+		<Specification-Version>1.3-SNAPSHOT</Specification-Version>
+		<Specification-Vendor>http://geowebcache.org</Specification-Vendor>
+		<Built-By>jetty</Built-By>
+		<Implementation-Version>2a534f91f6b99e5120a9eaa5db62df771dd01688/2a534f91f6b99e5120a9eaa5db62df771dd01688</Implementation-Version>
+		<Implementation-Vendor>http://geowebcache.org</Implementation-Vendor>
+		<Build-Jdk>1.6.0_21</Build-Jdk>
+		<Implementation-Title>org.geowebcache</Implementation-Title>
+		<Created-By>Apache Maven</Created-By>
+	  </resource>
+	</about>
+
+Filtering over resource properties
+==================================
+
+You can filter over resulting resources (manifest) ``properties`` using::
+
+	curl -u admin:geoserver -XGET -H 'Accept: text/xml' http://localhost:8080/geoserver/rest/about/manifest.xml?key=GeoServerModule
+
+Will get only resources with the property named ``GeoServerModule``
+
+.. code-block:: xml
+
+	<about>
+	 <resource name="control-flow-2.3-SNAPSHOT">
+	  <GeoServerModule>extension</GeoServerModule>
+	  <Iteration-Name/>
+	  <Specification-Title>OWS request flow controller</Specification-Title>
+	  <Archiver-Version>Plexus Archiver</Archiver-Version>
+	  <Specification-Version>2.3-SNAPSHOT</Specification-Version>
+	  <Specification-Vendor>The Open Planning Project</Specification-Vendor>
+	  <Application-Name/>
+	  <Implementation-Version>2.3-SNAPSHOT</Implementation-Version>
+	  <Implementation-Vendor-Id>org.geoserver.extension</Implementation-Vendor-Id>
+	  <Build-Jdk>1.6.0_31</Build-Jdk>
+	  <Created-By>Apache Maven</Created-By>
+	  <Implementation-Title>OWS request flow controller</Implementation-Title>
+	  <Manifest-Version>1.0</Manifest-Version>
+	  <Built-By>cancellieri</Built-By>
+	  <Build-Timestamp>11-Dec-2012 17:55</Build-Timestamp>
+	  <Git-Revision>e66f8da85521f73d0fd00b71331069a5f49f7865</Git-Revision>
+	  <Implementation-Vendor>The Open Planning Project</Implementation-Vendor>
+	  <Project-Version>2.3-SNAPSHOT</Project-Version>
+	 </resource>
+	 ...
+	 <resource name="wms-2.3-SNAPSHOT">
+	  <GeoServerModule>core</GeoServerModule>
+	  <Iteration-Name/>
+	  <Specification-Title>Web Map Service Module</Specification-Title>
+	  <Archiver-Version>Plexus Archiver</Archiver-Version>
+	  <Specification-Version>2.3-SNAPSHOT</Specification-Version>
+	  <Specification-Vendor>The Open Planning Project</Specification-Vendor>
+	  <Application-Name/>
+	  <Implementation-Version>2.3-SNAPSHOT</Implementation-Version>
+	  <Implementation-Vendor-Id>org.geoserver</Implementation-Vendor-Id>
+	  <Build-Jdk>1.6.0_31</Build-Jdk>
+	  <Created-By>Apache Maven</Created-By>
+	  <Implementation-Title>Web Map Service Module</Implementation-Title>
+	  <Manifest-Version>1.0</Manifest-Version>
+	  <Built-By>cancellieri</Built-By>
+	  <Build-Timestamp>11-Dec-2012 17:55</Build-Timestamp>
+	  <Git-Revision>e66f8da85521f73d0fd00b71331069a5f49f7865</Git-Revision>
+	  <Implementation-Vendor>The Open Planning Project</Implementation-Vendor>
+	  <Project-Version>2.3-SNAPSHOT</Project-Version>
+	 </resource>
+	</about>
+
+When you add the control-flow jar to the lib dir of geoserver it will be loaded by the class loader so its the manifest file will be added to the list of the returned resources.
+You can combine the filters using ``properties`` and ``value`` using::
+
+	curl -u admin:geoserver -XGET -H 'Accept: text/xml' http://localhost:8080/geoserver/rest/about/manifest.xml?key=GeoServerModule&value=extension
+
+Will get only resources where the property named ``GeoServerModule`` has value equals to ``extension``
+
+.. code-block:: xml
+
+	<about>
+	 <resource name="control-flow-2.3-SNAPSHOT">
+	  <GeoServerModule>extension</GeoServerModule>
+	  <Iteration-Name/>
+	  <Specification-Title>OWS request flow controller</Specification-Title>
+	  <Archiver-Version>Plexus Archiver</Archiver-Version>
+	  <Specification-Version>2.3-SNAPSHOT</Specification-Version>
+	  <Specification-Vendor>The Open Planning Project</Specification-Vendor>
+	  <Application-Name/>
+	  <Implementation-Version>2.3-SNAPSHOT</Implementation-Version>
+	  <Implementation-Vendor-Id>org.geoserver.extension</Implementation-Vendor-Id>
+	  <Build-Jdk>1.6.0_31</Build-Jdk>
+	  <Created-By>Apache Maven</Created-By>
+	  <Implementation-Title>OWS request flow controller</Implementation-Title>
+	  <Manifest-Version>1.0</Manifest-Version>
+	  <Built-By>cancellieri</Built-By>
+	  <Build-Timestamp>11-Dec-2012 17:55</Build-Timestamp>
+	  <Git-Revision>e66f8da85521f73d0fd00b71331069a5f49f7865</Git-Revision>
+	  <Implementation-Vendor>The Open Planning Project</Implementation-Vendor>
+	  <Project-Version>2.3-SNAPSHOT</Project-Version>
+	 </resource>
+	</about>
+	
 Adding a new workspace
 ----------------------
 

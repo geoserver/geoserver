@@ -151,7 +151,7 @@
         <module>release</module>
         <module>ftp</module>
         <module>spatialite</module>
-        <module>dbconfig</module>
+        <!--<module>dbconfig</module>-->
         <module>inspire</module>
         <module>sfs</module>
         <module>feature-aggregate</module>

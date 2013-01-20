@@ -79,7 +79,7 @@ public class DefaultWebFeatureService20 implements WebFeatureService20, Applicat
     }
 
     public TransformerBase getCapabilities(GetCapabilitiesType request) throws WFSException {
-        return new GetCapabilities(getServiceInfo(), getCatalog())
+        return new GetCapabilities(getServiceInfo(), getCatalog(), WFSExtensions.findExtendedCapabilitiesProviders(context))
         .run(new GetCapabilitiesRequest.WFS20(request));
     }
     

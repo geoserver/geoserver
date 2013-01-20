@@ -238,10 +238,20 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
                     } else {
                         AffineTransform2D affine = (AffineTransform2D) gridToCRS;
                         if (gridCRS.getGridType().equals(GridType.GT2dSimpleGrid.getXmlConstant()) || 
-                                gridCRS.getGridType().equals(GridType.GT2dGridIn2dCrs.getXmlConstant()))
-                            offsets = new Double[] { affine.getScaleX(), affine.getScaleY() };
-                        else
+                                gridCRS.getGridType().equals(GridType.GT2dGridIn2dCrs.getXmlConstant())) {
+                            AffineTransform2D at = (AffineTransform2D) gridToCRS;
+                            double angle = AffineTransform2D.getRotation(at);
+                            if(angle != 0) {
+                                AffineTransform rotateInverse = AffineTransform2D.getRotateInstance(-angle);
+                                AffineTransform at2 = new AffineTransform(at);
+                                at2.concatenate(rotateInverse);
+                                offsets = new Double[] {at2.getScaleX(), at2.getScaleY()};
+                            } else {
+                                offsets = new Double[] {at.getScaleX(), at.getScaleY()};
+                            }
+                        } else {
                             offsets = new Double[] { affine.getScaleX(), affine.getShearX(), affine.getShearY(), affine.getScaleY() };
+                        }
                     }
                 }
 
@@ -409,7 +419,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
             }
             
             //
-            // perform Read ...
+            // perform Read ...GeneralEnvelope[(1402796.735086838, 5000064.822668008), (1402868.2853603114, 5000119.220342959)]
             //
             coverage = (GridCoverage2D) reader.read(readParameters);
             if ((coverage == null) || !(coverage instanceof GridCoverage2D)) {

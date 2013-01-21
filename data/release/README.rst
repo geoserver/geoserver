@@ -57,9 +57,23 @@ To quote from the http://grass.osgeo.org/uploads/grass/sampledata/spearDB.pdf ::
 States
 ------
 
-TBD (Census data?)
+Coming from GeoTools sample data, simplified. The GeoTools file (statepop.shp) comes from Census data (by memory of people that imported it)
 
 Tasmania
 --------
 
-TBD
+The data is derived from the <Digital Chart of the World `http://en.wikipedia.org/wiki/Digital_Chart_of_the_World`> , which according to wikipedia is "is freely available as of 2006".
+
+Referenced Copyright Statement:
+http://en.wikipedia.org/wiki/Vector_map#Copyrights
+
+
+The U.S. government has released the data into public domain, with the following conditions imposed (quotation from VMAP0 Copyright Statement)::
+
+    As an agency of the United States government, NIMA makes no copyright claim under Title 17 of the United States Code with respect to any copyrightable material compiled in these products, nor requires compensation for their use.
+    When incorporating the NIMA maps into your product, please include the following:
+    a. "this product was developed using materials from the United States National Imagery and Mapping Agency and are reproduced with permission",
+    b. "this product has neither been endorsed nor authorized by the United States National Imagery and Mapping Agency or the United States Department of Defense".
+
+    With respect to any advertising, promoting or publicizing of this product, NIMA requires that you refrain from using the agency's name, seal, or initials. 
+

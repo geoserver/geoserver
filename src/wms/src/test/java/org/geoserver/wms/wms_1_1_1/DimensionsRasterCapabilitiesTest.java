@@ -46,7 +46,7 @@ public class DimensionsRasterCapabilitiesTest extends WMSDimensionsTestSupport {
         setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
         
         Document dom = dom(get("wms?request=getCapabilities&version=1.1.1"), false);
-//        print(dom);
+        //print(dom);
         
         // check dimension has been declared
         assertXpathEvaluatesTo("1", "count(//Layer/Dimension)", dom);

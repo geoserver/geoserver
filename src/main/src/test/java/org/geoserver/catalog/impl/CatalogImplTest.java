@@ -1832,8 +1832,9 @@ public class CatalogImplTest {
     
     @Test
     public void testLayerGroupType() {
+        addLayer();
         LayerGroupInfo lg2 = catalog.getFactory().createLayerGroup();
-        lg2.setWorkspace(catalog.getDefaultWorkspace());
+        lg2.setWorkspace(null);
         lg2.setName("layerGroup2");
         lg2.setMode(LayerGroupInfo.Mode.NAMED);
         lg2.getLayers().add(l);
@@ -1854,8 +1855,9 @@ public class CatalogImplTest {
     
     @Test
     public void testLayerGroupRootLayer() {
+        addLayer();
         LayerGroupInfo lg2 = catalog.getFactory().createLayerGroup();
-        lg2.setWorkspace(catalog.getDefaultWorkspace());
+        lg2.setWorkspace(null);
         lg2.setName("layerGroup2");
         lg2.getLayers().add(l);
         lg2.getStyles().add(s);        
@@ -1915,6 +1917,8 @@ public class CatalogImplTest {
     
     @Test
     public void testLayerGroupRenderingLayers() {
+        addDataStore();
+        addNamespace();
         FeatureTypeInfo ft1, ft2, ft3;
         catalog.add(ft1 = newFeatureType("ft1", ds));
         catalog.add(ft2 = newFeatureType("ft2", ds));

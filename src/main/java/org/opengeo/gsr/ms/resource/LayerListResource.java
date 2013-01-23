@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import net.sf.json.util.JSONBuilder;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -28,6 +29,7 @@ import org.opengeo.gsr.core.format.GeoServicesJsonFormat;
 import org.opengeo.gsr.core.geometry.GeometryEncoder;
 import org.opengeo.gsr.core.geometry.GeometryTypeEnum;
 import org.opengeo.gsr.core.geometry.SpatialReferences;
+import org.opengeo.gsr.core.renderer.StyleEncoder;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.PropertyDescriptor;
@@ -88,23 +90,30 @@ public class LayerListResource extends Resource {
         List<LayerOrTable> layersInWorkspace = new ArrayList<LayerOrTable>();
         List<LayerOrTable> tablesInWorkspace = new ArrayList<LayerOrTable>();
         int idCounter = 0;
-        for (FeatureTypeInfo featureType : catalog.getResourcesByNamespace(workspaceName, FeatureTypeInfo.class)) {
-            List<LayerInfo> layersForType = catalog.getLayers(featureType);
+        for (ResourceInfo resource : catalog.getResourcesByNamespace(workspaceName, ResourceInfo.class)) {
+            List<LayerInfo> layersForType = catalog.getLayers(resource);
             try {
-                final GeometryTypeEnum gtype;
-                GeometryDescriptor gDesc = featureType.getFeatureType().getGeometryDescriptor();
-                if (gDesc == null) {
-                    gtype = null;
-                } else { 
-                    gtype = GeometryTypeEnum.forJTSClass(gDesc.getType().getBinding());
-                }
-                for (LayerInfo layer : layersForType) {
-                    if (gtype == null) {
-                        tablesInWorkspace.add(new LayerOrTable(layer, idCounter, gtype));
-                    } else {
-                        layersInWorkspace.add(new LayerOrTable(layer, idCounter, gtype));
+                if (resource instanceof CoverageInfo) {
+                    for (LayerInfo layer : layersForType) {
+                        layersInWorkspace.add(new LayerOrTable(layer, idCounter, GeometryTypeEnum.POLYGON));
+                        idCounter++;
                     }
-                    idCounter++;
+                } else if (resource instanceof FeatureTypeInfo) {
+                    final GeometryTypeEnum gtype;
+                    GeometryDescriptor gDesc = ((FeatureTypeInfo)resource).getFeatureType().getGeometryDescriptor();
+                    if (gDesc == null) {
+                        gtype = null;
+                    } else { 
+                        gtype = GeometryTypeEnum.forJTSClass(gDesc.getType().getBinding());
+                    }
+                    for (LayerInfo layer : layersForType) {
+                        if (gtype == null) {
+                            tablesInWorkspace.add(new LayerOrTable(layer, idCounter, gtype));
+                        } else {
+                            layersInWorkspace.add(new LayerOrTable(layer, idCounter, gtype));
+                        }
+                        idCounter++;
+                    }
                 }
             } catch (IOException e) {
                 idCounter += layersForType.size();
@@ -150,7 +159,7 @@ public class LayerListResource extends Resource {
         }
     }
     
-    private static void encodeLayersOrTables(List<LayerOrTable> layers, JSONBuilder json) {
+    private static void encodeLayersOrTables(List<LayerOrTable> layers, JSONBuilder json) throws IOException {
         json.array();
         for (int i = 0; i < layers.size(); i++) {
             final LayerOrTable layerOrTable = layers.get(i);
@@ -175,6 +184,28 @@ public class LayerListResource extends Resource {
                 } catch (FactoryException e) {
                     LOGGER.log(Level.WARNING, "Unable to convert CRS to SpatialReference for layer " + layer, e);
                 }
+                json.key("displayInfo");
+                json.object().key("renderer");
+                switch (layerOrTable.gtype) {
+                case ENVELOPE:
+                case POLYGON:
+                    if (layer.getResource() instanceof CoverageInfo) {
+                        StyleEncoder.defaultRasterStyle(json);
+                    } else {
+                        StyleEncoder.defaultFillStyle(json);
+                    }
+                    break;
+                case POLYLINE:
+                    StyleEncoder.defaultLineStyle(json);
+                    break;
+                case MULTIPOINT:
+                case POINT:
+                    StyleEncoder.defaultMarkStyle(json);
+                    break;
+                default:
+                    throw new RuntimeException("Layer " + layer + " has unsupported geometrytype " + layerOrTable.gtype);
+                }
+                json.endObject();
             }
             DimensionInfo time = (DimensionInfo) layer.getResource().getMetadata().get(ResourceInfo.TIME);
             if (time != null) {
@@ -194,12 +225,14 @@ public class LayerListResource extends Resource {
             }
             json.key("hasAttachments").value(false);
             json.key("htmlPopupType").value("ServerHTMLPopupTypeNone");
-            try {
-                FeatureType ftype = ((FeatureTypeInfo) layer.getResource()).getFeatureType();
-                json.key("fields");
-                encodeSchemaProperties(json, ftype);
-            } catch (IOException e) {
-                LOGGER.log(Level.WARNING, "Omitting fields for layer " + layer + " because we were unable to connect to the underlying resource.", e);
+            if (layer.getResource() instanceof FeatureTypeInfo) {
+                try {
+                    FeatureType ftype = ((FeatureTypeInfo) layer.getResource()).getFeatureType();
+                    json.key("fields");
+                    encodeSchemaProperties(json, ftype);
+                } catch (IOException e) {
+                    LOGGER.log(Level.WARNING, "Omitting fields for layer " + layer + " because we were unable to connect to the underlying resource.", e);
+                }
             }
             json.key("capabilities").value("Query,Time");
             json.endObject();

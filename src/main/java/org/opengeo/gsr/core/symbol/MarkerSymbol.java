@@ -13,9 +13,9 @@ public class MarkerSymbol extends Symbol {
 
     private double angle;
 
-    private int xoffset;
+    private double xoffset;
 
-    private int yoffset;
+    private double yoffset;
 
     public double getAngle() {
         return angle;
@@ -25,24 +25,23 @@ public class MarkerSymbol extends Symbol {
         this.angle = angle;
     }
 
-    public int getXoffset() {
+    public double getXoffset() {
         return xoffset;
     }
 
-    public void setXoffset(int xoffset) {
+    public void setXoffset(double xoffset) {
         this.xoffset = xoffset;
     }
 
-    public int getYoffset() {
+    public double getYoffset() {
         return yoffset;
     }
 
-    public void setYoffset(int yoffset) {
+    public void setYoffset(double yoffset) {
         this.yoffset = yoffset;
     }
 
-    public MarkerSymbol(String type, double angle, int xoffset,
-            int yoffset) {
+    public MarkerSymbol(String type, double angle, double xoffset, double yoffset) {
         super(type);
         this.angle = angle;
         this.xoffset = xoffset;

@@ -55,7 +55,7 @@
    </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
-     <artifactId>dbconfig</artifactId>
+     <artifactId>jdbcconfig</artifactId>
      <version>${project.version}</version>
    </dependency>
    <dependency>

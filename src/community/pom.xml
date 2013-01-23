@@ -40,7 +40,7 @@
           <descriptor>release/ext-groovy.xml</descriptor>
           <descriptor>release/ext-javascript.xml</descriptor>
           <descriptor>release/ext-spatialite.xml</descriptor>
-          <descriptor>release/ext-dbconfig.xml</descriptor>
+          <descriptor>release/ext-jdbcconfig.xml</descriptor>
           <descriptor>release/ext-inspire.xml</descriptor>
           <descriptor>release/ext-sfs.xml</descriptor>
        	  <descriptor>release/ext-dds.xml</descriptor>
@@ -151,7 +151,7 @@
         <module>release</module>
         <module>ftp</module>
         <module>spatialite</module>
-        <!--<module>dbconfig</module>-->
+        <module>jdbcconfig</module>
         <module>inspire</module>
         <module>sfs</module>
         <module>feature-aggregate</module>

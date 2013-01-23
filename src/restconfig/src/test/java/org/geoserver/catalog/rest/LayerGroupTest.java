@@ -31,6 +31,7 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         removeLayerGroup(null, "newLayerGroup");
         removeLayerGroup(null, "newLayerGroupWithTypeCONTAINER");
         removeLayerGroup(null, "newLayerGroupWithTypeEO");
+        removeLayerGroup(null, "nestedLayerGroupTest");
         
         LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
         lg.setName( "sfLayerGroup" );
@@ -145,6 +146,44 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         assertNotNull( lg.getBounds() );
     }
 
+    @Test
+    public void testPostWithNestedGroups() throws Exception {
+        String xml = 
+                "<layerGroup>" + 
+                    "<name>nestedLayerGroupTest</name>" +
+                    "<publishables>" +
+                      "<published type=\"layer\">Ponds</published>" +
+                      "<published type=\"layer\">Forests</published>" +
+                      "<published type=\"layerGroup\">sfLayerGroup</published>" +
+                    "</publishables>" +
+                    "<styles>" +
+                      "<style>polygon</style>" +
+                      "<style>point</style>" +
+                      "<style></style>" +                      
+                    "</styles>" +
+                  "</layerGroup>";
+            
+            MockHttpServletResponse response = postAsServletResponse("/rest/layergroups", xml );
+            assertEquals( 201, response.getStatusCode() );
+            
+            assertNotNull( response.getHeader( "Location") );
+            assertTrue( response.getHeader("Location").endsWith( "/layergroups/nestedLayerGroupTest" ) );
+
+            LayerGroupInfo lg = catalog.getLayerGroupByName( "nestedLayerGroupTest");
+            assertNotNull( lg );
+            
+            assertEquals( 3, lg.getLayers().size() );
+            assertEquals( "Ponds", lg.getLayers().get( 0 ).getName() );
+            assertEquals( "Forests", lg.getLayers().get( 1 ).getName() );
+            assertEquals( "sfLayerGroup", lg.getLayers().get( 2 ).getName() );
+            assertEquals( 3, lg.getStyles().size() );
+            assertEquals( "polygon", lg.getStyles().get( 0 ).getName() );
+            assertEquals( "point", lg.getStyles().get( 1 ).getName() );
+            assertNull( lg.getStyles().get( 2 ) );
+            
+            assertNotNull( lg.getBounds() );
+    }
+    
     @Test
     public void testPostWithTypeContainer() throws Exception {
         String xml = 

@@ -21,7 +21,7 @@ This User Manual is a comprehensive guide to all aspects of using GeoServer. Whe
    filter/index
    styling/index
    services/index
-   restconfig/index
+   rest/index
    advanced/index
    security/index
    production/index

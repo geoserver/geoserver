@@ -12,12 +12,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
 
 import junit.framework.Test;
 
@@ -310,6 +314,20 @@ public class KMLTransformerTest extends WMSTestSupport {
 
         Element href = (Element) document.getElementsByTagName("href").item(0);
         assertTrue(href.getFirstChild().getNodeValue().startsWith("http://localhost"));
+    }
+
+    public void testRasterTransformerSLD() throws Exception {
+        KMLRasterTransformer transformer = new KMLRasterTransformer(getWMS(), mapContent);
+
+        mapContent.getRequest().setSld(new URL("http://my.external/dynamic/sldService"));
+        Document document = WMSTestSupport.transform(layer, transformer);
+
+        assertEquals(mapContent.layers().size(), document.getElementsByTagName("href").getLength());
+
+        Element href = (Element) document.getElementsByTagName("href").item(0);
+
+        assertTrue(href.getFirstChild().getNodeValue()
+                .contains("&sld=http%3A%2F%2Fmy.external%2Fdynamic%2FsldService"));
     }
 
     public void testRasterPlacemarkTrue() throws Exception {

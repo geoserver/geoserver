@@ -4,9 +4,6 @@
  */
 package org.geoserver.rest;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.StringWriter;
 
 import javax.xml.transform.OutputKeys;
@@ -18,12 +15,11 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import junit.framework.Assert;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import org.geoserver.test.GeoServerSystemTestSupport;
-import org.junit.Assert;
-import org.junit.Test;
+import org.geoserver.test.GeoServerTestSupport;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -31,27 +27,24 @@ import org.w3c.dom.Node;
 /**
  * @author Carlo Cancellieri - GeoSolutions SAS
  */
-public class AboutTest extends GeoServerSystemTestSupport {
+public class AboutTest extends GeoServerTestSupport {
 
-    @Test
     public void testEmptyListHTMLTemplate() throws Exception {
         try {
             getAsDOM("/rest/about/version?manifest=NOTEXISTS.*");
         } catch (Exception e) {
-            Assert.fail(e.getLocalizedMessage());
+            fail(e.getLocalizedMessage());
             e.printStackTrace();
         }
     }
 
-    @Test
     public void testGetVersionsAsXML() throws Exception {
         // make the request, parsing the result as a dom
         Document dom = getAsDOM("/rest/about/version.xml");
-
+        // serializeXML(dom);
         checkXMLModel(dom);
     }
 
-    @Test
     public void testGetManifestsAsXML() throws Exception {
         // make the request, parsing the result as a dom
         Document dom = getAsDOM("/rest/about/manifest.xml");
@@ -59,7 +52,6 @@ public class AboutTest extends GeoServerSystemTestSupport {
         checkXMLModel(dom);
     }
 
-    @Test
     public void testGetAsVersionsHTML() throws Exception {
         // make the request, parsing the result into a Dom object
         Document dom = getAsDOM("/rest/about/version");
@@ -67,7 +59,6 @@ public class AboutTest extends GeoServerSystemTestSupport {
         checkHTMLModel(dom);
     }
 
-    @Test
     public void testGetAsManifestsHTML() throws Exception {
         // make the request, parsing the result into a Dom object
         Document dom = getAsDOM("/rest/about/manifest?manifest=freemarker.*");
@@ -75,19 +66,17 @@ public class AboutTest extends GeoServerSystemTestSupport {
         checkHTMLModel(dom);
     }
 
-    @Test
     public void testGetAsVersionsJSON() throws Exception {
         // make the request, parsing the result into a json object
         JSONObject json = (JSONObject) getAsJSON("/rest/about/version.json");
-
+        // System.out.println(json.toString());
         checkJSONModel(json);
     }
 
-    @Test
     public void testGetAsManifestsJSON() throws Exception {
         // make the request, parsing the result into a json object
         JSONObject json = (JSONObject) getAsJSON("/rest/about/manifest.json");
-
+        // System.out.println(json.toString());
         checkJSONModel(json);
     }
 
@@ -105,9 +94,6 @@ public class AboutTest extends GeoServerSystemTestSupport {
     }
 
     private void checkJSONModel(JSONObject json) {
-        // StringWriter sw = new StringWriter();
-        // json.write(sw);
-        // System.out.println(sw.toString());
 
         // make assertions
         assertTrue(json instanceof JSONObject);
@@ -117,9 +103,10 @@ public class AboutTest extends GeoServerSystemTestSupport {
         JSONObject about = (JSONObject) obj;
 
         obj = about.get("resource");
-        assertTrue(obj instanceof JSONArray);
 
-        // JSONArray resources = (JSONArray) obj;
+        // in xstream 1.3.x an array with a single object is serialized as jsonobject
+        assertTrue(obj instanceof JSONArray || obj instanceof JSONObject);
+
     }
 
     private void checkXMLModel(Document dom) {

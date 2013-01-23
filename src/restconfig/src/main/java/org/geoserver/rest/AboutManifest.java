@@ -11,6 +11,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import jj2000.j2k.NotImplementedError;
 
@@ -29,6 +31,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
+import com.thoughtworks.xstream.converters.collections.CollectionConverter;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
@@ -120,6 +123,15 @@ public class AboutManifest extends ReflectiveResource {
         xs.addImplicitCollection(AboutModel.class, "manifests");
         xs.alias("about", AboutModel.class);
 
+        // http://jira.codehaus.org/browse/XSTR-433
+        // xs.omitField(TreeMap.class, "comparator");
+        xs.registerConverter(new CollectionConverter(xs.getMapper()) {
+            public boolean canConvert(Class type) {
+                return (type == TreeSet.class) || (type == TreeMap.class);
+            }
+
+        });
+
         // ManifestModel Xstream converter
         xs.registerConverter(new Converter() {
 
@@ -169,7 +181,8 @@ public class AboutManifest extends ReflectiveResource {
 
         });
         xs.alias("resource", ManifestModel.class);
-        xs.addImplicitCollection(ManifestModel.class, "entries");
+        // not supported for maps in 1.3.x
+        // xs.addImplicitCollection(ManifestModel.class, "entries");
         xs.useAttributeFor(ManifestModel.class, "name");
 
         xs.alias("property", Entry.class);
@@ -186,7 +199,7 @@ public class AboutManifest extends ReflectiveResource {
      * HTML format
      * 
      * @author carlo cancellieri - GeoSolutions SAS
-     *
+     * 
      */
     private static class AboutHTMLFormat extends CatalogFreemarkerHTMLFormat {
 

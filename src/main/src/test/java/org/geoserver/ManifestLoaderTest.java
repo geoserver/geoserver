@@ -4,8 +4,6 @@
  */
 package org.geoserver;
 
-import static junit.framework.Assert.assertNotNull;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -13,17 +11,10 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.ManifestLoader.AboutModel;
 import org.geoserver.ManifestLoader.AboutModel.ManifestModel;
-import org.geoserver.data.test.SystemTestData;
-import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geoserver.test.SystemTest;
-import org.geoserver.test.TestSetup;
-import org.geoserver.test.TestSetupFrequency;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.geoserver.test.GeoServerTestSupport;
 import org.springframework.util.Assert;
 
 /**
@@ -31,9 +22,7 @@ import org.springframework.util.Assert;
  * 
  * @author Carlo Cancellieri - Geo-Solutions SAS
  */
-@Category(SystemTest.class)
-@TestSetup(run = TestSetupFrequency.ONCE)
-public class ManifestLoaderTest extends GeoServerSystemTestSupport {
+public class ManifestLoaderTest extends GeoServerTestSupport {
 
     // singleton
     private static ManifestLoader loader;
@@ -41,29 +30,21 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
     // jar resource name to use for tests
     private static String resourceName = "freemarker-.*";
 
-    @Override
-    protected void onSetUp(SystemTestData testData) throws Exception {
+    public void testManifestLoaderVersions() {
         try {
             loader = new ManifestLoader(getResourceLoader());
         } catch (Exception e) {
             LOGGER.log(Level.FINER, e.getMessage(), e);
-            org.junit.Assert.fail(e.getLocalizedMessage());
+            fail(e.getLocalizedMessage());
         }
-    }
-
-    @Test
-    public void manifestLoaderVersionsTest() {
-
         Assert.notNull(ManifestLoader.getVersions());
     }
 
-    @Test
-    public void manifestLoaderResourcesTest() {
+    public void testManifestLoaderResources() {
         assertNotNull(ManifestLoader.getResources());
     }
 
-    @Test
-    public void filterNameByRegex() throws IllegalArgumentException {
+    public void testFilterNameByRegex() {
 
         AboutModel resources = ManifestLoader.getResources();
         AboutModel filtered = resources.filterNameByRegex(resourceName);
@@ -79,8 +60,7 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
 
     }
 
-    @Test
-    public void filterPropertyByKeyOrValueTest() throws IllegalArgumentException {
+    public void testFilterPropertyByKeyOrValue() {
         AboutModel resources = ManifestLoader.getResources();
 
         // extract first resource
@@ -119,8 +99,7 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
         }
     }
 
-    @Test
-    public void filterPropertyByKeyAndValueTest() throws IllegalArgumentException {
+    public void testFilterPropertyByKeyAndValue() {
         AboutModel resources = ManifestLoader.getResources();
 
         // extract first resource
@@ -156,8 +135,7 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
         }
     }
 
-    @Test
-    public void removeTest() {
+    public void testRemove() {
 
         AboutModel resources = ManifestLoader.getResources();
         AboutModel newResources = ManifestLoader.getResources();
@@ -179,21 +157,13 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
      * @author Carlo Cancellieri - GeoSolutions
      *
      */
-    @Category(SystemTest.class)
-    @TestSetup(run = TestSetupFrequency.REPEAT)
-    public static class ManifestPropertiesTest extends GeoServerSystemTestSupport {
+    public static class ManifestPropertiesTest extends GeoServerTestSupport {
 
         private File properties;
 
         String propertyKey;
 
-        @Override
-        protected void setUpTestData(SystemTestData testData) throws Exception {
-
-        }
-
-        @Override
-        protected void onSetUp(SystemTestData testData) throws Exception {
+        protected void onSetUp() throws Exception {
             AboutModel resources = ManifestLoader.getResources();
 
             // extract first resource
@@ -216,7 +186,7 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
 
             FileWriter writer = null;
             try {
-                properties = new File(testData.getDataDirectoryRoot(), ManifestLoader.PROPERTIES_FILE);
+                properties = new File(super.getDataDirectory().findDataRoot(), ManifestLoader.PROPERTIES_FILE);
 
                 writer = new FileWriter(properties);
                 writer.write(ManifestLoader.VERSION_ATTRIBUTE_INCLUSIONS + "=" + propertyKey + "\n");
@@ -225,7 +195,7 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
             } catch (IOException e) {
                 LOGGER.log(Level.WARNING,
                         "Unable to write test data to:" + testData.getDataDirectoryRoot());
-                org.junit.Assert.fail(e.getLocalizedMessage());
+                fail(e.getLocalizedMessage());
             } finally {
                 IOUtils.closeQuietly(writer);
             }
@@ -235,16 +205,11 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
                 loader = new ManifestLoader(getResourceLoader());
             } catch (Exception e) {
                 LOGGER.log(Level.FINER, e.getMessage(), e);
-                org.junit.Assert.fail(e.getLocalizedMessage());
+                fail(e.getLocalizedMessage());
             }
         }
 
-        @Override
-        protected void onTearDown(SystemTestData testData) throws Exception {
-            FileUtils.deleteQuietly(properties);
-        }
-
-        @Test
+        
         public void filterExcludingAttributes() {
             // load resources filtering attributes EXCLUDING propertyKey
             final AboutModel resources = ManifestLoader.getResources();
@@ -262,7 +227,7 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
             }
         }
 
-        @Test
+        
         public void filterIncludingAttributes() {
             // load resources filtering attributes INCLUDING propertyKey
             final AboutModel versions = ManifestLoader.getVersions();

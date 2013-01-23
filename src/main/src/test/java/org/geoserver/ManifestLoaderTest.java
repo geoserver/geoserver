@@ -155,7 +155,7 @@ public class ManifestLoaderTest extends GeoServerTestSupport {
      * SubTests to check properties personalizations
      * 
      * @author Carlo Cancellieri - GeoSolutions
-     *
+     * 
      */
     public static class ManifestPropertiesTest extends GeoServerTestSupport {
 
@@ -163,7 +163,15 @@ public class ManifestLoaderTest extends GeoServerTestSupport {
 
         String propertyKey;
 
-        protected void onSetUp() throws Exception {
+        protected void oneTimeSetUp() throws Exception {
+            super.oneTimeSetUp();
+
+            try {
+                loader = new ManifestLoader(getResourceLoader());
+            } catch (Exception e) {
+                LOGGER.log(Level.FINER, e.getMessage(), e);
+                fail(e.getLocalizedMessage());
+            }
             AboutModel resources = ManifestLoader.getResources();
 
             // extract first resource
@@ -186,7 +194,8 @@ public class ManifestLoaderTest extends GeoServerTestSupport {
 
             FileWriter writer = null;
             try {
-                properties = new File(super.getDataDirectory().findDataRoot(), ManifestLoader.PROPERTIES_FILE);
+                properties = new File(super.getDataDirectory().findDataRoot(),
+                        ManifestLoader.PROPERTIES_FILE);
 
                 writer = new FileWriter(properties);
                 writer.write(ManifestLoader.VERSION_ATTRIBUTE_INCLUSIONS + "=" + propertyKey + "\n");
@@ -209,8 +218,7 @@ public class ManifestLoaderTest extends GeoServerTestSupport {
             }
         }
 
-        
-        public void filterExcludingAttributes() {
+        public void testFilterExcludingAttributes() {
             // load resources filtering attributes EXCLUDING propertyKey
             final AboutModel resources = ManifestLoader.getResources();
 
@@ -227,8 +235,7 @@ public class ManifestLoaderTest extends GeoServerTestSupport {
             }
         }
 
-        
-        public void filterIncludingAttributes() {
+        public void testFilterIncludingAttributes() {
             // load resources filtering attributes INCLUDING propertyKey
             final AboutModel versions = ManifestLoader.getVersions();
 

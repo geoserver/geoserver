@@ -13,7 +13,7 @@
  <groupId>org.geoserver</groupId>
  <artifactId>geoserver</artifactId>
  <packaging>pom</packaging>
- <version>2.3-SNAPSHOT</version>
+ <version>2.3-beta1</version>
  <name>GeoServer</name>
 
  <scm>
@@ -1193,7 +1193,7 @@
       <descriptor>release/ext-monitor.xml</descriptor>
       <descriptor>release/ext-monitor-hibernate.xml</descriptor>
      </descriptors>
-     <finalName>geoserver-2.3-SNAPSHOT</finalName>
+     <finalName>geoserver-2.3-beta1</finalName>
      <outputDirectory>${project.build.directory}/release</outputDirectory>
     </configuration>
    </plugin>
@@ -1449,8 +1449,8 @@
  </modules>
 
  <properties>
-  <gs.version>2.3-SNAPSHOT</gs.version>
-  <gt.version>9-SNAPSHOT</gt.version>
+  <gs.version>2.3-beta1</gs.version>
+  <gt.version>9.0-beta1</gt.version>
   <gwc.version>1.4-SNAPSHOT</gwc.version>
   <spring.version>3.1.1.RELEASE</spring.version>
   <spring.security.version>3.1.0.RELEASE</spring.security.version> 

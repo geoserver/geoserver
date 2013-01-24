@@ -23,12 +23,14 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.styling.Style;
 import org.opengeo.gsr.core.exception.ServiceError;
 import org.opengeo.gsr.core.feature.FieldTypeEnum;
 import org.opengeo.gsr.core.format.GeoServicesJsonFormat;
 import org.opengeo.gsr.core.geometry.GeometryEncoder;
 import org.opengeo.gsr.core.geometry.GeometryTypeEnum;
 import org.opengeo.gsr.core.geometry.SpatialReferences;
+import org.opengeo.gsr.core.renderer.Renderer;
 import org.opengeo.gsr.core.renderer.StyleEncoder;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
@@ -192,15 +194,37 @@ public class LayerListResource extends Resource {
                     if (layer.getResource() instanceof CoverageInfo) {
                         StyleEncoder.defaultRasterStyle(json);
                     } else {
-                        StyleEncoder.defaultFillStyle(json);
+                        Style style = layer.getDefaultStyle().getStyle();
+                        Renderer renderer = StyleEncoder.styleToRenderer(style);
+                        if (renderer != null) {
+                            StyleEncoder.encodeRenderer(json, renderer);
+                        } else {
+                            StyleEncoder.defaultFillStyle(json);
+                        }
                     }
                     break;
                 case POLYLINE:
-                    StyleEncoder.defaultLineStyle(json);
+                    {
+                        Style style = layer.getDefaultStyle().getStyle();
+                        Renderer renderer = StyleEncoder.styleToRenderer(style);
+                        if (renderer != null) {
+                            StyleEncoder.encodeRenderer(json, renderer);
+                        } else {
+                            StyleEncoder.defaultLineStyle(json);
+                        }
+                    }
                     break;
                 case MULTIPOINT:
                 case POINT:
-                    StyleEncoder.defaultMarkStyle(json);
+                    {
+                        Style style = layer.getDefaultStyle().getStyle();
+                        Renderer renderer = StyleEncoder.styleToRenderer(style);
+                        if (renderer != null) {
+                            StyleEncoder.encodeRenderer(json, renderer);
+                        } else {
+                            StyleEncoder.defaultMarkStyle(json);
+                        }
+                    }
                     break;
                 default:
                     throw new RuntimeException("Layer " + layer + " has unsupported geometrytype " + layerOrTable.gtype);

@@ -1,6 +1,7 @@
 package org.opengeo.gsr.core.renderer;
 
 import java.awt.Color;
+import java.util.Arrays;
 import java.util.Set;
 
 import org.geotools.styling.Displacement;
@@ -105,11 +106,16 @@ public class StyleEncoder {
         json.array().value(r).value(g).value(b).value(a).endArray();
     }
     
-    public static Symbol styleToSymbol(Style style) {
-        Symbolizer sym = getSingleSymbolizer(style);
-        if (sym != null) {
-            return symbolizerToSymbol(sym);
-        } else { 
+    public static Renderer styleToRenderer(Style style) {
+        final Symbolizer symbolizer = getSingleSymbolizer(style);
+        if (symbolizer != null) {
+            final Symbol symbol = symbolizerToSymbol(symbolizer);
+            if (symbol != null) {
+                return new SimpleRenderer(symbol, "", "");
+            } else {
+                return null;
+            }
+        } else {
             return null;
         }
     }
@@ -243,6 +249,16 @@ public class StyleEncoder {
         }
     }
     
+    public static void encodeSymbol(JSONBuilder json, Symbol symbol) {
+        if (symbol instanceof SimpleMarkerSymbol) {
+            encodeMarkerSymbol(json, (SimpleMarkerSymbol) symbol);
+        } else if (symbol instanceof SimpleFillSymbol) {
+            encodeFillSymbol(json, (SimpleFillSymbol) symbol);
+        } else if (symbol instanceof SimpleLineSymbol) {
+            encodeLineStyle(json, (SimpleLineSymbol) symbol);
+        }
+    }
+    
     private static void encodePolygonSymbolizer(JSONBuilder json, PolygonSymbolizer sym) {
         final Fill fill = sym.getFill();
         final Stroke stroke = sym.getStroke();
@@ -276,11 +292,11 @@ public class StyleEncoder {
         json.object()
           .key("type").value("SFS")
           .key("style").value(sym.getStyle().getStyle())
-          .key("color").value(sym.getColor())
-          .key("outline");
+          .key("color");
+          writeInts(json, sym.getColor());
+          json.key("outline");
           encodeLineStyle(json, sym.getOutline());
-          json.endObject()
-        .endObject();
+        json.endObject();
     }
 
     private static void encodeLineSymbolizer(JSONBuilder json, LineSymbolizer sym) {
@@ -305,12 +321,14 @@ public class StyleEncoder {
       json.object()
         .key("type").value("SMS")
         .key("style").value(sms.getStyle().getStyle())
-        .key("color").value(sms.getColor())
-        .key("outline").object()
+        .key("color");
+        writeInts(json, sms.getColor());
+        json.key("outline").object()
           .key("type").value("SLS")
-          .key("style").value("SLSSolid")
-          .key("color").value(sms.getOutline().getColor())
-          .key("width").value(sms.getOutline().getWidth())
+          .key("style").value("SLSSolid");
+          json.key("color");
+          writeInts(json, sms.getOutline().getColor());
+          json.key("width").value(sms.getOutline().getWidth())
         .endObject()
       .endObject();
     }
@@ -319,16 +337,23 @@ public class StyleEncoder {
         json.object()
           .key("type").value("SLS")
           .key("style").value(symbol.getStyle().getStyle())
-          .key("color").value(symbol.getColor())
-          .key("width").value(symbol.getWidth())
+          .key("color");
+          writeInts(json, symbol.getColor());
+          json.key("width").value(symbol.getWidth())
         .endObject();
+    }
+
+    private static void writeInts(JSONBuilder json, int[] color) {
+        json.array();
+        for (int c : color) json.value(c);
+        json.endArray();
     }
 
     @SuppressWarnings("unchecked")
     private static <T> T evaluateWithDefault(Expression exp, T def) {
-        if (exp == null) return def;
+        if (exp == null || def == null) return def;
         try {
-            return (T) exp.evaluate(null, def.getClass());
+            return (T)exp.evaluate(null, def.getClass());
         } catch (IllegalArgumentException e) {
             return def;
         } catch (ClassCastException e) {
@@ -342,7 +367,7 @@ public class StyleEncoder {
         if (ftStyle.rules().size() != 1) return null;
         Rule rule = ftStyle.rules().get(0);
         if (rule.getFilter() != null) return null;
-        if (rule.getMinScaleDenominator() <= 0) return null;
+        if (rule.getMinScaleDenominator() > 0) return null;
         if (rule.getMaxScaleDenominator() < Double.MAX_VALUE) return null;
         if (rule.symbolizers().size() != 1) return null;
         return rule.symbolizers().get(0);
@@ -363,5 +388,23 @@ public class StyleEncoder {
         } else {
             return SimpleMarkerSymbolEnum.CIRCLE;
         }
+    }
+
+    public static void encodeRenderer(JSONBuilder json, Renderer renderer) {
+        if (renderer == null) {
+            json.value(null);
+        } else if (renderer instanceof SimpleRenderer) {
+            encodeSimpleRenderer(json, (SimpleRenderer) renderer);
+        }
+    }
+    
+    private static void encodeSimpleRenderer(JSONBuilder json, SimpleRenderer renderer) {
+        json.object()
+          .key("type").value("simple")
+          .key("symbol");
+          encodeSymbol(json, renderer.getSymbol());
+          json.key("label").value(renderer.getLabel())
+          .key("description").value(renderer.getDescription())
+        .endObject();
     }
 }

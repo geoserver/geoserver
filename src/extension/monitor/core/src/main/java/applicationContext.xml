@@ -82,6 +82,7 @@
     <!-- ows dispatcher callback for ows specific stuff -->
     <bean id="monitorOwsCallback" class="org.geoserver.monitor.ows.MonitorCallback">
       <constructor-arg ref="monitor"/>
+      <constructor-arg ref="catalog"/>
     </bean>
     <bean id="controlFlowCallbackProxy" class="org.geoserver.monitor.ows.ControlFlowCallbackProxy">
       <constructor-arg ref="monitor"/>

@@ -150,7 +150,7 @@ public class MonitorCallbackTest {
     
     @Before
     public void setUp() throws Exception {
-        callback = new MonitorCallback(monitor);
+        callback = new MonitorCallback(monitor, catalog);
         data = monitor.start();
     }
     

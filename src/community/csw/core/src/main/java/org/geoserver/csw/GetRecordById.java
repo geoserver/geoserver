@@ -77,7 +77,7 @@ public class GetRecordById {
 
             List<FeatureCollection> results = new ArrayList<FeatureCollection>();
             for (int i = 0; i < queries.size(); i++) {
-                results.add(store.getRecords(queries.get(i), Transaction.AUTO_COMMIT, null));
+                results.add(store.getRecords(queries.get(i), Transaction.AUTO_COMMIT));
             }
 
             if (results.size() == 1) {

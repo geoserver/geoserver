@@ -11,8 +11,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import net.opengis.cat.csw20.ElementSetType;
-
 import org.geoserver.csw.feature.MemoryFeatureCollection;
 import org.geoserver.csw.feature.sort.ComplexComparatorFactory;
 import org.geoserver.csw.records.CSWRecordDescriptor;
@@ -61,7 +59,7 @@ public class SimpleCatalogStore extends AbstractCatalogStore {
     }
 
     @Override
-    public FeatureCollection getRecordsInternal(RecordDescriptor rd, Query q, Transaction t, ElementSetType elementSet) throws IOException {
+    public FeatureCollection getRecordsInternal(RecordDescriptor rd, Query q, Transaction t) throws IOException {
        
         int startIndex = 0;
         if (q.getStartIndex() != null) {

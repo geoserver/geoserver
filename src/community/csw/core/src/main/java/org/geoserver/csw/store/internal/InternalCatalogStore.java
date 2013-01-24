@@ -54,7 +54,7 @@ public class InternalCatalogStore extends AbstractCatalogStore {
     }
 
     @Override
-    public FeatureCollection getRecordsInternal(RecordDescriptor rd, Query q, Transaction t, ElementSetType elementSet) throws IOException {
+    public FeatureCollection getRecordsInternal(RecordDescriptor rd, Query q, Transaction t) throws IOException {
 
         CatalogStoreMapping mapping = mappings.get(q.getTypeName());
 

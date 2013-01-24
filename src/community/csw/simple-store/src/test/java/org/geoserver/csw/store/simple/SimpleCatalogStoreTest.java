@@ -98,7 +98,7 @@ public class SimpleCatalogStoreTest {
     
     @Test
     public void testReadAllRecords() throws IOException {
-        FeatureCollection records = store.getRecords(Query.ALL, Transaction.AUTO_COMMIT, null);
+        FeatureCollection records = store.getRecords(Query.ALL, Transaction.AUTO_COMMIT);
         int fileCount = root.list(new RegexFileFilter("Record_.*\\.xml")).length;
         assertEquals(fileCount, records.size());
         
@@ -138,7 +138,7 @@ public class SimpleCatalogStoreTest {
     @Test
     public void testElementValueFilter() throws IOException {
         Filter filter = FF.equals(FF.property("dc:identifier/dc:value", CSWRecordDescriptor.NAMESPACES), FF.literal("urn:uuid:1ef30a8b-876d-4828-9246-c37ab4510bbd"));
-        FeatureCollection records = store.getRecords(new Query("Record", filter), Transaction.AUTO_COMMIT, null);
+        FeatureCollection records = store.getRecords(new Query("Record", filter), Transaction.AUTO_COMMIT);
         assertEquals(1, records.size());
         Feature record = (Feature) records.toArray()[0];
         assertEquals("urn:uuid:1ef30a8b-876d-4828-9246-c37ab4510bbd", getSimpleLiteralValue(record, "identifier"));
@@ -149,7 +149,7 @@ public class SimpleCatalogStoreTest {
     @Test
     public void testSpatialFilter() throws IOException {
         Filter filter = FF.bbox("", 60.042, 13.754, 68.410, 17.920, CSWRecordDescriptor.DEFAULT_CRS_NAME);
-        FeatureCollection records = store.getRecords(new Query("Record", filter), Transaction.AUTO_COMMIT, null);
+        FeatureCollection records = store.getRecords(new Query("Record", filter), Transaction.AUTO_COMMIT);
         assertEquals(1, records.size());
         Feature record = (Feature) records.toArray()[0];
         assertEquals("urn:uuid:1ef30a8b-876d-4828-9246-c37ab4510bbd", getSimpleLiteralValue(record, "identifier"));
@@ -158,7 +158,7 @@ public class SimpleCatalogStoreTest {
     @Test
     public void testScheme() throws IOException {
         Filter filter = FF.equals(FF.property("dc:identifier/dc:value", CSWRecordDescriptor.NAMESPACES), FF.literal("urn:uuid:6a3de50b-fa66-4b58-a0e6-ca146fdd18d4"));
-        FeatureCollection records = store.getRecords(new Query("Record", filter), Transaction.AUTO_COMMIT, null);
+        FeatureCollection records = store.getRecords(new Query("Record", filter), Transaction.AUTO_COMMIT);
         assertEquals(1, records.size());
         Feature record = (Feature) records.toArray()[0];
         assertEquals("http://www.digest.org/2.1", getSimpleLiteralScheme(record, "subject"));
@@ -167,7 +167,7 @@ public class SimpleCatalogStoreTest {
     @Test
     public void testSpatialFilterWorld() throws IOException {
         Filter filter = FF.bbox("", -90, -180, 90, 180, CSWRecordDescriptor.DEFAULT_CRS_NAME);
-        FeatureCollection records = store.getRecords(new Query("Record", filter), Transaction.AUTO_COMMIT, null);
+        FeatureCollection records = store.getRecords(new Query("Record", filter), Transaction.AUTO_COMMIT);
         // there are only 3 records with a bbox
         assertEquals(3, records.size());
     }
@@ -177,28 +177,28 @@ public class SimpleCatalogStoreTest {
         Query query = new Query("Record");
         query.setMaxFeatures(2);
         
-        FeatureCollection records = store.getRecords(query, Transaction.AUTO_COMMIT, null);
+        FeatureCollection records = store.getRecords(query, Transaction.AUTO_COMMIT);
         assertEquals(2, records.size());
     }
     
     @Test
     public void testOffsetFeatures() throws IOException {
         Query queryAll = new Query("Record");
-        FeatureCollection allRecords = store.getRecords(queryAll, Transaction.AUTO_COMMIT, null);
+        FeatureCollection allRecords = store.getRecords(queryAll, Transaction.AUTO_COMMIT);
         int size = allRecords.size();
         assertEquals(12, size);
         
         // with an offset
         Query queryOffset = new Query("Record");
         queryOffset.setStartIndex(1);
-        FeatureCollection offsetRecords = store.getRecords(queryOffset, Transaction.AUTO_COMMIT, null);
+        FeatureCollection offsetRecords = store.getRecords(queryOffset, Transaction.AUTO_COMMIT);
         assertEquals(size - 1, offsetRecords.size());
         
         // paged one, but towards the end so that we won't get a full page
         Query queryPaged = new Query("Record");
         queryPaged.setStartIndex(10);
         queryPaged.setMaxFeatures(3);
-        FeatureCollection pagedRecords = store.getRecords(queryPaged, Transaction.AUTO_COMMIT, null);
+        FeatureCollection pagedRecords = store.getRecords(queryPaged, Transaction.AUTO_COMMIT);
         assertEquals(2, pagedRecords.size());
     }
     
@@ -208,7 +208,7 @@ public class SimpleCatalogStoreTest {
         queryImage.setFilter(FF.equals(FF.property("dc:type/dc:value", CSWRecordDescriptor.NAMESPACES), FF.literal("http://purl.org/dc/dcmitype/Image")));
         queryImage.setSortBy(new SortBy[] {new SortByImpl(FF.property("dc:title/dc:value", CSWRecordDescriptor.NAMESPACES), SortOrder.ASCENDING)});
         
-        FeatureCollection records = store.getRecords(queryImage, Transaction.AUTO_COMMIT, null);
+        FeatureCollection records = store.getRecords(queryImage, Transaction.AUTO_COMMIT);
         // there are only 3 records with Image type
         assertEquals(3, records.size());
         
@@ -226,7 +226,7 @@ public class SimpleCatalogStoreTest {
         queryImage.setFilter(FF.equals(FF.property("dc:type/dc:value", CSWRecordDescriptor.NAMESPACES), FF.literal("http://purl.org/dc/dcmitype/Image")));
         queryImage.setSortBy(new SortBy[] {new SortByImpl(FF.property("dc:title/dc:value", CSWRecordDescriptor.NAMESPACES), SortOrder.DESCENDING)});
         
-        FeatureCollection records = store.getRecords(queryImage, Transaction.AUTO_COMMIT, null);
+        FeatureCollection records = store.getRecords(queryImage, Transaction.AUTO_COMMIT);
         // there are only 3 records with Image type
         assertEquals(3, records.size());
         
@@ -243,7 +243,7 @@ public class SimpleCatalogStoreTest {
         Query queryImage = new Query("Record");
         queryImage.setSortBy(new SortBy[] {SortBy.NATURAL_ORDER});
         
-        FeatureCollection records = store.getRecords(queryImage, Transaction.AUTO_COMMIT, null);
+        FeatureCollection records = store.getRecords(queryImage, Transaction.AUTO_COMMIT);
         assertEquals(12, records.size());
         
         // check they were sorted
@@ -277,7 +277,7 @@ public class SimpleCatalogStoreTest {
         // select some properties we did not use for filtering and sorting
         query.setProperties(Arrays.asList(FF.property("dc:identifier", CSWRecordDescriptor.NAMESPACES)));
         
-        FeatureCollection records = store.getRecords(query, Transaction.AUTO_COMMIT, null);    
+        FeatureCollection records = store.getRecords(query, Transaction.AUTO_COMMIT);    
         assertEquals(3, records.size());
         
         // check the properties and collect their identifier

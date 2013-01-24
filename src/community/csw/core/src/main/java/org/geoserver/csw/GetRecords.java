@@ -139,7 +139,7 @@ public class GetRecords {
                                 continue;
                             }
                             
-                            results.add(store.getRecords(q, Transaction.AUTO_COMMIT, elementSet));
+                            results.add(store.getRecords(q, Transaction.AUTO_COMMIT));
                         }
                         
                         if(results.size() == 1) {

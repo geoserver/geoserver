@@ -76,7 +76,7 @@ public abstract class AbstractCatalogStore implements CatalogStore {
         
         // collect the values without duplicates
         final Set<String> values = new HashSet<String>();
-        getRecords(q, Transaction.AUTO_COMMIT, null).accepts(new FeatureVisitor() {
+        getRecords(q, Transaction.AUTO_COMMIT).accepts(new FeatureVisitor() {
             
             @Override
             public void visit(Feature feature) {
@@ -97,7 +97,7 @@ public abstract class AbstractCatalogStore implements CatalogStore {
     }
     
     @Override
-    public FeatureCollection getRecords(Query q, Transaction t, ElementSetType elementSet) throws IOException {
+    public FeatureCollection getRecords(Query q, Transaction t) throws IOException {
         RecordDescriptor rd;
         if (q.getTypeName() == null) {
             rd = descriptorByType.get("Record");
@@ -109,10 +109,10 @@ public abstract class AbstractCatalogStore implements CatalogStore {
             throw new IOException(q.getTypeName() + " is not a supported type");
         }
         
-        return getRecordsInternal(rd, q, t, elementSet);
+        return getRecordsInternal(rd, q, t);
     }
     
-    public abstract FeatureCollection getRecordsInternal(RecordDescriptor rd, Query q, Transaction t, ElementSetType elementSet) throws IOException;
+    public abstract FeatureCollection getRecordsInternal(RecordDescriptor rd, Query q, Transaction t) throws IOException;
     
     @Override
     public RepositoryItem getRepositoryItem(String recordId) throws IOException {
@@ -125,7 +125,7 @@ public abstract class AbstractCatalogStore implements CatalogStore {
         // simply delegate to the feature collection, we have no optimizations 
         // available for the time being (even counting the files in case of no filtering
         // would be wrong as we have to 
-        return getRecords(q, t, null).size();
+        return getRecords(q, t).size();
     }
 
     @Override

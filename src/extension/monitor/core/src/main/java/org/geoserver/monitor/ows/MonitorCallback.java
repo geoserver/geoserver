@@ -38,9 +38,9 @@ public class MonitorCallback implements DispatcherCallback {
     
     Monitor monitor;
     
-    public MonitorCallback(Monitor monitor) {
+    public MonitorCallback(Monitor monitor, Catalog catalog) {
         this.monitor = monitor;
-        Catalog catalog = monitor.getServer().getCatalog();
+        
         //wfs
         handlers.add(new DescribeFeatureTypeHandler(monitor.getConfig(), catalog));
         handlers.add(new GetFeatureHandler(monitor.getConfig(), catalog));

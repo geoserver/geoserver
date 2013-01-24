@@ -75,19 +75,8 @@ The access mode defines what level of access should be granted on a specific wor
    
 The read and write modes apply to the data of a layer, whereas the admin mode applies to the configuration of a layer.
 
-.. note::
+.. note::  Currently it is only possible to assign admin permission to an entire workspace, and not at the layer level.
 
-   Currently it is only possible to assign admin permission to an entire 
-   workspace, and not on a layer by layer basis. For example::
-   
-       topp.*.a=ROLE_TOPP_ADMIN
-       
-   The following is not supported::
-   
-       topp.*.a=ROLE_TOPP_ADMIN
-   
-   Administrative access is only assignable at the workspace level, and not at the layer level.
-   
 Examples
 --------
 

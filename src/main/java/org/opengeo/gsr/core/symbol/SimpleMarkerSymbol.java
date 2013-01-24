@@ -17,7 +17,7 @@ public class SimpleMarkerSymbol extends MarkerSymbol {
 
     private double size;
 
-    private Outline outline;
+    private SimpleLineSymbol outline;
 
     public SimpleMarkerSymbolEnum getStyle() {
         return style;
@@ -43,16 +43,16 @@ public class SimpleMarkerSymbol extends MarkerSymbol {
         this.size = size;
     }
 
-    public Outline getOutline() {
+    public SimpleLineSymbol getOutline() {
         return outline;
     }
 
-    public void setOutline(Outline outline) {
+    public void setOutline(SimpleLineSymbol outline) {
         this.outline = outline;
     }
 
     public SimpleMarkerSymbol(SimpleMarkerSymbolEnum style, int[] color, double size, double angle,
-            double xoffset, double yoffset, Outline outline) {
+            double xoffset, double yoffset, SimpleLineSymbol outline) {
         super("SMS", angle, xoffset, yoffset);
         this.style = style;
         this.color = color;

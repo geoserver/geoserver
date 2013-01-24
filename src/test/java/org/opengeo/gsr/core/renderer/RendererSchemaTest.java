@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.junit.Test;
 import org.opengeo.gsr.JsonSchemaTest;
-import org.opengeo.gsr.core.symbol.Outline;
 import org.opengeo.gsr.core.symbol.SimpleFillSymbol;
 import org.opengeo.gsr.core.symbol.SimpleFillSymbolEnum;
 import org.opengeo.gsr.core.symbol.SimpleLineSymbol;
@@ -23,7 +22,7 @@ public class RendererSchemaTest extends JsonSchemaTest {
 
         int[] color = { 255, 0, 0, 255 };
         int[] outlinecolor = { 0, 0, 0, 255 };
-        Outline outline = new Outline(outlinecolor, 1);
+        SimpleLineSymbol outline = new SimpleLineSymbol(SimpleLineSymbolEnum.SOLID, outlinecolor, 1);
         SimpleMarkerSymbol sms = new SimpleMarkerSymbol(SimpleMarkerSymbolEnum.CIRCLE, color, 5, 0,
                 0, 0, outline);
         SimpleRenderer renderer = new SimpleRenderer(sms, "", "");

@@ -1,14 +1,14 @@
 package org.geoserver.cluster.hazelcast;
 
+import static org.geoserver.cluster.hazelcast.HazelcastUtil.localAddress;
+
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 
 import org.geoserver.catalog.CatalogException;
@@ -35,8 +35,8 @@ public class SimpleHzSynchronizer extends HzSynchronizer {
     /** event processor */
     ScheduledExecutorService executor;
 
-    /** */
-    Lock reloadLock = new ReentrantLock();
+    /** lock during reload */
+    AtomicBoolean reloadLock = new AtomicBoolean();
 
     public SimpleHzSynchronizer(HazelcastInstance hz, GeoServer gs) {
         super(hz);
@@ -44,13 +44,18 @@ public class SimpleHzSynchronizer extends HzSynchronizer {
 
         queue = new ConcurrentLinkedQueue<Event>();
         executor = Executors.newSingleThreadScheduledExecutor();
-        
+
         gs.addListener(this);
         gs.getCatalog().addListener(this);
     }
 
     @Override
     public void onMessage(Message<Event> message) {
+        Event e = message.getMessageObject();
+        if (localAddress(hz).equals(e.getSource())) {
+            LOGGER.finer("Skipping message generated locally " + message);
+            return;
+        }
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("Message recieved: " + message);
         }
@@ -67,7 +72,7 @@ public class SimpleHzSynchronizer extends HzSynchronizer {
                 }
 
                 //lock during reload
-                reloadLock.lock();
+                reloadLock.set(true);
                 try {
                     queue.clear();
                     gs.reload();
@@ -75,22 +80,23 @@ public class SimpleHzSynchronizer extends HzSynchronizer {
                     LOGGER.log(Level.WARNING, "Reload failed", e);
                 }
                 finally {
-                    reloadLock.unlock();
+                    reloadLock.set(false);
                 }
             }
-        }, 1, TimeUnit.SECONDS);
+        }, configWatcher.get().getSyncDelay(), TimeUnit.SECONDS);
     }
 
     protected void dispatch() {
         //check lock, if locked it means event in response to configuration reload, don't propagate
-        if (reloadLock.tryLock()) {
+        if (reloadLock.get()) {
             return;
         }
-
+    
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("Publishing event");
         }
-        topic.publish(new Event());
+        topic.publish(newEvent());
+
     }
 
 
@@ -112,7 +118,12 @@ public class SimpleHzSynchronizer extends HzSynchronizer {
     }
 
     @Override
-    public void handlePostGlobalChange(GeoServerInfo global) {
+    public void handleGlobalChange(GeoServerInfo global, List<String> propertyNames, 
+        List<Object> oldValues, List<Object> newValues) {
+        //optimization for update sequence
+        if (propertyNames.size() == 1 && propertyNames.contains("updateSequence")) {
+            return;
+        }
         dispatch();
     }
 

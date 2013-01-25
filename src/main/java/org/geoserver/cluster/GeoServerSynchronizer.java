@@ -11,6 +11,12 @@ import org.geoserver.config.ConfigurationListenerAdapter;
 public class GeoServerSynchronizer extends ConfigurationListenerAdapter 
     implements CatalogListener {
 
+    protected ClusterConfigWatcher configWatcher;
+
+    public final void initialize(ClusterConfigWatcher configWatcher) {
+        this.configWatcher = configWatcher;
+    }
+
     @Override
     public void handleAddEvent(CatalogAddEvent event) throws CatalogException {
     }

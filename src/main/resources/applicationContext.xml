@@ -35,8 +35,8 @@
       <constructor-arg ref="hzInstance"/>
     </bean>
 
-   <bean id="hzSynchronizer" class="org.geoserver.cluster.hazelcast.SimpleHzSynchronizer">
+   <bean id="hzSynchronizerInitializer" class="org.geoserver.cluster.hazelcast.HzSynchronizerInitializer">
      <constructor-arg ref="hzInstance"/>
-     <constructor-arg ref="geoServer"/> 
    </bean>
+
 </beans>

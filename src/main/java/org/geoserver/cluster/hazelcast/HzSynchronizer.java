@@ -1,5 +1,7 @@
 package org.geoserver.cluster.hazelcast;
 
+import static org.geoserver.cluster.hazelcast.HazelcastUtil.*;
+
 import java.util.logging.Logger;
 
 import org.geoserver.cluster.Event;
@@ -14,11 +16,20 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer implements Me
 
     protected static Logger LOGGER = Logging.getLogger("org.geoserver.cluster.hazelcast");
 
+    protected HazelcastInstance hz;
+
     protected ITopic<Event> topic;
 
     public HzSynchronizer(HazelcastInstance hz) {
+        this.hz = hz;
+
         topic = hz.getTopic("geoserver.config");
         topic.addMessageListener(this);
     }
 
+    protected Event newEvent() {
+        Event e = new Event();
+        e.setSource(localAddress(hz));
+        return e;
+    }
 }

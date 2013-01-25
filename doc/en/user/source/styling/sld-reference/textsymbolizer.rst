@@ -28,22 +28,35 @@ A ``<TextSymbolizer>`` contains the following elements:
      - **Description**
    * - ``<Geometry>``
      - No
-     - Specifies the geometry to be rendered.
+     - The geometry to be labelled.
    * - ``<Label>``
      - No
-     - Specifies the content of the text label.
+     - The text content for the label.
    * - ``<Font>``
      - No
-     - Specifies the font information for the labels.
+     - The font information for the label.
    * - ``<LabelPlacement>``
      - No
-     - Sets the position of the label relative to its associated feature.
+     - Sets the position of the label relative to its associated geometry.
    * - ``<Halo>``
      - No
-     - Creates a colored background around the text label, for improved legibility.
+     - Creates a colored background around the label text, for improved legibility.
    * - ``<Fill>``
      - No
-     - Specifies the fill color of the text label.
+     - The fill color of the label text.
+   * - ``<Graphic>``
+     - No
+     - A graphic to be displayed behind the label text.
+       See :ref:`sld_reference_graphic` for syntax.
+   * - ``<Priority>``
+     - No
+     - The priority of the label during conflict resolution.
+       See :ref:`labeling_priority`.
+   * - ``<VendorOption>``
+     - No
+     - A GeoServer-specific option.
+       See :ref:`sld_reference_labeling` for descriptions of the available options.
+       Any number of options may be specified.
 
      
 Geometry
@@ -95,23 +108,23 @@ The value may contain :ref:`expressions <sld_reference_parameter_expressions>`.
      - **Description**
    * - ``name="font-family"``
      - No
-     - Specifies the family name of the font to use for the label.  
+     - The family name of the font to use for the label.  
        Default is ``Times``.
    * - ``name="font-style"``
      - No
-     - Specifies the style of the font.  Options are ``normal``, ``italic``, and ``oblique``.  Default is ``normal``.
+     - The style of the font.  Options are ``normal``, ``italic``, and ``oblique``.  Default is ``normal``.
    * - ``name="font-weight"``
      - No
-     - Specifies the weight of the font.  Options are ``normal`` and ``bold``.  Default is ``normal``.
+     - The weight of the font.  Options are ``normal`` and ``bold``.  Default is ``normal``.
    * - ``name="font-size"``
      - No
-     - Specifies the size of the font in pixels.  Default is ``10``.
+     - The size of the font in pixels.  Default is ``10``.
 
 LabelPlacement
 ^^^^^^^^^^^^^^
 
 The ``<LabelPlacement>`` element specifies the placement of the label relative to the geometry being labelled.
-There are two possible sub-elements ``<PointPlacement>`` and ``<LinePlacement>``.  
+There are two possible sub-elements: ``<PointPlacement>`` or ``<LinePlacement>``.  
 Exactly one of these must be specified.
 
 .. list-table::
@@ -143,7 +156,7 @@ following sub-elements:
      - **Description**
    * - ``<AnchorPoint>``
      - No
-     - Specifies the location within the label bounding box that is aligned with the label point.
+     - The location within the label bounding box that is aligned with the label point.
        The location is specified by ``<AnchorPointX>`` and ``<AnchorPointY>`` sub-elements,
        with values in the range [0..1].
        Values may contain :ref:`expressions <sld_reference_parameter_expressions>`.
@@ -156,7 +169,7 @@ following sub-elements:
        Default is ``(0, 0)``.
    * - ``<Rotation>``
      - No
-     - Specifies the rotation of the label in clockwise degrees
+     - The rotation of the label in clockwise degrees
        (negative values are counterclockwise).  
        Value may contain :ref:`expressions <sld_reference_parameter_expressions>`.
        Default is ``0``.
@@ -180,11 +193,14 @@ following sub-element:
      - **Description**
    * - ``<PerpendicularOffset>``
      - No
-     - Specifies the offset from the linear path, in pixels.  
+     - The offset from the linear path, in pixels.  
        Positive values offset to the left of the line, negative to the right.
        Value may contain :ref:`expressions <sld_reference_parameter_expressions>`.
        Default is ``0``.
 
+The appearance of text along linear paths can be further controlled 
+by the vendor options ``followLine``, ``maxDisplacement``, ``repeat``, ``labelAllGroup``, and ``maxAngleDelta``.
+These are described in :ref:`sld_reference_labeling`.
 
 Halo
 ^^^^
@@ -200,12 +216,12 @@ Within the ``<Halo>`` element there are two sub-elements which control the appea
      - **Description**   
    * - ``<Radius>``
      - No
-     - Specifies the size of the halo radius, in pixels.  
+     - The halo radius, in pixels.  
        Value may contain :ref:`expressions <sld_reference_parameter_expressions>`.
        Default is ``1``.
    * - ``<Fill>``
      - No
-     - Specifies the color and opacity of the halo
+     - The color and opacity of the halo
        via ``CssParameter`` elements for ``fill`` and ``fill-opacity``.
        See :ref:`sld_reference_fill` for full syntax.
        The parameter values may contain :ref:`expressions <sld_reference_parameter_expressions>`.

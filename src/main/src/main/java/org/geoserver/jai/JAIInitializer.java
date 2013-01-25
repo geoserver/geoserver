@@ -64,6 +64,12 @@ public class JAIInitializer implements GeoServerInitializer {
             final ConcurrentTileFactory recyclingFactory = new ConcurrentTileFactory();
             jaiDef.setRenderingHint(JAI.KEY_TILE_FACTORY, recyclingFactory);
             jaiDef.setRenderingHint(JAI.KEY_TILE_RECYCLER, recyclingFactory);
+        } else {
+            if(!jai.isRecycling()){
+                final PassThroughTileFactory passThroughFactory = new PassThroughTileFactory();
+                jaiDef.setRenderingHint(JAI.KEY_TILE_FACTORY, passThroughFactory);
+                jaiDef.setRenderingHint(JAI.KEY_TILE_RECYCLER, passThroughFactory);
+            }
         }
         
         // Setting up Cache Capacity

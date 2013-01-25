@@ -21,7 +21,9 @@ import org.geoserver.sld.GetStylesRequest;
 import org.geoserver.wms.animate.Animator;
 import org.geoserver.wms.capabilities.Capabilities_1_3_0_Transformer;
 import org.geoserver.wms.capabilities.GetCapabilitiesTransformer;
+import org.geoserver.wms.describelayer.DescribeLayerModel;
 import org.geoserver.wms.describelayer.DescribeLayerTransformer;
+import org.geotools.data.ows.LayerDescription;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -334,7 +336,8 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
     /**
      * @see WebMapService#describeLayer(DescribeLayerRequest)
      */
-    public DescribeLayerTransformer describeLayer(DescribeLayerRequest request) {
+    @Override
+    public DescribeLayerModel describeLayer(DescribeLayerRequest request) {
         if (null == describeLayer) {
             throw new UnsupportedOperationException(
                     "Operation not properly configured, make sure the operation bean has been set");

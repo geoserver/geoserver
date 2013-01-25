@@ -3,17 +3,16 @@
  * This code is licensed under the GPL 2.0 license, availible at the root
  * application directory.
  */
-package org.geoserver.wfs.response;
+package org.geoserver.wfs.json;
 
 import java.io.Writer;
 import java.util.Calendar;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.geotools.util.Converters;
 
 import net.sf.json.JSONException;
 import net.sf.json.util.JSONBuilder;
+
+import org.geotools.util.Converters;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
@@ -39,7 +38,7 @@ import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
  */
 public class GeoJSONBuilder extends JSONBuilder {
     private final Logger LOGGER = org.geotools.util.logging.Logging
-    .getLogger(this.getClass().toString());
+    .getLogger(this.getClass());
     
     public GeoJSONBuilder(Writer w) {
         super(w);

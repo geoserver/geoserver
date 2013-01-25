@@ -113,6 +113,7 @@ The syntax is::
 The supported format options are:
 
 * ``antialiasing`` (values = ``on``, ``off``, ``text``): controls the use of antialiased rendering in raster output. 
+* ``callback``: specifies the callback function name for the jsonp response format (default is ``parseResponse``).
 * ``dpi``: sets the rendering DPI (dots-per-inch) for raster outputs. 
   The OGC standard output resolution is 90 DPI. 
   If you need to create high resolution images (e.g for printing) it is advisable to request a larger image size and specify a higher DPI. 

@@ -6,6 +6,10 @@ package org.geoserver.wms;
 
 import java.io.ByteArrayInputStream;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
+import org.geoserver.wfs.json.JSONType;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -74,4 +78,47 @@ public class WMSServiceExceptionTest extends WMSTestSupport {
         assertEquals("ServiceExceptionReport", dom.getDocumentElement().getNodeName());
         assertEquals("1.3.0", dom.getDocumentElement().getAttribute("version"));
     }
+
+    public void testJsonException130() throws Exception {
+        String path = "wms?version=1.3.0&request=getmap&layers=foobar&EXCEPTIONS=" + JSONType.jsonp
+                + "&format_options=callback:myMethod";
+        JSONType.setJsonpEnabled(true);
+        MockHttpServletResponse response = getAsServletResponse(path);
+        JSONType.setJsonpEnabled(false);
+        String content = response.getOutputStreamContent();
+        testJson(testJsonP(content));
+        
+    }
+
+    /**
+     * @param content Matches: myMethod( ... )
+     * @return trimmed string
+     */
+    private static String testJsonP(String content) {
+        assertTrue(content.startsWith("myMethod("));
+        assertTrue(content.endsWith(")"));
+        content = content.substring("myMethod(".length(), content.length() - 1);
+        return content;
+    }
+
+    /**
+     * @param path
+     * @throws Exception
+     * 
+     */
+    private static void testJson(String content) {
+
+        JSONObject jsonException = JSONObject.fromObject(content);
+        assertEquals(jsonException.getString("version"), "1.3.0");
+        JSONArray exceptions = jsonException.getJSONArray("exceptions");
+        JSONObject exception = exceptions.getJSONObject(0);
+        assertNotNull(exception);
+        assertNotNull(exception.getString("code"));
+        assertNotNull(exception.getString("locator"));
+        String exceptionText = exception.getString("text");
+        assertNotNull(exceptionText);
+        assertEquals(exceptionText, "Could not find layer foobar");
+
+    }
+
 }

@@ -36,8 +36,8 @@ import org.geoserver.ows.Request;
 import org.geoserver.ows.ServiceExceptionHandler;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.ows.util.ResponseUtils;
-import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wfs.json.JSONType;
 import org.geotools.util.Version;
 
 /**
@@ -64,6 +64,7 @@ import org.geotools.util.Version;
  * 
  * @author Justin Deoliveira
  * @author Gabriel Roldan
+ * @author Carlo Cancellieri - GeoSolutions
  * 
  */
 public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
@@ -111,30 +112,57 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
         final Boolean transparent;
         try {
             exceptions = (String) request.getKvp().get("EXCEPTIONS");
-            width = (Integer) request.getKvp().get("WIDTH");
-            height = (Integer) request.getKvp().get("HEIGHT");
-            format = (String) request.getKvp().get("FORMAT");
-            bgcolor = (Color) request.getKvp().get("BGCOLOR");
-            transparent = (Boolean) request.getKvp().get("TRANSPARENT");
+            if (exceptions == null) {
+                // use default
+                handleXmlException(exception, request);
+                return;
+            }
         } catch (Exception e) {
             // width and height might be missing
             handleXmlException(exception, request);
             return;
         }
-        if (exceptions == null || !isImageExceptionType(exceptions)
-                || width <= 0 || height <= 0 || !FORMATS.contains(format)) {
-            handleXmlException(exception, request);
+        boolean verbose = geoServer.getSettings().isVerboseExceptions();
+        String charset = geoServer.getSettings().getCharset();
+        if (JSONType.isJsonMimeType(exceptions)) {
+            // use Json format
+            JSONType.handleJsonException(LOGGER, exception, request, charset, verbose, false);
             return;
+        } else if (JSONType.useJsonp(exceptions)) {
+            // use JsonP format
+            JSONType.handleJsonException(LOGGER, exception, request, charset, verbose, true);
+            return;
+        } else if (isImageExceptionType(exceptions)) {
+            // ok, it's image, then we have to build a text representing the
+            // exception and lay it out in the image
+            try {
+                width = (Integer) request.getKvp().get("WIDTH");
+                height = (Integer) request.getKvp().get("HEIGHT");
+                format = (String) request.getKvp().get("FORMAT");
+                bgcolor = (Color) request.getKvp().get("BGCOLOR");
+                transparent = (Boolean) request.getKvp().get("TRANSPARENT");
+                if (width > 0 && height > 0 && FORMATS.contains(format)) {
+                    handleImageException(exception, request, width, height, format, exceptions,
+                            bgcolor, transparent);
+                    return;
+                } else {
+                    // use default
+                    handleXmlException(exception, request);
+                }
+            } catch (Exception e) {
+                // width and height might be missing
+                // use default
+                handleXmlException(exception, request);
+            }
+        } else {
+        	// use default
+            handleXmlException(exception, request);
         }
-
-        // ok, it's image, then we have to build a text representing the
-        // exception and lay it out in the image
-        handleImageException(exception, request, width, height, format, exceptions, bgcolor, transparent);
     }
-
+    
     private boolean isImageExceptionType(String exceptions) {
         return "application/vnd.ogc.se_inimage".equals(exceptions) || "INIMAGE".equals(exceptions)
-            || "BLANK".equals(exceptions);
+                || "BLANK".equals(exceptions);
     }
     
     private void handleImageException(ServiceException exception, Request request, final int width,
@@ -182,29 +210,27 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
     }
 
     public void handleXmlException(ServiceException exception, Request request) {
-        //Location of document type defintion for document
+        // Location of document type defintion for document
         String dtdLocation = null;
 
-        //Location of schema for document.
+        // Location of schema for document.
         String schemaLocation = null;
-        
-        //The content type of the produced document
+
+        // The content type of the produced document
         String contentType;
 
-        //first off negotiate the version to see what version of exception report to return
+        // first off negotiate the version to see what version of exception report to return
         Version version = WMS.negotiateVersion(request.getVersion());
         if (version == WMS.VERSION_1_1_1) {
-            //use dtd style
+            // use dtd style
             dtdLocation = "wms/1.1.1/WMS_exception_1_1_1.dtd";
             contentType = "application/vnd.ogc.se_xml";
-        }
-        else {
-            //use xml schema
+        } else {
+            // use xml schema
             schemaLocation = "wms/1.3.0/exceptions_1_3_0.xsd";
             contentType = "text/xml";
         }
-        
-        
+
         String tab = "   ";
         StringBuffer sb = new StringBuffer();
 

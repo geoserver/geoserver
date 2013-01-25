@@ -4,12 +4,10 @@
  */
 package org.geoserver.wms.describelayer;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import javax.xml.transform.TransformerException;
-
+import org.apache.commons.io.IOUtils;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
@@ -27,26 +25,56 @@ import org.springframework.util.Assert;
  * </p>
  * 
  * @author Gabriel Roldan
+ * @author Carlo Cancellieri
  * @version $Id$
  */
-public class DescribeLayerResponse extends Response {
+public abstract class DescribeLayerResponse extends Response {
 
-    public static final String DESCLAYER_MIME_TYPE = "application/vnd.ogc.wms_xml";
-
-    public DescribeLayerResponse() {
-        super(DescribeLayerTransformer.class);
+    private final String type;
+	
+    /**
+     * Creates a new GetMapResponse object.
+     */
+    public DescribeLayerResponse(String format) {
+        super(DescribeLayerModel.class,format);
+        this.type=format;
     }
 
     /**
-     * @return {@code "application/vnd.ogc.wms_xml"}
+     * Evaluates if this DescribeLayer producer can generate the format specified by
+     * <code>format</code>, where <code>format</code> is the MIME type of the requested
+     * response.
+     * 
+     * @param format
+     *            the MIME type of the required output format, might be {@code null}
+     * 
+     * @return true if class can produce a DescribeLayer in the passed format
+     */
+    public boolean canProduce(String format) {
+        return type.equalsIgnoreCase(format);
+    }
+
+    public String getContentType() {
+        return type;
+    }
+
+    /**
      * @see org.geoserver.ows.Response#getMimeType(java.lang.Object,
      *      org.geoserver.platform.Operation)
      */
     @Override
-    public String getMimeType(Object value, Operation operation) throws ServiceException {
-        return DESCLAYER_MIME_TYPE;
-    }
+    public String getMimeType(Object value, Operation operation)
+			throws ServiceException {
 
+		Object op = operation.getParameters()[0];
+		if (op instanceof DescribeLayerRequest) {
+			DescribeLayerRequest dlr = (DescribeLayerRequest) op;
+			return dlr.getOutputFormat();
+		}
+		throw new ServiceException("Unable to parse incoming operation");
+	}
+
+    
     /**
      * @param value
      *            {@link DescribeLayerTransformer}
@@ -61,21 +89,27 @@ public class DescribeLayerResponse extends Response {
     public void write(Object value, OutputStream output, Operation operation) throws IOException,
             ServiceException {
 
-        Assert.isTrue(value instanceof DescribeLayerTransformer);
+        
         Assert.notNull(operation.getParameters());
         Assert.isTrue(operation.getParameters()[0] instanceof DescribeLayerRequest);
-
-        DescribeLayerTransformer transformer = (DescribeLayerTransformer) value;
-        DescribeLayerRequest request = (DescribeLayerRequest) operation.getParameters()[0];
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        final DescribeLayerRequest request = (DescribeLayerRequest) operation.getParameters()[0];
+        
+        Assert.isTrue(value instanceof DescribeLayerModel);
+        final DescribeLayerModel results = (DescribeLayerModel) value;
         try {
-            transformer.transform(request, out);
-            out.flush();
-        } catch (TransformerException e) {
-            throw new ServiceException(e);
+        	write(results, request, output);
+        } finally {
+    		if (output!=null){
+    			try {
+    				output.flush();
+    			} catch (IOException ioe){}
+    			IOUtils.closeQuietly(output);
+    		}
         }
-        output.write(out.toByteArray());
-        output.flush();
+        
     }
 
+    public abstract void write(DescribeLayerModel description, DescribeLayerRequest output, OutputStream operation) throws IOException,
+    ServiceException ;
+    
 }

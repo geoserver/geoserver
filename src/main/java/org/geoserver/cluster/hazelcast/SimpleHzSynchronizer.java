@@ -23,6 +23,7 @@ import org.geoserver.config.SettingsInfo;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.Message;
+import com.yammer.metrics.Metrics;
 
 public class SimpleHzSynchronizer extends HzSynchronizer {
 
@@ -51,6 +52,8 @@ public class SimpleHzSynchronizer extends HzSynchronizer {
 
     @Override
     public void onMessage(Message<Event> message) {
+        Metrics.newCounter(getClass(), "recieved").inc();
+
         Event e = message.getMessageObject();
         if (localAddress(hz).equals(e.getSource())) {
             LOGGER.finer("Skipping message generated locally " + message);
@@ -76,12 +79,15 @@ public class SimpleHzSynchronizer extends HzSynchronizer {
                 try {
                     queue.clear();
                     gs.reload();
+
                 } catch (Exception e) {
                     LOGGER.log(Level.WARNING, "Reload failed", e);
                 }
                 finally {
                     reloadLock.set(false);
                 }
+
+                Metrics.newCounter(getClass(), "reloads").inc();
             }
         }, configWatcher.get().getSyncDelay(), TimeUnit.SECONDS);
     }
@@ -96,7 +102,7 @@ public class SimpleHzSynchronizer extends HzSynchronizer {
             LOGGER.fine("Publishing event");
         }
         topic.publish(newEvent());
-
+        Metrics.newCounter(getClass(), "dispatched").inc();
     }
 
 

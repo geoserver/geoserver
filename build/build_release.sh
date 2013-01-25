@@ -156,7 +156,7 @@ if [ -z $SKIP_GT ]; then
 
       gt_branch=${arr[0]}
       gt_rev=${arr[1]}
-      gt_dir=geotools
+      gt_dir=build/geotools/$gt_branch/$gt_rev
       if [ ! -e $gt_dir ]; then
          echo "cloning geotools repo from $GT_GIT_URL"
          git clone $GT_GIT_URL $gt_dir
@@ -199,7 +199,7 @@ if [ -z $SKIP_GWC ]; then
 
       gwc_branch=${arr[0]}
       gwc_rev=${arr[1]}
-      gwc_dir=geowebcache/$gwc_branch/$gwc_rev
+      gwc_dir=build/geowebcache/$gwc_branch/$gwc_rev
       if [ ! -e $gwc_dir ]; then
          mkdir -p $gwc_dir 
          echo "checking out geowebache ${gwc_branch}@${gwc_rev}"

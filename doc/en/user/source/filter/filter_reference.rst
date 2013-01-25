@@ -362,14 +362,17 @@ It contains data of one of the following types:
    * - **Type**
      - **Description**
    * - Numeric
-     - A string representing a numeric value.
+     - A string representing a numeric value (integer or decimal).
+   * - Boolean
+     - A boolean value of ``true`` or ``false``.
    * - String
      - A string value.
-       ``CDATA`` sections may be used to include non-XML compatible text
+       XML-incompatible text may be included by using 
+       **character entities** or ``<![CDATA[`` ``]]>`` delimiters.
    * - Date
      - A string representing a date.
    * - Geometry
-     - An element specifying a geometry in GML 3 format.
+     - An element specifying a geometry in GML3 format.
 
 
 

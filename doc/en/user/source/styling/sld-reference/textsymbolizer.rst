@@ -37,10 +37,10 @@ A ``<TextSymbolizer>`` contains the following elements:
      - Specifies the font information for the labels.
    * - ``<LabelPlacement>``
      - No
-     - Sets the position of the label relative its associate feature.
+     - Sets the position of the label relative to its associated feature.
    * - ``<Halo>``
      - No
-     - Creates a colored background around the text label, for low contrast situations.
+     - Creates a colored background around the text label, for improved legibility.
    * - ``<Fill>``
      - No
      - Specifies the fill color of the text label.
@@ -63,13 +63,14 @@ Label
 
 The ``<Label>`` element specifies the text that will be rendered as the label.
 It allows content of mixed type, which means that the content
-can be a mixture of string data and OGC Filter expressions.
+can be a mixture of string data and :ref:`sld_filter_expression`.
 These are concatenated to form the final label text.
 If a label is provided directly by a feature property, 
 the content is a single ``<PropertyName>``.
-Extra "boilerplate" text can be provide as well.
 Multiple properties can be included in the label,
 and property values can be manipulated by filter expressions and functions. 
+Additional "boilerplate" text can be provided as well.
+Whitespace can be preserved by surrounding it with XML ``<![CDATA[`` ``]]>`` delimiters.
 
 If this element is omitted, no label is rendered.
 
@@ -149,9 +150,10 @@ following sub-elements:
    * - ``<Displacement>``
      - No
      - Specifies that the label point should be offset from the original point.
-       The offset is specified by ``<DisplacementtX>`` and ``<DisplacementY>`` sub-elements,
+       The offset is specified by ``<DisplacementX>`` and ``<DisplacementY>`` sub-elements,
        with values in pixels.
        Values may contain :ref:`expressions <sld_reference_parameter_expressions>`.
+       Default is ``(0, 0)``.
    * - ``<Rotation>``
      - No
      - Specifies the rotation of the label in clockwise degrees
@@ -203,15 +205,18 @@ Within the ``<Halo>`` element there are two sub-elements which control the appea
        Default is ``1``.
    * - ``<Fill>``
      - No
-     - Specifies the color of the halo in the form ``#RRGGBB``.  
-       Value may contain :ref:`expressions <sld_reference_parameter_expressions>`.
-       Default is white (``#FFFFFF``). 
+     - Specifies the color and opacity of the halo
+       via ``CssParameter`` elements for ``fill`` and ``fill-opacity``.
+       See :ref:`sld_reference_fill` for full syntax.
+       The parameter values may contain :ref:`expressions <sld_reference_parameter_expressions>`.
+       Default is a **white** fill (``#FFFFFF``) at **100%** opacity. 
 
 Fill
 ^^^^
 
 The ``<Fill>`` element specifies the fill style for the label text.  
-The syntax is identical to that of the ``PolygonSymbolizer`` :ref:`sld_reference_fill` element.
+The syntax is the same as that of the ``PolygonSymbolizer`` :ref:`sld_reference_fill` element.
+The default fill color is **black** (``#FFFFFF``).
      
 Example
 -------

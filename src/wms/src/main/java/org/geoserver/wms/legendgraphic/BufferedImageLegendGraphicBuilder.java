@@ -22,8 +22,12 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.map.ImageUtils;
 import org.geotools.data.DataUtilities;
+import org.geotools.feature.NameImpl;
 import org.geotools.feature.SchemaException;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.feature.type.GeometryDescriptorImpl;
+import org.geotools.feature.type.GeometryTypeImpl;
 import org.geotools.geometry.jts.LiteShape2;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.renderer.lite.StyledShapePainter;
@@ -46,13 +50,18 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.IllegalAttributeException;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.feature.type.GeometryType;
 import org.opengis.util.InternationalString;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
 /**
@@ -234,11 +243,10 @@ public class BufferedImageLegendGraphicBuilder {
                 layersImages.add(image);
             } else {
                 
-                // final SimpleFeature sampleFeature;
-                final Feature sampleFeature;
+                Feature sampleFeature;
                 if (layer == null) {
                     sampleFeature = createSampleFeature();
-                } else {
+                } else {                    
                     sampleFeature = createSampleFeature(layer);
                 }
                 final FeatureTypeStyle[] ftStyles = gt2Style.featureTypeStyles().toArray(
@@ -281,6 +289,26 @@ public class BufferedImageLegendGraphicBuilder {
                             hintsMap);
                     graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                             RenderingHints.VALUE_ANTIALIAS_ON);
+                    Feature sample = null;
+                    
+                    // if we have a generic Geometry type, we need to create a sampleFeature
+                    // looking at the requested symbolizers (we chose the one with the max
+                    // dimensionality and create a congruent sample)
+                    if(sampleFeature == null) {
+                        int dimensionality = 1;
+                        for (int sIdx = 0; sIdx < symbolizers.length; sIdx++) {
+                            final Symbolizer symbolizer = symbolizers[sIdx];
+                            if(LineSymbolizer.class.isAssignableFrom(symbolizer.getClass())) {
+                                dimensionality = 2;
+                            }
+                            if(PolygonSymbolizer.class.isAssignableFrom(symbolizer.getClass())) {
+                                dimensionality = 3;
+                            }
+                        }
+                        sample = createSampleFeature(layer, dimensionality);
+                    } else {
+                        sample = sampleFeature;
+                    }
                     
                     for (int sIdx = 0; sIdx < symbolizers.length; sIdx++) {
                         final Symbolizer symbolizer = symbolizers[sIdx];
@@ -288,8 +316,8 @@ public class BufferedImageLegendGraphicBuilder {
                         if (symbolizer instanceof RasterSymbolizer) {
                             throw new IllegalStateException(
                                     "It is not legal to have a RasterSymbolizer here");
-                        } else {
-                            Style2D style2d = styleFactory.createStyle(sampleFeature, symbolizer,
+                        } else {                            
+                            Style2D style2d = styleFactory.createStyle(sample, symbolizer,
                                     scaleRange);
                             LiteShape2 shape = getSampleShape(symbolizer, w, h);
                             
@@ -621,6 +649,86 @@ public class BufferedImageLegendGraphicBuilder {
 
     /**
      * Creates a sample Feature instance in the hope that it can be used in the rendering of the
+     * legend graphic, using the given dimensionality for the geometry attribute.
+     * 
+     * @param schema
+     *            the schema for which to create a sample Feature instance
+     * @param dimensionality
+     *            the geometry dimensionality required (ovverides the one defined in the schema)
+     *            1= points, 2= lines, 3= polygons
+     * 
+     * @return
+     * 
+     * @throws ServiceException
+     */
+    private Feature createSampleFeature(FeatureType schema, int dimensionality)
+            throws ServiceException {
+        if (schema instanceof SimpleFeatureType) {
+            schema = cloneWithDimensionality(schema, dimensionality);
+        }
+    
+        return createSampleFeature(schema);
+    }
+
+    /**
+     * Clones the given schema, changing the geometry attribute to
+     * match the given dimensionality.
+     * 
+     * @param schema schema to clone
+     * @param dimensionality dimensionality for the geometry
+     *         1= points, 2= lines, 3= polygons
+     * @return
+     */
+    private FeatureType cloneWithDimensionality(FeatureType schema,
+            int dimensionality) {
+        SimpleFeatureType simpleFt = (SimpleFeatureType) schema;
+        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+        builder.setName(schema.getName());
+        builder.setCRS(schema.getCoordinateReferenceSystem());
+        for (AttributeDescriptor desc : simpleFt.getAttributeDescriptors()) {
+            if(isMixedGeometry(desc)) {
+                GeometryDescriptor geomDescriptor = (GeometryDescriptor) desc;
+                GeometryType geomType = geomDescriptor.getType();
+                
+                Class<?> geometryClass = getGeometryForDimensionality(dimensionality);
+                
+                GeometryType gt = new GeometryTypeImpl(geomType.getName(),
+                        geometryClass,
+                        geomType.getCoordinateReferenceSystem(),
+                        geomType.isIdentified(), geomType.isAbstract(),
+                        geomType.getRestrictions(), geomType.getSuper(),
+                        geomType.getDescription());
+   
+                builder.add(new GeometryDescriptorImpl(gt, geomDescriptor
+                        .getName(), geomDescriptor.getMinOccurs(),
+                        geomDescriptor.getMaxOccurs(), geomDescriptor
+                                .isNillable(), geomDescriptor.getDefaultValue()));
+            } else {
+                builder.add(desc);
+            }
+        }
+        schema = builder.buildFeatureType();
+        return schema;
+    }
+    
+    /**
+     * Creates a Geometry class for the given dimensionality.
+     *  
+     * @param dimensionality
+     * @return
+     */
+    private Class<?> getGeometryForDimensionality(int dimensionality) {
+        if (dimensionality == 1) {
+            return Point.class;
+        }
+        if (dimensionality == 2) {
+            return LineString.class;
+        }
+        return Polygon.class;
+    }
+
+    /**
+     * Creates a sample Feature instance in the hope that it can be used in the rendering of the
      * legend graphic.
      * 
      * @param schema
@@ -632,9 +740,14 @@ public class BufferedImageLegendGraphicBuilder {
      */
     private Feature createSampleFeature(FeatureType schema) throws ServiceException {
         Feature sampleFeature;
-        try {
+        try {            
             if (schema instanceof SimpleFeatureType) {
-                sampleFeature = SimpleFeatureBuilder.template((SimpleFeatureType) schema, null);
+                if (hasMixedGeometry((SimpleFeatureType)schema)) {
+                    // we can't create a sample for a generic Geometry type
+                    sampleFeature = null;
+                } else {                
+                    sampleFeature = SimpleFeatureBuilder.template((SimpleFeatureType) schema, null);
+                }
             } else {
                 sampleFeature = DataUtilities.templateFeature(schema);
             }
@@ -642,6 +755,35 @@ public class BufferedImageLegendGraphicBuilder {
             throw new ServiceException(e);
         }
         return sampleFeature;
+    }
+
+    /**
+     * Checks if the given schema contains a GeometryDescriptor that has a generic
+     * Geometry type.
+     * 
+     * @param schema
+     * @return
+     */
+    private boolean hasMixedGeometry(SimpleFeatureType schema) {
+        for (AttributeDescriptor attDesc : schema.getAttributeDescriptors()) {
+            if(isMixedGeometry(attDesc)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the given AttributeDescriptor describes a generic Geometry.
+     * 
+     * @param attDesc
+     */
+    private boolean isMixedGeometry(AttributeDescriptor attDesc) {
+        if (attDesc instanceof GeometryDescriptor
+                && attDesc.getType().getBinding() == Geometry.class) {
+            return true;
+        }
+        return false;
     }
     
 

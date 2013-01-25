@@ -36,7 +36,6 @@ All versions of WFS support the these operations:
    * - ``Transaction`` 
      - Edits existing feature types by creating, updating, and deleting 
 
-The following operations are available in **version 2.0.0 only**:
 
 .. list-table::
    :widths: 20 80
@@ -70,8 +69,26 @@ The following operations are available in **version 1.1.0 only**:
 
 .. note:: In the examples that follow, the fictional URL ``http://example.com/geoserver/wfs`` is used for illustration. To test the examples, substitute the address of a valid WFS. Also, although the request would normally be defined on one line with no breaks, breaks are added for clarity in the examples provided. 
 
-.. _wfs_getcap:
+The supported values for exceptions are:
 
+.. list-table::
+   :widths: 15 35 50
+   
+   * - **Format**
+     - **Syntax**
+     - **Notes**
+   * - XML
+     - ``EXCEPTIONS=text/xml``
+     - Xml output. (The default format)
+   * - JSON
+     - ``EXCEPTIONS=application/json``
+     - Simple Json representation.
+   * - JSONP
+     - ``EXCEPTIONS=text/javascript``
+     - Return a JsonP in the form: paddingOutput(...jsonp...). See :ref:`wms_vendor_parameters` to change the callback name.
+
+.. _wfs_getcap:
+     
 GetCapabilities
 ~~~~~~~~~~~~~~~
 
@@ -145,10 +162,10 @@ DescribeFeatureType
 
 **DescribeFeatureType** requests information about an individual feature type before requesting the actual data. Specifically, the operation will request a list of features and attributes for the given feature type, or list the feature types available.
 
-The parameters for DescribeFeatureType are:
+The standard parameters for the DescribeFeatureType operation are:
 
 .. list-table::
-   :widths: 20 20 60
+   :widths: 20 10 70
    :header-rows: 1
    
    * - Parameter
@@ -156,10 +173,11 @@ The parameters for DescribeFeatureType are:
      - Description
    * - ``service``
      - Yes
-     - Service name—Value is ``WFS``
+     - Service name. Value is ``WFS``.
    * - ``version``
      - Yes
-     - Service version—Value is the current version number
+     - Service version—Value is the current version number. Value is ``1.1.0``.
+
    * - ``request``
      - Yes
      - Operation name—Value is ``DescribeFeatureType``
@@ -188,6 +206,57 @@ To list information about a specific feature type called ``namespace:featuretype
      request=DescribeFeatureType&
      typeName=namespace:featuretype
 
+
+.. code-block:: xml 
+
+   http://localhost:8080/geoserver/wfs?
+      REQUEST=DescribeFeatureType&SERVICE=WFS&VERSION=1.1.0
+      &EXCEPTIONS=application/json
+      &outputFormat=text/javascript
+      &typeName=sf:roads
+
+Here is the result (if the JsonP format is enabled):
+
+.. code-block:: xml 
+
+   parseResponse(
+   {
+      elementFormDefault: "qualified",
+      targetNamespace: "http://www.openplans.org/spearfish",
+      targetPrefix: "sf",
+      featureTypes: [
+         {
+         typeName: "roads",
+         properties: [
+            {
+            name: "the_geom",
+            maxOccurs: 1,
+            minOccurs: 0,
+            nillable: true,
+            type: "gml:MultiLineString",
+            localType: "MultiLineString"
+            },
+            {
+            name: "cat",
+            maxOccurs: 1,
+            minOccurs: 0,
+            nillable: true,
+            type: "xsd:int",
+            localType: "int"
+            },
+            {
+            name: "label",
+            maxOccurs: 1,
+            minOccurs: 0,
+            nillable: true,
+            type: "xsd:string",
+            localType: "string"
+            }
+         ]
+         }
+      ]
+   }
+   )
 .. _wfs_getfeature:
 
 GetFeature

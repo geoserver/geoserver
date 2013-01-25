@@ -95,7 +95,7 @@ public class ConcurrentTileFactory implements TileFactory, TileRecycler {
 
             Long key = getKey(db.getDataType(), db.getNumBanks(), db.getSize());
             if (LOGGER.isLoggable(Level.FINER)) {
-                LOGGER.log(Level.FINER,
+                LOGGER.log(Level.INFO,
                         "Recycling tile hit on type:{1}, banks: {2}, arrayLength: {3}",
                         new Object[] { db.getDataType(), db.getNumBanks(), db.getSize() });
             }
@@ -260,7 +260,7 @@ public class ConcurrentTileFactory implements TileFactory, TileRecycler {
         return Raster.createWritableRaster(sampleModel, db, location);
     }
 
-    private static long getBufferSizeCSM(ComponentSampleModel csm) {
+    static long getBufferSizeCSM(ComponentSampleModel csm) {
         int[] bandOffsets = csm.getBandOffsets();
         int maxBandOff = bandOffsets[0];
         for (int i = 1; i < bandOffsets.length; i++)

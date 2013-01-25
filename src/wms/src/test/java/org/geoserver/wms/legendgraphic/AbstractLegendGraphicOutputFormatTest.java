@@ -14,6 +14,7 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,7 +35,6 @@ import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.map.ImageUtils;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.NameImpl;
@@ -44,6 +44,7 @@ import org.geotools.feature.type.AttributeTypeImpl;
 import org.geotools.feature.type.GeometryDescriptorImpl;
 import org.geotools.feature.type.GeometryTypeImpl;
 import org.geotools.referencing.CRS;
+import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.resources.coverage.FeatureUtilities;
 import org.geotools.resources.image.ImageUtilities;
 import org.geotools.styling.Rule;
@@ -59,7 +60,6 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
@@ -434,12 +434,7 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         List<Style> styles = new ArrayList<Style>();
         req.setStyles(styles);
     
-        StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory(null);
-        SLDParser stylereader = new SLDParser(styleFactory, getClass().getResource(
-                "MixedGeometry.sld"));
-        Style[] style = stylereader.readXML();
-    
-        styles.add(style[0]);
+        styles.add(readSLD("MixedGeometry.sld"));
     
         this.legendProducer.buildLegendGraphic(req);
     
@@ -456,6 +451,259 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         // PointSymbolizer
         assertPixel(image, 10, 50, new Color(255,0,0));
     
+    }
+    
+    /**
+     * Tests that symbols are not bigger than the requested icon size.
+     */
+    @org.junit.Test
+    public void testSymbolContainedInIcon() throws Exception {
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+    
+        FeatureTypeInfo ftInfo = getCatalog()
+                .getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(),
+                        MockData.MPOINTS.getLocalPart());
+    
+        List<FeatureType> layers = new ArrayList<FeatureType>();
+        layers.add(ftInfo.getFeatureType());
+        req.setLayers(layers);
+    
+        List<Style> styles = new ArrayList<Style>();
+        req.setStyles(styles);
+    
+        styles.add(readSLD("BigSymbol.sld"));
+    
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+        
+        
+        assertNotBlank("testSymbolSize", image, LegendUtils.DEFAULT_BG_COLOR);
+    
+        // background at borders
+        assertPixel(image, 1, 1, new Color(255, 255, 255));
+    
+        // symbol in the center
+        assertPixel(image, 10, 10, new Color(255, 0, 0));
+    }
+    
+    /**
+     * Tests that symbols are not bigger than the requested icon size, also
+     * if an expression is used for the symbol Size.
+     */
+    @org.junit.Test
+    public void testSymbolContainedInIconUsingExpression() throws Exception {
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+    
+        FeatureTypeInfo ftInfo = getCatalog()
+                .getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(),
+                        MockData.MPOINTS.getLocalPart());
+    
+        List<FeatureType> layers = new ArrayList<FeatureType>();
+        layers.add(ftInfo.getFeatureType());
+        req.setLayers(layers);
+    
+        List<Style> styles = new ArrayList<Style>();
+        req.setStyles(styles);
+    
+        styles.add(readSLD("SymbolExpression.sld"));
+    
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+        
+        assertNotBlank("testSymbolContainedInIconUsingExpression", image, LegendUtils.DEFAULT_BG_COLOR);
+    
+        // background at borders
+        assertPixel(image, 1, 1, new Color(255, 255, 255));
+    
+        // symbol in the center
+        assertPixel(image, 10, 10, new Color(255, 0, 0));
+        
+        
+    }
+    
+    /**
+     * Tests that symbols relative sizes are proportional.
+     */
+    @org.junit.Test
+    public void testProportionalSymbolSize() throws Exception {
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+        
+        FeatureTypeInfo ftInfo = getCatalog()
+                .getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(),
+                        MockData.MPOINTS.getLocalPart());
+    
+        List<FeatureType> layers = new ArrayList<FeatureType>();
+        layers.add(ftInfo.getFeatureType());
+        req.setLayers(layers);
+    
+        List<Style> styles = new ArrayList<Style>();
+        req.setStyles(styles);
+    
+        styles.add(readSLD("ProportionalSymbols.sld"));
+    
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+        
+        assertNotBlank("testProportionalSymbolSize", image, LegendUtils.DEFAULT_BG_COLOR);
+    
+        // biggest symbol
+        assertPixel(image, 1, 1, new Color(255, 255, 255));
+        assertPixel(image, 5, 5, new Color(255, 0, 0));
+        assertPixel(image, 10, 10, new Color(255, 0, 0));
+        
+        // second symbol
+        assertPixel(image, 1, 21, new Color(255, 255, 255));
+        assertPixel(image, 5, 25, new Color(255, 255, 255));
+        assertPixel(image, 7, 27, new Color(255, 0, 0));
+        assertPixel(image, 10, 30, new Color(255, 0, 0));
+        
+        // third symbol
+        assertPixel(image, 1, 41, new Color(255, 255, 255));
+        assertPixel(image, 5, 45, new Color(255, 255, 255));
+        assertPixel(image, 6, 46, new Color(255, 255, 255));
+        assertPixel(image, 10, 50, new Color(255, 0, 0));
+        
+        // smallest symbol
+        assertPixel(image, 1, 61, new Color(255, 255, 255));        
+        assertPixel(image, 6, 68, new Color(255, 255, 255));
+        assertPixel(image, 10, 70, new Color(255, 0, 0));
+    }
+    
+    /**
+     * Tests that symbols relative sizes are proportional also if using uoms.
+     */
+    @org.junit.Test
+    public void testProportionalSymbolSizeUOM() throws Exception {
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+        
+        FeatureTypeInfo ftInfo = getCatalog()
+                .getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(),
+                        MockData.MPOINTS.getLocalPart());
+    
+        List<FeatureType> layers = new ArrayList<FeatureType>();
+        layers.add(ftInfo.getFeatureType());
+        req.setLayers(layers);
+    
+        List<Style> styles = new ArrayList<Style>();
+        req.setStyles(styles);
+    
+        styles.add(readSLD("ProportionalSymbolsUOM.sld"));
+    
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+                
+        
+        assertNotBlank("testProportionalSymbolSize", image, LegendUtils.DEFAULT_BG_COLOR);
+    
+        // biggest symbol
+        assertPixel(image, 1, 1, new Color(255, 255, 255));
+        assertPixel(image, 5, 5, new Color(255, 0, 0));
+        assertPixel(image, 10, 10, new Color(255, 0, 0));
+        
+        // second symbol
+        assertPixel(image, 1, 21, new Color(255, 255, 255));
+        assertPixel(image, 5, 25, new Color(255, 255, 255));
+        assertPixel(image, 7, 27, new Color(255, 0, 0));
+        assertPixel(image, 10, 30, new Color(255, 0, 0));
+        
+        // third symbol
+        assertPixel(image, 1, 41, new Color(255, 255, 255));
+        assertPixel(image, 5, 45, new Color(255, 255, 255));
+        assertPixel(image, 6, 46, new Color(255, 255, 255));
+        assertPixel(image, 10, 50, new Color(255, 0, 0));
+        
+        // smallest symbol
+        assertPixel(image, 1, 61, new Color(255, 255, 255));        
+        assertPixel(image, 6, 68, new Color(255, 255, 255));
+        assertPixel(image, 10, 70, new Color(255, 0, 0));
+    }
+    
+    /**
+     * Tests that symbols relative sizes are proportional also if using uoms
+     * in some Symbolizer and not using them in others.
+     */
+    @org.junit.Test
+    public void testProportionalSymbolSizePartialUOM() throws Exception {
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+        
+        req.setScale(RendererUtilities.calculatePixelsPerMeterRatio(10, Collections.EMPTY_MAP));
+        
+        FeatureTypeInfo ftInfo = getCatalog()
+                .getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(),
+                        MockData.MPOINTS.getLocalPart());
+    
+        List<FeatureType> layers = new ArrayList<FeatureType>();
+        layers.add(ftInfo.getFeatureType());
+        req.setLayers(layers);
+    
+        List<Style> styles = new ArrayList<Style>();
+        req.setStyles(styles);
+    
+        styles.add(readSLD("ProportionalSymbolsPartialUOM.sld"));
+    
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+        
+        assertNotBlank("testProportionalSymbolSize", image, LegendUtils.DEFAULT_BG_COLOR);
+    
+        // UOM symbol
+        assertPixel(image, 1, 1, new Color(255, 255, 255));
+        assertPixel(image, 5, 5, new Color(255, 0, 0));
+        assertPixel(image, 10, 10, new Color(255, 0, 0));
+        
+        // non UOM symbol
+        assertPixel(image, 1, 1, new Color(255, 255, 255));
+        assertPixel(image, 5, 5, new Color(255, 0, 0));
+        assertPixel(image, 10, 10, new Color(255, 0, 0));
+    }
+    
+    /**
+     * Tests that minSymbolSize legend option is respected.
+     */
+    @org.junit.Test
+    public void testMinSymbolSize() throws Exception {
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+        
+        FeatureTypeInfo ftInfo = getCatalog()
+                .getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(),
+                        MockData.MPOINTS.getLocalPart());
+    
+        Map<String,String> options = new HashMap<String,String>();
+        options.put("minSymbolSize", "10");
+        req.setLegendOptions(options);
+        
+        List<FeatureType> layers = new ArrayList<FeatureType>();
+        layers.add(ftInfo.getFeatureType());
+        req.setLayers(layers);
+    
+        List<Style> styles = new ArrayList<Style>();
+        req.setStyles(styles);
+    
+        styles.add(readSLD("ProportionalSymbols.sld"));
+    
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+        
+        assertNotBlank("testProportionalSymbolSize", image, LegendUtils.DEFAULT_BG_COLOR);
+    
+        // biggest symbol
+        assertPixel(image, 1, 1, new Color(255, 255, 255));
+        assertPixel(image, 5, 5, new Color(255, 0, 0));
+        assertPixel(image, 10, 10, new Color(255, 0, 0));
+        
+        // smallest symbol
+        assertPixel(image, 1, 61, new Color(255, 255, 255));
+        assertPixel(image, 7, 67, new Color(255, 0, 0));
+        assertPixel(image, 10, 70, new Color(255, 0, 0));
+    }
+
+    /**
+     * @param sldName
+     * @return
+     * @throws IOException
+     */
+    private Style readSLD(String sldName) throws IOException {
+        StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory(null);
+        SLDParser stylereader = new SLDParser(styleFactory, getClass().getResource(
+                sldName));
+        Style[] readStyles = stylereader.readXML();
+    
+        Style style = readStyles[0];
+        return style;
     }
     
     private int getTitleHeight(GetLegendGraphicRequest req) {    

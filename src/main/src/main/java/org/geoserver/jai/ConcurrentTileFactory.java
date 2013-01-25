@@ -260,7 +260,7 @@ public class ConcurrentTileFactory implements TileFactory, TileRecycler {
         return Raster.createWritableRaster(sampleModel, db, location);
     }
 
-    private static long getBufferSizeCSM(ComponentSampleModel csm) {
+    static long getBufferSizeCSM(ComponentSampleModel csm) {
         int[] bandOffsets = csm.getBandOffsets();
         int maxBandOff = bandOffsets[0];
         for (int i = 1; i < bandOffsets.length; i++)

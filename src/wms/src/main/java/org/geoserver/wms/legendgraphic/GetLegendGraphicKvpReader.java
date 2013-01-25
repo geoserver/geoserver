@@ -11,15 +11,19 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LayerInfo.Type;
 import org.geoserver.ows.KvpRequestReader;
+import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.MapLayerInfo;
@@ -27,17 +31,17 @@ import org.geoserver.wms.WMS;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.factory.FactoryRegistryException;
 import org.geotools.factory.GeoTools;
+import org.geotools.feature.SchemaException;
 import org.geotools.resources.coverage.FeatureUtilities;
-import org.geotools.styling.FeatureTypeStyle;
-import org.geotools.styling.Rule;
 import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.geotools.util.NullProgressListener;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
-import org.vfny.geoserver.util.Requests;
+import org.opengis.referencing.operation.TransformException;
 
 /**
  * Key/Value pair set parsed for a GetLegendGraphic request. When calling <code>getRequest</code>
@@ -114,31 +118,31 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                     "MissingFormat");
         }
 
-        MapLayerInfo mli = null;
+        // object representing the layer or layer group requested
+        Object infoObject=null;
+        
+        // list of layers to render in the legend (we can have more
+        // than one if a layergroup is requested)
+        List<FeatureType> layers = new ArrayList<FeatureType>();
         if (layer != null) {
-            LayerInfo layerInfo = wms.getLayerByName(layer);
-            if (layerInfo == null) {
-                throw new ServiceException(layer + " layer does not exist.");
-            }
-
-            mli = new MapLayerInfo(layerInfo);
-
             try {
-                if (layerInfo.getType() == Type.VECTOR) {
-                    FeatureType featureType = mli.getFeature().getFeatureType();
-                    request.setLayer(featureType);
-                } else if (layerInfo.getType() == Type.RASTER) {
-                    CoverageInfo coverageInfo = mli.getCoverage();
-
-                    // it much safer to wrap a reader rather than a coverage in most cases, OOM can
-                    // occur otherwise
-                    final AbstractGridCoverage2DReader reader;
-                    reader = (AbstractGridCoverage2DReader) coverageInfo.getGridCoverageReader(
-                            new NullProgressListener(), GeoTools.getDefaultHints());
-                    final SimpleFeatureCollection feature;
-                    feature = FeatureUtilities.wrapGridCoverageReader(reader, null);
-                    request.setLayer(feature.getSchema());
+                LayerInfo layerInfo = wms.getLayerByName(layer);
+                if (layerInfo != null) {
+                    addLayer(layers,layerInfo,request);
+                    infoObject=layerInfo;
+                } else {
+                    LayerGroupInfo layerGroupInfo = wms.getLayerGroupByName(layer);
+                    if(layerGroupInfo != null) {
+                        // add all single layers of the group
+                        for(LayerInfo singleLayer : layerGroupInfo.getLayers()) {
+                            addLayer(layers,singleLayer,request);
+                        }
+                        infoObject=layerGroupInfo;
+                    } else {
+                        throw new ServiceException(layer + " layer does not exist.");
+                    }
                 }
+                request.setLayers(layers);
             } catch (IOException e) {
                 throw new ServiceException(e);
             } catch (NoSuchElementException ne) {
@@ -147,6 +151,9 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
             } catch (Exception te) {
                 throw new ServiceException("Can't obtain the schema for the required layer.", te);
             }
+        } else {
+            layers.add(null);
+            request.setLayers(layers);
         }
 
         if (request.getFormat() == null) {
@@ -158,12 +165,81 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
         }
 
         try {
-            parseOptionalParameters(request, mli, rawKvp);
+            parseOptionalParameters(request, infoObject, rawKvp);
+            
+            if (layers.size() != request.getStyles().size()) {
+                String msg = layers.size() + " layers requested, but found " + request.getStyles().size()
+                        + " styles specified. ";
+                throw new ServiceException(msg, getClass().getName());
+            }
+            
+            if (request.getRules().size()>0 && layers.size() != request.getRules().size()) {
+                String msg = layers.size() + " layers requested, but found " + request.getRules().size()
+                        + " rules specified. ";
+                throw new ServiceException(msg, getClass().getName());
+            }
         } catch (IOException e) {
             throw new ServiceException(e);
         }
-
+        
         return request;
+    }
+
+    /**
+     * Adds a new layer to the current list of layers to be drawn
+     * on the legend, and maps a title for it.
+     * 
+     * @param layers list of layers the current layer has to be added to
+     * @param layerInfo layer description
+     * @param req the GetLegendGrap
+     * @throws FactoryRegistryException
+     * @throws IOException
+     * @throws TransformException
+     * @throws SchemaException
+     */
+    private void addLayer(List<FeatureType> layers,
+            LayerInfo layerInfo, GetLegendGraphicRequest req) throws FactoryRegistryException, IOException, TransformException, SchemaException {
+        FeatureType featureType=getLayerFeatureType(layerInfo);
+        if(featureType != null) {
+            MapLayerInfo mli=new MapLayerInfo(layerInfo);
+            // maps a title, if label is defined on layer
+            if(mli.getLabel() != null) {
+                req.setTitle(featureType.getName(),mli.getLabel());
+            }
+            layers.add(featureType);
+        } else {
+            throw new ServiceException("Cannot get FeatureType for Layer",
+                    "MissingFeatureType");
+        }
+    }
+
+    /**
+     * Extracts a FeatureType for a given layer
+     * 
+     * @param layerInfo vector or raster layer
+     * @return the FeatureType for the given layer
+     * @throws IOException
+     * @throws FactoryRegistryException
+     * @throws TransformException
+     * @throws SchemaException
+     */
+    private FeatureType getLayerFeatureType(LayerInfo layerInfo) throws IOException, FactoryRegistryException, TransformException, SchemaException {
+        MapLayerInfo mli=new MapLayerInfo(layerInfo);
+        if (layerInfo.getType() == Type.VECTOR) {
+            FeatureType featureType = mli.getFeature().getFeatureType();
+            return featureType;
+        } else if (layerInfo.getType() == Type.RASTER) {
+            CoverageInfo coverageInfo = mli.getCoverage();
+            // it much safer to wrap a reader rather than a coverage in most cases, OOM can
+            // occur otherwise
+            final AbstractGridCoverage2DReader reader;
+            reader = (AbstractGridCoverage2DReader) coverageInfo.getGridCoverageReader(
+                    new NullProgressListener(), GeoTools.getDefaultHints());
+            final SimpleFeatureCollection feature;
+            feature = FeatureUtilities.wrapGridCoverageReader(reader, null);
+            return feature.getSchema();
+        }
+        return null;
     }
 
     /**
@@ -186,17 +262,16 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
      * 
      * @param req
      *            The request to set the properties to.
-     * @param mli
-     *            the {@link MapLayerInfo layer} for which the legend graphic is to be produced,
-     *            from where to extract the style information.
+     * @param infoObj   a {@link LayerInfo layer} or a {@link LayerGroupInfo layerGroup}
+     *                  for which the legend graphic is to be produced,
+     *                  from where to extract the style information.
      * @throws IOException
      * 
      * @task TODO: validate EXCEPTIONS parameter
      */
-    private void parseOptionalParameters(GetLegendGraphicRequest req, MapLayerInfo mli, Map rawKvp)
+    private void parseOptionalParameters(GetLegendGraphicRequest req, Object infoObj, Map rawKvp)
             throws IOException {
-
-        parseStyleAndRule(req, mli, rawKvp);
+        parseStyleAndRule(req, infoObj, rawKvp);
     }
 
     /**
@@ -218,50 +293,112 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
      * @param ftype
      * @throws IOException
      */
-    private void parseStyleAndRule(GetLegendGraphicRequest req, MapLayerInfo layer, Map rawKvp)
+    private void parseStyleAndRule(GetLegendGraphicRequest req, Object infoObj, Map rawKvp)
             throws IOException {
-        String styleName = (String) rawKvp.get("STYLE");
+        // gets the list of styles requested
+        String listOfStyles = (String) rawKvp.get("STYLE");
+        if(listOfStyles == null) {
+            listOfStyles = "";
+        }
+        List<String> styleNames = KvpUtils.readFlat(listOfStyles);
+        
+        
         String sldUrl = (String) rawKvp.get("SLD");
         String sldBody = (String) rawKvp.get("SLD_BODY");
 
         if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine(new StringBuffer("looking for style ").append(styleName).toString());
+            LOGGER.fine(new StringBuffer("looking for styles ").append(listOfStyles).toString());
         }
 
-        Style sldStyle = null;
+        List<Style> sldStyles = new ArrayList<Style>();
 
         if (sldUrl != null) {
             if (LOGGER.isLoggable(Level.FINER)) {
                 LOGGER.finer("taking style from SLD parameter");
             }
 
-            Style[] styles = loadRemoteStyle(sldUrl); // may throw an
-            // exception
-
-            sldStyle = findStyle(styleName, styles);
+            addStylesFrom(sldStyles,styleNames,loadRemoteStyle(sldUrl));
+            
         } else if (sldBody != null) {
             if (LOGGER.isLoggable(Level.FINER)) {
                 LOGGER.finer("taking style from SLD_BODY parameter");
             }
-
-            Style[] styles = parseSldBody(sldBody); // may throw an exception
-            sldStyle = findStyle(styleName, styles);
-        } else if ((styleName != null) && !"".equals(styleName)) {
+            addStylesFrom(sldStyles,styleNames,parseSldBody(sldBody));
+            
+        } else if (styleNames.size() > 0) {
             if (LOGGER.isLoggable(Level.FINER)) {
                 LOGGER.finer("taking style from STYLE parameter");
             }
-
-            sldStyle = wms.getStyleByName(styleName);
+            int pos=0;
+            for(String styleName : styleNames) {
+                // if we have a layer group and no style is specified
+                // use the default one for the layer in the current position
+                if (styleName.equals("") && infoObj instanceof LayerGroupInfo) {
+                    LayerGroupInfo layerGroupInfo = (LayerGroupInfo) infoObj;
+                    if (pos < layerGroupInfo.getLayers().size()) {
+                        sldStyles.add(getStyleFromLayer(layerGroupInfo.getLayers()
+                                .get(pos)));
+                    }
+                } else {
+                    sldStyles.add(wms.getStyleByName(styleName));
+                }
+                pos++;
+            }
+            
         } else {
-            sldStyle = layer.getDefaultStyle();
+            if(infoObj instanceof LayerInfo) {
+                sldStyles.add(getStyleFromLayer((LayerInfo)infoObj));
+            } else if(infoObj instanceof LayerGroupInfo) {
+                LayerGroupInfo layerGroupInfo=(LayerGroupInfo)infoObj;
+                for (int count = 0; count < layerGroupInfo.getLayers().size(); count++) {
+                    if (count < layerGroupInfo.getStyles().size()
+                            && layerGroupInfo.getStyles().get(count) != null) {
+                        sldStyles.add(layerGroupInfo.getStyles().get(count)
+                                .getStyle());
+                    } else {
+                        LayerInfo layerInfo = layerGroupInfo.getLayers().get(count);
+                        sldStyles.add(getStyleFromLayer(layerInfo));
+                    }
+                }
+            }
         }
 
-        req.setStyle(sldStyle);
+        req.setStyles(sldStyles);
 
         String rule = (String) rawKvp.get("RULE");
+        
         if (rule != null) {
-            req.setRule(rule);
+            List<String> ruleNames = KvpUtils.readFlat(rule);
+            req.setRules(ruleNames);
         }
+    }
+
+    /**
+     * Gets the default style for the given layer
+     * @param layerInfo layer requested
+     * @return default style of the layer
+     */
+    private Style getStyleFromLayer(LayerInfo layerInfo) {
+        MapLayerInfo mli=new MapLayerInfo(layerInfo);
+        return mli.getDefaultStyle();
+    }
+
+    /**
+     * Adds styles whose name matches names from a given source of styles.
+     * 
+     * @param sldStyles final styles container
+     * @param styleNames names of styles to find in the given source
+     * @param source list of styles from a given source
+     */
+    private void addStylesFrom(List<Style> sldStyles, List<String> styleNames, Style[] source) {
+        if(styleNames.size() == 0) { 
+            sldStyles.add(findStyle(null, source));
+        } else {
+            for(String styleName : styleNames) {
+                sldStyles.add(findStyle(styleName, source));
+            }
+        }
+        
     }
 
     /**

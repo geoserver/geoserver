@@ -114,7 +114,8 @@ It contains the element:
 PropertyIsBetweeen operator
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The ``<PropertyIsBetween>`` operator tests whether an expression value lies within a range.
+The ``<PropertyIsBetween>`` operator tests whether an expression value lies within a range
+given by a lower and upper bound (inclusive).
 It contains the elements:
 
 .. list-table::
@@ -316,7 +317,7 @@ Examples
 Expression
 ----------
 
-**Filter expressions** perform computation on data values.
+**Filter expressions** specify constant, variable or computed data values.
 An expression is formed from one of the following elements
 (some of which contain sub-expressions,
 meaning that expressions may be of arbitrary depth):

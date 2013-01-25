@@ -95,7 +95,7 @@ public class ConcurrentTileFactory implements TileFactory, TileRecycler {
 
             Long key = getKey(db.getDataType(), db.getNumBanks(), db.getSize());
             if (LOGGER.isLoggable(Level.FINER)) {
-                LOGGER.log(Level.INFO,
+                LOGGER.log(Level.FINER,
                         "Recycling tile hit on type:{1}, banks: {2}, arrayLength: {3}",
                         new Object[] { db.getDataType(), db.getNumBanks(), db.getSize() });
             }

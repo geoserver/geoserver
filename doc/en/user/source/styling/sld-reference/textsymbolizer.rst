@@ -43,17 +43,18 @@ A ``<TextSymbolizer>`` contains the following elements:
      - Creates a colored background around the label text, for improved legibility.
    * - ``<Fill>``
      - No
-     - The fill color of the label text.
+     - The fill style of the label text.
    * - ``<Graphic>``
      - No
      - A graphic to be displayed behind the label text.
-       See :ref:`sld_reference_graphic` for syntax.
+       See :ref:`sld_reference_graphic` for content syntax.
    * - ``<Priority>``
      - No
      - The priority of the label during conflict resolution.
-       See :ref:`labeling_priority`.
+       Content may contains :ref:`expressions <sld_reference_parameter_expressions>`. 
+       See also :ref:`labeling_priority`.
    * - ``<VendorOption>``
-     - No
+     - 0..N
      - A GeoServer-specific option.
        See :ref:`sld_reference_labeling` for descriptions of the available options.
        Any number of options may be specified.
@@ -232,8 +233,19 @@ Fill
 
 The ``<Fill>`` element specifies the fill style for the label text.  
 The syntax is the same as that of the ``PolygonSymbolizer`` :ref:`sld_reference_fill` element.
-The default fill color is **black** (``#FFFFFF``).
+The default fill color is **black** (``#FFFFFF``) at **100%** opacity..
      
+Graphic
+^^^^^^^
+
+The ``<Graphic>`` element specifies a graphic symbol to be displayed behind the label text (if any).
+A classic use for this is to display "highway shields" behind road numbers
+provided by feature attributes.
+The element content has the same syntax as the ``<PointSymbolizer>`` :ref:`sld_reference_graphic` element.
+Graphics can be provided by internal :ref:`mark symbols <pointsymbols>`, or by external images or SVG files.
+Their size and aspect ratio can be changed to match the text displayed with them
+by using the vendor options :ref:`labeling_graphic_resize` and :ref:`labeling_graphic_margin`.
+
 Example
 -------
 

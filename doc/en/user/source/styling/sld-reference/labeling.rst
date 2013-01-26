@@ -229,17 +229,17 @@ These options are specified as subelements of ``<TextSymbolizer>``.
 Priority Labeling 
 ^^^^^^^^^^^^^^^^^
 
-The optional ``<Priority>`` element allows specifying label priority based on 
-an attribute of a dataset. 
-This allows controlling how conflicts (overlaps) between feature labels
-are resolved during rendering.
-The content of the element may contain an :ref:`expression <sld_reference_parameter_expressions>` 
-to retrieve or calculate a priority value for each feature.
+The optional ``<Priority>`` element allows specifying label priority.. 
+This controls how conflicts (overlaps) between labels are resolved during rendering.
+The element content may be an :ref:`expression <sld_reference_parameter_expressions>` 
+to retrieve or calculate a relative priority value for each feature in a layer.
+Alternatively, the content may be a constant value,
+to set the priority of a layer's labels relative to other layers on a rendered map.
 
 .. note:: **Standard SLD Conflict Resolution**
 
   If the ``<Priority>`` element is not present, then standard SLD label conflict resolution is used.
-  Under this strategy, in a group of conflicting labels the label to display is chosen essentially at random.
+  Under this strategy, the label to display out of a group of conflicting labels is chosen essentially at random.
 
 For example, take the following dataset of cities::
 
@@ -456,13 +456,18 @@ The size should be wide enough to accommodate the longest word, otherwise single
 
   <VendorOption name="autoWrap">50</VendorOption>
 
+.. figure:: img/label_autoWrap.png	
+
+*Labeling with autoWrap enabled* 
+
 .. _labeling_force_left_to_right:
 
 forceLeftToRight
 ^^^^^^^^^^^^^^^^
 
-The labeller tries to draw labels so that they can be read, meaning the label does not always follow the line orientation, but sometimes it's flipped 180° instead to allow for normal reading. 
-This may get in the way if the label is a directional arrow, and you're trying to show one way directions (assuming the geometry is oriented along the one way, and that you have a flag to discern one ways from streets with both circulations).
+The renderer tries to draw labels for optimal legibility.  
+This means the label may not follow the line orientation, but is flipped 180° instead to allow easy reading. 
+In some cases altering the orientation of the label is not desired; for example, if the label is a directional arrow showing the orientation of the line.
 
 The ``forceLeftToRight`` option can be set to ``false`` to disable label flipping, making the label always follow the inherent orientation of the line being labelled:
 
@@ -532,6 +537,8 @@ This option allows GeoServer to try alternate rotations for the labels.
      - If the label does not fit horizontally the minimum bounding rectangle will be computed and a label aligned to it will be tried out as well
      
      
+.. _labeling_graphic_resize:
+
 graphic-resize
 ^^^^^^^^^^^^^^
 
@@ -565,6 +572,8 @@ If this option is used the ``graphic-margin`` option may also be specified.
 
 *Improved labeling using "graphic-resize"=stretch and "graphic-margin"=3* 
      
+.. _labeling_graphic_margin:
+
 graphic-margin
 ^^^^^^^^^^^^^^
 

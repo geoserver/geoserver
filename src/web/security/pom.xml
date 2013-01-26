@@ -60,5 +60,31 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
+	<build>
+	  <plugins>
+	   <plugin>
+	    <artifactId>maven-jar-plugin</artifactId>
+	    <configuration>
+	      <archive>
+		<manifestSections>
+		  <manifestSection>
+		    <name>org/geoserver/security/web/passwd</name>
+		    <manifestEntries>
+		      <Sealed>true</Sealed>
+		    </manifestEntries>
+		  </manifestSection>
+		 </manifestSections>
+	      </archive>
+	    </configuration>
+	    <executions>
+	      <execution>
+		<phase>package</phase>
+		<goals>
+		   <goal>test-jar</goal>
+		</goals>
+	      </execution>
+	    </executions>
+	   </plugin>
+	  </plugins>
+	</build>
 </project>

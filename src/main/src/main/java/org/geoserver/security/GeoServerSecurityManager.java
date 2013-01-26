@@ -1753,21 +1753,39 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         }
         
         String message = null;
-        
+        File info = new File(getSecurityRoot(),MASTER_PASSWD_INFO_FILENAME);
+        char[] masterPasswordArray=null;
         if (masterPW!=null) {
             message="Master password is identical to the password of user: "+username;
-        } else {
-            masterPW = new String(getRandomPassworddProvider().getRandomPassword(8));
-            message="The generated master password is: "+masterPW;
-        }
+            masterPasswordArray=masterPW.toCharArray();
+            writeMasterPasswordInfo(info,message,null);
+        } else {            
+            message="The generated master password is: ";
+            masterPasswordArray = getRandomPassworddProvider().getRandomPassword(8);
+            writeMasterPasswordInfo(info,message,masterPasswordArray);
+        }                                
         
-        File info = new File(getSecurityRoot(),MASTER_PASSWD_INFO_FILENAME);
-        BufferedWriter w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(info)));
+        LOGGER.info("Information regarding the master password is in: "+ info.getCanonicalPath());        
+        return masterPasswordArray;
+    }
+
+    /**
+     * Writes a file containing info about the master password.
+     * 
+     * @param file
+     * @param message
+     * @param masterPasswordArray
+     * @throws IOException
+     */
+    void writeMasterPasswordInfo(File file,String message,char[] masterPasswordArray) throws IOException {
+        BufferedWriter w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)));
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");                
         w.write("This file was created at "+dateFormat.format(new Date()));
         w.newLine();
         w.newLine();
         w.write(message);
+        if (masterPasswordArray!=null) 
+            w.write(masterPasswordArray);
         w.newLine();
         w.newLine();
         w.write("Test the master password by logging in as user \"root\"");
@@ -1775,12 +1793,59 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         w.newLine();
         w.write("This file should be removed after reading !!!.");
         w.newLine();
-        w.close();
-        
-        LOGGER.info("Information regarding the master password is in: "+ info.getCanonicalPath());
-        return masterPW.toCharArray();
+        w.close();        
     }
-
+    
+    /**
+     * Method to dump master password to a file
+     * 
+     * The file name is the shared secret between the administrator and GeoServer.
+     * 
+     * The method inspects the stack trace to check for an authorized calling method.
+     * The authenticated principal has to be an administrator
+     * 
+     * If authorization fails, a warning is written in the log and the return
+     * code is <code>false</code>. On success, the return code is <code>true</code>. 
+     * 
+     * @param file
+     * @return
+     * @throws IOException
+     */
+    public boolean dumpMasterPassword(File file) throws IOException {
+        
+                
+        if (checkAuthenticationForAdminRole()==false) {
+            LOGGER.warning("Unautorized user tries to dump master password");
+            return false;
+        }
+        
+        String[][] allowedMethods = new String [][]{
+                {"org.geoserver.security.GeoServerSecurityManagerTest","testMasterPasswordDump"},
+                {"org.geoserver.security.web.passwd.MasterPasswordInfoPage","dumpMasterPassword"}
+        };
+        
+        StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+        StackTraceElement element = stackTraceElements[2];
+        
+        boolean isAllowed=false;
+        for (String[] methodEntry : allowedMethods) {
+            if (methodEntry[0].equals(element.getClassName())&& 
+                    methodEntry[1].equals(element.getMethodName())) {
+                isAllowed=true;
+                break;
+            }
+        }
+        if (!isAllowed) {
+            LOGGER.warning("Dump master password is called be yn unautorized method:  "+
+                    element.getClassName()+":"+element.getMethodName());
+            return false;
+        }
+        
+        String message = "The current master password is: ";
+        writeMasterPasswordInfo(file, message, getMasterPassword());
+        return true;
+    }
+    
     
     /**
      * converts an 2.1.x security configuration to 2.2.x

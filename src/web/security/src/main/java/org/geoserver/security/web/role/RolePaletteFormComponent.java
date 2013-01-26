@@ -90,4 +90,16 @@ public class RolePaletteFormComponent extends PaletteFormComponent<GeoServerRole
     public List<GeoServerRole> getSelectedRoles() {
         return new ArrayList(palette.getModelCollection());
     }
+    
+    @Override
+    protected String getSelectedHeaderPropertyKey() {
+        return "RolePaletteFormComponent.selectedHeader";
+    }
+    
+    @Override
+    protected String getAvaliableHeaderPropertyKey() {
+        // TODO Auto-generated method stub
+        return "RolePaletteFormComponent.availableHeader";
+    }
+
 }

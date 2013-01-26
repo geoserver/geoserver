@@ -189,7 +189,7 @@ Examples:
 Composing labels from multiple attributes
 -----------------------------------------
 
-The ``<Label>`` element in TextSymbolizer is said to be mixed, that is, its content can be a mixture of plain text and OGC Expressions. The mix gets interepreted as a concatenation, this means you can leverage it to get complex labels out of multiple attributes.
+The ``<Label>`` element in TextSymbolizer is said to be mixed, that is, its content can be a mixture of plain text and OGC Expressions. The mix gets interepreted as a concatenation, this means you can leverage it to create complex labels out of multiple attributes.
 
 For example, if you want both a state name and its abbreviation to appear in a label, you can do the following:
 
@@ -199,9 +199,10 @@ For example, if you want both a state name and its abbreviation to appear in a l
     <ogc:PropertyName>STATE_NAME</ogc:PropertyName> (<ogc:PropertyName>STATE_ABBR</ogc:PropertyName>)
   </Label>
 
-and you'll get a label such as **Texas (TX)**.
+and you'll get a label looking like ``Texas (TX)``.
 
-If you need to add extra white space or newline, you'll stumble into an xml oddity.  The whitespace handling in the Label element is following a XML mandated rule called "collapse", in which all leading and trailing whitespaces have to be removed, whilst all whitespaces (and newlines) in the middle of the xml element are collapsed into a single whitespace.
+If you need to add extra white space or newline, you'll stumble into an XML oddity.  
+The whitespace handling in the Label element is following a XML rule called "collapse", in which all leading and trailing whitespaces have to be removed, whilst all whitespaces (and newlines) in the middle of the xml element are collapsed into a single whitespace.
 
 So, what if you need to insert a newline or a sequence of two or more spaces between your property names? Enter CDATA. CDATA is a special XML section that has to be returned to the interpreter as-is, without following any whitespace handling rule.
 So, for example, if you wanted to have the state abbreviation sitting on the next line you'd use the following:
@@ -232,7 +233,7 @@ The optional ``<Priority>`` element allows specifying label priority based on
 an attribute of a dataset. 
 This allows controlling how conflicts (overlaps) between feature labels
 are resolved during rendering.
-The content of the ``<Priority>`` element is a *Filter Expression* 
+The content of the element may contain an :ref:`expression <sld_reference_parameter_expressions>` 
 to retrieve or calculate a priority value for each feature.
 
 .. note:: **Standard SLD Conflict Resolution**
@@ -313,7 +314,7 @@ If desired the labeller can be forced to label every element in a group by speci
 .. warning::  
    Be careful that the labels truly indicate features that should be grouped together. 
    For example, grouping on city name alone might end up creating a group
-   containing both Paris (France) and Paris (Texas).
+   containing both *Paris* (France) and *Paris* (Texas).
 
 Road data is a classic example to show why grouping is useful.  
 It is usually desirable to display only a single label for all of "Main Street", 
@@ -335,8 +336,8 @@ This produces a much less cluttered map:
 
 .. _labeling_space_around:
 
-Overlapping and Separating Labels (<VendorOption name="spaceAround">)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Overlapping and Separating Labels (spaceAround)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 By default GeoServer will not render labels "on top of each other". 
 By using the ``spaceAround`` option you can either allow labels to overlap,
@@ -352,7 +353,7 @@ Using the default value of 0, the bounding box of a label cannot overlap the bou
 .. figure:: img/space_0.png
    :align: center
 
-With a negative spaceAround value, overlapping is allowed:
+With a negative ``spaceAround`` value, overlapping is allowed:
 
 .. figure:: img/space_neg.png
    :align: center
@@ -448,7 +449,8 @@ When used in conjunction with :ref:`labeling_follow_line`, the ``maxAngleDelta``
 autoWrap
 ^^^^^^^^
 
-The ``autoWrap`` option wraps labels when they exceed the given value, given in pixels. Make sure to give a dimension wide enough to accommodate the longest word other wise this option will split words over multiple lines.
+The ``autoWrap`` option wraps labels when they exceed the given width (in pixels). 
+The size should be wide enough to accommodate the longest word, otherwise single words will be split over multiple lines.
 
 .. code-block:: xml
 
@@ -459,7 +461,8 @@ The ``autoWrap`` option wraps labels when they exceed the given value, given in 
 forceLeftToRight
 ^^^^^^^^^^^^^^^^
 
-The labeller always tries to draw labels so that they can be read, meaning the label does not always follow the line orientation, but sometimes it's flipped 180° instead to allow for normal reading. This may get in the way if the label is a directional arrow, and you're trying to show one way directions (assuming the geometry is oriented along the one way, and that you have a flag to discern one ways from streets with both circulations).
+The labeller tries to draw labels so that they can be read, meaning the label does not always follow the line orientation, but sometimes it's flipped 180° instead to allow for normal reading. 
+This may get in the way if the label is a directional arrow, and you're trying to show one way directions (assuming the geometry is oriented along the one way, and that you have a flag to discern one ways from streets with both circulations).
 
 The ``forceLeftToRight`` option can be set to ``false`` to disable label flipping, making the label always follow the inherent orientation of the line being labelled:
 
@@ -482,8 +485,8 @@ This means the label will be drawn even if it overlaps with other labels, and ot
 
 .. _labeling_goodness_of_fit:
 
-Goodness of Fit
-^^^^^^^^^^^^^^^
+goodnessOfFit
+^^^^^^^^^^^^^
 
 Geoserver will remove labels if they are a particularly bad fit for the geometry they are labeling.
 
@@ -505,10 +508,11 @@ The default value is 0.5, but it can be modified using:
 
   <VendorOption name="goodnessOfFit">0.3</VendorOption>
   
-Polygon alignment
-^^^^^^^^^^^^^^^^^
+polygonAlign
+^^^^^^^^^^^^
 
-GeoServer normally tries to place horizontal labels within a polygon, and give up in case the label position is busy or if the label does not fit enough in the polygon. This options allows GeoServer to try alternate rotations for the labels.
+GeoServer normally tries to place labels horizontally within a polygon, and gives up if the label position is busy or if the label does not fit enough in the polygon. 
+This option allows GeoServer to try alternate rotations for the labels.
 
 .. code-block:: xml
 
@@ -520,12 +524,55 @@ GeoServer normally tries to place horizontal labels within a polygon, and give u
 
    * - **Option** 
      - **Description**
-   * - manual
-     - The default value, only the rotation manually specified in the ``<Rotation>`` tag will be used
-   * - ortho
-     - If the label does not fit horizontally and the polygon is taller than wider the vertical alignement will also be tried
-   * - mbr
+   * - ``manual``
+     - The default value. Only a rotation manually specified in the ``<Rotation>`` tag will be used
+   * - ``ortho``
+     - If the label does not fit horizontally and the polygon is taller than wider then vertical alignment will also be tried
+   * - ``mbr``
      - If the label does not fit horizontally the minimum bounding rectangle will be computed and a label aligned to it will be tried out as well
      
      
+graphic-resize
+^^^^^^^^^^^^^^
+
+When a ``<Graphic>`` is specified for a label by default it is displayed at its native size
+and aspect ratio.
+The ``graphic-resize`` option instructs the renderer to magnify or stretch the graphic to fully contain the text of the label.
+If this option is used the ``graphic-margin`` option may also be specified.
+
+.. code-block:: xml
+
+  <VendorOption name="graphic-resize">stretch</VendorOption>
+
+
+.. list-table::
+   :widths: 30 70 
+
+   * - **Option** 
+     - **Description**
+   * - ``none``
+     - Graphic is displayed at its native size (default)
+   * - ``proportional``
+     - Graphic size is increased uniformly to contain the label text
+   * - ``stretch``
+     - Graphic size is increased anisotropically to contain the label text
+     
+.. figure:: img/label_graphic-resize_none.png	
+
+*Labeling with a Graphic Mark "square" at native size. Squares do not fit labels optimally* 
+
+.. figure:: img/label_graphic-resize_stretch.png	
+
+*Improved labeling using "graphic-resize"=stretch and "graphic-margin"=3* 
+     
+graphic-margin
+^^^^^^^^^^^^^^
+
+The ``graphic-margin`` options specifies a margin (in pixels) to use around the label text 
+when the ``graphic-resize`` option is specified.
+
+.. code-block:: xml
+
+  <VendorOption name="graphic-margin">margin</VendorOption>
+
      

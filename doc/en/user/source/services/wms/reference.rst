@@ -206,13 +206,7 @@ The standard parameters for the GetMap operation are:
      - No
      - Format in which to report exceptions.
        Default value is ``application/vnd.ogc.se_xml``. 
-<<<<<<< HEAD
        Other valid values are ``application/vnd.ogc.inimage`` and ``application/vnd.ogc.se_blank``.
-=======
-   * - ``time``
-     - No
-     - Time value or range for map data.
-       See :ref:`wms_time` for more information.
    * - ``sld``
      - No
      - A URL referencing a :ref:`StyledLayerDescriptor <styling>` XML file
@@ -221,7 +215,6 @@ The standard parameters for the GetMap operation are:
      - No
      - A URL-encoded :ref:`StyledLayerDescriptor <styling>` XML document
        which controls or enhances map layers and styling     
->>>>>>> fb4666e... GEOS-[5346 5247] Cumulative fixes
 
        
 GeoServer provides a number of useful vendor-specific parameters, which are documented in the :ref:`wms_vendor_parameters` section.
@@ -344,13 +337,6 @@ The supported formats are:
      - ``info_format=text/javascript``
      - Returns a JsonP in the form: ``parseResponse(...json...)``. See :ref:`wms_vendor_parameters` to change the callback name. Note that this format is disabled by default (See :ref:`wms_global_variables`).
 
-<<<<<<< HEAD
-GeoServer provides a number of useful vendor-specific parameters
-for this operation, including ``buffer``, ``cql_filter``, ``filter`` and ``propertyName``.
-These are documented in the :ref:`wms_vendor_parameters` section.
-
-An example request for feature information in HTML format is:
-=======
 GeoServer provides the following vendor-specific parameters
 for the GetFeatureInfo operation.
 They are fully documented in the :ref:`wms_vendor_parameters` section.
@@ -375,7 +361,6 @@ They are fully documented in the :ref:`wms_vendor_parameters` section.
      - Feature properties to be returned
 
 An example request for feature information from the ``topp:states`` layer in HTML format is:
->>>>>>> fb4666e... GEOS-[5346 5247] Cumulative fixes
 
 .. code-block:: xml
 

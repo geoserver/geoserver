@@ -617,6 +617,10 @@
 		<constructor-arg ref="geoServer" />
 		<constructor-arg value="application/json" />
 	</bean>
+	<bean id="geoSimpleJSONGetFeatureResponse" class="org.geoserver.wfs.json.GeoJSONGetFeatureResponse">
+		<constructor-arg ref="geoServer" />
+		<constructor-arg value="json" />
+	</bean>
 
 	<!-- DescribeFeatureType JSONP -->
 	<bean id="jsonPDescribeFeatureTypeResponse" class="org.geoserver.wfs.json.JSONDescribeFeatureTypeResponse">

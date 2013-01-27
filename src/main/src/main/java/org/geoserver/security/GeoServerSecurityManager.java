@@ -2323,9 +2323,12 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
             // remove dynamic translation filter
             chain.getFilterNames().remove(GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER);
             chain.getFilterNames().remove(GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR);
-            chain.getFilterNames().remove(GeoServerSecurityFilterChain.FILTER_SECURITY_REST_INTERCEPTOR);
+            chain.getFilterNames().remove(GeoServerSecurityFilterChain.FILTER_SECURITY_REST_INTERCEPTOR);        
         }
+        // gui filter not needed any more
+        removeFilter(loadFilterConfig(GeoServerSecurityFilterChain.GUI_EXCEPTION_TRANSLATION_FILTER));
         saveSecurityConfig(config);
+        
         
         // load and store all filter configuration
         // some filter configurations may have their class name as top level xml element in config.xml,
@@ -2986,6 +2989,9 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
                 if (requestChain instanceof VariableFilterChain ) {
                     if (StringUtils.hasLength( ((VariableFilterChain)requestChain).getInterceptorName()))
                         writer.addAttribute("interceptorName",((VariableFilterChain)requestChain).getInterceptorName());
+                    if (StringUtils.hasLength( ((VariableFilterChain)requestChain).getExceptionTranslationName()))
+                        writer.addAttribute("exceptionTranslationName",((VariableFilterChain)requestChain).getExceptionTranslationName());
+
 
                 }
 
@@ -3026,6 +3032,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
                 String disabledString = reader.getAttribute("disabled");
                 String allowSessionCreationString = reader.getAttribute("allowSessionCreation");
                 String interceptorName = reader.getAttribute("interceptorName");
+                String exceptionTranslationName = reader.getAttribute("exceptionTranslationName");
                 String sslString=reader.getAttribute("ssl");
                 String matchHTTPMethodString=reader.getAttribute("matchHTTPMethod");
                 String httpMethodsString=reader.getAttribute("httpMethods");
@@ -3122,6 +3129,11 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
                 
                 if (requestChain instanceof VariableFilterChain) {                    
                     ((VariableFilterChain)requestChain).setInterceptorName(interceptorName);
+                    if (StringUtils.hasLength(exceptionTranslationName))
+                        ((VariableFilterChain)requestChain).setExceptionTranslationName(exceptionTranslationName);
+                    else
+                        ((VariableFilterChain)requestChain).
+                            setExceptionTranslationName(GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER);
                 }
                 requestChain.setFilterNames(filterNames);
                 filterChain.getRequestChains().add(requestChain);

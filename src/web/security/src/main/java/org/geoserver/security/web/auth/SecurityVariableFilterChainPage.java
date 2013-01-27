@@ -7,36 +7,19 @@ package org.geoserver.security.web.auth;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
-import org.apache.wicket.behavior.AttributeAppender;
-import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.SubmitLink;
-import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.exception.GeoServerExceptions;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.VariableFilterChain;
 import org.geoserver.security.config.SecurityManagerConfig;
-import org.geoserver.security.filter.GeoServerRoleFilter;
+import org.geoserver.security.filter.GeoServerExceptionTranslationFilter;
 import org.geoserver.security.filter.GeoServerSecurityInterceptorFilter;
-import org.geoserver.security.web.AbstractSecurityPage;
-import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.HelpLink;
-import org.geotools.util.logging.Logging;
 
 /**
  * Class for configuration panels of {@link VariableFilterChain} objects
@@ -69,9 +52,20 @@ public  class SecurityVariableFilterChainPage
                 
         super.initialize(chain, secMgrConfig, isNew, theForm, wrapper);
 
-                
-        
         List<String> filterNames=new ArrayList<String>();
+        try {  
+            filterNames.addAll(getSecurityManager().listFilters(GeoServerExceptionTranslationFilter.class));
+            for (GeoServerExceptionTranslationFilter filter : GeoServerExtensions.extensions(GeoServerExceptionTranslationFilter.class)){
+                filterNames.add(filter.getName());
+            }
+            form.add(new DropDownChoice<String>("exceptionTranslationName",
+                    new PropertyModel<String>(chainWrapper.getChain(), "exceptionTranslationName"),
+                    filterNames));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        
+        filterNames=new ArrayList<String>();
         try {  
             filterNames.addAll(getSecurityManager().listFilters(GeoServerSecurityInterceptorFilter.class));
             for (GeoServerSecurityInterceptorFilter filter :GeoServerExtensions.extensions(GeoServerSecurityInterceptorFilter.class)){

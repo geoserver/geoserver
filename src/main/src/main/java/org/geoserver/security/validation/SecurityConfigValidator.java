@@ -203,6 +203,20 @@ public class SecurityConfigValidator extends AbstractSecurityValidator{
                 throw createSecurityException(SecurityConfigException.INTERCEPTOR_FILTER_MANDATORY_$1,requestChain.getName());
             }
             
+            String exceptionTranslationName =  ((VariableFilterChain) requestChain).getExceptionTranslationName();
+            if (StringUtils.hasLength(exceptionTranslationName)) {
+                try {
+                    if (proxy.lookupFilter(exceptionTranslationName)==null) {                
+                        throw createSecurityException(SecurityConfigException.UNKNOWN_EXCEPTION_FILTER_$2,requestChain.getName(),exceptionTranslationName);
+                    }
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            } else {
+                throw createSecurityException(SecurityConfigException.EXCEPTION_FILTER_MANDATORY_$1,requestChain.getName());
+            }
+
+            
             int index = requestChain.getFilterNames().indexOf(GeoServerSecurityFilterChain.ANONYMOUS_FILTER);
             if (index!=-1 && index != requestChain.getFilterNames().size()-1)
                 throw createSecurityException(SecurityConfigException.ANONYMOUS_NOT_LAST_$1,requestChain.getName());

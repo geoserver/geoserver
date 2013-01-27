@@ -27,6 +27,14 @@ public class VariableFilterChainWrapper extends RequestFilterChainWrapper{
         getVariableFilterChain().setInterceptorName(interceptorName);
     }
     
+    public String getgetExceptionTranslationName() {
+        return getVariableFilterChain().getExceptionTranslationName();
+    }
+    public void setExceptionTranslationName(String exceptionTranslationName) {
+        getVariableFilterChain().setExceptionTranslationName(exceptionTranslationName);
+    }
+
+    
     public VariableFilterChain getVariableFilterChain() {
         return (VariableFilterChain) getChain();
     }

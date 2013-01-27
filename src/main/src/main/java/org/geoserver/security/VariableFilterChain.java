@@ -20,7 +20,7 @@ import java.util.SortedSet;
  */
 public abstract class VariableFilterChain extends RequestFilterChain {
 
-    String interceptorName;
+    String interceptorName, exceptionTranslationName;
     /**
      * 
      */
@@ -30,6 +30,7 @@ public abstract class VariableFilterChain extends RequestFilterChain {
     public VariableFilterChain(String... patterns) {
         super(patterns);     
         interceptorName=GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR;
+        exceptionTranslationName=GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER;
     }
 
     
@@ -50,7 +51,7 @@ public abstract class VariableFilterChain extends RequestFilterChain {
     @Override
     void createCompiledFilterList(List<String> list) {
         list.addAll(getFilterNames());
-        list.add(GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER);
+        list.add(exceptionTranslationName);
         list.add(interceptorName);
     }
     
@@ -89,6 +90,16 @@ public abstract class VariableFilterChain extends RequestFilterChain {
     @Override
     public boolean canBeRemoved() {
         return true;
+    }
+
+
+    public String getExceptionTranslationName() {
+        return exceptionTranslationName;
+    }
+
+
+    public void setExceptionTranslationName(String exceptionTranslationName) {
+        this.exceptionTranslationName = exceptionTranslationName;
     }
 
 

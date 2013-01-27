@@ -111,6 +111,8 @@ public class SecurityConfigException extends AbstractSecurityException {
     public static final String FILTER_CHAIN_NAME_NOT_UNIQUE_$1="FILTER_CHAIN_NAME_NOT_UNIQUE";
     public static final String UNKNOWN_INTERCEPTOR_FILTER_$2="UNKNOWN_INTERCEPTOR_FILTER";
     public static final String INTERCEPTOR_FILTER_MANDATORY_$1="INTERCEPTOR_FILTER_MANDATORY";
+    public static final String UNKNOWN_EXCEPTION_FILTER_$2="UNKNOWN_EXCEPTION_FILTER";
+    public static final String EXCEPTION_FILTER_MANDATORY_$1="INTERCEPTOR_EXCEPTION_MANDATORY";
             
     public static final String PATTERN_LIST_EMPTY_$1="PATTERN_LIST_EMPTY";
     public static final String ANONYMOUS_NOT_LAST_$1="ANONYMOUS_NOT_LAST";

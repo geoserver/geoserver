@@ -18,7 +18,7 @@ Catalog Styles
 ^^^^^^^^^^^^^^
 
 Styles in the catalog can be viewed, edited and validated via the :ref:`webadmin_styles` menu of the :ref:`web_admin`. 
-They may also be created and accessed via the :ref:`rest_extension` API.
+They may also be created and accessed via the REST :ref:`rest_api_styles` API.
 
 Catalog styles consist of a :ref:`sld_reference_sld` document 
 containing a single ``<NamedLayer>`` element, 
@@ -50,14 +50,17 @@ Styling can be defined externally to the server in a number of ways:
   
 In all of these cases, if the WMS ``layers`` parameter is not supplied
 then the map content is defined completely 
-by the layers and styles present in the SLD.
-If the ``layers`` parameter is present, then styling operates in **library mode**.
+by the layers and styles present in the external SLD.
+If the ``layers`` parameter is present, then styling operates in :ref:`sld_library_mode`.
 
-External styles can define new layers, 
-by using the :ref:`sld_reference_inlinefeature` element
-to provide feature data.
-External stying may be generated dynamically, 
-which provides a powerful way to control styling effects.
+External styles can define new layers of styled data, 
+by using the SLD :ref:`sld_reference_inlinefeature` element to provide feature data.
+This can be used to implement dynamic feature highlighting, for example.
+
+External styling may be generated dynamically by client applications, 
+This provides a powerful way for clients to control styling effects.
+
+.. _sld_library_mode:
 
 Library Mode
 ^^^^^^^^^^^^
@@ -73,19 +76,18 @@ take precedence over the catalog styles during rendering.
 Style lookup in library mode operates as follows:
 
 * For each layer in the ``layers`` list, the applied style is either 
-  a named style specified in the ``styles`` list (if present), or the default style
-* For a named style, if the eternal style document has a ``<NamedLayer>...<UserStyle>``
+  a named style specified in the ``styles`` list (if present), or the layer default style
+* For a **named** style, if the eternal style document has a ``<NamedLayer>...<UserStyle>``
   with matching layer name and style name, then it is used.
   Otherwise, the style name is searched for in the catalog.
   If it is not found there, an error occurs.
-* For a default style, the external style document is
+* For a **default** style, the external style document is
   searched to find a ``<NamedLayer>`` element with the layer name. 
   If it contains a ``<UserStyle>`` with the ``<IsDefault>`` element having the value ``1``
   then that style is used.
-  Otherwise the default server style (which must exist) is used.
+  Otherwise, the default server style for the layer (which must exist) is used.
 
-Generally it is simpler and more performant
-to use styles from the server catalog.
+Generally it is simpler and more performant to use styles from the server catalog.
 However, library mode can be useful if it is required to style a map containing many layers and 
 where only a few of them need to have their styling defined externally.
 
@@ -95,16 +97,16 @@ Viewing
 Once a style has been associated with a layer, the resulting rendering of the layer data
 can be viewed by using the :ref:`layerpreview`. 
 The most convenient output format to use is the built-in OpenLayers viewer.
-Styles can be modified while the view is open, and take effect as
-soon as the map view is moved or zoomed.
-Alternate styles can be viewed by setting them as the value of the ``styles`` parameter.
+Styles can be modified while the view is open, and their effect is visible as
+soon as the map view is panned or zoomed.
+Alternate styles can be viewed by specifying them in the ``styles`` WMS request parameter.
 
 To view the effect of compositing multiple styled layers, several approaches are available:
 
 * Create a **layer group** for the desired layers using the :ref:`webadmin_layergroups` page, and preview it.  
   Non-default styles can be specified for layers if required.
-* Submit a WMS :ref:`wms_getmap` GET request specifying the ``layers`` parameter, 
-  and the ``styles`` parameter if non-default styles are required.
+* Submit a WMS :ref:`wms_getmap` GET request specifying multiple layers in the ``layers`` parameter, 
+  and the corresponding styles in the ``styles`` parameter (if non-default styles are required).
 * Submit a WMS ``GetMap`` POST request containing a :ref:`sld_reference_sld` element
   specifying server layers, optional layers of inline data,
   and either named catalog styles or user-defined styling for each layer.

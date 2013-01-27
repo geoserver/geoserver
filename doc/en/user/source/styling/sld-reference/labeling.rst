@@ -342,7 +342,7 @@ Overlapping and Separating Labels (spaceAround)
 By default GeoServer will not render labels "on top of each other". 
 By using the ``spaceAround`` option you can either allow labels to overlap,
 or add extra space around labels.
-The value supplied for the option is a positive or negative size in pixels.
+The value supplied for the option is a positive or negative size, in pixels.
 
 .. code-block:: xml
  
@@ -358,20 +358,19 @@ With a negative ``spaceAround`` value, overlapping is allowed:
 .. figure:: img/space_neg.png
    :align: center
 
-With a positive ``spaceAround`` value of 10, each label will be 20 pixels apart from each other:
+With a positive ``spaceAround`` value of 10, each label is at least 20 pixels apart from others:
 
 .. figure:: img/space_10.png
    :align: center
 
-
 Positive ``spaceAround`` values actually provide twice the space that you might expect. 
 This is because you can specify a spaceAround for one label as 5, and for another label (in another TextSymbolizer) as 3. 
-The total distance between them will be 8. 
+The total distance between them is 8. 
 Two labels in the first symbolizer ("5") will each be 5 pixels apart from each other, for a total of 10 pixels.
 
 .. note:: **Interaction between values in different TextSymbolizers**
 
-  You can have multiple TextSymbolizers in your SLD file, each with a different spaceAround option. This will normally do what you would think if all your spaceAround options are >=0. If you have negative values ('allow overlap') then these labels can overlap labels that you've said should not be overlapping. If you dont like this behavior, its not too difficult to change - feel free to submit a patch!
+  You can have multiple TextSymbolizers in your SLD file, each with a different ``spaceAround`` option. If all the ``spaceAround`` options are >=0, this will do what you would normally expect. If you have negative values ('allow overlap') then these labels can overlap labels that you've said should not be overlapping. If you don't like this behavior, it's not difficult to change - feel free to submit a patch!
 
 .. _labeling_follow_line:
 
@@ -564,13 +563,13 @@ If this option is used the ``graphic-margin`` option may also be specified.
    * - ``stretch``
      - Graphic size is increased anisotropically to contain the label text
      
-.. figure:: img/label_graphic-resize_none.png	
+.. cssclass:: no-border
 
-*Labeling with a Graphic Mark "square" at native size. Squares do not fit labels optimally* 
-
-.. figure:: img/label_graphic-resize_stretch.png	
-
-*Improved labeling using "graphic-resize"=stretch and "graphic-margin"=3* 
+   =============================================  ================================================
+   .. figure:: img/label_graphic-resize_none.png  .. figure:: img/label_graphic-resize_stretch.png
+   =============================================  ================================================
+  
+*Labeling with a Graphic Mark "square" - L) at native size; R) with "graphic-resize"=stretch and "graphic-margin"=3* 
      
 .. _labeling_graphic_margin:
 

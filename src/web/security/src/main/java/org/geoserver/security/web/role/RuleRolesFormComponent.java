@@ -51,6 +51,16 @@ public class RuleRolesFormComponent extends RolePaletteFormComponent {
         return (Boolean) get("anyRole").getDefaultModelObject();
     }
 
+    @Override
+    protected String getSelectedHeaderPropertyKey() {
+        return "RuleRolesFormComponent.selectedHeader";
+    }
+    
+    @Override
+    protected String getAvaliableHeaderPropertyKey() {
+        return "RuleRolesFormComponent.availableHeader";
+    }
+
 //    
 //        add(hasAnyBox);
 //        if (hasStoredAnyRole(rootObject)) {

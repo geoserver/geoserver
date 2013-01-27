@@ -90,4 +90,14 @@ public class UserGroupPaletteFormComponent extends PaletteFormComponent<GeoServe
         }
 
     }
+    
+    @Override
+    protected String getSelectedHeaderPropertyKey() {
+        return "UserGroupPaletteFormComponent.selectedHeader";
+    }
+    
+    @Override
+    protected String getAvaliableHeaderPropertyKey() {
+        return "UserGroupPaletteFormComponent.availableHeader";
+    }
 }

@@ -5,10 +5,12 @@
 package org.geoserver.wms.wms_1_3;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +20,7 @@ import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
 
+import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -53,7 +56,6 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
         testData.setUpWcs10RasterLayers();
-        
     }
     
     @Override
@@ -84,6 +86,7 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         testData.addStyle("raster","raster.sld",CapabilitiesTest.class,catalog);
         testData.addStyle("rasterScales","rasterScales.sld",CapabilitiesTest.class,catalog);
         testData.addStyle("squares","squares.sld",CapabilitiesTest.class,catalog);
+        testData.addStyle("forestsManyRules", "ForestsManyRules.sld", CapabilitiesTest.class, catalog);
         testData.addVectorLayer(SQUARES,Collections.EMPTY_MAP,"squares.properties",
                 CapabilitiesTest.class,catalog);
         Map propertyMap = new HashMap();
@@ -218,6 +221,33 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         assertNotNull(result);
         assertTrue(result.indexOf("Green Forest") > 0);
     }
+    
+    @Test
+    public void testCustomTemplateManyRules() throws Exception {
+        // setup custom template
+        File root = getTestData().getDataDirectoryRoot();
+        File target = new File(root, "workspaces/" + MockData.FORESTS.getPrefix() + "/content.ftl");
+        File source = new File("./src/test/resources/org/geoserver/wms/content.ftl");
+        assertTrue(source.exists());
+        FileUtils.copyFile(source, target);
+        
+        // request with default style, just one rule
+        String layer = getLayerId(MockData.FORESTS);
+        String request = "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg&info_format=text/html&request=GetFeatureInfo&layers="
+                + layer + "&query_layers=" + layer + "&width=20&height=20&i=10&j=10";
+        Document dom = getAsDOM(request);
+        // print(dom);
+        
+        assertXpathExists("/html/body/ul/li/b[text() = 'Type: Forests']", dom);
+        
+        // request with a style having 21 rules, used to fail, see GEOS-5534
+        request = "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=forestsManyRules&format=jpeg&info_format=text/html&request=GetFeatureInfo&layers="
+                + layer + "&query_layers=" + layer + "&width=20&height=20&i=10&j=10";
+        dom = getAsDOM(request);
+        // print(dom);
+        
+        assertXpathExists("/html/body/ul/li/b[text() = 'Type: Forests']", dom);
+    }
 
     /**
      * Tests a simple GetFeatureInfo works, and that the result contains the expected polygon
@@ -234,7 +264,7 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         // count lines that do contain a forest reference
         assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[starts-with(.,'Forests.')])", dom);
     }
-
+    
     /**
      * Tests GetFeatureInfo with a buffer specified works, and that the result contains the expected
      * polygon

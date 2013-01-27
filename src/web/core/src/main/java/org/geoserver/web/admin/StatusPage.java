@@ -162,10 +162,6 @@ public class StatusPage extends ServerAdminPage {
                 target.addComponent(feedbackPanel);
             }
         });
-        
-        add(new Label("reload.date.geoserver", "Jul 14, 3:07 PM"));
-        add(new Label("reload.date.configuration", "Jul 14, 3:07 PM"));
-        add(new Label("reload.date.xml", "Mar 14, 2:15 PM"));
     }
 
     private void updateModel() {

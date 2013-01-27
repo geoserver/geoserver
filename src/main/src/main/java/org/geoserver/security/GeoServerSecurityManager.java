@@ -2305,7 +2305,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
                 chain.getFilterNames().remove(GeoServerSecurityFilterChain.SECURITY_CONTEXT_NO_ASC_FILTER);
             }
             // prepare web chain
-            if ("web".equals(chain.getName())) {
+            if (GeoServerSecurityFilterChain.WEB_CHAIN_NAME.equals(chain.getName())) {
                 // replace exception translation filter
                 int index = chain.getFilterNames().indexOf(GeoServerSecurityFilterChain.GUI_EXCEPTION_TRANSLATION_FILTER);
                 if (index!=-1)
@@ -3048,32 +3048,32 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
                 
                 // this is nasty but no other chance to migrate from GeoServer 2.2.0
                 if (classname==null) {
-                  if ("web".equals(name)) { 
+                  if (GeoServerSecurityFilterChain.WEB_CHAIN_NAME.equals(name)) { 
                       classname =HtmlLoginFilterChain.class.getName();
                       allowSessionCreationString="true";
                       interceptorName=GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR;
                   }
-                  if ("webLogin".equals(name)) {
+                  if (GeoServerSecurityFilterChain.WEB_LOGIN_CHAIN_NAME.equals(name)) {
                       classname = ConstantFilterChain.class.getName();
                       allowSessionCreationString="true";
                       interceptorName=GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR;
                   }
-                  if ("webLogout".equals(name)) {
+                  if (GeoServerSecurityFilterChain.WEB_LOGOUT_CHAIN_NAME.equals(name)) {
                       classname = LogoutFilterChain.class.getName();
                       allowSessionCreationString="true";
                       interceptorName=GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR;
                   }
-                  if ("rest".equals(name)) {
+                  if (GeoServerSecurityFilterChain.REST_CHAIN_NAME.equals(name)) {
                       classname = ServiceLoginFilterChain.class.getName();
                       allowSessionCreationString="false";
                       interceptorName=GeoServerSecurityFilterChain.FILTER_SECURITY_REST_INTERCEPTOR;
                   }
-                  if ("gwc".equals(name)) {
+                  if (GeoServerSecurityFilterChain.GWC_CHAIN_NAME.equals(name)) {
                       classname = ServiceLoginFilterChain.class.getName();
                       allowSessionCreationString="false";
                       interceptorName=GeoServerSecurityFilterChain.FILTER_SECURITY_REST_INTERCEPTOR;
                   }
-                  if ("default".equals(name)) {
+                  if (GeoServerSecurityFilterChain.DEFAULT_CHAIN_NAME.equals(name)) {
                       classname = ServiceLoginFilterChain.class.getName();
                       allowSessionCreationString="false";
                       interceptorName=GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR;

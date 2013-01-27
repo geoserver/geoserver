@@ -67,40 +67,51 @@ public class GeoServerSecurityFilterChain implements Serializable {
     public static final String FILTER_SECURITY_INTERCEPTOR = "interceptor";
     public static final String FILTER_SECURITY_REST_INTERCEPTOR = "restInterceptor";
 
+    // standard chain names as constant
+    public static final String WEB_CHAIN_NAME="web";
+    public static final String WEB_LOGIN_CHAIN_NAME="webLogin";
+    public static final String WEB_LOGOUT_CHAIN_NAME="webLogout";
+    public static final String REST_CHAIN_NAME="rest";
+    public static final String GWC_CHAIN_NAME="gwc";
+    public static final String DEFAULT_CHAIN_NAME="default";
+    
     static HtmlLoginFilterChain WEB = new HtmlLoginFilterChain(WEB_CHAIN, GWC_WEB_CHAIN);
     static {
-        WEB.setName("web");
+        WEB.setName(WEB_CHAIN_NAME);
         WEB.setFilterNames(REMEMBER_ME_FILTER, FORM_LOGIN_FILTER,ANONYMOUS_FILTER);
         WEB.setAllowSessionCreation(true);
     }
-
+    
+    
     private static ConstantFilterChain WEB_LOGIN = new ConstantFilterChain(FORM_LOGIN_CHAIN);
     static {
-        WEB_LOGIN.setName("webLogin");
+        WEB_LOGIN.setName(WEB_LOGIN_CHAIN_NAME);
         WEB_LOGIN.setFilterNames(FORM_LOGIN_FILTER);
     }
 
     private static LogoutFilterChain WEB_LOGOUT = new LogoutFilterChain(FORM_LOGOUT_CHAIN);
     static {
-        WEB_LOGOUT.setName("webLogout");
+        WEB_LOGOUT.setName(WEB_LOGOUT_CHAIN_NAME);
         WEB_LOGOUT.setFilterNames(FORM_LOGOUT_FILTER);
     }
 
     private static ServiceLoginFilterChain REST = new ServiceLoginFilterChain(REST_CHAIN);
     static {
-        REST.setName("rest");
+        REST.setName(REST_CHAIN_NAME);
         REST.setFilterNames( BASIC_AUTH_FILTER, ANONYMOUS_FILTER);
+        REST.setInterceptorName(FILTER_SECURITY_REST_INTERCEPTOR);
     }
 
     private static ServiceLoginFilterChain GWC = new ServiceLoginFilterChain(GWC_REST_CHAIN);
     static {
-        GWC.setName("gwc");
+        GWC.setName(GWC_CHAIN_NAME);
         GWC.setFilterNames( BASIC_AUTH_FILTER);
+        GWC.setInterceptorName(FILTER_SECURITY_REST_INTERCEPTOR);
     }
 
     private static ServiceLoginFilterChain DEFAULT = new ServiceLoginFilterChain(DEFAULT_CHAIN);
     static {
-        DEFAULT.setName("default");
+        DEFAULT.setName(DEFAULT_CHAIN_NAME);
         DEFAULT.setFilterNames( BASIC_AUTH_FILTER, ANONYMOUS_FILTER);
     }
 

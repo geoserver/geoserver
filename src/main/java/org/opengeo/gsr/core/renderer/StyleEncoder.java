@@ -362,6 +362,7 @@ public class StyleEncoder {
     }
 
     private static Symbolizer getSingleSymbolizer(Style style) {
+        if (style.featureTypeStyles() == null) return null;
         if (style.featureTypeStyles().size() != 1) return null;
         FeatureTypeStyle ftStyle = style.featureTypeStyles().get(0);
         if (ftStyle.rules().size() != 1) return null;

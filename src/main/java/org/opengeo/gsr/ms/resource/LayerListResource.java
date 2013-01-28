@@ -21,6 +21,7 @@ import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.styling.Style;
@@ -194,8 +195,18 @@ public class LayerListResource extends Resource {
                     if (layer.getResource() instanceof CoverageInfo) {
                         StyleEncoder.defaultRasterStyle(json);
                     } else {
-                        Style style = layer.getDefaultStyle().getStyle();
-                        Renderer renderer = StyleEncoder.styleToRenderer(style);
+                        final StyleInfo styleInfo = layer.getDefaultStyle();
+                        final Renderer renderer;
+                        if (styleInfo != null) {
+                            Style style = styleInfo.getStyle();
+                            if (style != null) {
+                                renderer = StyleEncoder.styleToRenderer(style);
+                            } else {
+                                renderer = null;
+                            }
+                        } else {
+                            renderer = null;
+                        }
                         if (renderer != null) {
                             StyleEncoder.encodeRenderer(json, renderer);
                         } else {
@@ -205,8 +216,18 @@ public class LayerListResource extends Resource {
                     break;
                 case POLYLINE:
                     {
-                        Style style = layer.getDefaultStyle().getStyle();
-                        Renderer renderer = StyleEncoder.styleToRenderer(style);
+                        final StyleInfo styleInfo = layer.getDefaultStyle();
+                        final Renderer renderer;
+                        if (styleInfo != null) {
+                            Style style = styleInfo.getStyle();
+                            if (style != null) {
+                                renderer = StyleEncoder.styleToRenderer(style);
+                            } else {
+                                renderer = null;
+                            }
+                        } else {
+                            renderer = null;
+                        }
                         if (renderer != null) {
                             StyleEncoder.encodeRenderer(json, renderer);
                         } else {
@@ -217,8 +238,18 @@ public class LayerListResource extends Resource {
                 case MULTIPOINT:
                 case POINT:
                     {
-                        Style style = layer.getDefaultStyle().getStyle();
-                        Renderer renderer = StyleEncoder.styleToRenderer(style);
+                        final StyleInfo styleInfo = layer.getDefaultStyle();
+                        final Renderer renderer;
+                        if (styleInfo != null) {
+                            Style style = styleInfo.getStyle();
+                            if (style != null) {
+                                renderer = StyleEncoder.styleToRenderer(style);
+                            } else {
+                                renderer = null;
+                            }
+                        } else {
+                            renderer = null;
+                        }
                         if (renderer != null) {
                             StyleEncoder.encodeRenderer(json, renderer);
                         } else {

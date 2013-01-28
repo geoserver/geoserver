@@ -54,8 +54,15 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
+      <artifactId>ows</artifactId>
+      <version>${gs.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
       <artifactId>rest</artifactId>
       <version>${gs.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -63,7 +70,49 @@
       <version>${gs.version}</version>
       <scope>provided</scope>
     </dependency>
-
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-api</artifactId>
+      <version>${gt.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-cql</artifactId>
+      <version>${gt.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-main</artifactId>
+      <version>${gt.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-metadata</artifactId>
+      <version>${gt.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-opengis</artifactId>
+      <version>${gt.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.thoughtworks.xstream</groupId>
+      <artifactId>xstream</artifactId>
+      <version>1.3.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.json-lib</groupId>
+      <artifactId>json-lib</artifactId>
+      <classifier>jdk15</classifier>
+      <version>2.2.3</version>
+      <scope>provided</scope>
+    </dependency>
     <!--  Test dependencies -->
     <dependency>
       <groupId>junit</groupId>

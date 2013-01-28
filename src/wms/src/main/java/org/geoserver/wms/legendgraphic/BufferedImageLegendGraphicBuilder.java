@@ -22,7 +22,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.map.ImageUtils;
 import org.geotools.data.DataUtilities;
-import org.geotools.feature.NameImpl;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.SchemaException;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -44,6 +44,7 @@ import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
 import org.geotools.styling.TextSymbolizer;
 import org.geotools.styling.visitor.DpiRescaleStyleVisitor;
+import org.geotools.styling.visitor.DuplicatingStyleVisitor;
 import org.geotools.styling.visitor.UomRescaleStyleVisitor;
 import org.geotools.util.NumberRange;
 import org.opengis.feature.Feature;
@@ -54,6 +55,9 @@ import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.GeometryType;
+import org.opengis.filter.FilterFactory;
+import org.opengis.filter.expression.Expression;
+import org.opengis.filter.expression.Literal;
 import org.opengis.util.InternationalString;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -124,6 +128,12 @@ public class BufferedImageLegendGraphicBuilder {
     private LiteShape2 samplePoint;
 
     /**
+     * Default minimum size for symbols rendering.
+     * Can be overridden using LEGEND_OPTIONS (minSymbolSize).
+     */
+    private final double MINIMUM_SYMBOL_SIZE = 3.0;
+    
+    /**
      * Default constructor. Subclasses may provide its own with a String parameter to establish its
      * desired output format, if they support more than one (e.g. a JAI based one)
      */
@@ -167,14 +177,11 @@ public class BufferedImageLegendGraphicBuilder {
                 forceLabelsOff = true;
             }
         }
-        
-        boolean forceTitlesOn = false;
+                
         boolean forceTitlesOff = false;
         if (request.getLegendOptions().get("forceTitles") instanceof String) {
             String forceTitlesOpt = (String) request.getLegendOptions().get("forceTitles");
-            if (forceTitlesOpt.equalsIgnoreCase("on")) {
-                forceTitlesOn = true;
-            } else if (forceTitlesOpt.equalsIgnoreCase("off")) {
+            if (forceTitlesOpt.equalsIgnoreCase("off")) {
                 forceTitlesOff = true;
             }
         }
@@ -200,7 +207,7 @@ public class BufferedImageLegendGraphicBuilder {
                 ruleName = null;
             }
             
-            // width and height, we might have to rescale those in case of DPI usage
+            // width and height, we might have to rescale those in case of DPI usage            
             int w = request.getWidth();
             int h = request.getHeight();
 
@@ -243,7 +250,7 @@ public class BufferedImageLegendGraphicBuilder {
                 layersImages.add(image);
             } else {
                 
-                Feature sampleFeature;
+                final Feature sampleFeature;
                 if (layer == null) {
                     sampleFeature = createSampleFeature();
                 } else {                    
@@ -277,10 +284,24 @@ public class BufferedImageLegendGraphicBuilder {
                 
                 final SLDStyleFactory styleFactory = new SLDStyleFactory();
                 
+                double minimumSymbolSize = MINIMUM_SYMBOL_SIZE;
+                // get minSymbolSize from LEGEND_OPTIONS, if defined
+                if (request.getLegendOptions().get("minSymbolSize") instanceof String) {
+                    String minSymbolSizeOpt = (String) request.getLegendOptions()
+                            .get("minSymbolSize");
+                    try {
+                        minimumSymbolSize = Double.parseDouble(minSymbolSizeOpt);
+                    } catch (NumberFormatException e) {
+                        throw new IllegalArgumentException(
+                                "Invalid minSymbolSize value: should be a number");
+                    }
+                }
+                // calculate the symbols rescaling factor necessary for them to be
+                // drawn inside the icon box
+                double symbolScale = calcSymbolScale(w, h, layer, sampleFeature,
+                        applicableRules, minimumSymbolSize);
+                
                 for (int i = 0; i < ruleCount; i++) {
-                    final Symbolizer[] symbolizers = applicableRules[i].getSymbolizers();
-                    
-                    // BufferedImage image = prepareImage(w, h, request.isTransparent());
                     
                     final RenderedImage image = ImageUtils.createImage(w, h, (IndexColorModel) null,
                             transparent);
@@ -289,40 +310,41 @@ public class BufferedImageLegendGraphicBuilder {
                             hintsMap);
                     graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                             RenderingHints.VALUE_ANTIALIAS_ON);
-                    Feature sample = null;
                     
-                    // if we have a generic Geometry type, we need to create a sampleFeature
-                    // looking at the requested symbolizers (we chose the one with the max
-                    // dimensionality and create a congruent sample)
-                    if(sampleFeature == null) {
-                        int dimensionality = 1;
-                        for (int sIdx = 0; sIdx < symbolizers.length; sIdx++) {
-                            final Symbolizer symbolizer = symbolizers[sIdx];
-                            if(LineSymbolizer.class.isAssignableFrom(symbolizer.getClass())) {
-                                dimensionality = 2;
-                            }
-                            if(PolygonSymbolizer.class.isAssignableFrom(symbolizer.getClass())) {
-                                dimensionality = 3;
-                            }
-                        }
-                        sample = createSampleFeature(layer, dimensionality);
-                    } else {
-                        sample = sampleFeature;
-                    }
+                    Feature sample = getSampleFeatureForRule(layer,
+                            sampleFeature, applicableRules[i]);
+                    
+                    FilterFactory ff = CommonFactoryFinder.getFilterFactory();
+                    final Symbolizer[] symbolizers = applicableRules[i].getSymbolizers();
                     
                     for (int sIdx = 0; sIdx < symbolizers.length; sIdx++) {
-                        final Symbolizer symbolizer = symbolizers[sIdx];
+                        Symbolizer symbolizer = symbolizers[sIdx];
                         
                         if (symbolizer instanceof RasterSymbolizer) {
                             throw new IllegalStateException(
                                     "It is not legal to have a RasterSymbolizer here");
-                        } else {                            
-                            Style2D style2d = styleFactory.createStyle(sample, symbolizer,
-                                    scaleRange);
+                        } else {
+                            // rescale symbols if needed
+                            if (symbolScale > 1.0
+                                    && symbolizer instanceof PointSymbolizer) {
+                                PointSymbolizer pointSymbolizer = cloneSymbolizer(symbolizer);
+                                if (pointSymbolizer.getGraphic() != null) {
+                                    double size = getPointSymbolizerSize(sample,
+                                            pointSymbolizer, Math.min(w, h) - 4);
+                                    pointSymbolizer.getGraphic().setSize(
+                                            ff.literal(size / symbolScale
+                                                    + minimumSymbolSize));
+    
+                                    symbolizer = pointSymbolizer;
+                                }
+                            }
+                            Style2D style2d = styleFactory.createStyle(sample,
+                                    symbolizer, scaleRange);
                             LiteShape2 shape = getSampleShape(symbolizer, w, h);
-                            
+    
                             if (style2d != null) {
-                                shapePainter.paint(graphics, shape, style2d, scaleDenominator);
+                                shapePainter.paint(graphics, shape, style2d,
+                                        scaleDenominator);
                             }
                         }
                     }
@@ -350,6 +372,131 @@ public class BufferedImageLegendGraphicBuilder {
             throw new IllegalArgumentException("no legend passed");
         }
         return finalLegend;
+    }
+
+    /**
+     * Clones the given (Point)Symbolizer.
+     * 
+     * @param symbolizer symbolizer to clone
+     * @return cloned PointSymbolizer
+     */
+    private PointSymbolizer cloneSymbolizer(Symbolizer symbolizer) {
+        DuplicatingStyleVisitor duplicator = new DuplicatingStyleVisitor();
+        symbolizer.accept(duplicator);
+        PointSymbolizer pointSymbolizer = (PointSymbolizer) duplicator
+                .getCopy();
+        return pointSymbolizer;
+    }
+
+    /**
+     * Calculates a global rescaling factor for all the symbols
+     * to be drawn in the given rules. This is to be sure all symbols
+     * are drawn inside the given w x h box.
+     * 
+     * @param width horizontal constraint
+     * @param height vertical constraint
+     * @param featureType FeatureType to be used for size extraction in expressions
+     *              (used to create a sample if feature is null)
+     * @param feature Feature to be used for size extraction in expressions
+     *              (if null a sample Feature will be created from featureType)
+     * @param rules set of rules to scan for symbols
+     * @param minimumSymbolSize lower constraint for the symbols size
+     * @return
+     */
+    private double calcSymbolScale(int width, int height, FeatureType featureType,
+            Feature feature, final Rule[] rules, double minimumSymbolsSize) {
+        // check for max and min size in rendered symbols
+        double minSize = Double.MAX_VALUE;
+        double maxSize = 0.0;
+    
+        final int ruleCount = rules.length;
+    
+        for (int i = 0; i < ruleCount; i++) {
+            Feature sample = getSampleFeatureForRule(featureType, feature, rules[i]);
+            final Symbolizer[] symbolizers = rules[i].getSymbolizers();
+            for (int sIdx = 0; sIdx < symbolizers.length; sIdx++) {
+                final Symbolizer symbolizer = symbolizers[sIdx];
+                if (symbolizer instanceof PointSymbolizer) {
+                    double size = getPointSymbolizerSize(sample,
+                            (PointSymbolizer) symbolizer, Math.min(width, height));
+                    if (size < minSize) {
+                        minSize = size;
+                    }
+                    if (size > maxSize) {
+                        maxSize = size;
+                    }
+                }
+            }
+        }
+        if(minSize != maxSize) {
+            return (maxSize - minSize + 1) / (Math.min(width, height) - minimumSymbolsSize);
+        } else {
+            return maxSize / (Math.min(width, height) - minimumSymbolsSize);
+        }
+    }
+
+    /**
+     * Gets a numeric value for the given PointSymbolizer
+     * 
+     * @param feature sample to be used for evals
+     * @param pointSymbolizer symbolizer
+     * @param defaultSize size to use is none can be taken from the symbolizer
+     */
+    private double getPointSymbolizerSize(Feature feature,
+            PointSymbolizer pointSymbolizer, int defaultSize) {
+        if (pointSymbolizer.getGraphic() != null) {
+            Expression sizeExp = pointSymbolizer.getGraphic().getSize();
+            if (sizeExp instanceof Literal) {
+                Object size = sizeExp.evaluate(feature);
+                if (size != null) {
+                    if (size instanceof Double) {
+                        return (Double) size;
+                    }
+                    try {
+                        return Double.parseDouble(size.toString());
+                    } catch (NumberFormatException e) {
+                        return defaultSize;
+                    }
+    
+                }
+            }
+        }
+        return defaultSize;
+    }
+
+    /**
+     * Returns a sample feature for the given rule, with the following criteria: -
+     * if a sample is given in input is returned in output - if a sample is not
+     * given in input, scan the rule symbolizers to find the one with the max
+     * dimensionality, and return a sample for that dimensionality.
+     * 
+     * @param featureType featureType used to create a sample, if none is given as
+     *        input
+     * @param sample feature sample to be returned as is in output, if defined
+     * @param rule rule containing symbolizers to scan for max dimensionality
+     * @return
+     */
+    private Feature getSampleFeatureForRule(FeatureType featureType,
+            Feature sample, final Rule rule) {
+        Symbolizer[] symbolizers = rule.getSymbolizers();
+        // if we don't have a sample as input, we need to create a sampleFeature
+        // looking at the requested symbolizers (we chose the one with the max
+        // dimensionality and create a congruent sample)
+        if (sample == null) {
+            int dimensionality = 1;
+            for (int sIdx = 0; sIdx < symbolizers.length; sIdx++) {
+                final Symbolizer symbolizer = symbolizers[sIdx];
+                if (LineSymbolizer.class.isAssignableFrom(symbolizer.getClass())) {
+                    dimensionality = 2;
+                }
+                if (PolygonSymbolizer.class.isAssignableFrom(symbolizer.getClass())) {
+                    dimensionality = 3;
+                }
+            }
+            return createSampleFeature(featureType, dimensionality);
+        } else {
+            return sample;
+        }
     }
     
     /**
@@ -648,17 +795,14 @@ public class BufferedImageLegendGraphicBuilder {
     }
 
     /**
-     * Creates a sample Feature instance in the hope that it can be used in the rendering of the
-     * legend graphic, using the given dimensionality for the geometry attribute.
+     * Creates a sample Feature instance in the hope that it can be used in the
+     * rendering of the legend graphic, using the given dimensionality for the
+     * geometry attribute.
      * 
-     * @param schema
-     *            the schema for which to create a sample Feature instance
-     * @param dimensionality
-     *            the geometry dimensionality required (ovverides the one defined in the schema)
-     *            1= points, 2= lines, 3= polygons
-     * 
+     * @param schema the schema for which to create a sample Feature instance
+     * @param dimensionality the geometry dimensionality required (ovverides the one
+     *        defined in the schema) 1= points, 2= lines, 3= polygons
      * @return
-     * 
      * @throws ServiceException
      */
     private Feature createSampleFeature(FeatureType schema, int dimensionality)
@@ -671,12 +815,12 @@ public class BufferedImageLegendGraphicBuilder {
     }
 
     /**
-     * Clones the given schema, changing the geometry attribute to
-     * match the given dimensionality.
+     * Clones the given schema, changing the geometry attribute to match the given
+     * dimensionality.
      * 
      * @param schema schema to clone
-     * @param dimensionality dimensionality for the geometry
-     *         1= points, 2= lines, 3= polygons
+     * @param dimensionality dimensionality for the geometry 1= points, 2= lines, 3=
+     *        polygons
      * @return
      */
     private FeatureType cloneWithDimensionality(FeatureType schema,
@@ -686,23 +830,22 @@ public class BufferedImageLegendGraphicBuilder {
         builder.setName(schema.getName());
         builder.setCRS(schema.getCoordinateReferenceSystem());
         for (AttributeDescriptor desc : simpleFt.getAttributeDescriptors()) {
-            if(isMixedGeometry(desc)) {
+            if (isMixedGeometry(desc)) {
                 GeometryDescriptor geomDescriptor = (GeometryDescriptor) desc;
                 GeometryType geomType = geomDescriptor.getType();
-                
+    
                 Class<?> geometryClass = getGeometryForDimensionality(dimensionality);
-                
+    
                 GeometryType gt = new GeometryTypeImpl(geomType.getName(),
-                        geometryClass,
-                        geomType.getCoordinateReferenceSystem(),
+                        geometryClass, geomType.getCoordinateReferenceSystem(),
                         geomType.isIdentified(), geomType.isAbstract(),
                         geomType.getRestrictions(), geomType.getSuper(),
                         geomType.getDescription());
-   
-                builder.add(new GeometryDescriptorImpl(gt, geomDescriptor
-                        .getName(), geomDescriptor.getMinOccurs(),
-                        geomDescriptor.getMaxOccurs(), geomDescriptor
-                                .isNillable(), geomDescriptor.getDefaultValue()));
+    
+                builder.add(new GeometryDescriptorImpl(gt,
+                        geomDescriptor.getName(), geomDescriptor.getMinOccurs(),
+                        geomDescriptor.getMaxOccurs(), geomDescriptor.isNillable(),
+                        geomDescriptor.getDefaultValue()));
             } else {
                 builder.add(desc);
             }
@@ -713,7 +856,7 @@ public class BufferedImageLegendGraphicBuilder {
     
     /**
      * Creates a Geometry class for the given dimensionality.
-     *  
+     * 
      * @param dimensionality
      * @return
      */

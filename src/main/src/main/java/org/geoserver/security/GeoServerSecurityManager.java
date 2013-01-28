@@ -1825,19 +1825,28 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         };
         
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-        StackTraceElement element = stackTraceElements[2];
+        
         
         boolean isAllowed=false;
-        for (String[] methodEntry : allowedMethods) {
-            if (methodEntry[0].equals(element.getClassName())&& 
-                    methodEntry[1].equals(element.getMethodName())) {
-                isAllowed=true;
-                break;
+        int countMethodsToCheck=10;
+        // since different sdks have a different stack trace the 
+        // first 10 elements are checked
+        for (int i = 0; i< countMethodsToCheck;i++) {
+            StackTraceElement element = stackTraceElements[i];
+            for (String[] methodEntry : allowedMethods) {
+                if (methodEntry[0].equals(element.getClassName())&& 
+                        methodEntry[1].equals(element.getMethodName())) {
+                    isAllowed=true;
+                    break;
+                }
             }
         }
         if (!isAllowed) {
-            LOGGER.warning("Dump master password is called be yn unautorized method:  "+
-                    element.getClassName()+":"+element.getMethodName());
+            LOGGER.warning("Dump master password is called by an unautorized method");
+            for (int i = 0; i< countMethodsToCheck;i++) {
+                StackTraceElement element = stackTraceElements[i];
+                LOGGER.warning(element.getClassName()+" : "+element.getMethodName());
+            }
             return false;
         }
         

@@ -210,17 +210,29 @@ public class StyleEncoder {
     }
 
     private static SimpleLineSymbol strokeToLineSymbol(Stroke stroke) {
-        Color color = evaluateWithDefault(stroke.getColor(), Color.BLACK);
-        double opacity = evaluateWithDefault(stroke.getOpacity(), 1d);
-        double width = evaluateWithDefault(stroke.getWidth(), 1d);
-        float[] dashArray = stroke.getDashArray();
+        final Color color;
+        final double opacity; 
+        final double width; 
+        float[] dashArray;
         final SimpleLineSymbolEnum lineStyle;
+        if (stroke != null) {
+            opacity = evaluateWithDefault(stroke.getOpacity(), 1d);
+            color = evaluateWithDefault(stroke.getColor(), Color.BLACK);
+            width = evaluateWithDefault(stroke.getWidth(), 1d);
+            dashArray = stroke.getDashArray();
+        } else {
+            color = Color.BLACK;
+            opacity = 1d;
+            width = 1d;
+            dashArray = null;
+        }
         if (dashArray == null || dashArray.length == 1) {
             lineStyle = SimpleLineSymbolEnum.SOLID;
         } else {
             Set<Float> uniqueValues = new java.util.HashSet<Float>();
-            for (float f : dashArray)
+            for (float f : dashArray) {
                 uniqueValues.add(f);
+            }
             if (uniqueValues.size() == 1) {
                 lineStyle = SimpleLineSymbolEnum.DASH;
             } else {

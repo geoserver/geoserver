@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.kml;
@@ -26,6 +26,7 @@ import org.xml.sax.ContentHandler;
  * Transformer to create a KML document from a {@link WMSMapContent}.
  * 
  * @author Justin Deoliveira
+ * @author Carlo Cancellieri - GeoSolutions SAS
  * 
  * @version $Id$
  * @see KMLVectorTransformer
@@ -90,8 +91,8 @@ public class KMLTransformer extends TransformerBase {
             // calculate scale denominator
             scaleDenominator = 1;
             try {
-                scaleDenominator = RendererUtilities.calculateScale(mapContent.getRenderingArea(),
-                        mapContent.getMapWidth(), mapContent.getMapHeight(), null);
+                scaleDenominator = RendererUtilities.calculateOGCScale(mapContent.getRenderingArea(),
+                        mapContent.getMapWidth(), null);
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "Error calculating scale denominator", e);
             }
@@ -99,8 +100,14 @@ public class KMLTransformer extends TransformerBase {
 
             // if we have more than one layer ( or a legend was requested ),
             // use the name "GeoServer" to group them
-            boolean group = (layers.size() > 1) || request.getLegend();
-
+            boolean group;
+            Boolean legend = (Boolean) request.getFormatOptions().get("legend");
+            if (legend != null) {
+                group = (layers.size() > 1) || legend.booleanValue();
+            } else {
+                group = (layers.size() > 1);
+            }
+            
             if (group) {
                 StringBuffer sb = new StringBuffer();
                 for (int i = 0; i < layers.size(); i++) {
@@ -139,7 +146,7 @@ public class KMLTransformer extends TransformerBase {
             }
 
             // legend suppoer
-            if (request.getLegend()) {
+            if (legend != null && legend.booleanValue()) {
                 // for every layer specified in the request
                 for (int i = 0; i < layers.size(); i++) {
                     // layer and info
@@ -280,9 +287,7 @@ public class KMLTransformer extends TransformerBase {
 
             try {
                 // 90 = OGC standard DPI (see SLD spec page 37)
-                return RendererUtilities.calculateScale(mapContent.getRenderingArea(),
-                        mapContent.getCoordinateReferenceSystem(), paintArea.width,
-                        paintArea.height, 90);
+                return RendererUtilities.calculateOGCScale(mapContent.getRenderingArea(), paintArea.width, null);
             } catch (Exception e) {
                 // probably either (1) no CRS (2) error xforming, revert to
                 // old method - the best we can do (DJB)

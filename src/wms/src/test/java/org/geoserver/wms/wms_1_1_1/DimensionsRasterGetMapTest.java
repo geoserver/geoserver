@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.wms_1_1_1;
@@ -10,6 +10,7 @@ import java.awt.image.BufferedImage;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.wms.WMSDimensionsTestSupport;
+import org.junit.Test;
 
 public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
     
@@ -19,6 +20,8 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         "&srs=EPSG:4326&format=image/png";
     final static String MIME = "image/png";
     
+    
+    @Test
     public void testNoDimension() throws Exception {
         BufferedImage image = getAsImage(BASE_URL, MIME);
         
@@ -28,9 +31,10 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         assertNotBlank("water temperature", image);
     }
 
+    @Test
     public void testDefaultValues() throws Exception {
-        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
-        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
         
         BufferedImage image = getAsImage(BASE_URL, "image/png");
 
@@ -39,9 +43,10 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         assertPixel(image, 68, 72, new Color(255, 185, 185));
     }
     
+    @Test
     public void testElevation() throws Exception {
-        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
-        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
         
         BufferedImage image = getAsImage(BASE_URL + "&elevation=100", "image/png");
 
@@ -51,9 +56,10 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         assertPixel(image, 68, 72, new Color(246, 246, 255));
     }
     
+    @Test
     public void testTime() throws Exception {
-        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
-        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
         
         BufferedImage image = getAsImage(BASE_URL + "&time=2008-10-31T00:00:00.000Z", "image/png");
 
@@ -62,17 +68,12 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         assertPixel(image, 68, 72, new Color(255, 182, 182));
     }
     
+    @Test
     public void testTimeTwice() throws Exception {
-        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
-        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
         
         BufferedImage image = getAsImage(BASE_URL + "&time=2008-10-31T00:00:00.000Z", "image/png");
-
-        // should be similar to the default, but with different shades of color
-        assertPixel(image, 36, 31, new Color(246, 246, 255));
-        assertPixel(image, 68, 72, new Color(255, 182, 182));
-        
-        image = getAsImage(BASE_URL + "&time=2008-10-31T00:00:00.000Z", "image/png");
 
         // should be similar to the default, but with different shades of color
         assertPixel(image, 36, 31, new Color(246, 246, 255));
@@ -80,9 +81,10 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
 
     }
     
+    @Test
     public void testTimeElevation() throws Exception {
-        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
-        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
         
         BufferedImage image = getAsImage(BASE_URL + "&time=2008-10-31T00:00:00.000Z&elevation=100", "image/png");
 

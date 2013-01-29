@@ -1,41 +1,22 @@
-/*
- *    GeoTools - The Open Source Java GIS Toolkit
- *    http://geotools.org
- *
- *    (C) 2006-2008, Open Source Geospatial Foundation (OSGeo)
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the GNU Lesser General Public
- *    License as published by the Free Software Foundation;
- *    version 2.1 of the License.
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *    Lesser General Public License for more details.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ *           (c) 2006-2008 Open Source Geospatial Foundation (LGPL)
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 package org.geoserver.wms.map.quantize;
 
+import static org.junit.Assert.*;
+
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
 
-import javax.imageio.ImageIO;
-import javax.media.jai.ImageLayout;
-import javax.media.jai.JAI;
-import javax.media.jai.OperationDescriptor;
-import javax.media.jai.ParameterBlockJAI;
-import javax.media.jai.PlanarImage;
 import javax.media.jai.TiledImage;
 
-import junit.framework.TestCase;
-
 import org.geotools.image.ImageWorker;
-import org.geotools.image.palette.CustomPaletteBuilder;
-import org.geotools.image.palette.InverseColorMapRasterOp;
+import org.junit.Test;
 
 /**
  * Testing custom code for color reduction.
@@ -45,12 +26,13 @@ import org.geotools.image.palette.InverseColorMapRasterOp;
  *
  * @source $URL$
  */
-public class ColorIndexerTest extends TestCase {
+public class ColorIndexerTest {
     
     static {
         ColorIndexerDescriptor.register();
     }
 
+    @Test
     public void test2BandsBug() {
         // build a transparent image
         BufferedImage image = new BufferedImage(256,256,BufferedImage.TYPE_BYTE_GRAY);
@@ -73,6 +55,7 @@ public class ColorIndexerTest extends TestCase {
         return indexed;
     }
     
+    @Test
     public void testOneColorBug() {
         // build a transparent image
         BufferedImage image = new BufferedImage(256, 256,
@@ -87,7 +70,8 @@ public class ColorIndexerTest extends TestCase {
         assertEquals(2, icm.getMapSize());
     }
 	
-	public void testGrayColor() {
+    @Test
+    public void testGrayColor() {
 		BufferedImage image = new BufferedImage(256, 256, BufferedImage.TYPE_BYTE_GRAY);
 		Graphics g = image.getGraphics();
 		g.setColor(Color.WHITE);
@@ -104,6 +88,7 @@ public class ColorIndexerTest extends TestCase {
 		
 	}
 	
+    @Test
     public void testTranslatedImage() throws Exception {
 	    BufferedImage bi = new BufferedImage(256, 256, BufferedImage.TYPE_BYTE_GRAY);
         TiledImage image = new TiledImage(0, 0, 256, 256, 1, 1, bi.getSampleModel().createCompatibleSampleModel(256, 256), bi.getColorModel());
@@ -122,6 +107,7 @@ public class ColorIndexerTest extends TestCase {
     }
 	
     
+    @Test
     public void testFourColor() {
         // build a transparent image
         BufferedImage image = new BufferedImage(256, 256,

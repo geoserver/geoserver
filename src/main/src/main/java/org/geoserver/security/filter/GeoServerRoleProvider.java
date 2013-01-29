@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -6,6 +6,7 @@
 package org.geoserver.security.filter;
 
 import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.security.config.RoleFilterConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 
 /**
@@ -18,7 +19,7 @@ public class GeoServerRoleProvider extends AbstractFilterProvider {
     @Override
     public void configure(XStreamPersister xp) {
         super.configure(xp);
-        xp.getXStream().alias("roleFilter", GeoServerRoleFilter.class);
+        xp.getXStream().alias("roleFilter", RoleFilterConfig.class);
     }
 
     @Override

@@ -1,12 +1,15 @@
 /*
- * Copyright (c) 2001 - 2010 TOPP - www.openplans.org. All rights reserved.
+ * Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 
 package org.geoserver.test;
 
-import junit.framework.Test;
+import static org.junit.Assert.*;
+
+import org.geoserver.data.test.SystemTestData;
+import org.junit.Test;
 
 import org.w3c.dom.Document;
 
@@ -17,20 +20,14 @@ import org.w3c.dom.Document;
  * @author Rini Angreani (CSIRO Earth Science and Resource Engineering)
  */
 
-public class TimeSeriesWfsTest extends AbstractAppSchemaWfsTestSupport {
+public class TimeSeriesWfsTest extends AbstractAppSchemaTestSupport {
 
-    /**
-     * Read-only test so can use one-time setup.
-     * 
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new TimeSeriesWfsTest());
-    }
-
-    protected NamespaceTestData buildTestData() {
+    @Override
+    protected AbstractAppSchemaMockData createTestData() {
         return new TimeSeriesMockData();
     }
 
+    @Test
     public void testGetFeature() {
         String path = "wfs?request=GetFeature&outputFormat=gml32&typeName=csml:PointSeriesFeature";
         Document doc = getAsDOM(path);
@@ -214,6 +211,7 @@ public class TimeSeriesWfsTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Test filtering quantity list that is feature chained.
      */
+    @Test
     public void testQuantityListSubset() {
         String xml = "<wfs:GetFeature "
                 + "service=\"WFS\" " //

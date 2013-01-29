@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 
@@ -282,6 +282,85 @@ public class LockingUserGroupService extends AbstractLockingService implements
         readLock();
         try {
             return getService().getGroupCount();
+        } finally {
+            readUnLock();
+        }            
+    }
+    /**
+     * READ_LOCK
+     */
+    @Override
+    public SortedSet<GeoServerUser> getUsersHavingProperty(String propname) throws IOException {
+        readLock();
+        try {
+            return getService().getUsersHavingProperty(propname);
+        } finally {
+            readUnLock();
+        }            
+    }
+    
+    /**
+     * READ_LOCK
+     */
+    @Override
+    public int getUserCountHavingProperty(String propname) throws IOException {
+        readLock();
+        try {
+            return getService().getUserCountHavingProperty(propname);
+        } finally {
+            readUnLock();
+        }            
+    }
+
+    /**
+     * READ_LOCK
+     */
+    @Override
+    public SortedSet<GeoServerUser> getUsersNotHavingProperty(String propname) throws IOException {
+        readLock();
+        try {
+            return getService().getUsersNotHavingProperty(propname);
+        } finally {
+            readUnLock();
+        }            
+    }
+
+    /**
+     * READ_LOCK
+     */
+    @Override
+    public int getUserCountNotHavingProperty(String propname) throws IOException {
+        readLock();
+        try {
+            return getService().getUserCountNotHavingProperty(propname);
+        } finally {
+            readUnLock();
+        }            
+    }
+
+    /**
+     * READ_LOCK
+     */
+    @Override
+    public SortedSet<GeoServerUser> getUsersHavingPropertyValue(String propname, String propvalue)
+            throws IOException {
+        readLock();
+        try {
+            return getService().getUsersHavingPropertyValue(propname, propvalue);
+        } finally {
+            readUnLock();
+        }            
+    }
+
+    /**
+     * READ_LOCK
+     */
+    @Override
+    public int getUserCountHavingPropertyValue(String propname, String propvalue)
+            throws IOException {
+        readLock();
+        try {
+            return getService().getUserCountHavingPropertyValue(propname, propvalue);
         } finally {
             readUnLock();
         }            

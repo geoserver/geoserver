@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -45,6 +45,20 @@ public class ControlFlowCallback extends AbstractDispatcherCallback implements
     AtomicLong blockedRequests = new AtomicLong();
     
     AtomicLong runningRequests = new AtomicLong();
+
+    /**
+     * Returns the current number of blocked/queued requests.
+     */
+    public long getBlockedRequests() {
+        return blockedRequests.get();
+    }
+
+    /**
+     * Returns the current number of running requests. 
+     */
+    public long getRunningRequests() {
+        return runningRequests.get();
+    }
 
     public void finished(Request request) {
         if(SENTINEL.isOutermostRequest()) {

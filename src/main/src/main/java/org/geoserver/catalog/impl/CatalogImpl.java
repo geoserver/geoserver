@@ -1,20 +1,16 @@
-/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog.impl;
 
-import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -32,11 +28,12 @@ import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.KeywordInfo;
+import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MapInfo;
-import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StoreInfo;
@@ -55,7 +52,6 @@ import org.geoserver.catalog.event.impl.CatalogModifyEventImpl;
 import org.geoserver.catalog.event.impl.CatalogPostModifyEventImpl;
 import org.geoserver.catalog.event.impl.CatalogRemoveEventImpl;
 import org.geoserver.catalog.util.CloseableIterator;
-import org.geoserver.ows.util.ClassProperties;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -97,13 +93,33 @@ public class CatalogImpl implements Catalog {
     protected ResourcePool resourcePool;
     protected GeoServerResourceLoader resourceLoader;
 
+    /**
+     * extended validation switch
+     */
+    protected boolean extendedValidation = true;
+
     public CatalogImpl() {
         facade = new DefaultCatalogFacade(this);
-        resourcePool = new ResourcePool(this);
+        resourcePool = ResourcePool.create(this);
     }
     
     public CatalogFacade getFacade() {
         return facade;
+    }
+
+    /**
+     * Turn on/off extended validation switch.
+     * <p>
+     * This is not part of the public api, it is used for testing purposes where we have to 
+     * bootstrap catalog contents. 
+     * </p>
+     */
+    public void setExtendedValidation(boolean extendedValidation) {
+        this.extendedValidation = extendedValidation;
+    }
+
+    public boolean isExtendedValidation() {
+        return extendedValidation;
     }
 
     public Iterable<CatalogValidator> getValidators() {
@@ -655,7 +671,7 @@ public class CatalogImpl implements Catalog {
     public void remove(LayerInfo layer) {
         //ensure no references to the layer
         for ( LayerGroupInfo lg : facade.getLayerGroups() ) {
-            if ( lg.getLayers().contains( layer ) ) {
+            if ( lg.getLayers().contains( layer ) || layer.equals( lg.getRootLayer() ) ) {
                 String msg = "Unable to delete layer referenced by layer group '"+lg.getName()+"'";
                 throw new IllegalArgumentException( msg );
             }
@@ -742,7 +758,7 @@ public class CatalogImpl implements Catalog {
         resolve(layerGroup);
         
         if ( layerGroup.getStyles().isEmpty() ) {
-            for ( LayerInfo l : layerGroup.getLayers() ) {
+            for ( PublishedInfo l : layerGroup.getLayers() ) {
                 // default style
                 layerGroup.getStyles().add(null);
             }
@@ -772,7 +788,6 @@ public class CatalogImpl implements Catalog {
             }
         }
 
-        
         if ( layerGroup.getLayers() == null || layerGroup.getLayers().isEmpty() ) {
             throw new IllegalArgumentException( "Layer group must not be empty");
         }
@@ -782,21 +797,88 @@ public class CatalogImpl implements Catalog {
             throw new IllegalArgumentException( "Layer group has different number of styles than layers");
         }
 
-        //if the layer group has a workspace assigned, ensure that every resource in that layer
+        LayerGroupHelper helper = new LayerGroupHelper(layerGroup);
+        Stack<LayerGroupInfo> loopPath = helper.checkLoops();
+        if (loopPath != null) {
+            throw new IllegalArgumentException( "Layer group is in a loop: " + helper.getLoopAsString(loopPath));
+        }
+        
+        // if the layer group has a workspace assigned, ensure that every resource in that layer
         // group lives within the same workspace
         if (ws != null) {
-            for (LayerInfo l : layerGroup.getLayers()) {
-                ResourceInfo r = l.getResource();
-                if (!ws.equals(r.getStore().getWorkspace())) {
-                    throw new IllegalArgumentException("Layer group within a workspace (" + 
-                        ws.getName() + ") can not contain resoures from other workspace: " + 
-                        r.getStore().getWorkspace().getName());
-                }
-                
+            checkLayerGroupResourceIsInWorkspace(layerGroup, ws);
+        }
+        
+        if (layerGroup.getMode() == null) {
+            throw new IllegalArgumentException("Layer group mode must not be null");
+        } else if (LayerGroupInfo.Mode.EO.equals(layerGroup.getMode())) {
+            if (layerGroup.getRootLayer() == null) {
+                throw new IllegalArgumentException("Layer group in mode " + LayerGroupInfo.Mode.EO.getName() + " must have a root layer"); 
+            }
+            
+            if (layerGroup.getRootLayerStyle() == null) {
+                throw new IllegalArgumentException("Layer group in mode " + LayerGroupInfo.Mode.EO.getName() + " must have a root layer style");                 
+            }
+        } else {
+            if (layerGroup.getRootLayer() != null) {
+                throw new IllegalArgumentException("Layer group in mode " + layerGroup.getMode().getName() + " must not have a root layer"); 
+            }
+            
+            if (layerGroup.getRootLayerStyle() != null) {
+                throw new IllegalArgumentException("Layer group in mode " + layerGroup.getMode().getName() + " must not have a root layer style");                 
+            }            
+        }
+        
+        return postValidate(layerGroup, isNew);
+    }
+    
+    private void checkLayerGroupResourceIsInWorkspace(LayerGroupInfo layerGroup, WorkspaceInfo ws) {
+        if (layerGroup == null) return;
+        
+        if (layerGroup.getWorkspace() != null && !ws.equals(layerGroup.getWorkspace())) {
+            throw new IllegalArgumentException("Layer group within a workspace (" + 
+                ws.getName() + ") can not contain resources from other workspace: " + 
+                layerGroup.getWorkspace().getName());
+        }
+        
+        checkLayerGroupResourceIsInWorkspace(layerGroup.getRootLayer(), ws);
+        checkLayerGroupResourceIsInWorkspace(layerGroup.getRootLayerStyle(), ws);
+        
+        for (PublishedInfo p : layerGroup.getLayers()) {
+            if (p instanceof LayerGroupInfo) {
+                checkLayerGroupResourceIsInWorkspace((LayerGroupInfo) p, ws);
+            } else {
+                checkLayerGroupResourceIsInWorkspace((LayerInfo) p, ws);                
             }
         }
-        return postValidate(layerGroup, isNew);
-   }
+        
+        if (layerGroup.getStyles() != null) {
+            for (StyleInfo s : layerGroup.getStyles()) {
+                checkLayerGroupResourceIsInWorkspace(s, ws);
+            }
+        }
+    }
+
+    private void checkLayerGroupResourceIsInWorkspace(StyleInfo style, WorkspaceInfo ws) {
+        if (style == null) return;
+        
+        if (style.getWorkspace() != null && !ws.equals(style.getWorkspace())) {
+            throw new IllegalArgumentException("Layer group within a workspace (" + 
+                ws.getName() + ") can not contain styles from other workspace: " + 
+                style.getWorkspace());
+        }
+    }    
+    
+    private void checkLayerGroupResourceIsInWorkspace(LayerInfo layer, WorkspaceInfo ws) {
+        if (layer == null) return;
+        
+        ResourceInfo r = layer.getResource();
+        if (r.getStore().getWorkspace() != null && !ws.equals(r.getStore().getWorkspace())) {
+            throw new IllegalArgumentException("Layer group within a workspace (" + 
+                ws.getName() + ") can not contain resources from other workspace: " + 
+                r.getStore().getWorkspace().getName());
+        }
+    }
     
     public void remove(LayerGroupInfo layerGroup) {
         facade.remove(layerGroup);
@@ -838,21 +920,26 @@ public class CatalogImpl implements Catalog {
     
     @Override
     public LayerGroupInfo getLayerGroupByName(String name) {
-        //handle prefixed name case
+
+        final LayerGroupInfo layerGroup = getLayerGroupByName((String) null, name);
+
+        if (layerGroup != null)
+            return layerGroup;
+
+        // last chance: checking handle prefixed name case
         String workspaceName = null;
         String layerGroupName = null;
-        
-        int colon = name.indexOf( ':' );
-        if(colon == -1){
+
+        int colon = name.indexOf(':');
+        if (colon == -1) {
             layerGroupName = name;
-        }if ( colon != -1 ) {
-            workspaceName = name.substring( 0, colon );
-            layerGroupName = name.substring( colon + 1 );
+        }
+        if (colon != -1) {
+            workspaceName = name.substring(0, colon);
+            layerGroupName = name.substring(colon + 1);
         }
 
-
-        LayerGroupInfo layerGroup = getLayerGroupByName(workspaceName, layerGroupName);
-        return layerGroup;
+        return getLayerGroupByName(workspaceName, layerGroupName);
     }
 
     @Override
@@ -1222,6 +1309,13 @@ public class CatalogImpl implements Catalog {
             }
         }
 
+        for ( LayerGroupInfo lg : facade.getLayerGroups() ) {
+            if ( lg.getStyles().contains( style ) || style.equals( lg.getRootLayerStyle() ) ) {
+                String msg = "Unable to delete style referenced by layer group '"+lg.getName()+"'";
+                throw new IllegalArgumentException( msg );
+            }
+        }
+        
         facade.remove(style);
         removed(style);
     }
@@ -1248,6 +1342,16 @@ public class CatalogImpl implements Catalog {
     public void removeListener(CatalogListener listener) {
         listeners.remove(listener);
     }
+    
+    @Override
+    public void removeListeners(Class listenerClass) {
+        for (Iterator it = listeners.iterator(); it.hasNext();) {
+            CatalogListener listener = (CatalogListener) it.next();
+            if(listenerClass.isInstance(listener)) {
+                it.remove();
+            }
+        }
+    }
 
     public Iterator search(String cql) {
         // TODO Auto-generated method stub
@@ -1269,9 +1373,8 @@ public class CatalogImpl implements Catalog {
         this.resourceLoader = resourceLoader;
     }
     public void dispose() {
-        facade.dispose();
-        if ( listeners != null ) listeners.clear();
         if ( resourcePool != null ) resourcePool.dispose();
+        facade.dispose();
     }
     
     protected void added(CatalogInfo object) {
@@ -1381,7 +1484,7 @@ public class CatalogImpl implements Catalog {
         }
         
         if ( resourcePool == null ) {
-            resourcePool = new ResourcePool(this);
+            resourcePool = ResourcePool.create(this);
         }
     }
     
@@ -1492,6 +1595,11 @@ public class CatalogImpl implements Catalog {
     
     protected List<RuntimeException> postValidate(CatalogInfo info, boolean isNew) {
         List<RuntimeException> errors = new ArrayList<RuntimeException>();
+
+        if (!extendedValidation) {
+            return errors; 
+        }
+
         for (CatalogValidator constraint : getValidators()) {
             try {
                 info.accept(new CatalogValidatorVisitor(constraint, isNew));

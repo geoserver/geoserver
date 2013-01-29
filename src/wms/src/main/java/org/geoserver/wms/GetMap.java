@@ -1,5 +1,5 @@
-/* Copyright (c) 2010 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms;
@@ -47,7 +47,6 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.renderer.lite.MetaBufferEstimator;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.renderer.lite.StreamingRenderer;
-import org.geotools.resources.CRSUtilities;
 import org.geotools.styling.FeatureTypeConstraint;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Rule;
@@ -135,12 +134,6 @@ public class GetMap {
 
         GetMapOutputFormat delegate = getDelegate(outputFormat);
 
-        // if there's a crs in the request, use that. If not, assume its 4326
-        final CoordinateReferenceSystem mapcrs = request.getCrs();
-
-        final List<MapLayerInfo> layers = request.getLayers();
-        final Style[] styles = request.getStyles().toArray(new Style[] {});
-        final Filter[] filters = buildLayersFilters(request.getFilter(), layers);
         final boolean isTiled = MetatileMapOutputFormat.isRequestTiled(request, delegate);
 
         //
@@ -338,6 +331,7 @@ public class GetMap {
                 }
                 FeatureLayer featureLayer = new FeatureLayer(source, layerStyle);
                 featureLayer.setTitle(mapLayerInfo.getFeature().getPrefixedName());
+                featureLayer.getUserData().put("abstract", mapLayerInfo.getDescription());
                 
                 // mix the dimension related filter with the layer filter
                 Filter dimensionFilter = wms.getTimeElevationToFilter(times, elevations, mapLayerInfo.getFeature());
@@ -451,8 +445,9 @@ public class GetMap {
         EnvFunction.setLocalValue("wms_width", mapContent.getMapWidth());
         EnvFunction.setLocalValue("wms_height", mapContent.getMapHeight());
         try {
-            EnvFunction.setLocalValue("wms_scale_denominator", RendererUtilities.calculateScale(mapContent.getRenderingArea(),
-                    mapContent.getMapWidth(), mapContent.getMapHeight(), null));
+            double scaleDenominator = RendererUtilities.calculateOGCScale(mapContent.getRenderingArea(),
+                    mapContent.getMapWidth(), null);
+            EnvFunction.setLocalValue("wms_scale_denominator", scaleDenominator);
         } catch(Exception e) {
             LOGGER.log(Level.SEVERE, "Failed to compute the scale denominator, wms_scale_denominator env variable is unset", e);
         }
@@ -633,6 +628,7 @@ public class GetMap {
      */
     private Filter[] buildLayersFilters(List<Filter> requestFilters, List<MapLayerInfo> layers) {
         final int nLayers = layers.size();
+
         if (requestFilters == null || requestFilters.size() == 0) {
             requestFilters = Collections.nCopies(layers.size(), (Filter) Filter.INCLUDE);
         } else if (requestFilters.size() != nLayers) {

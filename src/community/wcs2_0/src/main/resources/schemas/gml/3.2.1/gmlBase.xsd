@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml/3.2" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="3.2.1.2">
+	<annotation>
+		<appinfo source="urn:x-ogc:specification:gml:schema-xsd:gmlBase:3.2.1">gmlBase.xsd</appinfo>
+		<documentation>See ISO/DIS 19136 7.2.
+The gmlBase schema components establish the GML model and syntax, in particular
+-	a root XML type from which XML types for all GML objects should be derived,
+-	a pattern and components for GML properties,
+-	patterns for collections and arrays, and components for generic collections and arrays,
+-	components for associating metadata with GML objects,
+-	components for constructing definitions and dictionaries.
+
+GML is an OGC Standard.
+Copyright (c) 2007,2010 Open Geospatial Consortium.
+To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+		</documentation>
+	</annotation>
+	<include schemaLocation="gml.xsd"/>
+	<include schemaLocation="basicTypes.xsd"/>
+	<import namespace="http://www.w3.org/1999/xlink" schemaLocation="http://www.w3.org/1999/xlink.xsd"/>
+	<element name="AbstractObject" abstract="true">
+		<annotation>
+			<documentation>This element has no type defined, and is therefore implicitly (according to the rules of W3C XML Schema) an XML Schema anyType. It is used as the head of an XML Schema substitution group which unifies complex content and certain simple content elements used for datatypes in GML, including the gml:AbstractGML substitution group.</documentation>
+		</annotation>
+	</element>
+	<element name="AbstractGML" type="gml:AbstractGMLType" abstract="true" substitutionGroup="gml:AbstractObject">
+		<annotation>
+			<documentation>The abstract element gml:AbstractGML is "any GML object having identity".   It acts as the head of an XML Schema substitution group, which may include any element which is a GML feature, or other object, with identity.  This is used as a variable in content models in GML core and application schemas.  It is effectively an abstract superclass for all GML objects.</documentation>
+		</annotation>
+	</element>
+	<complexType name="AbstractGMLType" abstract="true">
+		<sequence>
+			<group ref="gml:StandardObjectProperties"/>
+		</sequence>
+		<attribute ref="gml:id" use="required"/>
+	</complexType>
+	<group name="StandardObjectProperties">
+		<sequence>
+			<element ref="gml:metaDataProperty" minOccurs="0" maxOccurs="unbounded"/>
+			<element ref="gml:description" minOccurs="0"/>
+			<element ref="gml:descriptionReference" minOccurs="0"/>
+			<element ref="gml:identifier" minOccurs="0"/>
+			<element ref="gml:name" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+	</group>
+	<attributeGroup name="AssociationAttributeGroup">
+		<annotation>
+			<documentation>XLink components are the standard method to support hypertext referencing in XML. An XML Schema attribute group, gml:AssociationAttributeGroup, is provided to support the use of Xlinks as the method for indicating the value of a property by reference in a uniform manner in GML.</documentation>
+		</annotation>
+		<attributeGroup ref="xlink:simpleAttrs"/>
+		<attribute name="nilReason" type="gml:NilReasonType"/>
+		<attribute ref="gml:remoteSchema">
+			<annotation>
+				<appinfo>deprecated</appinfo>
+			</annotation>
+		</attribute>
+	</attributeGroup>
+	<element name="abstractAssociationRole" type="gml:AssociationRoleType" abstract="true">
+		<annotation>
+			<documentation>Applying this pattern shall restrict the multiplicity of objects in a property element using this content model to exactly one. An instance of this type shall contain an element representing an object, or serve as a pointer to a remote object.
+Applying the pattern to define an application schema specific property type allows to restrict
+-	the inline object to specified object types, 
+-	the encoding to "by-reference only" (see 7.2.3.7),
+-	the encoding to "inline only" (see 7.2.3.8).</documentation>
+		</annotation>
+	</element>
+	<complexType name="AssociationRoleType">
+		<sequence minOccurs="0">
+			<any namespace="##any"/>
+		</sequence>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<attributeGroup name="OwnershipAttributeGroup">
+		<annotation>
+			<documentation>Encoding a GML property inline vs. by-reference shall not imply anything about the "ownership" of the contained or referenced GML Object, i.e. the encoding style shall not imply any "deep-copy" or "deep-delete" semantics. To express ownership over the contained or referenced GML Object, the gml:OwnershipAttributeGroup attribute group may be added to object-valued property elements. If the attribute group is not part of the content model of such a property element, then the value may not be "owned".
+When the value of the owns attribute is "true", the existence of inline or referenced object(s) depends upon the existence of the parent object.</documentation>
+		</annotation>
+		<attribute name="owns" type="boolean" default="false"/>
+	</attributeGroup>
+	<element name="abstractStrictAssociationRole" type="gml:AssociationRoleType" abstract="true">
+		<annotation>
+			<documentation>This element shows how an element 
+	declaration may include a Schematron constraint to limit the property to act 
+	in either inline or by-reference mode, but not both.</documentation>
+		</annotation>
+	</element>
+	<element name="abstractReference" type="gml:ReferenceType" abstract="true">
+		<annotation>
+			<documentation>gml:abstractReference may be used as the head of a subtitution group of more specific elements providing a value by-reference.</documentation>
+		</annotation>
+	</element>
+	<complexType name="ReferenceType">
+		<annotation>
+			<documentation>gml:ReferenceType is intended to be used in application schemas directly, if a property element shall use a "by-reference only" encoding.</documentation>
+		</annotation>
+		<sequence/>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="abstractInlineProperty" type="gml:InlinePropertyType" abstract="true">
+		<annotation>
+			<documentation>gml:abstractInlineProperty may be used as the head of a subtitution group of more specific elements providing a value inline.</documentation>
+		</annotation>
+	</element>
+	<complexType name="InlinePropertyType">
+		<sequence>
+			<any namespace="##any"/>
+		</sequence>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+	<element name="reversePropertyName" type="string">
+		<annotation>
+			<documentation>If the value of an object property is another object and that object contains also a property for the association between the two objects, then this name of the reverse property may be encoded in a gml:reversePropertyName element in an appinfo annotation of the property element to document the constraint between the two properties. The value of the element shall contain the qualified name of the property element.</documentation>
+		</annotation>
+	</element>
+	<element name="description" type="gml:StringOrRefType">
+		<annotation>
+			<documentation>The value of this property is a text description of the object. gml:description uses gml:StringOrRefType as its content model, so it may contain a simple text string content, or carry a reference to an external description. The use of gml:description to reference an external description has been deprecated and replaced by the gml:descriptionReference property.</documentation>
+		</annotation>
+	</element>
+	<element name="descriptionReference" type="gml:ReferenceType">
+		<annotation>
+			<documentation>The value of this property is a remote text description of the object. The xlink:href attribute of the gml:descriptionReference property references the external description.</documentation>
+		</annotation>
+	</element>
+	<element name="name" type="gml:CodeType">
+		<annotation>
+			<documentation>The gml:name property provides a label or identifier for the object, commonly a descriptive name. An object may have several names, typically assigned by different authorities. gml:name uses the gml:CodeType content model.  The authority for a name is indicated by the value of its (optional) codeSpace attribute.  The name may or may not be unique, as determined by the rules of the organization responsible for the codeSpace.  In common usage there will be one name per authority, so a processing application may select the name from its preferred codeSpace.</documentation>
+		</annotation>
+	</element>
+	<element name="identifier" type="gml:CodeWithAuthorityType">
+		<annotation>
+			<documentation>Often, a special identifier is assigned to an object by the maintaining authority with the intention that it is used in references to the object For such cases, the codeSpace shall be provided. That identifier is usually unique either globally or within an application domain. gml:identifier is a pre-defined property for such identifiers.</documentation>
+		</annotation>
+	</element>
+	<attribute name="id" type="ID">
+		<annotation>
+			<documentation>The attribute gml:id supports provision of a handle for the XML element representing a GML Object. Its use is mandatory for all GML objects. It is of XML type ID, so is constrained to be unique in the XML document within which it occurs.</documentation>
+		</annotation>
+	</attribute>
+	<complexType name="AbstractMemberType" abstract="true">
+		<annotation>
+			<documentation>To create a collection of GML Objects that are not all features, a property type shall be derived by extension from gml:AbstractMemberType.
+This abstract property type is intended to be used only in object types where software shall be able to identify that an instance of such an object type is to be interpreted as a collection of objects.
+By default, this abstract property type does not imply any ownership of the objects in the collection. The owns attribute of gml:OwnershipAttributeGroup may be used on a property element instance to assert ownership of an object in the collection. A collection shall not own an object already owned by another object.
+</documentation>
+		</annotation>
+		<sequence/>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+	<attributeGroup name="AggregationAttributeGroup">
+		<annotation>
+			<documentation>A GML Object Collection is any GML Object with a property element in its content model whose content model is derived by extension from gml:AbstractMemberType.
+In addition, the complex type describing the content model of the GML Object Collection may also include a reference to the attribute group gml:AggregationAttributeGroup to provide additional information about the semantics of the object collection.  This information may be used by applications to group GML objects, and optionally to order and index them.
+The allowed values for the aggregationType attribute are defined by gml:AggregationType. See 8.4 of ISO/IEC 11404:1996 for the meaning of the values in the enumeration.</documentation>
+		</annotation>
+		<attribute name="aggregationType" type="gml:AggregationType"/>
+	</attributeGroup>
+	<simpleType name="AggregationType" final="#all">
+		<restriction base="string">
+			<enumeration value="set"/>
+			<enumeration value="bag"/>
+			<enumeration value="sequence"/>
+			<enumeration value="array"/>
+			<enumeration value="record"/>
+			<enumeration value="table"/>
+		</restriction>
+	</simpleType>
+	<complexType name="AbstractMetadataPropertyType" abstract="true">
+		<annotation>
+			<documentation>To associate metadata described by any XML Schema with a GML object, a property element shall be defined whose content model is derived by extension from gml:AbstractMetadataPropertyType. 
+The value of such a property shall be metadata. The content model of such a property type, i.e. the metadata application schema shall be specified by the GML Application Schema.
+By default, this abstract property type does not imply any ownership of the metadata. The owns attribute of gml:OwnershipAttributeGroup may be used on a metadata property element instance to assert ownership of the metadata. 
+If metadata following the conceptual model of ISO 19115 is to be encoded in a GML document, the corresponding Implementation Specification specified in ISO/TS 19139 shall be used to encode the metadata information.
+</documentation>
+		</annotation>
+		<sequence/>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+	<element name="targetElement" type="string"/>
+	<element name="associationName" type="string"/>
+	<element name="defaultCodeSpace" type="anyURI"/>
+	<element name="gmlProfileSchema" type="anyURI"/>
+</schema>

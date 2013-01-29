@@ -1,25 +1,40 @@
 <html xmlns:wicket="http://wicket.apache.org/">
 <head></head>
 <body>
-<wicket:panel>
-	<ul>
-	  <!-- TIME -->
+  <wicket:panel>
+    <ul>
+      <!-- TIME -->
       <li>
         <fieldset>
-          <legend><span><wicket:message key="timeDimension">Time</wicket:message></span></legend>
-	          <div wicket:id="time"></div>
-		     </fieldset>	
-      </li>
-
-	  <!-- ELEVATION -->
-      <li>
-        <fieldset>
-          <legend><span><wicket:message key="elevDimension">Elevation</wicket:message></span></legend>
-	        <div wicket:id="elevation"></div>
+          <legend>
+            <span><wicket:message key="timeDimension">Time</wicket:message></span>
+          </legend>
+          <div wicket:id="time"></div>
         </fieldset>
       </li>
 
-     </ul>
-</wicket:panel>
+      <!-- ELEVATION -->
+      <li>
+        <fieldset>
+          <legend>
+            <span><wicket:message key="elevDimension">Elevation</wicket:message></span>
+          </legend>
+          <div wicket:id="elevation"></div>
+        </fieldset>
+      </li>
+      
+      <!-- CUSTOM DIMENSIONS -->
+      
+      <li wicket:id="customDimensions">
+        <fieldset>
+          <legend>
+            <span wicket:id="dimensionName"></span>
+          </legend>
+          <div wicket:id="dimension"></div>
+        </fieldset>
+      </li>
+      
+    </ul>
+  </wicket:panel>
 </body>
 </html>

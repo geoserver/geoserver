@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.jdbcconfig.internal;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -34,6 +38,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.Predicates;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
@@ -44,8 +49,11 @@ import org.geoserver.catalog.impl.StoreInfoImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.impl.CoverageAccessInfoImpl;
+import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.impl.GeoServerInfoImpl;
 import org.geoserver.config.impl.JAIInfoImpl;
 import org.geoserver.ows.util.OwsUtils;
@@ -91,6 +99,8 @@ public class ConfigDatabase {
     private DbMappings dbMappings;
 
     private CatalogImpl catalog;
+
+    private GeoServer geoServer;
 
     private NamedParameterJdbcOperations template;
 
@@ -150,18 +160,29 @@ public class ConfigDatabase {
         } finally {
             stream.close();
         }
-        String[] sql = lines.toArray(new String[lines.size()]);
-        for(String statement : sql){
-            if(statement.trim().length() == 0){
+
+        StringBuilder buf = new StringBuilder();
+        for (String sql : lines) {
+            sql = sql.trim();
+            if (sql.isEmpty()) {
                 continue;
             }
-            LOGGER.info("Running: " + statement);
-            template.getJdbcOperations().update(statement);
+            if (sql.startsWith("--")) {
+                continue;
+            }
+            buf.append(sql).append(" ");
+            if (sql.endsWith(";")) {
+                String stmt = buf.toString();
+                LOGGER.info("Running: " + stmt);
+                template.getJdbcOperations().update(stmt);
+
+                buf.setLength(0);
+            }
         }
         LOGGER.info("Initialization SQL script run sucessfully");
     }
 
-    DbMappings getDbMappings() {
+    public DbMappings getDbMappings() {
         return dbMappings;
     }
 
@@ -174,6 +195,14 @@ public class ConfigDatabase {
         return this.catalog;
     }
 
+    public void setGeoServer(GeoServer geoServer) {
+        this.geoServer = geoServer;
+    }
+
+    public GeoServer getGeoServer() {
+        return geoServer;
+    }
+    
     public <T extends CatalogInfo> int count(final Class<T> of, final Filter filter) {
 
         QueryBuilder<T> sqlBuilder = QueryBuilder.forCount(of, dbMappings).filter(filter);
@@ -767,8 +796,8 @@ public class ConfigDatabase {
             }
             resolveTransient(layer.getResource());
         } else if (real instanceof LayerGroupInfo) {
-            for (LayerInfo l : ((LayerGroupInfo) real).getLayers()) {
-                resolveTransient(l);
+            for (PublishedInfo p : ((LayerGroupInfo) real).getLayers()) {
+                resolveTransient(p);
             }
             for (StyleInfo s : ((LayerGroupInfo) real).getStyles()) {
                 resolveTransient(s);
@@ -883,6 +912,9 @@ public class ConfigDatabase {
                 if (global.getJAI() == null) {
                     global.setJAI(new JAIInfoImpl());
                 }
+            }
+            if (info instanceof ServiceInfo) {
+                ((ServiceInfo)info).setGeoServer(geoServer);
             }
 
             return info;

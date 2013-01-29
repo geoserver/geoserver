@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.config.impl;
 
 import java.lang.reflect.Proxy;
@@ -51,6 +55,7 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
     
     public void setGlobal(GeoServerInfo global) {
         resolve(global);
+        setId(global.getSettings());
         this.global = global;
     }
     
@@ -79,6 +84,7 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
     @Override
     public void add(SettingsInfo s) {
         s = unwrap(s);
+        setId(s);
         settings.add(s);
     }
 

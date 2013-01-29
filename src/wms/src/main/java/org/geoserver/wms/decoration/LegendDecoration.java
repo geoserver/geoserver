@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wms.decoration;
 
 import java.awt.BasicStroke;
@@ -91,8 +95,6 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
             request.setTransparent(true);
             request.setScale(scaleDenominator);
             request.setStyle(layer.getStyle());
-            request.setWidth((int) Math.ceil(GetLegendGraphicRequest.DEFAULT_WIDTH * scaleFactor));
-            request.setHeight((int) Math.ceil(GetLegendGraphicRequest.DEFAULT_HEIGHT * scaleFactor));
 
             Map legendOptions = new CaseInsensitiveMap(options);
             legendOptions.putAll(mapContext.getRequest().getFormatOptions());

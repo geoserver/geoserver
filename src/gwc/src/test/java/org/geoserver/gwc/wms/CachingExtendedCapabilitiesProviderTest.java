@@ -1,38 +1,41 @@
-/* Copyright (c) 2011 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.gwc.wms;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
-import junit.framework.Test;
 
+import java.util.List;
+
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.GWC;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.gwc.layer.CatalogConfiguration;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
 
-public class CachingExtendedCapabilitiesProviderTest extends GeoServerTestSupport {
-
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new CachingExtendedCapabilitiesProviderTest());
-    }
+public class CachingExtendedCapabilitiesProviderTest extends GeoServerSystemTestSupport {
 
     @Override
-    protected void oneTimeSetUp() throws Exception {
-        super.oneTimeSetUp();
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+
         GeoServerInfo global = getGeoServer().getGlobal();
         global.setProxyBaseUrl("../wms/src/test/resources/geoserver");
         getGeoServer().save(global);
     }
 
+    @Test
     public void testCapabilitiesContributedInternalDTD() throws Exception {
 
         GWC.get().getConfig().setDirectWMSIntegrationEnabled(false);
@@ -79,8 +82,19 @@ public class CachingExtendedCapabilitiesProviderTest extends GeoServerTestSuppor
         assertTrue(internalSubset, internalSubset.contains("<!ELEMENT Styles (#PCDATA)>"));
     }
 
+    @Test
     public void testTileSets() throws Exception {
-        final int numLayers = getCatalog().getLayers().size();
+        final int numLayers;
+        {
+            int validLayers = 0;
+            List<LayerInfo> layers = getCatalog().getLayers();
+            for (LayerInfo l : layers) {
+                if (CatalogConfiguration.isLayerExposable(l)) {
+                    ++validLayers;
+                }
+            }
+            numLayers = validLayers;
+        }
         final int numCRSs = 2; // 4326 and 900913
         final int numFormats = 2; // png, jpeg
         final int numTileSets = numLayers * numCRSs * numFormats;
@@ -109,6 +123,7 @@ public class CachingExtendedCapabilitiesProviderTest extends GeoServerTestSuppor
         assertXpathExists(tileSetPath + "[1]/Styles", dom);
     }
 
+    @Test
     public void testLocalWorkspaceIntegration() throws Exception {
 
         final String tileSetPath = "//WMT_MS_Capabilities/Capability/VendorSpecificCapabilities/TileSet";

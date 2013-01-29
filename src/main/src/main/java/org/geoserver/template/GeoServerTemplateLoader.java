@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.template;
@@ -128,8 +128,14 @@ public class GeoServerTemplateLoader implements TemplateLoader {
      * @throws IOException
      */
     public GeoServerTemplateLoader(Class caller, GeoServerResourceLoader rl) throws IOException {
+        this(caller, new GeoServerDataDirectory(rl));
+    }
+
+    public GeoServerTemplateLoader(Class caller, GeoServerDataDirectory dd) throws IOException {
+        this.dd = dd;
+
         //create a file template loader to delegate to
-        fileTemplateLoader = new FileTemplateLoader(rl.getBaseDirectory());
+        fileTemplateLoader = new FileTemplateLoader(dd.root());
 
         //grab the catalog and store a reference
         catalog = (Catalog)GeoServerExtensions.bean("catalog");
@@ -138,8 +144,10 @@ public class GeoServerTemplateLoader implements TemplateLoader {
         if (caller != null) {
             classTemplateLoader = new ClassTemplateLoader(caller, "");
         }
-        
-        dd = new GeoServerDataDirectory(rl);
+    }
+
+    public void setCatalog(Catalog catalog) {
+        this.catalog = catalog;
     }
 
     /**
@@ -194,8 +202,9 @@ public class GeoServerTemplateLoader implements TemplateLoader {
         // 1. Relative to resource
         // 2. Relative to store of the resource
         // 3. Relative to workspace of resource
-        // 4. Relative to templates directory
-        // 5. Relative to the class
+        // 4. Relative to workspaces directory
+        // 5. Relative to templates directory
+        // 6. Relative to the class
         
         if ( resource != null ) {
             //first check relative to set resource

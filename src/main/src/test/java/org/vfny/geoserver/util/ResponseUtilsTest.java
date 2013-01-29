@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.vfny.geoserver.util;
 
 import org.easymock.classextension.EasyMock;
@@ -8,12 +12,15 @@ import org.geoserver.config.SettingsInfo;
 import org.geoserver.ows.ProxifyingURLMangler;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.platform.GeoServerExtensions;
+import org.junit.After;
+import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
 import junit.framework.TestCase;
 import static org.easymock.EasyMock.*;
+import static org.junit.Assert.*;
 
-public class ResponseUtilsTest extends TestCase {
+public class ResponseUtilsTest {
 
     void createAppContext(String proxyBaseUrl) {
         SettingsInfo settings = createNiceMock(SettingsInfo.class);
@@ -32,6 +39,12 @@ public class ResponseUtilsTest extends TestCase {
         new GeoServerExtensions().setApplicationContext(appContext);
     }
 
+    @After
+    public void clearAppContext() {
+        new GeoServerExtensions().setApplicationContext(null);
+    }
+
+    @Test
     public void testProxyMetadataURL() throws Exception {
         createAppContext("http://foo.org/geoserver");
         MetadataLinkInfo link = new MetadataLinkInfoImpl();
@@ -41,6 +54,7 @@ public class ResponseUtilsTest extends TestCase {
         assertEquals(link.getContent(), url);
     }
 
+    @Test
     public void testProxyMetadataURLBackReference() throws Exception {
         createAppContext("http://foo.org/geoserver");
         MetadataLinkInfo link = new MetadataLinkInfoImpl();
@@ -50,6 +64,7 @@ public class ResponseUtilsTest extends TestCase {
         assertEquals("http://foo.org/geoserver/metadata.xml?foo=bar", url);
     }
 
+    @Test
     public void testProxyMetadataURLBackReferenceNoProxyBaseUrl() throws Exception {
         createAppContext(null);
         MetadataLinkInfo link = new MetadataLinkInfoImpl();

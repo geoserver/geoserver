@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml/3.2" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" elementFormDefault="qualified" version="3.2.1.2">
+	<annotation>
+		<appinfo source="urn:x-ogc:specification:gml:schema-xsd:temporal:3.2.1">temporal.xsd</appinfo>
+		<documentation>See ISO/DIS 19136 15.2.
+The GML temporal schemas include components for describing temporal geometry and topology, temporal reference systems, and the temporal characteristics of geographic data. The model underlying the representation constitutes a profile of the conceptual schema described in ISO 19108. The underlying spatiotemporal model strives to accommodate both feature-level and attribute-level time stamping; basic support for tracking moving objects is also included. 
+Time is measured on two types of scales: interval and ordinal.  An interval scale offers a basis for measuring duration, an ordinal scale provides information only about relative position in time.
+Two other ISO standards are relevant to describing temporal objects:  ISO 8601 describes encodings for time instants and time periods, as text strings with particular structure and punctuation; ISO 11404 provides a detailed description of time intervals as part of a general discussion of language independent datatypes.  
+The temporal schemas cover two interrelated topics and provide basic schema components for representing temporal instants and periods, temporal topology, and reference systems; more specialized schema components defines components used for dynamic features. Instances of temporal geometric types are used as values for the temporal properties of geographic features.
+
+GML is an OGC Standard.
+Copyright (c) 2007,2010 Open Geospatial Consortium.
+To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+		</documentation>
+	</annotation>
+	<include schemaLocation="gml.xsd"/>
+	<include schemaLocation="gmlBase.xsd"/>
+	<element name="AbstractTimeObject" type="gml:AbstractTimeObjectType" abstract="true" substitutionGroup="gml:AbstractGML">
+		<annotation>
+			<documentation>gml:AbstractTimeObject acts as the head of a substitution group for all temporal primitives and complexes.</documentation>
+		</annotation>
+	</element>
+	<complexType name="AbstractTimeObjectType" abstract="true">
+		<complexContent>
+			<extension base="gml:AbstractGMLType"/>
+		</complexContent>
+	</complexType>
+	<element name="AbstractTimePrimitive" type="gml:AbstractTimePrimitiveType" abstract="true" substitutionGroup="gml:AbstractTimeObject">
+		<annotation>
+			<documentation>gml:AbstractTimePrimitive acts as the head of a substitution group for geometric and topological temporal primitives.</documentation>
+		</annotation>
+	</element>
+	<complexType name="AbstractTimePrimitiveType" abstract="true">
+		<complexContent>
+			<extension base="gml:AbstractTimeObjectType">
+				<sequence>
+					<element name="relatedTime" type="gml:RelatedTimeType" minOccurs="0" maxOccurs="unbounded"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="TimePrimitivePropertyType">
+		<annotation>
+			<documentation>gml:TimePrimitivePropertyType provides a standard content model for associations between an arbitrary member of the substitution group whose head is gml:AbstractTimePrimitive and another object.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:AbstractTimePrimitive"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+	<element name="validTime" type="gml:TimePrimitivePropertyType">
+		<annotation>
+			<documentation>gml:validTime is a convenience property element.</documentation>
+		</annotation>
+	</element>
+	<complexType name="RelatedTimeType">
+		<annotation>
+			<documentation>gml:RelatedTimeType provides a content model for indicating the relative position of an arbitrary member of the substitution group whose head is gml:AbstractTimePrimitive. It extends the generic gml:TimePrimitivePropertyType with an XML attribute relativePosition, whose value is selected from the set of 13 temporal relationships identified by Allen (1983)</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:TimePrimitivePropertyType">
+				<attribute name="relativePosition">
+					<simpleType>
+						<restriction base="string">
+							<enumeration value="Before"/>
+							<enumeration value="After"/>
+							<enumeration value="Begins"/>
+							<enumeration value="Ends"/>
+							<enumeration value="During"/>
+							<enumeration value="Equals"/>
+							<enumeration value="Contains"/>
+							<enumeration value="Overlaps"/>
+							<enumeration value="Meets"/>
+							<enumeration value="OverlappedBy"/>
+							<enumeration value="MetBy"/>
+							<enumeration value="BegunBy"/>
+							<enumeration value="EndedBy"/>
+						</restriction>
+					</simpleType>
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="AbstractTimeComplex" type="gml:AbstractTimeComplexType" abstract="true" substitutionGroup="gml:AbstractTimeObject">
+		<annotation>
+			<documentation>gml:AbstractTimeComplex is an aggregation of temporal primitives and acts as the head of a substitution group for temporal complexes.</documentation>
+		</annotation>
+	</element>
+	<complexType name="AbstractTimeComplexType" abstract="true">
+		<complexContent>
+			<extension base="gml:AbstractTimeObjectType"/>
+		</complexContent>
+	</complexType>
+	<element name="AbstractTimeGeometricPrimitive" type="gml:AbstractTimeGeometricPrimitiveType" abstract="true" substitutionGroup="gml:AbstractTimePrimitive">
+		<annotation>
+			<documentation>gml:TimeGeometricPrimitive acts as the head of a substitution group for geometric temporal primitives.
+A temporal geometry shall be associated with a temporal reference system through the frame attribute that provides a URI reference that identifies a description of the reference system. Following ISO 19108, the Gregorian calendar with UTC is the default reference system, but others may also be used. The GPS calendar is an alternative reference systems in common use.
+The two geometric primitives in the temporal dimension are the instant and the period. GML components are defined to support these as follows.</documentation>
+		</annotation>
+	</element>
+	<complexType name="AbstractTimeGeometricPrimitiveType" abstract="true">
+		<complexContent>
+			<extension base="gml:AbstractTimePrimitiveType">
+				<attribute name="frame" type="anyURI" default="#ISO-8601"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="TimeInstant" type="gml:TimeInstantType" substitutionGroup="gml:AbstractTimeGeometricPrimitive">
+		<annotation>
+			<documentation>gml:TimeInstant acts as a zero-dimensional geometric primitive that represents an identifiable position in time.</documentation>
+		</annotation>
+	</element>
+	<complexType name="TimeInstantType" final="#all">
+		<complexContent>
+			<extension base="gml:AbstractTimeGeometricPrimitiveType">
+				<sequence>
+					<element ref="gml:timePosition"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="TimeInstantPropertyType">
+		<annotation>
+			<documentation>gml:TimeInstantPropertyType provides for associating a gml:TimeInstant with an object.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:TimeInstant"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+	<element name="TimePeriod" type="gml:TimePeriodType" substitutionGroup="gml:AbstractTimeGeometricPrimitive">
+		<annotation>
+			<documentation>gml:TimePeriod acts as a one-dimensional geometric primitive that represents an identifiable extent in time.
+The location in of a gml:TimePeriod is described by the temporal positions of the instants at which it begins and ends. The length of the period is equal to the temporal distance between the two bounding temporal positions. 
+Both beginning and end may be described in terms of their direct position using gml:TimePositionType which is an XML Schema simple content type, or by reference to an indentifiable time instant using gml:TimeInstantPropertyType.
+Alternatively a limit of a gml:TimePeriod may use the conventional GML property model to make a reference to a time instant described elsewhere, or a limit may be indicated as a direct position.</documentation>
+		</annotation>
+	</element>
+	<complexType name="TimePeriodType">
+		<complexContent>
+			<extension base="gml:AbstractTimeGeometricPrimitiveType">
+				<sequence>
+					<choice>
+						<element name="beginPosition" type="gml:TimePositionType"/>
+						<element name="begin" type="gml:TimeInstantPropertyType"/>
+					</choice>
+					<choice>
+						<element name="endPosition" type="gml:TimePositionType"/>
+						<element name="end" type="gml:TimeInstantPropertyType"/>
+					</choice>
+					<group ref="gml:timeLength" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="TimePeriodPropertyType">
+		<annotation>
+			<documentation>gml:TimePeriodPropertyType provides for associating a gml:TimePeriod with an object.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:TimePeriod"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+	<complexType name="TimePositionType" final="#all">
+		<annotation>
+			<documentation>The method for identifying a temporal position is specific to each temporal reference system.  gml:TimePositionType supports the description of temporal position according to the subtypes described in ISO 19108.
+Values based on calendars and clocks use lexical formats that are based on ISO 8601, as described in XML Schema Part 2:2001. A decimal value may be used with coordinate systems such as GPS time or UNIX time. A URI may be used to provide a reference to some era in an ordinal reference system . 
+In common with many of the components modelled as data types in the ISO 19100 series of International Standards, the corresponding GML component has simple content. However, the content model gml:TimePositionType is defined in several steps.
+Three XML attributes appear on gml:TimePositionType:
+A time value shall be associated with a temporal reference system through the frame attribute that provides a URI reference that identifies a description of the reference system. Following ISO 19108, the Gregorian calendar with UTC is the default reference system, but others may also be used. Components for describing temporal reference systems are described in 14.4, but it is not required that the reference system be described in this, as the reference may refer to anything that may be indentified with a URI.  
+For time values using a calendar containing more than one era, the (optional) calendarEraName attribute provides the name of the calendar era.  
+Inexact temporal positions may be expressed using the optional indeterminatePosition attribute.  This takes a value from an enumeration.</documentation>
+		</annotation>
+		<simpleContent>
+			<extension base="gml:TimePositionUnion">
+				<attribute name="frame" type="anyURI" default="#ISO-8601"/>
+				<attribute name="calendarEraName" type="string"/>
+				<attribute name="indeterminatePosition" type="gml:TimeIndeterminateValueType"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<simpleType name="TimeIndeterminateValueType">
+		<annotation>
+			<documentation>These values are interpreted as follows: 
+-	"unknown" indicates that no specific value for temporal position is provided.
+-	"now" indicates that the specified value shall be replaced with the current temporal position whenever the value is accessed.
+-	"before" indicates that the actual temporal position is unknown, but it is known to be before the specified value.
+-	"after" indicates that the actual temporal position is unknown, but it is known to be after the specified value.
+A value for indeterminatePosition may 
+-	be used either alone, or 
+-	qualify a specific value for temporal position.</documentation>
+		</annotation>
+		<restriction base="string">
+			<enumeration value="after"/>
+			<enumeration value="before"/>
+			<enumeration value="now"/>
+			<enumeration value="unknown"/>
+		</restriction>
+	</simpleType>
+	<simpleType name="TimePositionUnion">
+		<annotation>
+			<documentation>The simple type gml:TimePositionUnion is a union of XML Schema simple types which instantiate the subtypes for temporal position described in ISO 19108.
+ An ordinal era may be referenced via URI.  A decimal value may be used to indicate the distance from the scale origin .  time is used for a position that recurs daily (see ISO 19108:2002 5.4.4.2).
+ Finally, calendar and clock forms that support the representation of time in systems based on years, months, days, hours, minutes and seconds, in a notation following ISO 8601, are assembled by gml:CalDate</documentation>
+		</annotation>
+		<union memberTypes="gml:CalDate time dateTime anyURI decimal"/>
+	</simpleType>
+	<simpleType name="CalDate">
+		<union memberTypes="date gYearMonth gYear"/>
+	</simpleType>
+	<element name="timePosition" type="gml:TimePositionType">
+		<annotation>
+			<documentation>This element is used directly as a property of gml:TimeInstant (see 15.2.2.3), and may also be used in application schemas.</documentation>
+		</annotation>
+	</element>
+	<group name="timeLength">
+		<annotation>
+			<documentation>The length of a time period.</documentation>
+		</annotation>
+		<choice>
+			<element ref="gml:duration"/>
+			<element ref="gml:timeInterval"/>
+		</choice>
+	</group>
+	<element name="duration" type="duration">
+		<annotation>
+			<documentation>gml:duration conforms to the ISO 8601 syntax for temporal length as implemented by the XML Schema duration type.</documentation>
+		</annotation>
+	</element>
+	<element name="timeInterval" type="gml:TimeIntervalLengthType">
+		<annotation>
+			<documentation> gml:timeInterval conforms to ISO 11404 which is based on floating point values for temporal length.
+ISO 11404 syntax specifies the use of a positiveInteger together with appropriate values for radix and factor. The resolution of the time interval is to one radix ^(-factor) of the specified time unit.
+The value of the unit is either selected from the units for time intervals from ISO 31-1:1992, or is another suitable unit.  The encoding is defined for GML in gml:TimeUnitType. The second component of this union type provides a method for indicating time units other than the six standard units given in the enumeration.</documentation>
+		</annotation>
+	</element>
+	<complexType name="TimeIntervalLengthType" final="#all">
+		<simpleContent>
+			<extension base="decimal">
+				<attribute name="unit" type="gml:TimeUnitType" use="required"/>
+				<attribute name="radix" type="positiveInteger"/>
+				<attribute name="factor" type="integer"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<simpleType name="TimeUnitType">
+		<union>
+			<simpleType>
+				<restriction base="string">
+					<enumeration value="year"/>
+					<enumeration value="month"/>
+					<enumeration value="day"/>
+					<enumeration value="hour"/>
+					<enumeration value="minute"/>
+					<enumeration value="second"/>
+				</restriction>
+			</simpleType>
+			<simpleType>
+				<restriction base="string">
+					<pattern value="other:\w{2,}"/>
+				</restriction>
+			</simpleType>
+		</union>
+	</simpleType>
+</schema>

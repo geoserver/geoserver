@@ -1,7 +1,12 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.test.onlineTest;
 
-import junit.framework.Test;
+import org.junit.Test;
 
+import org.geoserver.data.test.SystemTestData;
 import org.geotools.data.complex.AppSchemaDataAccessRegistry;
 
 public class DataReferenceWfsPostgisWithJoiningTest extends DataReferenceWfsPostgisTest {
@@ -10,26 +15,13 @@ public class DataReferenceWfsPostgisWithJoiningTest extends DataReferenceWfsPost
         super();
     }
 
-    /**
-     * Read-only test so can use one-time setup.
-     *
-     * @return
-     */
-    public static Test suite() {
-        try {
-            return new OneTimeTestSetup(new DataReferenceWfsPostgisWithJoiningTest());
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    @Override
-    protected void oneTimeSetUp() throws Exception {
+    protected void onSetUp(SystemTestData testData) throws Exception {
         AppSchemaDataAccessRegistry.getAppSchemaProperties().setProperty ("app-schema.joining", "true");
-        super.oneTimeSetUp();
-    }
+        super.onSetUp(testData);
+    };
     
     @Override
+    @Test
     public void testFilteringSplit() throws Exception {
         //this is a non joining test
     }

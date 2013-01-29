@@ -1,18 +1,26 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.flow.controller;
 
-import org.geoserver.flow.controller.GlobalFlowController;
+import static junit.framework.Assert.*;
+
 import org.geoserver.flow.controller.FlowControllerTestingThread.ThreadState;
 import org.geoserver.ows.Request;
+import org.junit.Test;
 
 public class GlobalFlowControllerTest extends AbstractFlowControllerTest {
     private static final long MAX_WAIT = 1000;
     
+    @Test
     public void testPriority() {
         GlobalFlowController controller = new GlobalFlowController(1);
         // priority == queue size
         assertEquals(1, controller.getPriority());
     }
 
+    @Test
     public void testSingleDelay() throws Exception {
         // create a single item flow controller 
         GlobalFlowController controller = new GlobalFlowController(1);
@@ -63,6 +71,7 @@ public class GlobalFlowControllerTest extends AbstractFlowControllerTest {
         }
     }
     
+    @Test
     public void testTimeout() {
         // create a single item flow controller 
         GlobalFlowController controller = new GlobalFlowController(1);

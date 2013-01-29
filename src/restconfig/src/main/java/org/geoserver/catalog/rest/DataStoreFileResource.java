@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2009 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog.rest;
@@ -186,7 +186,14 @@ public class DataStoreFileResource extends StoreFileResource {
                 for ( File f : directory.listFiles() ) {
                     ZipEntry entry = new ZipEntry( f.getName() );
                     zout.putNextEntry(entry);
-                    IOUtils.copy( new FileInputStream( f ), zout );
+                    FileInputStream fis = null;
+                    try {
+                        fis = new FileInputStream(f);
+                        IOUtils.copy(fis, zout);
+                    } finally {
+                        IOUtils.closeQuietly(fis);
+                    }
+                    
                     zout.closeEntry();
                 }
                 zout.flush();

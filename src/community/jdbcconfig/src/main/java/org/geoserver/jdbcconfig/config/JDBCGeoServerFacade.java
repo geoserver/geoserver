@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.jdbcconfig.config;
 
 import static org.geoserver.catalog.CatalogFacade.ANY_WORKSPACE;
@@ -53,6 +57,7 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
     @Override
     public void setGeoServer(GeoServer geoServer) {
         this.geoServer = geoServer;
+        this.db.setGeoServer(geoServer);
     }
 
     @Override
@@ -68,7 +73,9 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
             SettingsInfo defaultSettings = geoServer.getFactory().createSettings();
             add(defaultSettings);
             global.setSettings(defaultSettings);
-        }else if(null == global.getSettings().getId()){
+        //JD: disabling this check, global settings should have an id 
+        //}else if(null == global.getSettings().getId()){
+        }else {
             add(global.getSettings());
         }
         if (null == getGlobal()) {
@@ -129,6 +136,7 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
     @Override
     public void add(ServiceInfo service) {
         setId(service, ServiceInfo.class);
+        service.setGeoServer(geoServer);
         db.add(service);
     }
 

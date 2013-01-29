@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.ows.kvp;
@@ -139,6 +139,10 @@ public class TimeKvpParser extends KvpParser {
             public int compare(Object o1, Object o2) {
                 final boolean o1Date= o1 instanceof Date;
                 final boolean o2Date= o2 instanceof Date;
+                
+                if(o1 == o2) {
+                    return 0;
+                }
                 
                 // o1 date
                 if(o1Date){

@@ -1,4 +1,10 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.flow;
+
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,10 +13,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class NestedRequestSentinelTest extends TestCase {
+public class NestedRequestSentinelTest {
 
+    @Test
     public void testBasicNesting() {
         NestedRequestSentinel sentinel = new NestedRequestSentinel();
         // no nesting
@@ -33,6 +40,7 @@ public class NestedRequestSentinelTest extends TestCase {
         sentinel.stop();
     }
     
+    @Test
     public void testMTNesting() throws Exception {
         ExecutorService executor = Executors.newCachedThreadPool();
         List<Future<Throwable>> results = new ArrayList<Future<Throwable>>();

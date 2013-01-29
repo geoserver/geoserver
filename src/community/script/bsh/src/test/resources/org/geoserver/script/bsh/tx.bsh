@@ -1,0 +1,39 @@
+before(req, context) {
+  context{"before"} = true;
+}
+
+preInsert(inserted, req, context) {
+  context{"preInsert"} = true;
+}
+
+postInsert(inserted, req, context) {
+  context{"postInsert"} = true;
+}
+
+preUpdate(updated, props, req, context) {
+  context{"preUpdate"} = true;
+}
+
+postUpdate(updated, props, req, context) {
+  context{"postUpdate"} = true;
+}
+
+preDelete(deleted, req, context) {
+  context{"preDelete"} = true;
+}
+
+postDelete(delete, req, context) {
+  context{"postDelete"} = true;
+}
+
+preCommit(req, context) {
+  context{"preCommit"} = true;
+}
+
+postCommit(req, res, context) {
+  context{"postCommit"} = true;
+}
+
+abort(req, res, context) {
+  context{"abort"} = true;
+}

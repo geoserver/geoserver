@@ -1,22 +1,25 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wps;
 
-import static org.custommonkey.xmlunit.XMLAssert.*;
-import junit.framework.Test;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 
+import org.junit.Test;
 import org.w3c.dom.Document;
+
 public class DescribeProcessTest extends WPSTestSupport {
 
-    //read-only test
-    public static Test suite() {
-        return new OneTimeTestSetup(new DescribeProcessTest());
-    }
-    
+    @Test
     public void testGetBuffer() throws Exception { // Standard Test A.4.3.1
         Document d = getAsDOM( root() + "service=wps&request=describeprocess&identifier=JTS:buffer");
         // print(d);
         testBufferDescription(d);
     }
     
+    @Test
     public void testPostBuffer() throws Exception { // Standard Test A.4.3.2
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + 
         		"<DescribeProcess xmlns=\"http://www.opengis.net/wps/1.0.0\" " +
@@ -30,6 +33,7 @@ public class DescribeProcessTest extends WPSTestSupport {
         testBufferDescription(d);
     }
 
+    @Test
     public void testGetBufferFeatureCollection() throws Exception { // Standard Test A.4.3.1
         Document d = getAsDOM( root() + "service=wps&request=describeprocess&identifier=gs:BufferFeatureCollection");
         // print(d);
@@ -78,6 +82,7 @@ public class DescribeProcessTest extends WPSTestSupport {
      * Tests encoding of bounding box outputs
      * @throws Exception
      */
+    @Test
     public void testBounds() throws Exception {
         Document d = getAsDOM( root() + "service=wps&request=describeprocess&identifier=gs:Bounds");
         // print(d);
@@ -125,5 +130,4 @@ public class DescribeProcessTest extends WPSTestSupport {
         testBufferDescription(d);
     }
     */
-    
 }

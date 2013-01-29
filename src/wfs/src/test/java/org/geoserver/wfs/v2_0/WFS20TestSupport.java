@@ -1,13 +1,16 @@
-/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs.v2_0;
 
-import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Map;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.Service;
+import org.geoserver.platform.Service; 
 import org.geoserver.wfs.WFSTestSupport;
 import org.geotools.wfs.v2_0.WFS;
 import org.w3c.dom.Document;

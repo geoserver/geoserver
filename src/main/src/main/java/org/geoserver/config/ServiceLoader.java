@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -44,4 +44,13 @@ public interface ServiceLoader<T extends ServiceInfo> {
      * @throws Exception Any errors that occur while saving the service.
      */
     void save( T service, GeoServer gs ) throws Exception;
+
+    /**
+     * Creates a new service from scratch.
+     * 
+     * @param gs The GeoServer configuration.
+     * 
+     * @throws Exception Any errors that occur while saving the service.
+     */
+    T create(GeoServer gs) throws Exception;
 }

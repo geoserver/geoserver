@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -117,7 +117,8 @@ public class ReprojectPage extends GeoServerBasePage {
             protected void onSubmit(AjaxRequestTarget at, Form<?> form) {
                 Geometry source = sourceGeom.getModelObject();
                 if (source == null) {
-                    error("Source point is not specified");
+                    error(getLocalizer().getString("ReprojectPage.sourcePointNotSpecifiedError", 
+                            ReprojectPage.this, "Source Geometry is not specified"));
                 } else {
                     MathTransform mt = getTransform();
                     if (mt != null) {
@@ -146,7 +147,8 @@ public class ReprojectPage extends GeoServerBasePage {
             protected void onSubmit(AjaxRequestTarget at, Form<?> form) {
                 Geometry target = targetGeom.getModelObject();
                 if (target == null) {
-                    error("Target point is not specified");
+                    error(getLocalizer().getString("ReprojectPage.targetPointNotSpecifiedError", 
+                            ReprojectPage.this, "Target Geometry is not specified"));
                 } else {
                     MathTransform mt = getTransform();
                     if (mt != null) {

@@ -20,6 +20,7 @@ import junit.framework.TestCase;
 
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.jdbcconfig.JDBCConfigTestSupport;
 import org.opengis.filter.Filter;
 
 /**
@@ -28,13 +29,13 @@ import org.opengis.filter.Filter;
  */
 public class QueryBuilderTest extends TestCase {
 
-    private JdbcConfigTestSupport testSupport;
+    private JDBCConfigTestSupport testSupport;
 
     private DbMappings dbMappings;
 
     public void setUp() throws Exception {
         dbMappings = new DbMappings();
-        testSupport = new JdbcConfigTestSupport();
+        testSupport = new JDBCConfigTestSupport();
         testSupport.setUp();
         dbMappings = testSupport.getDbMappings();
     }

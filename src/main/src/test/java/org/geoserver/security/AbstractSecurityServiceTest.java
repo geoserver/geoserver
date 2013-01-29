@@ -1,17 +1,20 @@
-/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 
 package org.geoserver.security;
 
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
 import org.apache.commons.io.FileUtils;
+
 import org.geoserver.data.test.LiveData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
@@ -26,6 +29,8 @@ import org.geoserver.security.password.GeoServerMultiplexingPasswordEncoder;
 import org.geoserver.security.password.GeoServerPBEPasswordEncoder;
 import org.geoserver.security.password.GeoServerPlainTextPasswordEncoder;
 import org.geoserver.test.GeoServerAbstractTestSupport;
+import org.geoserver.test.GeoServerBaseTestSupport;
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.data.DataUtilities;
 
 
@@ -35,7 +40,12 @@ import org.geotools.data.DataUtilities;
  * @author christian
  *
  */
-public abstract class AbstractSecurityServiceTest extends GeoServerAbstractTestSupport {
+public abstract class AbstractSecurityServiceTest extends GeoServerSystemTestSupport {
+
+    @Override
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        //explictily do nothing, we want no layers
+    }
 
     public GeoServerUserGroupService createUserGroupService(String name) throws Exception {
         return null;
@@ -75,7 +85,7 @@ public abstract class AbstractSecurityServiceTest extends GeoServerAbstractTestS
                         
         role_auth.getProperties().put("employee","");
         role_auth.getProperties().put("bbox","lookupAtRuntime");
-                        
+
         roleStore.addRole(role_admin);
         roleStore.addRole(role_auth);
         roleStore.addRole(role_wfs);
@@ -395,6 +405,48 @@ public abstract class AbstractSecurityServiceTest extends GeoServerAbstractTestS
 
         assertEquals(1,userGroupService.getGroupsForUser(groupAdminUser).size());
         assertTrue(userGroupService.getGroupsForUser(groupAdminUser).contains(group2));
+        
+        assertEquals(0,userGroupService.getUserCountHavingProperty("unknown"));
+        assertEquals(userGroupService.getUserCount(),
+                userGroupService.getUserCountNotHavingProperty("unknown"));
+        assertEquals(0,userGroupService.getUserCountHavingPropertyValue("tel","123"));
+
+        assertEquals(1,userGroupService.getUserCountHavingProperty("tel"));
+        assertEquals(userGroupService.getUserCount()-1,
+                userGroupService.getUserCountNotHavingProperty("tel"));
+        assertEquals(1,userGroupService.getUserCountHavingPropertyValue("tel","12-34-38"));
+
+        assertEquals(0,userGroupService.getUsersHavingProperty("unknown").size());
+        assertEquals(userGroupService.getUserCount(),
+                userGroupService.getUsersNotHavingProperty("unknown").size());
+        // check if properties are loaded too
+        for (GeoServerUser user : userGroupService.getUsersNotHavingProperty("unknown") ) {
+            if (user2.getUsername().equals(user.getUsername())) {
+                assertEquals(2,user.getProperties().size());
+                assertEquals(user.getProperties().getProperty("mail"),"user2@gmx.com");
+                assertEquals(user.getProperties().getProperty("tel"),"12-34-38");                
+            } else {
+                assertEquals(0,user.getProperties().size());
+            }
+        }        
+        assertEquals(0,userGroupService.getUsersHavingPropertyValue("tel","123").size());
+
+        assertEquals(1,userGroupService.getUsersHavingProperty("mail").size());
+        user2=userGroupService.getUsersHavingProperty("mail").first();
+        assertEquals(user2.getProperties().getProperty("mail"),"user2@gmx.com");
+        assertEquals(user2.getProperties().getProperty("tel"),"12-34-38");                
+
+        assertEquals(userGroupService.getUserCount()-1
+                ,userGroupService.getUsersNotHavingProperty("mail").size());
+        for (GeoServerUser user : userGroupService.getUsersNotHavingProperty("mail") ) {
+                assertEquals(0,user.getProperties().size());
+        }        
+        
+        assertEquals(1,userGroupService.getUsersHavingPropertyValue("tel","12-34-38").size());
+        user2=userGroupService.getUsersHavingPropertyValue("tel","12-34-38").first();
+        assertEquals(user2.getProperties().getProperty("mail"),"user2@gmx.com");
+        assertEquals(user2.getProperties().getProperty("tel"),"12-34-38");                                    
+        
     }
     protected void checkValuesModified(GeoServerUserGroupService userGroupService) throws IOException {
         GeoServerUser disableduser = userGroupService.getUserByUsername("disableduser");
@@ -417,6 +469,13 @@ public abstract class AbstractSecurityServiceTest extends GeoServerAbstractTestS
         assertTrue(userGroupService.getUsersForGroup(group1).contains(user1));
     
         assertEquals(0,userGroupService.getGroupsForUser(user2).size());
+        
+        assertEquals(0,userGroupService.getUsersHavingProperty("mail").size());
+        assertEquals(0,userGroupService.getUsersHavingPropertyValue("tel","12-34-38").size());
+        assertEquals(1,userGroupService.getUsersHavingPropertyValue("tel","11-22-33").size());
+        user2=userGroupService.getUsersHavingPropertyValue("tel","11-22-33").first();
+        assertEquals("11-22-33", user2.getProperties().getProperty("tel"));
+        
     }
     protected void checkValuesRemoved(GeoServerUserGroupService userGroupService) throws IOException {
         
@@ -442,6 +501,10 @@ public abstract class AbstractSecurityServiceTest extends GeoServerAbstractTestS
         assertEquals(0, userGroupService.getGroupsForUser(disableduser).size());
         assertEquals(1, userGroupService.getUsersForGroup(group1).size());
         assertTrue(userGroupService.getUsersForGroup(group1).contains(user1));
+        
+        assertEquals(0,userGroupService.getUsersHavingProperty("mail").size());
+        assertEquals(0,userGroupService.getUsersHavingPropertyValue("tel","11-22-33").size());
+
     }
     public void insertValues(GeoServerUserGroupStore userGroupStore) throws Exception {
                 
@@ -503,18 +566,17 @@ public abstract class AbstractSecurityServiceTest extends GeoServerAbstractTestS
     }
     public void removeValues(GeoServerUserGroupStore userGroupStore) throws IOException {
         GeoServerUser user2 = userGroupStore.getUserByUsername("user2");
-        userGroupStore.removeUser(user2);
+        if (user2 != null) {
+            userGroupStore.removeUser(user2);
+        }
         GeoServerUserGroup disabledGroup = userGroupStore.getGroupByGroupname("disabledgroup");
-        userGroupStore.removeGroup(disabledGroup);
-    }
-    
-    @Override
-    protected TestData buildTestData() throws Exception {
-        return new LiveData(unpackTestDataDir());
+        if (disabledGroup != null) {
+            userGroupStore.removeGroup(disabledGroup);
+        }
     }
 
     public static File unpackTestDataDir() throws Exception {
-        URL url = AbstractSecurityServiceTest.class.getResource("/datadir");
+        URL url = AbstractSecurityServiceTest.class.getResource("/data_dir/default");
         if (!"file".equals(url.getProtocol())) {
             //means a dependency is using this directory via a jarfile, copy out manually
             File dataDir = File.createTempFile("data", "live", new File("./target"));
@@ -523,7 +585,7 @@ public abstract class AbstractSecurityServiceTest extends GeoServerAbstractTestS
 
             //TODO: instead of harcoding files, dynamically read all subentries from the jar
             // and copy them out
-            FileUtils.copyURLToFile(AbstractSecurityServiceTest.class.getResource("/datadir/dummy.txt"), 
+            FileUtils.copyURLToFile(AbstractSecurityServiceTest.class.getResource("/data_dir/default/dummy.txt"), 
                 new File(dataDir, "dummy.txt"));
             return dataDir;
         }

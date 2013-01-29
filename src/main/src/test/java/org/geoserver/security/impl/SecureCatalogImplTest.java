@@ -1,8 +1,23 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.security.impl;
 
-import org.springframework.security.core.context.SecurityContextHolder;
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.security.ResourceAccessManager;
@@ -10,17 +25,22 @@ import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.decorators.ReadOnlyDataStoreTest;
 import org.geoserver.security.decorators.SecuredDataStoreInfo;
 import org.geoserver.security.decorators.SecuredFeatureTypeInfo;
+import org.geoserver.security.decorators.SecuredLayerGroupInfo;
 import org.geoserver.security.decorators.SecuredLayerInfo;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 public class SecureCatalogImplTest extends AbstractAuthorizationTest {
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         super.setUp();
 
         populateCatalog();
     }
 
+    @Test 
     public void testWideOpen() throws Exception {
         ResourceAccessManager manager = buildManager("wideOpen.properties");
         SecureCatalogImpl sc = new SecureCatalogImpl(catalog, manager);
@@ -40,6 +60,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         assertSame(arcGridStore, sc.getCoverageStoreByName("arcGrid"));
     }
 
+    @Test
     public void testLockedDown() throws Exception {
         ResourceAccessManager manager = buildManager("lockedDown.properties");
         SecureCatalogImpl sc = new SecureCatalogImpl(catalog, manager);
@@ -73,6 +94,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         assertSame(arcGridStore, sc.getCoverageStoreByName("arcGrid"));
     }
     
+    @Test
     public void testLockedChallenge() throws Exception {
         ResourceAccessManager manager = buildManager("lockedDownChallenge.properties");
         SecureCatalogImpl sc = new SecureCatalogImpl(catalog, manager);
@@ -154,6 +176,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         assertSame(arcGridStore, sc.getCoverageStoreByName("arcGrid"));
     }
     
+    @Test
     public void testLockedMixed() throws Exception {
         ResourceAccessManager manager = buildManager("lockedDownMixed.properties");
         SecureCatalogImpl sc = new SecureCatalogImpl(catalog, manager);
@@ -251,6 +274,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         assertSame(arcGridStore, sc.getCoverageStoreByName("arcGrid"));
     }
 
+    @Test
     public void testPublicRead() throws Exception {
         ResourceAccessManager manager = buildManager("publicRead.properties");
         SecureCatalogImpl sc = new SecureCatalogImpl(catalog, manager);
@@ -291,6 +315,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         assertSame(arcGridStore, sc.getCoverageStoreByName("arcGrid"));
     }
 
+    @Test
     public void testComplex() throws Exception {
         ResourceAccessManager manager = buildManager("complex.properties");
         SecureCatalogImpl sc = new SecureCatalogImpl(catalog, manager);
@@ -337,5 +362,59 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         // ... bases requires one to be in the military
         assertSame(bases, sc.getFeatureTypeByName("topp:bases"));
     }
-     
+
+    @Test
+    public void testLockedLayerInGroupMustNotHideGroup() throws Exception {        
+        ResourceAccessManager manager = buildManager("lockedLayerInLayerGroup.properties");
+        SecureCatalogImpl sc = new SecureCatalogImpl(catalog, manager);
+        
+        SecurityContextHolder.getContext().setAuthentication(rwUser);
+        assertSame(states, sc.getFeatureTypeByName("topp:states"));
+        assertSame(roads, sc.getFeatureTypeByName("topp:roads"));
+        LayerGroupInfo layerGroup = sc.getLayerGroupByName("topp", "layerGroupWithSomeLockedLayer");        
+        assertSame(layerGroupWithSomeLockedLayer, layerGroup);
+        assertEquals(2, layerGroup.getLayers().size());
+        
+        // try with read-only user, not empty LayerGroup should be returned
+        SecurityContextHolder.getContext().setAuthentication(roUser);
+        assertNull(sc.getFeatureTypeByName("topp:states"));
+        assertSame(roads, sc.getFeatureTypeByName("topp:roads"));
+        layerGroup = sc.getLayerGroupByName("topp", "layerGroupWithSomeLockedLayer");                
+        assertNotNull(layerGroup);
+        assertTrue(layerGroup instanceof SecuredLayerGroupInfo);
+        assertEquals(1, layerGroup.getLayers().size());
+        
+        // try with anonymous user, empty LayerGroup should be returned
+        SecurityContextHolder.getContext().setAuthentication(anonymous);
+        assertNull(sc.getFeatureTypeByName("topp:states"));
+        assertNull(sc.getFeatureTypeByName("topp:roads"));
+        layerGroup = sc.getLayerGroupByName("topp", "layerGroupWithSomeLockedLayer");                
+        assertNotNull(layerGroup);
+        assertTrue(layerGroup instanceof SecuredLayerGroupInfo);
+        assertEquals(0, layerGroup.getLayers().size());
+    }        
+    
+    @Test
+    public void testEoLayerGroupMustBeHiddenIfItsRootLayerIsHidden() throws Exception {
+        LayerGroupInfo eoRoadsLayerGroup = buildLayerGroup("eoRoadsLayerGroup", LayerGroupInfo.Mode.EO, roadsLayer, lineStyle, toppWs, statesLayer);
+        LayerGroupInfo eoStatesLayerGroup = buildLayerGroup("eoStatesLayerGroup", LayerGroupInfo.Mode.EO, statesLayer, lineStyle, toppWs, roadsLayer);
+        
+        Catalog eoCatalog = createNiceMock(Catalog.class);
+        expect(eoCatalog.getLayerGroupByName("topp", eoRoadsLayerGroup.getName())).andReturn(eoRoadsLayerGroup).anyTimes();
+        expect(eoCatalog.getLayerGroupByName("topp", eoStatesLayerGroup.getName())).andReturn(eoStatesLayerGroup).anyTimes();        
+        replay(eoCatalog);
+        
+        ResourceAccessManager manager = buildManager("lockedLayerInLayerGroup.properties");
+        SecureCatalogImpl sc = new SecureCatalogImpl(eoCatalog, manager);
+        SecurityContextHolder.getContext().setAuthentication(roUser);
+        
+        // if root layer is not hidden
+        LayerGroupInfo layerGroup = sc.getLayerGroupByName("topp", "eoRoadsLayerGroup");                
+        assertNotNull(layerGroup);
+        assertNotNull(layerGroup.getRootLayer());
+        
+        // if root layer is hidden
+        layerGroup = sc.getLayerGroupByName("topp", "eoStatesLayerGroup");                
+        assertNull(layerGroup);        
+    }
 }

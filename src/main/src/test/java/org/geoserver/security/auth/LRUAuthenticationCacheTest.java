@@ -1,11 +1,19 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.security.auth;
 
+import static org.junit.Assert.*;
+
+import org.junit.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import junit.framework.TestCase;
 
-public class LRUAuthenticationCacheTest extends TestCase {
+public class LRUAuthenticationCacheTest {
 
+    @Test
     public void testLRUCache() {
         
         LRUCache<String, String> cache = new LRUCache<String, String> (3);
@@ -20,6 +28,7 @@ public class LRUAuthenticationCacheTest extends TestCase {
         assertNull(cache.get("key1"));        
     }
     
+    @Test
     public void testAuthenticationKey() {
         AuthenticationCacheKey key11 = new AuthenticationCacheKey("f1","k1");
         assertTrue(key11.equals(key11));
@@ -38,6 +47,7 @@ public class LRUAuthenticationCacheTest extends TestCase {
         assertFalse(key11.hashCode()==key22.hashCode());
     }
     
+    @Test
     public void testAuthenticationEntry() {
         
         UsernamePasswordAuthenticationToken t1 = new UsernamePasswordAuthenticationToken("user1", "password1");
@@ -89,6 +99,7 @@ public class LRUAuthenticationCacheTest extends TestCase {
         }
     }
     
+    @Test
     public void testLRUAuthenticationCache() {
         // test max entries
         LRUAuthenticationCacheImpl cache = new LRUAuthenticationCacheImpl(5,10,3);        
@@ -143,7 +154,7 @@ public class LRUAuthenticationCacheTest extends TestCase {
         // test default live time
         cache = new LRUAuthenticationCacheImpl(5,0,4);        
         fillCache(cache);
-        waitForMilliSecs(1);
+        waitForMilliSecs(10);
         assertNull(cache.get("filtera","key1"));
         assertNull(cache.get("filtera","key2"));
         assertNull(cache.get("filterb","key3"));
@@ -152,7 +163,7 @@ public class LRUAuthenticationCacheTest extends TestCase {
         // test default idle time
         cache = new LRUAuthenticationCacheImpl(0,10,4);        
         fillCache(cache);
-        waitForMilliSecs(1);
+        waitForMilliSecs(10);
         assertNull(cache.get("filtera","key1"));
         assertNull(cache.get("filtera","key2"));
         assertNull(cache.get("filterb","key3"));
@@ -166,7 +177,7 @@ public class LRUAuthenticationCacheTest extends TestCase {
         assertNotNull(cache.get("filterb","key3"));
         assertNotNull(cache.get("filterb","key4"));
 
-        waitForMilliSecs(1100);
+        waitForMilliSecs(1500);
         assertNull(cache.get("filtera","key1"));
         assertNull(cache.get("filtera","key2"));
         assertNull(cache.get("filterb","key3"));
@@ -175,7 +186,7 @@ public class LRUAuthenticationCacheTest extends TestCase {
         // test timer task
         cache = new LRUAuthenticationCacheImpl(5,0,4);        
         fillCache(cache);
-        waitForMilliSecs(1);
+        waitForMilliSecs(10);
         cache.runRemoveExpiredTaskSynchron();
         assertEquals(0,cache.cache.size());             
     }

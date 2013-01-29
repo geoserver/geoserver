@@ -1,5 +1,0 @@
-WFSV is an experimental service, there still are a few issues with it
-
-* the service in all demo requests is WFSV to make the dispatcher happy and hit the parallel
-  WFSV service, thought this way requests aren't valid
-  

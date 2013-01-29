@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 
@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerRoleConverter;
-import org.geoserver.security.config.GeoServerRoleFilterConfig;
+import org.geoserver.security.config.RoleFilterConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -34,12 +34,15 @@ public class GeoServerRoleFilter extends GeoServerSecurityFilter {
     
     protected GeoServerRoleConverter converter;
     protected String headerAttribute;
+    
+    public static String DEFAULT_ROLE_CONVERTER="roleConverter";
+    public static String DEFAULT_HEADER_ATTRIBUTE="roles";
 
 
     @Override
     public void initializeFromConfig(SecurityNamedServiceConfig config) throws IOException {
         super.initializeFromConfig(config);
-        GeoServerRoleFilterConfig roleConfig = (GeoServerRoleFilterConfig) config;
+        RoleFilterConfig roleConfig = (RoleFilterConfig) config;
         
         headerAttribute = roleConfig.getHttpResponseHeaderAttrForIncludedRoles();
         // TODO, Justin, is this ok ?

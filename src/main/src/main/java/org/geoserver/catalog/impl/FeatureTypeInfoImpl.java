@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -24,13 +24,14 @@ import org.opengis.util.ProgressListener;
 public class FeatureTypeInfoImpl extends ResourceInfoImpl implements
         FeatureTypeInfo {
 
-    protected List<AttributeTypeInfo> attributes = new ArrayList<AttributeTypeInfo>();
-    
     protected Filter filter;
 
     protected int maxFeatures;
     protected int numDecimals;
 
+    protected List<AttributeTypeInfo> attributes = new ArrayList<AttributeTypeInfo>();
+
+    
     protected FeatureTypeInfoImpl() {
     }
 

@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- 
+ Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
@@ -20,6 +25,40 @@
       <artifactId>platform</artifactId>
     </dependency>
   </dependencies>
+
+
+  <build>
+   <plugins>
+	<plugin>
+		<artifactId>maven-jar-plugin</artifactId>
+		<executions>
+			<execution>
+				<phase>package</phase>
+				<goals>
+					<goal>test-jar</goal>
+				</goals>
+			</execution>
+		</executions>
+		<configuration>
+			<archive>
+				<manifest>
+					<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+					<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+				</manifest>
+				<manifestEntries>
+					<GeoServerModule>extension</GeoServerModule>
+					<Application-Name>${project.build.finalname}</Application-Name>
+					<Project-Version>${project.version}</Project-Version>
+					<Iteration-Name>${iteration}</Iteration-Name>
+					<Build-Timestamp>${maven.build.timestamp}</Build-Timestamp>
+					<Git-Revision>${build.commit.id}</Git-Revision>
+				</manifestEntries>
+			</archive>
+		</configuration>
+	</plugin>
+   </plugins>
+  </build>
+
 
   <profiles>
 
@@ -172,6 +211,25 @@
       </modules>
     </profile>
 
+    <profile>
+      <id>monitor</id>
+      <activation>
+        <property>
+          <name>monitoring</name>
+        </property>
+      </activation>
+      <modules>
+        <module>monitor</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>security</id>
+      <modules>
+        <module>security</module>
+      </modules>
+    </profile>
+
     <!-- allExtensions profile, includes all modules -->
     <profile>
       <id>allExtensions</id>
@@ -197,6 +255,8 @@
         <module>wps</module>
         <module>querylayer</module>
         <module>teradata</module>
+        <module>monitor</module>
+        <module>security</module>
       </modules>
     </profile>
 
@@ -225,6 +285,8 @@
         <module>wps</module>
         <module>querylayer</module>
         <module>teradata</module>
+        <module>monitor</module>
+        <module>security</module>
       </modules>
     </profile>
 

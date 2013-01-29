@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2009 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog.rest;
@@ -27,6 +27,7 @@ import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.restlet.Context;
+import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -286,7 +287,9 @@ public class FeatureTypeResource extends AbstractCatalogResource {
 
     @Override
     protected void configurePersister(XStreamPersister persister, DataFormat format) {
-        persister.setHideFeatureTypeAttributes();
+        if(getRequest().getMethod() == Method.GET) {
+            persister.setHideFeatureTypeAttributes();
+        }
         persister.setCallback( new XStreamPersister.Callback() {
             @Override
             protected void postEncodeReference(Object obj, String ref, String prefix,

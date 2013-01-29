@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -6,7 +6,9 @@ package org.geoserver.web.data.layergroup;
 
 import java.io.Serializable;
 
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.web.GeoServerApplication;
 
@@ -16,46 +18,55 @@ import org.geoserver.web.GeoServerApplication;
 @SuppressWarnings("serial")
 public class LayerGroupEntry implements Serializable {
 
-    String sid;
-    String lid;
+    String styleId;
+    String layerId;
+    String layerGroupId;
     
-    public LayerGroupEntry( LayerInfo layer, StyleInfo style ) {
+    public LayerGroupEntry( PublishedInfo layer, StyleInfo style ) {
         setLayer(layer);
         setStyle(style);
     }
     
     public StyleInfo getStyle() {
-        if(sid == null)
+        if(styleId == null)
             return null;
         else
-            return GeoServerApplication.get().getCatalog().getStyle( sid );
+            return GeoServerApplication.get().getCatalog().getStyle( styleId );
     }
     
     public boolean isDefaultStyle() {
-        return sid == null;
+        return styleId == null;
     }
     
     public void setDefaultStyle(boolean defaultStyle) {
-        if(defaultStyle) {
+        if(defaultStyle || (getLayer() instanceof LayerGroupInfo)) {
             setStyle(null);
         } else {
-            setStyle(getLayer().getDefaultStyle());
+            setStyle(((LayerInfo) getLayer()).getDefaultStyle());
         }
     }
     
     public void setStyle( StyleInfo style ) {
         if(style == null)
-            sid = null;
+            styleId = null;
         else
-            sid = style.getId();
+            styleId = style.getId();
     }
     
-    public LayerInfo getLayer() {
-        return GeoServerApplication.get().getCatalog().getLayer( lid );
+    public PublishedInfo getLayer() {
+        if (layerGroupId != null) {
+            return GeoServerApplication.get().getCatalog().getLayerGroup( layerGroupId );
+        } else {
+            return GeoServerApplication.get().getCatalog().getLayer( layerId );
+        }
     }
     
-    public void setLayer( LayerInfo layer ) {
-        lid = layer.getId();
+    public void setLayer( PublishedInfo publishedInfo ) {
+        if (publishedInfo instanceof LayerGroupInfo) {
+            layerGroupId = publishedInfo.getId();
+        } else {
+            layerId = publishedInfo.getId();
+        }
     }
     
 }

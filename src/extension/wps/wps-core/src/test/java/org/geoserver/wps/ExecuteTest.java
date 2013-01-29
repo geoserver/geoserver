@@ -1,23 +1,39 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wps;
 
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.geoserver.data.test.MockData.PRIMITIVEGEOFEATURE;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import javax.xml.namespace.QName;
+
 import net.opengis.ows11.BoundingBoxType;
 
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.custommonkey.xmlunit.exceptions.XpathException;
+import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
@@ -31,6 +47,8 @@ import org.geotools.process.ProcessException;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.xml.Parser;
+import org.junit.Before;
+import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.w3c.dom.Document;
 
@@ -43,24 +61,31 @@ import com.vividsolutions.jts.io.WKTReader;
 public class ExecuteTest extends WPSTestSupport {
 
     @Override
-    protected void oneTimeSetUp() throws Exception {
-        super.oneTimeSetUp();
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+
+        testData.addVectorLayer(SystemTestData.PRIMITIVEGEOFEATURE, getCatalog());
+
+        String pgf  = PRIMITIVEGEOFEATURE.getLocalPart();
+        testData.addVectorLayer(new QName("http://foo.org", pgf, "foo" ), new HashMap<LayerProperty,Object>(), pgf + ".properties", MockData.class, getCatalog());
+    }
+    
+    @Before
+    public void oneTimeSetUp() throws Exception {
         WPSInfo wps = getGeoServer().getService(WPSInfo.class);
         // want at least two asynchronous processes to test concurrency
         wps.setMaxAsynchronousProcesses(Math.max(2, wps.getMaxAsynchronousProcesses()));
         getGeoServer().save(wps);
     }
 
-    @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
-        
+    @Before
+    public void setUpInternal() throws Exception {
         // make extra sure we don't have anything else going
         MonkeyProcess.clearCommands();
     }
     
     /* TODO GET requests A.4.4.1 */
-
+    @Test
     public void testDataInline() throws Exception { // Standard Test A.4.4.2, A.4.4.4
         String xml =  
           "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
@@ -108,6 +133,7 @@ public class ExecuteTest extends WPSTestSupport {
             "/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output/wps:Data/wps:ComplexData/gml:Polygon", d);
     }
     
+    @Test
     public void testDataInlineRawOutput() throws Exception { // Standard Test A.4.4.3
         String xml =  
           "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
@@ -149,6 +175,7 @@ public class ExecuteTest extends WPSTestSupport {
         assertEquals( "gml:Polygon", d.getDocumentElement().getNodeName() );
     }
     
+    @Test
     public void testWKTInlineRawOutput() throws Exception { // Standard Test A.4.4.3
         String xml =  
           "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
@@ -186,6 +213,7 @@ public class ExecuteTest extends WPSTestSupport {
         assertTrue(g instanceof Polygon);
     }
     
+    @Test
     public void testWKTInlineKVPRawOutput() throws Exception {
         String request = "wps?service=WPS&version=1.0.0&request=Execute&Identifier=JTS:buffer" +
                 "&DataInputs=" + urlEncode("geom=POLYGON((1 1, 2 1, 2 2, 1 2, 1 1))@mimetype=application/wkt;distance=1") +
@@ -197,7 +225,7 @@ public class ExecuteTest extends WPSTestSupport {
         assertTrue(g instanceof Polygon);
     }
 
-
+    @Test
     public void testFeatureCollectionInline() throws Exception { // Standard Test A.4.4.2, A.4.4.4
         String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
               "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 
@@ -244,6 +272,7 @@ public class ExecuteTest extends WPSTestSupport {
             "/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output/wps:Data/wps:ComplexData/wfs:FeatureCollection", d);
     }
     
+    @Test
     public void testFeatureCollectionInlineBoundedBy() throws Exception { // Standard Test A.4.4.2, A.4.4.4
         String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
               "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 
@@ -285,6 +314,7 @@ public class ExecuteTest extends WPSTestSupport {
         assertXpathEvaluatesTo("0", "count(//feature:boundedBy)", d);
     }
     
+    @Test
     public void testFeatureCollectionInlineKVP() throws Exception { 
         String request = "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:BufferFeatureCollection" +
             "&DataInputs=" + urlEncode("features=" + readFileIntoString("states-FeatureCollection.xml") + "@mimetype=application/wfs-collection-1.1;distance=10") +
@@ -301,6 +331,7 @@ public class ExecuteTest extends WPSTestSupport {
             "/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output/wps:Data/wps:ComplexData/wfs:FeatureCollection", d);
     }
     
+    @Test
     public void testReferenceOutputXML() throws Exception { // Standard Test A.4.4.2, A.4.4.4
         String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
               "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 
@@ -344,6 +375,7 @@ public class ExecuteTest extends WPSTestSupport {
         assertXpathExists("wfs:FeatureCollection", d);
     }
     
+    @Test
     public void testReferenceOutputKVP() throws Exception { 
         String request = "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:BufferFeatureCollection" +
             "&DataInputs=" + urlEncode("features=" + readFileIntoString("states-FeatureCollection.xml") + 
@@ -367,6 +399,7 @@ public class ExecuteTest extends WPSTestSupport {
         assertXpathExists("wfs:FeatureCollection", d);
     }
     
+    @Test
     public void testFeatureCollectionFileReference() throws Exception { // Standard Test A.4.4.2, A.4.4.4
         URL collectionURL = getClass().getResource("states-FeatureCollection.xml");
         String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' xmlns:xlink=\"http://www.w3.org/1999/xlink\" " + 
@@ -405,6 +438,7 @@ public class ExecuteTest extends WPSTestSupport {
             "/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output/wps:Data/wps:ComplexData/wfs:FeatureCollection", d);
     }
     
+    @Test
     public void testFeatureCollectionFileReferenceKVP() throws Exception { 
         URL collectionURL = getClass().getResource("states-FeatureCollection.xml");
         String request = "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:BufferFeatureCollection" +
@@ -422,6 +456,7 @@ public class ExecuteTest extends WPSTestSupport {
             "/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output/wps:Data/wps:ComplexData/wfs:FeatureCollection", d);
     }
     
+    @Test
     public void testInlineGeoJSON() throws Exception {
         String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
         "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 
@@ -457,6 +492,7 @@ public class ExecuteTest extends WPSTestSupport {
         
     }
     
+    @Test
     public void testShapeZip() throws Exception {
         String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:xlink=\"http://www.w3.org/1999/xlink\" " +
                 "xmlns:wps='http://www.opengis.net/wps/1.0.0' xmlns:wfs='http://www.opengis.net/wfs' " + 
@@ -494,6 +530,7 @@ public class ExecuteTest extends WPSTestSupport {
      * Tests a process execution with a BoudingBox as the output and check internal layer
      * request handling as well
      */
+    @Test
     public void testBoundsPost() throws Exception {
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
                 "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n" + 
@@ -527,6 +564,7 @@ public class ExecuteTest extends WPSTestSupport {
      * Tests a process execution with a BoudingBox as the output and check internal layer
      * request handling as well
      */
+    @Test
     public void testBoundsGet() throws Exception {
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
                 "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n" + 
@@ -554,6 +592,7 @@ public class ExecuteTest extends WPSTestSupport {
     /**
      * Tests a process grabbing a remote layer 
      */
+    @Test
     public void testRemoteGetWFS10Layer() throws Exception {
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
         "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n" + 
@@ -578,6 +617,7 @@ public class ExecuteTest extends WPSTestSupport {
     /**
      * Tests a process grabbing a remote layer 
      */
+    @Test
     public void testRemotePostWFS10Layer() throws Exception {
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
         "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n" + 
@@ -619,6 +659,7 @@ public class ExecuteTest extends WPSTestSupport {
     /**
      * Tests a process grabbing a remote layer 
      */
+    @Test
     public void testRemoteBodyReferencePostWFS10Layer() throws Exception {
         URL getFeatureURL = getClass().getResource("getFeature.xml");
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
@@ -646,6 +687,7 @@ public class ExecuteTest extends WPSTestSupport {
     /**
      * Tests a process grabbing a remote layer 
      */
+    @Test
     public void testRemoteGetWFS11Layer() throws Exception {
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
         "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n" + 
@@ -671,6 +713,7 @@ public class ExecuteTest extends WPSTestSupport {
     /**
      * Tests a process grabbing a remote layer 
      */
+    @Test
     public void testRemotePostWFS11Layer() throws Exception {
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
         "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n" + 
@@ -708,6 +751,7 @@ public class ExecuteTest extends WPSTestSupport {
         executeState1BoundsTest(request, "POST WFS 1.1");
     }
     
+    @Test
     public void testProcessChaining() throws Exception {
         // chain two JTS processes
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
@@ -755,6 +799,7 @@ public class ExecuteTest extends WPSTestSupport {
         assertTrue(resp.getOutputStreamContent().matches("312\\..*"));
     }
     
+    @Test
     public void testProcessChainingKVP() throws Exception {
         String nested = "http://geoserver/wps?service=WPS&version=1.0.0&request=Execute&Identifier=JTS:buffer" +
         "&DataInputs=" + urlEncode("geom=POINT(0 0)@mimetype=application/wkt;distance=10") + "&RawDataOutput=result";
@@ -767,6 +812,7 @@ public class ExecuteTest extends WPSTestSupport {
         assertTrue(resp.getOutputStreamContent().matches("312\\..*"));
     }
     
+    @Test
     public void testProcessFailure() throws Exception {
         // have the monkey throw an exception 
         MonkeyProcess.exception("x1", new ProcessException("Sorry dude, things went pear shaped..."), false);
@@ -778,6 +824,7 @@ public class ExecuteTest extends WPSTestSupport {
                 "//wps:ProcessFailed/ows:ExceptionReport/ows:Exception/ows:ExceptionText", dom);
     }
     
+    @Test
     public void testStoredNoStatus() throws Exception {
         // submit asynch request with no updates
         String request = "wps?service=WPS&version=1.0.0&request=Execute&Identifier=gs:Monkey&storeExecuteResponse=true&DataInputs=" + urlEncode("id=x2");
@@ -810,6 +857,7 @@ public class ExecuteTest extends WPSTestSupport {
         return fc;
     }
     
+    @Test
     public void testStoredWithStatus() throws Exception {
         // submit asynch request with no updates
         String statusLocation = submitMonkey("x3");
@@ -839,6 +887,7 @@ public class ExecuteTest extends WPSTestSupport {
      * http://jira.codehaus.org/browse/GEOS-5208
      * @throws Exception
      */
+    @Test
     public void testChainedProgress() throws Exception {
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
         		"<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n" + 
@@ -882,6 +931,7 @@ public class ExecuteTest extends WPSTestSupport {
         assertEquals("GEOMETRYCOLLECTION EMPTY", response.getOutputStreamContent());
     }
     
+    @Test
     public void testAsynchFailEncode() throws Exception {
         // submit asynch request with no updates
         String statusLocation = submitMonkey("x5");
@@ -893,6 +943,7 @@ public class ExecuteTest extends WPSTestSupport {
         assertXpathExists("//wps:ProcessFailed", dom);
     }
     
+    @Test
     public void testConcurrentRequests() throws Exception {
         // submit first
         String statusLocation1 = submitMonkey("one");
@@ -916,7 +967,38 @@ public class ExecuteTest extends WPSTestSupport {
         dom = waitForProcessEnd(statusLocation2, 60);
         assertXpathExists("//wps:ProcessSucceeded", dom);
     }
-    
+
+    @Test
+    public void testInlineGetFeatureNameClash() throws Exception {
+        assertNotNull(getCatalog().getLayerByName("foo:PrimitiveGeoFeature"));
+        assertNotNull(getCatalog().getLayerByName("sf:PrimitiveGeoFeature"));
+
+        String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
+                "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n" + 
+                "  <ows:Identifier>gs:Bounds</ows:Identifier>\n" + 
+                "  <wps:DataInputs>\n" + 
+                "    <wps:Input>\n" + 
+                "      <ows:Identifier>features</ows:Identifier>\n" + 
+                "      <wps:Reference mimeType=\"text/xml; subtype=wfs-collection/1.0\" xlink:href=\"http://geoserver/wfs\" method=\"POST\">\n" + 
+                "        <wps:Body>\n" + 
+                "          <wfs:GetFeature service=\"WFS\" version=\"1.0.0\" xmlns:foo='http://foo.org'>\n" + 
+                "            <wfs:Query typeName=\"foo:PrimitiveGeoFeature\"/>\n" + 
+                "          </wfs:GetFeature>\n" + 
+                "        </wps:Body>\n" + 
+                "      </wps:Reference>\n" + 
+                "    </wps:Input>\n" + 
+                "  </wps:DataInputs>\n" + 
+                "  <wps:ResponseForm>\n" + 
+                "    <wps:RawDataOutput>\n" + 
+                "      <ows:Identifier>bounds</ows:Identifier>\n" + 
+                "    </wps:RawDataOutput>\n" + 
+                "  </wps:ResponseForm>\n" + 
+                "</wps:Execute>";
+        
+        Document dom = postAsDOM(root(), request);
+        assertEquals("ows:BoundingBox", dom.getDocumentElement().getNodeName());
+    }
+
     private void assertProgress(String statusLocation, String progress) throws Exception {
         Document dom = getAsDOM(statusLocation);
         // print(dom);

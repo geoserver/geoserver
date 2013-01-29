@@ -1,20 +1,20 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.filters;
+
+import static org.junit.Assert.assertEquals;
 
 import java.lang.reflect.Method;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.geoserver.test.GeoServerTestSupport;
-
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpSession;
 import com.mockrunner.mock.web.MockServletContext;
 
-public class RequestWrapperTestSupport extends GeoServerTestSupport{
+public class RequestWrapperTestSupport {
 
 	protected final String[] testStrings = new String[]{
 		"Hello, this is a test",

@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,23 +8,31 @@ package org.geoserver.security.validation;
 import static org.geoserver.security.validation.SecurityConfigException.*;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerAuthenticationProvider;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerSecurityFilterChain;
+import org.geoserver.security.GeoServerSecurityFilterChainProxy;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerSecurityProvider;
 import org.geoserver.security.GeoServerUserGroupService;
+import org.geoserver.security.HtmlLoginFilterChain;
 import org.geoserver.security.MasterPasswordProvider;
+import org.geoserver.security.RequestFilterChain;
+import org.geoserver.security.ServiceLoginFilterChain;
+import org.geoserver.security.VariableFilterChain;
 import org.geoserver.security.config.PasswordPolicyConfig;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.config.SecurityRoleServiceConfig;
 import org.geoserver.security.config.SecurityUserGroupServiceConfig;
+import org.geoserver.security.filter.GeoServerAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.password.GeoServerPasswordEncoder;
@@ -63,9 +71,11 @@ public class SecurityConfigValidator extends AbstractSecurityValidator{
      * Checks the {@link SecurityManagerConfig} object
      * 
      * @param config
+     * @param oldConfig
      * @throws SecurityConfigException
      */
-    public void validateManagerConfig(SecurityManagerConfig config) throws SecurityConfigException{
+    public void validateManagerConfig(SecurityManagerConfig config, 
+            SecurityManagerConfig oldConfig) throws SecurityConfigException{
         
         String encrypterName =config.getConfigPasswordEncrypterName();
         if (isNotEmpty(encrypterName)==false) {
@@ -116,21 +126,124 @@ public class SecurityConfigValidator extends AbstractSecurityValidator{
         }
         
         // check the filter chain
+        
+        
         GeoServerSecurityFilterChain chain = config.getFilterChain();
+        GeoServerSecurityFilterChain oldChain = oldConfig.getFilterChain();
         if (chain == null) {
-            throw createSecurityException(SecurityConfigException.FILTER_CHAIN_NULL_ERROR);
+            throw createSecurityException(SecurityConfigException.FILTER_CHAIN_NULL_ERROR);            
         }
 
-        //JD: disabling this check, i don't see a point to maintaining both a list of patterns
-        // which are then duplicated by the keys of the filter map set... if we want to enforce 
-        // ording just change the map interface to a sorted/order map
-        /*Set<String> keys = chain.getFilterMap().keySet();
-        if (keys.size()!=chain.getAntPatterns().size())
-            throw createSecurityException(SecurityConfigException.FILTER_CHAIN_CONFIG_ERROR);
-        for (String pattern : chain.getAntPatterns()) {
-            if (keys.contains(pattern)==false)
-                throw createSecurityException(SecurityConfigException.FILTER_CHAIN_CONFIG_ERROR);
-        }*/
+        // check for remove
+        for (RequestFilterChain oldRequestChain : oldChain.getRequestChains()) {
+            if (chain.getRequestChainByName(oldRequestChain.getName())==null) {
+                if (oldRequestChain.canBeRemoved()==false) {
+                    throw createSecurityException(
+                            SecurityConfigException.FILTER_CHAIN_NOT_REMOVEABLE_$1,oldRequestChain.getName());
+                }
+            }
+        }
+        // check for unique chain names
+        for (RequestFilterChain requestChain : chain.getRequestChains()) {
+            Set<String> chainNames = new HashSet<String> ();
+            // valid name
+            if (isNotEmpty(requestChain.getName())==false) {
+                  throw createSecurityException(SecurityConfigException.FILTER_CHAIN_NAME_MANDATORY);
+            }
+            if (chainNames.contains(requestChain.getName())) {
+                throw createSecurityException(
+                        SecurityConfigException.FILTER_CHAIN_NAME_NOT_UNIQUE_$1,requestChain.getName());
+            }
+            chainNames.add(requestChain.getName());
+        }
+        
+        for (RequestFilterChain requestChain : chain.getRequestChains()) {
+            validateRequestFilterChain(requestChain);
+        }
+    }
+    
+    public void validateRequestFilterChain(RequestFilterChain requestChain) throws SecurityConfigException {
+        if (isNotEmpty(requestChain.getName())==false) {
+            throw createSecurityException(SecurityConfigException.FILTER_CHAIN_NAME_MANDATORY);
+        }
+        
+        if (requestChain.getPatterns().isEmpty()) {
+            throw createSecurityException(SecurityConfigException.PATTERN_LIST_EMPTY_$1,requestChain.getName());
+        }
+        
+        GeoServerSecurityFilterChainProxy proxy = GeoServerExtensions.bean(GeoServerSecurityFilterChainProxy.class);
+        
+        String roleFilterName =  requestChain.getRoleFilterName();
+        if (StringUtils.hasLength(roleFilterName)) {
+            try {
+                if (proxy.lookupFilter(roleFilterName)==null) {                
+                    throw createSecurityException(SecurityConfigException.UNKNOWN_ROLE_FILTER_$2,requestChain.getName(),roleFilterName);
+                }                
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+        
+        
+
+        if (requestChain instanceof VariableFilterChain) {
+            if (requestChain.isDisabled()==false && requestChain.getFilterNames().isEmpty())
+                throw createSecurityException(SecurityConfigException.FILTER_CHAIN_EMPTY_$1,requestChain.getName());
+            
+            String interceptorFilterName =  ((VariableFilterChain) requestChain).getInterceptorName();
+            if (StringUtils.hasLength(interceptorFilterName)) {
+                try {
+                    if (proxy.lookupFilter(interceptorFilterName)==null) {                
+                        throw createSecurityException(SecurityConfigException.UNKNOWN_INTERCEPTOR_FILTER_$2,requestChain.getName(),interceptorFilterName);
+                    }
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            } else {
+                throw createSecurityException(SecurityConfigException.INTERCEPTOR_FILTER_MANDATORY_$1,requestChain.getName());
+            }
+            
+            String exceptionTranslationName =  ((VariableFilterChain) requestChain).getExceptionTranslationName();
+            if (StringUtils.hasLength(exceptionTranslationName)) {
+                try {
+                    if (proxy.lookupFilter(exceptionTranslationName)==null) {                
+                        throw createSecurityException(SecurityConfigException.UNKNOWN_EXCEPTION_FILTER_$2,requestChain.getName(),exceptionTranslationName);
+                    }
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            } else {
+                throw createSecurityException(SecurityConfigException.EXCEPTION_FILTER_MANDATORY_$1,requestChain.getName());
+            }
+
+            
+            int index = requestChain.getFilterNames().indexOf(GeoServerSecurityFilterChain.ANONYMOUS_FILTER);
+            if (index!=-1 && index != requestChain.getFilterNames().size()-1)
+                throw createSecurityException(SecurityConfigException.ANONYMOUS_NOT_LAST_$1,requestChain.getName());
+            
+            
+            for (String filterName : requestChain.getFilterNames()) {
+                    GeoServerSecurityFilter filter=null; 
+                    try {
+                        filter = (GeoServerSecurityFilter)proxy.lookupFilter(filterName);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    if (filter==null)
+                        throw createSecurityException(SecurityConfigException.UNKNOWN_FILTER_$2,requestChain.getName(),filterName);
+                    if (filter instanceof GeoServerAuthenticationFilter == false)
+                        throw createSecurityException(SecurityConfigException.NOT_AN_AUTHENTICATION_FILTER_$2,requestChain.getName(),filterName);
+                    GeoServerAuthenticationFilter authFilter = (GeoServerAuthenticationFilter) filter;
+                    
+                    if (requestChain instanceof HtmlLoginFilterChain && authFilter.applicableForHtml()==false) {        
+                        throw createSecurityException(SecurityConfigException.NOT_A_HTML_AUTHENTICATION_FILTER_$2,requestChain.getName(),filterName);
+                    }
+                    if (requestChain instanceof ServiceLoginFilterChain && authFilter.applicableForServices()==false) {        
+                        throw createSecurityException(SecurityConfigException.NOT_A_SERVICE_AUTHENTICATION_FILTER_$2,requestChain.getName(),filterName);
+                    }
+            }
+        }
+        
     }
     
     protected void checkExtensionPont(Class<?> extensionPoint, String className) throws SecurityConfigException{
@@ -402,7 +515,7 @@ public class SecurityConfigValidator extends AbstractSecurityValidator{
             return USERGROUP_SERVICE_ALREADY_EXISTS_$1;
         if (GeoServerSecurityFilter.class==extPoint)
             return AUTH_FILTER_ALREADY_EXISTS_$1;
-        throw new RuntimeException("Unkonw extension point: "+extPoint.getName());
+        throw new RuntimeException("Unknown extension point: "+extPoint.getName());
     }
 
     protected String notFoundErrorCode(Class<?> extPoint) {
@@ -416,7 +529,7 @@ public class SecurityConfigValidator extends AbstractSecurityValidator{
             return USERGROUP_SERVICE_NOT_FOUND_$1;
         if (GeoServerSecurityFilter.class==extPoint)
             return AUTH_FILTER_NOT_FOUND_$1;
-        throw new RuntimeException("Unkonw extension point: "+extPoint.getName());
+        throw new RuntimeException("Unknown extension point: "+extPoint.getName());
     }
 
     /**

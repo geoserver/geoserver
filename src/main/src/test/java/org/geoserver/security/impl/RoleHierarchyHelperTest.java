@@ -1,19 +1,23 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 
 package org.geoserver.security.impl;
 
 
+import static org.junit.Assert.*;
+
 import java.util.HashMap;
 import java.util.Map;
+
+import org.junit.Test;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
 
-public class RoleHierarchyHelperTest extends TestCase {
+public class RoleHierarchyHelperTest {
 
     protected Map<String,String> createFromArray (String[][] array) {
         Map<String,String> mappings = new HashMap<String, String>();
@@ -23,6 +27,7 @@ public class RoleHierarchyHelperTest extends TestCase {
         return mappings;
     }
     
+    @Test
     public void testValidTree() throws Exception {
         Map<String,String> map = createFromArray(new String[][] {
                 {"node1", null },
@@ -91,6 +96,7 @@ public class RoleHierarchyHelperTest extends TestCase {
 
     }
     
+    @Test
     public void testInValidTree1() throws Exception {
         Map<String,String> map = createFromArray(new String[][] {
                 {"node1", "node1" }
@@ -131,6 +137,7 @@ public class RoleHierarchyHelperTest extends TestCase {
         if (fail) Assert.fail("No Exception");        
     }
     
+    @Test
     public void testInValidTree2() throws Exception {
         Map<String,String> map = createFromArray(new String[][] {
                 {"node1", "node2" },

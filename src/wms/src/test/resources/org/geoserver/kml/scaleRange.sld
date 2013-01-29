@@ -27,7 +27,7 @@
         </Rule>
          <Rule>
           <MinScaleDenominator>5000</MinScaleDenominator>
-          <MaxScaleDenominator>50000000</MaxScaleDenominator>
+          <MaxScaleDenominator>200000000</MaxScaleDenominator>
           <PolygonSymbolizer>
             <Fill>
               <CssParameter name="fill">#AAAAAA</CssParameter>

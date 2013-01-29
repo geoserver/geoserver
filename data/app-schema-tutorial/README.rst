@@ -1,0 +1,67 @@
+Application Schema Tutorial
+===========================
+
+This GeoServer data directory contains configuration and data files used in the application schema tutorial:
+
+* http://docs.geoserver.org/latest/en/user/data/app-schema/tutorial.html
+
+
+Data from Victoria Department of Primary Industries
+---------------------------------------------------
+
+``gsml_GeologicUnit.properties`` and ``gsml_MappedFeature.properties`` are derived from data provided by the Department of Primary Industries, Victoria, Australia. For the purposes of this tutorial, this data has been modified to the extent that it has no real-world meaning.
+
+
+Data from Open Geospatial Consortium
+------------------------------------
+
+``RoadSegments.properties`` is derived from Open Geospatial Consortium CITE WMS 1.1.1 test data::
+
+    Copyright © 2012 Open Geospatial Consortium, Inc.
+    All Rights Reserved. http://www.opengeospatial.org/ogc/legal
+
+The original test data is available from:
+
+* http://cite.opengeospatial.org/teamengine/wms-1.1.1/Web_Map_Server.html
+* http://cite.opengeospatial.org/teamengine/wms-1.1.1/OGCTestData/wms/1.1.1/data/WmsTestData.zip
+
+
+Software Notice
+```````````````
+
+This OGC work (including software, documents, or other related items) is being provided by the
+copyright holders under the following license. By obtaining, using and/or copying this work, you
+(the licensee) agree that you have read, understood, and will comply with the following terms and
+conditions:
+
+Permission to use, copy, and modify this software and its documentation, with or without
+modification, for any purpose and without fee or royalty is hereby granted, provided that you
+include the following on ALL copies of the software and documentation or portions thereof, including
+modifications, that you make:
+
+1. The full text of this NOTICE in a location viewable to users of the redistributed or derivative
+work.
+
+2. Any pre-existing intellectual property disclaimers, notices, or terms and conditions. If none exist,
+a short notice of the following form (hypertext is preferred, text is permitted) should be used
+within the body of any redistributed or derivative code: "Copyright © [$date-of-document] Open
+Geospatial Consortium, Inc. All Rights Reserved. http://www.opengeospatial.org/ogc/legal (Hypertext
+is preferred, but a textual representation is permitted.)
+
+3. Notice of any changes or modifications to the OGC files, including the date changes were made. (We
+recommend you provide URIs to the location from which the code is derived.)
+
+THIS SOFTWARE AND DOCUMENTATION IS PROVIDED "AS IS," AND COPYRIGHT HOLDERS MAKE NO REPRESENTATIONS
+OR WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO, WARRANTIES OF MERCHANTABILITY OR
+FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF THE SOFTWARE OR DOCUMENTATION WILL NOT
+INFRINGE ANY THIRD PARTY PATENTS, COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS.
+
+COPYRIGHT HOLDERS WILL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, SPECIAL OR CONSEQUENTIAL DAMAGES
+ARISING OUT OF ANY USE OF THE SOFTWARE OR DOCUMENTATION.
+
+The name and trademarks of copyright holders may NOT be used in advertising or publicity pertaining
+to the software without specific, written prior permission. Title to copyright in this software and
+any associated documentation will at all times remain with copyright holders.
+
+
+

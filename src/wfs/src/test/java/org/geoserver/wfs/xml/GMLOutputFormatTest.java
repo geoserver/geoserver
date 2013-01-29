@@ -1,21 +1,22 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wfs.xml;
 
-import junit.framework.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import org.geoserver.data.test.MockData;
 import org.geoserver.wfs.WFSTestSupport;
 import org.geotools.wfs.v2_0.WFS;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class GMLOutputFormatTest extends WFSTestSupport {
     
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new GMLOutputFormatTest());
-    }
-
+	@Test
     public void testGML2() throws Exception {
         Document dom = getAsDOM( "wfs?request=getfeature&version=1.0.0&outputFormat=gml2&typename=" + 
             MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
@@ -42,6 +43,7 @@ public class GMLOutputFormatTest extends WFSTestSupport {
         assertNull( getFirstElementByTagName(dom, "gml:exterior")); 
     }
     
+	@Test
     public void testGML2GZIP() throws Exception {
 //        InputStream input = get( "wfs?request=getfeature&version=1.0.0&outputFormat=gml2-gzip&typename=" + 
 //            MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
@@ -55,6 +57,7 @@ public class GMLOutputFormatTest extends WFSTestSupport {
 //        assertNull( getFirstElementByTagName(dom, "gml:exterior")); 
     }
     
+    @Test
     public void testGML3() throws Exception {
         Document dom = getAsDOM( "wfs?request=getfeature&version=1.0.0&outputFormat=gml3&typename=" + 
             MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
@@ -81,6 +84,7 @@ public class GMLOutputFormatTest extends WFSTestSupport {
         assertNotNull( getFirstElementByTagName(dom, "gml:exterior")); 
     }
     
+    @Test
     public void testGML32() throws Exception {
         Document dom = getAsDOM( "wfs?request=getfeature&version=2.0.0&outputFormat=gml32&typename=" + 
                 MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wcs:DescribeCoverage
+	xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' 
+	xmlns:wcs='http://www.opengis.net/wcs/2.0' 
+	xmlns:gml='http://www.opengis.net/gml/3.2'
+	xmlns:gmlcov="http://www.opengis.net/gmlcov/1.0"
+	xsi:schemaLocation='http://www.opengis.net/wcs/2.0 http://schemas.opengis.net/wcs/2.0/wcsAll.xsd'
+	service="WCS" 
+	version="2.0.1" >
+	<wcs:CoverageId>wcs__multiband</wcs:CoverageId>
+</wcs:DescribeCoverage>

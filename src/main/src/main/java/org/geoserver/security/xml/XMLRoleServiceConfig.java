@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -16,6 +16,15 @@ public class XMLRoleServiceConfig extends XMLSecurityServiceConfig
     protected String adminRoleName;
     protected String groupAdminRoleName;
 
+    public XMLRoleServiceConfig() {
+    }
+    
+    public XMLRoleServiceConfig(XMLRoleServiceConfig other) {
+        super(other);
+        adminRoleName = other.getAdminRoleName();
+        groupAdminRoleName = other.getGroupAdminRoleName();
+    }
+    
     public String getGroupAdminRoleName() {
         return groupAdminRoleName;
     }

@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.ows;
@@ -210,8 +210,7 @@ public abstract class Response {
                 name = name + "-" + opName;
             }
             String[] typeParts = mimeType.split(";");
-            String extension = typeParts[0].split("/")[0];
-            name = name + "." + extension;
+            name = name + "." + typeParts[0].split("/")[0];
         }
         return name;
     }

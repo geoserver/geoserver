@@ -1,10 +1,12 @@
 /*
- * Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+ * Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 
 package org.geoserver.catalog;
+
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -19,12 +21,18 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.geoserver.catalog.util.ReaderUtils;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.test.RunTestSetup;
+import org.geoserver.test.SystemTest;
 import org.geotools.data.DataAccess;
 import org.geotools.factory.GeoTools;
 import org.geotools.feature.NameImpl;
+import org.geotools.util.SoftValueHashMap;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.w3c.dom.Element;
@@ -34,15 +42,16 @@ import org.w3c.dom.Element;
  * 
  * @author Ben Caradoc-Davies, CSIRO Exploration and Mining
  */
-public class ResourcePoolTest extends GeoServerTestSupport {
+@Category(SystemTest.class)
+public class ResourcePoolTest extends GeoServerSystemTestSupport {
 
     /**
      * Test that the {@link FeatureType} cache returns the same instance every time. This is assumed
      * by some nasty code in other places that tampers with the CRS. If a new {@link FeatureType} is
      * constructed for the same {@link FeatureTypeInfo}, Bad Things Happen (TM).
      */
-    public void testFeatureTypeCacheInstance() throws Exception {
-        ResourcePool pool = new ResourcePool(getCatalog());
+    @Test public void testFeatureTypeCacheInstance() throws Exception {
+        ResourcePool pool = ResourcePool.create(getCatalog());
         FeatureTypeInfo info = getCatalog().getFeatureTypeByName(
                 MockData.LAKES.getNamespaceURI(), MockData.LAKES.getLocalPart());
         FeatureType ft1 = pool.getFeatureType(info);
@@ -52,9 +61,9 @@ public class ResourcePoolTest extends GeoServerTestSupport {
         assertSame(ft1, ft3);
     }
     
-    public void testAttributeCache() throws Exception {
+    @Test public void testAttributeCache() throws Exception {
         final Catalog catalog = getCatalog();
-        ResourcePool pool = new ResourcePool(catalog);
+        ResourcePool pool = ResourcePool.create(catalog);
         
         // clean up the lakes type
         FeatureTypeInfo oldInfo = catalog.getFeatureTypeByName(
@@ -88,7 +97,7 @@ public class ResourcePoolTest extends GeoServerTestSupport {
     }
     
     boolean cleared = false;
-    public void testCacheClearing() throws IOException {
+    @Test public void testCacheClearing() throws IOException {
         cleared = false;
         ResourcePool pool = new ResourcePool(getCatalog()) {
             @Override
@@ -123,7 +132,7 @@ public class ResourcePoolTest extends GeoServerTestSupport {
      * Make sure {@link ResourcePool#clear(DataStoreInfo)} and {@link ResourcePool#dispose()} call
      * {@link DataAccess#dispose()}
      */
-    public void testDispose() throws IOException {
+    @Test public void testDispose() throws IOException {
         disposeCalled = false;
         class ResourcePool2 extends ResourcePool {
             @SuppressWarnings("serial")
@@ -159,45 +168,18 @@ public class ResourcePoolTest extends GeoServerTestSupport {
         pool.dispose();
         assertTrue(disposeCalled);
     }
-    
-    public void testGeoServerReload() throws Exception {
-        Catalog cat = getCatalog();
-        FeatureTypeInfo lakes = cat.getFeatureTypeByName(MockData.LAKES.getNamespaceURI(),
-                MockData.LAKES.getLocalPart());
-        assertFalse("foo".equals(lakes.getTitle()));
-        
-        File info = getResourceLoader().find("featureTypes", "cite_Lakes", "info.xml");
-        
-        FileReader in = new FileReader(info);
-        Element dom = ReaderUtils.parse(in); 
-        Element title = ReaderUtils.getChildElement(dom, "title");
-        title.getFirstChild().setNodeValue("foo");
-        
-        OutputStream output = new FileOutputStream(info);
-        try {
-            TransformerFactory.newInstance().newTransformer()
-                    .transform(new DOMSource(dom), new StreamResult(output));
-        } finally {
-            output.close();
-        }
-        
-        getGeoServer().reload();
-        lakes = cat.getFeatureTypeByName(MockData.LAKES.getNamespaceURI(),
-                MockData.LAKES.getLocalPart());
-        assertEquals("foo", lakes.getTitle());
-    }
-    
-    public void testConfigureFeatureTypeCacheSize() {
+
+    @Test public void testConfigureFeatureTypeCacheSize() {
         GeoServer gs = getGeoServer();
         GeoServerInfo global = gs.getGlobal();
         global.setFeatureTypeCacheSize(200);
         gs.save(global);
 
         Catalog catalog = getCatalog();
-        assertEquals(200, catalog.getResourcePool().featureTypeCache.getHardReferencesCount());
+        assertEquals(200, ((SoftValueHashMap)catalog.getResourcePool().getFeatureTypeCache()).getHardReferencesCount());
     }
     
-    public void testDropCoverageStore() throws Exception {
+    @Test public void testDropCoverageStore() throws Exception {
         // build the store
         Catalog cat = getCatalog();
         CatalogBuilder cb = new CatalogBuilder(cat);
@@ -226,5 +208,35 @@ public class ResourcePoolTest extends GeoServerTestSupport {
         // and reload (GEOS-4782 -> BOOM!)
         getGeoServer().reload();
         
+    }
+
+    @RunTestSetup
+    @Test public void testGeoServerReload() throws Exception {
+        Catalog cat = getCatalog();
+        FeatureTypeInfo lakes = cat.getFeatureTypeByName(MockData.LAKES.getNamespaceURI(),
+                MockData.LAKES.getLocalPart());
+        assertFalse("foo".equals(lakes.getTitle()));
+
+        GeoServerDataDirectory dd = new GeoServerDataDirectory(getResourceLoader());
+        File info = dd.findResourceFile(lakes);
+        //File info = getResourceLoader().find("featureTypes", "cite_Lakes", "info.xml");
+        
+        FileReader in = new FileReader(info);
+        Element dom = ReaderUtils.parse(in); 
+        Element title = ReaderUtils.getChildElement(dom, "title");
+        title.getFirstChild().setNodeValue("foo");
+        
+        OutputStream output = new FileOutputStream(info);
+        try {
+            TransformerFactory.newInstance().newTransformer()
+                    .transform(new DOMSource(dom), new StreamResult(output));
+        } finally {
+            output.close();
+        }
+        
+        getGeoServer().reload();
+        lakes = cat.getFeatureTypeByName(MockData.LAKES.getNamespaceURI(),
+                MockData.LAKES.getLocalPart());
+        assertEquals("foo", lakes.getTitle());
     }
 }

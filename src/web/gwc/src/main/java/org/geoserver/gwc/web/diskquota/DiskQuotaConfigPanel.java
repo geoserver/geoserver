@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -6,15 +6,21 @@ package org.geoserver.gwc.web.diskquota;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -28,11 +34,18 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.gwc.GWC;
+import org.geoserver.web.GeoServerApplication;
+import org.geoserver.web.wicket.LocalizedChoiceRenderer;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.diskquota.DiskQuotaConfig;
 import org.geowebcache.diskquota.ExpirationPolicy;
+import org.geowebcache.diskquota.QuotaStoreFactory;
+import org.geowebcache.diskquota.jdbc.JDBCConfiguration;
+import org.geowebcache.diskquota.jdbc.JDBCQuotaStoreFactory;
+import org.geowebcache.diskquota.jdbc.SQLDialect;
 import org.geowebcache.diskquota.storage.Quota;
 import org.geowebcache.diskquota.storage.StorageUnit;
+import org.springframework.context.ApplicationContext;
 
 /**
  * A panel to configure the global disk quota settings.
@@ -49,8 +62,8 @@ public class DiskQuotaConfigPanel extends Panel {
 
     private final IModel<Double> configQuotaValueModel;
 
-    public DiskQuotaConfigPanel(final String id, final IModel<DiskQuotaConfig> diskQuotaConfigModel) {
-
+    public DiskQuotaConfigPanel(final String id, final IModel<DiskQuotaConfig> diskQuotaConfigModel, 
+            final IModel<JDBCConfiguration> jdbcQuotaConfigModel) {
         super(id, diskQuotaConfigModel);
 
         final DiskQuotaConfig diskQuotaConfig = diskQuotaConfigModel.getObject();
@@ -72,8 +85,10 @@ public class DiskQuotaConfigPanel extends Panel {
         configQuotaValueModel = new Model<Double>(transformedQuota.doubleValue());
 
         configQuotaUnitModel = new Model<StorageUnit>(bestRepresentedUnit);
-
+        
         addDiskQuotaIntegrationEnablement(diskQuotaConfigModel);
+        
+        addDiskQuotaStoreChooser(diskQuotaConfigModel, jdbcQuotaConfigModel);
 
         addDiskBlockSizeConfig(diskQuotaConfigModel);
 
@@ -83,6 +98,109 @@ public class DiskQuotaConfigPanel extends Panel {
 
         addGlobalExpirationPolicyConfig(diskQuotaConfigModel);
 
+    }
+
+    private void addDiskQuotaStoreChooser(IModel<DiskQuotaConfig> diskQuotaModel, IModel<JDBCConfiguration> jdbcQuotaConfigModel) {
+        final WebMarkupContainer quotaStoreContainer = new WebMarkupContainer("quotaStoreContainer");
+        quotaStoreContainer.setOutputMarkupId(true);
+        add(quotaStoreContainer);
+        
+        // get the list of supported quota store types
+        ApplicationContext applicationContext = GeoServerApplication.get().getApplicationContext();
+        Map<String, QuotaStoreFactory> factories = applicationContext.getBeansOfType(QuotaStoreFactory.class);
+        List<String> storeNames = new ArrayList<String>();
+        for (QuotaStoreFactory sf : factories.values()) {
+            storeNames.addAll(sf.getSupportedStoreNames());
+        }
+        Collections.sort(storeNames);
+        
+        // add the drop down chooser
+        PropertyModel<String> storeNameModel = new PropertyModel<String>(diskQuotaModel, "quotaStore");
+        if(diskQuotaModel.getObject().getQuotaStore() == null) {
+            storeNameModel.setObject(JDBCQuotaStoreFactory.H2_STORE);
+        }
+        final DropDownChoice<String> quotaStoreChooser = new DropDownChoice<String>("diskQuotaStore", storeNameModel, storeNames,
+                new LocalizedChoiceRenderer(this));
+        quotaStoreChooser.setOutputMarkupId(true);
+        quotaStoreContainer.add(quotaStoreChooser);
+        
+        // add the JDBC container
+        final WebMarkupContainer jdbcContainer = new WebMarkupContainer("jdbcQuotaStoreContainer");
+        jdbcContainer.setOutputMarkupId(true);
+        jdbcContainer.setVisible("JDBC".equals(quotaStoreChooser.getModelObject()));
+        quotaStoreContainer.add(jdbcContainer);
+        
+        // add a chooser for the dialect type
+        List<String> dialectBeanNames = new ArrayList<String>(applicationContext.getBeansOfType(SQLDialect.class).keySet());
+        List<String> dialectNames = new ArrayList<String>();
+        for (String beanName : dialectBeanNames) {
+            int idx = beanName.indexOf("QuotaDialect");
+            if(idx > 0) {
+                dialectNames.add(beanName.substring(0, idx));
+            }
+        }
+        JDBCConfiguration config = jdbcQuotaConfigModel.getObject();
+        IModel<String> dialectModel = new PropertyModel<String>(jdbcQuotaConfigModel, "dialect");
+        DropDownChoice<String> dialectChooser = new DropDownChoice<String>("dialectChooser", dialectModel, dialectNames);
+        dialectChooser.setRequired(true);
+        jdbcContainer.add(dialectChooser);
+        
+        // add a chooser for the connection type
+        List<String> connectionTypes = Arrays.asList("JNDI", "PRIVATE_POOL");
+        Model<String> connectionTypeModel = new Model<String>();
+        if(config.getJNDISource() == null) {
+            connectionTypeModel.setObject("PRIVATE_POOL");
+        } else {
+            connectionTypeModel.setObject("JNDI");
+        }
+        final DropDownChoice<String> connectionTypeChooser = new DropDownChoice<String>("connectionTypeChooser", 
+                connectionTypeModel, connectionTypes, new LocalizedChoiceRenderer(this));
+        connectionTypeChooser.setOutputMarkupId(true);
+        jdbcContainer.add(connectionTypeChooser);
+        
+        // make the JDBC configuration visible only when the user chose a JDBC store
+        quotaStoreChooser.add(new AjaxFormComponentUpdatingBehavior("onChange") {
+            
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                jdbcContainer.setVisible("JDBC".equals(quotaStoreChooser.getModelObject()));
+                target.addComponent(quotaStoreContainer);
+            }
+        });
+        
+        // a container for jndi and local private pool options
+        final WebMarkupContainer connectionTypeContainer = new WebMarkupContainer("connectionTypeContainer");
+        connectionTypeContainer.setOutputMarkupId(true);
+        jdbcContainer.add(connectionTypeContainer);
+        
+        // add a field for editing the JNDI connection parameters
+        final WebMarkupContainer jndiContainer = new WebMarkupContainer("jndiLocationContainer");
+        jndiContainer.setVisible(config.getJNDISource() != null);
+        connectionTypeContainer.add(jndiContainer);
+        IModel<String> jndiModel = new PropertyModel<String>(jdbcQuotaConfigModel, "jNDISource");
+        TextField<String> jndiLocation = new TextField<String>("jndiLocation", jndiModel);
+        jndiLocation.setRequired(true);
+        jndiContainer.add(jndiLocation);
+        
+        // and a panel to edit the private jdbc pool
+        IModel<JDBCConfiguration.ConnectionPoolConfiguration> poolConfigurationModel = 
+                new PropertyModel<JDBCConfiguration.ConnectionPoolConfiguration>(jdbcQuotaConfigModel, "connectionPool");
+        final JDBCConnectionPoolPanel privatePoolPanel = new JDBCConnectionPoolPanel("connectionPoolConfigurator", poolConfigurationModel);
+        privatePoolPanel.setVisible(config.getJNDISource() == null);
+        connectionTypeContainer.add(privatePoolPanel);
+        
+        // make the two ways to configure the JDBC store show up as alternatives
+        connectionTypeChooser.add(new AjaxFormComponentUpdatingBehavior("onChange") {
+            
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                boolean jndiVisible = "JNDI".equals(connectionTypeChooser.getModelObject());
+                jndiContainer.setVisible(jndiVisible);
+                privatePoolPanel.setVisible(!jndiVisible);
+                target.addComponent(connectionTypeContainer);
+            }
+        });
+        
     }
 
     private void addGlobalQuotaConfig(final IModel<DiskQuotaConfig> diskQuotaModel,

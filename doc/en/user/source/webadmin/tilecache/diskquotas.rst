@@ -3,11 +3,10 @@
 Disk Quotas
 ===========
 
-This section manages the disk usage for cached tiles.
+The Disk Quotas page manages the disk usage for cached tiles and allows you to set the global disk quota. Individual layer quotas can be set in the layer's :ref:`properties <webadmin_layers>` page. 
 
-By default, disk usage for cached tiles is unbounded, but this can cause disk capacity issues, especially when using Direct WMS integration (see :ref:`webadmin_tilecaching_diskquotas` for more on this).  Setting a disk quota allows disk usage to be constrained.
+By default, disk usage for cached tiles is unbounded. However, this can cause disk capacity issues, especially when using Direct WMS integration (see :ref:`webadmin_tilecaching_diskquotas` for more on this). Setting a disk quota establishes disk usage limits.
 
-This page sets the global disk quota; individual layer quotas can be set in the layer's :ref:`properties <webadmin_layers>` page.  
 
 When finished making any changes, remember to click :guilabel:`Submit`.
 
@@ -19,27 +18,27 @@ When finished making any changes, remember to click :guilabel:`Submit`.
 Enable disk quota
 -----------------
 
-When enabled, the disk quota will be set according to the options listed below.  The setting is disabled by default.
+When enabled, the disk quota will be set according to the options listed below. The setting is disabled by default.
 
 Disk block size
 ---------------
 
-This setting determines how the tile cache calculates disk usage.  This field should be set equal to the disk block size of the storage medium where the cache is located.  The default is **4096 bytes**.  
+This setting determines how the tile cache calculates disk usage. The value for this setting should be equivalent to the disk block size of the storage medium where the cache is located. The default block size is **4096 bytes**.
 
 Disk quota check frequency
 --------------------------
 
-The time interval where the cache is polled for any overage.  Smaller values (more frequent polling) will slightly increase disk activity, but larger values (less frequent polling) may cause the disk quota to be temporarily exceeded.  The default is **10 seconds**.
+This setting determines how often the cache is polled for any overage. Smaller values (more frequent polling) will slightly increase disk activity, but larger values (less frequent polling) may cause the disk quota to be temporarily exceeded. The default is **10 seconds**.
 
 Maximum tile cache size
 -----------------------
 
-The maximum size for the cache.  When this value is exceeded and the cache is polled, tiles will be removed according to the policy.  Note that the unit options are **mebibytes (MiB)** (approx. 1.05MB), **gibibytes (GiB)** (approx. 1.07GB), and **tebibytes (TiB)** (approx. 1.10TB).  Default is **500 MiB**.
+The maximum size for the cache. When this value is exceeded and the cache is polled, tiles will be removed according to the policy. Note that the unit options are **mebibytes (MiB)** (approx. 1.05MB), **gibibytes (GiB)** (approx. 1.07GB), and **tebibytes (TiB)** (approx. 1.10TB). Default is **500 MiB**.
 
-Below this setting, a graphic showing the current utilized size of the cache relative to the disk quota is shown.
+The graphic below this setting illustrates the size of the cache relative to the disk quota.
 
 Tile removal policy
 -------------------
 
-When the disk quota is exceeded, this policy sets how the tiles to be deleted are determined.  Options are **Least Frequently Used** (removes tiles based on how often the tile was accessed) or **Least Recently Used** (removes tiles based on date of last access).  The best option is dependent on your data and server usage.
+When the disk quota is exceeded, this policy determines how the tiles to be deleted are identified. Options are **Least Frequently Used** (removes tiles based on how often the tile was accessed) or **Least Recently Used** (removes tiles based on date of last access). The optimum configuration is dependent on your data and server usage.
 

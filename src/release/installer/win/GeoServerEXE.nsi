@@ -796,7 +796,7 @@ Section "Main" SectionMain
     File /a wrapper.dll
 	
     ; Install the service (and start it)
-    nsExec::Exec "$INSTDIR\wrapper.exe -it ./wrapper/wrapper.conf wrapper.java.additional.3=-Djetty.port=$Port"
+    nsExec::Exec "$INSTDIR\wrapper.exe -it ./wrapper/wrapper.conf wrapper.java.additional.4=-Djetty.port=$Port"
 
   ${EndIf}
 
@@ -850,7 +850,7 @@ Section -FinishSection
   ${ElseIf} $IsManual == 1 ; manual
 
     FileOpen $9 startup.bat w ; Opens a Empty File and fills it
-    FileWrite $9 'call "$JavaHome\bin\java.exe" -DGEOSERVER_DATA_DIR="$DataDir" -Xmx512m -DSTOP.PORT=8079 -DSTOP.KEY=geoserver -Djetty.port=$Port -Djetty.logs="$INSTDIR\logs" -jar "$INSTDIR\start.jar"'
+    FileWrite $9 'call "$JavaHome\bin\java.exe" -DGEOSERVER_DATA_DIR="$DataDir" -Xmx512m -XX:MaxPermSize=128m -DSTOP.PORT=8079 -DSTOP.KEY=geoserver -Djetty.port=$Port -Djetty.logs="$INSTDIR\logs" -jar "$INSTDIR\start.jar"'
     FileClose $9 ; Closes the file
 
     FileOpen $9 shutdown.bat w ; Opens a Empty File and fills it

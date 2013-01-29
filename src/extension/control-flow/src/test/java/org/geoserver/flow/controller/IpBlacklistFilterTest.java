@@ -1,4 +1,10 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.flow.controller;
+
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -8,14 +14,16 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.junit.Test;
 
 import com.mockrunner.mock.web.MockFilterChain;
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-public class IpBlacklistFilterTest extends GeoServerTestSupport {
+public class IpBlacklistFilterTest extends GeoServerSystemTestSupport {
 
+    @Test
     public void testFilterIp() throws IOException, ServletException {
         Properties props = new Properties();
         props.put("ip.blacklist", "192.168.1.8,192.168.1.10");

@@ -1,4 +1,10 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.web.wicket;
+
+import static org.junit.Assert.*;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.Form;
@@ -9,12 +15,14 @@ import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.junit.Test;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Envelope;
 
 public class EnvelopePanelTest extends GeoServerWicketTestSupport {
 
+    @Test
     public void testEditPlain() throws Exception {
         final ReferencedEnvelope e = new ReferencedEnvelope(-180,180,-90,90, DefaultGeographicCRS.WGS84);
         tester.startPage(new FormTestPage(new ComponentBuilder() {
@@ -46,6 +54,7 @@ public class EnvelopePanelTest extends GeoServerWicketTestSupport {
         assertEquals( DefaultGeographicCRS.WGS84, ((ReferencedEnvelope) ep.getModelObject()).getCoordinateReferenceSystem() );
     }
     
+    @Test
     public void testEditCRS() throws Exception {
         CoordinateReferenceSystem epsg4326 = CRS.decode("EPSG:4326", true);
         CoordinateReferenceSystem epsg4140 = CRS.decode("EPSG:4140", true);
@@ -84,6 +93,7 @@ public class EnvelopePanelTest extends GeoServerWicketTestSupport {
         assertEquals( epsg4140, ((ReferencedEnvelope) ep.getModelObject()).getCoordinateReferenceSystem() );
     }
 
+    @Test
     public void testDecimalsPreserved() throws Exception {
         final ReferencedEnvelope e = new ReferencedEnvelope(-0.1E-10, 1.0E-9, -9E-11, 9E-11,
                 DefaultGeographicCRS.WGS84);

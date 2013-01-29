@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -41,6 +41,9 @@ public abstract class GeoServerPreAuthenticatedUserNameFilter extends GeoServerP
     private String roleConverterName;
     private String roleServiceName;
     private GeoServerRoleConverter converter;
+    
+    protected final static String UserNameAlreadyRetrieved = "org.geoserver.security.filter.usernameAlreadyRetrieved";
+    protected final static String UserName = "org.geoserver.security.filter.username";
 
     public RoleSource getRoleSource() {
         return roleSource;
@@ -110,21 +113,34 @@ public abstract class GeoServerPreAuthenticatedUserNameFilter extends GeoServerP
 
     @Override
     protected String getPreAuthenticatedPrincipal(HttpServletRequest request) {
+        // avoid retrieving the user name more than once
+        if (request.getAttribute(UserNameAlreadyRetrieved)!=null)
+            return (String) request.getAttribute(UserName);
+        
         String principal = getPreAuthenticatedPrincipalName(request);
         if (principal!=null && principal.trim().length()==0)
-            principal=null;
-        
+            principal=null;        
         try {
             if (principal!=null && RoleSource.UserGroupService.equals(getRoleSource())) {
                 GeoServerUserGroupService service = getSecurityManager().loadUserGroupService(getUserGroupServiceName());
                 GeoServerUser u = service.getUserByUsername(principal);
-                if (u!=null && u.isEnabled()==false)
-                    principal=null;            
+                if (u!=null && u.isEnabled()==false) {
+                    principal=null;
+                    handleDisabledUser(u, request);
+                }
+                
             }
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
+        request.setAttribute(UserNameAlreadyRetrieved, Boolean.TRUE);
+        if (principal!=null)
+            request.setAttribute(UserName,principal);
         return principal;    
+    }
+    
+    protected void handleDisabledUser(GeoServerUser u,HttpServletRequest request) {
+        // do nothing
     }
 
     @Override
@@ -153,19 +169,15 @@ public abstract class GeoServerPreAuthenticatedUserNameFilter extends GeoServerP
      * @throws IOException
      */
     protected Collection<GeoServerRole> getRolesFromRoleService(HttpServletRequest request, String principal) throws IOException{
-        Collection<GeoServerRole> roles = new ArrayList<GeoServerRole>();
         boolean useActiveService = getRoleServiceName()==null || 
                 getRoleServiceName().trim().length()==0;
       
         GeoServerRoleService service = useActiveService ?
               getSecurityManager().getActiveRoleService() :
               getSecurityManager().loadRoleService(getRoleServiceName());
-
-        roles.addAll(service.getRolesForUser(principal));       
-      
+              
         RoleCalculator calc = new RoleCalculator(service);
-        calc.addInheritedRoles(roles);
-        return roles;        
+        return calc.calculateRoles(principal);
     }
     
     /**

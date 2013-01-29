@@ -1,17 +1,23 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.web.wicket;
 
 import java.io.Serializable;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.FormTestPage;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.junit.Test;
 
 public class SRSPanelTest extends GeoServerWicketTestSupport implements Serializable {
-    
-    @Override
-    protected void setUpInternal() throws Exception {
+
+    @Test
+    public void testLoad() {
         tester.startPage(new FormTestPage(new ComponentBuilder() {
             
             public Component buildComponent(String id) {
@@ -26,11 +32,7 @@ public class SRSPanelTest extends GeoServerWicketTestSupport implements Serializ
                 };
             }
         }));
-        
-        // print(tester.getLastRenderedPage(), true, true);
-    }
-    
-    public void testLoad() {
+
         tester.assertRenderedPage(FormTestPage.class);
         tester.assertNoErrorMessage();
     }

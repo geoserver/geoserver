@@ -27,6 +27,7 @@ Extensions are available at the `GeoServer download page <http://geoserver.org/d
    arcgrid
    gdal
    oraclegeoraster
+   postgisraster
    imagepyramid
    imagemosaicjdbc
    customjdbcaccess

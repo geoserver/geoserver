@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<gwcConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://geowebcache.org/schema/1.3.0"
+  xsi:schemaLocation="http://geowebcache.org/schema/1.3.0 http://geowebcache.org/schema/1.3.0/geowebcache.xsd">
+  <version>1.3.0</version>
+  <backendTimeout>120</backendTimeout>
+  <!--
+  <serviceInformation>
+    <title>GeoWebCache</title>
+    <description>GeoWebCache is an advanced tile cache for WMS servers.It supports a large variety of protocols and
+      formats, including WMS-C, WMTS, KML, Google Maps and Virtual Earth.</description>
+    <keywords>
+      <string>WFS</string>
+      <string>WMS</string>
+      <string>WMTS</string>
+      <string>GEOWEBCACHE</string>
+    </keywords>
+    <serviceProvider>
+      <providerName>John Smith inc.</providerName>
+      <providerSite>http://www.example.com/</providerSite>
+      <serviceContact>
+        <individualName>John Smith</individualName>
+        <positionName>Geospatial Expert</positionName>
+        <addressType>Work</addressType>
+        <addressStreet>1 Bumpy St.</addressStreet>
+        <addressCity>Hobart</addressCity>
+        <addressAdministrativeArea>TAS</addressAdministrativeArea>
+        <addressPostalCode>7005</addressPostalCode>
+        <addressCountry>Australia</addressCountry>
+        <phoneNumber>+61 3 0000 0000</phoneNumber>
+        <faxNumber>+61 3 0000 0001</faxNumber>
+        <addressEmail>john.smith@example.com</addressEmail>
+      </serviceContact>
+    </serviceProvider>
+    <fees>NONE</fees>
+    <accessConstraints>NONE</accessConstraints>
+  </serviceInformation>
+  -->
+  <gridSets>
+    <!-- Grid Set Example, by default EPSG:900913 and EPSG:4326 are defined -->
+    <!--
+    <gridSet>
+      <name>EPSG:2163</name>
+      <srs>
+        <number>2163</number>
+      </srs>
+      <extent>
+        <coords>
+          <double>-2495667.977678598</double>
+          <double>-2223677.196231552</double>
+          <double>3291070.6104286816</double>
+          <double>959189.3312465074</double>
+        </coords>
+      </extent>
+      <scaleDenominators>
+        <double>25000000</double>
+        <double>1000000</double>
+        <double>100000</double>
+        <double>25000</double>
+      </scaleDenominators>
+      <tileHeight>200</tileHeight>
+      <tileWidth>200</tileWidth>
+    </gridSet>
+    -->
+  </gridSets>
+
+  <layers>
+    <!--
+    <wmsLayer>
+      <name>topp:states</name>
+      <mimeFormats>
+        <string>image/gif</string>
+        <string>image/jpeg</string>
+        <string>image/png</string>
+        <string>image/png8</string>
+      </mimeFormats>
+      <gridSubsets>
+        <gridSubset>
+          <gridSetName>EPSG:2163</gridSetName>
+        </gridSubset>
+      </gridSubsets>
+      <parameterFilters>
+        <stringParameterFilter>
+          <key>STYLES</key>
+          <defaultValue>population</defaultValue>
+          <values>
+            <string>population</string>
+            <string>polygon</string>
+            <string>usflags</string>
+            <string>pophatch</string>
+          </values>
+        </stringParameterFilter>
+      </parameterFilters>
+      <wmsUrl>
+        <string>http://demo.opengeo.org/geoserver/wms</string>
+      </wmsUrl>
+    </wmsLayer>
+
+    <wmsLayer>
+      <name>raster test layer</name>
+      <mimeFormats>
+        <string>image/gif</string>
+        <string>image/jpeg</string>
+        <string>image/png</string>
+        <string>image/png8</string>
+      </mimeFormats>
+      <wmsUrl>
+        <string>http://demo.opengeo.org/geoserver/wms</string>
+      </wmsUrl>
+      <wmsLayers>nurc:Img_Sample</wmsLayers>
+    </wmsLayer>
+
+    <wmsLayer>
+      <name>img states</name>
+      <metaInformation>
+        <title>Nicer title for Image States</title>
+        <description>This is a description. Fascinating.</description>
+      </metaInformation>
+      <mimeFormats>
+        <string>image/gif</string>
+        <string>image/jpeg</string>
+        <string>image/png</string>
+        <string>image/png8</string>
+      </mimeFormats>
+      <gridSubsets>
+        <gridSubset>
+          <gridSetName>EPSG:4326</gridSetName>
+          <extent>
+            <coords>
+              <double>-129.6</double>
+              <double>3.45</double>
+              <double>-62.1</double>
+              <double>70.9</double>
+            </coords>
+          </extent>
+        </gridSubset>
+      </gridSubsets>
+      <expireCacheList>
+        <expirationRule minZoom="0" expiration="60" />
+      </expireCacheList>
+      <expireClientsList>
+        <expirationRule minZoom="0" expiration="500" />
+      </expireClientsList>
+      <wmsUrl>
+        <string>http://demo.opengeo.org/geoserver/wms</string>
+      </wmsUrl>
+      <wmsLayers>nurc:Img_Sample,topp:states</wmsLayers>
+      <transparent>false</transparent>
+      <bgColor>0x0066FF</bgColor>
+    </wmsLayer>
+    -->
+  </layers>
+  
+</gwcConfiguration>

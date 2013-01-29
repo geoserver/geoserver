@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.security.web.passwd;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -26,6 +30,16 @@ public class PasswordPage extends AbstractSecurityPage {
                 setResponsePage(page);
             }
         });
+        
+        form.add(new Link("masterPasswordInfo") {
+            @Override
+            public void onClick() {
+                MasterPasswordInfoPage page = new MasterPasswordInfoPage();
+                page.setReturnPage(getPage());
+                setResponsePage(page);
+            }
+        });
+
 
         form.add(new MasterPasswordProvidersPanel("masterPasswordProviders"));
         form.add(new HelpLink("masterPasswordProvidersHelp").setDialog(dialog));

@@ -1,4 +1,12 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wps.gs;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 
 import java.awt.Color;
 import java.awt.geom.Point2D;
@@ -8,8 +16,7 @@ import java.awt.image.WritableRaster;
 
 import javax.media.jai.RasterFactory;
 
-import junit.framework.TestCase;
-
+import org.geoserver.wps.WPSTestSupport;
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -18,12 +25,13 @@ import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.ViewType;
 import org.geotools.geometry.Envelope2D;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.junit.Test;
 
 /**
  *
  * @author ETj <etj at geo-solutions.it>
  */
-public class Coverage2RenderedImageAdapterTest extends TestCase {
+public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
 
     protected final static double NODATA = 3.0d;
 
@@ -100,6 +108,7 @@ public class Coverage2RenderedImageAdapterTest extends TestCase {
         rendered.view(ViewType.RENDERED).show();
     }
 
+    @Test
     public void testSame() throws InterruptedException {
         GridCoverage2D src = createTestCoverage(500, 500, 0,0, 10,10);
         GridCoverage2D dst = createTestCoverage(500, 500, 0,0, 10,10);
@@ -128,6 +137,7 @@ public class Coverage2RenderedImageAdapterTest extends TestCase {
 //        Thread.sleep(15000);
     }
 
+    @Test
     public void testSameWorldSmallerDstRaster() throws InterruptedException {
         GridCoverage2D src = createTestCoverage(500,500, 0,0 ,10,10);
         GridCoverage2D dst = createTestCoverage(250,250, 0,0 ,10,10);
@@ -156,6 +166,7 @@ public class Coverage2RenderedImageAdapterTest extends TestCase {
      * Same raster dimension, subset word area
      * @throws InterruptedException
      */
+    @Test
     public void testSameRasterSmallerWorld() throws InterruptedException {
         GridCoverage2D src = createTestCoverage(500,500, 0,0 ,10,10);
         GridCoverage2D dst = createTestCoverage(500,500, 0,0 ,5,5);
@@ -187,6 +198,7 @@ public class Coverage2RenderedImageAdapterTest extends TestCase {
      * Same raster dimension, subset word area
      * @throws InterruptedException
      */
+    @Test
     public void testSameRasterTranslatedWorld0() throws InterruptedException {
         GridCoverage2D src = createTestCoverage(500,500, 0,0 ,5,5);
         GridCoverage2D dst = createTestCoverage(500,500, 2,2 ,5,5);

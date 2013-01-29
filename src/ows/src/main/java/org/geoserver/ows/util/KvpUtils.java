@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.ows.util;
@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 
 import org.geoserver.ows.KvpParser;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.ServiceException;
 import org.geotools.util.Version;
 
 /**
@@ -30,6 +31,7 @@ import org.geotools.util.Version;
  * @author Chris Holmes, TOPP
  * @author Gabriel Rold?n, Axios
  * @author Justin Deoliveira, TOPP
+ * @author Carlo Cancellieri Geo-Solutions SAS
  *
  * @version $Id$
  */
@@ -328,18 +330,26 @@ public class KvpUtils {
         for (Iterator itr = kvp.entrySet().iterator(); itr.hasNext();) {
             Map.Entry entry = (Map.Entry) itr.next();
             String key = (String) entry.getKey();
-            String value = null;
+            Object value = null;
 
             if (entry.getValue() instanceof String) {
-                value = (String) entry.getValue();
+                value = trim((String) entry.getValue());
             } else if (entry.getValue() instanceof String[]) {
-                //TODO: perhaps handle multiple values for a key
-                value = (String) ((String[]) entry.getValue())[0];
-            }
-
-            //trim the string
-            if ( value != null ) {
-                value = value.trim(); 
+                String[] values = (String[]) entry.getValue();
+                List<String> normalized = new ArrayList<String>();
+                for (String v : values) {
+                    v = trim(v);
+                    if(v != null) {
+                        normalized.add(v);
+                    }
+                }
+                if(normalized.size() == 0) {
+                    value = null;
+                } else if(normalized.size() == 1) {
+                    value = normalized.get(0);
+                } else {
+                    value = (String[]) normalized.toArray(new String[normalized.size()]);
+                }
             }
             
             //convert key to lowercase 
@@ -347,6 +357,14 @@ public class KvpUtils {
         }
         
         return normalizedKvp;
+    }
+
+    private static String trim(String value) {
+        // trim the string
+        if ( value != null ) {
+            value = value.trim(); 
+        }
+        return value;
     }
     
     /**
@@ -368,105 +386,190 @@ public class KvpUtils {
      * 
      * @return A list of errors that occured.
      */
-    public static List<Throwable> parse( Map kvp ) {
+    public static List<Throwable> parse(Map kvp) {
 
-        //look up parser objects
-        Collection parsers = GeoServerExtensions.extensions(KvpParser.class);
-       
+        // look up parser objects
+        List<KvpParser> parsers = GeoServerExtensions.extensions(KvpParser.class);
+
         //strip out parsers which do not match current service/request/version
-        String service = (String) kvp.get( "service" );
-        String version = (String) kvp.get( "version" );
-        String request = (String) kvp.get( "request" );
-        for (Iterator p = parsers.iterator(); p.hasNext(); ) {
-            KvpParser parser = (KvpParser) p.next();
-            
-            if ( parser.getService() != null && !parser.getService().equalsIgnoreCase(service) ) {
-                p.remove();
-                continue;
-            }
-            
-            if ( parser.getVersion() != null && !parser.getVersion().toString().equals(version) ) {
-                p.remove();
-                continue;
-            }
-            
-            if ( parser.getRequest() != null && !parser.getRequest().equalsIgnoreCase(request) ) {
-                p.remove();
-            }
-        }
+        String service = KvpUtils.getSingleValue(kvp, "service");
+        String version = KvpUtils.getSingleValue(kvp, "version");
+        String request = KvpUtils.getSingleValue(kvp, "request");
         
-        //parser the kvp's
+        purgeParsers(parsers, service, version, request);
+
+        // parser the kvp's
         ArrayList<Throwable> errors = new ArrayList<Throwable>();
-        for (Iterator itr = kvp.entrySet().iterator(); itr.hasNext();) {
-            Map.Entry entry = (Map.Entry) itr.next();
+        for (Iterator<Map.Entry<Object, Object>> itr = kvp.entrySet().iterator(); itr.hasNext();) {
+            Map.Entry<Object, Object> entry = itr.next();
             String key = (String) entry.getKey();
-            String value = (String) entry.getValue();
-            
-            //find the parser for this key value pair
+
+            // find the parser for this key value pair
+            KvpParser parser = findParser(key, service, request, version, parsers);
+
+            // parse the value
             Object parsed = null;
-
-            KvpParser parser = null;
-            for (Iterator pitr = parsers.iterator(); pitr.hasNext() && parsed == null;) {
-                KvpParser candidate = (KvpParser) pitr.next();
-                if (key.equalsIgnoreCase(candidate.getKey())) {
-                    if (parser == null) {
-                        parser = candidate;
-                    }
-                    else {
-                        String curService = parser.getService();
-                        Version curVersion = parser.getVersion();
-
-                        String trgService = candidate.getService();
-                        Version trgVersion = candidate.getVersion();
-
-                        //determine if this parser more closely matches the request
-                        if (curService == null) {
-                            //if target service matches, it is a closer match
-                            if (trgService != null && trgService.equalsIgnoreCase(service)) {
-                                parser = candidate;
-                            }
-                        }
-                        else {
-                            if (trgService != null && trgService.equalsIgnoreCase(service)) {
-                                //both match, filter by version
-                                if (trgVersion != null) {
-                                    if (curVersion == null && trgVersion.toString().equals(version)) {
-                                        parser = candidate;
-                                    }
-                                }
-                                else {
-                                    if (curVersion == null) {
-                                        //ambiguous, unable to match
-                                        //TODO: use request
-                                        throw new IllegalStateException("Multiple kvp parsers: " + 
-                                            parser + "," +  candidate);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
             if (parser != null) {
                 try {
-                    parsed = parser.parse(value);
+                    if (entry.getValue() instanceof String) {
+                        String value = (String) entry.getValue();
+                        parsed = parser.parse(value);
+                    } else {
+                        String[] values = (String[]) entry.getValue();
+                        List<Object> result = new ArrayList<Object>();
+                        for (String v : values) {
+                            result.add(parser.parse(v));
+                        }
+                        parsed = result;
+                    }
                 } catch (Throwable t) {
-                    //dont throw any exceptions yet, befor the service is
+                    // dont throw any exceptions yet, befor the service is
                     // known
-                    errors.add( t );
+                    errors.add(t);
                 }
             }
-            
-            //if noone could parse, just set to string value
+
+            // We only change the value of the parameter if the parser was found and no exception is thrown (parsed != null) If so (==null) it is
+            // untouched (remains a String)
             if (parsed != null) {
                 entry.setValue(parsed);
             }
         }
-        
+
         return errors;
     }
+
+    /**
+     * Strip out parsers which do not match current service/request/version
+     * 
+     * @param parsers list of {@link KvpParser} to purge (see {@link GeoServerExtensions#extensions(Class)})
+     * @param service the service parameter from the kvp (can be null)
+     * @param version the version parameter from the kvp (can be null)
+     * @param request the request parameter from the kvp (can be null)
+     */
+    public static void purgeParsers(List<KvpParser> parsers, final String service,
+            final String version, final String request) {
+        for (Iterator<KvpParser> p = parsers.iterator(); p.hasNext();) {
+            KvpParser parser = p.next();
+
+            if (parser.getService() != null && !parser.getService().equalsIgnoreCase(service)) {
+                p.remove();
+            } else if (parser.getVersion() != null
+                    && !parser.getVersion().toString().equals(version)) {
+                p.remove();
+            } else if (parser.getRequest() != null
+                    && !parser.getRequest().equalsIgnoreCase(request)) {
+                p.remove();
+            }
+        }
+    }
+
+    /**
+     * Find a parser for the passed key into registered parsers ({@link KvpParser})
+     * 
+     * @param key the key matching the value to parse
+     * @param service the service parameter from the kvp (can be null)
+     * @param version the version parameter from the kvp (can be null)
+     * @param request the request parameter from the kvp (can be null)
+     * @param parsers the purged parsers list (see {@link #purgeParsers(List, String, String, String)}
+     * @return the found parser or null (if no parser is found)
+     * @throws IllegalStateException if more than one candidate parser is found
+     */
+    public static KvpParser findParser(final String key, final String service,
+            final String request, final String version, Collection<KvpParser> parsers) {
+        // find the parser for this key value pair
+        KvpParser parser = null;
+        final Iterator<KvpParser> pitr = parsers.iterator();
+        while (pitr.hasNext()) {
+            KvpParser candidate = pitr.next();
+            if (key.equalsIgnoreCase(candidate.getKey())) {
+                if (parser == null) {
+                    parser = candidate;
+                } else {
+                    // if target service matches, it is a closer match
+                    String trgService = candidate.getService();
+                    if (trgService != null && trgService.equalsIgnoreCase(service)) {
+                        // determine if this parser more closely matches the request
+                        String curService = parser.getService();
+                        if (curService == null) {
+                            parser = candidate;
+                        } else {
+                            // both match, filter by version
+                            Version curVersion = parser.getVersion();
+                            Version trgVersion = candidate.getVersion();
+                            if (trgVersion != null) {
+                                if (curVersion == null && trgVersion.toString().equals(version)) {
+                                    parser = candidate;
+                                }
+                            } else {
+                                if (curVersion == null) {
+                                    // ambiguous, unable to match
+                                    throw new IllegalStateException("Multiple kvp parsers: "
+                                            + parser + "," + candidate);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return parser;
+    }
+
+    /**
+     * Parse this key value pair using registered parsers ({@link KvpParser})
+     * 
+     * @param key the key matching the value to parse
+     * @param value the value to parse
+     * @param service the service parameter from the kvp (can be null)
+     * @param version the version parameter from the kvp (can be null)
+     * @param request the request parameter from the kvp (can be null)
+     * @param parsers the purged parsers list (see {@link #purgeParsers(List, String, String, String)}
+     * @return the parsed value or null (if no parser is found)
+     * @throws Exception if the selected parser throws an exception
+     * @throws IllegalStateException if more than one candidate parser is found
+     */
+    public static Object parseKey(final String key, final String value, final String service,
+            final String request, final String version, List<KvpParser> parsers) throws Exception {
+        // find the parser for this key value pair
+        KvpParser parser = findParser(key, service, request, version, parsers);
+        if (parser == null) {
+            return null;
+        }
+        return parser.parse(value);
+    }
     
+    /**
+     * Returns a single value for the specified key, or throws an exception if multiple different
+     * values are found
+     * 
+     * @param kvp
+     * @param key
+     * @return
+     */
+    public static String getSingleValue(Map kvp, String key) {
+        Object value = kvp.get(key);
+        if(value == null) {
+            return null;
+        } else if(value instanceof String) {
+            return (String) value;
+        } else {
+            String[] strings = (String[]) value;
+            if(strings.length == 0) {
+                return null;
+            }
+            String result = strings[0];
+            for (int i = 1; i < strings.length; i++) {
+                if(!result.equals(strings[i])) {
+                    throw new ServiceException("Single value expected for request parameter " 
+                            + key + " but instead found: " + Arrays.toString(strings));
+                }
+            }
+            
+            return result;
+        }
+    }
+
     /**
      * Parses the parameters in the path query string. Normally this is done by the
      * servlet container but in a few cases (testing for example) we need to emulate the container
@@ -475,7 +578,7 @@ public class KvpUtils {
      * @param path a url in the form path?k1=v1&k2=v2&,,,
      * @return
      */
-    public static Map<String, String> parseQueryString(String path) {
+    public static Map<String, Object> parseQueryString(String path) {
         int index = path.indexOf('?');
 
         if (index == -1) {
@@ -484,7 +587,7 @@ public class KvpUtils {
 
         String queryString = path.substring(index + 1);
         StringTokenizer st = new StringTokenizer(queryString, "&");
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, Object> result = new HashMap<String, Object>();
         while (st.hasMoreTokens()) {
             String token = st.nextToken();
             String[] keyValuePair;
@@ -511,7 +614,25 @@ public class KvpUtils {
                 
             }
          
-            result.put(keyValuePair[0], keyValuePair.length > 1 ?  keyValuePair[1] : "");
+            String key = keyValuePair[0];
+            String value = keyValuePair.length > 1 ?  keyValuePair[1] : "";
+            if(result.get(key) == null) {
+                result.put(key, value);
+            } else {
+                String[] array;
+                Object oldValue = result.get(key);
+                if(oldValue instanceof String) {
+                    array = new String[2];
+                    array[0] = (String) oldValue;
+                    array[1] = value;
+                } else {
+                    String[] oldArray = (String[]) oldValue;
+                    array = new String[oldArray.length + 1];
+                    System.arraycopy(oldArray, 0, array, 0, oldArray.length);
+                    array[oldArray.length] = value;
+                }
+                result.put(key, array);
+            }
         }
         
         return result;
@@ -636,5 +757,28 @@ public class KvpUtils {
             else
                 options.put(entry.getKey(), entry.getValue());
         }
+    }
+
+    /**
+     * Extracts the first value for the specified parameter (the kvp can contain either a single
+     * string, or an array of values)
+     * @param kvp
+     * @param param
+     */
+    public static String firstValue(Map kvp, String param) {
+        Object o = kvp.get(param);
+        if(o == null) {
+            return null;
+        } else if(o instanceof String) {
+            return (String) o;
+        } else {
+            String[] values = (String[]) o;
+            if(values.length >= 0) {
+                return values[0];
+            } else {
+                return null;
+            }
+        }
+        
     }
 }

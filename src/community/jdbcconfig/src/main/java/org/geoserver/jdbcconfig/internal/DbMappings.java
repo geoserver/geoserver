@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.jdbcconfig.internal;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -106,7 +110,7 @@ public class DbMappings {
      */
     public void initDb(final NamedParameterJdbcOperations template) {
 
-        LOGGER.info("Initializing Catalog and Config database");
+        LOGGER.fine("Initializing Catalog and Config database");
 
         ClassMappings[] classMsappings = ClassMappings.values();
 

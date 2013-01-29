@@ -1,0 +1,1898 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+CORRECTIONS referenced 2012-07-13 #01
+AUTHOR: XML Maintenance group - Nicolas Lesage
+PURPOSE: Use of absolute path in xsi:schemaLocation
+DESCRIPTION:
+- ../gmx/gmx.xsd replaced by http://schemas.opengis.net/iso/19139/20070417/gmx/gmx.xsd
+- ../gco/gco.xsd replaced by http://schemas.opengis.net/iso/19139/20070417/gco/gco.xsd
+- ../xlink/xlinks.xsd replaced by http://www.w3.org/1999/xlink.xsd
+- ../gml/gml.xsd replaced by http://schemas.opengis.net/gml/3.2.1/gml.xsd
+
+CORRECTIONS referenced 2012-07-13 #02
+AUTHOR: XML Maintenance group - Nicolas Lesage
+PURPOSE: Invalid description of MD_DatatypeCode_codelist
+DESCRIPTION:
+<gml:description>descriptor of a set of objects that share the same attributes, operations, methods, relationships, and behavior</gml:description>
+has been replaced by:
+<gml:description>flexible enumeration useful for expressing a long list of values, can be extended</gml:description>
+
+CORRECTIONS referenced by 2008-09-11 #NN
+AUTHOR : IGN (France) contact: nicolas.lesage@ign.fr
+PURPOSE : Correction of 3 typographical errors 
+DESCRIPTION : 
+#01: 'unknwon' replaced by 'unknown'
+#02: 'MD_MaintenanceFrequencyCode_quartely' replaced by 'MD_MaintenanceFrequencyCode_quarterly'
+#03: 'quartely' replaced by 'quarterly'
+-->
+<!-- 2012-07-13 #01 -->
+<CT_CodelistCatalogue xmlns="http://www.isotc211.org/2005/gmx" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.isotc211.org/2005/gmx http://schemas.opengis.net/iso/19139/20070417/gmx/gmx.xsd http://www.isotc211.org/2005/gco http://schemas.opengis.net/iso/19139/20070417/gco/gco.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd http://www.w3.org/1999/xlink http://www.w3.org/1999/xlink.xsd">
+	<!--=====Catalogue description=====-->
+	<name>
+		<gco:CharacterString>gmxCodelists</gco:CharacterString>
+	</name>
+	<scope>
+		<gco:CharacterString>Codelists for description of metadata datasets compliant with ISO/TC 211 19115:2003 and 19139</gco:CharacterString>
+	</scope>
+	<fieldOfApplication>
+		<gco:CharacterString>GMX (and imported) namespace</gco:CharacterString>
+	</fieldOfApplication>
+	<versionNumber>
+		<gco:CharacterString>0.0</gco:CharacterString>
+	</versionNumber>
+	<versionDate>
+		<gco:Date>2005-03-18</gco:Date>
+	</versionDate>
+	<!--============================================================================-->
+	<!--============================================================================-->
+	<!--============================= Codelists =======================================-->
+	<!--=== CI_DateTypeCode ===-->
+	<codelistItem>
+		<CodeListDictionary gml:id="CI_DateTypeCode">
+			<gml:description>identification of when a given event occurred</gml:description>
+			<gml:identifier codeSpace="ISOTC211/19115">CI_DateTypeCode</gml:identifier>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_DateTypeCode_creation">
+					<gml:description>date identifies when the resource was brought into existence</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">creation</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_DateTypeCode_publication">
+					<gml:description>date identifies when the resource was issued</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">publication</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_DateTypeCode_revision">
+					<gml:description>date identifies when the resource was examined or re-examined and imporved or amended</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">revision</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+		</CodeListDictionary>
+	</codelistItem>
+	<!--=== CI_OnLineFunctionCode ===-->
+	<codelistItem>
+		<CodeListDictionary gml:id="CI_OnLineFunctionCode">
+			<gml:description>function performed by the resource</gml:description>
+			<gml:identifier codeSpace="ISOTC211/19115">CI_OnLineFunctionCode</gml:identifier>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_OnLineFunctionCode_download">
+					<gml:description>online instructions for transferring data from one storage device or system to another</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">download</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_OnLineFunctionCode_information">
+					<gml:description>online information about the resource</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">information</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_OnLineFunctionCode_offlineAccess">
+					<gml:description>online instructions for requesting the resource from the provider</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">offlineAccess</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_OnLineFunctionCode_order">
+					<gml:description>online order process for obtening the resource</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">order</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_OnLineFunctionCode_search">
+					<gml:description>online search interface for seeking out information about the resource</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">search</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+		</CodeListDictionary>
+	</codelistItem>
+	<!--=== CI_PresentationFormCode ===-->
+	<codelistItem>
+		<CodeListDictionary gml:id="CI_PresentationFormCode">
+			<gml:description>mode in which the data is represented</gml:description>
+			<gml:identifier codeSpace="ISOTC211/19115">CI_PresentationFormCode</gml:identifier>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_PresentationFormCode_documentDigital">
+					<gml:description>digital representation of a primarily textual item (can contain illustrations also)</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">documentDigital</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_PresentationFormCode_documentHardcopy">
+					<gml:description>representation of a primarily textual item (can contain illustrations also) on paper, photograhic material, or other media</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">imageDigital</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_PresentationFormCode_imageDigital">
+					<gml:description>likeness of natural or man-made features, objects, and activities acquired through the sensing of visual or any other segment of the electromagnetic spectrum by sensors, such as thermal infrared, and high resolution radar and stored in digital format</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">documentHardcopy</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_PresentationFormCode_imageHardcopy">
+					<gml:description>likeness of natural or man-made features, objects, and activities acquired through the sensing of visual or any other segment of the electromagnetic spectrum by sensors, such as thermal infrared, and high resolution radar and reproduced on paper, photographic material, or other media for use directly by the human user</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">imageHardcopy</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_PresentationFormCode_mapDigital">
+					<gml:description>map represented in raster or vector form</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">mapDigital</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_PresentationFormCode_mapHardcopy">
+					<gml:description>map printed on paper, photographic material, or other media for use directly by the human user</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">mapHardcopy</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_PresentationFormCode_modelDigital">
+					<gml:description>multi-dimensional digital representation of a feature, process, etc.</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">modelDigital</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_PresentationFormCode_modelHardcopy">
+					<gml:description>3-dimensional, physical model</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">modelHardcopy</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_PresentationFormCode_profileDigital">
+					<gml:description>vertical cross-section in digital form</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">profileDigital</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_PresentationFormCode_profileHardcopy">
+					<gml:description>vertical cross-section printed on paper, etc.</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">profileHardcopy</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_PresentationFormCode_tableDigital">
+					<gml:description>digital representation of facts or figures systematically displayed, especially in columns</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">tableDigital</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_PresentationFormCode_tableHardcopy">
+					<gml:description>representation of facts or figures systematically displayed, especially in columns, printed onpapers, photographic material, or other media</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">tableHardcopy</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_PresentationFormCode_videoDigital">
+					<gml:description>digital video recording</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">videoDigital</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_PresentationFormCode_videoHardcopy">
+					<gml:description>video recording on film</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">videoHardcopy</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+		</CodeListDictionary>
+	</codelistItem>
+	<!--=== CI_RoleCode ===-->
+	<codelistItem>
+		<CodeListDictionary gml:id="CI_RoleCode">
+			<gml:description>function performed by the responsible party</gml:description>
+			<gml:identifier codeSpace="ISOTC211/19115">CI_RoleCode</gml:identifier>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_RoleCode_resourceProvider">
+					<gml:description>party that supplies the resource</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">resourceProvider</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_RoleCode_custodian">
+					<gml:description>party that accepts accountability and responsability for the data and ensures appropriate care and maintenance of the resource</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">custodian</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_RoleCode_owner">
+					<gml:description>party that owns the resource</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">owner</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_RoleCode_user">
+					<gml:description>party who uses the resource</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">user</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_RoleCode_distributor">
+					<gml:description>party who distributes the resource</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">distributor</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_RoleCode_originator">
+					<gml:description>party who created the resource</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">originator</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_RoleCode_pointOfContact">
+					<gml:description>party who can be contacted for acquiring knowledge about or acquisition of the resource</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">pointOfContact</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_RoleCode_principalInvestigator">
+					<gml:description>key party responsible for gathering information and conducting research</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">principalInvestigator</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_RoleCode_processor">
+					<gml:description>party wha has processed the data in a manner such that the resource has been modified</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">processor</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_RoleCode_publisher">
+					<gml:description>party who published the resource</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">publisher</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="CI_RoleCode_author">
+					<gml:description>party who authored the resource</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">author</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+		</CodeListDictionary>
+	</codelistItem>
+	<!--=== DQ_EvaluationMethodTypeCode ===-->
+	<codelistItem>
+		<CodeListDictionary gml:id="DQ_EvaluationMethodTypeCode">
+			<gml:description>type or method for evaluating an identified data quality measure</gml:description>
+			<gml:identifier codeSpace="ISOTC211/19115">DQ_EvaluationMethodTypeCode</gml:identifier>
+			<codeEntry>
+				<CodeDefinition gml:id="DQ_EvaluationMethodTypeCode_directInternal">
+					<gml:description>method of evaluating the quality of a dataset based on inspection of items within the dataset, where all data required is internal to the dataset being evaluated</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">directInternal</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="DQ_EvaluationMethodTypeCode_directExternal">
+					<gml:description>method of evaluating the quality of a dataset based on inspection of items within the dataset, where reference data external to the dataset being evaluated is required</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">directExternal</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="DQ_EvaluationMethodTypeCode_indirect">
+					<gml:description>method of evaluating the quality of a dataset based on external knowledge</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">indirect</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+		</CodeListDictionary>
+	</codelistItem>
+	<!--=== DS_AssociationTypeCode ===-->
+	<codelistItem>
+		<CodeListDictionary gml:id="DS_AssociationTypeCode">
+			<gml:description>justification for the correlation of two datasets</gml:description>
+			<gml:identifier codeSpace="ISOTC211/19115">DS_AssociationTypeCode</gml:identifier>
+			<codeEntry>
+				<CodeDefinition gml:id="DS_AssociationTypeCode_crossReference">
+					<gml:description>reference from one dataset to another</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">crossReference</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="DS_AssociationTypeCode_largerWorkCitation">
+					<gml:description>reference to a master dataset of which this one is a part</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">largerWorkCitation</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="DS_AssociationTypeCode_partOfSeamlessDatabase">
+					<gml:description>part of the same structured set of data held in a computer</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">partOfSeamlessDatabase</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="DS_AssociationTypeCode_source">
+					<gml:description>mapping and charting information from which the dataset content originates</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">source</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="DS_AssociationTypeCode_stereoMate">
+					<gml:description>part of a set of imagery that when used together, provides three-dimensional images</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">stereoMate</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+		</CodeListDictionary>
+	</codelistItem>
+	<!--=== DS_InitiativeTypeCode ===-->
+	<codelistItem>
+		<CodeListDictionary gml:id="DS_InitiativeTypeCode">
+			<gml:description>type of aggregation activity in which datasets are related</gml:description>
+			<gml:identifier codeSpace="ISOTC211/19115">DS_InitiativeTypeCode</gml:identifier>
+			<codeEntry>
+				<CodeDefinition gml:id="DS_InitiativeTypeCode_campaign">
+					<gml:description>series of organized planned actions</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">campaign</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="DS_InitiativeTypeCode_collection">
+					<gml:description>accumulation of datasets assembled for a specific purpose</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">collection</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="DS_InitiativeTypeCode_exercise">
+					<gml:description>specific performance of a function or group of functions</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">exercise</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="DS_InitiativeTypeCode_experiment">
+					<gml:description>process designed to find if something is effective or valid</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">experiment</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="DS_InitiativeTypeCode_investigation">
+					<gml:description>search or systematic inquiry</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">investigation</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="DS_InitiativeTypeCode_mission">
+					<gml:description>specific operation of a data collection system</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">mission</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="DS_InitiativeTypeCode_sensor">
+					<gml:description>device or piece of equipment which detects or records</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">sensor</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="DS_InitiativeTypeCode_operation">
+					<gml:description>action that is part of a series of actions</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">operation</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="DS_InitiativeTypeCode_platform">
+					<gml:description>vehicle or other support base that holds a sensor</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">platform</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="DS_InitiativeTypeCode_process">
+					<gml:description>method of doing something involving a number of steps</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">process</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="DS_InitiativeTypeCode_program">
+					<gml:description>specific planned activity</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">program</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="DS_InitiativeTypeCode_project">
+					<gml:description>organized undertaking, research, or development</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">project</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="DS_InitiativeTypeCode_study">
+					<gml:description>examination or investigation</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">study</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="DS_InitiativeTypeCode_task">
+					<gml:description>piece of work</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">task</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="DS_InitiativeTypeCode_trial">
+					<gml:description>process of testing to discover or demonstrate something</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">trial</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+		</CodeListDictionary>
+	</codelistItem>
+	<!--=== MD_CellGeometryCode ===-->
+	<codelistItem>
+		<CodeListDictionary gml:id="MD_CellGeometryCode">
+			<gml:description>code indicating whether grid data is point or area</gml:description>
+			<gml:identifier codeSpace="ISOTC211/19115">MD_CellGeometryCode</gml:identifier>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CellGeometryCode_point">
+					<gml:description>each cell represents a point</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">point</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CellGeometryCode_area">
+					<gml:description>each cell represents an area</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">area</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+		</CodeListDictionary>
+	</codelistItem>
+	<!--=== MD_CharacterSetCode ===-->
+	<codelistItem>
+		<CodeListDictionary gml:id="MD_CharacterSetCode">
+			<gml:description>name of the character coding standard used in the resource</gml:description>
+			<gml:identifier codeSpace="ISOTC211/19115">MD_CharacterSetCode</gml:identifier>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CharacterSetCode_ucs2">
+					<gml:description>16-bit fixed size Universal Character Set, based on ISO/IEC 10646</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">ucs2</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CharacterSetCode_ucs4">
+					<gml:description>32-bit fixed size Universal Character Set, based on ISO/IEC 10646</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">ucs4</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CharacterSetCode_utf7">
+					<gml:description>7-bit variable size UCS Transfer Format, based on ISO/IEC 10646</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">utf7</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CharacterSetCode_utf8">
+					<gml:description>8-bit variable size UCS Transfer Format, based on ISO/IEC 10646</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">utf8</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CharacterSetCode_utf16">
+					<gml:description>16-bit variable size UCS Transfer Format, based on ISO/IEC 10646</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">utf16</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CharacterSetCode_8859part1">
+					<gml:description>ISO/IEC 8859-1, Information technology - 8-bit single byte coded graphic character sets - Part 1 : Latin alphabet No.1</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">8859part1</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CharacterSetCode_8859part2">
+					<gml:description>ISO/IEC 8859-2, Information technology - 8-bit single byte coded graphic character sets - Part 2 : Latin alphabet No.2</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">8859part2</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CharacterSetCode_8859part3">
+					<gml:description>ISO/IEC 8859-3, Information technology - 8-bit single byte coded graphic character sets - Part 3 : Latin alphabet No.3</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">8859part3</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CharacterSetCode_8859part4">
+					<gml:description>ISO/IEC 8859-4, Information technology - 8-bit single byte coded graphic character sets - Part 4 : Latin alphabet No.4</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">8859part4</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CharacterSetCode_8859part5">
+					<gml:description>ISO/IEC 8859-5, Information technology - 8-bit single byte coded graphic character sets - Part 5 : Latin/Cyrillic alphabet</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">8859part5</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CharacterSetCode_8859part6">
+					<gml:description>ISO/IEC 8859-6, Information technology - 8-bit single byte coded graphic character sets - Part 6 : Latin/Arabic alphabet</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">8859part6</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CharacterSetCode_8859part7">
+					<gml:description>ISO/IEC 8859-7, Information technology - 8-bit single byte coded graphic character sets - Part 7 : Latin/Greek alphabet</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">8859part7</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CharacterSetCode_8859part8">
+					<gml:description>ISO/IEC 8859-8, Information technology - 8-bit single byte coded graphic character sets - Part 8 : Latin/Hebrew alphabet</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">8859part8</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CharacterSetCode_8859part9">
+					<gml:description>ISO/IEC 8859-9, Information technology - 8-bit single byte coded graphic character sets - Part 9 : Latin alphabet No.5</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">8859part9</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CharacterSetCode_8859part10">
+					<gml:description>ISO/IEC 8859-10, Information technology - 8-bit single byte coded graphic character sets - Part 10 : Latin alphabet No.6</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">8859part10</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CharacterSetCode_8859part11">
+					<gml:description>ISO/IEC 8859-11, Information technology - 8-bit single byte coded graphic character sets - Part 11 : Latin/Thai alphabet</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">8859part11</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<!-- <codeEntry>
+<CodeDefinition gml:id="(reserved)">
+<gml:description>a future ISO/IEC 8-bit single byte coded graphic character set (e.g. possibly 8859 part 12</gml:description><gml:identifier codeSpace="ISOTC211/19115">(reserved)</gml:identifier>
+</CodeDefinition>
+</codeEntry> -->
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CharacterSetCode_8859part13">
+					<gml:description>ISO/IEC 8859-13, Information technology - 8-bit single byte coded graphic character sets - Part 13 : Latin alphabet No.7</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">8859part13</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CharacterSetCode_8859part14">
+					<gml:description>ISO/IEC 8859-14, Information technology - 8-bit single byte coded graphic character sets - Part 14 : Latin alphabet No.8 (Celtic)</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">8859part14</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CharacterSetCode_8859part15">
+					<gml:description>ISO/IEC 8859-15, Information technology - 8-bit single byte coded graphic character sets - Part 15 : Latin alphabet No.9</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">8859part15</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CharacterSetCode_8859part16">
+					<gml:description>ISO/IEC 8859-16, Information technology - 8-bit single byte coded graphic character sets - Part 16 : Latin alphabet No.10</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">8859part16</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CharacterSetCode_jis">
+					<gml:description>japanese code set used for electronic transmission</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">jis</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CharacterSetCode_shiftJIS">
+					<gml:description>japanese code set used on MS-DOS machines</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">shiftJIS</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CharacterSetCode_eucJP">
+					<gml:description>japanese code set used on UNIX based machines</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">eucJP</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CharacterSetCode_usAscii">
+					<gml:description>United States ASCII code set (ISO 646 US)</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">usAscii</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CharacterSetCode_ebcdic">
+					<gml:description>IBM mainframe code set</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">ebcdic</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CharacterSetCode_eucKR">
+					<gml:description>Korean code set</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">eucKR</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CharacterSetCode_big5">
+					<gml:description>traditional Chinese code set used in Taiwan, Hong Kong of China and other areas</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">big5</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CharacterSetCode_GB2312">
+					<gml:description>simplified Chinese code set</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">GB2312</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+		</CodeListDictionary>
+	</codelistItem>
+	<!--=== MD_ClassificationCode ===-->
+	<codelistItem>
+		<CodeListDictionary gml:id="MD_ClassificationCode">
+			<gml:description>name of the handling restrictions on the dataset</gml:description>
+			<gml:identifier codeSpace="ISOTC211/19115">MD_ClassificationCode</gml:identifier>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ClassificationCode_unclassified">
+					<gml:description>available for general disclosure</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">unclassified</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ClassificationCode_restricted">
+					<gml:description>not for general disclosure</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">restricted</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ClassificationCode_confidential">
+					<gml:description>available for someone who can be entrusted with information</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">confidential</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ClassificationCode_secret">
+					<gml:description>kept or meant to be kept private, unknown, or hidden from all but a select group of people</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">secret</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ClassificationCode_topSecret">
+					<gml:description>of the highest secrecy</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">topSecret</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+		</CodeListDictionary>
+	</codelistItem>
+	<!--=== MD_CoverageContentTypeCode ===-->
+	<codelistItem>
+		<CodeListDictionary gml:id="MD_CoverageContentTypeCode">
+			<gml:description>specific type of information represented in the cell</gml:description>
+			<gml:identifier codeSpace="ISOTC211/19115">MD_CoverageContentTypeCode</gml:identifier>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CoverageContentTypeCode_image">
+					<gml:description>meaningful numerical representation of a physical parameter that is not the actual value of the physical parameter</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">image</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CoverageContentTypeCode_thematicClassification">
+					<gml:description>code value with no quantitative meaning, used to represent a physical quantity</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">thematicClassification</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_CoverageContentTypeCode_physicalMeasurement">
+					<gml:description>value in physical units of the quantity being measured</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">physicalMeasurement</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+		</CodeListDictionary>
+	</codelistItem>
+	<!--=== MD_DatatypeCode ===-->
+	<codelistItem>
+		<CodeListDictionary gml:id="MD_DatatypeCode">
+			<gml:description>datatype of element or entity</gml:description>
+			<gml:identifier codeSpace="ISOTC211/19115">MD_DatatypeCode</gml:identifier>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_DatatypeCode_class">
+					<gml:description>descriptor of a set of objects that share the same attributes, operations, methods, relationships, and behavior</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">class</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_DatatypeCode_codelist">
+					<!-- 2012-07-13 #02 -->
+					<gml:description>flexible enumeration useful for expressing a long list of values, can be extended</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">codelist</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_DatatypeCode_enumeration">
+					<gml:description>data type whose instances form a list of named literal values, not extendable</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">enumeration</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_DatatypeCode_codelistElement">
+					<gml:description>permissible value for a codelist or enumeration</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">codelistElement</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_DatatypeCode_abstractClass">
+					<gml:description>class that cannot be directly instantiated</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">abstractClass</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_DatatypeCode_aggregateClass">
+					<gml:description>class that is composed of classes it is connected to by an aggregate relationship</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">aggregateClass</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_DatatypeCode_specifiedClass">
+					<gml:description>subclass that may be substituted for its superclass</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">specifiedClass</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_DatatypeCode_datatypeClass">
+					<gml:description>class with few or no operations whose primary purpose is to hold the abstract state of another class for transmittal, storage, encoding or persistent storage</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">datatypeClass</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_DatatypeCode_interfaceClass">
+					<gml:description>named set of operations that characterize the behavior of an element</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">interfaceClass</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_DatatypeCode_unionClass">
+					<gml:description>class describing a selection of one of the specified types</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">unionClass</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_DatatypeCode_metaClass">
+					<gml:description>class whose instances are classes</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">metaClass</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_DatatypeCode_typeClass">
+					<gml:description>class used for specification of a domain of instances (objects), together with the operations applicable to the objects. A type may have attributes and associations</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">typeClass</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_DatatypeCode_characterString">
+					<gml:description>free text field</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">characterString</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_DatatypeCode_integer">
+					<gml:description>numerical field</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">integer</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_DatatypeCode_association">
+					<gml:description>semantic relationship between two classes that involves connections among their instances</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">association</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+		</CodeListDictionary>
+	</codelistItem>
+	<!--=== MD_DimensionNameTypeCode ===-->
+	<codelistItem>
+		<CodeListDictionary gml:id="MD_DimensionNameTypeCode">
+			<gml:description>name of the dimension</gml:description>
+			<gml:identifier codeSpace="ISOTC211/19115">MD_DimensionNameTypeCode</gml:identifier>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_DimensionNameTypeCode_row">
+					<gml:description>ordinate (y) axis</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">row</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_DimensionNameTypeCode_column">
+					<gml:description>abscissa (x) axis</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">column</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_DimensionNameTypeCode_vertical">
+					<gml:description>vertical (z) axis</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">vertical</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_DimensionNameTypeCode_track">
+					<gml:description>along the direction of motion of the scan point</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">track</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_DimensionNameTypeCode_crossTrack">
+					<gml:description>perpendicular to the direction of motion of the scan point</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">crossTrack</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_DimensionNameTypeCode_line">
+					<gml:description>scan line of a sensor</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">line</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_DimensionNameTypeCode_sample">
+					<gml:description>element along a scan line</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">sample</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_DimensionNameTypeCode_time">
+					<gml:description>duration</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">time</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+		</CodeListDictionary>
+	</codelistItem>
+	<!--=== MD_GeometricObjectTypeCode ===-->
+	<codelistItem>
+		<CodeListDictionary gml:id="MD_GeometricObjectTypeCode">
+			<gml:description>name of point or vector objects used to locate zero-, one-, two-, or three-dimensional spatial locations in the dataset</gml:description>
+			<gml:identifier codeSpace="ISOTC211/19115">MD_GeometricObjectTypeCode</gml:identifier>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_GeometricObjectTypeCode_complex">
+					<gml:description>set of geometric primitives such that their boundaries can be represented as a union of other primitives</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">complex</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_GeometricObjectTypeCode_composite">
+					<gml:description>connected set of curves, solids or surfaces</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">composite</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_GeometricObjectTypeCode_curve">
+					<gml:description>bounded, 1-dimensional geometric primitive, representing the continuous image of a line</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">curve</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_GeometricObjectTypeCode_point">
+					<gml:description>zero-dimensional geometric primitive, representing a position but not having an extent</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">point</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_GeometricObjectTypeCode_solid">
+					<gml:description>bounded, connected 3-dimensional geometric primitive, representing the continuous image of a region of space</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">solid</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_GeometricObjectTypeCode_surface">
+					<gml:description>bounded, connected 2-dimensional geometric primitive, representing the continuous image of a region of a plane</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">surface</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+		</CodeListDictionary>
+	</codelistItem>
+	<!--=== MD_ImagingConditionCode ===-->
+	<codelistItem>
+		<CodeListDictionary gml:id="MD_ImagingConditionCode">
+			<gml:description>code which indicates conditions which may affect the image</gml:description>
+			<gml:identifier codeSpace="ISOTC211/19115">MD_ImagingConditionCode</gml:identifier>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ImagingConditionCode_blurredImage">
+					<gml:description>portion of the image is blurred</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">blurredImage</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ImagingConditionCode_cloud">
+					<gml:description>portion of the image is partially obscured by cloud cover</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">cloud</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ImagingConditionCode_degradingObliquity">
+					<gml:description>acute angle between the plane of the ecliptic (the plane of the Earth s orbit) and the plane of the celestial equator</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">degradingObliquity</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ImagingConditionCode_fog">
+					<gml:description>portion of the image is partially obscured by fog</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">fog</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ImagingConditionCode_heavySmokeOrDust">
+					<gml:description>portion of the image is partially obscured by heavy smoke or dust</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">heavySmokeOrDust</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ImagingConditionCode_night">
+					<gml:description>image was taken at night</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">night</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ImagingConditionCode_rain">
+					<gml:description>image was taken during rainfall</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">rain</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ImagingConditionCode_semiDarkness">
+					<gml:description>image was taken during semi-dark conditions -- twilight conditions</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">semiDarkness</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ImagingConditionCode_shadow">
+					<gml:description>portion of the image is obscured by shadow</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">shadow</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ImagingConditionCode_snow">
+					<gml:description>portion of the image is obscured by snow</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">snow</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ImagingConditionCode_terrainMasking">
+					<gml:description>the absence of collection data of a given point or area caused by the relative location of topographic features which obstruct the collection path between the collector(s) and the subject(s) of interest</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">terrainMasking</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+		</CodeListDictionary>
+	</codelistItem>
+	<!--=== MD_KeywordTypeCode ===-->
+	<codelistItem>
+		<CodeListDictionary gml:id="MD_KeywordTypeCode">
+			<gml:description>methods used to group similar keywords</gml:description>
+			<gml:identifier codeSpace="ISOTC211/19115">MD_KeywordTypeCode</gml:identifier>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_KeywordTypeCode_discipline">
+					<gml:description>keyword identifies a branch of instruction or specialized learning</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">discipline</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_KeywordTypeCode_place">
+					<gml:description>keyword identifies a location</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">place</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_KeywordTypeCode_stratum">
+					<gml:description>keyword identifies the layer(s) of any deposited substance</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">stratum</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_KeywordTypeCode_temporal">
+					<gml:description>keyword identifies a time period related to the dataset</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">temporal</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_KeywordTypeCode_theme">
+					<gml:description>keyword identifies a particular subject or topic</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">theme</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+		</CodeListDictionary>
+	</codelistItem>
+	<!--=== MD_MaintenanceFrequencyCode ===-->
+	<codelistItem>
+		<CodeListDictionary gml:id="MD_MaintenanceFrequencyCode">
+			<gml:description>frequency with which modifications and deletions are made to the data after it is first produced</gml:description>
+			<gml:identifier codeSpace="ISOTC211/19115">MD_MaintenanceFrequencyCode</gml:identifier>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MaintenanceFrequencyCode_continual">
+					<gml:description>data is repeatedly and frequently updated</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">continual</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MaintenanceFrequencyCode_daily">
+					<gml:description>data is updated each day</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">daily</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MaintenanceFrequencyCode_weekly">
+					<gml:description>data is updated on a weekly basis</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">weekly</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MaintenanceFrequencyCode_fortnightly">
+					<gml:description>data is updated every two weeks</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">fortnightly</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MaintenanceFrequencyCode_monthly">
+					<gml:description>data is updated each month</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">monthly</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<!-- CHANGE 2008-09-11 #02 -->
+				<CodeDefinition gml:id="MD_MaintenanceFrequencyCode_quarterly">
+				<!-- CHANGE 2008-09-11 #02
+				<CodeDefinition gml:id="MD_MaintenanceFrequencyCode_quartely">
+				-->
+					<gml:description>data is updated every three months</gml:description>
+					<!-- CHANGE 2008-09-11 #03 -->
+					<gml:identifier codeSpace="ISOTC211/19115">quarterly</gml:identifier>
+					<!-- CHANGE 2008-09-11 #03
+					<gml:identifier codeSpace="ISOTC211/19115">quartely</gml:identifier>
+					-->
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MaintenanceFrequencyCode_biannually">
+					<gml:description>data is updated twice each year</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">biannually</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MaintenanceFrequencyCode_annually">
+					<gml:description>data is updated every year</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">annually</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MaintenanceFrequencyCode_asNeeded">
+					<gml:description>data is updated as deemed necessary</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">asNeeded</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MaintenanceFrequencyCode_irregular">
+					<gml:description>data is updated in intervals that are uneven in duration</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">irregular</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MaintenanceFrequencyCode_notPlanned">
+					<gml:description>there are no plans to update the data</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">notPlanned</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MaintenanceFrequencyCode_unknown">
+					<gml:description>frequency of maintenance for the data is not known</gml:description>
+					<!-- CHANGE 2008-09-11 #01-->
+					<gml:identifier codeSpace="ISOTC211/19115">unknown</gml:identifier>
+					<!-- CHANGE 2008-09-11 #01
+					<gml:identifier codeSpace="ISOTC211/19115">unknwon</gml:identifier>
+					-->
+				</CodeDefinition>
+			</codeEntry>
+		</CodeListDictionary>
+	</codelistItem>
+	<!--=== MD_MediumFormatCode ===-->
+	<codelistItem>
+		<CodeListDictionary gml:id="MD_MediumFormatCode">
+			<gml:description>method used to write to the medium</gml:description>
+			<gml:identifier codeSpace="ISOTC211/19115">MD_MediumFormatCode</gml:identifier>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MediumFormatCode_cpio">
+					<gml:description>CoPy In / Out (UNIX file format and command)</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">cpio</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MediumFormatCode_tar">
+					<gml:description>Tape ARchive</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">tar</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MediumFormatCode_highSierra">
+					<gml:description>high sierra file system</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">highSierra</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MediumFormatCode_iso9660">
+					<gml:description>information processing   volume and file structure of CD-ROM</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">iso9660</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MediumFormatCode_iso9660RockRidge">
+					<gml:description>rock ridge interchange protocol (UNIX)</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">iso9660RockRidge</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MediumFormatCode_iso9660AppleHFS">
+					<gml:description>hierarchical file system (Macintosh)</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">iso9660AppleHFS</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+		</CodeListDictionary>
+	</codelistItem>
+	<!--=== MD_MediumNameCode ===-->
+	<codelistItem>
+		<CodeListDictionary gml:id="MD_MediumNameCode">
+			<gml:description>name of the medium</gml:description>
+			<gml:identifier codeSpace="ISOTC211/19115">MD_MediumNameCode</gml:identifier>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MediumNameCode_cdRom">
+					<gml:description>read-only optical disk</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">cdRom</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MediumNameCode_dvd">
+					<gml:description>digital versatile disk</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">dvd</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MediumNameCode_dvdRom">
+					<gml:description>digital versatile disk, read only</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">dvdRom</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MediumNameCode_3halfInchFloppy">
+					<gml:description>3,5 inch magnetic disk</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">3halfInchFloppy</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MediumNameCode_5quarterInchFloppy">
+					<gml:description>5,25 inch magnetic disk</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">5quarterInchFloppy</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MediumNameCode_7trackTape">
+					<gml:description>7 track magnetic tape</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">7trackTape</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MediumNameCode_9trackType">
+					<gml:description>9 track magnetic tape</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">9trackType</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MediumNameCode_3480Cartridge">
+					<gml:description>3480 cartridge tape drive</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">3480Cartridge</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MediumNameCode_3490Cartridge">
+					<gml:description>3490 cartridge tape drive</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">3490Cartridge</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MediumNameCode_3580Cartridge">
+					<gml:description>3580 cartridge tape drive</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">3580Cartridge</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MediumNameCode_4mmCartridgeTape">
+					<gml:description>4 millimetre magnetic tape</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">4mmCartridgeTape</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MediumNameCode_8mmCartridgeTape">
+					<gml:description>8 millimetre magnetic tape</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">8mmCartridgeTape</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MediumNameCode_1quarterInchCartridgeTape">
+					<gml:description>0,25 inch magnetic tape</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">1quarterInchCartridgeTape</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MediumNameCode_digitalLinearTape">
+					<gml:description>half inch cartridge streaming tape drive</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">digitalLinearTape</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MediumNameCode_onLine">
+					<gml:description>direct computer linkage</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">onLine</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MediumNameCode_satellite">
+					<gml:description>linkage through a satellite communication system</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">satellite</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MediumNameCode_telephoneLink">
+					<gml:description>communication through a telephone network</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">telephoneLink</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_MediumNameCode_hardcopy">
+					<gml:description>pamphlet or leaflet giving descriptive information</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">hardcopy</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+		</CodeListDictionary>
+	</codelistItem>
+	<!--=== MD_ObligationCode ===-->
+	<codelistItem>
+		<CodeListDictionary gml:id="MD_ObligationCode">
+			<gml:description>obligation of the element or entity</gml:description>
+			<gml:identifier codeSpace="ISOTC211/19115">MD_ObligationCode</gml:identifier>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ObligationCode_mandatory">
+					<gml:description>element is always required</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">mandatory</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ObligationCode_optional">
+					<gml:description>element is not required</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">optional</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ObligationCode_conditional">
+					<gml:description>element is required when a specific condition is met</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">conditional</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+		</CodeListDictionary>
+	</codelistItem>
+	<!--=== MD_PixelOrientationCode ===-->
+	<codelistItem>
+		<CodeListDictionary gml:id="MD_PixelOrientationCode">
+			<gml:description>point in a pixel corresponding to the Earth location of the pixel</gml:description>
+			<gml:identifier codeSpace="ISOTC211/19115">MD_PixelOrientationCode</gml:identifier>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_PixelOrientationCode_center">
+					<gml:description>point halfway between the lower left and the upper right of the pixel</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">center</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_PixelOrientationCode_lowerLeft">
+					<gml:description>the corner in the pixel closest to the origin of the SRS; if two are at the same distance from the origin, the one with the smallest x-value</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">lowerLeft</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_PixelOrientationCode_lowerRight">
+					<gml:description>next corner counterclockwise from the lower left</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">lowerRight</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_PixelOrientationCode_upperRight">
+					<gml:description>next corner counterclockwise from the lower right</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">upperRight</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_PixelOrientationCode_upperLeft">
+					<gml:description>next corner counterclockwise from the upper right</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">upperLeft</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+		</CodeListDictionary>
+	</codelistItem>
+	<!--=== MD_ProgressCode===-->
+	<codelistItem>
+		<CodeListDictionary gml:id="MD_ProgressCode">
+			<gml:description>status of the dataset or progress of a review</gml:description>
+			<gml:identifier codeSpace="ISOTC211/19115">MD_ProgressCode</gml:identifier>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ProgressCode_completed">
+					<gml:description>production of the data has been completed</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">completed</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ProgressCode_historicalArchive">
+					<gml:description>data has been stored in an offline storage facility</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">historicalArchive</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ProgressCode_obsolete">
+					<gml:description>data is no longer relevant</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">obsolete</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ProgressCode_onGoing">
+					<gml:description>data is continually being updated</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">onGoing</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ProgressCode_planned">
+					<gml:description>fixed date has been established upon or by which the data will be created or updated</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">planned</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ProgressCode_required">
+					<gml:description>data needs to be generated or updated</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">required</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ProgressCode_underDevelopment">
+					<gml:description>data is currently in the process of being created</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">underDevelopment</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+		</CodeListDictionary>
+	</codelistItem>
+	<!--=== MD_RestrictionCode ===-->
+	<codelistItem>
+		<CodeListDictionary gml:id="MD_RestrictionCode">
+			<gml:description>limitation(s) placed upon the access or use of the data</gml:description>
+			<gml:identifier codeSpace="ISOTC211/19115">MD_RestrictionCode</gml:identifier>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_RestrictionCode_copyright">
+					<gml:description>exclusive right to the publication, production, or sale of the rights to a literary, dramatic, musical, or artistic work, or to the use of a commercial print or label, granted by law for a specified period of time to an author, composer, artist, distributor</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">copyright</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_RestrictionCode_patent">
+					<gml:description>government has granted exclusive right to make, sell, use or license an invention or discovery</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">patent</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_RestrictionCode_patentPending">
+					<gml:description>produced or sold information awaiting a patent</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">patentPending</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_RestrictionCode_trademark">
+					<gml:description>a name, symbol, or other device identifying a product, officially registered and legally restricted to the use of the owner or manufacturer</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">trademark</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_RestrictionCode_license">
+					<gml:description>formal permission to do something</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">license</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_RestrictionCode_intellectualPropertyRights">
+					<gml:description>rights to financial benefit from and control of distribution of non-tangible property that is a result of creativity</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">intellectualPropertyRights</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_RestrictionCode_restricted">
+					<gml:description>withheld from general circulation or disclosure</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">restricted</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_RestrictionCode_otherRestrictions">
+					<gml:description>limitation not listed</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">otherRestrictions</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+		</CodeListDictionary>
+	</codelistItem>
+	<!--=== MD_ScopeCode ===-->
+	<codelistItem>
+		<CodeListDictionary gml:id="MD_ScopeCode">
+			<gml:description>class of information to which the referencing entity applies</gml:description>
+			<gml:identifier codeSpace="ISOTC211/19115">MD_ScopeCode</gml:identifier>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ScopeCode_attribute">
+					<gml:description>information applies to the attribute class</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">attribute</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ScopeCode_attributeType">
+					<gml:description>information applies to the characteristic of a feature</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">attributeType</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ScopeCode_collectionHardware">
+					<gml:description>information applies to the collection hardware class</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">collectionHardware</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ScopeCode_collectionSession">
+					<gml:description>information applies to the collection session</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">collectionSession</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ScopeCode_dataset">
+					<gml:description>information applies to the dataset</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">dataset</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ScopeCode_series">
+					<gml:description>information applies to the series</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">series</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ScopeCode_nonGeographicDataset">
+					<gml:description>information applies to non-geographic data</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">nonGeographicDataset</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ScopeCode_dimensionGroup">
+					<gml:description>information applies to a dimension group</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">dimensionGroup</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ScopeCode_feature">
+					<gml:description>information applies to a feature</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">feature</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ScopeCode_featureType">
+					<gml:description>information applies to a feature type</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">featureType</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ScopeCode_propertyType">
+					<gml:description>information applies to a property type</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">propertyType</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ScopeCode_fieldSession">
+					<gml:description>information applies to a field session</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">fieldSession</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ScopeCode_software">
+					<gml:description>information applies to a computer program or routine</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">software</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ScopeCode_service">
+					<gml:description>information applies to a capability which a service provider entity makes available to a service user entity through a set of interfaces that define a behaviour, such as a use case</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">service</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ScopeCode_model">
+					<gml:description>information applies to a copy or imitation of an existing or hypothetical object</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">model</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_ScopeCode_tile">
+					<gml:description>information applies to a tile, a spatial subset of geographic data</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">tile</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+		</CodeListDictionary>
+	</codelistItem>
+	<!--=== MD_SpatialRepresentationTypeCode ===-->
+	<codelistItem>
+		<CodeListDictionary gml:id="MD_SpatialRepresentationTypeCode">
+			<gml:description>method used to represent geographic information in the dataset</gml:description>
+			<gml:identifier codeSpace="ISOTC211/19115">MD_SpatialRepresentationTypeCode</gml:identifier>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_SpatialRepresentationTypeCode_vector">
+					<gml:description>vector data is used to represent geographic data</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">vector</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_SpatialRepresentationTypeCode_grid">
+					<gml:description>grid data is used to represent geographic data</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">grid</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_SpatialRepresentationTypeCode_textTable">
+					<gml:description>textual or tabular data is used to represent geographic data</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">textTable</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_SpatialRepresentationTypeCode_tin">
+					<gml:description>triangulated irregular network</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">tin</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_SpatialRepresentationTypeCode_stereoModel">
+					<gml:description>three-dimensional view formed by the intersecting homologous rays of an overlapping pair of images</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">stereoModel</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_SpatialRepresentationTypeCode_video">
+					<gml:description>scene from a video recording</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">video</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+		</CodeListDictionary>
+	</codelistItem>
+	<!--=== MD_TopicCategoryCode ===-->
+	<codelistItem>
+		<CodeListDictionary gml:id="MD_TopicCategoryCode">
+			<gml:description>high-level geographic data thematic classification to assist in the grouping and search of available geographic data sets. Can be used to group keywords as well. Listed examples are not exhaustive.</gml:description>
+			<gml:identifier codeSpace="ISOTC211/19115">MD_TopicCategoryCode</gml:identifier>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_TopicCategoryCode_farming">
+					<gml:description>rearing of animals and/or cultivation of plants. Examples: agriculture, irrigation, aquaculture, plantations, herding, pests and diseases affecting crops and livestock</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">farming</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_TopicCategoryCode_biota">
+					<gml:description>flora and/or fauna in natural environment. Examples: wildlife, vegetation, biological sciences, ecology, wilderness, sealife, wetlands, habitat</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">biota</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_TopicCategoryCode_boundaries">
+					<gml:description>legal land descriptions. Examples: political and administrative boundaries</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">boundaries</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_TopicCategoryCode_climatologyMeteorologyAtmosphere">
+					<gml:description>processes and phenomena of the atmosphere. Examples: cloud cover, weather, climate, atmospheric conditions, climate change, precipitation</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">climatologyMeteorologyAtmosphere</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_TopicCategoryCode_economy">
+					<gml:description>economic activities, conditions and employment. Examples: production, labour, revenue, commerce, industry, tourism and ecotourism, forestry, fisheries, commercial or subsistence hunting, exploration and exploitation of resources such as minerals, oil and gas</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">economy</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_TopicCategoryCode_elevation">
+					<gml:description>height above or below sea level. Examples: altitude, bathymetry, digital elevation models, slope, derived products</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">elevation</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_TopicCategoryCode_environment">
+					<gml:description>environmental resources, protection and conservation. Examples: environmental pollution, waste storage and treatment, environmental impact assessment, monitoring environmental risk, nature reserves, landscape</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">environment</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_TopicCategoryCode_geoscientificInformation">
+					<gml:description>information pertaining to earth sciences. Examples: geophysical features and processes, geology, minerals, sciences dealing with the composition, structure and origin of the earth s rocks, risks of earthquakes, volcanic activity, landslides, gravity information, soils, permafrost, hydrogeology, erosion</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">geoscientificInformation</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_TopicCategoryCode_health">
+					<gml:description>health, health services, human ecology, and safety. Examples: disease and illness, factors affecting health, hygiene, substance abuse, mental and physical health, health services</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">health</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_TopicCategoryCode_imageryBaseMapsEarthCover">
+					<gml:description>base maps. Examples: land cover, topographic maps, imagery, unclassified images, annotations</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">imageryBaseMapsEarthCover</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_TopicCategoryCode_intelligenceMilitary">
+					<gml:description>military bases, structures, activities. Examples: barracks, training grounds, military transportation, information collection</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">intelligenceMilitary</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_TopicCategoryCode_inlandWaters">
+					<gml:description>inland water features, drainage systems and their characteristics. Examples: rivers and glaciers, salt lakes, water utilization plans, dams, currents, floods, water quality, hydrographic charts</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">inlandWaters</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_TopicCategoryCode_location">
+					<gml:description>positional information and services. Examples: addresses, geodetic networks, control points, postal zones and services, place names</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">location</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_TopicCategoryCode_oceans">
+					<gml:description>features and characteristics of salt water bodies (excluding inland waters). Examples: tides, tidal waves, coastal information, reefs</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">oceans</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_TopicCategoryCode_planningCadastre">
+					<gml:description>information used for appropriate actions for future use of the land. Examples: land use maps, zoning maps, cadastral surveys, land ownership</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">planningCadastre</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_TopicCategoryCode_society">
+					<gml:description>characteristics of society and cultures. Examples: settlements, anthropology, archaeology, education, traditional beliefs, manners and customs, demographic data, recreational areas and activities, social impact assessments, crime and justice, census information</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">society</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_TopicCategoryCode_structure">
+					<gml:description>man-made construction. Examples: buildings, museums, churches, factories, housing, monuments, shops, towers</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">structure</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_TopicCategoryCode_transportation">
+					<gml:description>means and aids for conveying persons and/or goods. Examples: roads, airports/airstrips, shipping routes, tunnels, nautical charts, vehicle or vessel location, aeronautical charts, railways</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">transportation</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_TopicCategoryCode_utilitiesCommunication">
+					<gml:description>energy, water and waste systems and communications infrastructure and services. Examples: hydroelectricity, geothermal, solar and nuclear sources of energy, water purification and distribution, sewage collection and disposal, electricity and gas distribution, data communication, telecommunication, radio, communication networks</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">utilitiesCommunication</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+		</CodeListDictionary>
+	</codelistItem>
+	<!--=== MD_TopologyLevelCode ===-->
+	<codelistItem>
+		<CodeListDictionary gml:id="MD_TopologyLevelCode">
+			<gml:description>degree of complexity of the spatial relationships</gml:description>
+			<gml:identifier codeSpace="ISOTC211/19115">MD_TopologyLevelCode</gml:identifier>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_TopologyLevelCode_geometryOnly">
+					<gml:description>geometry objects without any additional structure which describes topology</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">geometryOnly</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_TopologyLevelCode_topology1D">
+					<gml:description>1-dimensional topological complex --  commonly called  chain-node  topology</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">topology1D</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_TopologyLevelCode_planarGraph">
+					<gml:description>1-dimensional topological complex that is planar. (A planar graph is a graph that can be drawn in a plane in such a way that no two edges intersect except at a vertex.)</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">planarGraph</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_TopologyLevelCode_fullPlanarGraph">
+					<gml:description>2-dimensional topological complex that is planar. (A 2-dimensional topological complex is commonly called  full topology  in a cartographic 2D environment.)</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">fullPlanarGraph</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_TopologyLevelCode_surfaceGraph">
+					<gml:description>1-dimensional topological complex that is isomorphic to a subset of a surface. (A geometric complex is isomorphic to a topological complex if their elements are in a one-to-one, dimensional-and boundry-preserving correspondence to one another.)</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">surfaceGraph</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_TopologyLevelCode_fullSurfaceGraph">
+					<gml:description>2-dimensional topological complex that is isomorphic to a subset of a surface</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">fullSurfaceGraph</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_TopologyLevelCode_topology3D">
+					<gml:description>3-dimensional topological complex. (A topological complex is a collection of topological primitives that are closed under the boundary operations.)</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">topology3D</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_TopologyLevelCode_fullTopology3D">
+					<gml:description>complete coverage of a 3D Euclidean coordinate space</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">fullTopology3D</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MD_TopologyLevelCode_abstract">
+					<gml:description>topological complex without any specified geometric realisation</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">abstract</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+		</CodeListDictionary>
+	</codelistItem>
+	<!---===MX_ScopeCode===-->
+	<codelistItem>
+		<CodeListDictionary gml:id="MX_ScopeCode">
+			<gml:description>Extension of MD_ScopeCode for the needs of GMX application schemas and in the context of a transfer</gml:description>
+			<gml:identifier codeSpace="ISOTC211/19115">MX_ScopeCode</gml:identifier>
+			<!--MD_ScopeCode values-->
+			<codeEntry>
+				<CodeDefinition gml:id="MX_ScopeCode_attribute">
+					<gml:description>information applies to the attribute class</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">attribute</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MX_ScopeCode_attributeType">
+					<gml:description>information applies to the characteristic of a feature</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">attributeType</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MX_ScopeCode_collectionHardware">
+					<gml:description>information applies to the collection hardware class</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">collectionHardware</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MX_ScopeCode_collectionSession">
+					<gml:description>information applies to the collection session</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">collectionSession</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MX_ScopeCode_dataset">
+					<gml:description>information applies to the dataset</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">dataset</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MX_ScopeCode_series">
+					<gml:description>information applies to the series</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">series</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MX_ScopeCode_nonGeographicDataset">
+					<gml:description>information applies to non-geographic data</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">nonGeographicDataset</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MX_ScopeCode_dimensionGroup">
+					<gml:description>information applies to a dimension group</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">dimensionGroup</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MX_ScopeCode_feature">
+					<gml:description>information applies to a feature</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">feature</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MX_ScopeCode_featureType">
+					<gml:description>information applies to a feature type</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">featureType</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MX_ScopeCode_propertyType">
+					<gml:description>information applies to a property type</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">propertyType</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MX_ScopeCode_fieldSession">
+					<gml:description>information applies to a field session</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">fieldSession</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MX_ScopeCode_software">
+					<gml:description>information applies to a computer program or routine</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">software</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MX_ScopeCode_service">
+					<gml:description>information applies to a capability which a service provider entity makes available to a service user entity through a set of interfaces that define a behaviour, such as a use case</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">service</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MX_ScopeCode_model">
+					<gml:description>information applies to a copy or imitation of an existing or hypothetical object</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">model</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MX_ScopeCode_tile">
+					<gml:description>information applies to a tile, a spatial subset of geographic data</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">tile</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<!--MX_ScopeCode extensions-->
+			<codeEntry>
+				<CodeDefinition gml:id="MX_ScopeCode_initiative">
+					<gml:description>The referencing entity applies to a transfer aggregate which was originally identified as an initiative (DS_Initiative)</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">initiative</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MX_ScopeCode_stereomate">
+					<gml:description>The referencing entity applies to a transfer aggregate which was originally identified as a stereo mate (DS_StereoMate)</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">stereomate</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MX_ScopeCode_sensor">
+					<gml:description>The referencing entity applies to a transfer aggregate which was originally identified as a sensor (DS_Sensor)</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">sensor</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MX_ScopeCode_platformSeries">
+					<gml:description>The referencing entity applies to a transfer aggregate which was originally identified as a platform series (DS_PlatformSeries)</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">platformSeries</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MX_ScopeCode_sensorSeries">
+					<gml:description>The referencing entity applies to a transfer aggregate which was originally identified as a sensor series (DS_SensorSeries)</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">sensorSeries</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MX_ScopeCode_productionSeries">
+					<gml:description>The referencing entity applies to a transfer aggregate which was originally identified as a production series (DS_ProductionSeries)</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">productionSeries</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MX_ScopeCode_transferAggregate">
+					<gml:description>The referencing entity applies to a transfer aggregate which has no existence outside of the transfer context</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">transferAggregate</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+			<codeEntry>
+				<CodeDefinition gml:id="MX_ScopeCode_otherAggregate">
+					<gml:description>The referencing entity applies to a transfer aggregate which has an existence outside of the transfer context, but which does not pertains to a specific aggregate type.</gml:description>
+					<gml:identifier codeSpace="ISOTC211/19115">otherAggregate</gml:identifier>
+				</CodeDefinition>
+			</codeEntry>
+		</CodeListDictionary>
+	</codelistItem>
+	<!--=== EOF ===-->
+</CT_CodelistCatalogue>

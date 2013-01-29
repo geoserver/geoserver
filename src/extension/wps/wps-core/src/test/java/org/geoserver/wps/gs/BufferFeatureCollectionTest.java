@@ -1,4 +1,11 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wps.gs;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
 import org.geoserver.wps.WPSTestSupport;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -7,7 +14,8 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.process.feature.gs.BufferFeatureCollection;
+import org.geotools.process.vector.BufferFeatureCollection;
+import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.FilterFactory;
 
@@ -21,6 +29,7 @@ public class BufferFeatureCollectionTest extends WPSTestSupport {
 
     FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
 
+    @Test
     public void testExecutePoint() throws Exception {
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.setName("featureType");
@@ -49,6 +58,7 @@ public class BufferFeatureCollectionTest extends WPSTestSupport {
         }
     }
 
+    @Test
     public void testExecuteLineString() throws Exception {
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.setName("featureType");
@@ -88,6 +98,7 @@ public class BufferFeatureCollectionTest extends WPSTestSupport {
         }
     }
 
+    @Test
     public void testExecutePolygon() throws Exception {
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.setName("featureType");
@@ -132,6 +143,7 @@ public class BufferFeatureCollectionTest extends WPSTestSupport {
         }
     }
 
+    @Test
     public void testExecuteBufferAttribute() throws Exception {
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.setName("featureType");

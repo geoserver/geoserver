@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 
@@ -34,6 +34,7 @@ public class MemoryUserGroupStore extends AbstractUserGroupStore {
         oout.writeObject(helper.groupMap);
         oout.writeObject(helper.user_groupMap);
         oout.writeObject(helper.group_userMap);
+        oout.writeObject(helper.propertyMap);
         ((MemoryUserGroupService) service).byteArray=out.toByteArray();
         oout.close();            
     }
@@ -54,6 +55,7 @@ public class MemoryUserGroupStore extends AbstractUserGroupStore {
             helper.groupMap =(TreeMap<String,GeoServerUserGroup>) oin.readObject();
             helper.user_groupMap = (TreeMap<GeoServerUser,SortedSet<GeoServerUserGroup>>)oin.readObject();
             helper.group_userMap = (TreeMap<GeoServerUserGroup,SortedSet<GeoServerUser>>)oin.readObject();
+            helper.propertyMap = (TreeMap<String,SortedSet<GeoServerUser>>)oin.readObject();
         } catch (ClassNotFoundException e) {
             throw new IOException(e);
         }

@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver;
@@ -97,7 +97,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
         // don't allow the connection to the EPSG database to time out. This is a server app,
         // we can afford keeping the EPSG db always on
         System.setProperty("org.geotools.epsg.factory.timeout", "-1");
-
+        
         // HACK: java.util.prefs are awful. See
         // http://www.allaboutbalance.com/disableprefs. When the site comes
         // back up we should implement their better way of fixing the problem.

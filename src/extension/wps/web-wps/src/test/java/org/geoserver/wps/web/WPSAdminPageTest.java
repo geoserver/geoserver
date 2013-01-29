@@ -1,12 +1,17 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wps.web;
 
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.KeywordsEditor;
 import org.geoserver.wps.WPSInfo;
-import org.geoserver.wps.web.WPSAdminPage;
+import org.junit.Test;
 
 public class WPSAdminPageTest extends GeoServerWicketTestSupport {
 
+    @Test
     public void test() throws Exception {
         login();
         WPSInfo wps = getGeoServerApplication().getGeoServer().getService(WPSInfo.class);

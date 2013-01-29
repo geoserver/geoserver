@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security;
@@ -17,6 +17,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.rmi.server.UID;
@@ -71,9 +72,11 @@ import org.geoserver.security.config.AnonymousAuthenticationFilterConfig;
 import org.geoserver.security.config.BasicAuthenticationFilterConfig;
 import org.geoserver.security.config.ExceptionTranslationFilterConfig;
 import org.geoserver.security.config.FileBasedSecurityServiceConfig;
+import org.geoserver.security.config.RoleFilterConfig;
 import org.geoserver.security.config.LogoutFilterConfig;
 import org.geoserver.security.config.PasswordPolicyConfig;
 import org.geoserver.security.config.RememberMeAuthenticationFilterConfig;
+import org.geoserver.security.config.SSLFilterConfig;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
 import org.geoserver.security.config.SecurityConfig;
 import org.geoserver.security.config.SecurityContextPersistenceFilterConfig;
@@ -94,14 +97,18 @@ import org.geoserver.security.filter.GeoServerBasicAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerExceptionTranslationFilter;
 import org.geoserver.security.filter.GeoServerLogoutFilter;
 import org.geoserver.security.filter.GeoServerRememberMeAuthenticationFilter;
+import org.geoserver.security.filter.GeoServerRoleFilter;
+import org.geoserver.security.filter.GeoServerSSLFilter;
 import org.geoserver.security.filter.GeoServerSecurityContextPersistenceFilter;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
 import org.geoserver.security.filter.GeoServerSecurityInterceptorFilter;
 import org.geoserver.security.filter.GeoServerUserNamePasswordAuthenticationFilter;
+import org.geoserver.security.impl.DataAccessRuleDAO;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.security.impl.GroupAdminProperty;
+import org.geoserver.security.impl.ServiceAccessRuleDAO;
 import org.geoserver.security.impl.Util;
 import org.geoserver.security.password.ConfigurationPasswordEncryptionHelper;
 import org.geoserver.security.password.GeoServerDigestPasswordEncoder;
@@ -149,6 +156,7 @@ import org.springframework.security.core.userdetails.memory.UserAttribute;
 import org.springframework.security.core.userdetails.memory.UserAttributeEditor;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
+import org.springframework.util.StringUtils;
 import org.vfny.geoserver.crs.GeoserverGridShiftLocator;
 
 import com.thoughtworks.xstream.converters.MarshallingContext;
@@ -290,7 +298,11 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
     public void setApplicationContext(ApplicationContext appContext) throws BeansException {
         this.appContext = appContext;
     }
-    
+
+    public ApplicationContext getApplicationContext() {
+        return appContext;
+    }
+
     @Override
     public void onApplicationEvent(ApplicationEvent event) {
         if (event instanceof ContextLoadedEvent) {
@@ -306,7 +318,8 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
 
             // migrate from old security config
             try {
-                migrateIfNecessary();
+                boolean migratedFrom21 = migrateFrom21();
+                migrateFrom22(migratedFrom21);
             } catch (Exception e1) {
                 throw new RuntimeException(e1);
             }
@@ -543,6 +556,14 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
 
     RememberMeServices lookupRememberMeService() {
         return (RememberMeServices) GeoServerExtensions.bean("rememberMeServices");
+    }
+
+    public DataAccessRuleDAO getDataAccessRuleDAO() {
+        return DataAccessRuleDAO.get();
+    }
+
+    public ServiceAccessRuleDAO getServiceAccessRuleDAO() {
+        return ServiceAccessRuleDAO.get();
     }
 
     /**
@@ -1337,11 +1358,13 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      */
     public synchronized void saveSecurityConfig(SecurityManagerConfig config) throws Exception {
         
+        SecurityManagerConfig oldConfig = new SecurityManagerConfig(this.securityConfig);
+        
         SecurityConfigValidator validator = new SecurityConfigValidator(this);
-        validator.validateManagerConfig(config);
+        validator.validateManagerConfig(config,oldConfig);
         
         //save the current config to fall back to                
-        SecurityManagerConfig oldConfig = new SecurityManagerConfig(this.securityConfig);
+        
 
         // The whole try block should run as a transaction, unfortunately
         // this is not possible with files.
@@ -1730,21 +1753,39 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         }
         
         String message = null;
-        
+        File info = new File(getSecurityRoot(),MASTER_PASSWD_INFO_FILENAME);
+        char[] masterPasswordArray=null;
         if (masterPW!=null) {
             message="Master password is identical to the password of user: "+username;
-        } else {
-            masterPW = new String(getRandomPassworddProvider().getRandomPassword(8));
-            message="The generated master password is: "+masterPW;
-        }
+            masterPasswordArray=masterPW.toCharArray();
+            writeMasterPasswordInfo(info,message,null);
+        } else {            
+            message="The generated master password is: ";
+            masterPasswordArray = getRandomPassworddProvider().getRandomPassword(8);
+            writeMasterPasswordInfo(info,message,masterPasswordArray);
+        }                                
         
-        File info = new File(getSecurityRoot(),MASTER_PASSWD_INFO_FILENAME);
-        BufferedWriter w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(info)));
+        LOGGER.info("Information regarding the master password is in: "+ info.getCanonicalPath());        
+        return masterPasswordArray;
+    }
+
+    /**
+     * Writes a file containing info about the master password.
+     * 
+     * @param file
+     * @param message
+     * @param masterPasswordArray
+     * @throws IOException
+     */
+    void writeMasterPasswordInfo(File file,String message,char[] masterPasswordArray) throws IOException {
+        BufferedWriter w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)));
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");                
         w.write("This file was created at "+dateFormat.format(new Date()));
         w.newLine();
         w.newLine();
         w.write(message);
+        if (masterPasswordArray!=null) 
+            w.write(masterPasswordArray);
         w.newLine();
         w.newLine();
         w.write("Test the master password by logging in as user \"root\"");
@@ -1752,24 +1793,83 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         w.newLine();
         w.write("This file should be removed after reading !!!.");
         w.newLine();
-        w.close();
-        
-        LOGGER.info("Information regarding the master password is in: "+ info.getCanonicalPath());
-        return masterPW.toCharArray();
+        w.close();        
     }
-
     
-    /*
-     * converts an old security configuration to the new
+    /**
+     * Method to dump master password to a file
+     * 
+     * The file name is the shared secret between the administrator and GeoServer.
+     * 
+     * The method inspects the stack trace to check for an authorized calling method.
+     * The authenticated principal has to be an administrator
+     * 
+     * If authorization fails, a warning is written in the log and the return
+     * code is <code>false</code>. On success, the return code is <code>true</code>. 
+     * 
+     * @param file
+     * @return
+     * @throws IOException
      */
-    void migrateIfNecessary() throws Exception{
+    public boolean dumpMasterPassword(File file) throws IOException {
+        
+                
+        if (checkAuthenticationForAdminRole()==false) {
+            LOGGER.warning("Unautorized user tries to dump master password");
+            return false;
+        }
+        
+        String[][] allowedMethods = new String [][]{
+                {"org.geoserver.security.GeoServerSecurityManagerTest","testMasterPasswordDump"},
+                {"org.geoserver.security.web.passwd.MasterPasswordInfoPage","dumpMasterPassword"}
+        };
+        
+        StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+        
+        
+        boolean isAllowed=false;
+        int countMethodsToCheck=10;
+        // since different sdks have a different stack trace the 
+        // first 10 elements are checked
+        for (int i = 0; i< countMethodsToCheck;i++) {
+            StackTraceElement element = stackTraceElements[i];
+            for (String[] methodEntry : allowedMethods) {
+                if (methodEntry[0].equals(element.getClassName())&& 
+                        methodEntry[1].equals(element.getMethodName())) {
+                    isAllowed=true;
+                    break;
+                }
+            }
+        }
+        if (!isAllowed) {
+            LOGGER.warning("Dump master password is called by an unautorized method");
+            for (int i = 0; i< countMethodsToCheck;i++) {
+                StackTraceElement element = stackTraceElements[i];
+                LOGGER.warning(element.getClassName()+" : "+element.getMethodName());
+            }
+            return false;
+        }
+        
+        String message = "The current master password is: ";
+        writeMasterPasswordInfo(file, message, getMasterPassword());
+        return true;
+    }
+    
+    
+    /**
+     * converts an 2.1.x security configuration to 2.2.x
+     * 
+     * @return <code>true</code> if migration has taken place  
+     * @throws Exception
+     */
+    boolean migrateFrom21() throws Exception{
         
         if (getRoleRoot(false) != null) {
             File oldUserFile = new File(getSecurityRoot(), "users.properties.old");
             if (oldUserFile.exists()) {
                 LOGGER.warning(oldUserFile.getCanonicalPath()+" could be removed manually");
             }
-            return; // already migrated
+            return false; // already migrated
         }
         
         LOGGER.info("Start security migration");
@@ -2152,7 +2252,107 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         }
                         
         LOGGER.info("End security migration");
+        return true;
     }
+    
+    /**
+     * migration from 2.2.x to 2.3.x
+     * return <code>true</code> if migration has taken place
+     * 
+     * @return
+     * @throws Exception
+     */
+    boolean migrateFrom22(boolean migratedFrom21) throws Exception{
+        
+        String filterName =GeoServerSecurityFilterChain.ROLE_FILTER;
+        GeoServerSecurityFilter filter = loadFilter(filterName);
+        
+        File logoutFilterDir = new File(getFilterRoot(),GeoServerSecurityFilterChain.FORM_LOGOUT_FILTER);
+        File oldLogoutFilterConfig = new File(logoutFilterDir,"config.xml.2.2.x");
+        File oldSecManagerConfig = new File(getSecurityRoot(), "config.xml.2.2.x");
+        
+        if (filter!=null) {            
+            if (oldLogoutFilterConfig.exists())
+                LOGGER.warning(oldLogoutFilterConfig.getCanonicalPath()+" could be removed manually");
+            if (oldSecManagerConfig.exists()) 
+                LOGGER.warning(oldSecManagerConfig.getCanonicalPath()+" could be removed manually");                
+            return false; // already migrated
+        }
+        
+        // add role filter
+        RoleFilterConfig rfConfig= new RoleFilterConfig();
+        rfConfig.setClassName(GeoServerRoleFilter.class.getName());
+        rfConfig.setName(filterName);
+        rfConfig.setHttpResponseHeaderAttrForIncludedRoles(GeoServerRoleFilter.DEFAULT_HEADER_ATTRIBUTE);
+        rfConfig.setRoleConverterName(GeoServerRoleFilter.DEFAULT_ROLE_CONVERTER);
+        saveFilter(rfConfig);
+        
+        // add ssl filter
+        SSLFilterConfig sslConfig= new SSLFilterConfig();
+        sslConfig.setClassName(GeoServerSSLFilter.class.getName());
+        sslConfig.setName(GeoServerSecurityFilterChain.SSL_FILTER);
+        sslConfig.setSslPort(443);
+        saveFilter(sslConfig);
+            
+        // set redirect url after successful logout
+        if (migratedFrom21== false)
+            FileUtils.copyFile(new File(logoutFilterDir,"config.xml"), oldLogoutFilterConfig);
+        LogoutFilterConfig loConfig = (LogoutFilterConfig) loadFilterConfig(GeoServerSecurityFilterChain.FORM_LOGOUT_FILTER);
+        loConfig.setRedirectURL(GeoServerLogoutFilter.URL_AFTER_LOGOUT);
+        saveFilter(loConfig);
+        
+        if (migratedFrom21== false)
+            FileUtils.copyFile(new File(getSecurityRoot(), "config.xml"), oldSecManagerConfig);
+        SecurityManagerConfig config = loadSecurityConfig();
+        for (RequestFilterChain chain : config.getFilterChain().getRequestChains()) {
+            if (chain.getFilterNames().contains(GeoServerSecurityFilterChain.SECURITY_CONTEXT_ASC_FILTER)) {
+                chain.setAllowSessionCreation(true);
+                chain.getFilterNames().remove(GeoServerSecurityFilterChain.SECURITY_CONTEXT_ASC_FILTER);
+            }
+            if (chain.getFilterNames().contains(GeoServerSecurityFilterChain.SECURITY_CONTEXT_NO_ASC_FILTER)) {
+                chain.setAllowSessionCreation(false);
+                chain.getFilterNames().remove(GeoServerSecurityFilterChain.SECURITY_CONTEXT_NO_ASC_FILTER);
+            }
+            // prepare web chain
+            if (GeoServerSecurityFilterChain.WEB_CHAIN_NAME.equals(chain.getName())) {
+                // replace exception translation filter
+                int index = chain.getFilterNames().indexOf(GeoServerSecurityFilterChain.GUI_EXCEPTION_TRANSLATION_FILTER);
+                if (index!=-1)
+                    chain.getFilterNames().set(index, GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER);
+                // inject form login filter if necessary 
+                if (chain.getFilterNames().indexOf(GeoServerSecurityFilterChain.FORM_LOGIN_FILTER)== -1) {
+                    index=chain.getFilterNames().indexOf(GeoServerSecurityFilterChain.ANONYMOUS_FILTER);
+                    if (index==-1)
+                        index=chain.getFilterNames().indexOf(GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR);
+                    if (index!=-1)
+                        chain.getFilterNames().add(index, GeoServerSecurityFilterChain.FORM_LOGIN_FILTER);
+                }
+            }
+            
+            // remove dynamic translation filter
+            chain.getFilterNames().remove(GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER);
+            chain.getFilterNames().remove(GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR);
+            chain.getFilterNames().remove(GeoServerSecurityFilterChain.FILTER_SECURITY_REST_INTERCEPTOR);        
+        }
+        // gui filter not needed any more
+        removeFilter(loadFilterConfig(GeoServerSecurityFilterChain.GUI_EXCEPTION_TRANSLATION_FILTER));
+        saveSecurityConfig(config);
+        
+        
+        // load and store all filter configuration
+        // some filter configurations may have their class name as top level xml element in config.xml,
+        // the alias should be used instead, this was bug fixed during GSIP 82
+        if (migratedFrom21== false) {
+            for (String fName : listFilters()) {
+                SecurityFilterConfig fConfig = loadFilterConfig(fName );
+                if (fConfig!=null) 
+                    saveFilter(fConfig);
+            }
+        }
+        
+        return true;
+    }
+
 
     /*
      * looks up security plugins
@@ -2194,6 +2394,9 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         xp.getXStream().alias("masterPassword", MasterPasswordConfig.class);
         xp.getXStream().registerLocalConverter( SecurityManagerConfig.class, "filterChain", 
             new FilterChainConverter(xp.getXStream().getMapper()));
+        
+        // The field anonymousAuth is deprecated
+        xp.getXStream().omitField(SecurityManagerConfig.class, "anonymousAuth");
         
         return xp;
     }
@@ -2788,8 +2991,28 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
                 if (requestChain.getName() != null) {
                     writer.addAttribute("name", requestChain.getName());
                 }
+                writer.addAttribute("class",requestChain.getClass().getName());
+                if (StringUtils.hasLength( requestChain.getRoleFilterName()))
+                    writer.addAttribute("roleFilterName",requestChain.getRoleFilterName());
+                
+                if (requestChain instanceof VariableFilterChain ) {
+                    if (StringUtils.hasLength( ((VariableFilterChain)requestChain).getInterceptorName()))
+                        writer.addAttribute("interceptorName",((VariableFilterChain)requestChain).getInterceptorName());
+                    if (StringUtils.hasLength( ((VariableFilterChain)requestChain).getExceptionTranslationName()))
+                        writer.addAttribute("exceptionTranslationName",((VariableFilterChain)requestChain).getExceptionTranslationName());
+
+
+                }
 
                 writer.addAttribute("path", sb.toString());
+                writer.addAttribute("disabled", Boolean.toString(requestChain.isDisabled()));
+                writer.addAttribute("allowSessionCreation", Boolean.toString(requestChain.isAllowSessionCreation()));
+                writer.addAttribute("ssl", Boolean.toString(requestChain.isRequireSSL()));
+                writer.addAttribute("matchHTTPMethod", Boolean.toString(requestChain.isMatchHTTPMethod()));
+                if (requestChain.getHttpMethods()!=null && requestChain.getHttpMethods().size()>0) {
+                    writer.addAttribute("httpMethods",
+                            StringUtils.collectionToCommaDelimitedString(requestChain.getHttpMethods()));
+                }
 
                 for (String filterName : requestChain.getFilterNames()) {
                     writer.startNode("filter");
@@ -2813,6 +3036,18 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
 
                 String path = reader.getAttribute("path");
                 String name = reader.getAttribute("name");
+                String classname = reader.getAttribute("class");
+                String roleFilterName= reader.getAttribute("roleFilterName");
+                String disabledString = reader.getAttribute("disabled");
+                String allowSessionCreationString = reader.getAttribute("allowSessionCreation");
+                String interceptorName = reader.getAttribute("interceptorName");
+                String exceptionTranslationName = reader.getAttribute("exceptionTranslationName");
+                String sslString=reader.getAttribute("ssl");
+                String matchHTTPMethodString=reader.getAttribute("matchHTTPMethod");
+                String httpMethodsString=reader.getAttribute("httpMethods");
+                
+                
+                
                 if (name == null) {
                     //first version of the serialization did not contain name attribute, if not 
                     // available try to look up well known chain, if not found just use the path
@@ -2826,6 +3061,40 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
                         name = path;
                     }
                 }
+                
+                // this is nasty but no other chance to migrate from GeoServer 2.2.0
+                if (classname==null) {
+                  if (GeoServerSecurityFilterChain.WEB_CHAIN_NAME.equals(name)) { 
+                      classname =HtmlLoginFilterChain.class.getName();
+                      allowSessionCreationString="true";
+                      interceptorName=GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR;
+                  }
+                  if (GeoServerSecurityFilterChain.WEB_LOGIN_CHAIN_NAME.equals(name)) {
+                      classname = ConstantFilterChain.class.getName();
+                      allowSessionCreationString="true";
+                      interceptorName=GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR;
+                  }
+                  if (GeoServerSecurityFilterChain.WEB_LOGOUT_CHAIN_NAME.equals(name)) {
+                      classname = LogoutFilterChain.class.getName();
+                      allowSessionCreationString="true";
+                      interceptorName=GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR;
+                  }
+                  if (GeoServerSecurityFilterChain.REST_CHAIN_NAME.equals(name)) {
+                      classname = ServiceLoginFilterChain.class.getName();
+                      allowSessionCreationString="false";
+                      interceptorName=GeoServerSecurityFilterChain.FILTER_SECURITY_REST_INTERCEPTOR;
+                  }
+                  if (GeoServerSecurityFilterChain.GWC_CHAIN_NAME.equals(name)) {
+                      classname = ServiceLoginFilterChain.class.getName();
+                      allowSessionCreationString="false";
+                      interceptorName=GeoServerSecurityFilterChain.FILTER_SECURITY_REST_INTERCEPTOR;
+                  }
+                  if (GeoServerSecurityFilterChain.DEFAULT_CHAIN_NAME.equals(name)) {
+                      classname = ServiceLoginFilterChain.class.getName();
+                      allowSessionCreationString="false";
+                      interceptorName=GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR;
+                  }                    
+                }
 
                 //<filter
                 ArrayList<String> filterNames = new ArrayList<String>();
@@ -2835,15 +3104,54 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
                     reader.moveUp();
                 }
 
-                RequestFilterChain requestChain = new RequestFilterChain(path.split(","));
+                RequestFilterChain requestChain=null;
+                try {
+                    Class<?> chainClass =Class.forName(classname); 
+                    Constructor<?> cons = chainClass.getConstructor(new Class[] {                        
+                            String[].class });
+                    String[] args= path.split(",");
+                    requestChain = (RequestFilterChain)cons.newInstance(new Object[] {args});
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
                 requestChain.setName(name);
+                if (StringUtils.hasLength(disabledString)) {
+                    requestChain.setDisabled(Boolean.parseBoolean(disabledString));
+                }
+                if (StringUtils.hasLength(allowSessionCreationString)) {
+                    requestChain.setAllowSessionCreation(Boolean.parseBoolean(allowSessionCreationString));
+                }                
+                if (StringUtils.hasLength(sslString)) {
+                    requestChain.setRequireSSL(Boolean.parseBoolean(sslString));
+                }
+                if (StringUtils.hasLength(matchHTTPMethodString)) {
+                    requestChain.setMatchHTTPMethod(Boolean.parseBoolean(matchHTTPMethodString));
+                }
+                if (StringUtils.hasLength(httpMethodsString)) {
+                    for (String method : httpMethodsString.split(",")) {
+                        requestChain.getHttpMethods().add(HTTPMethod.fromString(method));
+                    }
+                }
+
+
+                requestChain.setRoleFilterName(roleFilterName);
+                
+                if (requestChain instanceof VariableFilterChain) {                    
+                    ((VariableFilterChain)requestChain).setInterceptorName(interceptorName);
+                    if (StringUtils.hasLength(exceptionTranslationName))
+                        ((VariableFilterChain)requestChain).setExceptionTranslationName(exceptionTranslationName);
+                    else
+                        ((VariableFilterChain)requestChain).
+                            setExceptionTranslationName(GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER);
+                }
                 requestChain.setFilterNames(filterNames);
                 filterChain.getRequestChains().add(requestChain);
 
                 reader.moveUp();
             }
 
-            filterChain.simplify();
+            // no good idea, how to split them from the gui ???
+            //filterChain.simplify();
             return filterChain;
         }
 

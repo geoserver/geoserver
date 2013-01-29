@@ -1,10 +1,22 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.config.util;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -20,6 +32,7 @@ import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -36,7 +49,6 @@ import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.impl.ServiceInfoImpl;
 import org.geoserver.config.util.XStreamPersister.CRSConverter;
 import org.geoserver.config.util.XStreamPersister.SRSConverter;
-import org.geoserver.test.GeoServerTestSupport;
 import org.geotools.jdbc.RegexpValidator;
 import org.geotools.jdbc.VirtualTable;
 import org.geotools.jdbc.VirtualTableParameter;
@@ -44,6 +56,9 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.wkt.Formattable;
 import org.geotools.referencing.wkt.UnformattableObjectException;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -51,19 +66,19 @@ import org.xml.sax.SAXException;
 
 import com.vividsolutions.jts.geom.LineString;
 
-public class XStreamPersisterTest extends GeoServerTestSupport {
+public class XStreamPersisterTest {
 
     GeoServerFactory factory;
     CatalogFactory cfactory;
     XStreamPersister persister;
     
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
-        
+    @Before
+    public void init() {
         factory = new GeoServerImpl().getFactory();
         persister = new XStreamPersisterFactory().createXMLPersister();
     }
-    
+
+    @Test 
     public void testGlobal() throws Exception {
         GeoServerInfo g1 = factory.createGlobal();
         g1.setAdminPassword( "foo" );
@@ -108,7 +123,8 @@ public class XStreamPersisterTest extends GeoServerTestSupport {
         Document dom = dom( in( out ) );
         assertEquals( "global", dom.getDocumentElement().getNodeName() );
     }
-    
+
+    @Test 
     public void testLogging() throws Exception {
         LoggingInfo logging = factory.createLogging();
         
@@ -126,6 +142,7 @@ public class XStreamPersisterTest extends GeoServerTestSupport {
         assertEquals( "logging", dom.getDocumentElement().getNodeName() );
         
     }
+    @Test
     public void testGobalContactDefault() throws Exception {
         GeoServerInfo g1 = factory.createGlobal();
         ContactInfo contact = factory.createContact();
@@ -178,6 +195,7 @@ public class XStreamPersisterTest extends GeoServerTestSupport {
         }
     }
 
+    @Test
     public void testService() throws Exception {
         MyServiceInfo s1 = new MyServiceInfo();
         s1.setAbstract( "my service abstract" );
@@ -217,6 +235,7 @@ public class XStreamPersisterTest extends GeoServerTestSupport {
         assertEquals( s1.isVerbose(), s2.isVerbose() );
     } 
     
+    @Test
     public void testServiceOmitGlobal() throws Exception {
         MyServiceInfo s1 = new MyServiceInfo();
         s1.setGeoServer( new GeoServerImpl() );
@@ -229,6 +248,7 @@ public class XStreamPersisterTest extends GeoServerTestSupport {
         assertNull( s2.getGeoServer() );
     }
     
+    @Test
     public void testServiceCustomAlias() throws Exception {
         XStreamPersister p = persister = new XStreamPersisterFactory().createXMLPersister();
         p.getXStream().alias( "ms", MyServiceInfo.class );
@@ -242,6 +262,7 @@ public class XStreamPersisterTest extends GeoServerTestSupport {
         assertEquals( "ms", dom.getDocumentElement().getNodeName() );
     }
     
+    @Test
     public void testDataStore() throws Exception {
         Catalog catalog = new CatalogImpl();
         CatalogFactory cFactory = catalog.getFactory();
@@ -267,6 +288,7 @@ public class XStreamPersisterTest extends GeoServerTestSupport {
         assertEquals( "dataStore", dom.getDocumentElement().getNodeName() );
     }
     
+    @Test
     public void testCoverageStore() throws Exception {
         Catalog catalog = new CatalogImpl();
         CatalogFactory cFactory = catalog.getFactory();
@@ -292,6 +314,7 @@ public class XStreamPersisterTest extends GeoServerTestSupport {
         assertEquals( "coverageStore", dom.getDocumentElement().getNodeName() );
     }
     
+    @Test
     public void testWMSStore() throws Exception {
         Catalog catalog = new CatalogImpl();
         CatalogFactory cFactory = catalog.getFactory();
@@ -325,6 +348,7 @@ public class XStreamPersisterTest extends GeoServerTestSupport {
      * Check maxConnections, connectTimeout, and readTimeout, stored as metadata properties in a
      * 2.1.3+ configuration are read back as actual properties.
      */
+    @Test
     public void testWMSStoreBackwardsCompatibility() throws Exception {
         Catalog catalog = new CatalogImpl();
         CatalogFactory cFactory = catalog.getFactory();
@@ -355,6 +379,7 @@ public class XStreamPersisterTest extends GeoServerTestSupport {
         assertNull(wms2.getMetadata().get("readTimeout"));
     }
 
+    @Test
     public void testStyle() throws Exception {
         Catalog catalog = new CatalogImpl();
         CatalogFactory cFactory = catalog.getFactory();
@@ -375,6 +400,7 @@ public class XStreamPersisterTest extends GeoServerTestSupport {
         assertEquals( "style", dom.getDocumentElement().getNodeName() );
     }
     
+    @Test
     public void testCatalog() throws Exception {
         Catalog catalog = new CatalogImpl();
         CatalogFactory cFactory = catalog.getFactory();
@@ -437,6 +463,7 @@ public class XStreamPersisterTest extends GeoServerTestSupport {
         assertEquals( "style.sld", s.getFilename() );
     }
     
+    @Test
     public void testFeatureType() throws Exception {
         Catalog catalog = new CatalogImpl();
         CatalogFactory cFactory = catalog.getFactory();
@@ -477,6 +504,7 @@ public class XStreamPersisterTest extends GeoServerTestSupport {
         assertTrue( CRS.equalsIgnoreMetadata( CRS.decode( "EPSG:4326"), ft.getNativeCRS() ) ); 
     }
     
+    @Test
     public void testWMSLayer() throws Exception {
         Catalog catalog = new CatalogImpl();
         CatalogFactory cFactory = catalog.getFactory();
@@ -523,6 +551,7 @@ public class XStreamPersisterTest extends GeoServerTestSupport {
         assertEquals( "wmsLayer", dom.getDocumentElement().getNodeName() );
     }
     
+    @Test
     public void testLayer() throws Exception {
         Catalog catalog = new CatalogImpl();
         CatalogFactory cFactory = catalog.getFactory();
@@ -575,6 +604,68 @@ public class XStreamPersisterTest extends GeoServerTestSupport {
         
     }
     
+    @Test
+    public void testLayerGroupInfo() throws Exception {
+        Catalog catalog = new CatalogImpl();
+        CatalogFactory cFactory = catalog.getFactory();
+        
+        LayerGroupInfo group1 = cFactory.createLayerGroup();
+        group1.setName("foo");
+        group1.setTitle("foo title");
+        group1.setAbstract("foo abstract");
+        group1.setMode(LayerGroupInfo.Mode.NAMED);
+
+        ByteArrayOutputStream out = out();
+        persister.save(group1, out);
+
+        // print(in(out));
+        
+        ByteArrayInputStream in = in(out);
+        
+        LayerGroupInfo group2 = persister.load(in, LayerGroupInfo.class);
+        assertEquals(group1.getName(), group2.getName());
+        assertEquals(group1.getTitle(), group2.getTitle());
+        assertEquals(group1.getAbstract(), group2.getAbstract());
+        assertEquals(group1.getMode(), group2.getMode());
+        
+        Document dom = dom(in(out));
+        assertEquals("layerGroup", dom.getDocumentElement().getNodeName());
+    }    
+    
+    @Test
+    public void testLegacyLayerGroupWithoutMode() throws Exception {
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+        "<layerGroup>\n" +
+          "<name>foo</name>\n" +
+          "<title>foo title</title>\n" +
+          "<abstractTxt>foo abstract</abstractTxt>\n" +
+          "<layers>\n" +
+          "<layer>\n" +
+          "<id>LayerInfoImpl--570ae188:124761b8d78:-7fb0</id>\n" +
+          "</layer>\n" +
+          "</layers>\n" +
+          "<styles>\n" +
+          "<style/>\n" +
+          "</styles>\n" +
+          "<bounds>\n" +
+          "<minx>589425.9342365642</minx>\n" +
+          "<maxx>609518.6719560538</maxx>\n" +
+          "<miny>4913959.224611808</miny>\n" +
+          "<maxy>4928082.949945881</maxy>\n" +
+          "<crs class=\"projected\">EPSG:26713</crs>\n" +
+          "</bounds>\n" +
+          "</layerGroup>\n"; 
+        
+        LayerGroupInfo group = persister.load(new ByteArrayInputStream(xml.getBytes()), LayerGroupInfo.class);
+
+        Assert.assertEquals(LayerGroupInfo.Mode.SINGLE, group.getMode());
+        
+        Catalog catalog = new CatalogImpl();
+        List<RuntimeException> errors = catalog.validate(group, false);
+        Assert.assertTrue(errors == null || errors.size() == 0);
+    }
+    
+    @Test
     public void testVirtualTable() throws Exception {
         Catalog catalog = new CatalogImpl();
         CatalogFactory cFactory = catalog.getFactory();
@@ -622,6 +713,7 @@ public class XStreamPersisterTest extends GeoServerTestSupport {
         assertEquals(vt, vt2);
     }
 
+    @Test
     public void testCRSConverter() throws Exception {
         CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
         CRSConverter c = new CRSConverter();
@@ -636,6 +728,7 @@ public class XStreamPersisterTest extends GeoServerTestSupport {
         assertTrue(CRS.equalsIgnoreMetadata(crs, crs2));
     }
 
+    @Test
     public void testSRSConverter() throws Exception {
         CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
         SRSConverter c = new SRSConverter();
@@ -645,6 +738,7 @@ public class XStreamPersisterTest extends GeoServerTestSupport {
             c.toString(CRS.parseWKT("GEOGCS[\"GCS_WGS_1984\",DATUM[\"WGS_1984\",SPHEROID[\"WGS_1984\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"Degree\",0.017453292519943295]]"))));
     }
 
+    @Test
     public void testCRSConverterInvalidWKT() throws Exception {
         CoordinateReferenceSystem crs = CRS.decode("EPSG:3575");
         try {

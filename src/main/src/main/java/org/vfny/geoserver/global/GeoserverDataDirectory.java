@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.vfny.geoserver.global;
@@ -296,7 +296,7 @@ public class GeoserverDataDirectory {
 
             dataDir = new File(dataDirStr);
             LOGGER
-                    .severe("\n----------------------------------\n- GEOSERVER_DATA_DIR: "
+                    .info("\n----------------------------------\n- GEOSERVER_DATA_DIR: "
                             + dataDir.getAbsolutePath()
                             + "\n----------------------------------");
 
@@ -342,7 +342,11 @@ public class GeoserverDataDirectory {
         }
         return catalog;
     }
-    
+
+    public static void setCatalog(Catalog catalog) {
+        GeoserverDataDirectory.catalog = catalog;
+    }
+
     /**
      * Helper method to help client code migrade from using this class to using
      * {@link org.geoserver.config.GeoserverDataDirectory}.

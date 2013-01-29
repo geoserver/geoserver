@@ -1,8 +1,10 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security.web.usergroup;
+
+import static org.junit.Assert.*;
 
 import java.lang.reflect.Method;
 
@@ -19,6 +21,7 @@ import org.geoserver.security.web.SecurityNamedServiceNewPage;
 import org.geoserver.security.web.UserGroupRoleServicesPage;
 import org.geoserver.security.xml.XMLUserGroupService;
 import org.geoserver.security.xml.XMLUserGroupServiceConfig;
+import org.junit.Test;
 
 public class XMLUserGroupConfigDetailsPanelTest extends AbstractSecurityNamedServicePanelTest {
 
@@ -94,6 +97,7 @@ public class XMLUserGroupConfigDetailsPanelTest extends AbstractSecurityNamedSer
     }
         
                                     
+    @Test
     public void testAddModify() throws Exception{
         initializeForXML();
         
@@ -243,10 +247,11 @@ public class XMLUserGroupConfigDetailsPanelTest extends AbstractSecurityNamedSer
 
     }
 
+    @Test
     public void testRemove() throws Exception {
         initializeForXML();
         XMLUserGroupServiceConfig config = new XMLUserGroupServiceConfig();
-        config.setName("default2");
+        config.setName("default3");
         config.setClassName(XMLUserGroupService.class.getCanonicalName());
         config.setPasswordEncoderName(getPlainTextPasswordEncoder().getName());
         config.setPasswordPolicyName("default");
@@ -254,8 +259,8 @@ public class XMLUserGroupConfigDetailsPanelTest extends AbstractSecurityNamedSer
         getSecurityManager().saveUserGroupService(config);
         
         activatePanel();
-        doRemove("tabbedPanel:panel:removeSelected", "default2");
-        assertNull(getSecurityManager().loadUserGroupService("default2"));
+        doRemove("tabbedPanel:panel:removeSelected", "default3");
+        assertNull(getSecurityManager().loadUserGroupService("default3"));
     }
 
 }

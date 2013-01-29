@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs.response;
@@ -12,14 +12,10 @@ import java.text.NumberFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import javax.xml.namespace.QName;
-
 import org.geoserver.config.GeoServer;
-import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
-import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -145,7 +141,7 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
                 w.write( "\r\n" );
             }
         } finally {
-            fc.close( i );
+            i.close();
         }
            
         w.flush();

@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -6,14 +6,21 @@
 
 package org.geoserver.security.auth;
 
+import static org.junit.Assert.*;
+
 import org.geoserver.security.GeoServerSecurityTestSupport;
 import org.geoserver.security.impl.GeoServerUser;
+import org.geoserver.test.SystemTest;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
+@Category(SystemTest.class)
 public class GeoServerRootAuthenticationProviderTest extends GeoServerSecurityTestSupport {
 
+    @Test
     public void testRootProvider() throws Exception {
         
         // Check if the root provider is the first

@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.web;
 
 import java.util.ArrayList;
@@ -37,8 +41,7 @@ public class StringValidatable implements IValidatable<String> {
     }
 
     @Override
-    public IModel getModel() {
-        return new Model(value);
+    public IModel<String> getModel() {
+        return new Model<String>(value);
     }
-
 }

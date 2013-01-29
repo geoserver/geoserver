@@ -1,0 +1,35 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>GeoServer Configuration</title>
+    <meta name="ROBOTS" content="NOINDEX, NOFOLLOW"/>
+</head>
+<body>
+
+<h2>About:</h2>
+<ul>
+	<li><h3>Resource name: GeoServer</h3>
+  		<ul>
+  			<li><b>Build-Timestamp</b> : 11-Dec-2012 17:55</li>
+  			<li><b>Git-Revision</b> : e66f8da85521f73d0fd00b71331069a5f49f7865</li>
+  			<li><b>Version</b> : 2.3-SNAPSHOT</li>
+		</ul>
+	</li>
+	<li><h3>Resource name: GeoTools</h3>
+  		<ul>
+  			<li><b>Build-Timestamp</b> : 16-Jan-2013 02:31</li>
+  			<li><b>Git-Revision</b> : 7edd74818b729bb0909d328055137bfc68437854</li>
+  			<li><b>Version</b> : 9-SNAPSHOT</li>
+		</ul>
+	</li>
+	<li><h3>Resource name: GeoWebCache</h3>
+  		<ul>
+  			<li><b>Git-Revision</b> : 3adc8e4f8ab58646245dd0146b23b0a400fd4482/3adc8e4f8ab58646245dd0146b23b0a400fd4482</li>
+  			<li><b>Version</b> : 1.3-SNAPSHOT</li>
+		</ul>
+	</li>
+</ul>
+</body>
+</html>

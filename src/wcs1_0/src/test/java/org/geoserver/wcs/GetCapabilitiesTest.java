@@ -1,8 +1,14 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wcs;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.geoserver.data.test.MockData.*;
-import junit.framework.Test;
+import static org.junit.Assert.*;
+
+import java.io.IOException;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
@@ -14,6 +20,8 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wcs.test.WCSTestSupport;
+import org.junit.Before;
+import org.junit.Test;
 import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -26,12 +34,19 @@ public class GetCapabilitiesTest extends WCSTestSupport {
     // return "/GEOTOOLS_DEVELOPER_LOGGING.properties";
     // }
 
+    @Before
+    public void revertTasmaniaDem() throws IOException {
+        getTestData().addDefaultRasterLayer(TASMANIA_DEM, getCatalog());
+    }
+
+    @Test
     public void testGetBasic() throws Exception {
         Document dom = getAsDOM(BASEPATH + "?request=GetCapabilities&service=WCS&version=1.0.0");
         // print(dom);
         checkValidationErrors(dom, WCS10_GETCAPABILITIES_SCHEMA);
     }
     
+    @Test
     public void testSkipMisconfigured() throws Exception {
         // enable skipping of misconfigured layers
         GeoServerInfo global = getGeoServer().getGlobal();
@@ -51,12 +66,14 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         assertEquals(count - 1, dom.getElementsByTagName("wcs:CoverageOfferingBrief").getLength());
     }
 
+    @Test
     public void testNoServiceContactInfo() throws Exception {
         Document dom = getAsDOM(BASEPATH + "?request=GetCapabilities&service=WCS");
         // print(dom);
         checkValidationErrors(dom, WCS10_GETCAPABILITIES_SCHEMA);
     }
 
+    @Test
     public void testPostBasic() throws Exception {
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                 + "<wcs:GetCapabilities service=\"WCS\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" "
@@ -67,6 +84,7 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         checkValidationErrors(dom, WCS10_GETCAPABILITIES_SCHEMA);
     }
 
+    @Test
     public void testUpdateSequenceInferiorGet() throws Exception {
         Document dom = getAsDOM(BASEPATH + "?request=GetCapabilities&service=WCS&updateSequence=-1");
         checkValidationErrors(dom, WCS10_GETCAPABILITIES_SCHEMA);
@@ -75,6 +93,7 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         assertTrue(root.getChildNodes().getLength() > 0);
     }
 
+    @Test
     public void testUpdateSequenceInferiorPost() throws Exception {
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                 + "<wcs:GetCapabilities service=\"WCS\" xmlns:ows=\"http://www.opengis.net/ows/1.1\""
@@ -88,9 +107,11 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         assertTrue(root.getChildNodes().getLength() > 0);
     }
 
+    @Test
     public void testUpdateSequenceEqualsGet() throws Exception {
+        long i = getGeoServer().getGlobal().getUpdateSequence();
         Document dom = getAsDOM(BASEPATH
-                + "?request=GetCapabilities&service=WCS&version=1.0.0&updateSequence=0");
+                + "?request=GetCapabilities&service=WCS&version=1.0.0&updateSequence="+i);
         // print(dom);
         final Node root = dom.getFirstChild();
         assertEquals("ServiceExceptionReport", root.getNodeName());
@@ -98,12 +119,14 @@ public class GetCapabilitiesTest extends WCSTestSupport {
                 .getNamedItem("code").getNodeValue());
     }
 
+    @Test
     public void testUpdateSequenceEqualsPost() throws Exception {
+        long i = getGeoServer().getGlobal().getUpdateSequence();
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                 + "<wcs:GetCapabilities service=\"WCS\" xmlns:ows=\"http://www.opengis.net/ows/1.1\""
                 + " xmlns:wcs=\"http://www.opengis.net/wcs\""
                 + " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
-                + " updateSequence=\"0\"/>";
+                + " updateSequence=\"" + i + "\"/>";
         Document dom = postAsDOM(BASEPATH, request);
         // print(dom);
         final Node root = dom.getFirstChild();
@@ -112,23 +135,28 @@ public class GetCapabilitiesTest extends WCSTestSupport {
                 .getNamedItem("code").getNodeValue());
     }
 
+    @Test
     public void testUpdateSequenceSuperiorGet() throws Exception {
+        long i = getGeoServer().getGlobal().getUpdateSequence() + 1;
         Document dom = getAsDOM(BASEPATH
-                + "?request=GetCapabilities&service=WCS&version=1.0.0&updateSequence=1");
+                + "?request=GetCapabilities&service=WCS&version=1.0.0&updateSequence="+i);
         // print(dom);
         checkOws11Exception(dom);
     }
 
+    @Test
     public void testUpdateSequenceSuperiorPost() throws Exception {
+        long i = getGeoServer().getGlobal().getUpdateSequence() + 1;
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                 + "<wcs:GetCapabilities service=\"WCS\" xmlns:ows=\"http://www.opengis.net/ows/1.1\""
                 + " xmlns:wcs=\"http://www.opengis.net/wcs\""
                 + " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
-                + " updateSequence=\"1\" version=\"1.0.0\"/>";
+                + " updateSequence=\"" + i + "\" version=\"1.0.0\"/>";
         Document dom = postAsDOM(BASEPATH, request);
         checkOws11Exception(dom);
     }
 
+    @Test
     public void testSectionsBogus() throws Exception {
         Document dom = getAsDOM(BASEPATH
                 + "?request=GetCapabilities&service=WCS&version=1.0.0&section=Bogus");
@@ -137,6 +165,7 @@ public class GetCapabilitiesTest extends WCSTestSupport {
                 "/ServiceExceptionReport/ServiceException/@code", dom);
     }
 
+    @Test
     public void testSectionsAll() throws Exception {
         Document dom = getAsDOM(BASEPATH
                 + "?request=GetCapabilities&service=WCS&version=1.0.0&section=/");
@@ -147,6 +176,7 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         assertXpathEvaluatesTo("1", "count(//wcs:ContentMetadata)", dom);
     }
 
+    @Test
     public void testOneSection() throws Exception {
         Document dom = getAsDOM(BASEPATH
                 + "?request=GetCapabilities&service=WCS&version=1.0.0&section=/WCS_Capabilities/Service");
@@ -155,6 +185,7 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         assertXpathEvaluatesTo("0", "count(//wcs:ContentMetadata)", dom);
     }
     
+    @Test
     public void testMetadataLinks() throws Exception {
         Catalog catalog = getCatalog();
         CoverageInfo ci = catalog.getCoverageByName(getLayerId(TASMANIA_DEM));
@@ -176,6 +207,7 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         assertXpathEvaluatesTo("http://www.geoserver.org/tasmania/dem.xml", xpathBase + "/@xlink:href", dom);
     }
     
+    @Test
     public void testWorkspaceQualified() throws Exception {
         int expected = getCatalog().getCoverageStores().size();
         Document dom = getAsDOM(BASEPATH
@@ -187,6 +219,7 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         assertEquals( expected, xpath.getMatchingNodes("//wcs:CoverageOfferingBrief", dom).getLength());
     }
     
+    @Test
     public void testLayerQualified() throws Exception {
         int expected = getCatalog().getCoverageStores().size();
         Document dom = getAsDOM(BASEPATH
@@ -197,6 +230,7 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         assertEquals( 1, xpath.getMatchingNodes("//wcs:CoverageOfferingBrief", dom).getLength());
     }
     
+    @Test
     public void testTimeCoverage() throws Exception {
         setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null);
         

@@ -1,17 +1,24 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wfs.response;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
-
 import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.geoserver.wfs.WFSTestSupport;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 public class WfsXmlWriterTest extends WFSTestSupport {
 
+	@Test
     public void test() throws Exception {
         File tmp = File.createTempFile("wfs", "xml");
         tmp.deleteOnExit();

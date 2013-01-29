@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml/3.2" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="3.2.1.2">
+	<annotation>
+		<appinfo source="urn:x-ogc:specification:gml:schema-xsd:feature:3.2.1">feature.xsd</appinfo>
+		<documentation>See ISO/DIS 19136 Clause 9.
+A GML feature is a (representation of a) identifiable real-world object in a selected domain of discourse. The feature schema provides a framework for the creation of GML features and feature collections.
+
+GML is an OGC Standard.
+Copyright (c) 2007,2010 Open Geospatial Consortium.
+To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+		</documentation>
+	</annotation>
+	<include schemaLocation="gml.xsd"/>
+	<include schemaLocation="geometryAggregates.xsd"/>
+	<include schemaLocation="temporal.xsd"/>
+	<complexType name="AbstractFeatureType" abstract="true">
+		<annotation>
+			<documentation>The basic feature model is given by the gml:AbstractFeatureType.
+The content model for gml:AbstractFeatureType adds two specific properties suitable for geographic features to the content model defined in gml:AbstractGMLType. 
+The value of the gml:boundedBy property describes an envelope that encloses the entire feature instance, and is primarily useful for supporting rapid searching for features that occur in a particular location. 
+The value of the gml:location property describes the extent, position or relative location of the feature.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGMLType">
+				<sequence>
+					<element ref="gml:boundedBy" minOccurs="0"/>
+					<element ref="gml:location" minOccurs="0"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="AbstractFeature" type="gml:AbstractFeatureType" abstract="true" substitutionGroup="gml:AbstractGML">
+		<annotation>
+			<documentation>This abstract element serves as the head of a substitution group which may contain any elements whose content model is derived from gml:AbstractFeatureType.  This may be used as a variable in the construction of content models.  
+gml:AbstractFeature may be thought of as "anything that is a GML feature" and may be used to define variables or templates in which the value of a GML property is "any feature". This occurs in particular in a GML feature collection where the feature member properties contain one or multiple copies of gml:AbstractFeature respectively.</documentation>
+		</annotation>
+	</element>
+	<complexType name="FeaturePropertyType">
+		<sequence minOccurs="0">
+			<element ref="gml:AbstractFeature"/>
+		</sequence>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<element name="boundedBy" type="gml:BoundingShapeType" nillable="true">
+		<annotation>
+			<documentation>This property describes the minimum bounding box or rectangle that encloses the entire feature.</documentation>
+		</annotation>
+	</element>
+	<complexType name="BoundingShapeType">
+		<sequence>
+			<choice>
+				<element ref="gml:Envelope"/>
+				<element ref="gml:Null"/>
+			</choice>
+		</sequence>
+		<attribute name="nilReason" type="gml:NilReasonType"/>
+	</complexType>
+	<element name="EnvelopeWithTimePeriod" type="gml:EnvelopeWithTimePeriodType" substitutionGroup="gml:Envelope">
+		<annotation>
+			<documentation>gml:EnvelopeWithTimePeriod is provided for envelopes that include a temporal extent. It adds two time position properties, gml:beginPosition and gml:endPosition, which describe the extent of a time-envelope.  
+Since gml:EnvelopeWithTimePeriod is assigned to the substitution group headed by gml:Envelope, it may be used whenever gml:Envelope is valid.</documentation>
+		</annotation>
+	</element>
+	<complexType name="EnvelopeWithTimePeriodType">
+		<complexContent>
+			<extension base="gml:EnvelopeType">
+				<sequence>
+					<element name="beginPosition" type="gml:TimePositionType"/>
+					<element name="endPosition" type="gml:TimePositionType"/>
+				</sequence>
+				<attribute name="frame" type="anyURI" default="#ISO-8601"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="locationName" type="gml:CodeType">
+		<annotation>
+			<documentation>The gml:locationName property element is a convenience property where the text value describes the location of the feature. If the location names are selected from a controlled list, then the list shall be identified in the codeSpace attribute.</documentation>
+		</annotation>
+	</element>
+	<element name="locationReference" type="gml:ReferenceType">
+		<annotation>
+			<documentation>The gml:locationReference property element is a convenience property where the text value referenced by the xlink:href attribute describes the location of the feature.</documentation>
+		</annotation>
+	</element>
+	<complexType name="AbstractFeatureMemberType" abstract="true">
+		<annotation>
+			<documentation>To create a collection of GML features, a property type shall be derived by extension from gml:AbstractFeatureMemberType.
+By default, this abstract property type does not imply any ownership of the features in the collection. The owns attribute of gml:OwnershipAttributeGroup may be used on a property element instance to assert ownership of a feature in the collection. A collection shall not own a feature already owned by another object.</documentation>
+		</annotation>
+		<sequence/>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+</schema>

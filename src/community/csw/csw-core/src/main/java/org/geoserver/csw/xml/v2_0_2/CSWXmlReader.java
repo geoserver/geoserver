@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -25,7 +25,7 @@ import org.geotools.xml.Parser;
  * @author Andrea Aime - GeoSolutions
  */
 public class CSWXmlReader extends XmlRequestReader {
-    public Logger LOGGER = Logging.getLogger("org.geoserver.wps");
+    public Logger LOGGER = Logging.getLogger("org.geoserver.csw");
 
     private CSWConfiguration configuration;
 

@@ -1,8 +1,13 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wms.map.quantize;
+
+import static org.junit.Assert.*;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
@@ -10,19 +15,17 @@ import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
 
 import javax.media.jai.PlanarImage;
-import javax.media.jai.iterator.RectIter;
-import javax.media.jai.iterator.RectIterFactory;
 
 import org.geotools.image.test.ImageAssert;
+import org.junit.Test;
 
-import junit.framework.TestCase;
-
-public class QuantizerTest extends TestCase {
+public class QuantizerTest {
 
     static {
         ColorIndexerDescriptor.register();
     }
 
+    @Test
     public void testThreeColors() {
         BufferedImage bi = new BufferedImage(4, 4, BufferedImage.TYPE_3BYTE_BGR);
         Graphics2D gr = bi.createGraphics();
@@ -48,6 +51,7 @@ public class QuantizerTest extends TestCase {
         assertImagesSimilar(bi, indexed, 0);
     }
 
+    @Test
     public void testRedGradient() {
         BufferedImage bi = new BufferedImage(10, 256, BufferedImage.TYPE_3BYTE_BGR);
         Graphics2D gr = bi.createGraphics();
@@ -70,6 +74,7 @@ public class QuantizerTest extends TestCase {
         assertImagesSimilar(bi, indexed, 0);
     }
 
+    @Test
     public void testRedGradientSubsample() {
         BufferedImage bi = new BufferedImage(10, 256, BufferedImage.TYPE_3BYTE_BGR);
         Graphics2D gr = bi.createGraphics();
@@ -92,6 +97,7 @@ public class QuantizerTest extends TestCase {
         assertImagesSimilar(bi, indexed, 2); // allow a very small color difference
     }
 
+    @Test
     public void testColorWheelBitmask() {
         final int SIZE = 100;
         BufferedImage bi = new BufferedImage(SIZE, SIZE, BufferedImage.TYPE_4BYTE_ABGR);
@@ -127,6 +133,7 @@ public class QuantizerTest extends TestCase {
         assertImagesSimilar(bi, indexed, 250);
     }
 
+    @Test
     public void testColorWheelTranslucent() throws Exception {
         final int SIZE = 100;
         BufferedImage bi = new BufferedImage(SIZE, SIZE, BufferedImage.TYPE_4BYTE_ABGR);

@@ -1,28 +1,28 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wfs;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import junit.framework.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
-import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class GetFeatureBboxTest extends WFSTestSupport {
-    
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new GetFeatureBboxTest());
-    }
-    
+       
+	@Test
     public void testFeatureBoudingOn() throws Exception {
         WFSInfo wfs = getWFS();
         wfs.setFeatureBounding( true );
         getGeoServer().save( wfs );
         
-        Document doc = getAsDOM("wfs?request=GetFeature&typeName=" + getLayerId(MockData.BUILDINGS) + "&version=1.0.0&service=wfs&propertyName=ADDRESS");
+        Document doc = getAsDOM("wfs?request=GetFeature&typeName=" + getLayerId(SystemTestData.BUILDINGS) + "&version=1.0.0&service=wfs&propertyName=ADDRESS");
         // print(doc);
         
         // check it's a feature collection
@@ -35,12 +35,13 @@ public class GetFeatureBboxTest extends WFSTestSupport {
         
     }
     
+	@Test
     public void testFeatureBoudingOff() throws Exception {
         WFSInfo wfs = getWFS();
         wfs.setFeatureBounding( false );
         getGeoServer().save( wfs );
         
-        Document doc = getAsDOM("wfs?request=GetFeature&typeName=" + getLayerId(MockData.BUILDINGS) + "&version=1.0.0&service=wfs&propertyName=ADDRESS");
+        Document doc = getAsDOM("wfs?request=GetFeature&typeName=" + getLayerId(SystemTestData.BUILDINGS) + "&version=1.0.0&service=wfs&propertyName=ADDRESS");
 //        print(doc);
         
         // check it's a feature collection

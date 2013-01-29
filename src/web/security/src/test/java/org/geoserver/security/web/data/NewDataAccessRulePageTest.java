@@ -1,4 +1,10 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.security.web.data;
+
+import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -11,14 +17,25 @@ import org.geoserver.security.impl.DataAccessRuleDAO;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.web.AbstractSecurityWicketTestSupport;
 import org.geoserver.security.web.role.NewRolePage;
+import org.junit.Before;
+import org.junit.Test;
 
 public class NewDataAccessRulePageTest extends AbstractSecurityWicketTestSupport {
 
     NewDataAccessRulePage page;
-    
+
+    @Before
+    public void init() throws Exception {
+        initializeForXML();
+        clearServices();
+//        if (gaStore.getRoleByName("ROLE_NEW") != null) {
+//            gaStore.removeRole(gaStore.getRoleByName("ROLE_NEW"));
+//        }
+    }
+
+    @Test
     public void testFill() throws Exception {
         
-        initializeForXML();
         //insertValues();        
         tester.startPage(page=new NewDataAccessRulePage());        
         tester.assertRenderedPage(NewDataAccessRulePage.class);
@@ -75,8 +92,8 @@ public class NewDataAccessRulePageTest extends AbstractSecurityWicketTestSupport
         assertEquals("ROLE_NEW",foundRule.getRoles().iterator().next());        
     }
     
+    @Test
     public void testDuplicateRule() throws Exception {
-        initializeForXML();
         initializeServiceRules();
 
         tester.startPage(page=new NewDataAccessRulePage());
@@ -100,8 +117,8 @@ public class NewDataAccessRulePageTest extends AbstractSecurityWicketTestSupport
         tester.assertRenderedPage(NewDataAccessRulePage.class);
     }
     
+    @Test
     public void testEmptyRoles() throws Exception {
-        initializeForXML();
         initializeServiceRules();
         tester.startPage(page=new NewDataAccessRulePage());
                 
@@ -122,15 +139,15 @@ public class NewDataAccessRulePageTest extends AbstractSecurityWicketTestSupport
     }
 
     
+    @Test
     public void testReadOnlyRoleService() throws Exception{
-        initializeForXML();
         activateRORoleService();
         tester.startPage(page=new NewDataAccessRulePage());
         tester.assertInvisible("form:roles:addRole");
     }
 
+    @Test
     public void testAddAdminRule() throws Exception {
-        initializeForXML();
    
         tester.startPage(page=new NewDataAccessRulePage());
         tester.assertRenderedPage(NewDataAccessRulePage.class);
@@ -154,7 +171,7 @@ public class NewDataAccessRulePageTest extends AbstractSecurityWicketTestSupport
         form=tester.newFormTester("form");                
         form.setValue("name", "ROLE_NEW");
         form.submit("save");
-        
+        tester.assertNoErrorMessage();
         // assign the new role to the method
         form=tester.newFormTester("form");
         tester.assertRenderedPage(NewDataAccessRulePage.class);

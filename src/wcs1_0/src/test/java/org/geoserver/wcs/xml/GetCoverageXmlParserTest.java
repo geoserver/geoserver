@@ -1,4 +1,10 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wcs.xml;
+
+import static org.junit.Assert.*;
 
 import java.io.StringReader;
 
@@ -13,6 +19,8 @@ import org.geoserver.wcs.xml.v1_0_0.WcsXmlReader;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.wcs.WCSConfiguration;
+import org.junit.Before;
+import org.junit.Test;
 import org.opengis.coverage.grid.GridEnvelope;
 import org.vfny.geoserver.wcs.WcsException;
 
@@ -22,14 +30,13 @@ public class GetCoverageXmlParserTest extends WCSTestSupport {
 
     private WcsXmlReader reader;
 
-    @Override
-    protected void oneTimeSetUp() throws Exception {
-        super.oneTimeSetUp();
-        
+    @Before
+    public void setUp() {
         configuration = new WCSConfiguration();
         reader = new WcsXmlReader("GetCoverage", "1.0.0", configuration);
     }
 
+    @Test
     public void testInvalid() throws Exception {
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
                 + //
@@ -55,6 +62,7 @@ public class GetCoverageXmlParserTest extends WCSTestSupport {
         }
     }
 
+    @Test
     public void testBasic() throws Exception {
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
                 + //
@@ -105,16 +113,17 @@ public class GetCoverageXmlParserTest extends WCSTestSupport {
 
         GeneralEnvelope envelope = ((GeneralEnvelope) gc.getDomainSubset().getSpatialSubset().getEnvelope().get(0));
         assertEquals("EPSG:32633", CRS.lookupIdentifier(envelope.getCoordinateReferenceSystem(),true));
-        assertEquals(347649.93086859107, envelope.getLowerCorner().getOrdinate(0));
-        assertEquals(5176214.082539256, envelope.getLowerCorner().getOrdinate(1));
-        assertEquals(370725.976428591, envelope.getUpperCorner().getOrdinate(0));
-        assertEquals(5196961.352859256, envelope.getUpperCorner().getOrdinate(1));
+        assertEquals(347649.93086859107, envelope.getLowerCorner().getOrdinate(0), 0);
+        assertEquals(5176214.082539256, envelope.getLowerCorner().getOrdinate(1), 0);
+        assertEquals(370725.976428591, envelope.getUpperCorner().getOrdinate(0), 0);
+        assertEquals(5196961.352859256, envelope.getUpperCorner().getOrdinate(1), 0);
         assertNotNull(gc.getOutput().getCrs());
         assertEquals("EPSG:4326", gc.getOutput().getCrs().getValue());
         assertNotNull(gc.getOutput().getFormat());
         assertEquals("TIFF", gc.getOutput().getFormat().getValue());
     }
 
+    @Test
     public void testRangeSubsetKeys() throws Exception {
         String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
                 + //

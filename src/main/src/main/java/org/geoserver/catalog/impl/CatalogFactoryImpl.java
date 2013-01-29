@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -6,6 +6,7 @@ package org.geoserver.catalog.impl;
 
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.AttributionInfo;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
@@ -25,9 +26,9 @@ import org.geoserver.catalog.WorkspaceInfo;
 
 public class CatalogFactoryImpl implements CatalogFactory {
 
-    CatalogImpl catalog;
+    Catalog catalog;
     
-    public CatalogFactoryImpl( CatalogImpl catalog ) {
+    public CatalogFactoryImpl( Catalog catalog ) {
         this.catalog = catalog;
     }
     

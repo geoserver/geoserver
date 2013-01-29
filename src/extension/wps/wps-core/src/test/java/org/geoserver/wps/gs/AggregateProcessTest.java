@@ -1,15 +1,22 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wps.gs;
 
+import static junit.framework.Assert.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wps.WPSTestSupport;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class AggregateProcessTest extends WPSTestSupport {
 
+    @Test
     public void testSum() throws Exception {
         String xml = aggregateCall("Sum");
 
@@ -19,6 +26,7 @@ public class AggregateProcessTest extends WPSTestSupport {
         assertXpathEvaluatesTo("-111.0", "/AggregationResults/Sum", dom);
     }
 
+    @Test
     public void testMin() throws Exception {
         String xml = aggregateCall("Min");
         
@@ -28,6 +36,7 @@ public class AggregateProcessTest extends WPSTestSupport {
         assertXpathEvaluatesTo("-900.0", "/AggregationResults/Min", dom);
     }
 
+    @Test
     public void testMax() throws Exception {
         String xml = aggregateCall("Max");
         
@@ -37,6 +46,7 @@ public class AggregateProcessTest extends WPSTestSupport {
         assertXpathEvaluatesTo("300.0", "/AggregationResults/Max", dom);
     }
 
+    @Test
     public void testAverage() throws Exception {
         String xml = aggregateCall("Average");
         
@@ -46,6 +56,7 @@ public class AggregateProcessTest extends WPSTestSupport {
         assertXpathEvaluatesTo("-22.2", "/AggregationResults/Average", dom);
     }
 
+    @Test
     public void testStdDev() throws Exception {
         String xml = aggregateCall("StdDev");
 
@@ -95,6 +106,7 @@ public class AggregateProcessTest extends WPSTestSupport {
                 + "  </wps:ResponseForm>\n" + "</wps:Execute>";
     }
     
+    @Test
     public void testAllOneByOne() throws Exception {
         String xml = callAll(false);
 
@@ -109,6 +121,7 @@ public class AggregateProcessTest extends WPSTestSupport {
         assertTrue(xpath.evaluate("/AggregationResults/StandardDeviation", dom).matches("442\\.19380.*"));
     }
     
+    @Test
     public void testAllSinglePass() throws Exception {
         String xml = callAll(true);
 

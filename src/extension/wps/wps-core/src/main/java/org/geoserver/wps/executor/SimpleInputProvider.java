@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wps.executor;
@@ -38,6 +38,7 @@ import org.geoserver.ows.Request;
 import org.geoserver.ows.util.CaseInsensitiveMap;
 import org.geoserver.ows.util.KvpMap;
 import org.geoserver.ows.util.KvpUtils;
+import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wcs.WebCoverageService100;
 import org.geoserver.wcs.WebCoverageService111;
 import org.geoserver.wfs.WebFeatureService;
@@ -49,6 +50,9 @@ import org.geoserver.wps.ppio.BoundingBoxPPIO;
 import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geoserver.wps.ppio.LiteralPPIO;
 import org.geoserver.wps.ppio.ProcessParameterIO;
+import org.geoserver.wps.resource.GridCoverageResource;
+import org.opengis.coverage.Coverage;
+import org.opengis.coverage.grid.GridCoverage;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -138,6 +142,11 @@ class SimpleInputProvider implements InputProvider {
                 }
 
             }
+            
+            if(value instanceof GridCoverage) {
+                executor.getResourceManager().addResource(new GridCoverageResource((GridCoverage) value));
+            }
+            
             // release the input, it's not needed anymore 
             input = null;
         }

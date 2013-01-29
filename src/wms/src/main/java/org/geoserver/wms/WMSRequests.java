@@ -1,14 +1,12 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms;
 
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -16,11 +14,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.geoserver.config.GeoServer;
+import org.geoserver.ows.KvpParser;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.ResponseUtils;
-import org.geoserver.platform.ServiceException;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.map.Layer;
+import org.geotools.map.MapLayer;
 import org.geotools.styling.Style;
 import org.vfny.geoserver.util.Requests;
 
@@ -30,6 +30,7 @@ import com.vividsolutions.jts.geom.Envelope;
  * Utility class for creating wms requests.
  * 
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
+ * @author Carlo Cancellieri - Geo-Solutions SAS
  * @see Requests
  */
 public class WMSRequests {
@@ -360,6 +361,46 @@ public class WMSRequests {
         if (req.getViewParams() != null && !req.getViewParams().isEmpty()) {
             params.put("viewParams", encodeFormatOptions(req.getViewParams()));
         }
+        
+        Map<String,String> kvpMap=req.getRawKvp();
+        String propertyName=kvpMap.get("propertyName");
+        if (propertyName != null && !propertyName.isEmpty()) {
+            params.put("propertyName", propertyName);
+        }
+        
+        if (req.getSld() != null) {
+            params.put("sld", req.getSld().toString());
+        }
+        
+        if (req.getSldBody() != null) {
+            params.put("sld_body", req.getSldBody());
+        }
+        
+        if (req.getEnv() != null && !req.getEnv().isEmpty()) {
+            params.put("env", encodeFormatOptions(req.getEnv()));
+        }
+        
+        String tilesOrigin=kvpMap.get("tilesorigin");
+        if (tilesOrigin != null && !tilesOrigin.isEmpty()) {
+            params.put("tilesorigin", tilesOrigin);
+        }
+        
+        if (req.isTiled()) {
+            params.put("tiled", req.isTiled()?"true":"false");
+        }
+        
+        String palette=kvpMap.get("palette");
+        if (palette!= null && !palette.isEmpty()) {
+            params.put("palette", palette);
+        }
+
+        if (req.getBuffer()>0){
+            params.put("buffer", Integer.toString(req.getBuffer()));
+        }
+        
+        if (Double.compare(req.getAngle(),0.0)!=0){
+            params.put("angle", Double.toString(req.getAngle()));
+        }
 
         // overrides / additions
         for (int i = 0; (kvp != null) && (i < kvp.length); i += 2) {
@@ -367,6 +408,43 @@ public class WMSRequests {
         }
 
         return params;
+    }
+
+
+    /**
+     * Copy the Entry matching the key from the kvp map and put it into the formatOptions map. If a parameter is already present in formatOption map
+     * its value will be preserved.
+     * 
+     * @param kvp
+     * @param formatOptions
+     * @param key the key to parse
+     * @throws Exception - In the event of an unsuccesful parse.
+     */
+    public static void mergeEntry(Map<String, String> kvp, Map<String, Object> formatOptions,
+            final String key) throws Exception {
+        // look up parser objects
+        List<KvpParser> parsers = GeoServerExtensions.extensions(KvpParser.class);
+
+        // strip out parsers which do not match current service/request/version
+        String service = KvpUtils.getSingleValue(kvp, "service");
+        String version = KvpUtils.getSingleValue(kvp, "version");
+        String request = KvpUtils.getSingleValue(kvp, "request");
+
+        KvpUtils.purgeParsers(parsers, service, version, request);
+
+        String val = null;
+        if ((val = kvp.get(key)) != null) {
+            Object foValue = formatOptions.get(key);
+            // if not found in format option
+            if (foValue == null) {
+                Object parsed = KvpUtils.parseKey(key, val, service, request, version, parsers);
+                if (parsed != null) {
+                    formatOptions.put(key, parsed);
+                } else {
+                    formatOptions.put(key, val);
+                }
+            }
+        }
     }
 
     /**

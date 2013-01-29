@@ -1,22 +1,30 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.legendgraphic;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.Test;
-
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.feature.NameImpl;
 import org.geotools.styling.Style;
+import org.junit.Before;
+import org.opengis.feature.type.Name;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
+
 
 public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
     /**
@@ -40,12 +48,7 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
     /** mock config object */
     WMS wms;
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new GetLegendGraphicKvpReaderTest());
-    }
+  
 
     /**
      * Remainder:
@@ -65,8 +68,8 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
      * <li>EXCEPTIONS/Optional
      * </ul>
      */
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+    @Before
+    public void setParameters() throws Exception { 
         requiredParameters = new HashMap<String, String>();
         requiredParameters.put("VERSION", "1.0.0");
         requiredParameters.put("REQUEST", "GetLegendGraphic");
@@ -99,6 +102,8 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
      * 
      * @throws Exception
      */
+    
+    @org.junit.Test
     public void testRemoteSLDMultipleStyles() throws Exception {
         final URL remoteSldUrl = getClass().getResource("MultipleStyles.sld");
         this.allParameters.put("SLD", remoteSldUrl.toExternalForm());
@@ -110,7 +115,7 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
                 allParameters, allParameters);
 
         // the style names Ponds is declared in third position on the sld doc
-        Style selectedStyle = request.getStyle();
+        Style selectedStyle = request.getStyles().get(0);
         assertNotNull(selectedStyle);
         assertEquals("Ponds", selectedStyle.getName());
 
@@ -120,11 +125,12 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
         request = requestReader.read(new GetLegendGraphicRequest(), allParameters, allParameters);
 
         // the style names Ponds is declared in third position on the sld doc
-        selectedStyle = request.getStyle();
+        selectedStyle = request.getStyles().get(0);
         assertNotNull(selectedStyle);
         assertEquals("Lakes", selectedStyle.getName());
     }
-
+    
+    @org.junit.Test
     public void testMissingLayerParameter() throws Exception {
         requiredParameters.remove("LAYER");
         try {
@@ -135,7 +141,8 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
             assertEquals("LayerNotDefined", e.getCode());
         }
     }
-
+    
+    @org.junit.Test
     public void testMissingFormatParameter() throws Exception {
         requiredParameters.remove("FORMAT");
         try {
@@ -146,7 +153,7 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
             assertEquals("MissingFormat", e.getCode());
         }
     }
-
+    @org.junit.Test
     public void testStrictParameter() throws Exception {
         GetLegendGraphicRequest request;
 
@@ -158,5 +165,46 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
         allParameters.remove("LAYER");
         request = requestReader.read(new GetLegendGraphicRequest(), allParameters, allParameters);
         assertFalse(request.isStrict());
+    }
+    
+    @org.junit.Test
+    public void testLayerGroup() throws Exception {
+        GetLegendGraphicRequest request;
+        
+        request = requestReader.read(new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
+        assertTrue(request.getLayers().size() == 1);
+        
+        requiredParameters.put("LAYER", NATURE_GROUP);
+        request = requestReader.read(new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
+        assertTrue(request.getLayers().size() > 1);
+    }
+    
+    @org.junit.Test
+    public void testStylesForLayerGroup() throws Exception {
+        GetLegendGraphicRequest request;
+               
+        requiredParameters.put("LAYER", NATURE_GROUP);
+        requiredParameters.put("STYLE", "style1,style2");
+        request = requestReader.read(new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
+        assertTrue(request.getStyles().size() == 2);
+    }
+    
+    @org.junit.Test
+    public void testRulesForLayerGroup() throws Exception {
+        GetLegendGraphicRequest request;
+               
+        requiredParameters.put("LAYER", NATURE_GROUP);
+        requiredParameters.put("RULE", "rule1,rule2");
+        request = requestReader.read(new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
+        assertTrue(request.getRules().size() == 2);
+    }
+    
+    @org.junit.Test
+    public void testLabelsForLayerGroup() throws Exception {
+        GetLegendGraphicRequest request;
+               
+        requiredParameters.put("LAYER", NATURE_GROUP);
+        request = requestReader.read(new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
+        assertNotNull(request.getTitle(new NameImpl("http://www.opengis.net/cite","Lakes")));
     }
 }

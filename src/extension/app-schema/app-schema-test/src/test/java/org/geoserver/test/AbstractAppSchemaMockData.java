@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2001 - 2009 TOPP - www.openplans.org. All rights reserved.
+ * Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 
 import org.geoserver.data.CatalogWriter;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.test.onlineTest.setup.AppSchemaTestOracleSetup;
 import org.geoserver.test.onlineTest.setup.AppSchemaTestPostgisSetup;
@@ -39,7 +40,8 @@ import com.vividsolutions.jts.geom.Envelope;
  * 
  * @author Ben Caradoc-Davies, CSIRO Exploration and Mining
  */
-public abstract class AbstractAppSchemaMockData implements NamespaceTestData {
+public abstract class AbstractAppSchemaMockData extends SystemTestData 
+    implements NamespaceTestData {
     
     /**
      * Folder for for test data.
@@ -143,8 +145,6 @@ public abstract class AbstractAppSchemaMockData implements NamespaceTestData {
     
     private final Map<String, String> layerStyles = new LinkedHashMap<String,String>();
 
-    private File data;
-    
     private File styles;
 
     /** the 'featureTypes' directory, under 'data' */
@@ -164,23 +164,30 @@ public abstract class AbstractAppSchemaMockData implements NamespaceTestData {
      * AppSchemaCatalog to work with AppSchemaValidator for test requests validation. 
      */
     private AppSchemaCatalog catalog;
+
+    /**
+     * True if running 3D online test. Only matters for Oracle, since a special wkt parser is needed.
+     */
+	private boolean is3D = false;
     /**
      * Constructor with the default namespaces, schema directory, and catalog file.
      */
     public AbstractAppSchemaMockData() {
         this(NAMESPACES);
     }
-    
-    public AbstractAppSchemaMockData(Map<String, String> namespaces) {
-        this.namespaces = new LinkedHashMap<String, String>(namespaces);
-        // create the mock data directory
+
+    static File newRandomDirectory() {
         try {
-            data = IOUtils.createRandomDirectory("target", "app-schema-mock", "data");
+            return IOUtils.createRandomDirectory("target", "app-schema-mock", "data");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        data.delete();
-        data.mkdir();
+    }
+
+    public AbstractAppSchemaMockData(Map<String, String> namespaces) {
+        super(newRandomDirectory());
+        this.namespaces = new LinkedHashMap<String, String>(namespaces);
+
         // create a featureTypes directory
         featureTypesBaseDir = new File(data, "featureTypes");
         featureTypesBaseDir.mkdir();
@@ -283,11 +290,17 @@ public abstract class AbstractAppSchemaMockData implements NamespaceTestData {
      * 
      * @see org.geoserver.data.test.TestData#setUp()
      */
-    public void setUp() {
+    public void setUp() throws IOException {
         setUpCatalog();
+        setUpSecurity();
         copy(MockData.class.getResourceAsStream("services.xml"), "services.xml");
     }
 
+    @Override
+    public void setUpDefault() throws Exception {
+        //do nothing
+    }
+    
     /**
      * Removes the mock data directory.
      * 
@@ -495,6 +508,25 @@ public abstract class AbstractAppSchemaMockData implements NamespaceTestData {
     }    
     
     /**
+     * The same as {@link #addFeatureType(String, String, String, String...)} except this to enable 3D WKT parser for Oracle. 
+     * Use this one for tests with 3D data that needs to be run online.
+     * 
+     * @param namespacePrefix
+     *            namespace prefix of the WFS feature type
+     * @param typeName
+     *            local name of the WFS feature type
+     * @param mappingFileName
+     *            file name of the app-schema mapping file
+     * @param supportFileNames
+     *            names of other files to be copied into the feature type directory
+     */
+    public void add3DFeatureType(String namespacePrefix, String typeName, String mappingFileName,
+            String... supportFileNames) {
+        addFeatureType(namespacePrefix, typeName, mappingFileName, supportFileNames);
+        this.is3D = true;
+    }
+    
+    /**
      * Determine which setup class to use based on the fixture id specified in the vm arg.
      * 
      * @throws Exception
@@ -502,8 +534,12 @@ public abstract class AbstractAppSchemaMockData implements NamespaceTestData {
     private void createTablesInTestDatabase() throws Exception {
         if (onlineTestId != null) {
             AbstractReferenceDataSetup setup = null;
-            if (onlineTestId.equals("oracle")) {
-                setup = AppSchemaTestOracleSetup.getInstance(propertiesFiles);
+            if (onlineTestId.equals("oracle")) {            	
+            	if (is3D) {
+            		setup = AppSchemaTestOracleSetup.get3DInstance(propertiesFiles);
+            	} else {
+                    setup = AppSchemaTestOracleSetup.getInstance(propertiesFiles);
+            	}
             } else if (onlineTestId.equals("postgis")) {
                 setup = AppSchemaTestPostgisSetup.getInstance(propertiesFiles);
             }

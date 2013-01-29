@@ -1,5 +1,5 @@
-/* Copyright (c) 2010 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms;
@@ -50,7 +50,6 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
     private String capabilitiesErrorHandling;
 
     public WMSInfoImpl() {
-        setId("wms");
         authorityURLs = new ArrayList<AuthorityURLInfo>(2);
         identifiers = new ArrayList<LayerIdentifierInfo>(2);
     }

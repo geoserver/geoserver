@@ -1,10 +1,16 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.web.data.resource;
 
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.junit.Test;
 
 public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
     
+    @Test
     public void testBasic() {
         LayerInfo layer = getGeoServerApplication().getCatalog().getLayers().get(0);
 

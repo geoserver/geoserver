@@ -1,5 +1,12 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.csw;
 
+import static org.junit.Assert.fail;
+
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -12,25 +19,30 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
-import org.geoserver.data.test.MockData;
-import org.geoserver.test.ows.KvpRequestReaderTestSupport;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.csw.CSW;
 import org.geotools.csw.CSWConfiguration;
 import org.geotools.csw.DC;
 import org.geotools.csw.DCT;
-import org.geotools.ows.v1_1.OWS;
+import org.geotools.filter.v1_1.OGC;
+import org.geotools.ows.OWS;
 import org.geotools.xlink.XLINK;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Parser;
+import org.junit.BeforeClass;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXParseException;
 
-public abstract class CSWTestSupport extends KvpRequestReaderTestSupport {
-
-    protected void setUpInternal() throws Exception {
+public abstract class CSWTestSupport extends GeoServerSystemTestSupport {
+    protected static final String BASEPATH = "csw";
+    
+    @BeforeClass
+    public static void configureXMLUnit() throws Exception {
         // init xmlunit
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("csw", CSW.NAMESPACE);
@@ -38,16 +50,23 @@ public abstract class CSWTestSupport extends KvpRequestReaderTestSupport {
         namespaces.put("dct", DCT.NAMESPACE);
         namespaces.put("csw", CSW.NAMESPACE);
         namespaces.put("ows", OWS.NAMESPACE);
+        namespaces.put("ogc", OGC.NAMESPACE);
         namespaces.put("gml", "http://www.opengis.net/gml");
         namespaces.put("xlink", XLINK.NAMESPACE);
         namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+        namespaces.put("xsd", "http://www.w3.org/2001/XMLSchema");
+        namespaces.put("xs", "http://www.w3.org/2001/XMLSchema");
 
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
     };
     
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        // we need no data whatsoever for most of the CSW tests, let's not waste time adding some
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        // copy all records into the data directory
+        File root = testData.getDataDirectoryRoot();
+        File catalog = new File(root, "catalog");
+        File records = new File("./src/test/resources/org/geoserver/csw/records");
+        FileUtils.copyDirectory(records, catalog);
     }
 
     protected String root() {

@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security.filter;
@@ -64,7 +64,7 @@ public abstract class GeoServerPreAuthenticationFilter extends GeoServerSecurity
             
             Authentication postAuthentication = SecurityContextHolder.getContext().getAuthentication();
             if (postAuthentication != null && cacheKey!=null) {
-                if (cacheAuthentication(postAuthentication)) {
+                if (cacheAuthentication(postAuthentication,(HttpServletRequest)request)) {
                     getSecurityManager().getAuthenticationCache().put(getName(), cacheKey,postAuthentication);    
                 }
             }
@@ -146,15 +146,41 @@ public abstract class GeoServerPreAuthenticationFilter extends GeoServerSecurity
         return aep;
     }
 
-    protected boolean cacheAuthentication(Authentication auth) {
-        return true;
+    protected boolean cacheAuthentication(Authentication auth,HttpServletRequest request) {
+        // only cache if no HTTP session is available 
+        return request.getSession(false) == null;
     }
 
     @Override
     public String getCacheKey(HttpServletRequest request) {
+        
+        if (Boolean.TRUE.equals(request.getAttribute(GeoServerSecurityContextPersistenceFilter.ALLOWSESSIONCREATION_ATTR)))
+            return null;
+        
+        if (request.getSession(false)!=null) // no caching if there is an HTTP session
+            return null;
+        
         String retval = getPreAuthenticatedPrincipal(request);
         if (GeoServerUser.ROOT_USERNAME.equals(retval))
             return null;
         return retval;
     }
+    
+    /**
+     * @see org.geoserver.security.filter.GeoServerAuthenticationFilter#applicableForHtml()
+     */
+    @Override
+    public boolean applicableForHtml() {
+        return true;
+    }
+
+
+    /**
+     * @see org.geoserver.security.filter.GeoServerAuthenticationFilter#applicableForServices()
+     */
+    @Override
+    public boolean applicableForServices() {
+        return true;
+    }
+
 }

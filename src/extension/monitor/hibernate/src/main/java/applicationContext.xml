@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx.xsd" 
+    default-autowire="byName">
+
+    <!--
+    data source with a runtime fallback that will make it work against an H2 stored in the data dir 
+    if not configured before
+    -->
+    <bean id="monitorDataSource" class="org.geoserver.monitor.hib.MonitoringDataSource" depends-on="geoServerLoader" >
+      <property name="dataDirectory" ref="dataDirectory" />
+      <property name="config" ref="monitorConfig" />
+    </bean>
+    
+    <!-- monitor daos -->
+    <import resource="applicationContext-hib2.xml"/>
+    
+    <bean id="monitorHibInitializer" class="org.geoserver.monitor.hib.MonitorHibernateInitializer">
+      <constructor-arg ref="monitor"/>
+    </bean>
+
+    <!-- hibernate open session in view filter -->
+    <bean id="openSessionInViewFilter" 
+       class="org.geoserver.monitor.OpenSessionInViewFilter">
+       <property name="sessionFactoryBeanName" value="hibSessionFactory"/>
+    </bean>
+</beans>

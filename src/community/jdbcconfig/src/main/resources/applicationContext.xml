@@ -8,37 +8,31 @@
         http://www.springframework.org/schema/jdbc   http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
         http://www.springframework.org/schema/tx     http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
         ">
-        
+
+  <!-- main configuration, loaded via factory bean -->
+  <bean id="jdbcConfigProperties" 
+    class="org.geoserver.jdbcconfig.internal.JDBCConfigPropertiesFactoryBean">
+      <constructor-arg ref="resourceLoader"/>
+  </bean>
+
+  <!-- data source, also loaded and configured via factory bean -->
+  <bean id="jdbcConfigDataSource" class="org.geoserver.jdbcconfig.internal.DataSourceFactoryBean">
+    <constructor-arg ref="jdbcConfigProperties" />
+  </bean>
+
+  <!-- transaction manager -->
   <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-    <property name="dataSource" ref="jdbcConfigPoolingDataSource" />
+    <property name="dataSource" ref="jdbcConfigDataSource" />
   </bean>
 
   <tx:annotation-driven transaction-manager="txManager" />
-
-  <!--jdbc:initialize-database data-source="jdbcConfigDataSource" enabled="true" ignore-failures="NONE"> <jdbc:script location="file:///${GEOSERVER_DATA_DIR}/jdbcconfig.properties"/> 
-    </jdbc:initialize-database -->
-
-  <!-- BoneCP configuration -->
-  <bean id="jdbcConfigProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
-    <property name="ignoreResourceNotFound" value="true" />
-    <property name="locations">
-      <list>
-        <value>classpath:/jdbcconfig.properties</value>
-        <value>file:///${GEOSERVER_DATA_DIR}/jdbcconfig.properties</value>
-      </list>
-    </property>
-  </bean>
-
-  <bean id="jdbcConfigPoolingDataSource" class="com.jolbox.bonecp.BoneCPDataSource" destroy-method="close">
-    <property name="properties" ref="jdbcConfigProperties" />
-  </bean>
 
   <bean id="jdbcPersistenceBinding" class="org.geoserver.jdbcconfig.internal.XStreamInfoSerialBinding">
     <constructor-arg ref="xstreamPersisterFactory" />
   </bean>
 
   <bean id="JDBCConfigDB" class="org.geoserver.jdbcconfig.internal.ConfigDatabase">
-    <constructor-arg ref="jdbcConfigPoolingDataSource" />
+    <constructor-arg ref="jdbcConfigDataSource" />
     <constructor-arg ref="jdbcPersistenceBinding" />
   </bean>
 
@@ -55,6 +49,7 @@
       Replaces the default GeoServerLoader to establish the JDBCCatalogFacade and JDBCGeoServerFacade
     </description>
     <constructor-arg ref="resourceLoader" />
+    <constructor-arg ref="jdbcConfigProperties" />
     <property name="catalogFacade" ref="JDBCCatalogFacade" />
     <property name="geoServerFacade" ref="JDBCGeoServerFacade" />
   </bean>

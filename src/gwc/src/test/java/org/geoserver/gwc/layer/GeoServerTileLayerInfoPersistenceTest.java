@@ -1,9 +1,11 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.gwc.layer;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static org.geoserver.gwc.GWCTestHelpers.mockLayer;
 import static org.geoserver.gwc.layer.TileLayerInfoUtil.loadOrCreate;
 
@@ -13,8 +15,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geowebcache.config.XMLConfiguration;
@@ -23,10 +23,12 @@ import org.geowebcache.filter.parameters.FloatParameterFilter;
 import org.geowebcache.filter.parameters.RegexParameterFilter;
 import org.geowebcache.filter.parameters.StringParameterFilter;
 import org.geowebcache.grid.BoundingBox;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.thoughtworks.xstream.XStream;
 
-public class GeoServerTileLayerInfoPersistenceTest extends TestCase {
+public class GeoServerTileLayerInfoPersistenceTest {
 
     private GeoServerTileLayerInfo info;
 
@@ -34,8 +36,8 @@ public class GeoServerTileLayerInfoPersistenceTest extends TestCase {
 
     private GeoServerTileLayerInfo defaultVectorInfo;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         info = new GeoServerTileLayerInfoImpl();
         defaults = GWCConfig.getOldDefaults();
         defaultVectorInfo = TileLayerInfoUtil.create(defaults);
@@ -79,15 +81,16 @@ public class GeoServerTileLayerInfoPersistenceTest extends TestCase {
         }
     }
 
+    @Test
     public void testMarshallingDefaults() {
         GWCConfig oldDefaults = GWCConfig.getOldDefaults();
-        LayerInfo layerInfo = mockLayer("testLayer");
+        LayerInfo layerInfo = mockLayer("testLayer", new String[]{}, LayerInfo.Type.RASTER);
         info = loadOrCreate(layerInfo, oldDefaults);
         testMarshaling(info);
     }
 
+    @Test
     public void testMarshallingGridSubsets() {
-
         List<XMLGridSubset> subsets = new ArrayList<XMLGridSubset>();
         XMLGridSubset subset;
         subset = new XMLGridSubset();
@@ -122,8 +125,8 @@ public class GeoServerTileLayerInfoPersistenceTest extends TestCase {
         testMarshaling(info);
     }
 
+    @Test
     public void testMarshallingParameterFilters() throws Exception {
-
         StringParameterFilter strParam = new StringParameterFilter();
         strParam.setKey("TIME");
         strParam.setDefaultValue("now");
@@ -166,7 +169,6 @@ public class GeoServerTileLayerInfoPersistenceTest extends TestCase {
         strParam2.getValues().addAll(Arrays.asList("1", "2", "3"));
         info.getParameterFilters().add(strParam2);
         testMarshaling(info);
-
     }
 
 }

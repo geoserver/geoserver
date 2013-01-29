@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -9,6 +9,7 @@ import java.util.Arrays;
 import org.apache.wicket.markup.html.WebPage;
 import org.geoserver.web.CapabilitiesHomePagePanel.CapsInfo;
 import org.geotools.util.Version;
+import org.junit.Test;
 
 public class CapabilitiesHomePagePanelTest extends GeoServerWicketTestSupport {
 
@@ -21,6 +22,7 @@ public class CapabilitiesHomePagePanelTest extends GeoServerWicketTestSupport {
          */
     }
 
+    @Test
     public void testCapabilitiesLinks() {
 
         CapsInfo ci1 = new CapsInfo("FakeService1", new Version("1.0.0"), "../caps1_v1");
@@ -37,7 +39,7 @@ public class CapabilitiesHomePagePanelTest extends GeoServerWicketTestSupport {
 
         //super.print(page, false, true);
 
-        tester.assertListView("capsList:services", Arrays.asList("FakeService1", "FakeService2"));
+        tester.assertListView("capsList:services", Arrays.asList("fakeservice1", "fakeservice2"));
         tester.assertLabel("capsList:services:0:service", "FAKESERVICE1");
         tester.assertLabel("capsList:services:1:service", "FAKESERVICE2");
 

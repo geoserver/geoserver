@@ -1,6 +1,10 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.security.web;
 
-
+import static org.junit.Assert.*;
 import java.util.Iterator;
 
 import org.apache.wicket.Component;
@@ -9,21 +13,36 @@ import org.apache.wicket.Page;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.util.tester.FormTester;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public abstract class AbstractTabbedListPageTest<T> extends AbstractSecurityWicketTestSupport {
     
      public static final String FIRST_COLUM_PATH="itemProperties:0:component:link";
     
 
-    @Override
-    protected void setUpInternal() throws Exception {        
+    @Before
+    public void setUp() throws Exception {
         login();
     }
 
-    public void testRenders() throws Exception {
+    @Before
+    public void initService() throws Exception {
+        doInitialize();
+        clearServices();
+        insertValues();
+    }
+
+    protected void doInitialize() throws Exception {
         initializeForXML();
+    }
+
+    @Test
+    public void testRenders() throws Exception {
         tester.assertRenderedPage(listPage(getServiceName()).getClass());
     }
     
@@ -44,10 +63,9 @@ public abstract class AbstractTabbedListPageTest<T> extends AbstractSecurityWick
     abstract protected boolean checkEditForm(String search);
     
     
+    @Test
     public void testEdit() throws Exception {
         // the name link for the first user
-        initializeForXML();
-        insertValues();
         AbstractSecurityPage listPage = (AbstractSecurityPage) listPage(getServiceName());
         //tester.startPage(listPage);
                    
@@ -82,8 +100,8 @@ public abstract class AbstractTabbedListPageTest<T> extends AbstractSecurityWick
         return null;
     }
     
+    @Test
     public void testNew() throws Exception {
-        initializeForXML();
         listPage(getServiceName());        
         tester.clickLink(getTabbedPanelPath()+":panel:header:addNew");        
         Page newPage = tester.getLastRenderedPage();
@@ -92,9 +110,8 @@ public abstract class AbstractTabbedListPageTest<T> extends AbstractSecurityWick
     
     
     
+    @Test
     public void testRemove() throws Exception {
-        initializeForXML();
-        insertValues();
         addAdditonalData();
         doRemove(getTabbedPanelPath()+":panel:header:removeSelected");
     }

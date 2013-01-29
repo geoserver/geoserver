@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -1763,5 +1763,12 @@ public interface Catalog extends CatalogInfo {
     public <T extends CatalogInfo> CloseableIterator<T> list(final Class<T> of,
             final Filter filter, @Nullable Integer offset, @Nullable Integer count,
             @Nullable SortBy sortBy);
+
+    /**
+     * Removes all the listeners which are instances of the specified class
+     * 
+     * @param listenerClass
+     */
+    public void removeListeners(Class listenerClass);
 
 }

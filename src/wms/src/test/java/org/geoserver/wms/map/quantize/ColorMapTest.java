@@ -1,16 +1,20 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wms.map.quantize;
+
+import static org.junit.Assert.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import org.geoserver.wms.map.quantize.ColorMap;
-import org.geoserver.wms.map.quantize.ColorUtils;
 import org.geoserver.wms.map.quantize.ColorMap.ColorEntry;
+import org.junit.Test;
 
-import junit.framework.TestCase;
+public class ColorMapTest {
 
-public class ColorMapTest extends TestCase {
-
+    @Test
     public void testSimpleIncrement() {
         ColorMap map = new ColorMap();
 
@@ -21,6 +25,7 @@ public class ColorMapTest extends TestCase {
         assertEquals(1, map.size());
     }
 
+    @Test
     public void testPutIncrement() {
         ColorMap map = new ColorMap();
 
@@ -31,6 +36,7 @@ public class ColorMapTest extends TestCase {
         assertEquals(1, map.size());
     }
     
+    @Test
     public void testRehash() {
         ColorMap map = new ColorMap(16);
         assertEquals(16, map.table.length);
@@ -48,6 +54,7 @@ public class ColorMapTest extends TestCase {
         }
     }
     
+    @Test
     public void testIterate() {
         ColorMap map = new ColorMap(16);
         assertEquals(16, map.table.length);

@@ -1,13 +1,22 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wps;
 
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static junit.framework.Assert.assertEquals;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 
-import java.util.Collections;
+import java.util.HashMap;
 
 import javax.xml.namespace.QName;
 
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.wfs.WFSInfo;
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class SnapTest extends WPSTestSupport {
@@ -15,19 +24,20 @@ public class SnapTest extends WPSTestSupport {
     public static QName STREAMS = new QName(MockData.CITE_URI, "Streams", MockData.CITE_PREFIX);
     
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        dataDirectory.addPropertiesType(STREAMS, MockData.class.getResource("Streams.properties"), Collections.EMPTY_MAP);
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+
+        testData.addVectorLayer(STREAMS, new HashMap<LayerProperty,Object>(), "Streams.properties", MockData.class, getCatalog());
     }
     
-    @Override
-    protected void oneTimeSetUp() throws Exception {
-    	super.oneTimeSetUp();
-    	WFSInfo wfs = getGeoServer().getService( WFSInfo.class );
+    @Before
+    public void oneTimeSetUp() throws Exception {
+        WFSInfo wfs = getGeoServer().getService( WFSInfo.class );
         wfs.setFeatureBounding(true);
-    	getGeoServer().save(wfs);
+        getGeoServer().save(wfs);
     }
 
+    @Test
     public void testFeatureCollectionInline4326Raw() throws Exception {
         String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
               "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 
@@ -65,6 +75,7 @@ public class SnapTest extends WPSTestSupport {
         assertXpathExists("/wfs:FeatureCollection/gml:featureMember", d);
     }
 
+    @Test
     public void testFeatureCollectionInline4326Doc() throws Exception {
         String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
               "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 
@@ -104,6 +115,7 @@ public class SnapTest extends WPSTestSupport {
         assertXpathExists("/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output/wps:Data/wps:ComplexData/wfs:FeatureCollection/gml:featureMember", d);
     }
 
+    @Test
     public void testFeatureCollectionInline3338Raw() throws Exception {
         String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
               "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 
@@ -145,6 +157,7 @@ public class SnapTest extends WPSTestSupport {
         assertXpathExists("/wfs:FeatureCollection/gml:featureMember", d);
     }
 
+    @Test
     public void testFeatureCollectionInline3338Doc() throws Exception {
         String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
               "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 
@@ -188,6 +201,7 @@ public class SnapTest extends WPSTestSupport {
         assertXpathExists("/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output/wps:Data/wps:ComplexData/wfs:FeatureCollection/gml:featureMember", d);
     }
 
+    @Test
     public void testFeatureCollectionInternalWFSRaw() throws Exception {
         String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
               "xmlns:ows='http://www.opengis.net/ows/1.1' xmlns:xlink=\"http://www.w3.org/1999/xlink\" >" + 
@@ -230,6 +244,7 @@ public class SnapTest extends WPSTestSupport {
         assertXpathExists("/wfs:FeatureCollection/gml:featureMember", d);
     }
 
+    @Test
     public void testFeatureCollectionWFSFilter1Raw() throws Exception {
         String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
               "xmlns:ows='http://www.opengis.net/ows/1.1' xmlns:xlink=\"http://www.w3.org/1999/xlink\" >" + 
@@ -282,6 +297,7 @@ public class SnapTest extends WPSTestSupport {
         assertXpathExists("/wfs:FeatureCollection/gml:featureMember", d);
     }
 
+    @Test
     public void testFeatureCollectionWFSFilter2Raw() throws Exception {
         String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
               "xmlns:ows='http://www.opengis.net/ows/1.1' xmlns:xlink=\"http://www.w3.org/1999/xlink\" >" + 
@@ -336,6 +352,7 @@ public class SnapTest extends WPSTestSupport {
         assertXpathExists("/wfs:FeatureCollection/gml:featureMember", d);
     }
 
+    @Test
     public void testMissingFeatures() throws Exception {
         String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
               "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 
@@ -367,6 +384,7 @@ public class SnapTest extends WPSTestSupport {
         assertXpathExists("//wps:Status/wps:ProcessFailed", d);
     }
 
+    @Test
     public void testMissingPoint() throws Exception {
         String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
               "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 
@@ -394,6 +412,7 @@ public class SnapTest extends WPSTestSupport {
         assertXpathExists("//wps:Status/wps:ProcessFailed", d);
     }
 
+    @Test
     public void testWrongCRS() throws Exception {
         String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
               "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 

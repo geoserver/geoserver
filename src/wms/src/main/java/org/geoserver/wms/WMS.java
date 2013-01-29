@@ -1,14 +1,13 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms;
 
-import static org.geoserver.ows.util.ResponseUtils.buildURL;
-
+import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,9 +29,9 @@ import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
@@ -41,8 +40,6 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.JAIInfo;
 import org.geoserver.data.util.CoverageUtils;
-import org.geoserver.ows.URLMangler.URLType;
-import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMSInfo.WMSInterpolation;
@@ -52,10 +49,8 @@ import org.geoserver.wms.map.RenderedImageMapResponse;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
-import org.geotools.data.QueryCapabilities;
 import org.geotools.data.ows.Layer;
 import org.geotools.data.ows.WMSCapabilities;
-import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
 import org.geotools.feature.FeatureCollection;
@@ -64,24 +59,30 @@ import org.geotools.feature.visitor.MaxVisitor;
 import org.geotools.feature.visitor.MinVisitor;
 import org.geotools.feature.visitor.UniqueVisitor;
 import org.geotools.filter.Filters;
-import org.geotools.filter.SortByImpl;
-import org.geotools.resources.coverage.FeatureUtilities;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.styling.Style;
-import org.geotools.util.*;
+import org.geotools.util.Converters;
+import org.geotools.util.Range;
+import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
-import org.opengis.filter.sort.SortBy;
-import org.opengis.filter.sort.SortOrder;
 import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.GeneralParameterValue;
+import org.opengis.parameter.ParameterDescriptor;
+import org.opengis.parameter.ParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
+import com.vividsolutions.jts.geom.Coordinate;
 
 /**
  * A facade providing access to the WMS configuration details
@@ -772,9 +773,15 @@ public class WMS implements ApplicationContextAware {
     }
 
     public boolean isQueryable(LayerGroupInfo layerGroup) {
-        for (LayerInfo layer : layerGroup.getLayers()) {
-            if (!isQueryable(layer)) {
-                return false;
+        for (PublishedInfo published : layerGroup.getLayers()) {
+            if (published instanceof LayerInfo) {
+                if (!isQueryable((LayerInfo) published)) {
+                    return false;
+                }
+            } else {
+                if (!isQueryable((LayerGroupInfo) published)) {
+                    return false;
+                }
             }
         }
         return true;
@@ -801,11 +808,13 @@ public class WMS implements ApplicationContextAware {
         GeneralParameterValue[] readParameters = CoverageUtils.getParameters(
                 readParametersDescriptor, coverage.getParameters(), readGeom);
         ReaderDimensionsAccessor dimensions = new ReaderDimensionsAccessor(reader);
-
         // pass down time
         final DimensionInfo timeInfo = metadata.get(ResourceInfo.TIME, DimensionInfo.class);
-        final List<GeneralParameterDescriptor> parameterDescriptors = readParametersDescriptor
-                .getDescriptor().descriptors();
+        // add the descriptors for custom dimensions 
+        final List<GeneralParameterDescriptor> parameterDescriptors = 
+                new ArrayList<GeneralParameterDescriptor>(readParametersDescriptor.getDescriptor().descriptors());
+        Set<ParameterDescriptor<List>> dynamicParameters = reader.getDynamicParameters();
+        parameterDescriptors.addAll(dynamicParameters);
         if (timeInfo != null && timeInfo.isEnabled()) {
             // handle "current"
             List<Object> fixedTimes = new ArrayList<Object>(times);
@@ -834,11 +843,76 @@ public class WMS implements ApplicationContextAware {
                     fixedElevations, "ELEVATION", "Elevation");
         }
 
-        if (layerFilter != null) {
-            readParameters = CoverageUtils.mergeParameter(parameterDescriptors, readParameters,
-                    layerFilter, "FILTER", "Filter");
+        if (layerFilter != null && readParameters != null) {
+            // test for default [empty is replaced with INCLUDE filter] ]filter
+            for (int i = 0; i < readParameters.length; i++) {
+
+                GeneralParameterValue param = readParameters[i];
+                GeneralParameterDescriptor pd = param.getDescriptor();
+
+                if (pd.getName().getCode().equalsIgnoreCase("FILTER")) {
+                    final ParameterValue pv = (ParameterValue) pd.createValue();
+                    // if something different from the default INCLUDE filter is specified
+                    if (layerFilter != Filter.INCLUDE) {
+                        // override the default filter
+                        pv.setValue(layerFilter);
+                        readParameters[i] = pv;
+                    }
+                    break;
+                }
+            }
         }
+        
+        // custom dimensions
+        final Map<String, String> rawKvpMap = request.getRawKvp();
+        List<String> customDomains = new ArrayList(dimensions.getCustomDomains());
+        if (rawKvpMap != null) {
+            for (Map.Entry<String, String> kvp : rawKvpMap.entrySet()) {
+                String name = kvp.getKey();
+                if (name.regionMatches(true, 0, "dim_", 0, 4)) {
+                    name = name.substring(4);
+                    name = caseInsensitiveLookup(customDomains, name);
+                    if(name != null) {
+                        // remove it so that we don't have to set the default value
+                        customDomains.remove(name);
+                        final DimensionInfo customInfo = metadata.get(ResourceInfo.CUSTOM_DIMENSION_PREFIX + name,
+                                DimensionInfo.class);
+                        if (dimensions.hasDomain(name) && customInfo != null && customInfo.isEnabled()) {
+                            final ArrayList<String> val = new ArrayList<String>(1);
+                            val.add(kvp.getValue());
+                            readParameters = CoverageUtils.mergeParameter(
+                                parameterDescriptors, readParameters, val, name);
+                        }
+                    }
+                }
+            }
+        }
+        
+        // see if we have any custom domain for which we have to set the default value
+        if(!customDomains.isEmpty()) {
+            for (String name : customDomains) {
+                final DimensionInfo customInfo = metadata.get(ResourceInfo.CUSTOM_DIMENSION_PREFIX + name,
+                        DimensionInfo.class);
+                if (customInfo != null && customInfo.isEnabled()) {
+                    final ArrayList<String> val = new ArrayList<String>(1);
+                    val.add(dimensions.getCustomDomainDefaultValue(name));
+                    readParameters = CoverageUtils.mergeParameter(
+                        parameterDescriptors, readParameters, val, name);
+                }
+            }
+        }
+
         return readParameters;
+    }
+
+    private String caseInsensitiveLookup(List<String> names, String name) {
+        for (String s : names) {
+            if(name.equalsIgnoreCase(s)) {
+                return s;
+            }
+        }
+        
+        return null;
     }
 
     public Collection<RenderedImageMapResponse> getAvailableMapResponses() {
@@ -963,7 +1037,11 @@ public class WMS implements ApplicationContextAware {
         FeatureCollection collection = getDimensionCollection(typeInfo, time);
         final MaxVisitor max = new MaxVisitor(time.getAttribute());
         collection.accepts(max, null);
-        return (Date) max.getMax();
+        if (max.getResult() != CalcResult.NULL_RESULT) {
+            return (Date) max.getMax();
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -1000,7 +1078,7 @@ public class WMS implements ApplicationContextAware {
         FeatureCollection collection = getDimensionCollection(typeInfo, elevation);
         final MinVisitor min = new MinVisitor(elevation.getAttribute());
         collection.accepts(min, null);
-        if (min.getMin() == null) {
+        if (min.getResult() == CalcResult.NULL_RESULT) {
             return null;
         } else {
             return ((Number) min.getMin()).doubleValue();
@@ -1065,7 +1143,9 @@ public class WMS implements ApplicationContextAware {
      */
     Filter buildDimensionFilter(Object value, PropertyName attribute, PropertyName endAttribute) {
         Filter filter;
-        if (value instanceof Range) {
+        if (value == null) {
+            filter = Filter.INCLUDE;
+        } else if (value instanceof Range) {
             Range range = (Range) value;
             if (endAttribute == null) {
                 filter = ff.between(attribute, ff.literal(range.getMinValue()),
@@ -1160,6 +1240,80 @@ public class WMS implements ApplicationContextAware {
         }
 
         return result;
+    }
+
+    /**
+     * Converts a coordinate expressed on the device space back to real world coordinates. Stolen
+     * from LiteRenderer but without the need of a Graphics object
+     * 
+     * @param x
+     *            horizontal coordinate on device space
+     * @param y
+     *            vertical coordinate on device space
+     * @param map
+     *            The map extent
+     * @param width
+     *            image width
+     * @param height
+     *            image height
+     * 
+     * @return The correspondent real world coordinate
+     * 
+     * @throws RuntimeException
+     */
+    public static Coordinate pixelToWorld(double x, double y, ReferencedEnvelope map, double width, double height) {
+        // set up the affine transform and calculate scale values
+        AffineTransform at = worldToScreenTransform(map, width, height);
+    
+        Point2D result = null;
+    
+        try {
+            result = at.inverseTransform(new java.awt.geom.Point2D.Double(x, y),
+                    new java.awt.geom.Point2D.Double());
+        } catch (NoninvertibleTransformException e) {
+            throw new RuntimeException(e);
+        }
+    
+        Coordinate c = new Coordinate(result.getX(), result.getY());
+    
+        return c;
+    }
+
+    /**
+     * Sets up the affine transform. Stolen from liteRenderer code.
+     * 
+     * @param mapExtent
+     *            the map extent
+     * @param width
+     *            the screen size
+     * @param height
+     * 
+     * @return a transform that maps from real world coordinates to the screen
+     */
+    public static AffineTransform worldToScreenTransform(ReferencedEnvelope mapExtent, double width, double height) {
+        
+        //the transformation depends on an x/y ordering, if we have a lat/lon crs swap it
+        CoordinateReferenceSystem crs = mapExtent.getCoordinateReferenceSystem();
+        boolean swap = crs != null && CRS.getAxisOrder(crs) == AxisOrder.NORTH_EAST;
+        if (swap) {
+            mapExtent = new ReferencedEnvelope(mapExtent.getMinY(), mapExtent.getMaxY(), 
+                mapExtent.getMinX(), mapExtent.getMaxX(), null);
+        }
+        
+        double scaleX = (double) width / mapExtent.getWidth();
+        double scaleY = (double) height / mapExtent.getHeight();
+    
+        double tx = -mapExtent.getMinX() * scaleX;
+        double ty = (mapExtent.getMinY() * scaleY) + height;
+    
+        AffineTransform at = new AffineTransform(scaleX, 0.0d, 0.0d, -scaleY, tx, ty);
+    
+        //if we swapped concatenate a transform that swaps back
+        if (swap) {
+            at.concatenate(new AffineTransform(0, 1, 1, 0, 0, 0));
+        }
+    
+        return at;
     }
 
     public static WMS get() {

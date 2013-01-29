@@ -88,22 +88,17 @@ fi
 
 popd > /dev/null
 
-# merge the tag release branch into main release branch and tag it
-git checkout rel_$branch
+# tag release branch
 if [ -z $SKIP_MERGE_AND_TAG ]; then
-  git merge -Xtheirs -m "Merging rel_$tag into rel_$branch" rel_$tag
   git tag $tag
 else
-  echo "Skipping git merge -m "Merging rel_$tag into rel_$branch" rel_$tag"
   echo "Skipping git tag $tag"
 fi
 
-# push them up
+# push tag up
 if [ -z $SKIP_PUSH ]; then
-  git push origin rel_$branch
   git push origin $tag
 else
-  echo "Skipping git push origin rel_$branch"
   echo "Skipping git push origin $tag"
 fi
 

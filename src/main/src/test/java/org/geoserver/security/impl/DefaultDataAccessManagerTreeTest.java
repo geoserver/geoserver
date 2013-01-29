@@ -1,9 +1,14 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.security.impl;
 
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.Properties;
@@ -18,6 +23,8 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.impl.DefaultDataAccessManager;
 import org.geoserver.security.impl.SecureTreeNode;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Tests parsing of the property file into a security tree, and the
@@ -26,7 +33,7 @@ import org.geoserver.security.impl.SecureTreeNode;
  * @author Andrea Aime - TOPP
  * 
  */
-public class DefaultDataAccessManagerTreeTest extends TestCase {
+public class DefaultDataAccessManagerTreeTest {
 
     private Catalog catalog;
 
@@ -38,8 +45,8 @@ public class DefaultDataAccessManagerTreeTest extends TestCase {
 
     private TestingAuthenticationToken anonymous;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         catalog = createNiceMock(Catalog.class);
         expect(catalog.getWorkspace((String) anyObject())).andReturn(
                 createNiceMock(WorkspaceInfo.class)).anyTimes();
@@ -61,6 +68,7 @@ public class DefaultDataAccessManagerTreeTest extends TestCase {
         return new DefaultDataAccessManager(new MemoryDataAccessRuleDAO(catalog, props)).root;
     }
 
+    @Test
     public void testWideOpen() throws Exception {
         SecureTreeNode root = buildTree("wideOpen.properties");
         assertEquals(0, root.children.size());
@@ -71,6 +79,7 @@ public class DefaultDataAccessManagerTreeTest extends TestCase {
         assertTrue(root.canAccess(anonymous, AccessMode.WRITE));
     }
 
+    @Test
     public void testLockedDown() throws Exception {
         SecureTreeNode root = buildTree("lockedDown.properties");
         assertEquals(0, root.children.size());
@@ -88,6 +97,7 @@ public class DefaultDataAccessManagerTreeTest extends TestCase {
         assertTrue(root.canAccess(rwUser, AccessMode.WRITE));
     }
 
+    @Test
     public void testPublicRead() throws Exception {
         SecureTreeNode root = buildTree("publicRead.properties");
         assertEquals(0, root.children.size());
@@ -103,6 +113,7 @@ public class DefaultDataAccessManagerTreeTest extends TestCase {
         assertTrue(root.canAccess(rwUser, AccessMode.WRITE));
     }
 
+    @Test
     public void testComplex() throws Exception {
         SecureTreeNode root = buildTree("complex.properties");
 

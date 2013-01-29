@@ -1,12 +1,11 @@
-/* Copyright (c) 2011 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.gwc.layer;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
-import static org.geoserver.gwc.GWC.tileLayerName;
+import static com.google.common.base.Preconditions.*;
+import static org.geoserver.gwc.GWC.*;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -35,6 +34,7 @@ import org.geoserver.gwc.config.GWCConfig;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.filter.parameters.StringParameterFilter;
 import org.geowebcache.grid.GridSetBroker;
+import org.geowebcache.locks.LockProvider;
 import org.geowebcache.storage.StorageBroker;
 
 import com.google.common.base.Objects;
@@ -64,8 +64,8 @@ import com.google.common.collect.Sets;
  * {@link LayerInfo#getName()} (at least until GeoServer separates out data from publication - the
  * famous data/publish split), GWC is instructed to rename the layer preserving the cache and any
  * other information for the layer.</li>
- * <li><b>LayerGroupInfo modified</b>: either the {@link LayerGroupInfo#getLayers() layers} or
- * {@link LayerGroupInfo#getStyles() styles} changed for a {@code LayerGroupInfo}. It's cache is
+ * <li><b>LayerGroupInfo modified</b>: either the {@link LayerGroupInfo#layers() layers} or
+ * {@link LayerGroupInfo#styles() styles} changed for a {@code LayerGroupInfo}. It's cache is
  * truncated.</li>
  * <li><b>LayerInfo default style replaced</b>: a {@code LayerInfo} has been assigned a different
  * {@link LayerInfo#getDefaultStyle() default style}. The corresponding tile layer's cache is
@@ -354,6 +354,7 @@ public class CatalogLayerEventListener implements CatalogListener {
 
         if (save) {
             GridSetBroker gridSetBroker = mediator.getGridSetBroker();
+            LockProvider lockProvider = mediator.getLockProvider();
             GeoServerTileLayer tileLayer = new GeoServerTileLayer(li, gridSetBroker, tileLayerInfo);
             mediator.save(tileLayer);
         }
@@ -399,6 +400,7 @@ public class CatalogLayerEventListener implements CatalogListener {
             // notify the mediator of the rename so it changes the name of the layer in GWC without
             // affecting its caches
             GridSetBroker gridSetBroker = mediator.getGridSetBroker();
+            LockProvider lockProvider = mediator.getLockProvider();
 
             final GeoServerTileLayer oldTileLayer = (GeoServerTileLayer) mediator
                     .getTileLayerByName(oldLayerName);

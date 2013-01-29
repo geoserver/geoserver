@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -123,6 +123,22 @@ public class StoredQueryProvider {
             File f = new File(storedQueryDir(), toFilename(query.getName()));
             if (f.exists()) {
                 f.delete();
+            }
+        }
+        catch(IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    /**
+     * Removes all stored queries.
+     */
+    public void removeAll() {
+        try {
+            File dir = storedQueryDir();
+            File[] files = dir.listFiles();
+            for(int i=0; i<files.length; i++) {
+                 files[i].delete();
             }
         }
         catch(IOException e) {

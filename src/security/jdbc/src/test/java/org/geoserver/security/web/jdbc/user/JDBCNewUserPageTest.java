@@ -1,23 +1,33 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.security.web.jdbc.user;
 
 import org.geoserver.security.jdbc.H2RoleServiceTest;
 import org.geoserver.security.jdbc.H2UserGroupServiceTest;
 import org.geoserver.security.web.user.NewUserPageTest;
+import org.junit.Test;
 
 public class JDBCNewUserPageTest extends NewUserPageTest {
 
-    public void testFill() throws Exception{
+    @Override
+    protected void doInitialize() throws Exception {
         initializeForJDBC();
+    }
+
+    @Test
+    public void testFill() throws Exception{
         doTestFill();
     }
     
+    @Test
     public void testFill3() throws Exception{
-        initializeForJDBC();
         doTestFill3();
     }
 
+    @Test
     public void testFill2() throws Exception{
-        initializeForJDBC();
         doTestFill2();
     }
 

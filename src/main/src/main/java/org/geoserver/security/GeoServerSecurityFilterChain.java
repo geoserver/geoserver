@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -29,7 +29,7 @@ public class GeoServerSecurityFilterChain implements Serializable {
     /** serialVersionUID */
     private static final long serialVersionUID = 1L;
 
-    List<RequestFilterChain> requestChains = new ArrayList();
+    List<RequestFilterChain> requestChains = new ArrayList<RequestFilterChain>();
 
     /*
      * chain patterns 
@@ -48,6 +48,9 @@ public class GeoServerSecurityFilterChain implements Serializable {
     public static final String SECURITY_CONTEXT_ASC_FILTER = "contextAsc";
     public static final String SECURITY_CONTEXT_NO_ASC_FILTER = "contextNoAsc";
     
+    public static final String ROLE_FILTER = "roleFilter";
+    public static final String SSL_FILTER = "sslFilter";
+    
     public static final String FORM_LOGIN_FILTER = "form";
     public static final String FORM_LOGOUT_FILTER = "formLogout";
 
@@ -64,44 +67,52 @@ public class GeoServerSecurityFilterChain implements Serializable {
     public static final String FILTER_SECURITY_INTERCEPTOR = "interceptor";
     public static final String FILTER_SECURITY_REST_INTERCEPTOR = "restInterceptor";
 
-    static RequestFilterChain WEB = new RequestFilterChain(WEB_CHAIN, GWC_WEB_CHAIN);
+    // standard chain names as constant
+    public static final String WEB_CHAIN_NAME="web";
+    public static final String WEB_LOGIN_CHAIN_NAME="webLogin";
+    public static final String WEB_LOGOUT_CHAIN_NAME="webLogout";
+    public static final String REST_CHAIN_NAME="rest";
+    public static final String GWC_CHAIN_NAME="gwc";
+    public static final String DEFAULT_CHAIN_NAME="default";
+    
+    static HtmlLoginFilterChain WEB = new HtmlLoginFilterChain(WEB_CHAIN, GWC_WEB_CHAIN);
     static {
-        WEB.setName("web");
-        WEB.setFilterNames(SECURITY_CONTEXT_ASC_FILTER, REMEMBER_ME_FILTER, ANONYMOUS_FILTER,
-            GUI_EXCEPTION_TRANSLATION_FILTER, FILTER_SECURITY_INTERCEPTOR);
+        WEB.setName(WEB_CHAIN_NAME);
+        WEB.setFilterNames(REMEMBER_ME_FILTER, FORM_LOGIN_FILTER,ANONYMOUS_FILTER);
+        WEB.setAllowSessionCreation(true);
+    }
+    
+    
+    private static ConstantFilterChain WEB_LOGIN = new ConstantFilterChain(FORM_LOGIN_CHAIN);
+    static {
+        WEB_LOGIN.setName(WEB_LOGIN_CHAIN_NAME);
+        WEB_LOGIN.setFilterNames(FORM_LOGIN_FILTER);
     }
 
-    private static RequestFilterChain WEB_LOGIN = new RequestFilterChain(FORM_LOGIN_CHAIN);
+    private static LogoutFilterChain WEB_LOGOUT = new LogoutFilterChain(FORM_LOGOUT_CHAIN);
     static {
-        WEB_LOGIN.setName("webLogin");
-        WEB_LOGIN.setFilterNames(SECURITY_CONTEXT_ASC_FILTER, FORM_LOGIN_FILTER);
+        WEB_LOGOUT.setName(WEB_LOGOUT_CHAIN_NAME);
+        WEB_LOGOUT.setFilterNames(FORM_LOGOUT_FILTER);
     }
 
-    private static RequestFilterChain WEB_LOGOUT = new RequestFilterChain(FORM_LOGOUT_CHAIN);
+    private static ServiceLoginFilterChain REST = new ServiceLoginFilterChain(REST_CHAIN);
     static {
-        WEB_LOGOUT.setName("webLogout");
-        WEB_LOGOUT.setFilterNames(SECURITY_CONTEXT_ASC_FILTER, FORM_LOGOUT_FILTER);
+        REST.setName(REST_CHAIN_NAME);
+        REST.setFilterNames( BASIC_AUTH_FILTER, ANONYMOUS_FILTER);
+        REST.setInterceptorName(FILTER_SECURITY_REST_INTERCEPTOR);
     }
 
-    private static RequestFilterChain REST = new RequestFilterChain(REST_CHAIN);
+    private static ServiceLoginFilterChain GWC = new ServiceLoginFilterChain(GWC_REST_CHAIN);
     static {
-        REST.setName("rest");
-        REST.setFilterNames(SECURITY_CONTEXT_NO_ASC_FILTER, BASIC_AUTH_FILTER, ANONYMOUS_FILTER, 
-            DYNAMIC_EXCEPTION_TRANSLATION_FILTER, FILTER_SECURITY_REST_INTERCEPTOR);
+        GWC.setName(GWC_CHAIN_NAME);
+        GWC.setFilterNames( BASIC_AUTH_FILTER);
+        GWC.setInterceptorName(FILTER_SECURITY_REST_INTERCEPTOR);
     }
 
-    private static RequestFilterChain GWC = new RequestFilterChain(GWC_REST_CHAIN);
+    private static ServiceLoginFilterChain DEFAULT = new ServiceLoginFilterChain(DEFAULT_CHAIN);
     static {
-        GWC.setName("gwc");
-        GWC.setFilterNames(SECURITY_CONTEXT_NO_ASC_FILTER, BASIC_AUTH_FILTER, 
-            DYNAMIC_EXCEPTION_TRANSLATION_FILTER, FILTER_SECURITY_REST_INTERCEPTOR);
-    }
-
-    private static RequestFilterChain DEFAULT = new RequestFilterChain(DEFAULT_CHAIN);
-    static {
-        DEFAULT.setName("default");
-        DEFAULT.setFilterNames(SECURITY_CONTEXT_NO_ASC_FILTER, BASIC_AUTH_FILTER, ANONYMOUS_FILTER, 
-            DYNAMIC_EXCEPTION_TRANSLATION_FILTER, FILTER_SECURITY_INTERCEPTOR);
+        DEFAULT.setName(DEFAULT_CHAIN_NAME);
+        DEFAULT.setFilterNames( BASIC_AUTH_FILTER, ANONYMOUS_FILTER);
     }
 
     private static List<RequestFilterChain> INITIAL = new ArrayList<RequestFilterChain>();
@@ -115,7 +126,7 @@ public class GeoServerSecurityFilterChain implements Serializable {
     }
 
     public GeoServerSecurityFilterChain() {
-        requestChains = new ArrayList();
+        requestChains = new ArrayList<RequestFilterChain>();
     }
 
     /**
@@ -129,7 +140,7 @@ public class GeoServerSecurityFilterChain implements Serializable {
      * Constructor cloning all collections
      */
     public GeoServerSecurityFilterChain(GeoServerSecurityFilterChain other) {
-        this.requestChains = new ArrayList(other.getRequestChains());
+        this.requestChains = new ArrayList<RequestFilterChain>(other.getRequestChains());
     }
 
     /**
@@ -138,7 +149,7 @@ public class GeoServerSecurityFilterChain implements Serializable {
      * @return
      */
     public static GeoServerSecurityFilterChain createInitialChain() {
-        return new GeoServerSecurityFilterChain(new ArrayList(INITIAL));
+        return new GeoServerSecurityFilterChain(new ArrayList<RequestFilterChain>(INITIAL));
     }
 
     public void postConfigure(GeoServerSecurityManager secMgr) {
@@ -187,6 +198,15 @@ public class GeoServerSecurityFilterChain implements Serializable {
     public List<RequestFilterChain> getRequestChains() {
         return requestChains;
     }
+    
+    public List<RequestFilterChain> getVariableRequestChains() {
+        List<RequestFilterChain> result = new ArrayList<RequestFilterChain>();
+        for (RequestFilterChain chain: getRequestChains())
+            if (chain.isConstant()==false)
+                result.add(chain);
+        return result;
+    }
+
 
     public RequestFilterChain getRequestChainByName(String name) {
         for (RequestFilterChain requestChain : requestChains) {
@@ -197,71 +217,6 @@ public class GeoServerSecurityFilterChain implements Serializable {
         return null;
     }
 
-    public Map<String,List<String>> compileFilterMap() {
-        Map<String,List<String>> filterMap = new LinkedHashMap();
-        
-        for (RequestFilterChain ch : requestChains) {
-            //patterns.addAll(ch.getPatterns());
-            
-            for (String p : ch.getPatterns()) {
-                filterMap.put(p, ch.getFilterNames());
-            }
-        }
-
-        return filterMap;
-    }
-
-    public void simplify() {
-        int j = 0;
-        for (Iterator<RequestFilterChain> it = requestChains.iterator(); it.hasNext(); j++) {
-            RequestFilterChain requestChain = it.next();
-            RequestFilterChain toMerge = null;
-
-            //look at any previous chain to see if we can merge
-            for (int i = 0; i < j; i++) {
-                RequestFilterChain requestChain2 = requestChains.get(i);
-                if (requestChain2 == requestChain) {
-                    continue;
-                }
-                if (requestChain2.getFilterNames().equals(requestChain.getFilterNames())) {
-                    toMerge = requestChain2;
-                    break;
-                }
-            }
-
-            if (toMerge != null) {
-                toMerge.getPatterns().addAll(requestChain.getPatterns());
-                it.remove();
-                j--;
-            }
-        }
-    
-    }
-
-    public void decompileFilterMap(Map<String,List<String>> filterMap) {
-        List<RequestFilterChain> requestChains = new ArrayList();
-        for (String pattern : filterMap.keySet()) {
-            List<String> filterNames = filterMap.get(pattern);
-            RequestFilterChain requestChain = null;
-            for (RequestFilterChain chain : requestChains) {
-                if (chain.getFilterNames().equals(filterNames)) {
-                    requestChain = chain;
-                    break;
-                }
-            }
-            if (requestChain == null) {
-                //new chain
-                requestChain = new RequestFilterChain(pattern);
-                requestChain.setFilterNames(filterNames);
-            }
-            else {
-                //merge with existing chain
-                requestChain.getPatterns().add(pattern);
-            }
-            requestChains.add(requestChain);
-        }
-        this.requestChains = requestChains;
-    }
 
     /**
      * Inserts a filter as the first of the filter list corresponding to the specified pattern.
@@ -369,6 +324,17 @@ public class GeoServerSecurityFilterChain implements Serializable {
             return requestChains.remove(requestChain);
         }
         return false;
+    }
+
+    /**
+     * Removes a filter by name from all filter request chains.
+     */
+    public boolean remove(String filterName) {
+        boolean removed = false;
+        for (RequestFilterChain requestChain : requestChains) {
+            removed |= requestChain.getFilterNames().remove(filterName);
+        }
+        return removed;
     }
 
     RequestFilterChain findAndCheck(String pattern, String filterName) {

@@ -1,9 +1,16 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.gwc.layer;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertSame;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.eq;
@@ -27,13 +34,12 @@ import java.util.Set;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
-import junit.framework.TestCase;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LayerInfo.Type;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
@@ -60,9 +66,13 @@ import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.grid.OutsideCoverageException;
 import org.geowebcache.io.Resource;
 import org.geowebcache.layer.meta.LayerMetaInformation;
+import org.geowebcache.locks.MemoryLockProvider;
 import org.geowebcache.mime.MimeType;
 import org.geowebcache.storage.StorageBroker;
 import org.geowebcache.storage.TileObject;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -70,7 +80,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-public class GeoServerTileLayerTest extends TestCase {
+public class GeoServerTileLayerTest {
 
     private LayerInfoImpl layerInfo;
 
@@ -88,14 +98,17 @@ public class GeoServerTileLayerTest extends TestCase {
 
     private GWC mockGWC;
 
-    @Override
+    @After
     public void tearDown() throws Exception {
         GWC.set(null);
     }
 
-    @Override
+    @Before
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void setUp() throws Exception {
         mockGWC = mock(GWC.class);
+        MemoryLockProvider lockProvider = new MemoryLockProvider();
+        when(mockGWC.getLockProvider()).thenReturn(lockProvider);
         GWC.set(mockGWC);
 
         final String layerInfoId = "mock-layer-info";
@@ -147,7 +160,7 @@ public class GeoServerTileLayerTest extends TestCase {
         final String layerGroupId = "mock-layergroup-id";
         layerGroup.setId(layerGroupId);
         layerGroup.setName("MockLayerGroup");
-        layerGroup.setLayers(Collections.singletonList((LayerInfo) layerInfo));
+        layerGroup.setLayers(Collections.singletonList((PublishedInfo) layerInfo));
 
         defaults = GWCConfig.getOldDefaults();
 
@@ -160,6 +173,7 @@ public class GeoServerTileLayerTest extends TestCase {
         gridSetBroker.put(gridSetBroker.WORLD_EPSG3857);
     }
 
+    @Test
     public void testEnabled() {
         layerInfo.setEnabled(true);
         layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
@@ -186,6 +200,7 @@ public class GeoServerTileLayerTest extends TestCase {
         assertTrue(layerGroupInfoTileLayer.isEnabled());
     }
 
+    @Test
     public void testGetMetaTilingFactors() {
 
         layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
@@ -206,6 +221,7 @@ public class GeoServerTileLayerTest extends TestCase {
         assertEquals(2 + defaults.getMetaTilingY(), metaTilingFactors[1]);
     }
 
+    @Test
     public void testIsQueryable() {
 
         layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
@@ -219,6 +235,7 @@ public class GeoServerTileLayerTest extends TestCase {
         verify(mockGWC, times(2)).isQueryable(same(layerInfoTileLayer));
     }
 
+    @Test
     public void testGetName() {
 
         layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
@@ -229,6 +246,7 @@ public class GeoServerTileLayerTest extends TestCase {
 
     }
 
+    @Test
     public void testGetParameterFilters() {
 
         layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
@@ -245,6 +263,7 @@ public class GeoServerTileLayerTest extends TestCase {
         // layerInfoTileLayer.getInfo().getCachedStyles().add("alternateStyle-2");
     }
 
+    @Test
     public void testGetDefaultParameterFilters() {
 
         layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
@@ -268,6 +287,7 @@ public class GeoServerTileLayerTest extends TestCase {
     //
     // }
 
+    @Test
     public void testGetModifiableParameters() throws GeoWebCacheException {
 
         layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
@@ -293,6 +313,7 @@ public class GeoServerTileLayerTest extends TestCase {
         }
     }
 
+    @Test
     public void testGetMetaInformation() {
         layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
         layerGroupInfoTileLayer = new GeoServerTileLayer(layerGroup, defaults, gridSetBroker);
@@ -320,6 +341,7 @@ public class GeoServerTileLayerTest extends TestCase {
         assertEquals(0, keywords.size());
     }
 
+    @Test
     public void testGetStyles() {
         layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
         layerGroupInfoTileLayer = new GeoServerTileLayer(layerGroup, defaults, gridSetBroker);
@@ -334,6 +356,7 @@ public class GeoServerTileLayerTest extends TestCase {
         assertEquals("newDefault", layerInfoTileLayer.getStyles());
     }
 
+    @Test
     public void testGetGridSubsets() throws Exception {
         layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
         Set<String> gridSubsets = layerInfoTileLayer.getGridSubsets();
@@ -359,6 +382,7 @@ public class GeoServerTileLayerTest extends TestCase {
         assertEquals(2, gridSubsets.size());
     }
 
+    @Test
     public void testGridSubsetBoundsClippedToTargetCrsAreaOfValidity() throws Exception {
 
         CoordinateReferenceSystem nativeCrs = CRS.decode("EPSG:4326", true);
@@ -382,6 +406,7 @@ public class GeoServerTileLayerTest extends TestCase {
                 expected.equals(gridSubsetExtent, threshold));
     }
 
+    @Test
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void testGetFeatureInfo() throws Exception {
 
@@ -432,6 +457,7 @@ public class GeoServerTileLayerTest extends TestCase {
         }
     }
 
+    @Test
     public void testGetTilePreconditions() throws Exception {
 
         StorageBroker storageBroker = mock(StorageBroker.class);
@@ -475,6 +501,7 @@ public class GeoServerTileLayerTest extends TestCase {
         }
     }
 
+    @Test
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void testGetTile() throws Exception {
 
@@ -515,6 +542,7 @@ public class GeoServerTileLayerTest extends TestCase {
         verify(mockGWC, times(1)).getResponseEncoder(eq(mimeType), isA(RenderedImageMap.class));
     }
 
+    @Test
     public void testGetMimeTypes() throws Exception {
 
         layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);

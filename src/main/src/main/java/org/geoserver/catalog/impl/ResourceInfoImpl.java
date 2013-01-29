@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -24,6 +24,8 @@ import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.Name;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
+import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * Default implementation of {@link ResourceInfo}.
@@ -222,7 +224,7 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
           php == ProjectionPolicy.REPROJECT_TO_DECLARED ) {
           return nativeBox.transform(declaredCRS,true); 
       } else if(php == ProjectionPolicy.FORCE_DECLARED) {
-          return new ReferencedEnvelope(nativeBox, declaredCRS);
+    	  return ReferencedEnvelope.create( (Envelope) nativeBox, declaredCRS);
       }
       
       return nativeBox;

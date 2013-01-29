@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+ * Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -15,10 +15,10 @@ import org.geotools.data.SampleDataAccess;
  * 
  * @author Ben Caradoc-Davies, CSIRO Exploration and Mining
  */
-public abstract class SampleDataAccessTestSupport extends GeoServerAbstractTestSupport {
+public abstract class SampleDataAccessTestSupport extends GeoServerSystemTestSupport {
 
     @Override
-    protected TestData buildTestData() throws Exception {
+    protected SampleDataAccessMockData createTestData() throws Exception {
         return new SampleDataAccessMockData();
     }
 

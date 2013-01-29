@@ -1,10 +1,12 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.gwc.web.gridset;
 
-import junit.framework.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.Session;
@@ -26,19 +28,14 @@ import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSetBroker;
+import org.junit.Test;
 
 public class GridSetNewPageTest extends GeoServerWicketTestSupport {
 
     /**
-     * This is a NOT a read only test, but we save the per test set up cost anyways
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new GridSetNewPageTest());
-    }
-
-    /**
      * Just a smoke test to make sure the page loads as expected
      */
+    @Test
     public void testPageLoad() {
         GridSetNewPage page = new GridSetNewPage(new PageParameters());
 
@@ -57,6 +54,7 @@ public class GridSetNewPageTest extends GeoServerWicketTestSupport {
         tester.assertComponent("gridSetForm:addZoomLevel", GeoServerAjaxFormLink.class);
     }
 
+    @Test
     public void testCreateFromTemplate() {
 
         PageParameters params = new PageParameters();
@@ -90,6 +88,7 @@ public class GridSetNewPageTest extends GeoServerWicketTestSupport {
         assertEquals(check.getNumLevels() + 2, created.getNumLevels());
     }
 
+    @Test
     public void testCreateFromScratch() {
         GWC mediator = GWC.get();
         GridSetBroker gridSetBroker = mediator.getGridSetBroker();

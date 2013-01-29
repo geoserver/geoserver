@@ -1,29 +1,32 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.gwc.web;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Sets.newHashSet;
+import static com.google.common.collect.Lists.*;
+import static com.google.common.collect.Sets.*;
+import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
-import junit.framework.Test;
-
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.util.tester.FormTester;
+import org.geoserver.gwc.ConfigurableLockProvider;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geowebcache.locks.MemoryLockProvider;
+import org.geowebcache.locks.NIOLockProvider;
+import org.junit.Before;
+import org.junit.Test;
 
 public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
 
-    public static Test suite() {
-        return new OneTimeTestSetup(new GWCSettingsPageTest());
-    }
-
+    @Test
     public void testPageLoad() {
         GWCSettingsPage page = new GWCSettingsPage();
 
@@ -32,7 +35,16 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
 
         // print(page, true, true);
     }
+    
+    @Before
+    public void cleanup() throws IOException {
+        GWC gwc = GWC.get();
+        GWCConfig config = gwc.getConfig();
+        config.setLockProviderName(null);
+        gwc.saveConfig(config);
+    }
 
+    @Test
     public void testEditDirectWMSIntegration() {
         GWC gwc = GWC.get();
         boolean directWMSIntegrationEnabled = gwc.getConfig().isDirectWMSIntegrationEnabled();
@@ -42,6 +54,7 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         assertEquals(!directWMSIntegrationEnabled, gwc.getConfig().isDirectWMSIntegrationEnabled());
     }
 
+    @Test
     public void testEditEnableWMSC() {
         GWC gwc = GWC.get();
         boolean enabled = gwc.getConfig().isWMSCEnabled();
@@ -50,7 +63,7 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         assertEquals(!enabled, gwc.getConfig().isWMSCEnabled());
     }
 
-    public void testEditEnableWMTS() {
+    @Test public void testEditEnableWMTS() {
         GWC gwc = GWC.get();
         boolean enabled = gwc.getConfig().isWMTSEnabled();
         testEditCheckboxOption("form:gwcServicesPanel:enableWMTS", "gwcServicesPanel:enableWMTS",
@@ -58,6 +71,7 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         assertEquals(!enabled, gwc.getConfig().isWMTSEnabled());
     }
 
+    @Test
     public void testEditEnableTMS() {
         GWC gwc = GWC.get();
         boolean enabled = gwc.getConfig().isTMSEnabled();
@@ -66,6 +80,7 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         assertEquals(!enabled, gwc.getConfig().isTMSEnabled());
     }
 
+    @Test
     public void testEnableCacheLayersByDefault() throws Exception {
         GWC gwc = GWC.get();
         GWCConfig config = gwc.getConfig();
@@ -79,6 +94,7 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         assertTrue(gwc.getConfig().isCacheLayersByDefault());
     }
 
+    @Test
     public void testDisableCacheLayersByDefault() throws Exception {
         GWC gwc = GWC.get();
         GWCConfig config = gwc.getConfig();
@@ -92,6 +108,7 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         assertFalse(gwc.getConfig().isCacheLayersByDefault());
     }
 
+    @Test
     public void testEnableAutoCacheStyles() throws Exception {
         GWC gwc = GWC.get();
         GWCConfig config = gwc.getConfig();
@@ -106,6 +123,7 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         assertTrue(gwc.getConfig().isCacheNonDefaultStyles());
     }
 
+    @Test
     public void testDisableAutoCacheStyles() throws Exception {
         GWC gwc = GWC.get();
         GWCConfig config = gwc.getConfig();
@@ -120,6 +138,7 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         assertFalse(gwc.getConfig().isCacheNonDefaultStyles());
     }
 
+    @Test
     public void testSetDefaultCacheFormats() throws Exception {
         GWC gwc = GWC.get();
         GWCConfig config = gwc.getConfig();
@@ -180,5 +199,38 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         form.submit("submit");
 
         tester.assertRenderedPage(GeoServerHomePage.class);
+    }
+    
+    @Test
+    public void testEditLockProvider() {
+        GWC gwc = GWC.get();
+        ConfigurableLockProvider lockProvider = (ConfigurableLockProvider) gwc.getLockProvider();
+        assertTrue(lockProvider.getDelegate() instanceof MemoryLockProvider);
+        
+        GWCSettingsPage page = new GWCSettingsPage();
+        tester.startPage(page);
+        tester.assertRenderedPage(GWCSettingsPage.class);
+        
+        // determine in a future proof way which item contains nioLock
+        DropDownChoice lockDropDown = (DropDownChoice) tester.getComponentFromLastRenderedPage("form:cachingOptionsPanel:container:configs:lockProvider");
+        List choices = lockDropDown.getChoices();
+        int nioLockIndex = -1;
+        for (int i = 0; i < choices.size(); i++) {
+            if("nioLock".equals(choices.get(i))) {
+                nioLockIndex = i;
+                break;
+            }
+        }
+        assertTrue(nioLockIndex >= 0);
+        
+        FormTester form = tester.newFormTester("form");
+        form.select("cachingOptionsPanel:container:configs:lockProvider", nioLockIndex);
+        form.submit("submit");
+        
+        tester.assertNoErrorMessage();
+        
+        // check the lock provider has been changed
+        lockProvider = (ConfigurableLockProvider) gwc.getLockProvider();
+        assertTrue(lockProvider.getDelegate() instanceof NIOLockProvider);
     }
 }

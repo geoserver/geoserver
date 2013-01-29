@@ -1,8 +1,10 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.filters;
+
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -15,11 +17,13 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
-import org.geoserver.test.GeoServerTestSupport;
+import org.junit.Test;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-public class GZIPResponseStreamTest extends GeoServerTestSupport {
+public class GZIPResponseStreamTest  {
+    
+    @Test
     public void testStream() throws Exception {
         ByteStreamCapturingHttpServletResponse response = 
             new ByteStreamCapturingHttpServletResponse(new MockHttpServletResponse());

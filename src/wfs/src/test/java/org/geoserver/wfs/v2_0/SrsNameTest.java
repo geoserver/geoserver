@@ -1,13 +1,20 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wfs.v2_0;
 
+import static org.junit.Assert.assertEquals;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.GMLInfo.SrsNameStyle;
 import org.geoserver.wfs.WFSInfo;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class SrsNameTest extends WFS20TestSupport {
 
+	@Test
     public void testSrsNameSyntax() throws Exception {
         doTestSrsNameSyntax(SrsNameStyle.URN2, false);
         doTestSrsNameSyntax(SrsNameStyle.URN, true);

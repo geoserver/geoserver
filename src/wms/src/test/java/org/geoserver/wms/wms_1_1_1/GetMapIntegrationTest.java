@@ -1,8 +1,10 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.wms_1_1_1;
+
+import static org.junit.Assert.*;
 
 import java.awt.Color;
 import java.awt.Transparency;
@@ -13,34 +15,48 @@ import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletResponse;
 import javax.xml.namespace.QName;
 
-import junit.framework.Test;
-
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.spi.LoggingEvent;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.test.RemoteOWSTestSupport;
+import org.geoserver.wms.GetMap;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
+import org.junit.Test;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class GetMapIntegrationTest extends WMSTestSupport {
+    
     String bbox = "-130,24,-66,50";
 
     String styles = "states";
 
     String layers = "sf:states";
-
+    
     public static final String STATES_SLD = "<StyledLayerDescriptor version=\"1.0.0\">"
             + "<UserLayer><Name>sf:states</Name><UserStyle><Name>UserSelection</Name>"
             + "<FeatureTypeStyle><Rule><Filter xmlns:gml=\"http://www.opengis.net/gml\">"
@@ -106,48 +122,40 @@ public class GetMapIntegrationTest extends WMSTestSupport {
             + "                        <ogc:Height>250</ogc:Height>\n "
             + "                </ogc:Size>\n " + "        </ogc:Output>\n " + "</ogc:GetMap>\n ";
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new GetMapIntegrationTest());
+  
+    @Override
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        super.setUpTestData(testData);
+        testData.setUpWcs11RasterLayers();
     }
     
     @Override
-    public void setUpInternal() throws Exception {
-        // Logging.getLogger("org.geoserver.ows").setLevel(Level.OFF);
-    }
-
-    @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        dataDirectory.addStyle("Population",
-                GetMapIntegrationTest.class.getResource("Population.sld"));
-        dataDirectory.addPropertiesType(new QName(MockData.SF_URI, "states", MockData.SF_PREFIX),
-                getClass().getResource("states.properties"), null);
-        
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        Catalog catalog = getCatalog();
+        testData.addStyle("Population","Population.sld",GetMapIntegrationTest.class,catalog);
+        testData.addVectorLayer(new QName(MockData.SF_URI, "states", MockData.SF_PREFIX),
+                Collections.EMPTY_MAP,"states.properties", getClass(),catalog);
         // add a parametric style to the mix
-        dataDirectory.addStyle("parametric", WMSTestSupport.class.getResource("map/parametric.sld"));
+        testData.addStyle("parametric", "parametric.sld",org.geoserver.wms.map.GetMapIntegrationTest.class,catalog);
         
         // add a translucent style to the mix
-        dataDirectory.addStyle("translucent", GetMapIntegrationTest.class.getResource("translucent.sld"));
-        
-        // add the mosaic with holes
-        URL style = MockData.class.getResource("raster.sld");
-        String styleName = "raster";
-        dataDirectory.addStyle(styleName, style);
-        dataDirectory.addCoverageFromZip(new QName(MockData.SF_URI, "mosaic_holes", MockData.SF_PREFIX), 
-                GetMapIntegrationTest.class.getResource("mosaic_holes.zip"), null, "raster");
-        
-        // add a raster style with translucent color map
-        dataDirectory.addWcs11Coverages();
-        dataDirectory.addStyle("demTranslucent", GetMapIntegrationTest.class.getResource("demTranslucent.sld"));
-    }
+        testData.addStyle("translucent", "translucent.sld",GetMapIntegrationTest.class,catalog);
 
+        testData.addStyle("raster", "raster.sld",SystemTestData.class,catalog);
+        testData.addStyle("demTranslucent","demTranslucent.sld",GetMapIntegrationTest.class,catalog);
+        
+        Map properties = new HashMap();
+        properties.put(LayerProperty.STYLE,"raster");
+        testData.addRasterLayer(new QName(MockData.SF_URI, "mosaic_holes", MockData.SF_PREFIX),
+                "mosaic_holes.zip", null, properties,GetMapIntegrationTest.class,catalog);
+    }
+    
     // protected String getDefaultLogConfiguration() {
     // return "/DEFAULT_LOGGING.properties";
     // }
 
+    @Test
     public void testImage() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox
                 + "&styles=&layers=" + layers + "&Format=image/png" + "&request=GetMap"
@@ -155,6 +163,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         checkImage(response);
     }
     
+    @Test
     public void testLayoutLegendNPE() throws Exception {
         // set the title to null
         FeatureTypeInfo states = getCatalog().getFeatureTypeByName("states");
@@ -178,6 +187,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertPixel(image, 12, 52, Color.BLUE);
     }
     
+    @Test
     public void testLayoutLegendStyleTitle() throws Exception {
         // set the title to null
         FeatureTypeInfo states = getCatalog().getFeatureTypeByName("states");
@@ -201,6 +211,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertPixel(image, 12, 72, Color.BLUE);
     }
     
+    @Test
     public void testLayoutTranslucent() throws Exception {
         // add the layout to the data dir
         File layouts = getDataDirectory().findOrCreateDir("layouts");
@@ -219,6 +230,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertPixel(image, 52, 221, Color.BLACK);
     }
     
+    @Test
     public void testGeotiffMime() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox
                 + "&styles=&layers=" + layers + "&Format=image/geotiff" + "&request=GetMap"
@@ -227,6 +239,55 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals("inline; filename=sf-states.tif", response.getHeader("Content-Disposition"));
     }
     
+    @Test 
+    public void testLargerThanWorld() throws Exception {
+        // setup a logging "bomb" rigged to explode when the warning message we
+        // want to eliminate
+        org.apache.log4j.Logger l4jLogger = getLog4JLogger(GetMap.class, "LOGGER");
+        l4jLogger.addAppender(new AppenderSkeleton() {
+
+            @Override
+            public boolean requiresLayout() {
+                return false;
+            }
+
+            @Override
+            public void close() {
+            }
+
+            @Override
+            protected void append(LoggingEvent event) {
+                if (event.getMessage() != null
+                        && event.getMessage().toString()
+                                .startsWith("Failed to compute the scale denominator")) {
+                    // ka-blam!
+                    fail("The error message is still there!");
+                }
+
+            }
+        });
+        
+        MockHttpServletResponse response = getAsServletResponse(
+                "wms?bbox=-9.6450076761637E7,-3.9566251818225E7,9.6450076761637E7,3.9566251818225E7" 
+                + "&styles=&layers=" + layers + "&Format=image/png" + "&request=GetMap"
+                + "&width=550" + "&height=250" + "&srs=EPSG:900913");
+        assertEquals("image/png", response.getContentType());
+        assertEquals("inline; filename=sf-states.png", response.getHeader("Content-Disposition"));
+    }
+
+    private org.apache.log4j.Logger getLog4JLogger(Class targetClass, String fieldName) throws NoSuchFieldException,
+            IllegalAccessException {
+        Field field = targetClass.getDeclaredField(fieldName);
+        field.setAccessible(true);
+        Logger jlogger = (Logger) field.get(null);
+        Field l4jField = jlogger.getClass().getDeclaredField("logger");
+        l4jField.setAccessible(true);
+        org.apache.log4j.Logger l4jLogger = (org.apache.log4j.Logger) l4jField.get(jlogger);
+        return l4jLogger;
+    }
+
+
+    @Test
     public void testPng8Opaque() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox
                 + "&styles=&layers=" + layers + "&Format=image/png8" + "&request=GetMap"
@@ -241,6 +302,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals(-1, cm.getTransparentPixel());
     }
     
+    @Test
     public void testPng8ForceBitmask() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox
                 + "&styles=&layers=" + layers + "&Format=image/png8" + "&request=GetMap"
@@ -255,6 +317,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertTrue(cm.getTransparentPixel() >= 0);
     }
     
+    @Test 
     public void testPng8Translucent() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox
                 + "&styles=&layers=" + layers + "&Format=image/png8" + "&request=GetMap"
@@ -269,6 +332,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
     }
 
     
+    @Test 
     public void testDefaultContentDisposition() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox
                 + "&styles=&layers=" + layers + "&Format=image/png" + "&request=GetMap"
@@ -277,6 +341,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals("inline; filename=sf-states.png", response.getHeader("Content-Disposition"));
     }
     
+    @Test
     public void testForcedContentDisposition() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox
                 + "&styles=&layers=" + layers + "&Format=image/png" + "&request=GetMap"
@@ -285,6 +350,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals("attachment; filename=sf-states.png", response.getHeader("Content-Disposition"));
     }
     
+    @Test
     public void testForcedFilename() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox
                 + "&styles=&layers=" + layers + "&Format=image/png" + "&request=GetMap"
@@ -293,6 +359,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals("inline; filename=dude.png", response.getHeader("Content-Disposition"));
     }
     
+    @Test
     public void testForcedContentDispositionFilename() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox
                 + "&styles=&layers=" + layers + "&Format=image/png" + "&request=GetMap"
@@ -302,6 +369,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
     }
     
 
+    @Test
     public void testSldBody() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox + "&styles="
                 + "&layers=" + layers + "&Format=image/png" + "&request=GetMap" + "&width=550"
@@ -310,6 +378,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         checkImage(response);
     }
     
+    @Test 
     public void testSldBody11() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox + "&styles="
                 + "&layers=" + layers + "&Format=image/png" + "&request=GetMap" + "&width=550"
@@ -318,6 +387,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         checkImage(response);
     }
     
+    @Test
     public void testSldBodyNoVersion() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox + "&styles="
                 + "&layers=" + layers + "&Format=image/png" + "&request=GetMap" + "&width=550"
@@ -326,6 +396,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         checkImage(response);
     }
 
+    @Test 
     public void testSldBodyPost() throws Exception {
         MockHttpServletResponse response = postAsServletResponse("wms?bbox=" + bbox
                 + "&format=image/png&request=GetMap&width=550&height=250" + "&srs=EPSG:4326",
@@ -334,6 +405,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         checkImage(response);
     }
     
+    @Test
     public void testSldBodyPost11() throws Exception {
         MockHttpServletResponse response = postAsServletResponse("wms?bbox=" + bbox
                 + "&format=image/png&request=GetMap&width=550&height=250" + "&srs=EPSG:4326",
@@ -342,11 +414,13 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         checkImage(response);
     }
 
+    @Test
     public void testXmlPost() throws Exception {
         MockHttpServletResponse response = postAsServletResponse("wms?", STATES_GETMAP);
         checkImage(response);
     }
 
+    @Test
     public void testRemoteOWSGet() throws Exception {
         if (!RemoteOWSTestSupport.isRemoteWFSStatesAvailable(LOGGER))
             return;
@@ -369,6 +443,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals("image/png", response.getContentType());
     }
 
+    @Test
     public void testRemoteOWSUserStyleGet() throws Exception {
         if (!RemoteOWSTestSupport.isRemoteWFSStatesAvailable(LOGGER)) {
             return;
@@ -385,6 +460,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals("image/png", response.getContentType());
     }
 
+    @Test 
     public void testWorkspaceQualified() throws Exception {
 
         Document doc = getAsDOM("cite/wms?request=getmap&service=wms"
@@ -398,6 +474,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals("image/png", response.getContentType());
     }
 
+    @Test
     public void testLayerQualified() throws Exception {
         Document doc = getAsDOM("cite/Ponds/wms?request=getmap&service=wms"
                 + "&layers=Forests&width=100&height=100&format=image/png"
@@ -410,6 +487,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals("image/png", response.getContentType());
     }
     
+    @Test
     public void testGroupWorkspaceQualified() throws Exception {
         // check the group works without workspace qualification
         String url = "wms?request=getmap&service=wms"
@@ -423,6 +501,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals("image/png", response.getContentType());
     }
     
+    @Test
     public void testEnvDefault() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox
                 + "&styles=parametric&layers=" + layers + "&Format=image/png" + "&request=GetMap"
@@ -439,6 +518,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         //assertEquals(0, rgba[2]);
     }
     
+    @Test
     public void testEnvRed() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox
                 + "&styles=parametric&layers=" + layers + "&Format=image/png" + "&request=GetMap"
@@ -455,6 +535,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         //assertEquals(0, rgba[2]);
     }
     
+    @Test
     public void testMosaicHoles() throws Exception {
         String url = "wms?LAYERS=sf%3Amosaic_holes&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1" +
         		"&REQUEST=GetMap&STYLES=&SRS=EPSG%3A4326" +
@@ -478,6 +559,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertTrue(Arrays.equals(new int[] {255,255,255,0}, pixel));
     }
     
+    @Test
     public void testTransparentPaletteOpaqueOutput() throws Exception {
         String url = "wms?LAYERS=" + getLayerId(MockData.TASMANIA_DEM) + "&styles=demTranslucent&"
                 + "FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1"
@@ -506,6 +588,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals(0, color[2]);
     }
     
+    @Test
     public void testTransparentPaletteTransparentOutput() throws Exception {
         String url = "wms?LAYERS=" + getLayerId(MockData.TASMANIA_DEM) + "&styles=demTranslucent&"
                 + "FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1"
@@ -533,6 +616,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals(255, color[3]);
     }
     
+    @Test 
     public void testTransparentPaletteTransparentOutputPng8() throws Exception {
         String url = "wms?LAYERS=" + getLayerId(MockData.TASMANIA_DEM) + "&styles=demTranslucent&"
                 + "FORMAT=image%2Fpng8&SERVICE=WMS&VERSION=1.1.1"
@@ -559,5 +643,120 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals(0, color[2]);
         assertEquals(255, color[3]);
     }
+    
+    @Test
+    public void testLayoutLegendStyleTitleDPI() throws Exception {
+        // set the title to null
+        FeatureTypeInfo states = getCatalog().getFeatureTypeByName("states");
+        states.setTitle(null);
+        getCatalog().save(states);
+        
+        // add the layout to the data dir
+        File layouts = getDataDirectory().findOrCreateDir("layouts");
+        URL layout = GetMapIntegrationTest.class.getResource("test-layout-sldtitle.xml");
+        FileUtils.copyURLToFile(layout, new File(layouts, "test-layout-sldtitle.xml"));
+    
+        int dpi = 90 * 2;
+        int width = 550 * 2;
+        int height = 250 * 2;
+    
+        // get a map with the layout, it used to NPE
+        BufferedImage image = getAsImage("wms?bbox=" + bbox
+                + "&styles=Population&layers=" + layers + "&Format=image/png" + "&request=GetMap"
+                + "&width=" + width + "&height=" + height + "&srs=EPSG:4326&format_options=layout:test-layout-sldtitle;dpi:"+dpi, "image/png");
+        // RenderedImageBrowser.showChain(image);
+    
+        // check the pixels that should be in the legend
+        assertPixel(image, 15, 67, Color.RED);
+        assertPixel(image, 15, 107, Color.GREEN);
+        assertPixel(image, 15, 147, Color.BLUE);
+    }
+    
+    @Test    
+    public void testLayerGroupSingle() throws Exception {
+        Catalog catalog = getCatalog();
+        LayerGroupInfo group = createLakesPlacesLayerGroup(catalog, LayerGroupInfo.Mode.SINGLE, null);
+        try {
+            String url = "wms?LAYERS="
+                    + group.getName()
+                    + "&STYLES=&FORMAT=image%2Fpng"
+                    + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=0.0000,-0.0020,0.0035,0.0010";
+            BufferedImage image = getAsImage(url, "image/png");
 
+            assertPixel(image, 150, 160, Color.WHITE);
+            // places
+            assertPixel(image, 180, 16, COLOR_PLACES_GRAY);
+            // lakes
+            assertPixel(image, 90, 200, COLOR_LAKES_BLUE);
+        } finally {
+            catalog.remove(group);
+        }        
+    }
+
+    @Test    
+    public void testLayerGroupNamed() throws Exception {
+        Catalog catalog = getCatalog();
+        LayerGroupInfo group = createLakesPlacesLayerGroup(catalog, LayerGroupInfo.Mode.NAMED, null);
+        try {
+            String url = "wms?LAYERS="
+                    + group.getName()
+                    + "&STYLES=&FORMAT=image%2Fpng"
+                    + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=0.0000,-0.0020,0.0035,0.0010";
+            BufferedImage image = getAsImage(url, "image/png");
+
+            assertPixel(image, 150, 160, Color.WHITE);
+            // places
+            assertPixel(image, 180, 16, COLOR_PLACES_GRAY);
+            // lakes
+            assertPixel(image, 90, 200, COLOR_LAKES_BLUE);
+        } finally {
+            catalog.remove(group);
+        }               
+    }
+
+    @Test
+    public void testLayerGroupContainer() throws Exception {
+        Catalog catalog = getCatalog();
+        LayerGroupInfo group = createLakesPlacesLayerGroup(catalog, LayerGroupInfo.Mode.CONTAINER, null);
+        try {
+            String url = "wms?LAYERS="
+                    + group.getName()
+                    + "&STYLES=&FORMAT=image%2Fpng"
+                    + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=0.0000,-0.0020,0.0035,0.0010";
+            // this group is not meant to be called directly so we should get an exception
+            MockHttpServletResponse resp = getAsServletResponse(url);
+            assertEquals("application/vnd.ogc.se_xml", resp.getContentType());
+            
+            Document dom = getAsDOM(url);
+            assertEquals("ServiceExceptionReport", dom.getDocumentElement().getNodeName()); 
+            
+            Element serviceException = (Element) dom.getDocumentElement().getElementsByTagName("ServiceException").item(0);
+            assertEquals("LayerNotDefined", serviceException.getAttribute("code"));
+            assertEquals("layers", serviceException.getAttribute("locator"));
+            assertEquals("Could not find layer " + group.getName(), serviceException.getTextContent().trim());                        
+        } finally {
+            catalog.remove(group);
+        }
+    }
+    
+    @Test
+    public void testLayerGroupModeEo() throws Exception {
+        Catalog catalog = getCatalog();
+        LayerGroupInfo group = createLakesPlacesLayerGroup(catalog, LayerGroupInfo.Mode.EO, catalog.getLayerByName(getLayerId(MockData.LAKES)));
+        try {
+            String url = "wms?LAYERS="
+                    + group.getName()
+                    + "&STYLES=&FORMAT=image%2Fpng"
+                    + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=0.0000,-0.0020,0.0035,0.0010";
+            BufferedImage image = getAsImage(url, "image/png");
+            
+            assertPixel(image, 150, 160, Color.WHITE);
+            // no places
+            assertPixel(image, 180, 16, Color.WHITE);
+            // lakes
+            assertPixel(image, 90, 200, COLOR_LAKES_BLUE);
+        } finally {
+            catalog.remove(group);
+        }
+    }   
 }

@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wcs.response;
@@ -248,7 +248,9 @@ public class Wcs10CapsTransformer extends TransformerBase {
                 attributes.addAttribute("", "version", "version", "", CUR_VERSION);
             }
             start("wcs:Service", attributes);
-            handleMetadataLink(wcs.getMetadataLink(), "simple");
+            if (wcs.getMetadataLink() != null) {
+                handleMetadataLink(wcs.getMetadataLink(), "simple");
+            }
             element("wcs:description", wcs.getAbstract());
             element("wcs:name", wcs.getName());
             element("wcs:label", wcs.getTitle());
@@ -309,6 +311,10 @@ public class Wcs10CapsTransformer extends TransformerBase {
          *             DOCUMENT ME!
          */
         private void handleKeywords(List kwords) {
+            if (kwords == null || kwords.isEmpty()) {
+                return;
+            }
+
             start("wcs:keywords");
 
             if (kwords != null) {

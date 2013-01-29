@@ -218,7 +218,7 @@ In this example, there is a ``<ColorMap>`` with two entries: **line 5** specifie
 Discrete colors
 ---------------
 
-This example shows a gradient that is not linearly interpolated but instead has values mapped precisely to one of three speci?c colors.
+This example shows a gradient that is not linearly interpolated but instead has values mapped precisely to one of three specific colors.
 
 .. note:: This example leverages an SLD extension in GeoServer.  Discrete colors are not part of the standard SLD 1.0 specification.
 
@@ -256,7 +256,7 @@ band such that colors are mapped to values less than the value of one entry but 
 Many color gradient
 -------------------
 
-This example shows an eight color gradient.
+This example shows a gradient interpolated across eight different colors.
 
 .. figure:: images/raster_manycolorgradient.png
    :align: center
@@ -291,7 +291,8 @@ Code
 Details
 ~~~~~~~
 
-There is no limit on the amount of entries that can be contained in a ``<ColorMap>`` (**lines 4-13**).  This example has eight entries:
+A ``<ColorMap>`` can include up to 255 ``<ColorMapEntry>`` elements.  
+This example has eight entries (**lines 4-13**):
 
 .. list-table::
    :widths: 15 25 30 30 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -17,6 +17,7 @@ import javax.measure.unit.Unit;
 import javax.media.jai.PlanarImage;
 
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
+import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.catalog.impl.ResourceInfoImpl;
 import org.geoserver.catalog.impl.StoreInfoImpl;
@@ -39,11 +40,13 @@ import org.geotools.data.wms.WebMapServer;
 import org.geotools.factory.GeoTools;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.resources.image.ImageUtilities;
+import org.geotools.util.NumberRange;
 import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.Format;
@@ -58,7 +61,6 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.crs.GeographicCRS;
 import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
 
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
@@ -466,14 +468,23 @@ public class CatalogBuilder {
     public void setupMetadata(FeatureTypeInfo ftinfo, FeatureSource featureSource) 
         throws IOException {
 
-        org.geotools.data.ResourceInfo rinfo = featureSource.getInfo();
+        org.geotools.data.ResourceInfo rinfo = null;
+        try {
+            rinfo = featureSource.getInfo();
+        }
+        catch(Exception ignore) {
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.log(Level.FINE, "Unable to get resource info from feature source", ignore);
+            }
+        }
+
         if (ftinfo.getTitle() == null) {
             ftinfo.setTitle(rinfo != null ? rinfo.getTitle() : ftinfo.getName());
         }
         if (rinfo != null && ftinfo.getDescription() == null) {
             ftinfo.setDescription(rinfo.getDescription());
         }
-        if (rinfo != null && ftinfo.getKeywords() == null || ftinfo.getKeywords().isEmpty()) {
+        if (rinfo != null && (ftinfo.getKeywords() == null || ftinfo.getKeywords().isEmpty())) {
             if (rinfo.getKeywords() != null) {
                 if (ftinfo.getKeywords() == null) {
                     ((FeatureTypeInfoImpl)ftinfo).setKeywords(new ArrayList());
@@ -504,8 +515,7 @@ public class CatalogBuilder {
             if (!CRS.equalsIgnoreMetadata(DefaultGeographicCRS.WGS84, declaredCRS)) {
                 // transform
                 try {
-                    ReferencedEnvelope bounds = new ReferencedEnvelope(nativeBounds, declaredCRS);
-                    return bounds.transform(DefaultGeographicCRS.WGS84, true);
+                	return JTS.toGeographic( nativeBounds );
                 } catch (Exception e) {
                     throw (IOException) new IOException("transform error").initCause(e);
                 }
@@ -1014,16 +1024,23 @@ public class CatalogBuilder {
                 label.append(")".intern());
             }
 
+            GridSampleDimension sd = sampleDimensions[i];
             label.append("[".intern());
-            label.append(sampleDimensions[i].getMinimumValue());
+            label.append(sd.getMinimumValue());
             label.append(",".intern());
-            label.append(sampleDimensions[i].getMaximumValue());
+            label.append(sd.getMaximumValue());
             label.append("]".intern());
 
             dim.setDescription(label.toString());
-            dim.setRange(sampleDimensions[i].getRange());
 
-            final List<Category> categories = sampleDimensions[i].getCategories();
+            if (sd.getRange() != null) {
+                dim.setRange(sd.getRange());    
+            }
+            else {
+                dim.setRange(NumberRange.create(sd.getMinimumValue(), sd.getMaximumValue()));
+            }
+            
+            final List<Category> categories = sd.getCategories();
             if (categories != null) {
                 for (Category cat : categories) {
 
@@ -1296,75 +1313,18 @@ public class CatalogBuilder {
     /**
      * Calculates the bounds of a layer group specifying a particular crs.
      */
-    public void calculateLayerGroupBounds(LayerGroupInfo lg, CoordinateReferenceSystem crs)
+    public void calculateLayerGroupBounds(LayerGroupInfo layerGroup, CoordinateReferenceSystem crs)
             throws Exception {
-
-        if (lg.getLayers().isEmpty()) {
-            return;
-        }
-
-        LayerInfo l = lg.getLayers().get(0);
-        ReferencedEnvelope bounds = transform(l.getResource().getLatLonBoundingBox(), crs);
-
-        for (int i = 1; i < lg.getLayers().size(); i++) {
-            l = lg.getLayers().get(i);
-            bounds.expandToInclude(transform(l.getResource().getLatLonBoundingBox(), crs));
-        }
-        lg.setBounds(bounds);
+        LayerGroupHelper helper = new LayerGroupHelper(layerGroup);
+        helper.calculateBounds(crs);
     }
 
     /**
-     * Calculates the bounds of a layer group by aggregating the bounds of each layer. TODO: move
-     * this method to a utility class, it should not be on a builder.
+     * Calculates the bounds of a layer group by aggregating the bounds of each layer.
      */
-    public void calculateLayerGroupBounds(LayerGroupInfo lg) throws Exception {
-        if (lg.getLayers().isEmpty()) {
-            return;
-        }
-
-        LayerInfo l = lg.getLayers().get(0);
-        ReferencedEnvelope bounds = l.getResource().boundingBox();
-        boolean latlon = false;
-        if (bounds == null) {
-            bounds = l.getResource().getLatLonBoundingBox();
-            latlon = true;
-        }
-
-        if (bounds == null) {
-            throw new IllegalArgumentException(
-                    "Could not calculate bounds from layer with no bounds, " + l.getName());
-        }
-
-        for (int i = 1; i < lg.getLayers().size(); i++) {
-            l = lg.getLayers().get(i);
-
-            ReferencedEnvelope re;
-            if (latlon) {
-                re = l.getResource().getLatLonBoundingBox();
-            } else {
-                re = l.getResource().boundingBox();
-            }
-
-            re = transform(re, bounds.getCoordinateReferenceSystem());
-            if (re == null) {
-                throw new IllegalArgumentException(
-                        "Could not calculate bounds from layer with no bounds, " + l.getName());
-            }
-            bounds.expandToInclude(re);
-        }
-
-        lg.setBounds(bounds);
-    }
-
-    /**
-     * Helper method for transforming an envelope.
-     */
-    ReferencedEnvelope transform(ReferencedEnvelope e, CoordinateReferenceSystem crs)
-            throws TransformException, FactoryException {
-        if (!CRS.equalsIgnoreMetadata(crs, e.getCoordinateReferenceSystem())) {
-            return e.transform(crs, true);
-        }
-        return e;
+    public void calculateLayerGroupBounds(LayerGroupInfo layerGroup) throws Exception {
+        LayerGroupHelper helper = new LayerGroupHelper(layerGroup);
+        helper.calculateBounds();
     }
 
     //
@@ -1453,9 +1413,22 @@ public class CatalogBuilder {
      * Reattaches a serialized {@link LayerGroupInfo} to the catalog
      */
     public void attach(LayerGroupInfo groupInfo) {
-        for (LayerInfo layer : groupInfo.getLayers()) {
-            attach(layer);
+        if (groupInfo.getRootLayer() != null) {
+            attach(groupInfo.getRootLayer());
         }
+        
+        if (groupInfo.getRootLayerStyle() != null) {
+            attach(groupInfo.getRootLayerStyle());            
+        }
+        
+        for (PublishedInfo p : groupInfo.getLayers()) {
+            if (p instanceof LayerInfo) {
+                attach((LayerInfo) p);
+            } else {
+                attach((LayerGroupInfo) p);                
+            }
+        }
+        
         for (StyleInfo style : groupInfo.getStyles()) {
             if (style != null)
                 attach(style);

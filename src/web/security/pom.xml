@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- 
+ Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
@@ -55,5 +60,31 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
+	<build>
+	  <plugins>
+	   <plugin>
+	    <artifactId>maven-jar-plugin</artifactId>
+	    <configuration>
+	      <archive>
+		<manifestSections>
+		  <manifestSection>
+		    <name>org/geoserver/security/web/passwd</name>
+		    <manifestEntries>
+		      <Sealed>true</Sealed>
+		    </manifestEntries>
+		  </manifestSection>
+		 </manifestSections>
+	      </archive>
+	    </configuration>
+	    <executions>
+	      <execution>
+		<phase>package</phase>
+		<goals>
+		   <goal>test-jar</goal>
+		</goals>
+	      </execution>
+	    </executions>
+	   </plugin>
+	  </plugins>
+	</build>
 </project>

@@ -1,13 +1,21 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.flow.controller;
+
+import static org.junit.Assert.*;
 
 import org.geoserver.flow.controller.FlowControllerTestingThread.ThreadState;
 import org.geoserver.ows.Request;
+import org.junit.Test;
 
 public class SingleIpFlowControllerTest extends IpFlowControllerTest {
 
     private static final long MAX_WAIT = 10000;
 
     @Override
+    @Test
     public void testConcurrentRequestsSingleIPAddress() {
         // an ip based flow controller that will allow just one request at a time
         SingleIpFlowController controller = new SingleIpFlowController(1, "127.0.0.1");
@@ -56,6 +64,7 @@ public class SingleIpFlowControllerTest extends IpFlowControllerTest {
         }
     }
 
+    @Test
     public void testConcurrentRequestsDifferentIPAddress() {
         SingleIpFlowController controller = new SingleIpFlowController(1, "192.168.1.8");
         String ipAddress = "127.0.0.1";

@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -41,11 +41,6 @@ class CheckAttributesFeatureCollection extends DecoratingSimpleFeatureCollection
     @Override
     public SimpleFeatureIterator features() {
         return new CheckAttributesFeatureIterator(delegate.features(), writableAttributes);
-    }
-
-    @Override
-    public Iterator iterator() {
-        return new FeatureIteratorIterator<SimpleFeature>(features());
     }
 
     public class CheckAttributesFeatureIterator implements SimpleFeatureIterator {

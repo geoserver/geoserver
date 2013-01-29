@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -31,17 +36,46 @@
           <descriptor>release/ext-css.xml</descriptor>
           <descriptor>release/ext-ftp.xml</descriptor>
           <descriptor>release/ext-printing.xml</descriptor>
-          <descriptor>release/ext-monitor.xml</descriptor>
           <descriptor>release/ext-python.xml</descriptor>
+          <descriptor>release/ext-groovy.xml</descriptor>
+          <descriptor>release/ext-javascript.xml</descriptor>
           <descriptor>release/ext-spatialite.xml</descriptor>
-          <descriptor>release/ext-dbconfig.xml</descriptor>
+          <descriptor>release/ext-jdbcconfig.xml</descriptor>
           <descriptor>release/ext-inspire.xml</descriptor>
           <descriptor>release/ext-sfs.xml</descriptor>
-    	  <descriptor>release/ext-dds.xml</descriptor>
+       	  <descriptor>release/ext-dds.xml</descriptor>
           <descriptor>release/ext-aggregate.xml</descriptor>
+          <descriptor>release/ext-xslt.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
+	<plugin>
+		<artifactId>maven-jar-plugin</artifactId>
+		<executions>
+			<execution>
+				<phase>package</phase>
+				<goals>
+					<goal>test-jar</goal>
+				</goals>
+			</execution>
+		</executions>
+		<configuration>
+			<archive>
+				<manifest>
+					<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+					<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+				</manifest>
+				<manifestEntries>
+					<GeoServerModule>community</GeoServerModule>
+					<Application-Name>${project.build.finalname}</Application-Name>
+					<Project-Version>${project.version}</Project-Version>
+					<Iteration-Name>${iteration}</Iteration-Name>
+					<Build-Timestamp>${maven.build.timestamp}</Build-Timestamp>
+					<Git-Revision>${build.commit.id}</Git-Revision>
+				</manifestEntries>
+			</archive>
+		</configuration>
+	</plugin>
    </plugins>
   </build>
 
@@ -84,12 +118,6 @@
       </modules>
     </profile>
     <profile>
-      <id>scriptlet</id>
-      <modules>
-        <module>scriptlet</module>
-      </modules>
-    </profile>
-    <profile>
       <id>dbconfig</id>
       <modules>
         <module>dbconfig</module>
@@ -122,19 +150,13 @@
         <module>printing</module>
         <module>release</module>
         <module>ftp</module>
-        <module>monitoring</module>
-        <module>python</module>
         <module>spatialite</module>
-        <module>dbconfig</module>
+        <module>jdbcconfig</module>
         <module>inspire</module>
         <module>sfs</module>
         <module>feature-aggregate</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>python</id>
-      <modules>
-        <module>python</module>
+        <module>script</module>
+        <module>xslt</module>
       </modules>
     </profile>
     <profile>
@@ -153,12 +175,6 @@
       <id>ftp</id>
       <modules>
         <module>ftp</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>monitoring</id>
-      <modules>
-        <module>monitoring</module>
       </modules>
     </profile>
     <profile>
@@ -191,12 +207,6 @@
         <module>feature-aggregate</module>
       </modules>
     </profile>
-    <profile>
-     <id>wfsv</id>
-     <modules>
-       <module>wfsv</module>
-     </modules>
-    </profile>
     <profile>      
       <id>authkey</id>
       <modules>
@@ -213,6 +223,39 @@
       <id>jdbcconfig</id>
       <modules>
         <module>jdbcconfig</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>script</id>
+      <activation>
+        <property><name>script</name></property>
+      </activation> 
+      <modules>
+        <module>script</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>xslt</id>
+      <activation>
+        <property><name>xslt</name></property>
+      </activation> 
+      <modules>
+        <module>xslt</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>wcs20</id>
+      <activation>
+        <property><name>wcs20</name></property>
+      </activation> 
+      <modules>
+        <module>wcs2_0</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>w3ds</id>
+      <modules>
+        <module>w3ds</module>
       </modules>
     </profile>
   </profiles>

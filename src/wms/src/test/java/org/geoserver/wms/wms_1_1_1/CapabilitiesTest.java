@@ -1,30 +1,37 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.wms_1_1_1;
 
-import static org.custommonkey.xmlunit.XMLAssert.*;
-import static org.custommonkey.xmlunit.XMLUnit.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
+import static org.custommonkey.xmlunit.XMLUnit.newXpathEngine;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
-import junit.framework.Test;
-
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.AttributionInfo;
-import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.Keyword;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -35,35 +42,38 @@ public class CapabilitiesTest extends WMSTestSupport {
         super();
     }
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new CapabilitiesTest());
-    }
-
     @Override
-    protected void oneTimeSetUp() throws Exception {
-        super.oneTimeSetUp();
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        super.setUpTestData(testData);
+        testData.setUpDefaultRasterLayers();        
+    }
+    
+    
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+       
+        Catalog catalog = getCatalog();
+        DataStoreInfo info =catalog.getDataStoreByName(MockData.SF_PREFIX);
+        info.setEnabled(false);
+        catalog.save(info);
+        
         GeoServerInfo global = getGeoServer().getGlobal();
-        global.setProxyBaseUrl("src/test/resources/geoserver");
+        global.getSettings().setProxyBaseUrl("src/test/resources/geoserver");
         getGeoServer().save(global);
         
     }
 
-    @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        dataDirectory.addWcs11Coverages();
-        dataDirectory.disableDataStore(MockData.SF_PREFIX);
-    }
 
+
+    @Test
     public void testCapabilities() throws Exception {
         Document dom = dom(get("wms?request=getCapabilities&version=1.1.1"), false);
         Element e = dom.getDocumentElement();
         assertEquals("WMT_MS_Capabilities", e.getLocalName());
     }
 
+    @Test
     public void testGetCapsContainsNoDisabledTypes() throws Exception {
 
         Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.1.1", true);
@@ -75,6 +85,7 @@ public class CapabilitiesTest extends WMSTestSupport {
 
     }
 
+    @Test
     public void testFilteredCapabilitiesCite() throws Exception {
         Document dom = dom(get("wms?request=getCapabilities&version=1.1.1&namespace=cite"), true);
         Element e = dom.getDocumentElement();
@@ -85,6 +96,7 @@ public class CapabilitiesTest extends WMSTestSupport {
                 .getLength());
     }
 
+    @Test
     public void testLayerCount() throws Exception {
         List<LayerInfo> layers = new ArrayList<LayerInfo>(getCatalog().getLayers());
         for (ListIterator<LayerInfo> it = layers.listIterator(); it.hasNext();) {
@@ -104,6 +116,7 @@ public class CapabilitiesTest extends WMSTestSupport {
         assertEquals(layers.size() + groups.size(), nodeLayers.getLength());
     }
 
+    @Test
     public void testNonAdvertisedLayer() throws Exception {
         String layerId = getLayerId(MockData.BUILDINGS);
         LayerInfo layer = getCatalog().getLayerByName(layerId);
@@ -123,14 +136,15 @@ public class CapabilitiesTest extends WMSTestSupport {
         }
     }
     
+    @Test
     public void testWorkspaceQualified() throws Exception {
         Document dom = dom(get("cite/wms?request=getCapabilities&version=1.1.1"), true);
         Element e = dom.getDocumentElement();
         assertEquals("WMT_MS_Capabilities", e.getLocalName());
         XpathEngine xpath = XMLUnit.newXpathEngine();
-        assertTrue(xpath.getMatchingNodes("//Layer/Name[starts-with(., cite)]", dom).getLength() > 0);
-        assertEquals(0, xpath.getMatchingNodes("//Layer/Name[not(starts-with(., cite))]", dom)
-                .getLength());
+        assertEquals(0, xpath.getMatchingNodes("//Layer/Name[starts-with(., 'cite')]", dom).getLength());
+        assertTrue (xpath.getMatchingNodes("//Layer/Name[not(starts-with(., 'cite'))]", dom)
+                .getLength() > 0 );
 
         NodeList nodes = xpath.getMatchingNodes("//Layer//OnlineResource", dom);
         assertTrue(nodes.getLength() > 0);
@@ -142,14 +156,16 @@ public class CapabilitiesTest extends WMSTestSupport {
 
     }
 
+    @Test
     public void testLayerQualified() throws Exception {
         Document dom = dom(get("cite/Forests/wms?request=getCapabilities&version=1.1.1"), true);
         Element e = dom.getDocumentElement();
         assertEquals("WMT_MS_Capabilities", e.getLocalName());
         XpathEngine xpath = XMLUnit.newXpathEngine();
-        assertTrue(xpath.getMatchingNodes("//Layer/Name[starts-with(., cite:Forests)]", dom)
-                .getLength() == 1);
-        assertEquals(1, xpath.getMatchingNodes("//Layer//Layer", dom).getLength());
+        assertEquals(0, xpath.getMatchingNodes("//Layer/Name[starts-with(., 'cite:Forests')]", dom)
+                .getLength());
+        assertEquals(1, xpath.getMatchingNodes("//Layer[Name = 'Forests']", dom)
+                .getLength());
 
         NodeList nodes = xpath.getMatchingNodes("//Layer//OnlineResource", dom);
         assertTrue(nodes.getLength() > 0);
@@ -160,6 +176,7 @@ public class CapabilitiesTest extends WMSTestSupport {
 
     }
 
+    @Test
     public void testAttribution() throws Exception {
         // Uncomment the following lines if you want to use DTD validation for these tests
         // (by passing false as the second param to getAsDOM())
@@ -210,6 +227,7 @@ public class CapabilitiesTest extends WMSTestSupport {
         assertXpathEvaluatesTo("1", "count(//Attribution/LogoURL)", doc);
     }
 
+    @Test
     public void testAlternateStyles() throws Exception {
         // add an alternate style to Fifteen
         StyleInfo pointStyle = getCatalog().getStyleByName("point");
@@ -240,6 +258,7 @@ public class CapabilitiesTest extends WMSTestSupport {
         assertTrue(href.contains("style=point"));
     }
 
+    @Test 
     public void testServiceMetadata() throws Exception {
         final WMSInfo service = getGeoServer().getService(WMSInfo.class);
         service.setTitle("test title");
@@ -295,6 +314,7 @@ public class CapabilitiesTest extends WMSTestSupport {
         assertXpathEvaluatesTo("e@mail", cinfo + "ContactElectronicMailAddress", doc);
     }
     
+    @Test
     public void testQueryable() throws Exception{
         LayerInfo lines = getCatalog().getLayerByName(MockData.LINES.getLocalPart());
         lines.setQueryable(true);

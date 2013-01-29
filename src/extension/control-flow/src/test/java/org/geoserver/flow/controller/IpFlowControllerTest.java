@@ -1,7 +1,14 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.flow.controller;
+
+import static org.junit.Assert.*;
 
 import org.geoserver.flow.controller.FlowControllerTestingThread.ThreadState;
 import org.geoserver.ows.Request;
+import org.junit.Test;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -10,6 +17,7 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
 
     private static final long MAX_WAIT = 10000;
 
+    @Test
     public void testConcurrentRequestsSingleIPAddress() {
         // an ip based flow controller that will allow just one request at a time
         IpFlowController controller = new IpFlowController(1);
@@ -59,6 +67,7 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
 
     }
     
+    @Test
     public void testUserAndIPAddressFlowControl() {
         // an ip based flow controller that will allow just one request at a time
         IpFlowController ipController = new IpFlowController(1);
@@ -113,6 +122,7 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
 
 
     // Test 2 remote addresses that are reported as the same, but have gone through a proxy. These two should not queue up
+    @Test
     public void testConcurrentProxiedIPAddresses() {
         IpFlowController controller = new IpFlowController(1);
         String ipAddress = "192.168.1.1";

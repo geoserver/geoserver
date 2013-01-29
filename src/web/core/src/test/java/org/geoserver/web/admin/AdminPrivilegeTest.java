@@ -1,13 +1,23 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.web.admin;
+
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Properties;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -16,10 +26,14 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.security.AccessMode;
 import org.geoserver.security.AdminRequest;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.UnauthorizedPage;
 import org.geoserver.web.data.layer.LayerPage;
+import org.geoserver.web.data.layer.NewFeatureTypePage;
+import org.geoserver.web.data.layer.SQLViewNewPage;
 import org.geoserver.web.data.layergroup.LayerGroupEditPage;
 import org.geoserver.web.data.layergroup.LayerGroupNewPage;
 import org.geoserver.web.data.layergroup.LayerGroupPage;
@@ -30,36 +44,29 @@ import org.geoserver.web.data.workspace.WorkspaceEditPage;
 import org.geoserver.web.data.workspace.WorkspaceNewPage;
 import org.geoserver.web.data.workspace.WorkspacePage;
 import org.geotools.data.property.PropertyDataStoreFactory;
+import org.junit.After;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
 
 public class AdminPrivilegeTest extends GeoServerWicketTestSupport {
 
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
 
-        //add a new user with only admin privileges to a single workspace
-        File security = new File(dataDirectory.getDataDirectoryRoot(), "security");
-        security.mkdir();
-        
-        File users = new File(security, "users.properties");
-        Properties props = new Properties();
-        props.put("admin", "geoserver,ROLE_ADMINISTRATOR");
-        props.put("cite", "cite,ROLE_CITE_ADMIN");
-        props.put("sf", "sf,ROLE_SF_ADMIN");
-        props.store(new FileOutputStream(users), "");
+        //addUser("admin", "geoserver", null, Arrays.asList("ROLE_ADMINISTRATOR"));
+        addUser("cite", "cite", null, Arrays.asList("ROLE_CITE_ADMIN"));
+        addUser("sf", "sf", null, Arrays.asList("ROLE_SF_ADMIN"));
 
-        File layers = new File(security, "layers.properties");
-        props.put("*.*.r", "*");
-        props.put("*.*.w", "*");
-        props.put("*.*.a", "ROLE_ADMINISTRATOR");
-        props.put("cite.*.a", "ROLE_CITE_ADMIN");
-        props.put("sf.*.a", "ROLE_SF_ADMIN");
-        props.store(new FileOutputStream(layers), "");
-    }
-
-    @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+        addLayerAccessRule("*", "*", AccessMode.READ, "*");
+        addLayerAccessRule("*", "*", AccessMode.WRITE, "*");
+        addLayerAccessRule("*", "*", AccessMode.ADMIN, "ROLE_ADMINISTRATOR");
+        addLayerAccessRule("cite", "*", AccessMode.ADMIN, "ROLE_CITE_ADMIN");
+        addLayerAccessRule("sf", "*", AccessMode.ADMIN, "ROLE_SF_ADMIN");
 
         Catalog cat = getCatalog();
 
@@ -96,10 +103,9 @@ public class AdminPrivilegeTest extends GeoServerWicketTestSupport {
         cat.add(lg);
     }
 
-    @Override
-    protected void tearDownInternal() throws Exception {
+    @After
+    public void finishAdminRequest() {
         AdminRequest.finish();
-        super.tearDownInternal();
     }
 
     void loginAsCite() {
@@ -110,6 +116,7 @@ public class AdminPrivilegeTest extends GeoServerWicketTestSupport {
         login("sf", "sf", "ROLE_SF_ADMIN");
     }
 
+    @Test
     public void testWorkspaceAllPage() throws Exception {
         loginAsCite();
 
@@ -129,6 +136,7 @@ public class AdminPrivilegeTest extends GeoServerWicketTestSupport {
         assertEquals("cite", ws.getName());
     }
 
+    @Test
     public void testWorkspaceNewPage() throws Exception {
         loginAsCite();
 
@@ -136,6 +144,7 @@ public class AdminPrivilegeTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(UnauthorizedPage.class);
     }
 
+    @Test
     public void testWorkspaceEditPage() throws Exception {
         loginAsCite();
 
@@ -144,12 +153,14 @@ public class AdminPrivilegeTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
     }
 
+    @Test
     public void testWorkspaceEditPageUnauthorized() throws Exception {
         loginAsCite();
         tester.startPage(WorkspaceEditPage.class,new PageParameters("name=cdf"));
         tester.assertErrorMessages(new String[]{"Could not find workspace \"cdf\""});
     }
 
+    @Test
     public void testLayerAllPage() throws Exception {
         loginAsCite();
         tester.startPage(LayerPage.class);
@@ -160,6 +171,7 @@ public class AdminPrivilegeTest extends GeoServerWicketTestSupport {
         assertEquals(getCatalog().getResourcesByNamespace("cite", ResourceInfo.class).size(), dv.size());
     }
 
+    @Test
     public void testStoreAllPage() throws Exception {
         loginAsCite();
 
@@ -171,6 +183,7 @@ public class AdminPrivilegeTest extends GeoServerWicketTestSupport {
         assertEquals(getCatalog().getStoresByWorkspace("cite", StoreInfo.class).size(), dv.size());
     }
 
+    @Test
     public void testStoreNewPage() throws Exception {
         loginAsCite();
 
@@ -189,6 +202,7 @@ public class AdminPrivilegeTest extends GeoServerWicketTestSupport {
         assertEquals("cite", wsChoice.getChoices().get(0).getName());
     }
 
+    @Test
     public void testStoreEditPage() throws Exception {
         loginAsCite();
         
@@ -200,6 +214,8 @@ public class AdminPrivilegeTest extends GeoServerWicketTestSupport {
     /*
      * Disabled due to https://issues.apache.org/jira/browse/WICKET-4636, 
      * please enable back when we upgrade to 1.5.8 or 6.0-beta3
+     */
+    @Ignore
     public void testStoreEditPageUnauthorized() throws Exception {
         loginAsCite();
         
@@ -207,8 +223,8 @@ public class AdminPrivilegeTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(StorePage.class);
         tester.assertErrorMessages(new String[]{"Could not find data store \"cdf\" in workspace \"cdf\""});
     }
-         */
 
+    @Test
     public void testLayerGroupAllPageAsAdmin() throws Exception {
         login();
         tester.startPage(LayerGroupPage.class);
@@ -221,6 +237,7 @@ public class AdminPrivilegeTest extends GeoServerWicketTestSupport {
         assertEquals(cat.getLayerGroups().size(), view.getItemCount());
     }
 
+    @Test
     public void testLayerGroupAllPage() throws Exception {
         loginAsCite();
 
@@ -233,7 +250,7 @@ public class AdminPrivilegeTest extends GeoServerWicketTestSupport {
             (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
 
         AdminRequest.start(new Object());
-        assertEquals(2, view.getItemCount());
+        assertEquals(cat.getLayerGroups().size(), view.getItemCount());
 
         for (Iterator<Item> it = view.getItems(); it.hasNext();) {
             String name = it.next().get("itemProperties:0:component:link:label")
@@ -242,6 +259,7 @@ public class AdminPrivilegeTest extends GeoServerWicketTestSupport {
         }
     }
 
+    @Test
     public void testLayerGroupNewPageAsAdmin() throws Exception {
         login();
 
@@ -255,6 +273,7 @@ public class AdminPrivilegeTest extends GeoServerWicketTestSupport {
         assertFalse(choice.isRequired());
     }
 
+    @Test
     public void testLayerGroupNewPage() throws Exception {
         loginAsCite();
 
@@ -270,6 +289,7 @@ public class AdminPrivilegeTest extends GeoServerWicketTestSupport {
         assertTrue(choice.isRequired());
     }
 
+    @Test
     public void testLayerGroupEditPageGlobal() throws Exception {
         loginAsCite();
 
@@ -281,5 +301,33 @@ public class AdminPrivilegeTest extends GeoServerWicketTestSupport {
         assertFalse(tester.getComponentFromLastRenderedPage("form:workspace").isEnabled());
         assertNull(tester.getComponentFromLastRenderedPage("form:save"));
         assertTrue(tester.getComponentFromLastRenderedPage("form:cancel").isEnabled());
+    }
+
+    public void testSqlViewNewPageAsWorkspaceAdmin() throws Exception {
+        loginAsCite();
+
+        PageParameters pp = new PageParameters();
+        pp.add(SQLViewNewPage.WORKSPACE, "cite");
+
+        //not a jdbc datastore obviously but we don't need one to simply test that the 
+        // page will render with worksapce admin privilieges
+        pp.add(SQLViewNewPage.DATASTORE, "cite");
+
+        new SQLViewNewPage(pp);
+        assertTrue(tester.isRenderedPage(UnauthorizedPage.class).wasFailed());
+    }
+
+    public void testCreateNewFeatureTypePageAsWorkspaceAdmin() throws Exception {
+        loginAsCite();
+
+        PageParameters pp = new PageParameters();
+        pp.add(NewFeatureTypePage.WORKSPACE, "cite");
+
+        //not a jdbc datastore obviously but we don't need one to simply test that the 
+        // page will render with worksapce admin privilieges
+        pp.add(NewFeatureTypePage.DATASTORE, "cite");
+
+        new NewFeatureTypePage(pp);
+        assertTrue(tester.isRenderedPage(UnauthorizedPage.class).wasFailed());
     }
 }

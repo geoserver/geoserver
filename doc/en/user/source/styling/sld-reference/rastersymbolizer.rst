@@ -50,13 +50,14 @@ The ``<ColorMap>`` element defines the color values for the pixels
 of a raster image, as either color gradients,
 or a mapping of specific values to fixed colors.
 
-A color map is defined by a series of ``<ColorMapEntry>`` elements.
+A color map is defined by a sequence of ``<ColorMapEntry>`` elements.
 Each ``<ColorMapEntry>`` element specifies a ``color`` and a ``quantity`` attribute. 
 The quantity refers to the value of a raster pixel. 
 The ``color`` value is denoted in standard hexadecimal RGB format (#RRGGBB).
 ``<ColorMapEntry>`` elements can also have ``opacity`` and ``label`` attributes.
 The ``opacity`` attribute overrides the global ``<Opacity>`` value.
 The ``label`` attribute is used to provide text for legends.
+A color map can contain up to 255 ``<ColorMapEntry>`` elements.
 
 The simplest ``<ColorMap>`` has two color map entries. 
 One specifyies a color for the "bottom" of the dataset, 
@@ -106,11 +107,10 @@ Notice that the default opacity is 1 (opaque) when not specified.
    :align: left
 
 
+GeoServer extends the ``<ColorMap>`` element to allow two attributes: ``type`` and ``extended``.
 
 type
 """"
-
-GeoServer extends the ``<ColorMap>`` element to allow two attributes: ``type`` and ``extended``.
 
 The ``<ColorMap>`` ``type`` attribute specifies the kind of ColorMap to use. 
 There are three different types of ColorMaps that can be specified: ``ramp``, ``intervals`` and ``values``.

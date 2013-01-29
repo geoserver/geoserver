@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs.json;
@@ -10,25 +10,27 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.util.Map;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONException;
+import net.sf.json.util.JSONBuilder;
 
 import org.apache.commons.io.IOUtils;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.ServiceException;
 
-import com.thoughtworks.xstream.io.json.JsonWriter;
-
 /**
  * Enum to hold the MIME type for JSON and some useful related utils
  * <ul>
- * <li>application/json</li>
- * <li>text/javascript</li>
+ * <li>JSON: application/json</li>
+ * <li>JSONP: text/javascript</li>
  * </ul>
  * 
  * @author Carlo Cancellieri - GeoSolutions
@@ -44,30 +46,103 @@ public enum JSONType {
     /**
      * The default value of the callback function
      */
-    public final static String CALLBACK_FUNCTION = "paddingOutput";
+    public final static String CALLBACK_FUNCTION = "parseResponse";
 
     public final static String json = "application/json";
 
+    public final static String simple_json = "json";
+
     public final static String jsonp = "text/javascript";
+
+    /**
+     * The key of the property to enable the JSonp responses This property is set default to false.
+     */
+    public final static String ENABLE_JSONP_KEY = "ENABLE_JSONP";
+
+    private static boolean jsonpEnabled = isJsonpEnabledByEnv() || isJsonpEnabledByProperty();
 
     /**
      * Check if the passed MimeType is a valid jsonp
      * 
      * @param type the MimeType string representation to check
-     * @return true if type is equals to {@link #jsonp}
+     * @return true if type is equalsIgnoreCase to {@link #jsonp}
      */
     public static boolean isJsonpMimeType(String type) {
-        return JSONType.jsonp.equals(type);
+        return JSONType.jsonp.equalsIgnoreCase(type);
+    }
+
+    /**
+     * Check if the passed MimeType is a valid jsonp and if jsonp is enabled
+     * 
+     * @param type the MimeType string representation to check
+     * @return true if type is equalsIgnoreCase to {@link #jsonp} and jsonp is enabled
+     * @see {@link JSONType#isJsonMimeType(String)}
+     */
+    public static boolean useJsonp(String type) {
+        return JSONType.isJsonpEnabled() && JSONType.isJsonpMimeType(type);
+    }
+
+    private static ReadWriteLock lock = new ReentrantReadWriteLock(true);
+
+    /**
+     * @return The boolean returned represents the value of the jsonp toggle (if true jsonp is enabled)
+     */
+    public static boolean isJsonpEnabled() {
+        lock.readLock().lock();
+        try {
+            return jsonpEnabled;
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    /**
+     * Enable disable the jsonp toggle overriding environment and properties.
+     * 
+     * @see {@link JSONType#isJsonpEnabledByEnv()} and {@link JSONType#isJsonpEnabledByProperty()}
+     * @param jsonpEnabled true to enable jsonp
+     */
+    public static void setJsonpEnabled(boolean jsonpEnabled) {
+        if (jsonpEnabled != JSONType.jsonpEnabled) {
+            lock.writeLock().lock();
+            try {
+                JSONType.jsonpEnabled = jsonpEnabled;
+            } finally {
+                lock.writeLock().unlock();
+            }
+        }
+    }
+
+    /**
+     * Parses the ENABLE_JSONP value as a boolean from properties.
+     * 
+     * @return The boolean returned represents the value true if the string argument of the ENABLE_JSONP property is not null and is equal, ignoring
+     *         case, to the string "true".
+     */
+    private static boolean isJsonpEnabledByProperty() {
+        String jsonp = System.getProperty(ENABLE_JSONP_KEY);
+        return Boolean.parseBoolean(jsonp);
+    }
+
+    /**
+     * Parses the ENABLE_JSONP value as a boolean from environment.
+     * 
+     * @return The boolean returned represents the value true if the string argument of the ENABLE_JSONP property is not null and is equal, ignoring
+     *         case, to the string "true".
+     */
+    private static boolean isJsonpEnabledByEnv() {
+        String jsonp = System.getenv(ENABLE_JSONP_KEY);
+        return Boolean.parseBoolean(jsonp);
     }
 
     /**
      * Check if the passed MimeType is a valid json
      * 
      * @param type the MimeType string representation to check
-     * @return true if type is equals to {@link #json}
+     * @return true if type is equalsIgnoreCase to {@link JSONType#json} or to {@link JSONType#simple_json}
      */
     public static boolean isJsonMimeType(String type) {
-        return JSONType.json.equals(type);
+        return JSONType.json.equalsIgnoreCase(type) || JSONType.simple_json.equalsIgnoreCase(type);
     }
 
     /**
@@ -77,7 +152,7 @@ public enum JSONType {
      * @return the JSNOType enum matching the passed MimeType or null (if no match)
      */
     public static JSONType getJSONType(String mime) {
-        if (json.equalsIgnoreCase(mime)) {
+        if (json.equalsIgnoreCase(mime) || simple_json.equalsIgnoreCase(mime)) {
             return JSON;
         } else if (jsonp.equalsIgnoreCase(mime)) {
             return JSONP;
@@ -109,16 +184,17 @@ public enum JSONType {
      * @return
      */
     public static String[] getSupportedTypes() {
-        return new String[] { json, jsonp };
+        if (isJsonpEnabled())
+            return new String[] { json, simple_json, jsonp };
+        else
+            return new String[] { json, simple_json };
     }
 
     /**
-     * Can be used when {@link #jsonp} format is specified to resolve the callback parameter into
-     * the FORMAT_OPTIONS map
+     * Can be used when {@link #jsonp} format is specified to resolve the callback parameter into the FORMAT_OPTIONS map
      * 
      * @param kvp the kay value pair map of the request
-     * @return The string name of the callback function or the default {@link #CALLBACK_FUNCTION} if
-     *         not found.
+     * @return The string name of the callback function or the default {@link #CALLBACK_FUNCTION} if not found.
      */
     public static String getCallbackFunction(Map kvp) {
         if (!(kvp.get("FORMAT_OPTIONS") instanceof Map)) {
@@ -134,11 +210,20 @@ public enum JSONType {
         }
     }
 
+    /**
+     * Handle Exception in JSON and JSONP format
+     * 
+     * @param LOGGER the logger to use (can be null)
+     * @param exception the exception to write to the response outputStream
+     * @param request the request generated the exception
+     * @param charset the desired charset
+     * @param verbose be verbose
+     * @param isJsonp switch writing json (false) or jsonp (true)
+     */
     public static void handleJsonException(Logger LOGGER, ServiceException exception,
             Request request, String charset, boolean verbose, boolean isJsonp) {
 
         final HttpServletResponse response = request.getHttpResponse();
-        response.setContentType(JSONType.jsonp);
         // TODO: server encoding options?
         response.setCharacterEncoding(charset);
 
@@ -147,12 +232,14 @@ public enum JSONType {
             os = response.getOutputStream();
             if (isJsonp) {
                 // jsonp
+                response.setContentType(JSONType.jsonp);
                 JSONType.writeJsonpException(exception, request, os, charset, verbose);
             } else {
                 // json
                 OutputStreamWriter outWriter = null;
                 try {
                     outWriter = new OutputStreamWriter(os, charset);
+                    response.setContentType(JSONType.json);
                     JSONType.writeJsonException(exception, request, outWriter, verbose);
                 } finally {
                     if (outWriter != null) {
@@ -166,7 +253,8 @@ public enum JSONType {
 
             }
         } catch (Exception e) {
-            LOGGER.warning(e.getLocalizedMessage());
+            if (LOGGER != null && LOGGER.isLoggable(Level.SEVERE))
+                LOGGER.severe(e.getLocalizedMessage());
         } finally {
             if (os != null) {
                 try {
@@ -200,16 +288,13 @@ public enum JSONType {
     private static void writeJsonException(ServiceException exception, Request request,
             OutputStreamWriter outWriter, boolean verbose) throws IOException {
         try {
-            final JsonWriter jsonWriter = new JsonWriter(outWriter);
-
-            jsonWriter.startNode("ExceptionReport", String.class);
-            jsonWriter.addAttribute("version", request.getVersion());
-            jsonWriter.startNode("Exception", String.class);
-            jsonWriter.addAttribute("exceptionCode",
-                    exception.getCode() == null ? "noApplicableCode" : exception.getCode());
-            jsonWriter.addAttribute("exceptionLocator",
-                    exception.getLocator() == null ? "noLocator" : exception.getLocator());
-            jsonWriter.startNode("ExceptionText", String.class);
+            JSONBuilder json = new JSONBuilder(outWriter);
+            json.object().key("version").value(request.getVersion()).key("exceptions").array()
+                    .object().key("code")
+                    .value(exception.getCode() == null ? "noApplicableCode" : exception.getCode())
+                    .key("locator")
+                    .value(exception.getLocator() == null ? "noLocator" : exception.getLocator())
+                    .key("text");
             // message
             if ((exception.getMessage() != null)) {
                 StringBuffer sb = new StringBuffer(exception.getMessage().length());
@@ -226,12 +311,10 @@ public enum JSONType {
                         IOUtils.closeQuietly(stackTrace);
                     }
                 }
-                jsonWriter.setValue(sb.toString());
-            }
-            jsonWriter.endNode();
-            jsonWriter.endNode();
-            jsonWriter.endNode();
+                json.value(sb.toString());
 
+            }
+            json.endObject().endArray().endObject();
         } catch (JSONException jsonException) {
             ServiceException serviceException = new ServiceException("Error: "
                     + jsonException.getMessage());
@@ -239,5 +322,4 @@ public enum JSONType {
             throw serviceException;
         }
     }
-
 }

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gmlcov/1.0"
+    xmlns:gmlcov="http://www.opengis.net/gmlcov/1.0"
+    xmlns="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified" version="1.0.2">
+    <annotation>
+        <appinfo>gmlcovAll.xsd</appinfo>
+        <documentation>This is the XML Schema for the GML 3.2.1 Application Schema for Coverages.
+            This XML Schema Document includes, directly and indirectly, all the XML Schema Documents defined by the this standard.
+            Last updated: 2012-Jul-10
+            Copyright (c) 2012 Open Geospatial Consortium.
+            To obtain additional rights of use, visit http://www.opengeospatial.org/legal/.
+        </documentation>
+    </annotation>
+    <!-- ========================================================= -->
+    <!-- Includes and imports                                      -->
+    <!-- ========================================================= -->
+    <include schemaLocation="coverage.xsd"/>
+    <include schemaLocation="grids.xsd"/>
+</schema>

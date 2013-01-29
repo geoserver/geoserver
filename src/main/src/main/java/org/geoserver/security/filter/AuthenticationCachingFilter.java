@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -35,6 +35,12 @@ public interface AuthenticationCachingFilter {
      * 
      * As an example, the derived information could be
      * an md5 checksum of the credentials 
+     * 
+     * If there is an already existing HTTP Session, 
+     * this method should return <code>null</code>
+     * 
+     * If the HTTP request attribute named GeoServerSecurityContextPersistenceFilter.ALLOWSESSIONCREATION_ATTR
+     * is true, this method should return <code>null</code>
      * 
      * @param request
      * @return

@@ -8,7 +8,7 @@
             <xsl:apply-templates select="@*|node()" />
         </xsl:copy>
     </xsl:template>
-    <xsl:template match="@*|text()|comment()|processing-instruction">
+    <xsl:template match="@*|text()|comment()|processing-instruction()">
         <xsl:copy-of select="." />
     </xsl:template>
     <xsl:template match="//wfs:FeatureCollection/@numberOfFeatures">

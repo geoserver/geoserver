@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -20,6 +20,8 @@ import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.RoleSo
 import org.geoserver.security.filter.GeoServerPreAuthenticatedUserNameFilter;
 import org.geoserver.security.web.role.RoleServiceChoice;
 import org.geoserver.security.web.usergroup.UserGroupServiceChoice;
+import org.geoserver.web.wicket.GeoServerDialog;
+import org.geoserver.web.wicket.HelpLink;
 
 /**
  * Configuration panel for {@link GeoServerPreAuthenticatedUserNameFilter}.
@@ -33,7 +35,9 @@ public abstract class PreAuthenticatedUserNameFilterPanel<T extends PreAuthentic
 
     public PreAuthenticatedUserNameFilterPanel(String id, IModel<T> model) {
         super(id, model);
-
+                                        
+        add(new HelpLink("roleSourceHelp",this).setDialog(dialog));
+        
         add(roleSourceChoice = 
             new DropDownChoice<RoleSource>("roleSource", Arrays.asList(RoleSource.values()),
             new EnumChoiceRenderer<RoleSource>()));

@@ -1,11 +1,11 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wps.gs;
 
 import org.geoserver.wps.ppio.XStreamPPIO;
-import org.geotools.process.feature.gs.AggregateProcess;
+import org.geotools.process.vector.AggregateProcess;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.mapper.MapperWrapper;

@@ -1,8 +1,10 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.template;
+
+import static org.junit.Assert.*;
 
 import java.io.StringWriter;
 
@@ -12,6 +14,8 @@ import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.junit.Before;
+import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -21,19 +25,19 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 
 
-public class FeatureWrapperTest extends TestCase {
-    SimpleFeatureCollection features;
+public class FeatureWrapperTest {
+    DefaultFeatureCollection features;
     Configuration cfg;
 
-    protected void setUp() throws Exception {
-        super.setUp();
-
+    @Before
+    public void setUp() throws Exception {
+    
         //create some data
         GeometryFactory gf = new GeometryFactory();
         SimpleFeatureType featureType = DataUtilities.createType("testType",
                 "string:String,int:Integer,double:Double,geom:Point");
 
-        features = new DefaultFeatureCollection(null, null) {};
+        features = new DefaultFeatureCollection() {};
         features.add(
             SimpleFeatureBuilder.build(featureType, new Object[] {
                 "one", new Integer(1), new Double(1.1), gf.createPoint(new Coordinate(1, 1))
@@ -54,6 +58,7 @@ public class FeatureWrapperTest extends TestCase {
         cfg.setObjectWrapper(new FeatureWrapper());
     }
 
+    @Test
     public void testFeatureCollection() throws Exception {
         Template template = cfg.getTemplate("FeatureCollection.ftl");
 
@@ -63,6 +68,7 @@ public class FeatureWrapperTest extends TestCase {
         assertEquals("fid.1\nfid.2\nfid.3\n", out.toString().replaceAll("\r\n", "\n").replaceAll("\r", "\n"));
     }
 
+    @Test
     public void testFeatureSimple() throws Exception {
         Template template = cfg.getTemplate("FeatureSimple.ftl");
 
@@ -73,6 +79,7 @@ public class FeatureWrapperTest extends TestCase {
         assertEquals("one\n1\n1.1\nPOINT (1 1)", out.toString().replace(',', '.').replaceAll("\r\n", "\n").replaceAll("\r", "\n"));
     }
 
+    @Test
     public void testFeatureDynamic() throws Exception {
         Template template = cfg.getTemplate("FeatureDynamic.ftl");
 

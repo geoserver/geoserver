@@ -1,53 +1,49 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wfs;
 
-import java.util.Arrays;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
 import java.util.Collections;
 
 import javax.xml.namespace.QName;
-
-import junit.framework.Test;
-
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
-import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 public class GetFeatureTest extends WFSTestSupport {
 	
-    public static QName NULL_GEOMETRIES = new QName(MockData.CITE_URI, "NullGeometries", MockData.CITE_PREFIX);
-    
+    public static QName NULL_GEOMETRIES = new QName(SystemTestData.CITE_URI, "NullGeometries", SystemTestData.CITE_PREFIX);
+        
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        dataDirectory.addPropertiesType(NULL_GEOMETRIES, 
-                ReprojectionTest.class.getResource("NullGeometries.properties"), Collections.EMPTY_MAP);
-    }
-    
-    @Override
-    protected void oneTimeSetUp() throws Exception {
-    	super.oneTimeSetUp();
+    protected void setUpInternal(SystemTestData data) throws Exception {
     	WFSInfo wfs = getWFS();
         wfs.setFeatureBounding(true);
     	getGeoServer().save(wfs);
+    	
+    	data.addVectorLayer (NULL_GEOMETRIES, Collections.EMPTY_MAP, getClass(), getCatalog());
     }
-    
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new GetFeatureTest());
-    }
-    
+       
+    @Test
     public void testGet() throws Exception {
     	testGetFifteenAll("wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs");
     }
     
+    @Test
     public void testGetPropertyNameEmpty() throws Exception {
     	testGetFifteenAll("wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs&propertyname=");
     }
     
+    @Test
     public void testGetPropertyNameStar() throws Exception {
     	testGetFifteenAll("wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs&propertyname=*");
     }
@@ -62,6 +58,7 @@ public class GetFeatureTest extends WFSTestSupport {
     }
     
     // see GEOS-1893
+    @Test
     public void testGetMissingParams() throws Exception {
         Document doc = getAsDOM("wfs?request=GetFeature&typeNameWrongParam=cdf:Fifteen&version=1.0.0&service=wfs");
         // trick: the document specifies a namespace with schema reference, as a result xpath expressions
@@ -70,6 +67,7 @@ public class GetFeatureTest extends WFSTestSupport {
         XMLAssert.assertXpathEvaluatesTo("MissingParameterValue", "//ogc:ServiceException/@code", doc);
     }
     
+    @Test
     public void testAlienNamespace() throws Exception {
         // if the namespace is not known, complain with a service exception
         Document doc = getAsDOM("wfs?request=GetFeature&typename=youdontknowme:Fifteen&version=1.0.0&service=wfs");
@@ -77,6 +75,7 @@ public class GetFeatureTest extends WFSTestSupport {
                 .getNodeName());
     }
     
+    @Test
     public void testGetNullGeometies() throws Exception {
         Document doc;
         doc = getAsDOM("wfs?request=GetFeature&typeName=" + getLayerId(NULL_GEOMETRIES) + "&version=1.0.0&service=wfs");
@@ -87,6 +86,7 @@ public class GetFeatureTest extends WFSTestSupport {
     }
     
     // see GEOS-1287
+    @Test
     public void testGetWithFeatureId() throws Exception {
 
         Document doc;
@@ -109,6 +109,7 @@ public class GetFeatureTest extends WFSTestSupport {
                 "//wfs:FeatureCollection/gml:featureMember/cite:NamedPlaces/@fid", doc);
     }
 
+    @Test
     public void testPost() throws Exception {
 
         String xml = "<wfs:GetFeature " + "service=\"WFS\" "
@@ -130,6 +131,7 @@ public class GetFeatureTest extends WFSTestSupport {
 
     }
     
+    @Test
     public void testPostWithFilter() throws Exception {
 
         String xml = "<wfs:GetFeature " + "service=\"WFS\" "
@@ -155,10 +157,11 @@ public class GetFeatureTest extends WFSTestSupport {
         assertFalse(featureMembers.getLength() == 0);
     }
     
+    @Test
     public void testLax() throws Exception {
         String xml = 
             "<GetFeature version='1.1.0' xmlns:gml=\"http://www.opengis.net/gml\">" +  
-            " <Query typeName=\"" + MockData.BUILDINGS.getLocalPart() + "\">" + 
+            " <Query typeName=\"" + SystemTestData.BUILDINGS.getLocalPart() + "\">" + 
             "   <PropertyName>ADDRESS</PropertyName>" + 
             "   <Filter>" + 
             "     <PropertyIsEqualTo>" + 
@@ -178,6 +181,7 @@ public class GetFeatureTest extends WFSTestSupport {
         assertEquals(1,featureMembers.getLength());
     }
     
+    @Test
     public void testMixed() throws Exception {
         String xml = "<wfs:GetFeature " + "service=\"WFS\" "
         + "version=\"1.0.0\" "
@@ -197,11 +201,12 @@ public class GetFeatureTest extends WFSTestSupport {
         assertFalse(featureMembers.getLength() == 0);
     }
     
+    @Test
     public void testLikeMatchCase() throws Exception {
         // first run, without matching case, should match both buildings
         String xml = 
             "<GetFeature version='1.1.0' xmlns:gml=\"http://www.opengis.net/gml\">" +  
-            " <Query typeName=\"" + MockData.BUILDINGS.getLocalPart() + "\">" + 
+            " <Query typeName=\"" + SystemTestData.BUILDINGS.getLocalPart() + "\">" + 
             "   <PropertyName>ADDRESS</PropertyName>" + 
             "   <Filter>" + 
             "     <PropertyIsLike wildCard=\"*\" singleChar=\".\" escapeChar=\"\\\" matchCase=\"false\">" + 
@@ -222,7 +227,7 @@ public class GetFeatureTest extends WFSTestSupport {
         // second run, with match case, should match none
         xml = 
             "<GetFeature version='1.1.0' xmlns:gml=\"http://www.opengis.net/gml\">" +  
-            " <Query typeName=\"" + MockData.BUILDINGS.getLocalPart() + "\">" + 
+            " <Query typeName=\"" + SystemTestData.BUILDINGS.getLocalPart() + "\">" + 
             "   <PropertyName>ADDRESS</PropertyName>" + 
             "   <Filter>" + 
             "     <PropertyIsLike wildCard=\"*\" singleChar=\".\" escapeChar=\"\\\" matchCase=\"true\">" + 
@@ -241,6 +246,7 @@ public class GetFeatureTest extends WFSTestSupport {
 
     }
     
+    @Test
     public void testWorkspaceQualified() throws Exception {
         testGetFifteenAll("cdf/wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs");
         testGetFifteenAll("cdf/wfs?request=GetFeature&typename=Fifteen&version=1.0.0&service=wfs");
@@ -249,6 +255,7 @@ public class GetFeatureTest extends WFSTestSupport {
         XMLAssert.assertXpathEvaluatesTo("1", "count(//ogc:ServiceException)", doc);
     }
     
+    @Test
     public void testLayerQualified() throws Exception {
         testGetFifteenAll("cdf/Fifteen/wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs");
         testGetFifteenAll("cdf/Fifteen/wfs?request=GetFeature&typename=Fifteen&version=1.0.0&service=wfs");
@@ -257,9 +264,10 @@ public class GetFeatureTest extends WFSTestSupport {
         XMLAssert.assertXpathEvaluatesTo("1", "count(//ogc:ServiceException)", doc);
     }
     
+    @Test
     public void testMultiLayer() throws Exception {
-        Document doc = getAsDOM("/wfs?request=GetFeature&typename=" + getLayerId(MockData.BASIC_POLYGONS) 
-                + "," + getLayerId(MockData.BRIDGES) + "&version=1.0.0&service=wfs");
+        Document doc = getAsDOM("/wfs?request=GetFeature&typename=" + getLayerId(SystemTestData.BASIC_POLYGONS) 
+                + "," + getLayerId(SystemTestData.BRIDGES) + "&version=1.0.0&service=wfs");
         // print(doc);
         
         XpathEngine engine = XMLUnit.newXpathEngine();

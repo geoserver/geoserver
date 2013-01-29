@@ -3,45 +3,55 @@
 WFS basics
 ==========
 
-GeoServer provides support for Open Geospatial Consortium (OGC) Web Feature Service (WFS) versions 1.0 and 1.1.  This is a standard for getting raw vector data - the 'source code' of the map - over the web.  Using a compliant WFS makes it possible for clients to query the data structure and the actual data.  Advanced WFS operations also enable editing and locking of the data.  
+GeoServer provides support for the `Open Geospatial Consortium (OGC) <http://www.opengeospatial.org>`_ `Web Feature Service (WFS) <http://www.opengeospatial.org/standards/wms>`_ specification, versions **1.0.0**, **1.1.0**, and **2.0.0**. WFS defines a standard for exchanging vector data over the Internet. With a compliant WFS, clients can query both the data structure and the source data. Advanced WFS operations also support feature locking and edit operations.  
 
-GeoServer is the reference implementation of both the 1.0 and 1.1 versions of the standard, completely implementing every part of the protocol.  This includes the Basic operations of GetCapabilities, DescribeFeatureType and GetFeature, as well as the more advanced Transaction, LockFeature and GetGmlObject operations.  GeoServer's WFS also is integrated with GeoServer's :ref:`security` system, to limit access to data and transactions.  It also supports a wide variety of :ref:`wfs_output_formats`, to make the raw data more widely available.  
-
-GeoServer additionally supports a special 'versioning' protocol in an extension: :ref:`wfsv_extension`.  This is not yet a part of the WFS specification, but is written to be compatible, extending it to provide a history of edits, differences between edits, and a rollback operation to take things to a previous state.  
-
-
-:ref:`wfs_reference`
+GeoServer is the reference implementation of all three versions of the standard, completely implementing every part of the protocol. This includes the basic operations of :ref:`wfs_getcap`, :ref:`wfs_dft`, and :ref:`wfs_getfeature`, as well as more advanced options such as :ref:`wfs_wfst`. GeoServer WFS is also integrated with its :ref:`security` system to limit access to data and transactions, and supports a variety of :ref:`wfs_output_formats`, making the raw data more widely available.
 
 Differences between WFS versions
--------------------------------- 
+--------------------------------
 
 The major differences between the WFS versions are: 
 
-* WFS 1.1.0 returns GML3 as the default GML. In WFS 1.0.0 the default was GML2. (GeoServer still supports requests in both GML3 and GML2 formats.) GML3 has slightly different ways of specifying a geometry. 
-* In WFS 1.1.0, the way to specify the SRS (Spatial Reference System, aka projection) is ``urn:x-ogc:def:crs:EPSG:XXXX``, whereas in version 1.0.0 the specification was ``http://www.opengis.net/gml/srs/epsg.xml#XXXX``. This change has implications on the axis order of the returned data. 
-* WFS 1.1.0 supports on-the-fly reprojection of data, which allows for data to be returned in a SRS other than the native. 
+* WFS 1.1.0 and 2.0.0 return GML3 as the default GML, whereas in WFS 1.0.0, the default is GML2. GML3 adopts marginally different ways of specifying a geometry. GeoServer supports requests in both GML3 and GML2 formats.
+
+* In WFS 1.1.0 and 2.0.0, the SRS (Spatial Reference System, or projection) is specified with ``urn:x-ogc:def:crs:EPSG:XXXX``, whereas in WFS 1.0.0 the specification was ``http://www.opengis.net/gml/srs/epsg.xml#XXXX``. This change has implications for the `axis order <wfs_basics_axis>`_ of the returned data. 
+
+* WFS 1.1.0 and 2.0.0 support on-the-fly reprojection of data, which supports returning the data in a SRS other than the native SRS. 
+
+* WFS 2.0.0 introduces a new version of the filter encoding specification, adding support for temporal filters.
+
+* WFS 2.0.0 supports joins via a GetFeature request.
+
+* WFS 2.0.0 adds the ability to page results of a GetFeature request via the ``startIndex`` and ``maxFeatures`` parameters. GeoServer now supports this functionality in WFS 1.0.0 and 1.1.0. 
+
+* WFS 2.0.0 supports stored queries, which are regular WFS queries stored on the server such that they may be invoked by passing the appropriate identifier with a WFS request.
+
+* WFS 2.0.0 supports SOAP (Simple Object Access Protocol) as an alternative to the OGC interface.
+
+
+.. _wfs_basics_axis:
 
 Axis ordering
-------------- 
+-------------
 
-WFS 1.0.0 servers return geographic coordinates in longitude/latitude 
-(x/y) order. This is the most common way to distribute data as well (for 
-example, most shapefiles adopt this order by default). 
+WFS 1.0.0 servers return geographic coordinates in longitude/latitude (x/y) order, the most common way to distribute data. For example, most shapefiles adopt this order by default. 
 
-However, the traditional axis order for geographic and cartographic 
-systems is latitude/longitude (y/x), the opposite and WFS 1.1.0 
-specification respects this. This can cause difficulties when switching 
-between servers with different WFS versions, or when upgading your WFS. 
+However, the traditional axis order for geographic and cartographic systems is the opposite—latitude/longitude (y/x)—and the later WFS specifications respect this. The default axis ordering support is: 
 
-To sum up, the defaults are as follows: 
+* Latitude/longitude—WFS 1.1.0 and WFS 2.0.0
+* Longitude/latitude—WMS 1.0.0 
 
-* WFS 1.1.0 request = latitude/longitude
-* WMS 1.0.0 request = longitude/latitude 
+This may cause difficulties when switching between servers with different WFS versions, or when upgrading your WFS. To minimize confusion and increase interoperability, GeoServer has adopted the following assumptions when specifying projections in the following formats: 
 
-GeoServer, however, in an attempt to minimize confusion and increase 
-interoperability, has adopted the following conventions when specifying 
-projections in the follow formats: 
+.. list-table::
+   :widths: 75 25
+   :header-rows: 1
 
-* ``EPSG:xxxx`` - longitude/latitude
-* ``http://www.opengis.net/gml/srs/epsg.xml#xxxx`` - longitude/latitude
-* ``urn:x-ogc:def:crs:EPSG:xxxx`` - latitude/longitude 
+   * - Representation
+     - Assumed axis order
+   * - ``EPSG:xxxx``
+     - longitude/latitude (x/y)
+   * - ``http://www.opengis.net/gml/srs/epsg.xml#xxxx``
+     - longitude/latitude (x/y)
+   * - ``urn:x-ogc:def:crs:EPSG:xxxx``
+     - latitude/longitude (y/x) 

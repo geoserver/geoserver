@@ -1,4 +1,10 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wms.web.data;
+
+import static org.junit.Assert.*;
 
 import java.io.FileReader;
 
@@ -9,16 +15,19 @@ import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.util.file.File;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.junit.Before;
+import org.junit.Test;
 
 public class StyleNewPageTest extends GeoServerWicketTestSupport {
     
-    @Override
-    protected void setUpInternal() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         login();
         tester.startPage(StyleNewPage.class);
         // org.geoserver.web.wicket.WicketHierarchyPrinter.print(tester.getLastRenderedPage(), true, false);
     }
 
+    @Test
     public void testLoad() throws Exception {
         tester.assertRenderedPage(StyleNewPage.class);
         tester.assertNoErrorMessage();
@@ -30,6 +39,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         tester.assertModelValue("form:name", null);
     }
     
+    @Test
     public void testUpload() throws Exception {
         FormTester upload = tester.newFormTester("uploadForm");
         File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
@@ -55,6 +65,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         tester.assertErrorMessages(new String[] {"Field 'Name' is required."});
     }
     
+    @Test
     public void testMissingStyle() throws Exception {
         FormTester form = tester.newFormTester("form");
         form.setValue("name", "test");
@@ -65,7 +76,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         tester.assertErrorMessages(new String[] {"Field 'SLD' is required."});
     }
 
-    
+    @Test
     public void testNewStyle() throws Exception {
         
         FormTester form = tester.newFormTester("form");

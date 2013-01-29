@@ -1,10 +1,19 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wps.gs;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
 import java.io.InputStream;
 
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wps.WPSTestSupport;
 import org.geotools.gce.arcgrid.ArcGridFormat;
+import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridEnvelope;
 
@@ -15,11 +24,13 @@ public class ScaleCoverageTest extends WPSTestSupport {
     static final double EPS = 1e-6;
     
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        dataDirectory.addWcs11Coverages();
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        
+        addWcs11Coverages(testData);
     }
 
+    @Test
     public void testScale() throws Exception {
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
         		"<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n" + 
@@ -83,6 +94,7 @@ public class ScaleCoverageTest extends WPSTestSupport {
         GridCoverage gc = format.getReader(is).read(null);
         
         GridCoverage original = getCatalog().getCoverageByName(getLayerId(MockData.TASMANIA_DEM)).getGridCoverage(null, null);
+        scheduleForDisposal(original);
         
         // check the envelope did not change
         assertEquals(original.getEnvelope().getMinimum(0), gc.getEnvelope().getMinimum(0), EPS);
@@ -95,6 +107,5 @@ public class ScaleCoverageTest extends WPSTestSupport {
         GridEnvelope resultRange = gc.getGridGeometry().getGridRange();
         assertEquals(originalRange.getSpan(0) * 2, resultRange.getSpan(0));
         assertEquals(originalRange.getSpan(1) * 2, resultRange.getSpan(1));
-
     }
 }

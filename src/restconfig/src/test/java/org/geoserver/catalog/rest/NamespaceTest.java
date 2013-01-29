@@ -1,10 +1,13 @@
-/* Copyright (c) 2001 - 2009 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -15,6 +18,8 @@ import net.sf.json.JSONObject;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.MockData;
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -22,13 +27,20 @@ import org.w3c.dom.NodeList;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class NamespaceTest extends CatalogRESTTestSupport {
+    
+    @Before
+    public void cleanNamespaces() {
+        removeWorkspace("foo");
+    }
 
+    @Test
     public void testGetAllAsXML() throws Exception {
         Document dom = getAsDOM( "/rest/namespaces.xml");
         assertEquals( catalog.getNamespaces().size() , 
             dom.getElementsByTagName( "namespace").getLength() );
     }
-    
+
+    @Test
     public void testGetAllAsJSON() throws Exception {
         JSON json = getAsJSON( "/rest/namespaces.json");
         assertTrue( json instanceof JSONObject );
@@ -38,7 +50,8 @@ public class NamespaceTest extends CatalogRESTTestSupport {
         
         assertEquals( catalog.getNamespaces().size() , namespaces.size() ); 
     }
-    
+
+    @Test
     public void testGetAllAsHTML() throws Exception {
         Document dom = getAsDOM( "/rest/namespaces.html" );
         
@@ -54,15 +67,18 @@ public class NamespaceTest extends CatalogRESTTestSupport {
             assertTrue( link.getAttribute("href").endsWith( ws.getPrefix() + ".html") );
         }
     }
-    
+
+    @Test
     public void testPutAllUnauthorized() throws Exception {
         assertEquals( 405, putAsServletResponse( "/rest/namespaces" ).getStatusCode() );
     }
-    
+
+    @Test
     public void testDeleteAllUnauthorized() throws Exception {
         assertEquals( 405, deleteAsServletResponse( "/rest/namespaces").getStatusCode() );
     }
     
+    @Test
     public void testGetAsXML() throws Exception {
         Document dom = getAsDOM( "/rest/namespaces/sf.xml");
         assertEquals( "namespace", dom.getDocumentElement().getLocalName() );
@@ -75,6 +91,7 @@ public class NamespaceTest extends CatalogRESTTestSupport {
         assertEquals( MockData.SF_URI, name.getFirstChild().getTextContent() );
     }
     
+    @Test
     public void testGetAsHTML() throws Exception {
         Document dom = getAsDOM( "/rest/namespaces/sf.html");
 
@@ -90,10 +107,12 @@ public class NamespaceTest extends CatalogRESTTestSupport {
         }
     }
     
+    @Test
     public void testGetNonExistant() throws Exception {
         assertEquals( 404, getAsServletResponse( "/rest/namespaces/none").getStatusCode() );
     }
     
+    @Test
     public void testPostAsXML() throws Exception {
         String xml = 
             "<namespace>" + 
@@ -109,6 +128,7 @@ public class NamespaceTest extends CatalogRESTTestSupport {
         assertNotNull(ws);
     }
     
+    @Test
     public void testGetAsJSON() throws Exception {
         JSON json = getAsJSON( "/rest/namespaces/sf.json");
         JSONObject namespace = ((JSONObject) json).getJSONObject( "namespace") ;
@@ -116,6 +136,7 @@ public class NamespaceTest extends CatalogRESTTestSupport {
         assertEquals( MockData.SF_URI, namespace.get( "uri" ) );
     }
     
+    @Test
     public void testPostAsJSON() throws Exception {
         String json = "{'namespace':{ 'prefix':'foo', 'uri':'http://foo.com' }}";
         
@@ -129,6 +150,7 @@ public class NamespaceTest extends CatalogRESTTestSupport {
         assertNotNull(ws);
     }
     
+    @Test
     public void testPostToResource() throws Exception {
         String xml = 
             "<namespace>" +
@@ -140,10 +162,12 @@ public class NamespaceTest extends CatalogRESTTestSupport {
         assertEquals( 405, response.getStatusCode() );
     }
     
+    @Test
     public void testDeleteNonExistant() throws Exception {
         assertEquals( 404, deleteAsServletResponse("/rest/namespaces/newExistant").getStatusCode() );
     }
     
+    @Test
     public void testDelete() throws Exception {
         String xml = 
             "<namespace>" +
@@ -159,10 +183,12 @@ public class NamespaceTest extends CatalogRESTTestSupport {
         assertEquals( 404, getAsServletResponse( "/rest/namespaces/foo.xml" ).getStatusCode() );
     }
     
+    @Test
     public void testDeleteNonEmpty() throws Exception {
         assertEquals( 401, deleteAsServletResponse("/rest/namespaces/sf").getStatusCode() );
     }
     
+    @Test
     public void testPut() throws Exception {
         String xml = 
             "<namespace>" +
@@ -177,6 +203,7 @@ public class NamespaceTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("1", "count(//namespace/uri[text()='http://changed'])", dom );
     }
     
+    @Test
     public void testPutNonExistant() throws Exception {
         String xml = 
             "<namespace>" +
@@ -188,6 +215,7 @@ public class NamespaceTest extends CatalogRESTTestSupport {
         assertEquals( 404, response.getStatusCode() );
     }
     
+    @Test
     public void testGetDefaultNamespace() throws Exception {
         Document dom = getAsDOM( "/rest/namespaces/default.xml");
         
@@ -196,6 +224,7 @@ public class NamespaceTest extends CatalogRESTTestSupport {
         assertEquals( 1, dom.getElementsByTagName( "uri" ).getLength() );
     }
     
+    @Test
     public void testPutDefaultNamespace() throws Exception {
         NamespaceInfo def = getCatalog().getDefaultNamespace();
         assertEquals( "gs", def.getPrefix() );

@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -7,6 +7,7 @@ package org.geoserver.security.filter;
 
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
+import org.geoserver.security.config.UsernamePasswordAuthenticationFilterConfig;
 
 /**
  * Security provider for {@link GeoServerUserNamePasswordAuthenticationFilter}
@@ -18,7 +19,7 @@ public class GeoServerUserNamePasswordAuthenticationProvider extends AbstractFil
     @Override
     public void configure(XStreamPersister xp) {
         super.configure(xp);
-        xp.getXStream().alias("usernamePasswordFilter", GeoServerUserNamePasswordAuthenticationFilter.class);
+        xp.getXStream().alias("usernamePasswordFilter", UsernamePasswordAuthenticationFilterConfig.class);
     }
 
     @Override

@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 
@@ -69,5 +69,23 @@ public class GeoServerAnonymousAuthenticationFilter extends GeoServerSecurityFil
             AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails> authenticationDetailsSource) {
         Assert.notNull(authenticationDetailsSource, "AuthenticationDetailsSource required");
         this.authenticationDetailsSource = authenticationDetailsSource;
+    }
+
+
+    /**
+     * @see org.geoserver.security.filter.GeoServerAuthenticationFilter#applicableForHtml()
+     */
+    @Override
+    public boolean applicableForHtml() {
+        return true;
+    }
+
+
+    /**
+     * @see org.geoserver.security.filter.GeoServerAuthenticationFilter#applicableForServices()
+     */
+    @Override
+    public boolean applicableForServices() {
+        return true;
     }
 }

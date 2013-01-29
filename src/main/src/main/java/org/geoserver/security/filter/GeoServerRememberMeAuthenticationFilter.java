@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -32,5 +32,22 @@ public class GeoServerRememberMeAuthenticationFilter extends GeoServerCompositeF
         filter.afterPropertiesSet();
         getNestedFilters().add(filter);        
     }
-    
+
+    /**
+     * @see org.geoserver.security.filter.GeoServerAuthenticationFilter#applicableForHtml()
+     */
+    @Override
+    public boolean applicableForHtml() {
+        return true;
+    }
+
+
+    /**
+     * @see org.geoserver.security.filter.GeoServerAuthenticationFilter#applicableForServices()
+     */
+    @Override
+    public boolean applicableForServices() {
+        return false;
+    }
+
 }

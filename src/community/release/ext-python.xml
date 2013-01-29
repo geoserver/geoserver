@@ -9,7 +9,9 @@
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
-        <include>python*</include>
+        <include>script-core*</include>
+        <include>script-py*</include>
+        <include>geoscript-py*</include>
         <include>jython*</include>
         <include>gt-process*</include>
         <include>gt-geojson*</include>

@@ -1,4 +1,10 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.web.data.workspace;
+
+import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -13,21 +19,32 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.junit.Before;
+import org.junit.Test;
 
 public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
 
     private WorkspaceInfo citeWorkspace;
 
-    @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+    @Before
+    public void init() {
         login();
         citeWorkspace = getCatalog().getWorkspaceByName(MockData.CITE_PREFIX);
-        tester.startPage(new WorkspaceEditPage(citeWorkspace));
+        
+        GeoServer gs = getGeoServer();
+        SettingsInfo s = gs.getSettings(citeWorkspace);
+        if (s != null) {
+            gs.remove(s);
+        }
+        NamespaceInfo citeNS = getCatalog().getNamespaceByPrefix(MockData.CITE_PREFIX);
+        citeNS.setURI(MockData.CITE_URI);
+        getCatalog().save(citeNS);
 
-        // print(tester.getLastRenderedPage(), true, true);
+        tester.startPage(new WorkspaceEditPage(citeWorkspace));
     }
-    
+
+
+    @Test
     public void testURIRequired() {
         FormTester form = tester.newFormTester("form");
         form.setValue("uri", "");
@@ -37,6 +54,7 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         tester.assertErrorMessages(new String[] {"Field 'uri' is required."});
     }
 
+    @Test
     public void testLoad() {
         tester.assertRenderedPage(WorkspaceEditPage.class);
         tester.assertNoErrorMessage();
@@ -45,6 +63,7 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         tester.assertModelValue("form:uri", MockData.CITE_URI);
     }
 
+    @Test
     public void testValidURI() {
         FormTester form = tester.newFormTester("form");
         form.setValue("uri", "http://www.geoserver.org");
@@ -54,6 +73,7 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
     }
 
+    @Test
     public void testInvalidURI() {
         FormTester form = tester.newFormTester("form");
         form.setValue("uri", "not a valid uri");
@@ -70,6 +90,7 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
      * See GEOS-3322, upon a namespace URI change the datastores connection parameter shall be
      * changed accordingly
      */
+    @Test
     public void testUpdatesDataStoresNamespace() {
         final Catalog catalog = getCatalog();
         final List<DataStoreInfo> storesInitial = catalog.getStoresByWorkspace(citeWorkspace,
@@ -94,6 +115,7 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         }
     }
     
+    @Test
     public void testDefaultCheckbox() {
         assertFalse(getCatalog().getDefaultWorkspace().getName().equals(MockData.CITE_PREFIX));
         
@@ -105,6 +127,7 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         assertEquals(MockData.CITE_PREFIX, getCatalog().getDefaultWorkspace().getName());
     }
 
+    @Test
     public void testEnableSettings() throws Exception {
         GeoServer gs = getGeoServer();
 
@@ -118,6 +141,7 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         assertNotNull(gs.getSettings(citeWorkspace));
     }
 
+    @Test
     public void testDisableSettings() throws Exception {
         GeoServer gs = getGeoServer();
         SettingsInfo settings = gs.getFactory().createSettings();

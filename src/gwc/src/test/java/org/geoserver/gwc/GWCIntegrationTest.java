@@ -1,25 +1,25 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.gwc;
 
-import static org.geoserver.data.test.MockData.BASIC_POLYGONS;
-import static org.geoserver.gwc.GWC.tileLayerName;
+import static junit.framework.Assert.*;
+import static org.geoserver.data.test.MockData.*;
+import static org.geoserver.gwc.GWC.*;
 
 import java.util.Date;
 
 import javax.servlet.http.HttpServletResponse;
 
-import junit.framework.Test;
-
 import org.apache.commons.httpclient.util.DateUtil;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.layer.CatalogConfiguration;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.test.GeoServerTestSupport;
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.GeoWebCacheExtensions;
 import org.geowebcache.grid.BoundingBox;
@@ -27,24 +27,36 @@ import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.grid.GridSubset;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.TileLayerDispatcher;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-public class GWCIntegrationTest extends GeoServerTestSupport {
-
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new GWCIntegrationTest());
-    }
+public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
     @Override
-    protected void setUpInternal() {
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        
         GWC.get().getConfig().setDirectWMSIntegrationEnabled(false);
     }
+    
+    @Before
+    public void resetLayers() throws Exception {
+        final String layerName = getLayerId(BASIC_POLYGONS);
+        LayerInfo layerInfo = getCatalog().getLayerByName(layerName);
+        if(layerInfo != null) {
+            getCatalog().remove(layerInfo);
+            getGeoServer().reload();
+            
+        }
+        
+        revertLayer(BASIC_POLYGONS);
+        revertLayer(MPOINTS);
+    }
 
+    @Test 
     public void testPngIntegration() throws Exception {
         String layerId = getLayerId(MockData.BASIC_POLYGONS);
         MockHttpServletResponse sr = getAsServletResponse("gwc/service/wmts?request=GetTile&layer="
@@ -58,7 +70,7 @@ public class GWCIntegrationTest extends GeoServerTestSupport {
      * If direct WMS integration is enabled, a GetMap requests that hits the regular WMS but matches
      * a gwc tile should return with the proper {@code geowebcache-tile-index} HTTP response header.
      */
-    public void testDirectWMSIntegration() throws Exception {
+    @Test public void testDirectWMSIntegration() throws Exception {
         final GWC gwc = GWC.get();
         gwc.getConfig().setDirectWMSIntegrationEnabled(true);
 
@@ -80,7 +92,7 @@ public class GWCIntegrationTest extends GeoServerTestSupport {
         assertEquals("image/png", response.getContentType());
     }
 
-    public void testDirectWMSIntegrationResponseHeaders() throws Exception {
+    @Test public void testDirectWMSIntegrationResponseHeaders() throws Exception {
         final GWC gwc = GWC.get();
         gwc.getConfig().setDirectWMSIntegrationEnabled(true);
 
@@ -98,7 +110,7 @@ public class GWCIntegrationTest extends GeoServerTestSupport {
         assertEquals("EPSG:4326", response.getHeader("geowebcache-crs"));
     }
 
-    public void testDirectWMSIntegrationIfModifiedSinceSupport() throws Exception {
+    @Test public void testDirectWMSIntegrationIfModifiedSinceSupport() throws Exception {
         final GWC gwc = GWC.get();
         gwc.getConfig().setDirectWMSIntegrationEnabled(true);
 
@@ -139,7 +151,7 @@ public class GWCIntegrationTest extends GeoServerTestSupport {
         assertEquals(HttpServletResponse.SC_NOT_MODIFIED, response.getErrorCode());
     }
 
-    public void testDirectWMSIntegrationWithVirtualServices() throws Exception {
+    @Test public void testDirectWMSIntegrationWithVirtualServices() throws Exception {
         final GWC gwc = GWC.get();
         gwc.getConfig().setDirectWMSIntegrationEnabled(true);
 
@@ -161,7 +173,7 @@ public class GWCIntegrationTest extends GeoServerTestSupport {
         assertEquals(qualifiedName, response.getHeader("geowebcache-layer"));
     }
 
-    public void testDirectWMSIntegrationWithVirtualServicesHiddenLayer() throws Exception {
+    @Test public void testDirectWMSIntegrationWithVirtualServicesHiddenLayer() throws Exception {
         /*
          * Nothing special needs to be done at the GWC integration level for this to work. The hard
          * work should already be done by WMSWorkspaceQualifier so that when the request hits GWC
@@ -193,7 +205,7 @@ public class GWCIntegrationTest extends GeoServerTestSupport {
                         .contains("Could not find layer cdf:BasicPolygons"));
     }
 
-    public void testReloadConfiguration() throws Exception {
+    @Test public void testReloadConfiguration() throws Exception {
         String path = "/gwc/rest/reload";
         String content = "reload_configuration=1";
         String contentType = "application/x-www-form-urlencoded";
@@ -201,7 +213,7 @@ public class GWCIntegrationTest extends GeoServerTestSupport {
         assertEquals(200, response.getStatusCode());
     }
 
-    public void testBasicIntegration() throws Exception {
+    @Test public void testBasicIntegration() throws Exception {
         Catalog cat = getCatalog();
         TileLayerDispatcher tld = GeoWebCacheExtensions.bean(TileLayerDispatcher.class);
         assertNotNull(tld);
@@ -242,7 +254,7 @@ public class GWCIntegrationTest extends GeoServerTestSupport {
         assertTrue(foudAGF);
 
         // 3) Basic get
-        LayerInfo li = cat.getLayers().get(1);
+        LayerInfo li = cat.getLayerByName(super.getLayerId(MockData.MPOINTS));
         String layerName = tileLayerName(li);
 
         TileLayer tl = tld.getTileLayer(layerName);
@@ -300,6 +312,7 @@ public class GWCIntegrationTest extends GeoServerTestSupport {
      * See GEOS-5092, check server startup is not hurt by a tile layer out of sync (say someone
      * manually removed the GeoServer layer)
      */
+    @Test 
     public void testMissingGeoServerLayerAtStartUp() throws Exception {
 
         Catalog catalog = getCatalog();
@@ -313,8 +326,7 @@ public class GWCIntegrationTest extends GeoServerTestSupport {
         assertNotNull(tileLayer);
         assertTrue(tileLayer.isEnabled());
 
-        MockData testData = getTestData();
-        testData.removeFeatureType(BASIC_POLYGONS);
+        getCatalog().remove(layerInfo);
 
         getGeoServer().reload();
 
@@ -330,4 +342,28 @@ public class GWCIntegrationTest extends GeoServerTestSupport {
             assertTrue(true);
         }
     }
+    
+    @Test
+    public void testRemoveLayerAfterReload() throws Exception {
+        Catalog cat = getCatalog();
+        TileLayerDispatcher tld = GeoWebCacheExtensions.bean(TileLayerDispatcher.class);
+        
+        LayerInfo li = cat.getLayerByName(super.getLayerId(MockData.MPOINTS));
+        String layerName = tileLayerName(li);
+
+        assertNotNull(tld.getTileLayer(layerName));
+
+        // force reload
+        getGeoServer().reload();
+        
+        // now remove the layer and check it has been removed from GWC as well
+        cat.remove(li);
+        try {
+            tld.getTileLayer(layerName);
+            fail("Layer should not exist");
+        } catch (GeoWebCacheException gwce) {
+            // fine
+        }
+    }
+    
 }

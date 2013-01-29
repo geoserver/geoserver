@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 
@@ -19,6 +19,8 @@ import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.web.AbstractConfirmRemovalPanelTest;
 import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.FormTestPage;
+import org.junit.Before;
+import org.junit.Test;
 
 public class ConfirmRemovalUserPanelTest extends AbstractConfirmRemovalPanelTest<GeoServerUser> {
     private static final long serialVersionUID = 1L;
@@ -43,16 +45,23 @@ public class ConfirmRemovalUserPanelTest extends AbstractConfirmRemovalPanelTest
             }
         }));
     }
-    
+
+
+    @Before
+    public void init() throws Exception {
+        initializeForXML();
+        clearServices();
+    }
+
+    @Test
     public void testRemoveUser() throws Exception {
         disassociateRoles=false;
-        initializeForXML();
         removeObject();                                       
     }
 
+    @Test
     public void testRemoveUserWithRoles() throws Exception {
         disassociateRoles=true;
-        initializeForXML();
         removeObject();                                       
     }
 

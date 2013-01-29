@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wcs;
 
 import java.util.ArrayList;
@@ -28,7 +32,6 @@ public class WCSXStreamLoader extends XStreamServiceLoader<WCSInfo> {
     protected WCSInfo createServiceFromScratch(GeoServer gs) {
 
         WCSInfoImpl wcs = new WCSInfoImpl();
-        wcs.setId("wcs");
         wcs.setName("WCS");
 
         return wcs;
@@ -45,10 +48,17 @@ public class WCSXStreamLoader extends XStreamServiceLoader<WCSInfo> {
 		super.initialize(service);
         if (service.getExceptionFormats() == null) {
             ((WCSInfoImpl) service).setExceptionFormats(new ArrayList<String>());
-        }        
+        }   
         if (service.getVersions().isEmpty()) {
             service.getVersions().add(new Version("1.0.0"));
             service.getVersions().add(new Version("1.1.1"));
+        } 
+        Version v201 = new Version("2.0.1");        
+        if(!service.getVersions().contains(v201)) {
+            service.getVersions().add(v201);
+        }
+        if(service.getSRS() == null) {
+            ((WCSInfoImpl) service).setSRS(new ArrayList<String>());
         }
         return service;
     }

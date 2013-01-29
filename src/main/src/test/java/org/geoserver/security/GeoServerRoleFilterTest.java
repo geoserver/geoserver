@@ -1,21 +1,31 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.security;
 
+import static org.junit.Assert.*;
+
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.security.config.GeoServerRoleFilterConfig;
+import org.geoserver.security.config.RoleFilterConfig;
 import org.geoserver.security.filter.GeoServerRoleFilter;
 import org.geoserver.security.impl.GeoServerRole;
+import org.geoserver.test.SystemTest;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import com.mockrunner.mock.web.MockFilterChain;
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
+@Category(SystemTest.class)
 public class GeoServerRoleFilterTest extends GeoServerSecurityTestSupport {
 
-    
+    @Test
     public void testFilterChainWithEnabled() throws Exception {
         
         GeoServerSecurityManager secMgr = getSecurityManager();
-        GeoServerRoleFilterConfig config = new GeoServerRoleFilterConfig();
+        RoleFilterConfig config = new RoleFilterConfig();
         config.setName("roleConverter");
         config.setClassName(GeoServerRoleFilter.class.getName());
         config.setRoleConverterName("roleConverter");
@@ -35,6 +45,7 @@ public class GeoServerRoleFilterTest extends GeoServerSecurityTestSupport {
         assertEquals(GeoServerRole.ANONYMOUS_ROLE.getAuthority(),response.getHeader("ROLES"));        
     }
 
+    @Test
     public void testFilterChainWithDisabled() throws Exception {
 
         MockHttpServletRequest request = createRequest("/foo");
@@ -48,7 +59,4 @@ public class GeoServerRoleFilterTest extends GeoServerSecurityTestSupport {
         assertNull(response.getHeader("ROLES"));
         
     }
-
-
-
 }

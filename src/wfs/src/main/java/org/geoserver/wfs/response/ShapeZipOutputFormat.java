@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs.response;
@@ -474,7 +474,14 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat implements A
 
         if (file != null && file.exists()) {
             Properties properties = new Properties();
-            properties.load(new FileInputStream(file));
+            FileInputStream fis = null;
+            try {
+            	fis = new FileInputStream(file);
+            	properties.load(fis);
+            } finally {
+            	org.apache.commons.io.IOUtils.closeQuietly(fis);
+            }
+			
 
             String data = (String) properties.get(epsgCode.toString());
 

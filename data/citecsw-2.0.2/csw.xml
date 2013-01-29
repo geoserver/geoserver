@@ -1,0 +1,13 @@
+<csw>
+  <id>csw</id>
+  <enabled>true</enabled>
+  <versions>
+    <org.geotools.util.Version>
+      <version>2.0.2</version>
+    </org.geotools.util.Version>
+  </versions>
+  <citeCompliant>true</citeCompliant>
+  <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
+  <verbose>false</verbose>
+  <canonicalSchemaLocation>false</canonicalSchemaLocation>
+</csw>

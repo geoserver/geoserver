@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.security.web.service;
 
 import java.util.List;
@@ -10,10 +14,12 @@ import org.geoserver.security.impl.ServiceAccessRuleDAO;
 import org.geoserver.security.web.AbstractConfirmRemovalPanelTest;
 import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.FormTestPage;
+import org.junit.Test;
 
 public class ConfirmRemovalServicePanelTest extends AbstractConfirmRemovalPanelTest<ServiceAccessRule> {
     private static final long serialVersionUID = 1L;
 
+    @Test
     public void testRemoveRule() throws Exception {
         initializeForXML();
         removeObject();        

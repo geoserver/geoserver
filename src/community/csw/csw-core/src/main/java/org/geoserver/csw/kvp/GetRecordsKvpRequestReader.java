@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -6,6 +6,7 @@
 package org.geoserver.csw.kvp;
 
 import java.io.StringReader;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,12 +19,20 @@ import net.opengis.cat.csw20.ElementSetType;
 import net.opengis.cat.csw20.GetRecordsType;
 import net.opengis.cat.csw20.QueryType;
 
+import org.geoserver.csw.records.CSWRecordDescriptor;
+import org.geoserver.csw.records.RecordDescriptor;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.v1_1.OGC;
 import org.geotools.filter.v1_1.OGCConfiguration;
 import org.geotools.xml.Parser;
+import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
+import org.opengis.filter.sort.SortBy;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
@@ -31,13 +40,19 @@ import org.xml.sax.helpers.NamespaceSupport;
  * 
  * @author Andrea Aime, GeoSolutions
  */
-public class GetRecordsKvpRequestReader extends CSWKvpRequestReader {
+public class GetRecordsKvpRequestReader extends CSWKvpRequestReader implements ApplicationContextAware {
     
     private static final String FILTER = "FILTER";
     private static final String CQL_TEXT = "CQL_TEXT";
     private static final String CONSTRAINTLANGUAGE = "constraintlanguage";
     private static final String CONSTRAINT = "constraint";
-    TypeNameResolver resolver = new TypeNameResolver();
+    
+    /**
+     * Resolves the type names into proper QName objects
+     */
+    TypeNamesResolver resolver = new TypeNamesResolver();
+    
+    HashMap<QName, RecordDescriptor> descriptors;
 
     public GetRecordsKvpRequestReader() {
         super(GetRecordsType.class);
@@ -74,15 +89,19 @@ public class GetRecordsKvpRequestReader extends CSWKvpRequestReader {
 
         // parse the type names
         String typeNamesString = (String) kvp.get("typeNames");
-        NamespaceSupport namespaces = (NamespaceSupport) kvp.get("namespaces");
+        if(typeNamesString == null) {
+            throw new ServiceException("Mandatory parameter typeNames is missing", ServiceException.MISSING_PARAMETER_VALUE, "typeNames");
+        }
+        NamespaceSupport namespaces = (NamespaceSupport) kvp.get("namespace");
         if (namespaces == null) {
-            namespaces = new NamespaceSupport();
+            // by spec, "NAMSPACE, If not included, all qualified names are in default namespace"
+            namespaces = CSWRecordDescriptor.NAMESPACES;
         }
         List<QName> typeNames = resolver.parseQNames(typeNamesString, namespaces);
         query.setTypeNames(typeNames);
         
         // handle the element set
-        ElementSetType elementSet = (ElementSetType) kvp.remove("elementSetName");
+        ElementSetType elementSet = (ElementSetType) kvp.remove("ELEMENTSETNAME");
         if (elementSet != null) {
             ElementSetNameType esn = Csw20Factory.eINSTANCE.createElementSetNameType();
             esn.setValue(elementSet);
@@ -91,7 +110,7 @@ public class GetRecordsKvpRequestReader extends CSWKvpRequestReader {
         } 
         
         // and the element names
-        String elementNamesString = (String) kvp.remove("elementName");
+        String elementNamesString = (String) kvp.remove("ELEMENTNAME");
         if(elementNamesString != null) {
             List<QName> elementNames = resolver.parseQNames(elementNamesString, namespaces);
             query.getElementName().addAll(elementNames);
@@ -135,10 +154,27 @@ public class GetRecordsKvpRequestReader extends CSWKvpRequestReader {
                         ServiceException.INVALID_PARAMETER_VALUE, CONSTRAINTLANGUAGE);
             }
         }
-
         
+        // check if we have to sort the request
+        if(kvp.get("SORTBY") != null) {
+            query.setSortBy((SortBy[]) kvp.get("SORTBY"));
+        }
 
         return query;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        descriptors = new HashMap<QName, RecordDescriptor>();
+        
+        // gather all the prefix to namespace associations in the set of records we are going to
+        // support, we will use them to qualify the property names in the filters
+        List<RecordDescriptor> allDescriptors = GeoServerExtensions.extensions(RecordDescriptor.class, applicationContext);
+        for (RecordDescriptor rd : allDescriptors) {
+            Name name = rd.getFeatureType().getName();
+            QName qname = new QName(name.getNamespaceURI(), name.getLocalPart());
+            descriptors.put(qname, rd);
+        }
     }
 
   

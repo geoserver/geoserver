@@ -1,5 +1,11 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.security.web;
 
+
+import static org.junit.Assert.*;
 
 import java.util.Iterator;
 
@@ -12,6 +18,8 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
+import org.junit.Before;
+import org.junit.Test;
 
 public abstract class AbstractListPageTest<T> extends AbstractSecurityWicketTestSupport {
     
@@ -19,11 +27,12 @@ public abstract class AbstractListPageTest<T> extends AbstractSecurityWicketTest
      public static final String FIRST_COLUM_PATH="itemProperties:0:component:link";
     
 
-    @Override
-    protected void setUpInternal() throws Exception {        
+    @Before
+    public void setUp() throws Exception {
         login();
     }
 
+    @Test
     public void testRenders() throws Exception {
         initializeForXML();
         tester.startPage(listPage(null));
@@ -39,10 +48,11 @@ public abstract class AbstractListPageTest<T> extends AbstractSecurityWicketTest
     abstract protected boolean checkEditForm(String search);
     
     
+    @Test
     public void testEdit() throws Exception {
         // the name link for the first user
         initializeForXML();
-        insertValues();
+        //insertValues();
         
         tester.startPage(listPage(null));
                    
@@ -76,6 +86,7 @@ public abstract class AbstractListPageTest<T> extends AbstractSecurityWicketTest
         return null;
     }
     
+    @Test
     public void testNew() throws Exception {
         initializeForXML();
         tester.startPage(listPage(null));        
@@ -86,6 +97,7 @@ public abstract class AbstractListPageTest<T> extends AbstractSecurityWicketTest
     
     
     
+    @Test
     public void testRemove() throws Exception {
         initializeForXML();
         insertValues();

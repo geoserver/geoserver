@@ -1,8 +1,6 @@
-/*
- * Created on Jan 23, 2004
- *
- * To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 package org.vfny.geoserver.config.validation;
 

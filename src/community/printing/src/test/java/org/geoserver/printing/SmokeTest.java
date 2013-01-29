@@ -1,10 +1,19 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.printing;
 
+import static org.junit.Assert.*;
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
-import org.geoserver.test.GeoServerTestSupport;
 
-public class SmokeTest extends GeoServerTestSupport {
+import org.geoserver.test.GeoServerSystemTestSupport;
+import org.junit.Test;
+
+public class SmokeTest extends GeoServerSystemTestSupport  {
+    
+    @Test
     public void testServiceExists() throws Exception {
         JSON json = getAsJSON("/pdf/info.json");
 

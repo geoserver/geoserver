@@ -1,9 +1,15 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.gwc;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.geoserver.gwc.GWCTestHelpers.mockGroup;
 import static org.geoserver.gwc.GWCTestHelpers.mockLayer;
@@ -32,8 +38,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import junit.framework.TestCase;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -74,8 +78,12 @@ import org.geowebcache.mime.MimeType;
 import org.geowebcache.seed.GWCTask;
 import org.geowebcache.seed.TileBreeder;
 import org.geowebcache.service.Service;
+import org.geowebcache.storage.DefaultStorageFinder;
 import org.geowebcache.storage.StorageBroker;
 import org.geowebcache.storage.StorageException;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -97,7 +105,7 @@ import com.vividsolutions.jts.geom.Envelope;
  * @author groldan
  * 
  */
-public class GWCTest extends TestCase {
+public class GWCTest {
 
     private GWC mediator;
 
@@ -135,10 +143,12 @@ public class GWCTest extends TestCase {
 
     GeoServerTileLayer tileLayerGroup;
 
-    @Override
-    protected void setUp() throws Exception {
+    private DefaultStorageFinder storageFinder;
+
+    @Before
+    public void setUp() throws Exception {
         catalog = mock(Catalog.class);
-        layer = mockLayer("testLayer", "style1", "style2");
+        layer = mockLayer("testLayer", new String[]{"style1", "style2"}, LayerInfo.Type.RASTER);
         layerGroup = mockGroup("testGroup", layer);
         mockCatalog();
 
@@ -163,16 +173,19 @@ public class GWCTest extends TestCase {
         tileBreeder = mock(TileBreeder.class);
         quotaStore = mock(QuotaStore.class);
         diskQuotaMonitor = mock(DiskQuotaMonitor.class);
+        when(diskQuotaMonitor.getQuotaStore()).thenReturn(quotaStore);
         owsDispatcher = mock(Dispatcher.class);
+        
+        storageFinder = mock(DefaultStorageFinder.class);
 
         mediator = new GWC(gwcConfigPersister, storageBroker, tld, gridSetBroker, tileBreeder,
-                quotaStore, diskQuotaMonitor, owsDispatcher, catalog);
+                diskQuotaMonitor, owsDispatcher, catalog, storageFinder);
 
         GWC.set(mediator);
     }
 
-    @Override
-    protected void tearDown() {
+    @After
+    public void tearDown() {
         GWC.set(null);
     }
 
@@ -220,6 +233,7 @@ public class GWCTest extends TestCase {
         verify(config, times(1)).save();
     }
 
+    @Test
     public void testModifyTileLayer() throws Exception {
         try {
             mediator.save(null);
@@ -249,6 +263,7 @@ public class GWCTest extends TestCase {
         }
     }
 
+    @Test
     public void testRemoveTileLayers() throws Exception {
         try {
             mediator.removeTileLayers(null);
@@ -266,6 +281,7 @@ public class GWCTest extends TestCase {
         verify(config, times(1)).save();
     }
 
+    @Test
     public void testAddGridset() throws Exception {
         try {
             mediator.addGridSet(null);
@@ -286,6 +302,7 @@ public class GWCTest extends TestCase {
         verify(tld, times(1)).addGridSet(same(gset2));
     }
 
+    @Test
     public void testModifyGridsetPreconditions() throws Exception {
         GridSet oldGridset = gridSetBroker.get("EPSG:4326");
         try {
@@ -308,6 +325,7 @@ public class GWCTest extends TestCase {
         }
     }
 
+    @Test
     public void testModifyGridsetNoNeedToTruncate() throws Exception {
         final String oldName = "EPSG:4326";
         final String newName = "MyEPSG:4326";
@@ -346,6 +364,7 @@ public class GWCTest extends TestCase {
         verify(config, times(1)).save();
     }
 
+    @Test
     public void testModifyGridsetTruncates() throws Exception {
         final String oldName = "EPSG:4326";
         final String newName = "MyEPSG:4326";
@@ -374,6 +393,7 @@ public class GWCTest extends TestCase {
                 .deleteByGridSetId(eq(tileLayerGroup.getName()), eq(oldName));
     }
 
+    @Test
     public void testRemoveGridsets() throws Exception {
         try {
             mediator.removeGridSets(null);
@@ -425,6 +445,7 @@ public class GWCTest extends TestCase {
         verify(config, times(1)).save();
     }
 
+    @Test
     public void testRemoveAllLayerGridsetsDisablesLayer() throws Exception {
 
         when(tld.getConfiguration(same(tileLayer))).thenReturn(config);
@@ -456,6 +477,7 @@ public class GWCTest extends TestCase {
         assertFalse(tileLayerGroup.getInfo().isEnabled());
     }
 
+    @Test
     public void testAutoConfigureLayers() throws Exception {
         {
             GWCConfig insaneDefaults = new GWCConfig();
@@ -475,7 +497,7 @@ public class GWCTest extends TestCase {
             assertTrue(true);
         }
 
-        LayerInfo layer2 = mockLayer("layer2");
+        LayerInfo layer2 = mockLayer("layer2", new String[]{}, LayerInfo.Type.RASTER);
         LayerGroupInfo group2 = mockGroup("group2", layer, layer2);
 
         when(catalog.getLayerByName(eq(tileLayerName(layer2)))).thenReturn(layer2);
@@ -504,6 +526,7 @@ public class GWCTest extends TestCase {
         assertEquals(expected2, actual2);
     }
 
+    @Test
     public void testIsInternalGridset() {
 
         Set<String> embeddedNames = gridSetBroker.getEmbeddedNames();
@@ -514,6 +537,7 @@ public class GWCTest extends TestCase {
         assertFalse(mediator.isInternalGridSet("somethingelse"));
     }
 
+    @Test
     public void testDeleteCacheByGridSetId() throws Exception {
 
         when(storageBroker.deleteByGridSetId(eq("layer"), eq("gset1"))).thenThrow(
@@ -530,6 +554,7 @@ public class GWCTest extends TestCase {
 
     }
 
+    @Test
     public void testDestroy() throws Exception {
 
         mediator.destroy();
@@ -542,6 +567,7 @@ public class GWCTest extends TestCase {
         }
     }
 
+    @Test
     public void testTruncateLayerFully() throws Exception {
 
         when(tld.getTileLayer(eq(tileLayerGroup.getName()))).thenThrow(
@@ -556,6 +582,7 @@ public class GWCTest extends TestCase {
 
     }
 
+    @Test
     public void testTruncateByLayerAndStyle() throws Exception {
 
         String layerName = tileLayer.getName();
@@ -571,6 +598,7 @@ public class GWCTest extends TestCase {
         verify(tileBreeder, times(expected)).dispatchTasks(any(GWCTask[].class));
     }
 
+    @Test
     public void testTruncateByBounds() throws Exception {
 
         String layerName = tileLayer.getName();
@@ -614,6 +642,7 @@ public class GWCTest extends TestCase {
         verify(tileBreeder, times(expected)).dispatchTasks(any(GWCTask[].class));
     }
 
+    @Test
     public void testLayerRemoved() throws Exception {
         mediator.layerRemoved("someLayer");
         verify(storageBroker, times(1)).delete(eq("someLayer"));
@@ -627,6 +656,7 @@ public class GWCTest extends TestCase {
         }
     }
 
+    @Test
     public void testLayerAdded() throws Exception {
 
         when(diskQuotaMonitor.isEnabled()).thenReturn(false);
@@ -647,6 +677,7 @@ public class GWCTest extends TestCase {
         }
     }
 
+    @Test
     public void testLayerRenamed() throws Exception {
 
         mediator.layerRenamed("old", "new");
@@ -662,6 +693,7 @@ public class GWCTest extends TestCase {
         }
     }
 
+    @Test
     public void testReload() throws Exception {
         mediator.reload();
         verify(tld, times(1)).reInit();
@@ -674,6 +706,7 @@ public class GWCTest extends TestCase {
         }
     }
 
+    @Test
     public void testReloadAndLayerRemovedExternally() throws Exception {
 
         final String removedLayer = tileLayer.getName();
@@ -703,6 +736,7 @@ public class GWCTest extends TestCase {
         assertEquals(removedLayer, argCaptor.getValue());
     }
 
+    @Test
     public void testIsServiceEnabled() {
         Service service = mock(Service.class);
 
@@ -728,6 +762,7 @@ public class GWCTest extends TestCase {
         assertTrue(mediator.isServiceEnabled(service));
     }
 
+    @Test
     public void testDispatchGetMapDoesntMatchTileCache() throws Exception {
         GetMapRequest request = new GetMapRequest();
 
@@ -777,6 +812,7 @@ public class GWCTest extends TestCase {
         assertDispatchMismatch(request, "request does not align to grid");
     }
 
+    @Test
     public void testDispatchGetMapNonMatchingParameterFilter() throws Exception {
         GetMapRequest request = new GetMapRequest();
 
@@ -865,6 +901,7 @@ public class GWCTest extends TestCase {
     /**
      * See GEOS-5003
      */
+    @Test
     public void testNullsInDimensionAndTimeParameters() throws Exception {
         TileLayerInfoUtil.updateAcceptAllFloatParameterFilter(tileLayerInfo, "ELEVATION", true);
         TileLayerInfoUtil.updateAcceptAllRegExParameterFilter(tileLayerInfo, "TIME", true);
@@ -899,6 +936,7 @@ public class GWCTest extends TestCase {
                 target.toString().contains(expectedReason));
     }
 
+    @Test
     public void testDispatchGetMapMultipleCrsMatchingGridSubsets() throws Exception {
 
         testMultipleCrsMatchingGridSubsets("EPSG:4326", "EPSG:4326", new long[] { 1, 1, 1 });
@@ -1006,6 +1044,7 @@ public class GWCTest extends TestCase {
         return tileLayer;
     }
 
+    @Test
     public void testDispatchGetMapWithMatchingParameterFilters() throws Exception {
         GetMapRequest request = new GetMapRequest();
 

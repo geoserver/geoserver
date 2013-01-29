@@ -1,19 +1,22 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.map;
 
+import static org.junit.Assert.*;
+
 import java.awt.Point;
 import java.awt.geom.Point2D;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 import com.vividsolutions.jts.geom.Envelope;
 
-public class QuickTileCacheTest extends TestCase {
+public class QuickTileCacheTest {
     QuickTileCache cache = new QuickTileCache();
 
+    @Test
     public void testMetaCoordinates() {
         Point orig = new Point(0, 0);
         assertEquals(orig, cache.getMetaTileCoordinates(orig));
@@ -43,6 +46,7 @@ public class QuickTileCacheTest extends TestCase {
         assertEquals(new Point(-6, 3), cache.getMetaTileCoordinates(tm44));
     }
 
+    @Test
     public void testTileCoordinatesNaturalOrigin() {
         Point2D origin = new Point2D.Double(0, 0);
         Envelope env = new Envelope(30, 60, 30, 60);

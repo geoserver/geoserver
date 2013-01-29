@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2010 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms;
@@ -12,7 +12,7 @@ public class WatermarkInfoImpl implements WatermarkInfo {
 
     Position position = Position.BOT_RIGHT;
 
-    int transparency = 255;
+    int transparency = 100;
 
     String url;
 

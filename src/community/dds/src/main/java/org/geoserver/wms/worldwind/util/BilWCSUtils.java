@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wms.worldwind.util;
 
 import java.util.HashMap;
@@ -6,7 +10,7 @@ import javax.media.jai.Interpolation;
 
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.coverage.processing.DefaultProcessor;
+import org.geotools.coverage.processing.CoverageProcessor;
 import org.geotools.coverage.processing.operation.Crop;
 import org.geotools.coverage.processing.operation.FilteredSubsample;
 import org.geotools.coverage.processing.operation.Interpolate;
@@ -49,7 +53,7 @@ public class BilWCSUtils extends WCSUtils {
         // Static Processors
         //
         // ///////////////////////////////////////////////////////////////////
-        final DefaultProcessor processor = new DefaultProcessor();
+        final CoverageProcessor processor = new CoverageProcessor();
         bandSelectParams = processor.getOperation("SelectSampleDimension").getParameters();
         cropParams = processor.getOperation("CoverageCrop").getParameters();
         interpolateParams = processor.getOperation("Interpolate").getParameters();

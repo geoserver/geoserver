@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -18,6 +18,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.util.StringUtils;
 
 /**
@@ -96,8 +97,9 @@ public class GeoServerExceptionTranslationFilter extends GeoServerCompositeFilte
             ep.setEntryEntryPoint(authFilter.getAuthenticationEntryPoint());
         }
 
-                
-        ExceptionTranslationFilter filter = new ExceptionTranslationFilter(ep); 
+        HttpSessionRequestCache cache = new HttpSessionRequestCache();
+        cache.setCreateSessionAllowed(false);
+        ExceptionTranslationFilter filter = new ExceptionTranslationFilter(ep,cache); 
                                 
         if (StringUtils.hasLength(authConfig.getAccessDeniedErrorPage())) {
             AccessDeniedHandlerImpl accessDeniedHandler = new AccessDeniedHandlerImpl();

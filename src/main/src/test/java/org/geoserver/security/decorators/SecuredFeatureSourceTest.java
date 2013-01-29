@@ -1,6 +1,11 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.security.decorators;
 
 import static org.easymock.EasyMock.*;
+import static org.junit.Assert.*;
 
 import org.geoserver.security.WrapperPolicy;
 import org.geoserver.security.impl.SecureObjectsTest;
@@ -11,11 +16,13 @@ import org.geotools.data.FeatureSource;
 import org.geotools.data.FeatureStore;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
+import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
 
 public class SecuredFeatureSourceTest extends SecureObjectsTest {
 
+    @Test
     public void testReadOnlyFeatureSourceDataStore() throws Exception {
         // build up the mock
         DataStore ds = createNiceMock(DataStore.class);
@@ -36,6 +43,7 @@ public class SecuredFeatureSourceTest extends SecureObjectsTest {
         assertTrue(ro.getFeatures(new Query()) instanceof SecuredFeatureCollection);
     }
     
+    @Test
     public void testReadOnlyFeatureStore() throws Exception {
         // build up the mock
         SimpleFeatureType schema = createNiceMock(SimpleFeatureType.class);
@@ -56,6 +64,7 @@ public class SecuredFeatureSourceTest extends SecureObjectsTest {
     }
     
     
+    @Test
     public void testReadOnlyFeatureSourceDataAccess() throws Exception {
         // build the mock up
         DataAccess da = createNiceMock(DataAccess.class);

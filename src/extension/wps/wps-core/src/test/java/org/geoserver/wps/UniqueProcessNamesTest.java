@@ -1,4 +1,10 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wps;
+
+import static junit.framework.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -6,9 +12,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.geoserver.test.GeoServerTestSupport;
 import org.geoserver.wps.process.GeoServerProcessors;
 import org.geotools.process.ProcessFactory;
+import org.junit.Test;
 import org.opengis.feature.type.Name;
 
 /**
@@ -22,8 +28,9 @@ import org.opengis.feature.type.Name;
  * @author Martin Davis, OpenGeo
  * 
  */
-public class UniqueProcessNamesTest extends GeoServerTestSupport {
+public class UniqueProcessNamesTest extends WPSTestSupport {
 
+    @Test
     public void testNamesUnique() throws Exception {
         List<String> procs = new ArrayList<String>();
         Set<String> uniqueProcs = new HashSet<String>();

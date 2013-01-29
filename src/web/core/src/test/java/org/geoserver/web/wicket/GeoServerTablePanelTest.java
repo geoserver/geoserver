@@ -1,4 +1,10 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.web.wicket;
+
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,15 +23,18 @@ import org.apache.wicket.util.tester.WicketTester;
 import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.FormTestPage;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
+import org.junit.Before;
+import org.junit.Test;
 
-public class GeoServerTablePanelTest extends TestCase {
+public class GeoServerTablePanelTest {
     WicketTester tester;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         tester = new WicketTester();
     }
     
+    @Test
     public void testBasicTable() throws Exception {
         tester.startPage(new FormTestPage(new ComponentBuilder() {
         
@@ -45,6 +54,7 @@ public class GeoServerTablePanelTest extends TestCase {
         assertEquals(10, dv.size());
     }
     
+    @Test
     public void testFullSelection() throws Exception {
         tester.startPage(new FormTestPage(new ComponentBuilder() {
             
@@ -74,6 +84,7 @@ public class GeoServerTablePanelTest extends TestCase {
         assertEquals(0, table.getSelection().size());
     }
     
+    @Test
     public void testSingleSelection() throws Exception {
         tester.startPage(new FormTestPage(new ComponentBuilder() {
             
@@ -95,6 +106,7 @@ public class GeoServerTablePanelTest extends TestCase {
         assertEquals(new Integer(6), table.getSelection().get(1));
     }
 
+    @Test
     public void testSingleSelectionByObjectAndIndex() throws Exception {
         tester.startPage(new FormTestPage(new ComponentBuilder() {
             

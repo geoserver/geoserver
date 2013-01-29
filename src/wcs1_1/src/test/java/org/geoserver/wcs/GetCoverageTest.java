@@ -1,7 +1,15 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wcs;
 
-import static org.geoserver.data.test.MockData.*;
-import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.*;
+import static org.geoserver.data.test.MockData.TASMANIA_BM;
+import static org.geoserver.data.test.MockData.WORLD;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.InvalidParameterValue;
 
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -16,18 +24,18 @@ import javax.mail.Multipart;
 import javax.servlet.ServletResponse;
 import javax.xml.namespace.QName;
 
-import junit.framework.Test;
-
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
+import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.geometry.Envelope;
@@ -39,36 +47,20 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class GetCoverageTest extends AbstractGetCoverageTest {
 
-    private static final QName MOSAIC = new QName(MockData.SF_URI, "rasterFilter", MockData.SF_PREFIX);
+    private static final QName MOSAIC = new QName(MockData.SF_URI, "rasterFilter",
+            MockData.SF_PREFIX);
+
     private static final QName RAIN = new QName(MockData.SF_URI, "rain", MockData.SF_PREFIX);
 
-
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new GetCoverageTest());
-    }
-
-
     @Override
-    protected String getLogConfiguration() {
-        return "/DEFAULT_LOGGING.properties";
-    }
-    
-    @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        
-        // this also adds the raster style
-        dataDirectory.addCoverageFromZip(MOSAIC, 
-                MockData.class.getResource("raster-filter-test.zip"), null, "raster");
-        
-        // add a data source that cannot restrict spatial data on its own
-        dataDirectory.addCoverageFromZip(RAIN, 
-                MockData.class.getResource("rain.zip"), "asc", "raster");
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        testData.addRasterLayer(MOSAIC, "raster-filter-test.zip", null, getCatalog());
+        testData.addRasterLayer(RAIN, "rain.zip", "asc", getCatalog());
+
     }
 
+    @Test
     public void testKvpBasic() throws Exception {
         Map<String, Object> raw = baseMap();
         final String getLayerId = getLayerId(TASMANIA_BM);
@@ -85,6 +77,7 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
                 .getCoordinateReferenceSystem());
     }
 
+    @Test
     public void testAntimeridianWorld() throws Exception {
         // for the moment, just make sure we don't die and return something, see
         Map<String, Object> raw = baseMap();
@@ -102,6 +95,7 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
                 .getCoordinateReferenceSystem());
     }
 
+    @Test
     public void testAntimeridianTaz() throws Exception {
         // for the moment, just make sure we don't die and return something, see
         Map<String, Object> raw = baseMap();
@@ -131,6 +125,7 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         executeGetCoverageKvp(raw);
     }
 
+    @Test
     public void testWrongFormatParams() throws Exception {
         Map<String, Object> raw = baseMap();
         final String getLayerId = getLayerId(TASMANIA_BM);
@@ -146,6 +141,7 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         }
     }
 
+    @Test
     public void testDefaultGridOrigin() throws Exception {
         Map<String, Object> raw = new HashMap<String, Object>(baseMap());
         final String getLayerId = getLayerId(TASMANIA_BM);
@@ -160,7 +156,8 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         assertEquals(0.0, tx.getTranslateX() + tx.getScaleX() / 2, 1e-9);
         assertEquals(0.0, tx.getTranslateY() + tx.getScaleY() / 2, 1e-9);
     }
-    
+
+    @Test
     public void testSpatialSubsetOnePixel() throws Exception {
         Map<String, Object> raw = new HashMap<String, Object>(baseMap());
         final String getLayerId = getLayerId(RAIN);
@@ -171,12 +168,13 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
 
         GridCoverage[] coverages = executeGetCoverageKvp(raw);
         Envelope envelope = coverages[0].getEnvelope();
-        assertEquals(-45d, envelope.getMinimum(0));
-        assertEquals(-40d, envelope.getMaximum(0));
-        assertEquals(146d, envelope.getMinimum(1));
-        assertEquals(151d, envelope.getMaximum(1));
+        assertEquals(-45d, envelope.getMinimum(0), 1e-6);
+        assertEquals(-42d, envelope.getMaximum(0), 1e-6);
+        assertEquals(146d, envelope.getMinimum(1), 1e-6);
+        assertEquals(149d, envelope.getMaximum(1), 1e-6);
     }
 
+    @Test
     public void testWrongGridOrigin() throws Exception {
         Map<String, Object> raw = baseMap();
         final String getLayerId = getLayerId(TASMANIA_BM);
@@ -192,7 +190,8 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
             assertEquals("GridOrigin", e.getLocator());
         }
     }
-    
+
+    @Test
     public void testReproject() throws Exception {
         // add the target code to the supported ones
         Catalog catalog = getCatalog();
@@ -200,7 +199,7 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         CoverageInfo ci = catalog.getCoverageByName(layerId);
         ci.getResponseSRS().add("EPSG:3857");
         catalog.save(ci);
-        
+
         // do the request
         Map<String, Object> raw = baseMap();
         raw.put("identifier", layerId);
@@ -208,21 +207,55 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         raw.put("BoundingBox", "-80,-180,80,180,urn:ogc:def:crs:EPSG:6.6:4326");
         raw.put("GridBaseCRS", "EPSG:3857");
         GridCoverage[] coverages = executeGetCoverageKvp(raw);
-        
+
+        // System.out.println(coverages[0]);
+
+        // check the envelope
         Envelope envelope = coverages[0].getEnvelope();
-        System.out.println(envelope);
+        // System.out.println(envelope);
         CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:3857");
         assertEquals(targetCRS, envelope.getCoordinateReferenceSystem());
-        
+
         ReferencedEnvelope nativeBounds = ci.getNativeBoundingBox();
         ReferencedEnvelope expected = nativeBounds.transform(targetCRS, true);
-        
-        assertEquals(expected.getMinimum(0), envelope.getMinimum(0));
-        assertEquals(expected.getMaximum(0), envelope.getMaximum(0));
-        assertEquals(expected.getMinimum(1), envelope.getMinimum(1));
-        assertEquals(expected.getMaximum(1), envelope.getMaximum(1));
+
+        assertEquals(0, Double.compare(expected.getMinimum(0), envelope.getMinimum(0)));
+        assertEquals(0, Double.compare(expected.getMaximum(0), envelope.getMaximum(0)));
+        assertEquals(0, Double.compare(expected.getMinimum(1), envelope.getMinimum(1)));
+        assertEquals(0, Double.compare(expected.getMaximum(1), envelope.getMaximum(1)));
+
+        // check we did not get a massive raster out (GEOS-5346)
+        GridEnvelope range = coverages[0].getGridGeometry().getGridRange();
+        assertEquals(360, range.getSpan(0));
+        assertEquals(499, range.getSpan(1));
+    }
+    
+    @Test
+    public void testRotated() throws Exception {
+        final String layerId = getLayerId(MockData.ROTATED_CAD);
+
+        // do the request
+        Map<String, Object> raw = baseMap();
+        raw.put("identifier", layerId);
+        raw.put("format", "image/geotiff");
+        raw.put("BoundingBox", "7.7634301664746515,45.14713380418506,7.764350661575157,45.14763319238466,EPSG:4326");
+        GridCoverage[] coverages = executeGetCoverageKvp(raw);
+
+        // System.out.println(coverages[0]);
+
+        // check the envelope
+        Envelope envelope = coverages[0].getEnvelope();
+        // System.out.println(envelope);
+        CoordinateReferenceSystem targetCRS = CRS.decode("urn:x-ogc:def:crs:EPSG:3003");
+        assertEquals(targetCRS, envelope.getCoordinateReferenceSystem());
+
+        // check we did not get a massive raster out
+        GridEnvelope range = coverages[0].getGridGeometry().getGridRange();
+        assertEquals(482, range.getSpan(0));
+        assertEquals(447, range.getSpan(1));
     }
 
+    @Test
     public void testWorkspaceQualified() throws Exception {
         String queryString = "&request=getcoverage&service=wcs&version=1.1.1&&format=image/geotiff"
                 + "&BoundingBox=-45,146,-42,147,urn:ogc:def:crs:EPSG:6.6:4326";
@@ -234,6 +267,7 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         assertEquals("ows:ExceptionReport", dom.getDocumentElement().getNodeName());
     }
 
+    @Test
     public void testLayerQualified() throws Exception {
         String queryString = "&request=getcoverage&service=wcs&version=1.1.1&&format=image/geotiff"
                 + "&BoundingBox=-45,146,-42,147,urn:ogc:def:crs:EPSG:6.6:4326";
@@ -244,20 +278,21 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         Document dom = getAsDOM("wcs/DEM/wcs?identifier=BlueMarble" + queryString);
         assertEquals("ows:ExceptionReport", dom.getDocumentElement().getNodeName());
     }
-    
+
+    @Test
     public void testLargerThanData() throws Exception {
-        MockHttpServletResponse response = getAsServletResponse(
-                "wcs/BlueMarble/wcs?identifier=" + getLayerId(TASMANIA_BM)
-                + "&request=getcoverage&service=wcs&version=1.1.1&&format=image/geotiff" 
+        MockHttpServletResponse response = getAsServletResponse("wcs/BlueMarble/wcs?identifier="
+                + getLayerId(TASMANIA_BM)
+                + "&request=getcoverage&service=wcs&version=1.1.1&&format=image/geotiff"
                 + "&BoundingBox=-90,-180,90,180,urn:ogc:def:crs:EPSG:6.6:4326&GridBaseCRS=EPSG:4326");
-        
+
         // parse the multipart, check there are two parts
         Multipart multipart = getMultipart(response);
         assertEquals(2, multipart.getCount());
         BodyPart coveragePart = multipart.getBodyPart(1);
-        assertEquals("image/tiff;subtype=\"geotiff\"", coveragePart.getContentType());
+        assertEquals("image/tiff", coveragePart.getContentType());
         assertEquals("<theCoverage>", coveragePart.getHeader("Content-ID")[0]);
-        
+
         // save
         File tiffFile = File.createTempFile("wcs", "", new File("target"));
         IOUtils.copy(coveragePart.getInputStream(), new FileOutputStream(tiffFile));
@@ -265,17 +300,19 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         // make sure we can read the coverage back
         GeoTiffReader reader = new GeoTiffReader(tiffFile);
         GridCoverage2D result = reader.read(null);
-        
+        coverages.add(result);
+
         // see that we got the entire coverage, but nothing more
         CoverageInfo ci = getCatalog().getCoverageByName(TASMANIA_BM.getLocalPart());
         GridCoverage2D original = (GridCoverage2D) ci.getGridCoverage(null, null);
-        
+        coverages.add(original);
+
         // the grid should not be swapped since the target output is expressed in EPSG:XYWZ form
         GridEnvelope originalRange = original.getGridGeometry().getGridRange();
         GridEnvelope actualRange = result.getGridGeometry().getGridRange();
         assertEquals(originalRange.getSpan(0), actualRange.getSpan(0));
         assertEquals(originalRange.getSpan(1), actualRange.getSpan(1));
-        
+
         // check also the geographic bounds
         Envelope2D originalEnv = original.getEnvelope2D();
         Envelope2D actualEnv = result.getEnvelope2D();
@@ -283,11 +320,12 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         assertEquals(originalEnv.getMinY(), actualEnv.getMinY(), 1e-6);
         assertEquals(originalEnv.getMaxX(), actualEnv.getMaxX(), 1e-6);
         assertEquals(originalEnv.getMaxY(), actualEnv.getMaxY(), 1e-6);
-        
+
         // cleanup
         tiffFile.delete();
     }
 
+    @Test
     public void testInputLimits() throws Exception {
         try {
             // ridicolous limit, just one byte
@@ -296,41 +334,43 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
                     + "&BoundingBox=-45,146,-42,147,urn:ogc:def:crs:EPSG:6.6:4326";
             Document dom = getAsDOM("wcs/BlueMarble/wcs?identifier=" + getLayerId(TASMANIA_BM)
                     + queryString);
-            //print(dom);
+            // print(dom);
             // check it's an error, check we're getting it because of the input limits
             assertEquals("ows:ExceptionReport", dom.getDocumentElement().getNodeName());
-            String error = xpath.evaluate("/ows:ExceptionReport/ows:Exception/ows:ExceptionText/text()", dom);
+            String error = xpath.evaluate(
+                    "/ows:ExceptionReport/ows:Exception/ows:ExceptionText/text()", dom);
             assertTrue(error.matches(".*read too much data.*"));
         } finally {
             setInputLimit(0);
         }
     }
-    
+
+    @Test
     public void testOutputLimits() throws Exception {
         try {
             // ridicolous limit, just one byte
             setOutputLimit(1);
             String queryString = "&request=getcoverage&service=wcs&version=1.1.1&&format=image/geotiff"
                     + "&BoundingBox=-45,146,-42,147,urn:ogc:def:crs:EPSG:6.6:4326";
-            Document dom = getAsDOM("wcs/wcs?identifier=" + getLayerId(TASMANIA_BM)
-                    + queryString);
-            //print(dom);
+            Document dom = getAsDOM("wcs/wcs?identifier=" + getLayerId(TASMANIA_BM) + queryString);
+            // print(dom);
             // check it's an error, check we're getting it because of the output limits
             assertEquals("ows:ExceptionReport", dom.getDocumentElement().getNodeName());
-            String error = xpath.evaluate("/ows:ExceptionReport/ows:Exception/ows:ExceptionText/text()", dom);
+            String error = xpath.evaluate(
+                    "/ows:ExceptionReport/ows:Exception/ows:ExceptionText/text()", dom);
             assertTrue(error.matches(".*generate too much data.*"));
         } finally {
             setOutputLimit(0);
         }
     }
 
-
+    @Test
     public void testRasterFilterGreen() throws Exception {
-        String queryString = "wcs?identifier=" + getLayerId(MOSAIC) + "&request=getcoverage" +
-                "&service=wcs&version=1.1.1&&format=image/tiff" + 
-                "&BoundingBox=0,0,1,1,urn:ogc:def:crs:EPSG:6.6:4326" + 
-                "&CQL_FILTER=location like 'green%25'";
-        
+        String queryString = "wcs?identifier=" + getLayerId(MOSAIC) + "&request=getcoverage"
+                + "&service=wcs&version=1.1.1&&format=image/tiff"
+                + "&BoundingBox=0,0,1,1,urn:ogc:def:crs:EPSG:6.6:4326"
+                + "&CQL_FILTER=location like 'green%25'";
+
         MockHttpServletResponse response = getAsServletResponse(queryString);
 
         // parse the multipart, check there are two parts
@@ -344,7 +384,7 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         ImageReader reader = ImageIO.getImageReadersByFormatName("tiff").next();
         reader.setInput(ImageIO.createImageInputStream(coveragePart.getInputStream()));
         RenderedImage image = reader.read(0);
-        
+
         // check the pixel
         int[] pixel = new int[3];
         image.getData().getPixel(0, 0, pixel);
@@ -352,13 +392,14 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         assertEquals(255, pixel[1]);
         assertEquals(0, pixel[2]);
     }
-    
+
+    @Test
     public void testRasterFilterRed() throws Exception {
-        String queryString = "wcs?identifier=" + getLayerId(MOSAIC) + "&request=getcoverage" +
-                "&service=wcs&version=1.1.1&&format=image/tiff" + 
-                "&BoundingBox=0,0,1,1,urn:ogc:def:crs:EPSG:6.6:4326" + 
-                "&CQL_FILTER=location like 'red%25'";
-        
+        String queryString = "wcs?identifier=" + getLayerId(MOSAIC) + "&request=getcoverage"
+                + "&service=wcs&version=1.1.1&&format=image/tiff"
+                + "&BoundingBox=0,0,1,1,urn:ogc:def:crs:EPSG:6.6:4326"
+                + "&CQL_FILTER=location like 'red%25'";
+
         MockHttpServletResponse response = getAsServletResponse(queryString);
 
         // parse the multipart, check there are two parts
@@ -372,13 +413,121 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         ImageReader reader = ImageIO.getImageReadersByFormatName("tiff").next();
         reader.setInput(ImageIO.createImageInputStream(coveragePart.getInputStream()));
         RenderedImage image = reader.read(0);
-        
+
         // check the pixel
         int[] pixel = new int[3];
         image.getData().getPixel(0, 0, pixel);
         assertEquals(255, pixel[0]);
         assertEquals(0, pixel[1]);
         assertEquals(0, pixel[2]);
+    }
+
+    @Test
+    public void testReadNoGridCRS() throws Exception {
+        String request = //
+        "  <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\" "
+                + "                   xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" "
+                + "                   xmlns:gml=\"http://www.opengis.net/gml\""
+                + "                   xmlns:ows=\"http://www.opengis.net/ows/1.1\" >\n"
+                + "   <ows:Identifier>"
+                + getLayerId(MockData.TASMANIA_DEM)
+                + "   </ows:Identifier>\n"
+                + "            <wcs:DomainSubset>\n"
+                + "              <ows:BoundingBox crs=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">\n"
+                + "                <ows:LowerCorner>-180.0 -90.0</ows:LowerCorner>\n"
+                + "                <ows:UpperCorner>180.0 90.0</ows:UpperCorner>\n"
+                + "              </ows:BoundingBox>\n" //
+                + "            </wcs:DomainSubset>\n"
+                + "            <wcs:Output format=\"image/tiff\"/>\n"
+                + "          </wcs:GetCoverage>";
+
+        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+
+        // parse the multipart, check there are two parts
+        Multipart multipart = getMultipart(response);
+        assertEquals(2, multipart.getCount());
+        BodyPart coveragePart = multipart.getBodyPart(1);
+        assertEquals("image/tiff", coveragePart.getContentType());
+        assertEquals("<theCoverage>", coveragePart.getHeader("Content-ID")[0]);
+
+        // make sure we can read the coverage back
+        ImageReader reader = ImageIO.getImageReadersByFormatName("tiff").next();
+        reader.setInput(ImageIO.createImageInputStream(coveragePart.getInputStream()));
+        RenderedImage image = reader.read(0);
+    }
+    
+    /**
+     * This tests just ended up throwing an exception as the coverage being encoded
+     * was too large due to a bug in the scales estimation
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testRotatedPost() throws Exception {
+        String request = "<GetCoverage xmlns=\"http://www.opengis.net/wcs/1.1.1\" xmlns:gml=\"http://www.opengis.net/gml\"\n" + 
+                "             xmlns:ows11=\"http://www.opengis.net/ows/1.1\"\n" + 
+                "             xmlns:ows=\"http://www.opengis.net/ows/1.1\"\n" +
+                "             xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \r\n" + //
+                "             xmlns:wcs=\"http://schemas.opengis.net/wcs/1.1.1\"\n" + 
+                "             xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n" + 
+                "             service=\"WCS\"\n" + 
+                "             version=\"1.1.1\"\n" + 
+                "             xsi:schemaLocation=\"http://www.opengis.net/wcs/1.1.1 http://schemas.opengis.net/wcs/1.1.1/wcsAll.xsd\">\n" + 
+                "   <ows11:Identifier>RotatedCad</ows11:Identifier>\n" + 
+                "   <DomainSubset>\n" + 
+                "      <ows11:BoundingBox crs=\"urn:ogc:def:crs:OGC:1.3:CRS84\">\n" + 
+                "         <ows11:LowerCorner>7.7634301664746515 45.14713380418506</ows11:LowerCorner>\n" + 
+                "         <ows11:UpperCorner>7.764350661575157 45.14763319238466</ows11:UpperCorner>\n" + 
+                "      </ows11:BoundingBox>\n" + 
+                "   </DomainSubset>\n" + 
+                "   <Output format=\"image/tiff\"/>\n" + 
+                "</GetCoverage>";
+        
+        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+
+        // parse the multipart, check there are two parts
+        Multipart multipart = getMultipart(response);
+        assertEquals(2, multipart.getCount());
+        BodyPart coveragePart = multipart.getBodyPart(1);
+        assertEquals("image/tiff", coveragePart.getContentType());
+        assertEquals("<theCoverage>", coveragePart.getHeader("Content-ID")[0]);
+
+        // make sure we can read the coverage back
+        ImageReader reader = ImageIO.getImageReadersByFormatName("tiff").next();
+        reader.setInput(ImageIO.createImageInputStream(coveragePart.getInputStream()));
+        RenderedImage image = reader.read(0);
+        
+        // check the image is suitably small (without requiring an exact size)
+        assertTrue(image.getWidth() < 1000);
+        assertTrue(image.getHeight() < 1000);
+    }
+    
+    /**
+     * This tests just ended up throwing an exception as the coverage being encoded
+     * was too large due to a bug in the scales estimation
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testRotatedGet() throws Exception {
+        String request = "wcs?&service=WCS&request=GetCoverage&version=1.1.1&identifier=RotatedCad&BoundingBox=7.7634071540971386,45.14712131948007,7.76437367395267,45.14764567708965,urn:ogc:def:crs:OGC:1.3:CRS84&Format=image/tiff";
+        MockHttpServletResponse response = getAsServletResponse(request);
+
+        // parse the multipart, check there are two parts
+        Multipart multipart = getMultipart(response);
+        assertEquals(2, multipart.getCount());
+        BodyPart coveragePart = multipart.getBodyPart(1);
+        assertEquals("image/tiff", coveragePart.getContentType());
+        assertEquals("<theCoverage>", coveragePart.getHeader("Content-ID")[0]);
+
+        // make sure we can read the coverage back
+        ImageReader reader = ImageIO.getImageReadersByFormatName("tiff").next();
+        reader.setInput(ImageIO.createImageInputStream(coveragePart.getInputStream()));
+        RenderedImage image = reader.read(0);
+        
+        // check the image is suitably small (without requiring an exact size)
+        assertTrue(image.getWidth() < 1000);
+        assertTrue(image.getHeight() < 1000);
     }
 
 }

@@ -1,19 +1,26 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.web.data.layergroup;
+
+import static org.junit.Assert.*;
 
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.data.test.SystemTestData;
+import org.junit.Test;
 
 public class LayerGroupPageTest extends LayerGroupBaseTest {
 
     @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
         login();
         tester.startPage(LayerGroupPage.class);
-        
-        // print(tester.getLastRenderedPage(), true, true);
     }
-    
+
+    @Test
     public void testLoad() {
         tester.assertRenderedPage(LayerGroupPage.class);
         tester.assertNoErrorMessage();

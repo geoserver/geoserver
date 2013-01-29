@@ -1,18 +1,19 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security.filter;
 
 import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.config.UsernamePasswordAuthenticationFilterConfig;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -32,20 +33,22 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class GeoServerUserNamePasswordAuthenticationFilter extends GeoServerCompositeFilter
     implements GeoServerAuthenticationFilter {
 
-    public static final String URL_FOR_LOGIN = "/j_spring_security_check";
-    public static final String URL_LOGIN_SUCCCESS = "/";
-    public static final String URL_LOGIN_FAILURE = "/web/?wicket:bookmarkablePage=:org.geoserver.web.GeoServerLoginPage&amp;error=true";
-    public static final String URL_LOGIN_FORM="/admin/login.do";
+    //public static final String URL_FOR_LOGIN = "/j_spring_security_check";
+    public static final String URL_LOGIN_SUCCCESS = "/web";
+    public static final String URL_LOGIN_FAILURE = "/web/?wicket:bookmarkablePage=:org.geoserver.web.GeoServerLoginPage&error=true";
+    public static final String URL_LOGIN_FORM="/web/?wicket:bookmarkablePage=:org.geoserver.web.GeoServerLoginPage&error=false";
+    //public static final String URL_LOGIN_FORM="/admin/login.do";
     
     
     private LoginUrlAuthenticationEntryPoint aep;
+    String[] pathInfos;
 
 
     @Override
     public void initializeFromConfig(SecurityNamedServiceConfig config) throws IOException {
         super.initializeFromConfig(config);
         
-
+        pathInfos=GeoServerSecurityFilterChain.FORM_LOGIN_CHAIN.split(",");
         
         UsernamePasswordAuthenticationFilterConfig upConfig = (UsernamePasswordAuthenticationFilterConfig) config;
         
@@ -60,7 +63,19 @@ public class GeoServerUserNamePasswordAuthenticationFilter extends GeoServerComp
         RememberMeServices rms = securityManager.getRememberMeService(); 
 
         // add login filter
-        UsernamePasswordAuthenticationFilter filter = new UsernamePasswordAuthenticationFilter();
+        UsernamePasswordAuthenticationFilter filter = new UsernamePasswordAuthenticationFilter() {
+            @Override
+            protected boolean requiresAuthentication(HttpServletRequest request,
+                    HttpServletResponse response) {
+                
+                for (String pathInfo:pathInfos) {            
+                    if (getRequestPath(request).startsWith(pathInfo)) 
+                        return true;
+                    
+                }   
+                return false;
+            }
+        };
 
 
         filter.setPasswordParameter(upConfig.getPasswordParameterName());
@@ -72,7 +87,7 @@ public class GeoServerUserNamePasswordAuthenticationFilter extends GeoServerComp
         filter.setAuthenticationDetailsSource(s);
 
         filter.setAllowSessionCreation(false);
-        filter.setFilterProcessesUrl(URL_FOR_LOGIN);
+        //filter.setFilterProcessesUrl(URL_FOR_LOGIN);
 
         SimpleUrlAuthenticationSuccessHandler successHandler = new SimpleUrlAuthenticationSuccessHandler();
         successHandler.setDefaultTargetUrl(URL_LOGIN_SUCCCESS);
@@ -84,7 +99,7 @@ public class GeoServerUserNamePasswordAuthenticationFilter extends GeoServerComp
                 .setDefaultFailureUrl(URL_LOGIN_FAILURE);
         filter.setAuthenticationFailureHandler(failureHandler);
 
-        filter.afterPropertiesSet();
+        //filter.afterPropertiesSet();
         getNestedFilters().add(filter);
     }
     
@@ -99,6 +114,23 @@ public class GeoServerUserNamePasswordAuthenticationFilter extends GeoServerComp
         req.setAttribute(GeoServerSecurityFilter.AUTHENTICATION_ENTRY_POINT_HEADER, aep);
         super.doFilter(req, res, chain);
     }            
+
+    /**
+     * @see org.geoserver.security.filter.GeoServerAuthenticationFilter#applicableForHtml()
+     */
+    @Override
+    public boolean applicableForHtml() {
+        return true;
+    }
+
+
+    /**
+     * @see org.geoserver.security.filter.GeoServerAuthenticationFilter#applicableForServices()
+     */
+    @Override
+    public boolean applicableForServices() {
+        return false;
+    }
 
 
 }

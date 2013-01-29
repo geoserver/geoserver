@@ -1,12 +1,16 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.animate;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.net.URLEncoder;
-import java.util.Iterator;
+import java.io.File;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -14,8 +18,8 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import javax.xml.namespace.QName;
 
-import junit.framework.Test;
-
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMSTestSupport;
@@ -23,6 +27,7 @@ import org.geoserver.wms.WebMapService;
 import org.geoserver.wms.map.RenderedImageMap;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
+
 
 /**
  * Some functional tests for animator
@@ -35,18 +40,13 @@ public class AnimatorTest extends WMSTestSupport {
     /** default 'format' value */
     public static final String GIF_ANIMATED_FORMAT = "image/gif;subtype=animated";
     
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new AnimatorTest());
-    }
 
     /**
      * Testing FrameCatalog constructor from a generic WMS request.
      * 
      * @throws Exception
      */
+    @org.junit.Test
     public void testFrameCatalog() throws Exception {
     	final WebMapService wms = (WebMapService) applicationContext.getBean("wmsService2");
     	final String layerName = MockData.BASIC_POLYGONS.getPrefix() + ":" +
@@ -80,6 +80,7 @@ public class AnimatorTest extends WMSTestSupport {
      * 
      * @throws Exception
      */
+    @org.junit.Test
     public void testFrameVisitor() throws Exception {
     	final WebMapService wms = (WebMapService) applicationContext.getBean("wmsService2");
     	final String layerName = MockData.BASIC_POLYGONS.getPrefix() + ":" +
@@ -112,6 +113,7 @@ public class AnimatorTest extends WMSTestSupport {
     /**
      * Produce animated gif through the WMS request.
      */
+    @org.junit.Test
     public void testAnimator() throws Exception {
         final String layerName = MockData.BASIC_POLYGONS.getPrefix() + ":" +
             MockData.BASIC_POLYGONS.getLocalPart();
@@ -126,6 +128,7 @@ public class AnimatorTest extends WMSTestSupport {
     /**
      * Animate layers
      */
+    @org.junit.Test
     public void testAnimatorLayers() throws Exception {
         final String layerName = MockData.BASIC_POLYGONS.getPrefix() + ":" +
             MockData.BASIC_POLYGONS.getLocalPart();
@@ -143,4 +146,72 @@ public class AnimatorTest extends WMSTestSupport {
         reader.setInput(iis);
         assertEquals(3, reader.getNumImages(true));
     }
+    
+    /**
+     * Animate layer groups
+     */
+    @org.junit.Test
+    public void testAnimatorLayerGroups() throws Exception {
+        Catalog catalog = getCatalog();
+        LayerGroupInfo singleGroup = createLakesPlacesLayerGroup(catalog, "singleGroup", LayerGroupInfo.Mode.SINGLE, null);
+        try {
+            LayerGroupInfo namedGroup = createLakesPlacesLayerGroup(catalog, "namedGroup", LayerGroupInfo.Mode.NAMED, null);
+            try {
+                LayerGroupInfo eoGroup = createLakesPlacesLayerGroup(catalog, "eoGroup", LayerGroupInfo.Mode.EO, catalog.getLayerByName(getLayerId(MockData.LAKES)));                
+                try {
+                    
+                    String requestURL = "wms/animate?BBOX=0.0000,-0.0020,0.0035,0.0010&aparam=layers&avalues=" +
+                            singleGroup.getName() + "," +
+                            namedGroup.getName() + "," +
+                            eoGroup.getName();
+                    
+                    // check we got a gif
+                    MockHttpServletResponse resp = getAsServletResponse(requestURL);
+                    assertEquals("image/gif", resp.getContentType());
+                    
+                    // check it has three frames
+                    ByteArrayInputStream bis = getBinaryInputStream(resp);
+                    ImageInputStream iis = ImageIO.createImageInputStream(bis);
+                    ImageReader reader = ImageIO.getImageReadersBySuffix("gif").next();
+                    reader.setInput(iis);
+
+                    // BufferedImage gif = getAsImage(requestURL, "image/gif");
+                    // ImageIO.write(gif, "gif", new File("anim.gif"));
+                    
+                    assertEquals(3, reader.getNumImages(true));
+
+                    // single group:
+                    BufferedImage image = reader.read(0);
+                    assertPixel(image, 300, 270, Color.WHITE);
+                    // places
+                    assertPixel(image, 380, 30, COLOR_PLACES_GRAY);
+                    // lakes
+                    assertPixel(image, 180, 350, COLOR_LAKES_BLUE);                    
+
+                    // named group:
+                    image = reader.read(1);
+                    assertPixel(image, 300, 270, Color.WHITE);
+                    // places
+                    assertPixel(image, 380, 30, COLOR_PLACES_GRAY);
+                    // lakes
+                    assertPixel(image, 180, 350, COLOR_LAKES_BLUE);                    
+                    
+                    // EO group:
+                    image = reader.read(2);
+                    assertPixel(image, 300, 270, Color.WHITE);
+                    // no places
+                    assertPixel(image, 380, 30, Color.WHITE);
+                    // lakes
+                    assertPixel(image, 180, 350, COLOR_LAKES_BLUE);               
+                } finally {
+                    catalog.remove(eoGroup);
+                }
+            } finally {
+                catalog.remove(namedGroup);
+            }                     
+        } finally {
+            catalog.remove(singleGroup);
+        }
+    }
+    
 }

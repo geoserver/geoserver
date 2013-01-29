@@ -44,7 +44,7 @@ Graphic
 ^^^^^^^
 
 Symbology is specified using a ``<Graphic>`` element. 
-The point symbol is specified by either an ``<ExternalGraphic>`` or a ``<Mark>`` element. 
+The symbol is specified by either an ``<ExternalGraphic>`` or a ``<Mark>`` element. 
 **External Graphics** are image files (in formats such as PNG or SVG) that contain the shape and color information defining how to render a symbol.
 **Marks** are vector shapes whose stroke and fill are defined explicitly in the symbolizer.  
 
@@ -65,20 +65,20 @@ One of ``<ExternalGraphic>`` or ``<Mark>`` must be specified; the others are opt
      - Specifies a common shape to use as the symbol.
    * - ``<Opacity>``
      - No
-     - Determines the opacity (transparency) of the symbol.  
+     - Specifies the opacity (transparency) of the symbol.  
        Values range from ``0`` (completely transparent) to ``1`` (completely opaque).  
        Value may contain :ref:`expressions <sld_reference_parameter_expressions>`.
        Default is ``1`` (opaque).
    * - ``<Size>``
      - No 
-     - Determines the size of the symbol, in pixels.  
+     - Specifies the size of the symbol, in pixels.  
        When used with an image file, this specifies the height of the image, with the width being scaled accordingly.
        Value may contain :ref:`expressions <sld_reference_parameter_expressions>`.
    * - ``<Rotation>``
      - No
-     - Determines the rotation of the symbol, in degrees.  
-       The rotation increases in the clockwise direction.  
-       Negative values indicate counter-clockwise rotation. 
+     - Specifies the rotation of the symbol about its center point, in decimal degrees.  
+       Positive values indicate rotation in the clockwise direction,  
+       negative values indicate counter-clockwise rotation. 
        Value may contain :ref:`expressions <sld_reference_parameter_expressions>`.
        Default is ``0``.
 
@@ -105,7 +105,7 @@ The ``<ExternalGraphic>`` element has the sub-elements:
      - Yes
      - The MIME type of the image format.  
        Most standard web image formats are supported.  
-       Common MIME types are ``image/png``, ``image/jpeg``, ``image/gif``, and ``image/svg+xml``  
+       Common MIME types are ``image/png``, ``image/jpeg``, ``image.png``, and ``image/svg+xml``  
 
 Mark
 ^^^^
@@ -176,8 +176,8 @@ The next example uses an external graphic loaded from the file system:
       <Graphic>
         <ExternalGraphic>
           <OnlineResource xlink:type="simple" 
-                          xlink:href="file:///var/www/htdocs/sun.gif" />
-          <Format>image/gif</Format>
+                          xlink:href="file:///var/www/htdocs/sun.png" />
+          <Format>image.png</Format>
         </ExternalGraphic>
       </Graphic>
     </PointSymbolizer>
@@ -195,9 +195,9 @@ Using expressions in parameter values
 Many SLD parameters allow their values to be of **mixed type**. 
 This means that the element content can be:
 
-* a constant string value,
-* an OGC Filter expression,
-* any combination of strings and expressions.
+* a constant value expressed as a string
+* a :ref:`filter expression <sld_filter_expression>`
+* any combination of strings and filter expressions.
 
 Using expressions in parameter values provides the ability to determine styling dynamically
 on a per-feature basis,

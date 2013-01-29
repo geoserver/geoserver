@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wcs.responses;
@@ -7,6 +7,7 @@ package org.geoserver.wcs.responses;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Map;
 
 import org.geoserver.platform.ServiceException;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -50,7 +51,7 @@ public interface CoverageResponseDelegate {
      * @throws ServiceException
      * @throws IOException
      */
-    void encode(GridCoverage2D coverage, String outputFormat, OutputStream output) throws ServiceException, IOException;
+    void encode(GridCoverage2D coverage, String outputFormat, Map<String,String> econdingParameters,OutputStream output) throws ServiceException, IOException;
     
     /**
      * Returns the list of output formats managed by this delegate

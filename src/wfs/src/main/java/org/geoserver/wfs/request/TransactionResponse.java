@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wfs.request;
 
 import java.math.BigInteger;
@@ -15,6 +19,16 @@ import org.eclipse.emf.ecore.EObject;
 import org.opengis.filter.identity.FeatureId;
 
 public abstract class TransactionResponse extends RequestObject {
+
+    public static TransactionResponse adapt(Object request) {
+        if (request instanceof TransactionResponseType) {
+            return new WFS11((EObject) request);
+        }
+        else if (request instanceof net.opengis.wfs20.TransactionResponseType) {
+            return new WFS20((EObject) request);
+        }
+        return null;
+    }
 
     protected TransactionResponse(EObject adaptee) {
         super(adaptee);

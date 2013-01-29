@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -685,5 +685,9 @@ public class AbstractCatalogDecorator extends AbstractDecorator<Catalog> impleme
     public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter,
             Integer offset, Integer count, SortBy sortOrder) {
         return delegate.list(of, filter, offset, count, sortOrder);
+    }
+
+    public void removeListeners(Class listenerClass) {
+        delegate.removeListeners(listenerClass);
     }
 }

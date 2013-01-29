@@ -1,4 +1,10 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.web.demo;
+
+import static org.junit.Assert.*;
 
 import java.io.Serializable;
 
@@ -7,16 +13,19 @@ import org.apache.wicket.markup.html.form.ValidationErrorFeedback;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.junit.Test;
 
 public class ReprojectPageTest extends GeoServerWicketTestSupport {
 
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
+    protected void setUpTestData(SystemTestData testData) throws Exception {
         // we don't need data configured in the catalog
     }
 
+    @Test
     public void testReprojectPoint() {
         tester.startPage(ReprojectPage.class);
         FormTester form = tester.newFormTester("form");
@@ -32,6 +41,7 @@ public class ReprojectPageTest extends GeoServerWicketTestSupport {
         assertEquals("736446.0261038465 4987329.504699742", tx);
     }
     
+    @Test
     public void testInvalidPoint() {
         tester.startPage(ReprojectPage.class);
         FormTester form = tester.newFormTester("form");
@@ -48,6 +58,7 @@ public class ReprojectPageTest extends GeoServerWicketTestSupport {
         assertEquals(expected, message);
     }
     
+    @Test
     public void testReprojectLinestring() {
         tester.startPage(ReprojectPage.class);
         FormTester form = tester.newFormTester("form");
@@ -63,6 +74,7 @@ public class ReprojectPageTest extends GeoServerWicketTestSupport {
         assertEquals("LINESTRING (736446.0261038465 4987329.504699742, 815261.4271666661 4990738.261612577)", tx);
     }
     
+    @Test
     public void testInvalidGeometry() {
         tester.startPage(ReprojectPage.class);
         FormTester form = tester.newFormTester("form");
@@ -79,6 +91,7 @@ public class ReprojectPageTest extends GeoServerWicketTestSupport {
         assertEquals(expected, message);
     }
     
+    @Test
     public void testPageParams() {
     	PageParameters params = new PageParameters();
     	params.add("fromSRS", "EPSG:4326");

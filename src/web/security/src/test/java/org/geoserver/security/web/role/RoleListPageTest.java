@@ -1,4 +1,10 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.security.web.role;
+
+import static org.junit.Assert.*;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -11,6 +17,7 @@ import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.web.AbstractSecurityPage;
 import org.geoserver.security.web.AbstractTabbedListPageTest;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
+import org.junit.Test;
 
 public class RoleListPageTest extends AbstractTabbedListPageTest<GeoServerRole> {
     
@@ -55,9 +62,8 @@ public class RoleListPageTest extends AbstractTabbedListPageTest<GeoServerRole> 
     };
     
     
+    @Test
     public void testEditParentRole() throws Exception {
-        initializeForXML();
-        insertValues();
         
         tester.startPage(listPage(getRoleServiceName()));
                    
@@ -104,9 +110,8 @@ public class RoleListPageTest extends AbstractTabbedListPageTest<GeoServerRole> 
                 tester.getComponentFromLastRenderedPage("form:name").getDefaultModelObject());
     }
     
+    @Test
     public void testReadOnlyService() throws Exception{
-        initializeForXML();
-
         listPage(getRoleServiceName());
         tester.assertVisible(getRemoveLink().getPageRelativePath());
         tester.assertVisible(getAddLink().getPageRelativePath());

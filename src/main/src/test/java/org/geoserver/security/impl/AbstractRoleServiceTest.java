@@ -1,34 +1,42 @@
-/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 
 
 package org.geoserver.security.impl;
 
+import static org.junit.Assert.*;
+
 import java.io.IOException;
 
 import junit.framework.Assert;
 
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.AbstractSecurityServiceTest;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
+import org.junit.Before;
+import org.junit.Test;
 
 public abstract class AbstractRoleServiceTest extends AbstractSecurityServiceTest {
     
     protected GeoServerRoleService service; 
     protected GeoServerRoleStore store; 
 
-
     @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
-        service =   createRoleService("test");
-        store  = createStore(service);
-            
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        service = createRoleService("test");
     }
 
-            
+    @Before
+    public void init() throws IOException {
+        service = getSecurityManager().loadRoleService("test");
+        store = createStore(service);
+    }
+
+    @Test
     public void testIsModified() {
         try {
             
@@ -111,6 +119,7 @@ public abstract class AbstractRoleServiceTest extends AbstractSecurityServiceTes
     }            
 
     
+    @Test
     public void testInsert() {
         try {
             
@@ -142,6 +151,7 @@ public abstract class AbstractRoleServiceTest extends AbstractSecurityServiceTes
         }        
     }
 
+    @Test
     public void testModify() {
         try {
             
@@ -174,6 +184,7 @@ public abstract class AbstractRoleServiceTest extends AbstractSecurityServiceTes
         }        
     }
 
+    @Test
     public void testRemove() {
         try {
             

@@ -1,9 +1,10 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.vfny.geoserver.util;
 
+import java.awt.image.RenderedImage;
 import java.awt.image.SampleModel;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -301,7 +302,7 @@ public class WCSUtils {
      */
 	public static void checkOutputLimits(WCSInfo info, GridEnvelope2D gridRange2D, SampleModel sampleModel) {
         // do we have to check a limit at all?
-	    long limit = info.getMaxOutputMemory() * 1024;
+	long limit = info.getMaxOutputMemory() * 1024;
         if(limit <= 0) {
             return;
         }
@@ -344,21 +345,22 @@ public class WCSUtils {
     }
     
     /**
-     * Computes the size of a grid coverage given its grid envelope and the target sample model
+     * Computes the size of a grid coverage in bytes given its grid envelope and the target sample model
      * @param envelope
      * @param sm
      * @return
      */
     static long getCoverageSize(GridEnvelope2D envelope, SampleModel sm) {
-        long pixels = 1;
-        for(int i = 0; i < envelope.getDimension(); i++) {
-            pixels *= envelope.getSpan(i);
-        }
+        // === compute the coverage memory usage and compare with limit
+        final long pixelsNumber = computePixelsNumber(envelope);
+        
+        
         long pixelSize = 0;
-        for (int i = 0; i < sm.getNumBands(); i++) {
+        final int numBands=sm.getNumBands();
+        for (int i = 0; i < numBands; i++) {
             pixelSize += sm.getSampleSize(i);
         }
-        return pixels * pixelSize / 8;
+        return pixelsNumber * pixelSize / 8;
     }
 
     /**
@@ -540,5 +542,55 @@ public class WCSUtils {
         } else {
             return null;
         }
+    }
+
+    /**
+     * Checks the coverage described by the specified source coverage and target band names does not exceeds the output
+     * @param wcs
+     * @param gridRange2D
+     * @param indexes
+     */
+    public static void checkOutputLimits(WCSInfo wcs, GridCoverage2D gc,
+            int[] indexes) {
+        // do we have to check a limit at all?
+        long limit = wcs.getMaxOutputMemory() * 1024;
+        if(limit <= 0) {
+            return;
+        }
+        
+        // === compute the coverage memory usage and compare with limit
+        final long pixelsNumber = computePixelsNumber(gc.getGridGeometry().getGridRange2D());
+        
+        // bands
+        long pixelSize = 0;
+        final RenderedImage image= gc.getRenderedImage();
+        final SampleModel sm=image.getSampleModel();
+        for (int band:indexes) {
+            pixelSize += sm.getSampleSize(band);
+        }
+        long actual= pixelsNumber * pixelSize / 8; // in bytes
+        
+        if(actual > limit) {
+            throw new WcsException("This request is trying to generate too much data, " +
+                    "the limit is " + formatBytes(limit) + " but the actual amount of bytes to be " +
+                            "written in the output is " + formatBytes(actual));
+        }
+        
+    }
+
+    /**
+     * Computes the number of pixels for this {@link GridEnvelope2D}.
+     * 
+     * @param rasterEnvelope the {@link GridEnvelope2D} to compute the number of pixels for
+     * @return the number of pixels for the provided {@link GridEnvelope2D}
+     */
+    private static long computePixelsNumber(GridEnvelope2D rasterEnvelope){
+        // pixels
+        long pixelsNumber=1;
+        final int dimensions= rasterEnvelope.getDimension();
+        for(int i = 0; i <dimensions; i++) {
+            pixelsNumber *= rasterEnvelope.getSpan(i);
+        }
+        return pixelsNumber;
     }
 }

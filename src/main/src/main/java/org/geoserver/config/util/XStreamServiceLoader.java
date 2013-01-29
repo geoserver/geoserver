@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -72,6 +72,16 @@ public abstract class XStreamServiceLoader<T extends ServiceInfo> implements Ser
             return initialize( (T) service );
         }
     }
+    
+    /**
+     * Fills in all the bits that are normally not loaded automatically by XStream, such
+     * as empty collections
+     * 
+     * @param info
+     */
+    public void initializeService(ServiceInfo info) {
+        initialize((T) info);
+    }
 
     /**
      * Fills in the blanks of the service object loaded by XStream. This implementation makes sure
@@ -139,6 +149,10 @@ public abstract class XStreamServiceLoader<T extends ServiceInfo> implements Ser
         xp.setGeoServer( gs );
         xp.setCatalog( gs.getCatalog() );
         xp.getXStream().alias( filenameBase, getServiceClass() );
+    }
+
+    public final T create(GeoServer gs) {
+        return createServiceFromScratch(gs);
     }
     
     protected abstract T createServiceFromScratch(GeoServer gs);

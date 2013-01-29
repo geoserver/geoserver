@@ -26,6 +26,11 @@
    <version>${project.version}</version>
   </dependency>
   <dependency>
+   <groupId>org.geoserver</groupId>
+   <artifactId>wfs</artifactId>
+   <version>${project.version}</version>
+  </dependency>
+  <dependency>
    <groupId>org.geoserver.web</groupId>
    <artifactId>web-core</artifactId>
    <version>${project.version}</version>

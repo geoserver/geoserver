@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.ows.util;
@@ -12,15 +12,14 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
+import org.geoserver.platform.OWS20Exception;
 
 import org.geoserver.platform.ServiceException;
 import org.geotools.util.Version;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
 
 
 /**
@@ -171,7 +170,8 @@ public class RequestUtils {
         // supports, the server shall return an Exception with 
         // exceptionCode="VersionNegotiationFailed"
         if(negotiated == null)
-            throw new ServiceException("Could not find any matching version", "VersionNegotiationFailed");
+            throw new ServiceException("Could not find any matching version " 
+                    + acceptedList + " in supported list: " + acceptedList, "VersionNegotiationFailed");
         
         return negotiated.toString();
     }
@@ -189,7 +189,7 @@ public class RequestUtils {
             throw new ServiceException(msg, "VersionNegotiationFailed", locator);
         }
     }
-    
+
     /**
      * Wraps an xml input xstream in a buffered reader specifying a lookahead that can be used
      * to preparse some of the xml document, resetting it back to its original state for actual 

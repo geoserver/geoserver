@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+CORRECTIONS referenced 2012-07-13 #01
+AUTHOR: XML Maintenance group - Nicolas Lesage
+PURPOSE: Use of absolute path in xsi:schemaLocation
+DESCRIPTION:
+- ../gmx/gmx.xsd replaced by http://schemas.opengis.net/iso/19139/20070417/gmx/gmx.xsd
+- ../gmd/gmd.xsd replaced by http://schemas.opengis.net/iso/19139/20070417/gmd/gmd.xsd
+- ../gco/gco.xsd replaced by http://schemas.opengis.net/iso/19139/20070417/gco/gco.xsd
+- ../xlink/xlinks.xsd replaced by http://www.w3.org/1999/xlink.xsd
+- ../gml/gml.xsd replaced by http://schemas.opengis.net/gml/3.2.1/gml.xsd
+
+-->
+<CT_CrsCatalogue xmlns="http://www.isotc211.org/2005/gmx" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.isotc211.org/2005/gmx http://schemas.opengis.net/iso/19139/20070417/gmx/gmx.xsd http://www.isotc211.org/2005/gmd http://schemas.opengis.net/iso/19139/20070417/gmd/gmd.xsd http://www.isotc211.org/2005/gco http://schemas.opengis.net/iso/19139/20070417/gco/gco.xsd http://www.w3.org/1999/xlink http://www.w3.org/1999/xlink.xsd">
+
+	<!--=====Catalogue description=====-->
+	<name>
+		<gco:CharacterString>ML_gmxCrs</gco:CharacterString>
+	</name>
+	<scope xsi:type="gmd:PT_FreeText_PropertyType">
+		<gco:CharacterString>CRS catalogue for description of gmx metadata dataset</gco:CharacterString>
+		<gmd:PT_FreeText>
+			<gmd:textGroup>
+				<gmd:LocalisedCharacterString locale="#xpointer(//*[@id='fra'])">Catalogue des paramètres géodésiques pour la description de jeux de métadonnées conformes aux schémas gmx</gmd:LocalisedCharacterString>
+			</gmd:textGroup>
+		</gmd:PT_FreeText>
+	</scope>
+	<fieldOfApplication>
+		<gco:CharacterString>GMX (and imported) namespace</gco:CharacterString>
+	</fieldOfApplication>
+	<versionNumber>
+		<gco:CharacterString>0.0</gco:CharacterString>
+	</versionNumber>
+	<versionDate>
+		<gco:Date>2005-03-29</gco:Date>
+	</versionDate>
+	<!--=== for Cultural and Linguistic Adaptability ===-->
+	<!--Default language-->
+	<language>
+		<gmd:LanguageCode codeList="../codelist/ML_gmxCodelists.xml#LanguageCode" codeListValue="eng">English</gmd:LanguageCode>
+	</language>
+	<characterSet>
+		<gmd:MD_CharacterSetCode codeList="../codelist/ML_gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8">UTF 8</gmd:MD_CharacterSetCode>
+	</characterSet>
+	<!--List of the 'locales' into which free text values can be translated-->
+	<locale>
+		<gmd:PT_Locale id="fra">
+			<gmd:languageCode>
+				<gmd:LanguageCode codeList="../codelist/ML_gmxCodelists.xml#LanguageCode" codeListValue="french">French</gmd:LanguageCode>
+			</gmd:languageCode>
+			<gmd:country>
+				<gmd:Country codeList="../Codelist/ML_gmxCodelists.xm#Country" codeListValue="FR">France</gmd:Country>
+			</gmd:country>
+			<gmd:characterEncoding>
+				<gmd:MD_CharacterSetCode codeList="../Codelist/ML_gmxCodelists.xm#MD_CharacterSetCode" codeListValue="utf8">UTF 8</gmd:MD_CharacterSetCode>
+			</gmd:characterEncoding>
+		</gmd:PT_Locale>
+	</locale>
+	<!--============================================================================-->
+	<!--============================================================================-->
+	<!--======================= Coordinate reference systems ============================-->
+	<!--*** WGS 84 - CRS ***-->
+	<crs>
+		<ML_GeodeticCRS gml:id="ml_EPSG4326">
+			<gml:identifier codeSpace="EPSG_v65">4326</gml:identifier>
+			<gml:name codeSpace="IGN-F">WGS84G</gml:name>
+			<gml:name>World Geodetic System 1984</gml:name>
+			<gml:domainOfValidity>
+				<gmd:EX_Extent>
+					<gmd:geographicElement>
+						<gmd:EX_GeographicDescription>
+							<gmd:geographicIdentifier>
+								<gmd:MD_Identifier>
+									<gmd:code>
+										<gco:CharacterString>World</gco:CharacterString>
+									</gmd:code>
+								</gmd:MD_Identifier>
+							</gmd:geographicIdentifier>
+						</gmd:EX_GeographicDescription>
+					</gmd:geographicElement>
+				</gmd:EX_Extent>
+			</gml:domainOfValidity>
+			<gml:scope>not known</gml:scope>
+			<gml:usesEllipsoidalCS xlink:href="#xpointer(//*[@gml:id='EPSG6422'])"/>
+			<gml:usesGeodeticDatum xlink:href="#xpointer(//*[@gml:id='EPSG6422')]"/>
+			<!--==alternative definition(s)==-->
+			<alternativeExpression>
+				<CrsAlt gml:id="ml_EPSG4326_fr" codeSpace="fra">
+					<gml:identifier codeSpace="EPSG_v65">4326</gml:identifier>
+					<gml:name codeSpace="IGN-F">WGS84G</gml:name>
+					<gml:name>WGS 1984</gml:name>
+					<gml:domainOfValidity>
+						<gmd:EX_Extent>
+							<gmd:geographicElement>
+								<gmd:EX_GeographicDescription>
+									<gmd:geographicIdentifier>
+										<gmd:MD_Identifier>
+											<gmd:code>
+												<gco:CharacterString>Monde</gco:CharacterString>
+											</gmd:code>
+										</gmd:MD_Identifier>
+									</gmd:geographicIdentifier>
+								</gmd:EX_GeographicDescription>
+							</gmd:geographicElement>
+						</gmd:EX_Extent>
+					</gml:domainOfValidity>
+					<gml:scope>inconnu</gml:scope>
+					<locale xlink:href="#xpointer(//*[@id='fra'])"/>
+				</CrsAlt>
+			</alternativeExpression>
+		</ML_GeodeticCRS>
+	</crs>
+	<!--============================ Coordinate systems ===============================-->
+	<!--*** Ellipsoidal - 2D - degree ***-->
+	<coordinateSystem>
+		<gml:EllipsoidalCS gml:id="EPSG6422">
+			<gml:identifier codeSpace="EPSG_v65">6422</gml:identifier>
+			<gml:name>ellipsoidal2Ddeg</gml:name>
+			<gml:axis xlink:href="#xpointer(//*[@gml:id='EPSG9901'])"/>
+			<gml:axis xlink:href="#xpointer(//*[@gml:id='EPSG9902'])"/>
+		</gml:EllipsoidalCS>
+	</coordinateSystem>
+	<!--========================== Coordinate system axis ==============================-->
+	<!--*** Latitude ***-->
+	<axis>
+		<gml:CoordinateSystemAxis gml:id="EPSG9901" uom="../uom/ML_gmxUom.xsd#xpointer(//*[@gml:id='deg'])">
+			<gml:identifier codeSpace="EPSG_v65">9901</gml:identifier>
+			<gml:name>Geodetic latitude</gml:name>
+			<gml:axisAbbrev>Lat</gml:axisAbbrev>
+			<gml:axisDirection codeSpace="EPSG">North</gml:axisDirection>
+		</gml:CoordinateSystemAxis>
+	</axis>
+	<!--*** Longitude ***-->
+	<axis>
+		<gml:CoordinateSystemAxis gml:id="EPSG9902" uom="../uom/ML_gmxUom.xsd#xpointer(//*[@gml:id='deg'])">
+			<gml:identifier codeSpace="EPSG_v65">9902</gml:identifier>
+			<gml:name>Geodetic longitude</gml:name>
+			<gml:axisAbbrev>Lon</gml:axisAbbrev>
+			<gml:axisDirection codeSpace="EPSG">East</gml:axisDirection>
+		</gml:CoordinateSystemAxis>
+	</axis>
+	<!--================================ Datums =====================================-->
+	<!--*** WGS 84 - Datum ***-->
+	<datum>
+		<gml:GeodeticDatum gml:id="EPSG6326">
+			<gml:identifier codeSpace="EPSG_v65">6326</gml:identifier>
+			<gml:name>World Geodetic System 1984</gml:name>
+			<gml:scope>not known</gml:scope>
+			<gml:primeMeridian xlink:href="#xpointer(//*[@gml:id='EPSG8901'])"/>
+			<gml:ellipsoid xlink:href="#xpointer(//*[@gml:id='EPSG7030'])"/>
+		</gml:GeodeticDatum>
+	</datum>
+	<!--================================ Ellipsoids ====================================-->
+	<!--*** WGS 84 - Ellipsoid ***-->
+	<ellipsoid>
+		<gml:Ellipsoid gml:id="EPSG7030">
+			<gml:identifier codeSpace="EPSG_v65">7030</gml:identifier>
+			<gml:name>WGS 84</gml:name>
+			<gml:semiMajorAxis uom="../uom/ML_gmxUom.xsd#xpointer(//*[@gml:id='m'])">6378137</gml:semiMajorAxis>
+			<gml:secondDefiningParameter>
+				<gml:SecondDefiningParameter>
+					<gml:inverseFlattening uom="../uom/ML_gmxUom.xsd#xpointer(//*[@gml:id='m'])">298.2572</gml:inverseFlattening>
+				</gml:SecondDefiningParameter>
+			</gml:secondDefiningParameter>
+		</gml:Ellipsoid>
+	</ellipsoid>
+	<!--============================== Prime meridians =================================-->
+	<!--*** Greenwich ***-->
+	<primeMeridian>
+		<gml:PrimeMeridian gml:id="EPSG8901">
+			<gml:identifier codeSpace="EPSG_v65">8901</gml:identifier>
+			<gml:name>Greenwich</gml:name>
+			<gml:greenwichLongitude uom="../uom/ML_gmxUom.xsd#xpointer(//*[@gml:id='deg'])">0</gml:greenwichLongitude>
+		</gml:PrimeMeridian>
+	</primeMeridian>
+	<!--================================ Operations ===================================-->
+	<!--============================= Operation methods ================================-->
+	<!--=========================== Operation parameters ================================-->
+</CT_CrsCatalogue>

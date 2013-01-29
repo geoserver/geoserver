@@ -1,9 +1,17 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wfs;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class WFSDisabledTest extends WFSTestSupport {
     
+	@Test
     public void testDisabledServiceResponse() throws Exception {
         WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
         wfs.setEnabled(false);
@@ -14,6 +22,7 @@ public class WFSDisabledTest extends WFSTestSupport {
                 .getNodeName());
     }
     
+	@Test
     public void testEnabledServiceResponse() throws Exception {
         WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
         wfs.setEnabled(true);

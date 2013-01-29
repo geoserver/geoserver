@@ -1,13 +1,14 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms;
 
+import static org.junit.Assert.*;
 import java.util.List;
 import java.util.Set;
 
-import junit.framework.Test;
+import org.junit.Test;
 
 /**
  * An integration test for the GetMapOutputFormat implementations
@@ -17,13 +18,9 @@ import junit.framework.Test;
  */
 public class GetMapOutputFormatTest extends WMSTestSupport {
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new GetMapOutputFormatTest());
-    }
+ 
 
+    @Test
     public void testGetOutputFormatNames() {
         List<GetMapOutputFormat> producers = WMSExtensions.findMapProducers(applicationContext);
         for (GetMapOutputFormat producer : producers) {
@@ -36,6 +33,7 @@ public class GetMapOutputFormatTest extends WMSTestSupport {
         }
     }
 
+    @Test 
     public void testGetOutputFormat() {
         List<GetMapOutputFormat> producers = WMSExtensions.findMapProducers(applicationContext);
         for (GetMapOutputFormat producer : producers) {
@@ -43,6 +41,7 @@ public class GetMapOutputFormatTest extends WMSTestSupport {
         }
     }
 
+    @Test 
     public void testSetOutputFormat() {
 
         List<GetMapOutputFormat> producers = WMSExtensions.findMapProducers(applicationContext);

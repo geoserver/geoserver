@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -16,8 +16,9 @@ import net.opengis.cat.csw20.HarvestType;
 import net.opengis.cat.csw20.TransactionType;
 
 import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.csw.response.CSWRecordsResult;
+import org.geoserver.csw.store.RepositoryItem;
 import org.geoserver.platform.ServiceException;
-import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.type.FeatureType;
 
 /**
@@ -39,12 +40,12 @@ public interface CatalogService {
     /**
      * Returns the records matching the specified request
      */
-    FeatureCollection getRecords(GetRecordsType request) throws ServiceException;
+    CSWRecordsResult getRecords(GetRecordsType request) throws ServiceException;
 
     /**
      * Returns the records matching the specified request
      */
-    FeatureCollection getRecordById(GetRecordByIdType request) throws ServiceException;
+    CSWRecordsResult getRecordById(GetRecordByIdType request) throws ServiceException;
     
     /**
      * Returns the list of possible values for the specified parameter/property
@@ -55,14 +56,14 @@ public interface CatalogService {
      * The optional GetRepositoryItem request, used for ebRIM but could be useful for
      * a general catalog that wants the data to be made available for download as well
      */
-    RepositoryItem getRepositoryItem(GetRepositoryItem request) throws ServiceException;
+    RepositoryItem getRepositoryItem(GetRepositoryItemType request) throws ServiceException;
 
     /**
      * Runs a harvest request
      * 
      * @param request
      * @param response
-     * @throws WPSException
+     * @throws CSWException
      */
     HarvestResponseType harvest(HarvestType request) throws ServiceException;
     
@@ -71,7 +72,7 @@ public interface CatalogService {
      * 
      * @param request
      * @param response
-     * @throws WPSException
+     * @throws CSWException
      */
     HarvestResponseType transaction(TransactionType request) throws ServiceException;
 

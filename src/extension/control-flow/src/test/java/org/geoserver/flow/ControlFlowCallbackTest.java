@@ -1,16 +1,22 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.flow;
+
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.geoserver.ows.HttpErrorCodeException;
 import org.geoserver.ows.Request;
+import org.junit.Test;
 
-public class ControlFlowCallbackTest extends TestCase {
+public class ControlFlowCallbackTest {
 
+    @Test
     public void testBasicFunctionality() {
         ControlFlowCallback callback = new ControlFlowCallback();
         TestingConfigurator tc = new TestingConfigurator();
@@ -27,6 +33,7 @@ public class ControlFlowCallbackTest extends TestCase {
         assertEquals(1, controller.requestCompleteCalls);
     }
     
+    @Test
     public void testTimeout() {
         ControlFlowCallback callback = new ControlFlowCallback();
         TestingConfigurator tc = new TestingConfigurator();

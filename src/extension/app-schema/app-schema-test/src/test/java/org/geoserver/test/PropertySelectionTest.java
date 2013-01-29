@@ -1,13 +1,14 @@
-/* Copyright (c) 2001 - 2009 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 
 package org.geoserver.test;
 
-import org.w3c.dom.Document;
+import static org.junit.Assert.*;
 
-import junit.framework.Test;
+import org.junit.Test;
+import org.w3c.dom.Document;
 
 /**
  * Tests whether Property Selection is properly applied on complex features
@@ -15,28 +16,20 @@ import junit.framework.Test;
  * @author Niels Charlier, Curtin University of Technology
  * 
  */
-public class PropertySelectionTest extends AbstractAppSchemaWfsTestSupport {
-
-    /**
-     * Read-only test so can use one-time setup.
-     * 
-     * @return
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new PropertySelectionTest());
-    }
+public class PropertySelectionTest extends AbstractAppSchemaTestSupport {
 
     @Override
-    protected NamespaceTestData buildTestData() {
+    protected PropertySelectionMockData createTestData() {
         return new PropertySelectionMockData();
     }
     
     /**
      * Test GetFeature with Property Selection.
      */
+    @Test
     public void testGetFeature() {
-    	Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typeName=gsml:MappedFeature&propertyname=gml:description");
-        LOGGER.info("wfs?request=GetFeature&typeName=gsml:MappedFeature&propertyname=gml:description Response:\n" + prettyString(doc));
+    	Document doc = getAsDOM("wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=gsml:MappedFeature&propertyname=gml:description");
+        LOGGER.info("wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=gsml:MappedFeature&propertyname=gml:description Response:\n" + prettyString(doc));
 
         // using custom IDs - this is being tested too
 
@@ -74,9 +67,10 @@ public class PropertySelectionTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Test Property Selection with Feature Chaining.
      */
+    @Test
     public void testGetFeatureFeatureChaining() {
-        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&propertyname=gsml:specification/gsml:GeologicUnit/gml:description");
-        LOGGER.info("wfs?request=GetFeature&typename=gsml:MappedFeature&propertyname=gsml:specification/gsml:GeologicUnit/gml:description response:\n"
+        Document doc = getAsDOM("wfs?service=WFS&version=1.1.0&request=GetFeature&typename=gsml:MappedFeature&propertyname=gsml:specification/gsml:GeologicUnit/gml:description");
+        LOGGER.info("wfs?service=WFS&version=1.1.0&request=GetFeature&typename=gsml:MappedFeature&propertyname=gsml:specification/gsml:GeologicUnit/gml:description response:\n"
                 + prettyString(doc));
 
         // check if requested property is present
@@ -113,9 +107,10 @@ public class PropertySelectionTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Test GetFeature with Property Selection, using client properties.
      */
+    @Test
     public void testGetFeatureClientProperty() {
-        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typeName=gsml:MappedFeature&propertyname=gsml:metadata");
-        LOGGER.info("wfs?request=GetFeature&typeName=gsml:MappedFeature&propertyname=gsml:metadata response:\n" + prettyString(doc));
+        Document doc = getAsDOM("wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=gsml:MappedFeature&propertyname=gsml:metadata");
+        LOGGER.info("wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=gsml:MappedFeature&propertyname=gsml:metadata response:\n" + prettyString(doc));
 
         // test client property works
         assertXpathEvaluatesTo("zzzgu.25699",
@@ -126,19 +121,21 @@ public class PropertySelectionTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Test GetFeature with Property Selection, with an invalid column name.
      */
+    @Test
     public void testGetFeatureInvalidName() {
-        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typeName=gsml:MappedFeature&propertyname=gml:name");
-        LOGGER.info("wfs?request=GetFeature&typeName=gsml:MappedFeature&propertyname=gml:name response:\n" + prettyString(doc));
+        Document doc = getAsDOM("wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=gsml:MappedFeature&propertyname=gml:name");
+        LOGGER.info("wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=gsml:MappedFeature&propertyname=gml:name response:\n" + prettyString(doc));
 
         // test exception refering to missing column
         assertTrue(evaluate("//ows:ExceptionText", doc)
-                .endsWith("No value for xpath: DOESNT_EXIST"));
+                .contains("Could not find working property accessor for attribute (DOESNT_EXIST)"));
 
     }
 
     /**
      * Test Posting GetFeature
      */
+    @Test
     public void testPostGetFeature() {
         String xml = "<wfs:GetFeature " //
                 + "service=\"WFS\" " //
@@ -189,9 +186,10 @@ public class PropertySelectionTest extends AbstractAppSchemaWfsTestSupport {
      * Test GetFeature with Property Selection, with properties names with same name but different
      * namespace.
      */
+    @Test
     public void testSameNameDiffNamespace1() {
-        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typeName=ex:MyTestFeature&propertyname=ex:name");
-        LOGGER.info("wfs?request=GetFeature&typeName=ex:MyTestFeature&propertyname=ex:name response:\n" + prettyString(doc));
+        Document doc = getAsDOM("wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=ex:MyTestFeature&propertyname=ex:name");
+        LOGGER.info("wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=ex:MyTestFeature&propertyname=ex:name response:\n" + prettyString(doc));
 
         assertXpathCount(1, "//ex:MyTestFeature[@gml:id='f1']/ex:name", doc);
         assertXpathCount(0, "//ex:MyTestFeature[@gml:id='f1']/gml:name", doc);
@@ -201,9 +199,10 @@ public class PropertySelectionTest extends AbstractAppSchemaWfsTestSupport {
      * Test GetFeature with Property Selection, with properties names with same name but different
      * namespace.
      */
+    @Test
     public void testSameNameDiffNamespace2() {
-        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typeName=ex:MyTestFeature&propertyname=gml:name");
-        LOGGER.info("wfs?request=GetFeature&typeName=ex:MyTestFeature&propertyname=gml:name response:\n" + prettyString(doc));
+        Document doc = getAsDOM("wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=ex:MyTestFeature&propertyname=gml:name");
+        LOGGER.info("wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=ex:MyTestFeature&propertyname=gml:name response:\n" + prettyString(doc));
 
         assertXpathCount(1, "//ex:MyTestFeature[@gml:id='f1']/gml:name", doc);
         assertXpathCount(0, "//ex:MyTestFeature[@gml:id='f1']/ex:name", doc);
@@ -212,9 +211,10 @@ public class PropertySelectionTest extends AbstractAppSchemaWfsTestSupport {
     /**
      * Test GetFeature with Property Selection, with an invalid column name.
      */
+    @Test
     public void testSameNameDiffNamespace3() {
-        Document doc = getAsDOM("wfs?request=GetFeature&typeName=ex:MyTestFeature");
-        LOGGER.info("WFS GetFeature response:\n" + prettyString(doc));
+        Document doc = getAsDOM("wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=ex:MyTestFeature");
+        LOGGER.info("wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=ex:MyTestFeature response:\n" + prettyString(doc));
 
     }
 

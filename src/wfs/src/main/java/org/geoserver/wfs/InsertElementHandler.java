@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs;
@@ -93,8 +93,8 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
             for (Iterator f = featureList.iterator(); f.hasNext();) {
                 SimpleFeature feature = (SimpleFeature) f.next();
                 SimpleFeatureType schema = feature.getFeatureType();
-                SimpleFeatureCollection collection;
-                collection = (SimpleFeatureCollection) schema2features.get(schema);
+                DefaultFeatureCollection collection = 
+                    (DefaultFeatureCollection) schema2features.get(schema);
 
                 if (collection == null) {
                     collection = new DefaultFeatureCollection(null, schema);
@@ -181,14 +181,15 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
                     //fire pre insert event
                     TransactionEvent event = new TransactionEvent(TransactionEventType.PRE_INSERT,
                             request, elementName, collection);
-                    event.setSource( insert );
+                    event.setSource(Insert.WFS11.unadapt(insert));
                     
                     listener.dataStoreChange( event );
                     fids.addAll(store.addFeatures(collection));
                     
                     //fire post insert event
                     SimpleFeatureCollection features = store.getFeatures(filterFactory.id(new HashSet<FeatureId>(fids)));
-                    event = new TransactionEvent(TransactionEventType.POST_INSERT, request, elementName, features, insert );
+                    event = new TransactionEvent(TransactionEventType.POST_INSERT, request, 
+                        elementName, features, Insert.WFS11.unadapt(insert));
                     listener.dataStoreChange( event );
                 }
             }

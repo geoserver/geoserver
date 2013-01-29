@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.security.impl;
 
 import static org.easymock.EasyMock.anyObject;
@@ -17,14 +21,16 @@ import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.impl.DataAccessRule;
 import org.geoserver.security.impl.DataAccessRuleDAO;
+import org.junit.Before;
+import org.junit.Test;
 
 public class DataAccessRuleDAOTest extends TestCase {
 
     DataAccessRuleDAO dao;
     Properties props;
     
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         // make a nice little catalog that does always tell us stuff is there 
         Catalog catalog = createNiceMock(Catalog.class);
         expect(catalog.getWorkspaceByName((String) anyObject())).andReturn(new WorkspaceInfoImpl()).anyTimes();
@@ -41,6 +47,7 @@ public class DataAccessRuleDAOTest extends TestCase {
         dao = new MemoryDataAccessRuleDAO(catalog, props);
     }
     
+    @Test
     public void testRulesForRole() {
         
         assertEquals(0,dao.getRulesAssociatedWithRole("CHALLENGE").size());
@@ -50,6 +57,7 @@ public class DataAccessRuleDAOTest extends TestCase {
     }
     
     
+    @Test
     public void testParse() {
         assertEquals(3, dao.getRules().size());
         
@@ -60,6 +68,7 @@ public class DataAccessRuleDAOTest extends TestCase {
         assertEquals("*", rule.getRoles().iterator().next());
     }
     
+    @Test
     public void testAdd() {
         assertEquals(3, dao.getRules().size());
         DataAccessRule newRule = dao.parseDataAccessRule("*.*.w", "ROLE_GENERIC_W");
@@ -69,6 +78,7 @@ public class DataAccessRuleDAOTest extends TestCase {
         assertFalse(dao.addRule(newRule));
     }
     
+    @Test
     public void testRemove() {
         DataAccessRule newRule = dao.parseDataAccessRule("*.*.w", "ROLE_GENERIC_W");
         assertFalse(dao.removeRule(newRule));
@@ -78,6 +88,7 @@ public class DataAccessRuleDAOTest extends TestCase {
         assertEquals(2, dao.getRules().size());
     }
     
+    @Test
     public void testStore() {
         Properties newProps = dao.toProperties();
         
@@ -90,6 +101,7 @@ public class DataAccessRuleDAOTest extends TestCase {
         }
     }
     
+    @Test
     public void testParsePlain() {
         DataAccessRule rule = dao.parseDataAccessRule("a.b.r", "ROLE_WHO_CARES");
         assertEquals("a", rule.getWorkspace());
@@ -97,6 +109,7 @@ public class DataAccessRuleDAOTest extends TestCase {
         assertEquals(AccessMode.READ, rule.getAccessMode());
     }
     
+    @Test
     public void testParseSpaces() {
         DataAccessRule rule = dao.parseDataAccessRule(" a  . b . r ", "ROLE_WHO_CARES");
         assertEquals("a", rule.getWorkspace());
@@ -104,6 +117,7 @@ public class DataAccessRuleDAOTest extends TestCase {
         assertEquals(AccessMode.READ, rule.getAccessMode());
     }
     
+    @Test
     public void testParseEscapedDots() {
         DataAccessRule rule = dao.parseDataAccessRule("w. a\\.b . r ", "ROLE_WHO_CARES");
         assertEquals("w", rule.getWorkspace());
@@ -111,6 +125,7 @@ public class DataAccessRuleDAOTest extends TestCase {
         assertEquals(AccessMode.READ, rule.getAccessMode());
     }
     
+    @Test
     public void testStoreEscapedDots() throws Exception {
         dao.clear();
         dao.addRule(new DataAccessRule("it.geosolutions", "layer.dots", 

@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wcs.response;
@@ -134,7 +134,7 @@ public class DescribeCoverageTransformer extends TransformerBase {
             final String locationAtt = new StringBuffer(XSI_PREFIX).append(":schemaLocation")
                     .toString();
 
-             final String locationDef = buildSchemaURL(request.getBaseUrl(),  "wcs/1.1.1/wcsDescribeCoverage.xsd");
+             final String locationDef = WCS_URI + " " + buildSchemaURL(request.getBaseUrl(),  "wcs/1.1.1/wcsDescribeCoverage.xsd");
             
             attributes.addAttribute("", locationAtt, locationAtt, "", locationDef);
 

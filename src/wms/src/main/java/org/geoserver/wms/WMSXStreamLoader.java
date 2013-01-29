@@ -1,5 +1,5 @@
-/* Copyright (c) 2010 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms;
@@ -16,6 +16,7 @@ import org.geoserver.config.util.LayerIdentifierInfoListConverter;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.wms.WMSInfo.WMSInterpolation;
 import org.geotools.util.Version;
 
 import com.thoughtworks.xstream.XStream;
@@ -69,6 +70,9 @@ public class WMSXStreamLoader extends XStreamServiceLoader<WMSInfo> {
         }
         if (service.getSRS() == null) {
             ((WMSInfoImpl) service).setSRS(new ArrayList<String>());
+        }
+        if (service.getInterpolation() == null) {
+            service.setInterpolation(WMSInterpolation.Nearest);
         }
         return service;
     }

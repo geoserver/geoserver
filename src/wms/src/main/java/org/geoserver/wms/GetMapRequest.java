@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms;
@@ -235,62 +235,6 @@ public class GetMapRequest extends WMSRequest {
     }
 
     /**
-     * @return the KML/KMZ score value for image vs. vector response
-     * @deprecated use <code>getFormatOptions().get( "kmscore" )</code>
-     */
-    public int getKMScore() {
-        Integer kmscore = (Integer) getFormatOptions().get("kmscore");
-
-        if (kmscore != null) {
-            return kmscore.intValue();
-        }
-
-        return 40; // old default
-    }
-
-    /**
-     * @return true: return full attribution for placemark <description>
-     * @deprecated use <code>getFormatOptions().get( "kmattr" )</code>
-     */
-    public boolean getKMattr() {
-        Boolean kmattr = (Boolean) getFormatOptions().get("kmattr");
-
-        if (kmattr != null) {
-            return kmattr.booleanValue();
-        }
-
-        return true; // old default
-    }
-
-    // /**
-    // * @return super overlay flag, <code>true</code> if super overlay requested.
-    // * @deprecated use <code>getFormatOptions().get( "superoverlay" )</code>
-    // */
-    // public boolean getSuperOverlay() {
-    // Boolean superOverlay = (Boolean) getFormatOptions().get("superoverlay");
-    //
-    // if (superOverlay != null) {
-    // return superOverlay.booleanValue();
-    // }
-    //
-    // return false; //old default
-    // }
-
-    /**
-     * @return kml legend flag, <code>true</code> if legend is enabled.
-     * @deprecated use <code>getFormatOptions().get( "legend" )</code>
-     */
-    public boolean getLegend() {
-        Boolean legend = (Boolean) getFormatOptions().get("legend");
-
-        if (legend != null) {
-            return legend.booleanValue();
-        }
-
-        return false; // old default
-    }
-
-    /**
      * @return The time request parameter. The list may contain {@link Date} or {@link DateRange} objects
      */
     public List<Object> getTime() {
@@ -514,43 +458,6 @@ public class GetMapRequest extends WMSRequest {
 
     public void setWidth(Integer width) {
         this.mandatoryParams.width = width.intValue();
-    }
-
-    /**
-     * @param score
-     *            the KML/KMZ score value for image vs. vector response, from 0 to 100
-     * @deprecated use <code>getFormatOptions().put( "kmscore", new Integer( score ) );</code>
-     */
-    public void setKMScore(int score) {
-        getFormatOptions().put("kmscore", new Integer(score));
-    }
-
-    /**
-     * @param on
-     *            true: full attribution; false: no attribution
-     * @deprecated use <code>getFormatOptions().put( "kmattr", new Boolean( on ) );</code>
-     */
-    public void setKMattr(boolean on) {
-        getFormatOptions().put("kmattr", new Boolean(on));
-    }
-
-    /**
-     * Sets the super overlay parameter on the request.
-     * 
-     * @deprecated use
-     *             <code>getFormatOptions().put( "superoverlay", new Boolean( superOverlay ) );</code>
-     */
-    public void setSuperOverlay(boolean superOverlay) {
-        getFormatOptions().put("superoverlay", new Boolean(superOverlay));
-    }
-
-    /**
-     * Sets the kml legend parameter of the request.
-     * 
-     * @deprecated use <code>getFormatOptions().put( "legend", new Boolean( legend ) );</code>
-     */
-    public void setLegend(boolean legend) {
-        getFormatOptions().put("legend", new Boolean(legend));
     }
 
     /**

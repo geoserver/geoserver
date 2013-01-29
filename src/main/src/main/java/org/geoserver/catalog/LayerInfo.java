@@ -1,11 +1,9 @@
-/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog;
 
-import java.io.Serializable;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -13,7 +11,7 @@ import java.util.Set;
  * 
  * @author Justin Deoliveira, The Open Planning Project
  */
-public interface LayerInfo extends CatalogInfo {
+public interface LayerInfo extends PublishedInfo {
     
     /**
      * The rendering buffer
@@ -49,28 +47,6 @@ public interface LayerInfo extends CatalogInfo {
         
         public abstract Integer getCode();
     }
-    
-    /**
-     * Name of the layer.
-     */
-    String getName();
-
-    /**
-     * Sets the name of the layer.
-     */
-    void setName( String name );
-
-    /**
-     * The derived prefixed name of the layer.
-     * <p>
-     * If a workspace is set for the layer this method returns:
-     * <pre>
-     *   getWorkspace().getName() + ":" + getName();
-     * </pre>
-     * Otherwise it simply returns: <pre>getName()</pre>
-     * </p>
-     */
-    String prefixedName();
 
     /**
      * The type of the layer.
@@ -200,21 +176,6 @@ public interface LayerInfo extends CatalogInfo {
     boolean isQueryable();
 
     /**
-     * A persistent map of metadata.
-     * <p>
-     * Data in this map is intended to be persisted. Common case of use is to
-     * have services associate various bits of data with a particular layer. An
-     * example might include caching information.
-     * </p>
-     * <p>
-     * The key values of this map are of type {@link String} and values are of
-     * type {@link Serializable}.
-     * </p>
-     * 
-     */
-    MetadataMap getMetadata();
-
-    /**
      * Gets the attribution information for this layer.  
      *
      * @return an AttributionInfo instance with the layer's attribution information.
@@ -244,13 +205,4 @@ public interface LayerInfo extends CatalogInfo {
      */
     void setAdvertised(boolean advertised);
 
-    /**
-     * @return the list of this layer's authority URLs
-     */
-    List<AuthorityURLInfo> getAuthorityURLs();
-    
-    /**
-     * @return the list of this layer's identifiers
-     */
-    List<LayerIdentifierInfo> getIdentifiers();
 }

@@ -1,5 +1,5 @@
-/* Copyright (c) 2001, 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.map.quantize;
@@ -104,7 +104,7 @@ public class Quantizer {
             int spang = box.getGreenSpan();
             int spanb = box.getBlueSpan();
             SortComponent sort;
-            if (spana > spanr && spana > spanb & spana > spang) {
+            if (spana > spanr && spana > spanb && spana > spang) {
                 sort = SortComponent.Alpha;
             } else if (spanr > spang && spanr > spanb) {
                 sort = SortComponent.Red;

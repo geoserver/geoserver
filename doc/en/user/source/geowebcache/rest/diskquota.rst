@@ -3,7 +3,7 @@
 Disk Quota
 ==========
 
-The GeoWebCache REST API provides a RESTful interface through which clients can configure the disk usage limits and expiration policies for a GeoWebCache instance.
+The GeoWebCache REST API provides a RESTful interface through which users can configure the disk usage limits and expiration policies for a GeoWebCache instance.
 
 Operations
 ----------
@@ -39,12 +39,12 @@ URL: ``/gwc/rest/diskquota.<format>``
 * :download:`XML <representations/diskquota_xml.txt>`
 * :download:`JSON <representations/diskquota_json.txt>`
 
-The examples below use the `cURL <http://curl.haxx.se/>`_ utility, though the examples apply to any HTTP-capable tool or library.
+The examples below use the `cURL <http://curl.haxx.se/>`_ tool, though the examples apply to any HTTP-capable tool or library.
 
 Retrieving the current configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The following obtains the current disk quota configuration in **XML** format:
+The following returns the current disk quota configuration in **XML** format:
 
 .. code-block:: console
 
@@ -72,7 +72,7 @@ The following obtains the current disk quota configuration in **XML** format:
      <layerQuotas/>
    </gwcQuotaConfiguration>
 
-The following obtains the current disk quota configuration in **JSON** format:
+The following returns the current disk quota configuration in **JSON** format:
 
 .. code-block:: xml
 
@@ -96,7 +96,7 @@ Changing configuration
 
 .. note::
 
-   The request body for PUT should contain only the desired properties to be modified.  For example, the following will only change the maxConcurrentCleanups property in XML format:
+   The request body for PUT should contain only the desired properties to be modified. For example, the following will only change the maxConcurrentCleanups property in XML format:
 
    .. code-block:: xml
 
@@ -136,7 +136,7 @@ The following XML example successfully enables the quota and sets the globalQuot
 	  <layerQuotas/>
 	</gwcQuotaConfiguration>
 
-The following JSON example changes the globalQuote and expirationPolicyName
+The following JSON example changes the globalQuote and expirationPolicyName parameters:
 
 .. code-block:: console
 
@@ -155,7 +155,7 @@ The following JSON example changes the globalQuote and expirationPolicyName
    {"gwcQuotaConfiguration":{"diskBlockSize":2048,"enabled":true,"maxConcurrentCleanUps":5,"cacheCleanUpFrequency":5,"globalExpirationPolicyName":"LRU","globalQuota":{"value":"100","units":"MiB"},"cacheCleanUpUnits":"SECONDS","layerQuotas":[]}}
 
 
-The following *invalid* XML example has an invalid parameter (maxConcurrentCleanUps must be > 0).  It returns a 400 response code and contains an error message as plain text: 
+The following *invalid* XML example has an invalid parameter (maxConcurrentCleanUps must be > 0). It returns a 400 response code and contains an error message as plain text: 
 
 .. code-block:: console
 
@@ -173,7 +173,7 @@ The following *invalid* XML example has an invalid parameter (maxConcurrentClean
    * Closing connection #0
    maxConcurrentCleanUps shall be a positive integer: -1
 
-The following *invalid* JSON example uses an unknown unit of measure (ZZiB).  It returns a 400 response code and contains an error message as plain text: 
+The following *invalid* JSON example uses an unknown unit of measure (ZZiB). It returns a 400 response code and contains an error message as plain text: 
 
 .. code-block:: console
 

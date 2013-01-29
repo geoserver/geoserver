@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2012 TOPP - www.openplans.org.  All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -173,7 +173,7 @@ public final class URLMasterPasswordProvider extends MasterPasswordProvider {
         }
     }
 
-    static class URLMasterPasswordProviderValidator extends SecurityConfigValidator {
+    public static class URLMasterPasswordProviderValidator extends SecurityConfigValidator {
 
         public URLMasterPasswordProviderValidator(GeoServerSecurityManager securityManager) {
             super(securityManager);

@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/gml/3.2" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xlink="http://www.w3.org/1999/xlink" elementFormDefault="qualified" version="3.2.1.2">
+	<annotation>
+		<appinfo source="urn:x-ogc:specification:gml:schema-xsd:geometryBasic0d1d:3.2.1">geometryBasic0d1d.xsd</appinfo>
+		<documentation>See ISO/DIS 19136 Clause 10.
+Any geometry element that inherits the semantics of AbstractGeometryType may be viewed as a set of direct positions. 
+All of the classes derived from AbstractGeometryType inherit an optional association to a coordinate reference system. All direct positions shall directly or indirectly be associated with a coordinate reference system. When geometry elements are aggregated in another geometry element (such as a MultiGeometry or GeometricComplex), which already has a coordinate reference system specified, then these elements are assumed to be in that same coordinate reference system unless otherwise specified.
+The geometry model distinguishes geometric primitives, aggregates and complexes. 
+Geometric primitives, i.e. instances of a subtype of AbstractGeometricPrimitiveType, will be open, that is, they will not contain their boundary points; curves will not contain their end points, surfaces will not contain their boundary curves, and solids will not contain their bounding surfaces.
+
+GML is an OGC Standard.
+Copyright (c) 2007,2010 Open Geospatial Consortium.
+To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+		</documentation>
+	</annotation>
+	<include schemaLocation="gml.xsd"/>
+	<include schemaLocation="measures.xsd"/>
+	<complexType name="AbstractGeometryType" abstract="true">
+		<annotation>
+			<documentation>All geometry elements are derived directly or indirectly from this abstract supertype. A geometry element may have an identifying attribute (gml:id), one or more names (elements identifier and name) and a description (elements description and descriptionReference) . It may be associated with a spatial reference system (attribute group gml:SRSReferenceGroup).
+The following rules shall be adhered to:
+-	Every geometry type shall derive from this abstract type.
+-	Every geometry element (i.e. an element of a geometry type) shall be directly or indirectly in the substitution group of AbstractGeometry.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGMLType">
+				<attributeGroup ref="gml:SRSReferenceGroup"/>
+			</extension>
+		</complexContent>
+	</complexType>
+	<attributeGroup name="SRSReferenceGroup">
+		<annotation>
+			<documentation>The attribute group SRSReferenceGroup is an optional reference to the CRS used by this geometry, with optional additional information to simplify the processing of the coordinates when a more complete definition of the CRS is not needed.
+In general the attribute srsName points to a CRS instance of gml:AbstractCoordinateReferenceSystem. For well-known references it is not required that the CRS description exists at the location the URI points to. 
+If no srsName attribute is given, the CRS shall be specified as part of the larger context this geometry element is part of.</documentation>
+		</annotation>
+		<attribute name="srsName" type="anyURI"/>
+		<attribute name="srsDimension" type="positiveInteger"/>
+		<attributeGroup ref="gml:SRSInformationGroup"/>
+	</attributeGroup>
+	<attributeGroup name="SRSInformationGroup">
+		<annotation>
+			<documentation>The attributes uomLabels and axisLabels, defined in the SRSInformationGroup attribute group, are optional additional and redundant information for a CRS to simplify the processing of the coordinate values when a more complete definition of the CRS is not needed. This information shall be the same as included in the complete definition of the CRS, referenced by the srsName attribute. When the srsName attribute is included, either both or neither of the axisLabels and uomLabels attributes shall be included. When the srsName attribute is omitted, both of these attributes shall be omitted.
+The attribute axisLabels is an ordered list of labels for all the axes of this CRS. The gml:axisAbbrev value should be used for these axis labels, after spaces and forbidden characters are removed. When the srsName attribute is included, this attribute is optional. When the srsName attribute is omitted, this attribute shall also be omitted.
+The attribute uomLabels is an ordered list of unit of measure (uom) labels for all the axes of this CRS. The value of the string in the gml:catalogSymbol should be used for this uom labels, after spaces and forbidden characters are removed. When the axisLabels attribute is included, this attribute shall also be included. When the axisLabels attribute is omitted, this attribute shall also be omitted.</documentation>
+		</annotation>
+		<attribute name="axisLabels" type="gml:NCNameList"/>
+		<attribute name="uomLabels" type="gml:NCNameList"/>
+	</attributeGroup>
+	<element name="AbstractGeometry" type="gml:AbstractGeometryType" abstract="true" substitutionGroup="gml:AbstractGML">
+		<annotation>
+			<documentation>The AbstractGeometry element is the abstract head of the substitution group for all geometry elements of GML. This includes pre-defined and user-defined geometry elements. Any geometry element shall be a direct or indirect extension/restriction of AbstractGeometryType and shall be directly or indirectly in the substitution group of AbstractGeometry.</documentation>
+		</annotation>
+	</element>
+	<complexType name="GeometryPropertyType">
+		<annotation>
+			<documentation>A geometric property may either be any geometry element encapsulated in an element of this type or an XLink reference to a remote geometry element (where remote includes geometry elements located elsewhere in the same or another document). Note that either the reference or the contained element shall be given, but not both or none.
+If a feature has a property that takes a geometry element as its value, this is called a geometry property. A generic type for such a geometry property is GeometryPropertyType.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:AbstractGeometry"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+	<complexType name="GeometryArrayPropertyType">
+		<annotation>
+			<documentation>If a feature has a property which takes an array of geometry elements as its value, this is called a geometry array property. A generic type for such a geometry property is GeometryArrayPropertyType. 
+The elements are always contained inline in the array property, referencing geometry elements or arrays of geometry elements via XLinks is not supported.</documentation>
+		</annotation>
+		<sequence minOccurs="0" maxOccurs="unbounded">
+			<element ref="gml:AbstractGeometry"/>
+		</sequence>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+	<complexType name="DirectPositionType">
+		<annotation>
+			<documentation>Direct position instances hold the coordinates for a position within some coordinate reference system (CRS). Since direct positions, as data types, will often be included in larger objects (such as geometry elements) that have references to CRS, the srsName attribute will in general be missing, if this particular direct position is included in a larger element with such a reference to a CRS. In this case, the CRS is implicitly assumed to take on the value of the containing object's CRS.
+if no srsName attribute is given, the CRS shall be specified as part of the larger context this geometry element is part of, typically a geometric object like a point, curve, etc.</documentation>
+		</annotation>
+		<simpleContent>
+			<extension base="gml:doubleList">
+				<attributeGroup ref="gml:SRSReferenceGroup"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<element name="pos" type="gml:DirectPositionType"/>
+	<complexType name="DirectPositionListType">
+		<annotation>
+			<documentation>posList instances (and other instances with the content model specified by DirectPositionListType) hold the coordinates for a sequence of direct positions within the same coordinate reference system (CRS).
+if no srsName attribute is given, the CRS shall be specified as part of the larger context this geometry element is part of, typically a geometric object like a point, curve, etc. 
+The optional attribute count specifies the number of direct positions in the list. If the attribute count is present then the attribute srsDimension shall be present, too.
+The number of entries in the list is equal to the product of the dimensionality of the coordinate reference system (i.e. it is a derived value of the coordinate reference system definition) and the number of direct positions.</documentation>
+		</annotation>
+		<simpleContent>
+			<extension base="gml:doubleList">
+				<attributeGroup ref="gml:SRSReferenceGroup"/>
+				<attribute name="count" type="positiveInteger"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+	<element name="posList" type="gml:DirectPositionListType"/>
+	<group name="geometricPositionGroup">
+		<annotation>
+			<documentation>GML supports two different ways to specify a geometric position: either by a direct position (a data type) or a point (a geometric object).
+pos elements are positions that are "owned" by the geometric primitive encapsulating this geometric position.
+pointProperty elements contain a point that may be referenced from other geometry elements or reference another point defined elsewhere (reuse of existing points).</documentation>
+		</annotation>
+		<choice>
+			<element ref="gml:pos"/>
+			<element ref="gml:pointProperty"/>
+		</choice>
+	</group>
+	<group name="geometricPositionListGroup">
+		<annotation>
+			<documentation>GML supports two different ways to specify a list of geometric positions: either by a sequence of geometric positions (by reusing the group definition) or a sequence of direct positions (element posList). 
+The posList element allows for a compact way to specify the coordinates of the positions, if all positions are represented in the same coordinate reference system.</documentation>
+		</annotation>
+		<choice>
+			<element ref="gml:posList"/>
+			<group ref="gml:geometricPositionGroup" maxOccurs="unbounded"/>
+		</choice>
+	</group>
+	<complexType name="VectorType">
+		<annotation>
+			<documentation>For some applications the components of the position may be adjusted to yield a unit vector.</documentation>
+		</annotation>
+		<simpleContent>
+			<restriction base="gml:DirectPositionType"/>
+		</simpleContent>
+	</complexType>
+	<element name="vector" type="gml:VectorType"/>
+	<complexType name="EnvelopeType">
+		<choice>
+			<sequence>
+				<element name="lowerCorner" type="gml:DirectPositionType"/>
+				<element name="upperCorner" type="gml:DirectPositionType"/>
+			</sequence>
+			<element ref="gml:pos" minOccurs="2" maxOccurs="2">
+				<annotation>
+					<appinfo>deprecated</appinfo>
+				</annotation>
+			</element>
+			<element ref="gml:coordinates"/>
+		</choice>
+		<attributeGroup ref="gml:SRSReferenceGroup"/>
+	</complexType>
+	<element name="Envelope" type="gml:EnvelopeType" substitutionGroup="gml:AbstractObject">
+		<annotation>
+			<documentation>Envelope defines an extent using a pair of positions defining opposite corners in arbitrary dimensions. The first direct position is the "lower corner" (a coordinate position consisting of all the minimal ordinates for each dimension for all points within the envelope), the second one the "upper corner" (a coordinate position consisting of all the maximal ordinates for each dimension for all points within the envelope).
+The use of the properties "coordinates" and "pos" has been deprecated. The explicitly named properties "lowerCorner" and "upperCorner" shall be used instead.</documentation>
+		</annotation>
+	</element>
+	<complexType name="AbstractGeometricPrimitiveType" abstract="true">
+		<annotation>
+			<documentation>gml:AbstractGeometricPrimitiveType is the abstract root type of the geometric primitives. A geometric primitive is a geometric object that is not decomposed further into other primitives in the system. All primitives are oriented in the direction implied by the sequence of their coordinate tuples.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGeometryType"/>
+		</complexContent>
+	</complexType>
+	<element name="AbstractGeometricPrimitive" type="gml:AbstractGeometricPrimitiveType" abstract="true" substitutionGroup="gml:AbstractGeometry">
+		<annotation>
+			<documentation>The AbstractGeometricPrimitive element is the abstract head of the substitution group for all (pre- and user-defined) geometric primitives.</documentation>
+		</annotation>
+	</element>
+	<complexType name="GeometricPrimitivePropertyType">
+		<annotation>
+			<documentation>A property that has a geometric primitive as its value domain may either be an appropriate geometry element encapsulated in an element of this type or an XLink reference to a remote geometry element (where remote includes geometry elements located elsewhere in the same document). Either the reference or the contained element shall be given, but neither both nor none.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:AbstractGeometricPrimitive"/>
+		</sequence>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+	</complexType>
+	<complexType name="PointType">
+		<complexContent>
+			<extension base="gml:AbstractGeometricPrimitiveType">
+				<sequence>
+					<choice>
+						<element ref="gml:pos"/>
+						<element ref="gml:coordinates"/>
+					</choice>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="Point" type="gml:PointType" substitutionGroup="gml:AbstractGeometricPrimitive">
+		<annotation>
+			<documentation>A Point is defined by a single coordinate tuple. The direct position of a point is specified by the pos element which is of type DirectPositionType.</documentation>
+		</annotation>
+	</element>
+	<complexType name="PointPropertyType">
+		<annotation>
+			<documentation>A property that has a point as its value domain may either be an appropriate geometry element encapsulated in an element of this type or an XLink reference to a remote geometry element (where remote includes geometry elements located elsewhere in the same document). Either the reference or the contained element shall be given, but neither both nor none.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:Point"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+	<element name="pointProperty" type="gml:PointPropertyType">
+		<annotation>
+			<documentation>This property element either references a point via the XLink-attributes or contains the point element. pointProperty is the predefined property which may be used by GML Application Schemas whenever a GML feature has a property with a value that is substitutable for Point.</documentation>
+		</annotation>
+	</element>
+	<complexType name="PointArrayPropertyType">
+		<annotation>
+			<documentation>gml:PointArrayPropertyType is a container for an array of points. The elements are always contained inline in the array property, referencing geometry elements or arrays of geometry elements via XLinks is not supported.</documentation>
+		</annotation>
+		<sequence minOccurs="0" maxOccurs="unbounded">
+			<element ref="gml:Point"/>
+		</sequence>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+	<complexType name="AbstractCurveType" abstract="true">
+		<annotation>
+			<documentation>gml:AbstractCurveType is an abstraction of a curve to support the different levels of complexity. The curve may always be viewed as a geometric primitive, i.e. is continuous.</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="gml:AbstractGeometricPrimitiveType"/>
+		</complexContent>
+	</complexType>
+	<element name="AbstractCurve" type="gml:AbstractCurveType" abstract="true" substitutionGroup="gml:AbstractGeometricPrimitive">
+		<annotation>
+			<documentation>The AbstractCurve element is the abstract head of the substitution group for all (continuous) curve elements.</documentation>
+		</annotation>
+	</element>
+	<complexType name="CurvePropertyType">
+		<annotation>
+			<documentation>A property that has a curve as its value domain may either be an appropriate geometry element encapsulated in an element of this type or an XLink reference to a remote geometry element (where remote includes geometry elements located elsewhere in the same document). Either the reference or the contained element shall be given, but neither both nor none.</documentation>
+		</annotation>
+		<sequence minOccurs="0">
+			<element ref="gml:AbstractCurve"/>
+		</sequence>
+		<attributeGroup ref="gml:AssociationAttributeGroup"/>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+	<element name="curveProperty" type="gml:CurvePropertyType">
+		<annotation>
+			<documentation>This property element either references a curve via the XLink-attributes or contains the curve element. curveProperty is the predefined property which may be used by GML Application Schemas whenever a GML feature has a property with a value that is substitutable for AbstractCurve.</documentation>
+		</annotation>
+	</element>
+	<complexType name="CurveArrayPropertyType">
+		<annotation>
+			<documentation>A container for an array of curves. The elements are always contained in the array property, referencing geometry elements or arrays of geometry elements via XLinks is not supported.</documentation>
+		</annotation>
+		<sequence minOccurs="0" maxOccurs="unbounded">
+			<element ref="gml:AbstractCurve"/>
+		</sequence>
+		<attributeGroup ref="gml:OwnershipAttributeGroup"/>
+	</complexType>
+	<complexType name="LineStringType">
+		<complexContent>
+			<extension base="gml:AbstractCurveType">
+				<sequence>
+					<choice>
+						<choice minOccurs="2" maxOccurs="unbounded">
+							<element ref="gml:pos"/>
+							<element ref="gml:pointProperty"/>
+							<element ref="gml:pointRep"/>
+						</choice>
+						<element ref="gml:posList"/>
+						<element ref="gml:coordinates"/>
+					</choice>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<element name="LineString" type="gml:LineStringType" substitutionGroup="gml:AbstractCurve">
+		<annotation>
+			<documentation>A LineString is a special curve that consists of a single segment with linear interpolation. It is defined by two or more coordinate tuples, with linear interpolation between them. The number of direct positions in the list shall be at least two.</documentation>
+		</annotation>
+	</element>
+</schema>

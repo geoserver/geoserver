@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.security.validation;
 
 import java.io.IOException;
@@ -10,9 +14,15 @@ import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.security.impl.MemoryUserGroupService;
 import org.geoserver.security.password.PasswordValidator;
+import org.geoserver.test.SystemTest;
 import org.geotools.util.logging.Logging;
-import static org.geoserver.security.validation.UserGroupServiceException.*;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+import static org.geoserver.security.validation.UserGroupServiceException.*;
+import static org.junit.Assert.*;
+
+@Category(SystemTest.class)
 public class UserGroupStoreValidationWrapperTest extends GeoServerSecurityTestSupport {
 
     
@@ -38,6 +48,7 @@ public class UserGroupStoreValidationWrapperTest extends GeoServerSecurityTestSu
         }
     }
     
+    @Test
     public void testUserGroupStoreWrapper() throws Exception {
         boolean failed;
         UserGroupStoreValidationWrapper store = createStore("test");

@@ -1,8 +1,11 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.georss;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -14,8 +17,6 @@ import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import junit.framework.Test;
-
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
@@ -24,7 +25,7 @@ import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
 import org.geotools.map.FeatureLayer;
-import org.geotools.map.Layer;
+import org.junit.Test;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.w3c.dom.Document;
@@ -35,12 +36,25 @@ import org.xml.sax.SAXException;
 
 public class RSSGeoRSSTransformerTest extends WMSTestSupport {
     FilterFactory ff = CommonFactoryFinder.getFilterFactory(GeoTools.getDefaultHints());
-    
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new RSSGeoRSSTransformerTest());
+
+    @Test
+    public void testChannelDescription() throws Exception {
+        WMSMapContent map = new WMSMapContent(createGetMapRequest(MockData.BASIC_POLYGONS));
+        map.addLayer(createMapLayer(MockData.BASIC_POLYGONS));
+        map.layers().get(0).getUserData().put("abstract", "Test Abstract");
+
+        Document document;
+        try {
+            document = getRSSResponse(map, AtomGeoRSSTransformer.GeometryEncoding.LATLONG);
+        } finally {
+            map.dispose();
+        }
+        Element element = document.getDocumentElement();
+        assertEquals("rss", element.getNodeName());
+
+        Element channel = (Element) element.getElementsByTagName("channel").item(0);
+        NodeList description = channel.getElementsByTagName("description");
+        assertEquals("Test Abstract", description.item(0).getChildNodes().item(0).getNodeValue());
     }
 
     public void testLatLongInternal() throws Exception {
@@ -69,6 +83,7 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
         }
     }
     
+    @Test 
     public void testLatLongWMS() throws Exception {
         Document document = getAsDOM(
                 "wms/reflect?format_options=encoding:latlong&format=application/rss+xml&layers=" 
@@ -91,6 +106,7 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
         }
     }
     
+    @Test
     public void testSimpleInternal() throws Exception {
         WMSMapContent map = new WMSMapContent(createGetMapRequest(MockData.BASIC_POLYGONS));
         map.addLayer(createMapLayer(MockData.BASIC_POLYGONS));
@@ -117,6 +133,7 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
         }
     }
 
+    @Test 
     public void testSimpleWMS() throws Exception {
         Document document = getAsDOM(
                 "wms/reflect?format_options=encoding:simple&format=application/rss+xml&layers=" 
@@ -138,6 +155,7 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
         }
     }
     
+    @Test 
     public void testGmlWMS() throws Exception {
         Document document = getAsDOM(
                 "wms/reflect?format_options=encoding:gml&format=application/rss+xml&layers=" 
@@ -159,6 +177,7 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
         }
     }
 
+    @Test 
     public void testFilter() throws Exception {
         // Set up a map context with a filtered layer
         WMSMapContent map = new WMSMapContent(createGetMapRequest(MockData.BUILDINGS));
@@ -177,6 +196,7 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
         assertEquals(1, items.getLength());
     }
     
+    @Test
     public void testReproject() throws Exception {
         // Set up a map context with a projected layer
         WMSMapContent map = new WMSMapContent(createGetMapRequest(MockData.LINES));

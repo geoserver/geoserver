@@ -1,15 +1,18 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wfs.response;
+
+import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-
-import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.WfsFactory;
-
 import org.geoserver.data.test.MockData;
 import org.geoserver.platform.Operation;
 import org.geoserver.wfs.WFSTestSupport;
@@ -20,11 +23,10 @@ import org.geotools.data.memory.MemoryDataStore;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-
 import au.com.bytecode.opencsv.CSVReader;
-
 import com.mockrunner.mock.web.MockHttpServletResponse;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -33,6 +35,7 @@ import com.vividsolutions.jts.geom.Point;
 
 public class CSVOutputFormatTest extends WFSTestSupport {
 
+	@Test
     public void testFullRequest() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("wfs?version=1.1.0&request=GetFeature&typeName=sf:PrimitiveGeoFeature&outputFormat=csv");
         
@@ -58,6 +61,7 @@ public class CSVOutputFormatTest extends WFSTestSupport {
         }
     }
     
+	@Test
     public void testEscapes() throws Exception {
         // build some fake data in memory, the property data store cannot handle newlines in its data
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();

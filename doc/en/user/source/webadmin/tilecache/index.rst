@@ -3,7 +3,7 @@
 Tile Caching
 ============
 
-This section of the :ref:`web_admin` allows for setting of the tile caching options for GeoServer.  GeoServer uses GeoWebCache to provide direct and integrated tile caching, and can dramatically increase your server's responsiveness and reliability.
+This section of the :ref:`web_admin` describes how to configure the tile caching options for GeoServer. GeoServer uses GeoWebCache to provide direct and integrated tile caching, and can dramatically increase your server's responsiveness and reliability.
 
 For more information on GeoServer's integrated tile cache, please see the section on :ref:`geowebcache`.
 

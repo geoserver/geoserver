@@ -1,4 +1,4 @@
-/* Copyright (c) 2010 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -7,16 +7,18 @@ package org.geoserver.wms.capabilities;
 import java.io.Reader;
 import java.io.StringReader;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
 import org.geoserver.wms.GetCapabilitiesRequest;
+import org.junit.Test;
 
 /**
  * 
  * @author Gabriel Roldan
  */
-public class CapabilitiesXmlReaderTest extends TestCase {
+public class CapabilitiesXmlReaderTest {
 
+    @Test
     public void testParseXmlGetCapabilities() throws Exception {
         CapabilitiesXmlReader reader = new CapabilitiesXmlReader();
 

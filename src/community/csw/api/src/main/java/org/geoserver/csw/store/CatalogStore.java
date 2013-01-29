@@ -123,10 +123,9 @@ public interface CatalogStore {
     
     
     /**
-     * 
-     * @param name
-     * @return
+     * Maps a qualified name to it's equivalent property name for the backend store.
+     *
      */
-    public PropertyName translateProperty(RecordDescriptor rd, Name name) ;
+    PropertyName translateProperty(RecordDescriptor rd, Name name) ;
 
 }

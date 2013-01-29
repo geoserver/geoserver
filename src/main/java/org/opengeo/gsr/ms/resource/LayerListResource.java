@@ -24,6 +24,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.geotools.styling.Style;
 import org.opengeo.gsr.core.exception.ServiceError;
 import org.opengeo.gsr.core.feature.FieldTypeEnum;
@@ -37,6 +38,8 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.TransformException;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -182,12 +185,23 @@ public class LayerListResource extends Resource {
                     ReferencedEnvelope boundingBox = layer.getResource().getLatLonBoundingBox();
                     if (boundingBox != null) {
                         json.key("extent");
-                        GeometryEncoder.referencedEnvelopeToJson(boundingBox, SpatialReferences.fromCRS(boundingBox.getCoordinateReferenceSystem()), json);
+                        CoordinateReferenceSystem WEB_MERCATOR = CRS.decode("EPSG:3785");
+                        try {
+                            double minx = Math.max(boundingBox.getMinX(), -179.95);
+                            double maxx = Math.min(boundingBox.getMaxX(), 179.95);
+                            double miny = Math.max(boundingBox.getMinY(), -89.95);
+                            double maxy = Math.min(boundingBox.getMaxY(), 89.95);
+                            ReferencedEnvelope sphericalMercatorBoundingBox = new ReferencedEnvelope(minx, maxx, miny, maxy, boundingBox.getCoordinateReferenceSystem());
+                            sphericalMercatorBoundingBox = sphericalMercatorBoundingBox.transform(WEB_MERCATOR, true);
+                            GeometryEncoder.referencedEnvelopeToJson(sphericalMercatorBoundingBox, SpatialReferences.fromCRS(WEB_MERCATOR), json);
+                        } catch (TransformException e) {
+                            e.printStackTrace();
+                        }
                     }
                 } catch (FactoryException e) {
                     LOGGER.log(Level.WARNING, "Unable to convert CRS to SpatialReference for layer " + layer, e);
                 }
-                json.key("displayInfo");
+                json.key("drawingInfo");
                 json.object().key("renderer");
                 switch (layerOrTable.gtype) {
                 case ENVELOPE:

@@ -283,8 +283,8 @@ priority labeling is essential to ensure that larger cities are more visible tha
 
 .. _labeling_group:
 
-Grouping Features
-^^^^^^^^^^^^^^^^^
+Grouping Features (group)
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The ``group`` option allows displaying a single label for multiple features
 in a logical group.
@@ -332,6 +332,19 @@ This produces a much less cluttered map:
 
 .. figure:: img/group_yes.png
    :align: center
+
+.. _labeling_all_group:
+
+labelAllGroup
+^^^^^^^^^^^^^
+
+The ``labelAllGroup`` option can be used in conjunction with the ``group`` option (see :ref:`labeling_group`).
+It causes *all* of the disjoint paths in a line group to be labeled, not just the longest one.
+
+.. code-block:: xml
+
+  <VendorOption name="labelAllGroup">true</VendorOption>
+
 
 
 .. _labeling_space_around:
@@ -383,7 +396,7 @@ The ``followLine`` option forces a label to follow the curve of the line. To use
   
   <VendorOption name="followLine">true</VendorOption>  
 
-It is required to use ``<LinePlacement>`` along with this option to ensure that labels are placd along lines:
+It is required to use ``<LinePlacement>`` along with this option to ensure that labels are placed along lines:
 
 .. code-block:: xml
 
@@ -397,8 +410,9 @@ maxDisplacement
 ^^^^^^^^^^^^^^^
 
 The ``maxDisplacement`` option controls the displacement of the label along a line. 
-Normally GeoServer labels a line at its center point only, provided the location is not occupied by another label, and not label it at all otherwise. 
-When this option is enabled the labeller will attempt to avoid conflict by using an alternate location within **maxDisplacement** pixels from the pre-computed label point.
+Normally GeoServer labels a line at its center point only.
+If this label conflicts with another one it may not be displayed at all. 
+When this option is enabled the labeller will attempt to avoid conflict by using an alternate location within **maxDisplacement** pixels along the line from the pre-computed label point.
 
 If used in conjunction with :ref:`labeling_repeat`, the value for ``maxDisplacement`` should always be **lower** than the value for ``repeat``.
 
@@ -411,26 +425,15 @@ If used in conjunction with :ref:`labeling_repeat`, the value for ``maxDisplacem
 repeat
 ^^^^^^
 
-The ``repeat`` option determines how often GeoServer labels a line. 
+The ``repeat`` option determines how often GeoServer displays labels along a line. 
 Normally GeoServer labels each line only once, regardless of length. 
 Specifying a positive value for this option makes the labeller attempt to draw the label every **repeat** pixels.
+For long or complex lines (such as contour lines) this makes labeling more informative.
 
 .. code-block:: xml
 
   <VendorOption name="repeat">100</VendorOption>
 
-
-.. _labeling_all_group:
-
-labelAllGroup
-^^^^^^^^^^^^^
-
-The ``labelAllGroup`` option can be used in conjunction with the ``group`` option (see :ref:`labeling_group`).
-It causes *all* of the disjoint paths in a line group to be labeled, not just the longest one.
-
-.. code-block:: xml
-
-  <VendorOption name="labelAllGroup">true</VendorOption>
 
 .. _labeling_max_angle_delta:
 
@@ -464,8 +467,8 @@ The size should be wide enough to accommodate the longest word, otherwise single
 forceLeftToRight
 ^^^^^^^^^^^^^^^^
 
-The renderer tries to draw labels for optimal legibility.  
-This means the label may not follow the line orientation, but is flipped 180° instead to allow easy reading. 
+The renderer tries to draw labels along lines so that the text is upright, for maximum legibility.  
+This means a label may not follow the line orientation, but instead may be rotated 180° to display the text the right way up. 
 In some cases altering the orientation of the label is not desired; for example, if the label is a directional arrow showing the orientation of the line.
 
 The ``forceLeftToRight`` option can be set to ``false`` to disable label flipping, making the label always follow the inherent orientation of the line being labelled:

@@ -41,15 +41,6 @@
    <version>2.3-SNAPSHOT</version>
   </dependency>
   <dependency>
-    <groupId>stax</groupId>
-    <artifactId>stax-api</artifactId>
-  </dependency>
-  <dependency>
-    <!-- StAX is the reference implementation of the StAX API -->
-    <groupId>stax</groupId>
-    <artifactId>stax</artifactId>
-  </dependency>
-  <dependency>
    <groupId>org.geoserver</groupId>
    <artifactId>main</artifactId>
    <version>2.3-SNAPSHOT</version>

@@ -40,6 +40,8 @@ public class FeatureTimeTemplateTest extends WMSTestSupport {
     
     @Test 
     public void testEmpty() throws Exception {
+        setupTemplate(MockData.PRIMITIVEGEOFEATURE,"time.ftl","");
+        
         FeatureTimeTemplate template = new FeatureTimeTemplate();
         String[] result = template.execute( feature );
         

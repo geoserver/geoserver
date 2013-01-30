@@ -73,6 +73,33 @@ public class PreviewLayerProviderTest extends GeoServerWicketTestSupport {
             getCatalog().remove(group);
         }        
     }
+
+    @Test
+    public void testNestedContainerLayerGroup() throws Exception {
+        String layerId = getLayerId(MockData.BUILDINGS);
+        LayerInfo layer = getCatalog().getLayerByName(layerId);
+
+        LayerGroupInfo containerGroup = getCatalog().getFactory().createLayerGroup();
+        containerGroup.setName("testContainerLayerGroup");
+        containerGroup.setMode(LayerGroupInfo.Mode.SINGLE);        
+        containerGroup.getLayers().add(layer);
+        getCatalog().add(containerGroup);           
+        
+        LayerGroupInfo singleGroup = getCatalog().getFactory().createLayerGroup();
+        singleGroup.setName("testSingleLayerGroup");
+        singleGroup.setMode(LayerGroupInfo.Mode.SINGLE);        
+        singleGroup.getLayers().add(containerGroup);
+        getCatalog().add(singleGroup);
+           
+        try {
+            PreviewLayerProvider provider = new PreviewLayerProvider();
+            assertNotNull(getPreviewLayer(provider, singleGroup.prefixedName()));
+            assertNotNull(getPreviewLayer(provider, layer.prefixedName()));
+        } finally {
+            getCatalog().remove(singleGroup);
+            getCatalog().remove(containerGroup);
+        }        
+    }    
     
     private PreviewLayer getPreviewLayer(PreviewLayerProvider provider, String prefixedName) {
         for (PreviewLayer pl : provider.getItems()) {

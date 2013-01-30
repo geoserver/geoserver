@@ -23,4 +23,4 @@ This section describes the GeoServer REST configuration API.
    services
    reload
    reset
-   
+   manifests

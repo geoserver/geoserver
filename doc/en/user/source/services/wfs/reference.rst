@@ -69,23 +69,27 @@ The following operations are available in **version 1.1.0 only**:
 
 .. note:: In the examples that follow, the fictional URL ``http://example.com/geoserver/wfs`` is used for illustration. To test the examples, substitute the address of a valid WFS. Also, although the request would normally be defined on one line with no breaks, breaks are added for clarity in the examples provided. 
 
-The supported values for exceptions are:
+Exceptions
+----------
+
+WFS also supports a number of formats for reporting exceptions. The supported values for exception reporting are:
 
 .. list-table::
    :widths: 15 35 50
+   :header-rows: 1
    
-   * - **Format**
-     - **Syntax**
-     - **Notes**
+   * - Format
+     - Syntax
+     - Description
    * - XML
-     - ``EXCEPTIONS=text/xml``
-     - Xml output. (The default format)
+     - ``exceptions=text/xml``
+     - *(default)* XML output
    * - JSON
-     - ``EXCEPTIONS=application/json``
-     - Simple Json representation.
+     - ``exceptions=application/json``
+     - Simple JSON
    * - JSONP
-     - ``EXCEPTIONS=text/javascript``
-     - Return a JsonP in the form: paddingOutput(...jsonp...). See :ref:`wms_vendor_parameters` to change the callback name.
+     - ``exceptions=text/javascript``
+     - Return a JsonP in the form: parseResponse(...jsonp...). See :ref:`wms_vendor_parameters` to change the callback name. Note that this format is disabled by default (See :ref:`wms_global_variables`).
 
 .. _wfs_getcap:
      
@@ -542,24 +546,3 @@ The same example in a POST request:
      <wfs:StoredQueryId>urn:ogc:def:query:OGC-WFS::GetFeatureById</wfs:StoredQueryId>
    </wfs:DescribeStoredQueries>
 
-Exceptions
-----------
-
-WFS also supports a number of formats for reporting exceptions. The supported values for exception reporting are:
-
-.. list-table::
-   :widths: 15 35 50
-   :header-rows: 1
-   
-   * - Format
-     - Syntax
-     - Description
-   * - XML
-     - ``exceptions=text/xml``
-     - *(default)* XML output
-   * - JSON
-     - ``exceptions=application/json``
-     - Simple JSON
-   * - JSONP
-     - ``exceptions=text/javascript``
-     - Returns a JSONP in the form: ``paddingOutput(...jsonp...)``. See :ref:`wms_vendor_parameters` to change the callback name. Note that this format is disabled by default (See :ref:`wms_global_variables`).

@@ -22,18 +22,6 @@
          <artifactId>ftpserver-core</artifactId>
          <version>1.0.5</version>
       </dependency>
-      <dependency>
-        <!-- StAX API is the standard java XML processing API defined by JSR-173 -->
-        <groupId>stax</groupId>
-        <artifactId>stax-api</artifactId>
-        <version>1.0.1</version>
-      </dependency>
-      <dependency>
-        <!-- StAX is the reference implementation of the StAX API -->
-        <groupId>stax</groupId>
-        <artifactId>stax</artifactId>
-        <version>1.2.0</version>
-      </dependency>
 
       <!-- Testing -->
       <dependency>

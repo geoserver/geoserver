@@ -174,6 +174,9 @@ public class LayerListResource extends Resource {
             json.key("id").value(layerOrTable.id);
             json.key("type").value("Feature Layer");
             json.key("name").value(layer.getName());
+            json.key("currentVersion").value(2.24);
+            json.key("defaultVisibility").value(false);
+            json.key("definitionExpression").value("");
             json.key("description").value(layer.getResource().getAbstract());
             json.key("copyrightText").value(null);
             json.key("relationships").array().endArray();
@@ -303,7 +306,7 @@ public class LayerListResource extends Resource {
                     LOGGER.log(Level.WARNING, "Omitting fields for layer " + layer + " because we were unable to connect to the underlying resource.", e);
                 }
             }
-            json.key("capabilities").value("Query,Time");
+            json.key("capabilities").value("Query,Time,Data");
             json.endObject();
         }
         json.endArray();
@@ -314,7 +317,7 @@ public class LayerListResource extends Resource {
         for (PropertyDescriptor desc : ftype.getDescriptors()) {
             json.object();
             json.key("name").value(desc.getName().getLocalPart());
-            json.key("type").value(FieldTypeEnum.forClass(desc.getType().getBinding()));
+            json.key("type").value(FieldTypeEnum.forClass(desc.getType().getBinding()).getFieldType());
             json.key("editable").value(false);
             json.endObject();
         }

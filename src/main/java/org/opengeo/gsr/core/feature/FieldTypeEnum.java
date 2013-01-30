@@ -17,15 +17,15 @@ import com.vividsolutions.jts.geom.Geometry;
  */
 public enum FieldTypeEnum {
 
-    SHORT_INTEGER("FieldTypeSmallInteger"),
-    INTEGER("FieldTypeInteger"),
-    SINGLE("FieldTypeSingle"),
-    DOUBLE("FieldTypeDouble"),
-    STRING("FieldTypeString"),
-    DATE("FieldTypeDate"),
-    OID("FieldTypeOID"),
-    GEOMETRY("FieldTypeGeometry"),
-    GUID("FieldTypeGUID");
+    SHORT_INTEGER("esriFieldTypeSmallInteger"),
+    INTEGER("esriFieldTypeInteger"),
+    SINGLE("esriFieldTypeSingle"),
+    DOUBLE("esriFieldTypeDouble"),
+    STRING("esriFieldTypeString"),
+    DATE("esriFieldTypeDate"),
+    OID("esriFieldTypeOID"),
+    GEOMETRY("esriFieldTypeGeometry"),
+    GUID("esriFieldTypeGUID");
 
     private final String fieldType;
 

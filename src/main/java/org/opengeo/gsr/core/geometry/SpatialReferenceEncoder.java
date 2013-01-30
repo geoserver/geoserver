@@ -14,7 +14,7 @@ public class SpatialReferenceEncoder {
         if (sr instanceof SpatialReferenceWKID) {
             SpatialReferenceWKID wkid = (SpatialReferenceWKID) sr;
             json.object()
-              .key("wkid").value(wkid.getWkid())
+              .key("wkid").value(102100) // wkid.getWkid())
             .endObject();
         } else if (sr instanceof SpatialReferenceWKT) {
             SpatialReferenceWKT wkt = (SpatialReferenceWKT) sr;

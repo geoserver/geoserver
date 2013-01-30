@@ -5,17 +5,15 @@
 package org.opengeo.gsr.core.geometry;
 
 /**
- * 
  * @author Juan Marin - OpenGeo
- * 
  */
 public enum GeometryTypeEnum {
 
-    POINT("GeometryPoint"),
-    MULTIPOINT("GeometryMultiPoint"),
-    POLYLINE("GeometryPolyline"),
-    POLYGON("GeometryPolygon"),
-    ENVELOPE("GeometryEnvelope");
+    POINT("esriGeometryPoint"),
+    MULTIPOINT("esriGeometryMultiPoint"),
+    POLYLINE("esriGeometryPolyline"),
+    POLYGON("esriGeometryPolygon"),
+    ENVELOPE("esriGeometryEnvelope");
     
     private final String geometryType;
 
@@ -37,6 +35,8 @@ public enum GeometryTypeEnum {
         } else if (jtsClass.equals(com.vividsolutions.jts.geom.Polygon.class)) {
             return POLYGON;
         } else if (jtsClass.equals(com.vividsolutions.jts.geom.MultiPolygon.class)) {
+            return POLYGON;
+        } else if (jtsClass.equals(com.vividsolutions.jts.geom.Geometry.class)) {
             return POLYGON;
         } else if (jtsClass.equals(com.vividsolutions.jts.geom.Envelope.class)) {
             return ENVELOPE;

@@ -1,4 +1,4 @@
-GEOSERVER 2.3+ DATA STORE EXTRAS README
+GEOSERVER 2.4+ DATA STORE EXTRAS README
 
 This package contains a VPF DataStore implementation that is 
 distributed as a separate plug-in.  This plug-in is still experimental,
@@ -24,5 +24,5 @@ Config -> Data -> DataStores -> New.  Fill out the appropriate params.
 
 COMPATIBILITY
 
-This jar should work with any version of GeoServer based on GeoTools 9.x.  
-Currently this is anything in 2.3.x.
+This jar should work with any version of GeoServer based on GeoTools 10.x.  
+Currently this is anything in 2.4.x.

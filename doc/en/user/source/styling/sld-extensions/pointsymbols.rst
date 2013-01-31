@@ -82,10 +82,10 @@ Their names are prefixed by ``shape://``
    * - ``shape://oarrow``
      - An open arrow symbol (triangle without one side, suitable for placing arrows at the end of lines)
    * - ``shape://carrow``
-     - An closed arrow symbol (closed triangle, suitable for placing arrows at the end of lines)
+     - A closed arrow symbol (closed triangle, suitable for placing arrows at the end of lines)
 
 TTF marks
-~~~~~~~~~~~~~
+~~~~~~~~~
 
 It is possible to create a mark using glyphs from any decorative or symbolic True Type Font, such as Wingdings, WebDings, or the many symbol fonts available on the internet.
 The syntax for specifying this is::
@@ -185,6 +185,19 @@ For example:
 
 In this example an SVG graphic is being used, so the size is specified explicitly. 
 
+Symbol Positioning
+~~~~~~~~~~~~~~~~~~
+
+Graphic symbols are rendered so that the center of the graphic extent 
+lies on the placement point (or points, in the case of repeated or tiled graphics).
+If it is desired to have a graphic offset from a point
+(such as a symbol which acts
+as a pointer) it is necessary to offset 
+the visible portion of the graphic within the overall extent.
+For images this can be accomplished by extending the image with transparent pixels.
+For SVG graphics this can be done by surrounding the shape with 
+an invisible rectangle with the desired relative position.
+
 Dynamic symbolizers
 -------------------
 
@@ -192,9 +205,9 @@ In standard SLD, the ``Mark/WellKnowName`` element and the ``ExternalGraphic/Onl
 This means they have the same value for all rendered features.
 When the symbols to be displayed vary depending on feature attributes this restriction leads to very verbose styling, as a separate ``Rule`` and ``Symbolizer`` must be used for each different symbol.
 
-GeoServer improves this by allowing CQL expressions to be embedded inside the content of both ``WellKnownName`` and ``OnlineResource/@xlink:href``.
+GeoServer improves this by allowing :ref:`CQL expressions<filter_ecql_reference>` to be embedded inside the content of both ``WellKnownName`` and ``OnlineResource/@xlink:href``.
 When the names of the symbols can be derived from the feature attribute values, this provides much more compact styling. 
-CQL expressions can be embedded in a ``<WellKnownName>`` content string or an ``href`` URL by using the syntax::
+CQL expressions can be embedded in a ``<WellKnownName>`` content string or an ``<OnlineResource>`` ``xlink:href`` attribute by using the syntax::
 	
   ${<cql expression>}
 
@@ -202,7 +215,7 @@ CQL expressions can be embedded in a ``<WellKnownName>`` content string or an ``
 
   Currently ``xlink:href`` strings must be valid URLs *before* expression expansion is performed.
   This means that the URL cannot be completely provided by an expression.
-  The ``href`` string must explicitly include at least the prefix ``http://``
+  The ``xlink:href`` string must explicitly include at least the prefix ``http://``
 
   
 The simplest form of expression is a single attribute name, such as ``${STATE_ABBR}``.

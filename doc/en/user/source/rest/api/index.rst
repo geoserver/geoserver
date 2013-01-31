@@ -20,7 +20,9 @@ This section describes the GeoServer REST configuration API.
    layers
    layergroups
    fonts
+   templates
    services
    reload
    reset
    manifests
+   

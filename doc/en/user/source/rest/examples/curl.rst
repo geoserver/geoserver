@@ -498,3 +498,141 @@ This layer group can be viewed with a WMS GetMap request::
   http://localhost:8080/geoserver/wms/reflect?layers=nyc
 
 
+Retrieving component versions
+-----------------------------
+
+This example shows how to retrieve the versions of the main components: GeoServer, GeoTools, and GeoWebCache:
+
+.. note:: The code block below contains a single command that is extended over multiple lines.
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XGET -H "Accept: text/xml" 
+     http://localhost:8080/geoserver/rest/about/version.xml
+
+The response will look something like this:
+
+.. code-block:: xml
+
+  <about>
+   <resource name="GeoServer">
+    <Build-Timestamp>11-Dec-2012 17:55</Build-Timestamp>
+    <Git-Revision>e66f8da85521f73d0fd00b71331069a5f49f7865</Git-Revision>
+    <Version>2.3-SNAPSHOT</Version>
+   </resource>
+   <resource name="GeoTools">
+    <Build-Timestamp>04-Dec-2012 02:31</Build-Timestamp>
+    <Git-Revision>380a2b8545ee9221f1f2d38a4f10ef77a23bccae</Git-Revision>
+    <Version>9-SNAPSHOT</Version>
+   </resource>
+   <resource name="GeoWebCache">
+    <Git-Revision>2a534f91f6b99e5120a9eaa5db62df771dd01688</Git-Revision>
+    <Version>1.3-SNAPSHOT</Version>
+   </resource>
+  </about>
+
+Retrieving manifests
+--------------------
+
+This collection of examples shows how to retrieve the full manifest and subsets of the manifest as known to the ClassLoader.
+
+
+.. note:: The code block below contains a single command that is extended over multiple lines.
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XGET -H "Accept: text/xml"
+     http://localhost:8080/geoserver/rest/about/manifest.xml
+
+The result will be a very long list of manifest information. While this can be useful, it is often desirable to filter this list.
+
+Filtering over resource name
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+It is possible to filter over resource names using regular expressions. This example will retrieve only resources where the ``name`` attribute matches ``gwc-.*``: 
+
+.. note:: The code block below contains a single command that is extended over multiple lines.
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XGET -H "Accept: text/xml"
+     http://localhost:8080/geoserver/rest/about/manifest.xml?manifest=gwc-.*
+
+The result will look something like this (edited for brevity):
+
+.. code-block:: xml
+
+  <about>
+    <resource name="gwc-2.3.0">
+      ...
+    </resource>
+    <resource name="gwc-core-1.4.0">
+      ...
+    </resource>
+    <resource name="gwc-diskquota-core-1.4.0">
+      ...
+    </resource>
+    <resource name="gwc-diskquota-jdbc-1.4.0">
+      ...
+    </resource>
+    <resource name="gwc-georss-1.4.0">
+      ...
+    </resource>
+    <resource name="gwc-gmaps-1.4.0">
+      ...
+    </resource>
+    <resource name="gwc-kml-1.4.0">
+      ...
+    </resource>
+    <resource name="gwc-rest-1.4.0">
+      ...
+    </resource>
+    <resource name="gwc-tms-1.4.0">
+      ...
+    </resource>
+    <resource name="gwc-ve-1.4.0">
+      ...
+    </resource>
+    <resource name="gwc-wms-1.4.0">
+      ...
+    </resource>
+    <resource name="gwc-wmts-1.4.0">
+      ...
+    </resource>
+  </about>
+
+Filtering over resource properties
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Filtering is also available over resulting resource properties. This example will retrieve only resources with a property equal to ``GeoServerModule``.
+
+.. note:: The code blocks below contain a single command that is extended over multiple lines.
+
+.. code-block:: console
+
+  curl -u admin:geoserver -XGET -H "Accept: text/xml"
+    http://localhost:8080/geoserver/rest/about/manifest.xml?key=GeoServerModule
+
+The result will look something like this (edited for brevity):
+
+.. code-block:: xml
+
+  <about>
+   <resource name="control-flow-2.3.0">
+    <GeoServerModule>extension</GeoServerModule>
+    ...
+   </resource>
+   ...
+   <resource name="wms-2.3.0">
+    <GeoServerModule>core</GeoServerModule>
+    ...
+   </resource>
+  </about>
+
+It is also possible to filter against both property and value. To retrieve only resources where a property named ``GeoServerModule`` has a value equal to ``extension``, append the above request with ``&value=extension``:
+
+.. code-block:: console
+
+   curl -u admin:geoserver -XGET -H "Accept: text/xml"
+     http://localhost:8080/geoserver/rest/about/manifest.xml?key=GeoServerModule&value=extension
+

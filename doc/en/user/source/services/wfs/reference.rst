@@ -70,6 +70,27 @@ The following operations are available in **version 1.1.0 only**:
 
 .. note:: In the examples that follow, the fictional URL ``http://example.com/geoserver/wfs`` is used for illustration. To test the examples, substitute the address of a valid WFS. Also, although the request would normally be defined on one line with no breaks, breaks are added for clarity in the examples provided. 
 
+Exceptions
+----------
+
+WFS also supports a number of formats for reporting exceptions. The supported values for exception reporting are:
+
+.. list-table::
+   :widths: 15 35 50
+   :header-rows: 1
+   
+   * - Format
+     - Syntax
+     - Description
+   * - XML
+     - ``exceptions=text/xml``
+     - *(default)* XML output
+   * - JSON
+     - ``exceptions=application/json``
+     - Simple JSON
+   * - JSONP
+     - ``exceptions=text/javascript``
+     - Return a JsonP in the form: parseResponse(...jsonp...). See :ref:`wms_vendor_parameters` to change the callback name. Note that this format is disabled by default (See :ref:`wms_global_variables`).
 .. _wfs_getcap:
 
 GetCapabilities
@@ -473,24 +494,3 @@ The same example in a POST request:
      <wfs:StoredQueryId>urn:ogc:def:query:OGC-WFS::GetFeatureById</wfs:StoredQueryId>
    </wfs:DescribeStoredQueries>
 
-Exceptions
-----------
-
-WFS also supports a number of formats for reporting exceptions. The supported values for exception reporting are:
-
-.. list-table::
-   :widths: 15 35 50
-   :header-rows: 1
-   
-   * - Format
-     - Syntax
-     - Description
-   * - XML
-     - ``exceptions=text/xml``
-     - *(default)* XML output
-   * - JSON
-     - ``exceptions=application/json``
-     - Simple JSON
-   * - JSONP
-     - ``exceptions=text/javascript``
-     - Returns a JSONP in the form: ``paddingOutput(...jsonp...)``. See :ref:`wms_vendor_parameters` to change the callback name. Note that this format is disabled by default (See :ref:`wms_global_variables`).

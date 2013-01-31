@@ -81,6 +81,17 @@ public class GeoJSONTest extends WFSTestSupport {
     	JSONObject aFeature = featureCol.getJSONObject(0);
     	assertEquals(aFeature.getString("geometry_name"),"surfaceProperty");
     }
+    
+    @Test
+    public void testGetSimpleJson() throws Exception {    
+        String out = getAsString("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat="+JSONType.simple_json);
+        
+        JSONObject rootObject = JSONObject.fromObject( out );
+        assertEquals(rootObject.get("type"),"FeatureCollection");
+        JSONArray featureCol = rootObject.getJSONArray("features");
+        JSONObject aFeature = featureCol.getJSONObject(0);
+        assertEquals(aFeature.getString("geometry_name"),"surfaceProperty");
+    }
 
     @Test
     public void testPost() throws Exception {

@@ -258,5 +258,11 @@
         <module>w3ds</module>
       </modules>
     </profile>
+    <profile>
+      <id>wms-eo</id>
+      <modules>
+        <module>wms-eo</module>
+      </modules>
+    </profile>	
   </profiles>
 </project>

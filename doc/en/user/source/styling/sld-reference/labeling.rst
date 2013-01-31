@@ -155,7 +155,9 @@ To label linear features (such as a road or river), the ``<LinePlacement>`` elem
 This indicates that the styler should determine the best placement and rotation for the labels 
 along the lines. 
 
-The LinePlacement element provides one optional sub-element, ``<PerpendicularOffset>``.
+The standard SLD LinePlacement element provides one optional sub-element, ``<PerpendicularOffset>``.
+GeoServer provides much more control over line label placement via vendor-specific options;
+see below for details.
 
 PerpendicularOffset
 ^^^^^^^^^^^^^^^^^^^
@@ -189,7 +191,10 @@ Examples:
 Composing labels from multiple attributes
 -----------------------------------------
 
-The ``<Label>`` element in TextSymbolizer is said to be mixed, that is, its content can be a mixture of plain text and OGC Expressions. The mix gets interepreted as a concatenation, this means you can leverage it to create complex labels out of multiple attributes.
+The ``<Label>`` element in `<TextSymbolizer>` allows mixed content.
+This means its content can be a mixture of plain text and :ref:`Filter Expressions <sld_reference_parameter_expressions>`. 
+The mix gets interepreted as a concatenation.
+You can leverage this to create complex labels out of multiple attributes.
 
 For example, if you want both a state name and its abbreviation to appear in a label, you can do the following:
 
@@ -229,16 +234,20 @@ These options are specified as subelements of ``<TextSymbolizer>``.
 Priority Labeling 
 ^^^^^^^^^^^^^^^^^
 
-The optional ``<Priority>`` element allows specifying label priority.. 
+The optional ``<Priority>`` element allows specifying label priority.
 This controls how conflicts (overlaps) between labels are resolved during rendering.
 The element content may be an :ref:`expression <sld_reference_parameter_expressions>` 
 to retrieve or calculate a relative priority value for each feature in a layer.
 Alternatively, the content may be a constant value,
 to set the priority of a layer's labels relative to other layers on a rendered map.
 
+The default priority for labels is 1000.
+
+
 .. note:: **Standard SLD Conflict Resolution**
 
-  If the ``<Priority>`` element is not present, then standard SLD label conflict resolution is used.
+  If the ``<Priority>`` element is not present, or if a group of labels all have the same priority,
+  then standard SLD label conflict resolution is used.
   Under this strategy, the label to display out of a group of conflicting labels is chosen essentially at random.
 
 For example, take the following dataset of cities::
@@ -255,8 +264,8 @@ For example, take the following dataset of cities::
 
 *City locations (large scale map)*
 
-Most people know where New York City is, but don't know where Yonkers is. 
-Thus we want to give the label "New York" priority so it will be visible when in conflict with (overlapping) "Yonkers".
+More people know where New York City is than where Jersey City is. 
+Thus we want to give the label "New York" priority so it will be visible when in conflict with (overlapping) "Jersey City".
 To do this we include the following code in the ``<TextSymbolizer>``:
 
 .. code-block:: xml 
@@ -265,14 +274,14 @@ To do this we include the following code in the ``<TextSymbolizer>``:
       <PropertyName>population</PropertyName>
   </Priority>
   
-This ensures that at small scales New York is labeled in preference to the less populated cities: 
+This ensures that at small scales New York is labeled in preference to the less populous cities nearby: 
 
 .. figure:: img/priority_some.png
    :align: center
 
 *City locations (small scale map)*
    
-Without priority labeling, Yonkers could be labeled in preference to New York, 
+Without priority labeling, Jersey City could be labeled in preference to New York, 
 making it difficult to interpret the map.
 At scales showing many features, 
 priority labeling is essential to ensure that larger cities are more visible than smaller cities.

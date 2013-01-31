@@ -16,7 +16,9 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
+import org.geotools.map.RasterLayer;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
@@ -124,7 +126,6 @@ public class KMLTransformer extends TransformerBase {
             for (int i = 0; i < layers.size(); i++) {
                 // layer and info
                 Layer layer = layers.get(i);
-                MapLayerInfo layerInfo = mapContent.getRequest().getLayers().get(i);
 
                 // was a super overlay requested?
                 Boolean superoverlay = (Boolean) mapContent.getRequest().getFormatOptions()
@@ -135,10 +136,10 @@ public class KMLTransformer extends TransformerBase {
                     encodeSuperOverlayLayer(mapContent, layer);
                 } else {
                     // figure out which type of layer this is, raster or vector
-                    if (layerInfo.getType() != MapLayerInfo.TYPE_RASTER) {
+                    if (layer instanceof FeatureLayer) {
                         // vector
                         encodeVectorLayer(mapContent, layer, lookAtOpts);
-                    } else {
+                    } else if(layer instanceof RasterLayer){
                         // encode as normal ground overlay
                         encodeRasterLayer(mapContent, layer, lookAtOpts);
                     }

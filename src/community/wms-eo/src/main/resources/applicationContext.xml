@@ -12,4 +12,8 @@
 		<constructor-arg ref="resourceLoader" />
 	</bean>
 
+	<bean id="wmsGetFeatureInfoXML" class="org.geoserver.wms.eo.XMLFeatureInfoOutputFormat">
+		<constructor-arg ref="wms" />
+	</bean>
+
 </beans>

@@ -46,6 +46,7 @@
        	  <descriptor>release/ext-dds.xml</descriptor>
           <descriptor>release/ext-aggregate.xml</descriptor>
           <descriptor>release/ext-xslt.xml</descriptor>
+          <descriptor>release/ext-wcs2_0.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -157,6 +158,7 @@
         <module>feature-aggregate</module>
         <module>script</module>
         <module>xslt</module>
+        <module>wcs2_0</module>
       </modules>
     </profile>
     <profile>

@@ -56,8 +56,12 @@ public class GML3FeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
      * Default constructor, sets up the supported output format string.
      */
     public GML3FeatureInfoOutputFormat(final WMS wms) {
-        super(FORMAT);
-        this.wms = wms;
+        this(wms, FORMAT);
+    }
+    
+    protected GML3FeatureInfoOutputFormat(WMS wms, String format) {
+        super(format);
+        this.wms = wms;        
     }
 
     /**

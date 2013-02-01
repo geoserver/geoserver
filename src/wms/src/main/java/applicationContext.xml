@@ -59,7 +59,7 @@
       <constructor-arg ref="wms"/>
 	</bean>	
 		
-	<bean id="wmsGetMap" class="org.geoserver.wms.GetMap">
+	<bean id="wmsGetMap" class="org.geoserver.wms.GetMap" depends-on="extensions">
 	    <constructor-arg ref="wms"/>
         <property name="filterFactory" ref="filterFactory">
           <description>Use the same filter factory declared in the WFS module</description>

@@ -16,10 +16,6 @@
     <version>${gs.version}</version>
     <name>Web Processing Service Module</name>
     
-    <properties>
-      <jt.version>1.2.0</jt.version>
-    </properties>
-    
     <repositories>
         <repository> 
             <id>jaitools-snapshots</id> 
@@ -103,35 +99,10 @@
             <version>${gt.version}</version>
         </dependency>
         <dependency>
-          <groupId>org.jaitools</groupId>
-          <artifactId>jt-zonalstats</artifactId>
-          <version>${jt.version}</version>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
         </dependency>
         <dependency>
-          <groupId>org.jaitools</groupId>
-          <artifactId>jt-rangelookup</artifactId>
-          <version>${jt.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.jaitools</groupId>
-          <artifactId>jt-contour</artifactId>
-          <version>${jt.version}</version>
-        </dependency>    
-        <dependency>
-          <groupId>org.jaitools</groupId>
-          <artifactId>jt-vectorize</artifactId>
-          <version>${jt.version}</version>
-        </dependency>            
-        <dependency>
-          <groupId>org.jaitools</groupId>
-          <artifactId>jt-utils</artifactId>
-          <version>${jt.version}</version>
-        </dependency>
-        
-        
-        
-        
-         <dependency>
 	        <groupId>org.apache.ant</groupId>
 	        <artifactId>ant</artifactId>
 	        <version>1.7.1</version>

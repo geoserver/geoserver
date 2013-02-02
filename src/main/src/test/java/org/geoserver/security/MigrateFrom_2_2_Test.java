@@ -5,7 +5,11 @@
 
 package org.geoserver.security;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
@@ -14,12 +18,9 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.config.RoleFilterConfig;
 import org.geoserver.security.config.SSLFilterConfig;
 import org.geoserver.security.config.SecurityManagerConfig;
-import org.geoserver.security.filter.GeoServerRoleFilter;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Test;
 import org.springframework.util.StringUtils;
-
-import com.sun.org.apache.bcel.internal.generic.INSTANCEOF;
 
 /**
  * Tests migration from 2.2.x to 2.3.x

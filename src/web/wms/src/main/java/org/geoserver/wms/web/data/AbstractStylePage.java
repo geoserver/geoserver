@@ -232,12 +232,17 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         };
     }
     
-    private static String sldErrorWithLineNo(Exception e) {
+    private String sldErrorWithLineNo(Exception e) {
         if (e instanceof SAXParseException) {
             SAXParseException se = (SAXParseException) e;
             return "line " + se.getLineNumber() + ": " + e.getLocalizedMessage();
         }
-        return e.getLocalizedMessage();
+        String message = e.getLocalizedMessage();
+        if(message != null) {
+            return message;
+        } else {
+            return new ParamResourceModel("genericError", this).getString();
+        }
     }
     
     List<Exception> validateSLD() {

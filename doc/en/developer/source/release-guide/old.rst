@@ -46,7 +46,7 @@ To obtain the GeoServer and Geotools revisions that have passed the `CITE test <
 	
 Perform a search on the log for 'Git revision' and you should obtain the following.::
 
-	version = 2.3-SNAPSHOT
+	version = 2.4-SNAPSHOT
 	Git revision = 68cbe445ca378e0dd04405870ef95c852189c1b0
 	Git branch = 68cbe445ca378e0dd04405870ef95c852189c1b0
 	build date = 08-Jul-2012 03:36

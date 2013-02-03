@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security;
@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -56,7 +55,7 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider{
     protected File keyStoreFile;
     protected KeyStore ks;
 
-    String keyStoreType = "JCEKS";
+    public final static String KEYSTORETYPE = "JCEKS";
      
     GeoServerSecurityManager securityManager;
 
@@ -236,7 +235,7 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider{
         
         char[] passwd = securityManager.getMasterPassword();
         try {
-            ks = KeyStore.getInstance(keyStoreType);
+            ks = KeyStore.getInstance(KEYSTORETYPE);
             if (getFile().exists()==false) { // create an empy one
                 ks.load(null, passwd);
                 addInitialKeys();
@@ -269,7 +268,7 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider{
         
         KeyStore testStore=null;
         try {
-            testStore = KeyStore.getInstance(keyStoreType);
+            testStore = KeyStore.getInstance(KEYSTORETYPE);
         } catch (KeyStoreException e1) {
             // should not happen, see assertActivatedKeyStore
             throw new RuntimeException(e1);
@@ -382,12 +381,12 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider{
             newKSFile.delete();
         
         try {
-            KeyStore oldKS=KeyStore.getInstance(keyStoreType);
+            KeyStore oldKS=KeyStore.getInstance(KEYSTORETYPE);
             FileInputStream fin = new FileInputStream(getFile());
             oldKS.load(fin, oldPassword);
             fin.close();
             
-            KeyStore newKS = KeyStore.getInstance(keyStoreType);
+            KeyStore newKS = KeyStore.getInstance(KEYSTORETYPE);
             newKS.load(null, newPassword);
             KeyStore.PasswordProtection protectionparam = 
                     new KeyStore.PasswordProtection(newPassword);
@@ -455,7 +454,7 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider{
         char[] passwd = securityManager.getMasterPassword();
         
         try {
-            KeyStore newKS = KeyStore.getInstance(keyStoreType);
+            KeyStore newKS = KeyStore.getInstance(KEYSTORETYPE);
             newKS.load(fin, passwd);
             
             // to be sure, decrypt all keys

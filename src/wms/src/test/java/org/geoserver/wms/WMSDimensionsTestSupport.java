@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -64,6 +64,8 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
         namespaces.put("gml", "http://www.opengis.net/gml");
         namespaces.put("", "http://www.opengis.net/wms");
         namespaces.put("wms", "http://www.opengis.net/wms");
+        namespaces.put("kml", "http://www.opengis.net/kml/2.2");
+        namespaces.put("ows", "http://www.opengis.net/kml/2.2");
         getTestData().registerNamespaces(namespaces);
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
     }
@@ -92,7 +94,7 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
                 WMSDimensionsTestSupport.class,catalog);        
         
         
-        testData.addStyle("temperature","../temperature.sld",getClass(),catalog);
+        testData.addStyle("temperature","./temperature.sld",WMSDimensionsTestSupport.class,catalog);
         Map propertyMap = new HashMap();
         propertyMap.put(LayerProperty.STYLE,"temperature");
         testData.addRasterLayer(WATTEMP, "watertemp.zip", null, propertyMap, SystemTestData.class, catalog);

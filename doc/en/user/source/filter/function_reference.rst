@@ -236,9 +236,12 @@ Geometric functions
    * - distance
      - ``a``:Geometry, ``b``:Geometry
      - Returns the euclidean distance between the two geometries
+   * - endAngle
+     - ``line``:LineString
+     - Returns the angle of the end segment of the linestring
    * - endPoint
      - ``line``:LineString
-     - Returns the end point of the line
+     - Returns the end point of the linestring
    * - envelope
      - ``geometry``:geometry
      - Returns the polygon representing the envelope of the geometry, that is, the minimum rectangle with sides parallels to the axis containing it
@@ -283,7 +286,7 @@ Geometric functions
      - Returns true if the geometry does not contain any point (typical case, an empty geometry collection)
    * - isometric
      - ``geometry``:Geometry, ``extrusion``:Double
-     - Returns a multi-polygon containing the isometric extrusions of all segments part of the original geometry. The extrusion distance is ``extrusion`` and it's assume to be expressed in the same unit as the geometry coordinates. Can be used to get a cheap pseudo-3d map effect
+     - Returns a MultiPolygon containing the isometric extrusions of all components of the input geometry. The extrusion distance is ``extrusion``, expressed in the same unit as the geometry coordinates. Can be used to get a pseudo-3d effect in a map
    * - isRing
      - ``line``:LineString
      - Returns true if the ``line`` is actually a closed ring (equivalent to ``isRing(line) and isSimple(line)``)
@@ -308,9 +311,12 @@ Geometric functions
    * - pointN
      - ``geometry``: Geometry, ``n``:Integer
      - Returns the n-th point inside the specified geometry
+   * - startAngle
+     - ``line``: LineString
+     - Returns the angle of the starting segment of the input linestring
    * - startPoint
      - ``line``: LineString
-     - Returns the starting point of the specified geometry
+     - Returns the starting point of the input linestring
    * - symDifference
      - ``a``: Geometry, ``b``:Geometry
      - Returns the symmetrical difference between ``a`` and ``b`` (all points that are inside ``a`` or ``b``, but not both)

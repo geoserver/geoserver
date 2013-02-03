@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2012 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wcs2_0.response;
@@ -35,7 +35,7 @@ public class WCS20GetCapabilitiesResponse extends Response {
     public boolean canHandle(Operation operation) {
 
         return "GetCapabilities".equalsIgnoreCase(operation.getId()) && 
-                operation.getService().getId().equals("wcs") &&
+                operation.getService().getId().equals(WCS20Const.SERVICE_NAME) &&
                 ( operation.getService().getVersion().toString().equals(WCS20Const.V20x) ||
                   operation.getService().getVersion().toString().equals(WCS20Const.V20) );
     }

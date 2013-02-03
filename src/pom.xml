@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- 
- Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -13,7 +13,7 @@
  <groupId>org.geoserver</groupId>
  <artifactId>geoserver</artifactId>
  <packaging>pom</packaging>
- <version>2.3-SNAPSHOT</version>
+ <version>2.4-SNAPSHOT</version>
  <name>GeoServer</name>
 
  <scm>
@@ -529,7 +529,7 @@
    </dependency>
    <dependency>
     <groupId>org.geowebcache</groupId>
-    <artifactId>gwc-diskquota</artifactId>
+    <artifactId>gwc-diskquota-jdbc</artifactId>
     <version>${gwc.version}</version>
    </dependency>
 
@@ -574,55 +574,14 @@
      <version>1.8.5</version>
    </dependency>    
    <dependency>
-    <groupId>xml-apis</groupId>
-    <artifactId>xml-apis</artifactId>
-    <version>1.3.04</version>
-   </dependency>
-   <dependency>
-    <groupId>xml-apis</groupId>
-    <artifactId>xml-apis-xerces</artifactId>
-    <version>2.7.1</version>
-   </dependency>
-   <dependency>
-    <groupId>xml-apis</groupId>
-    <artifactId>xmlParserAPIs</artifactId>
-    <version>2.0.2</version>
-   </dependency>
-   <dependency>
-    <groupId>xerces</groupId>
-    <artifactId>xmlParserAPIs</artifactId>
-    <version>2.6.2</version>
-   </dependency>
-   <dependency>
-    <groupId>xerces</groupId>
-    <artifactId>xercesImpl</artifactId>
-    <version>2.7.1</version>
-   </dependency>
-   <dependency>
-    <groupId>xalan</groupId>
-    <artifactId>xalan</artifactId>
-    <version>2.7.0</version>
-   </dependency>
-   <dependency>
-    <groupId>javax.xml</groupId>
-    <artifactId>jaxp-api</artifactId>
-    <version>1.3.1</version>
+     <groupId>xalan</groupId>
+     <artifactId>xalan</artifactId>
+     <version>2.7.0</version>
    </dependency>
    <dependency>
     <groupId>xpp3</groupId>
     <artifactId>xpp3</artifactId>
     <version>1.1.3.4.O</version>
-   </dependency>
-   <dependency>
-     <groupId>stax</groupId>
-     <artifactId>stax-api</artifactId>
-     <version>1.0.1</version>
-   </dependency>
-   <dependency>
-     <!-- StAX is the reference implementation of the StAX API -->
-     <groupId>stax</groupId>
-     <artifactId>stax</artifactId>
-     <version>1.2.0</version>
    </dependency>
    <dependency>
     <groupId>org.codehaus.jettison</groupId>
@@ -1111,6 +1070,7 @@
    <plugin>
      <groupId>org.apache.maven.plugins</groupId>
      <artifactId>maven-compiler-plugin</artifactId>
+     <version>2.3.2</version>
      <configuration>
        <source>1.6</source>
        <target>1.6</target>
@@ -1148,7 +1108,7 @@
       <exclude>${test.exclude.pattern}</exclude>
      </excludes>
      <forkMode>once</forkMode>
-     <argLine>-Xmx${test.maxHeapSize} -XX:MaxPermSize=${test.maxPermSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d}-DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image}</argLine>
+     <argLine>-Xmx${test.maxHeapSize} -XX:MaxPermSize=${test.maxPermSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d}-DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone}</argLine>
      <enableAssertions>true</enableAssertions>
      <printSummary>true</printSummary>
      <testFailureIgnore>${allow.test.failure.ignore}</testFailureIgnore>
@@ -1192,7 +1152,7 @@
       <descriptor>release/ext-monitor.xml</descriptor>
       <descriptor>release/ext-monitor-hibernate.xml</descriptor>
      </descriptors>
-     <finalName>geoserver-2.3-SNAPSHOT</finalName>
+     <finalName>geoserver-2.4-SNAPSHOT</finalName>
      <outputDirectory>${project.build.directory}/release</outputDirectory>
     </configuration>
    </plugin>
@@ -1223,15 +1183,31 @@
    </plugin>
 
    <plugin>
-    <artifactId>maven-jar-plugin</artifactId>
-    <executions>
-      <execution>
-        <phase>package</phase>
-        <goals>
-           <goal>test-jar</goal>
-        </goals>
-      </execution>
-    </executions>
+	<artifactId>maven-jar-plugin</artifactId>
+	<executions>
+		<execution>
+			<phase>package</phase>
+			<goals>
+				<goal>test-jar</goal>
+			</goals>
+		</execution>
+	</executions>
+	<configuration>
+		<archive>
+			<manifest>
+				<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+				<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+			</manifest>
+			<manifestEntries>
+				<GeoServerModule>core</GeoServerModule>
+				<Application-Name>${project.build.finalname}</Application-Name>
+				<Project-Version>${project.version}</Project-Version>
+				<Iteration-Name>${iteration}</Iteration-Name>
+				<Build-Timestamp>${maven.build.timestamp}</Build-Timestamp>
+				<Git-Revision>${build.commit.id}</Git-Revision>
+			</manifestEntries>
+		</archive>
+	</configuration>
    </plugin>
 
    <plugin>
@@ -1432,9 +1408,9 @@
  </modules>
 
  <properties>
-  <gs.version>2.3-SNAPSHOT</gs.version>
-  <gt.version>9-SNAPSHOT</gt.version>
-  <gwc.version>1.3-SNAPSHOT</gwc.version>
+  <gs.version>2.4-SNAPSHOT</gs.version>
+  <gt.version>10-SNAPSHOT</gt.version>
+  <gwc.version>1.4-SNAPSHOT</gwc.version>
   <spring.version>3.1.1.RELEASE</spring.version>
   <spring.security.version>3.1.0.RELEASE</spring.security.version> 
   <wicket.version>1.4.12</wicket.version>

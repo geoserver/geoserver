@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -48,24 +48,24 @@ public class JDBCConfigTestSupport {
         return f;
     }
 
-    // String driver = "org.postgresql.Driver";
-    //
-    // String connectionUrl = "jdbc:postgresql://localhost:5432/test";
-    //
-    // String initScriptName = "initdb.postgres.sql";
-    //
-    // String dropScriptName = "dropdb.postgres.sql";
+//     String driver = "org.postgresql.Driver";
+//    
+//     String connectionUrl = "jdbc:postgresql://localhost:5432/geoserver";
+//    
+//     String initScriptName = "initdb.postgres.sql";
+//    
+//     String dropScriptName = "dropdb.postgres.sql";
 
     String driver = "org.h2.Driver";
 
-    String connectionUrl = "jdbc:h2:file:${DATA_DIR}/test";
+    String connectionUrl = "jdbc:h2:file:${DATA_DIR}/geoserver";
 
     String initScriptName = "initdb.h2.sql";
 
     String dropScriptName = "dropdb.h2.sql";
 
-     String dbUser = "postgres";
-     String dbPasswd = "geo123";
+     String dbUser = System.getProperty("user.name");
+     String dbPasswd = "";
 
     private WebApplicationContext appContext;
 

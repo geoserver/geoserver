@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -408,6 +408,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                     String axisName = axis.getName();
                     if (!axisName.equalsIgnoreCase(WCSUtils.ELEVATION)) {
                         Object dimInfo = meta.getMetadata().get(ResourceInfo.CUSTOM_DIMENSION_PREFIX + axisName);
+                        axisName = axisName.toUpperCase(); // using uppercase with imagemosaic
                         if (dimInfo instanceof DimensionInfo && dimensions.hasDomain(axisName)) {
                             int valueCount = axis.getSingleValue().size();
                             if (valueCount > 0) {

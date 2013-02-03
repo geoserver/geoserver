@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.legendgraphic;
@@ -22,6 +22,8 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LayerInfo.Type;
+import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.ows.KvpRequestReader;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
@@ -134,7 +136,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                     LayerGroupInfo layerGroupInfo = wms.getLayerGroupByName(layer);
                     if(layerGroupInfo != null) {
                         // add all single layers of the group
-                        for(LayerInfo singleLayer : layerGroupInfo.getLayers()) {
+                        for(LayerInfo singleLayer : layerGroupInfo.layers()) {
                             addLayer(layers,singleLayer,request);
                         }
                         infoObject=layerGroupInfo;
@@ -335,9 +337,9 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                 // use the default one for the layer in the current position
                 if (styleName.equals("") && infoObj instanceof LayerGroupInfo) {
                     LayerGroupInfo layerGroupInfo = (LayerGroupInfo) infoObj;
-                    if (pos < layerGroupInfo.getLayers().size()) {
-                        sldStyles.add(getStyleFromLayer(layerGroupInfo.getLayers()
-                                .get(pos)));
+                    List<LayerInfo> groupLayers = layerGroupInfo.layers();
+                    if (pos < groupLayers.size()) {
+                        sldStyles.add(getStyleFromLayer(groupLayers.get(pos)));
                     }
                 } else {
                     sldStyles.add(wms.getStyleByName(styleName));
@@ -350,13 +352,13 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                 sldStyles.add(getStyleFromLayer((LayerInfo)infoObj));
             } else if(infoObj instanceof LayerGroupInfo) {
                 LayerGroupInfo layerGroupInfo=(LayerGroupInfo)infoObj;
-                for (int count = 0; count < layerGroupInfo.getLayers().size(); count++) {
-                    if (count < layerGroupInfo.getStyles().size()
-                            && layerGroupInfo.getStyles().get(count) != null) {
-                        sldStyles.add(layerGroupInfo.getStyles().get(count)
-                                .getStyle());
+                List<LayerInfo> groupLayers = layerGroupInfo.layers();
+                List<StyleInfo> groupStyles = layerGroupInfo.styles();
+                for (int count = 0; count < groupLayers.size(); count++) {
+                    if (count < groupStyles.size() && groupStyles.get(count) != null) {
+                        sldStyles.add(groupStyles.get(count).getStyle());
                     } else {
-                        LayerInfo layerInfo = layerGroupInfo.getLayers().get(count);
+                        LayerInfo layerInfo = groupLayers.get(count);
                         sldStyles.add(getStyleFromLayer(layerInfo));
                     }
                 }

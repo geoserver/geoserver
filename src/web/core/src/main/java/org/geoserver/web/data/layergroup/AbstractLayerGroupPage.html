@@ -27,6 +27,13 @@
          <input wicket:id="generateBounds" type="submit" wicket:message="value:generateBounds"></input>
        </li>
        <li>
+         <label for="mode"><wicket:message key="mode">Mode</wicket:message></label>
+         <select wicket:id="mode"></select>
+       </li>
+	   <li wicket:id="rootLayerContainer">
+	   	 <div wicket:id="rootLayer"></div>
+	   </li>                     
+       <li>
          <div wicket:id="layers"></div>
        </li>
        <li>

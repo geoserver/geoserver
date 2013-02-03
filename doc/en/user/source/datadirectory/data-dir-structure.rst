@@ -10,7 +10,7 @@ This is not intended to be a complete reference to the GeoServer configuration i
 since generally the data directory configuration files should not be accessed directly.
 Instead, the :ref:`web_admin` can be used to view and modify the configuration manually, 
 and for programmatic access and manipulation 
-the :ref:`rest_extension` API should be used.
+the :ref:`rest` API should be used.
 
 The directories that do contain user-modifiable content are:
 ``logs``, ``palettes``, ``templates``, ``user-projection``, and ``www``.

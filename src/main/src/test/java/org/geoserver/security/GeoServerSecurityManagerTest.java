@@ -1,10 +1,12 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -19,6 +21,7 @@ import org.geoserver.test.SystemTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @Category(SystemTest.class)
 public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
@@ -89,12 +92,45 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
         assertEquals(validPassword, new String(generatedPW));
         assertFalse(masterPWInfoFileContains(validPassword));
         assertTrue(masterPWInfoFileContains(GeoServerUser.ADMIN_USERNAME));
-        //dumpPWInfoFile();
-                
+        //dumpPWInfoFile();                
     }
     
-    void dumpPWInfoFile() throws Exception {
-        File infoFile = new File(getSecurityManager().getSecurityRoot(),GeoServerSecurityManager.MASTER_PASSWD_INFO_FILENAME);
+    @Test
+    public void testMasterPasswordDump() throws Exception{
+        
+        GeoServerSecurityManager secMgr = getSecurityManager();
+        File f = File.createTempFile("masterpw", "info");
+        assertFalse(secMgr.dumpMasterPassword(f));
+        
+        TestingAuthenticationToken auth = new TestingAuthenticationToken("admin", "geoserver", 
+                (List) Arrays.asList(GeoServerRole.ADMIN_ROLE));
+            auth.setAuthenticated(true);
+        SecurityContextHolder.getContext().setAuthentication(auth);
+        
+        assertTrue(secMgr.dumpMasterPassword(f));
+        dumpPWInfoFile(f);
+        assertTrue(masterPWInfoFileContains(f,new String(secMgr.getMasterPassword())));
+        
+    }
+    
+    @Test
+    public void testMasterPasswordDumpNotAuthorized() throws Exception{
+        
+        GeoServerSecurityManager secMgr = getSecurityManager();
+        File f = File.createTempFile("masterpw", "info");
+        assertFalse(secMgr.dumpMasterPassword(f));
+        
+        TestingAuthenticationToken auth = new TestingAuthenticationToken("admin", "geoserver", 
+                (List) Arrays.asList(GeoServerRole.ADMIN_ROLE));
+            auth.setAuthenticated(true);
+        SecurityContextHolder.getContext().setAuthentication(auth);
+        
+        assertFalse(secMgr.dumpMasterPassword(f));                        
+    }
+
+    
+    void dumpPWInfoFile(File infoFile) throws Exception {
+        
         
         BufferedReader bf = new BufferedReader(new FileReader(infoFile));
         String line;
@@ -106,8 +142,11 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
     }
 
     
-    boolean masterPWInfoFileContains(String searchString) throws Exception {
-        File infoFile = new File(getSecurityManager().getSecurityRoot(),GeoServerSecurityManager.MASTER_PASSWD_INFO_FILENAME);
+    void dumpPWInfoFile() throws Exception {
+        dumpPWInfoFile(new File(getSecurityManager().getSecurityRoot(),GeoServerSecurityManager.MASTER_PASSWD_INFO_FILENAME));                
+    }
+
+    boolean masterPWInfoFileContains(File infoFile,String searchString) throws Exception {        
         
         BufferedReader bf = new BufferedReader(new FileReader(infoFile));
         String line;
@@ -119,5 +158,13 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
         }
         bf.close();
         return false;
+    }
+
+    
+    
+    boolean masterPWInfoFileContains(String searchString) throws Exception {
+        return masterPWInfoFileContains(new File(getSecurityManager().getSecurityRoot(),
+                GeoServerSecurityManager.MASTER_PASSWD_INFO_FILENAME),searchString);
+        
     }
 }

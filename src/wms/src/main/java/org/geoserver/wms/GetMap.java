@@ -1,5 +1,5 @@
-/* Copyright (c) 2010 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms;
@@ -24,6 +24,7 @@ import javax.media.jai.RenderedImageList;
 
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.map.MetatileMapOutputFormat;
 import org.geoserver.wms.map.RenderedImageMap;
@@ -73,14 +74,22 @@ public class GetMap {
     private FilterFactory ff;
 
     private final WMS wms;
+    
+    private List<GetMapCallback> callbacks;
 
     public GetMap(final WMS wms) {
         this.wms = wms;
         this.ff = CommonFactoryFinder.getFilterFactory(GeoTools.getDefaultHints());
+        this.callbacks = GeoServerExtensions.extensions(GetMapCallback.class);
     }
 
     public void setFilterFactory(final FilterFactory filterFactory) {
         this.ff = filterFactory;
+    }
+    
+    public void setGetMapCallbacks(List<GetMapCallback> callbacks) {
+        this.callbacks.clear();
+        this.callbacks.addAll(callbacks);
     }
 
     /**
@@ -102,24 +111,64 @@ public class GetMap {
      * @throws ServiceException
      *             if an error occurs creating the map from the provided request
      */
-    public WebMap run(final GetMapRequest request) throws ServiceException {
+    public WebMap run(GetMapRequest request) throws ServiceException {
+        request = fireInitRequest(request);
         // JD/GR:hold a reference in order to release resources later. mapcontext can leak memory --
-        // we make sure we done (see
-        // finally block)
+        // we make sure we done (see finally block)
         WMSMapContent mapContent = new WMSMapContent(request);
+        mapContent.setGetMapCallbacks(callbacks);
         try {
-            return run(request, mapContent);
-        } catch (ServiceException e) {
-            mapContent.dispose();
-            throw e;
-        } catch (RuntimeException e) {
-            mapContent.dispose();
-            throw (RuntimeException) e;
-        } catch (Exception e) {
-            mapContent.dispose();
-            throw new ServiceException("Internal error ", e);
-        }
+            WebMap map = run(request, mapContent);
+            map = fireFinished(map);
+            return map;
+        } catch (Throwable t) {
+            fireFailed(t);
+            if(t instanceof RuntimeException) {
+                throw (RuntimeException) t;
+            } else if(t instanceof Error) {
+                throw (Error) t;
+            } else {
+                throw new ServiceException("Internal error ", t);
+            }
+        } 
     }
+
+    private GetMapRequest fireInitRequest(GetMapRequest request) {
+        for (GetMapCallback callback : callbacks) {
+            request = callback.initRequest(request);
+        }        
+        
+        return request;
+    }
+    
+    private void fireMapContentInit(WMSMapContent mapContent) {
+        for (GetMapCallback callback : callbacks) {
+            callback.initMapContent(mapContent);
+        }        
+    }
+    
+    private WMSMapContent fireBeforeRender(WMSMapContent mapContent) {
+        for (GetMapCallback callback : callbacks) {
+            mapContent = callback.beforeRender(mapContent);
+        }        
+        
+        return mapContent;
+    }
+    
+    private WebMap fireFinished(WebMap result) {
+        for (GetMapCallback callback : callbacks) {
+            result = callback.finished(result);
+        }        
+        
+        return result;
+    }
+    
+    private void fireFailed(Throwable t) {
+        for (GetMapCallback callback : callbacks) {
+            callback.failed(t);
+        }        
+    }
+
 
     /**
      * TODO: This method have become a 300+ lines monster, refactor it to private methods from which
@@ -172,7 +221,7 @@ public class GetMap {
         if(numTimes > 1 && isMultivaluedSupported) {
             WebMap map = null;
             List<RenderedImage> images = new ArrayList<RenderedImage>();
-            for (Object currentTime : times){
+            for (Object currentTime : times) {
                 map = executeInternal(mapContent, request, delegate, Arrays.asList(currentTime), elevations);
                 
                 // remove layers to start over again
@@ -259,6 +308,8 @@ public class GetMap {
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("setting up map");
         }
+        
+        fireMapContentInit(mapContent);
 
         // track the external caching strategy for any map layers
         boolean cachingPossible = request.isGet();
@@ -463,6 +514,7 @@ public class GetMap {
         // Producing the map in the requested format.
         //
         // /////////////////////////////////////////////////////////
+        mapContent = fireBeforeRender(mapContent);
         WebMap map = delegate.produceMap(mapContent);
         
         if (cachingPossible) {
@@ -478,9 +530,7 @@ public class GetMap {
         return map;
     }
 
-    
-
-	/**
+    /**
      * Computes the rendering buffer in case the user did not specify one in the request, and the
      * admin setup some rendering buffer hints in the layer configurations
      * 

@@ -1,26 +1,31 @@
-/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog.impl;
 
+import java.io.ObjectStreamException;
 import java.io.Serializable;
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.Info;
+import org.geoserver.catalog.MetadataMap;
 import org.geoserver.ows.util.ClassProperties;
 import org.geoserver.ows.util.OwsUtils;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geotools.factory.CommonFactoryFinder;
+import org.opengis.filter.FilterFactory;
 
 /**
  * Proxies an object storing any modifications to it.
@@ -426,6 +431,118 @@ public class ModificationProxy implements WrappingProxy, Serializable {
             s = cp().setter(propertyName, type);
         }
         return s;
+    }
+
+    private Object readResolve() throws ObjectStreamException {
+        // replace the main proxy object
+        if(proxyObject instanceof CatalogInfo) {
+            CatalogInfo replacement = replaceCatalogInfo((CatalogInfo) proxyObject);
+            if(replacement != null) {
+                proxyObject = unwrap(replacement);
+            }
+        }
+        
+        // any dirty property value
+        if(properties != null) {
+            for (Entry<String, Object> property : properties.entrySet()) {
+                Object value = property.getValue();
+                if(value instanceof CatalogInfo) {
+                    CatalogInfo replacement = replaceCatalogInfo((CatalogInfo) value);
+                    if(replacement != null) {
+                        property.setValue(unwrap(replacement));
+                    }
+                } else if(value instanceof Collection) {
+                    Collection clone = cloneCollection((Collection) value);
+                    property.setValue(clone);
+                } else if(value instanceof MetadataMap) {
+                    MetadataMap clone = cloneMetadataMap((MetadataMap) value);
+                    property.setValue(clone);
+                }
+            }
+        }
+        
+        // and eventually also contents of old collections, they might also be
+        if(oldCollectionValues != null) {
+            for (Entry<String, Object> oce : oldCollectionValues.entrySet()) {
+                Object value = oce.getValue();
+                if(value instanceof Collection) {
+                    Collection oldCollection = (Collection) value;
+                    Collection clone = cloneCollection(oldCollection);
+                    oce.setValue(clone);
+                } else if(value instanceof MetadataMap) {
+                    MetadataMap clone = cloneMetadataMap((MetadataMap) value);
+                    oce.setValue(clone);
+                }
+            }
+        }
+        
+        return this;
+    }
+
+    private MetadataMap cloneMetadataMap(MetadataMap original) {
+        MetadataMap clone = new MetadataMap();
+        for (Entry<String, Serializable> entry : original.entrySet()) {
+            String key = entry.getKey();
+            Serializable value = entry.getValue();
+            if(value instanceof CatalogInfo) {
+                CatalogInfo replacement = replaceCatalogInfo((CatalogInfo) value);
+                if(replacement != null) {
+                    value = replacement;
+                }
+            }
+            
+            clone.put(key, value);
+        }
+        
+        return clone;
+    }
+
+    private Collection cloneCollection(Collection oldCollection) {
+        Class<? extends Collection> oldCollectionClass = oldCollection.getClass();
+        try {
+            Collection clone = oldCollectionClass.newInstance();
+            for (Object o : oldCollection) {
+                if(o instanceof CatalogInfo) {
+                    CatalogInfo replacement = replaceCatalogInfo((CatalogInfo) o);
+                    if(replacement != null) {
+                        clone.add(unwrap(replacement));
+                    } else {
+                        clone.add(o);
+                    }
+                } else {
+                    clone.add(o);
+                }
+            }
+            
+            return clone;
+        } catch(Exception e) {
+            throw new RuntimeException("Unexpected failure while cloning collection of class " + oldCollectionClass, e);
+        }
+    }
+
+    private CatalogInfo replaceCatalogInfo(CatalogInfo ci) {
+        String id = ci.getId();
+        Catalog catalog = (Catalog) GeoServerExtensions.bean("catalog");
+        FilterFactory ff = CommonFactoryFinder.getFilterFactory();
+        Class iface = getCatalogInfoInterface(ci.getClass());
+        CatalogInfo replacement = catalog.get(iface, ff.equal(ff.property("id"), ff.literal(id), true));
+        return replacement;
+    }
+
+    /**
+     * Gathers the most specific CatalogInfo sub-interface from the specified class object
+     * @param class1
+     * @return
+     */
+    private Class getCatalogInfoInterface(Class<? extends CatalogInfo> clazz) {
+        Class result = CatalogInfo.class;
+        for (Class c : clazz.getInterfaces()) {
+            if(result.isAssignableFrom(c)) {
+                result = c;
+            }
+        }
+        
+        return result;
     }
 
     /**

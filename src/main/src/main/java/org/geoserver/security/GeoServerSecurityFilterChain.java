@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -49,6 +49,7 @@ public class GeoServerSecurityFilterChain implements Serializable {
     public static final String SECURITY_CONTEXT_NO_ASC_FILTER = "contextNoAsc";
     
     public static final String ROLE_FILTER = "roleFilter";
+    public static final String SSL_FILTER = "sslFilter";
     
     public static final String FORM_LOGIN_FILTER = "form";
     public static final String FORM_LOGOUT_FILTER = "formLogout";
@@ -66,40 +67,51 @@ public class GeoServerSecurityFilterChain implements Serializable {
     public static final String FILTER_SECURITY_INTERCEPTOR = "interceptor";
     public static final String FILTER_SECURITY_REST_INTERCEPTOR = "restInterceptor";
 
+    // standard chain names as constant
+    public static final String WEB_CHAIN_NAME="web";
+    public static final String WEB_LOGIN_CHAIN_NAME="webLogin";
+    public static final String WEB_LOGOUT_CHAIN_NAME="webLogout";
+    public static final String REST_CHAIN_NAME="rest";
+    public static final String GWC_CHAIN_NAME="gwc";
+    public static final String DEFAULT_CHAIN_NAME="default";
+    
     static HtmlLoginFilterChain WEB = new HtmlLoginFilterChain(WEB_CHAIN, GWC_WEB_CHAIN);
     static {
-        WEB.setName("web");
+        WEB.setName(WEB_CHAIN_NAME);
         WEB.setFilterNames(REMEMBER_ME_FILTER, FORM_LOGIN_FILTER,ANONYMOUS_FILTER);
         WEB.setAllowSessionCreation(true);
     }
-
+    
+    
     private static ConstantFilterChain WEB_LOGIN = new ConstantFilterChain(FORM_LOGIN_CHAIN);
     static {
-        WEB_LOGIN.setName("webLogin");
+        WEB_LOGIN.setName(WEB_LOGIN_CHAIN_NAME);
         WEB_LOGIN.setFilterNames(FORM_LOGIN_FILTER);
     }
 
     private static LogoutFilterChain WEB_LOGOUT = new LogoutFilterChain(FORM_LOGOUT_CHAIN);
     static {
-        WEB_LOGOUT.setName("webLogout");
+        WEB_LOGOUT.setName(WEB_LOGOUT_CHAIN_NAME);
         WEB_LOGOUT.setFilterNames(FORM_LOGOUT_FILTER);
     }
 
     private static ServiceLoginFilterChain REST = new ServiceLoginFilterChain(REST_CHAIN);
     static {
-        REST.setName("rest");
+        REST.setName(REST_CHAIN_NAME);
         REST.setFilterNames( BASIC_AUTH_FILTER, ANONYMOUS_FILTER);
+        REST.setInterceptorName(FILTER_SECURITY_REST_INTERCEPTOR);
     }
 
     private static ServiceLoginFilterChain GWC = new ServiceLoginFilterChain(GWC_REST_CHAIN);
     static {
-        GWC.setName("gwc");
+        GWC.setName(GWC_CHAIN_NAME);
         GWC.setFilterNames( BASIC_AUTH_FILTER);
+        GWC.setInterceptorName(FILTER_SECURITY_REST_INTERCEPTOR);
     }
 
     private static ServiceLoginFilterChain DEFAULT = new ServiceLoginFilterChain(DEFAULT_CHAIN);
     static {
-        DEFAULT.setName("default");
+        DEFAULT.setName(DEFAULT_CHAIN_NAME);
         DEFAULT.setFilterNames( BASIC_AUTH_FILTER, ANONYMOUS_FILTER);
     }
 
@@ -205,46 +217,6 @@ public class GeoServerSecurityFilterChain implements Serializable {
         return null;
     }
 
-    public Map<String,List<String>> compileFilterMap() {
-        Map<String,List<String>> filterMap = new LinkedHashMap();
-        
-        for (RequestFilterChain ch : requestChains) {
-            //patterns.addAll(ch.getPatterns());
-            
-            for (String p : ch.getPatterns()) {
-                filterMap.put(p, ch.getCompiledFilterNames());
-            }
-        }
-
-        return filterMap;
-    }
-
-    public void simplify() {
-        int j = 0;
-        for (Iterator<RequestFilterChain> it = requestChains.iterator(); it.hasNext(); j++) {
-            RequestFilterChain requestChain = it.next();
-            RequestFilterChain toMerge = null;
-
-            //look at any previous chain to see if we can merge
-            for (int i = 0; i < j; i++) {
-                RequestFilterChain requestChain2 = requestChains.get(i);
-                if (requestChain2 == requestChain) {
-                    continue;
-                }
-                if (requestChain2.getFilterNames().equals(requestChain.getFilterNames())) {
-                    toMerge = requestChain2;
-                    break;
-                }
-            }
-
-            if (toMerge != null) {
-                toMerge.getPatterns().addAll(requestChain.getPatterns());
-                it.remove();
-                j--;
-            }
-        }
-    
-    }
 
     /**
      * Inserts a filter as the first of the filter list corresponding to the specified pattern.

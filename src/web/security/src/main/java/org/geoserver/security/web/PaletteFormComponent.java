@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -13,11 +13,12 @@ import org.apache.wicket.Component;
 import org.apache.wicket.behavior.IBehavior;
 import org.apache.wicket.extensions.markup.html.form.palette.Palette;
 import org.apache.wicket.extensions.markup.html.form.palette.component.Recorder;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.geoserver.security.impl.GeoServerUserGroup;
+import org.apache.wicket.model.ResourceModel;
 
 public class PaletteFormComponent<T> extends FormComponentPanel {
 
@@ -45,10 +46,44 @@ public class PaletteFormComponent<T> extends FormComponentPanel {
                 toAdd.clear();
                 return rec;
             }
+            
+            /**
+             * Override otherwise the header is not i18n'ized
+             */
+            @Override
+            public Component newSelectedHeader(final String componentId) {
+                
+                return new Label(componentId, new ResourceModel(getSelectedHeaderPropertyKey()));
+            }
+
+            /**
+             * Override otherwise the header is not i18n'ized
+             */
+            @Override
+            public Component newAvailableHeader(final String componentId) {
+                return new Label(componentId, new ResourceModel(
+                        getAvaliableHeaderPropertyKey()));
+            }
         });
         palette.setOutputMarkupId(true);
     }
 
+    /**
+     * @return the default key, subclasses may override, if "Selected" is not
+     *         illustrative enough
+     */
+    protected String getSelectedHeaderPropertyKey() {
+        return "PaletteFormComponent.selectedHeader";
+    }
+
+    /**
+     * @return the default key, subclasses may override, if "Available" is not
+     *         illustrative enough
+     */
+    protected String getAvaliableHeaderPropertyKey() {
+        return "PaletteFormComponent.availableHeader";
+    }
+    
     @Override
     public Component add(IBehavior... behaviors) {
         if (palette.getRecorderComponent() == null) {

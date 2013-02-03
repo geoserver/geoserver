@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2010 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog;
@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.stream.StreamSource;
 
 import org.geoserver.ows.util.RequestUtils;
 import org.geotools.factory.CommonFactoryFinder;

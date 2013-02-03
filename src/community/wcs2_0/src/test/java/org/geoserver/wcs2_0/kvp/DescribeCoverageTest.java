@@ -17,4 +17,13 @@ public class DescribeCoverageTest extends WCSTestSupport {
         
         checkValidationErrors(dom, WCS20_SCHEMA);
     }
+    
+    @Test
+    public void testMultiBandKVP() throws Exception {
+        Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=wcs__multiband");
+        assertNotNull(dom);
+        print(dom, System.out);
+        
+        checkValidationErrors(dom, WCS20_SCHEMA);
+    }
 }

@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wcs.responses;
@@ -53,7 +53,7 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
     public GeoTIFFCoverageResponseDelegate(GeoServer geoserver) {
         super(
                 geoserver,
-                Arrays.asList("tif","tiff","geotiff","TIFF", "GEOTIFF","image/geotiff"), //output formats
+                Arrays.asList("tif","tiff","geotiff","TIFF", "GEOTIFF", "GeoTIFF","image/geotiff"), //output formats
                 new HashMap<String, String>(){ // file extensions
                     {
                         put("tiff", "tif");
@@ -61,6 +61,7 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
                         put("geotiff", "tif");
                         put("TIFF", "tif");
                         put("GEOTIFF", "tif");
+                        put("GeoTIFF", "tif");
                         put("image/geotiff", "tif");    
                         put("image/tiff", "tif"); 
                     }
@@ -72,6 +73,7 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
                         put("geotiff", "image/tiff");
                         put("TIFF", "image/tiff");
                         put("GEOTIFF", "image/tiff");
+                        put("GeoTIFF", "image/tiff");
                         put("image/geotiff", "image/tiff");                        
                     }
                 });        

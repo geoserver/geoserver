@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.featureinfo;
@@ -21,6 +21,7 @@ import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.WMS;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
+import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.Name;
 
 import freemarker.template.Configuration;
@@ -111,7 +112,7 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
                 FeatureCollection fc = collections.get(i);
                 if (fc != null && fc.size() > 0) {
                     Template content = null;
-                    if (! (fc instanceof SimpleFeatureCollection)) {
+                    if (! (fc.getSchema() instanceof SimpleFeatureType)) {
                         //if there is a specific template for complex features, use that.
                         content = getTemplate(FeatureCollectionDecorator.getName(fc), "complex_content.ftl", charSet);
                     }                

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -33,7 +33,7 @@
 
   <!-- service descriptors -->
   <bean id="wcsService-2.0" class="org.geoserver.platform.Service">
-    <constructor-arg index="0" value="wcs" />
+    <constructor-arg index="0" value="WCS" />
     <constructor-arg index="1" ref="wcs20Service" />
     <constructor-arg index="2" value="2.0.1" />
     <constructor-arg index="3">

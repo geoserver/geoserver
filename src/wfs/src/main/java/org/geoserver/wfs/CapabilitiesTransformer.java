@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
 */
 package org.geoserver.wfs;
@@ -9,11 +9,14 @@ import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 import static org.geoserver.ows.util.ResponseUtils.params;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -54,6 +57,7 @@ import org.opengis.filter.FilterFactory;
 import org.opengis.filter.capability.FunctionName;
 import org.opengis.parameter.Parameter;
 import org.vfny.geoserver.global.FeatureTypeInfoTitleComparator;
+import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
@@ -858,27 +862,43 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
      */
     public static class WFS1_1 extends CapabilitiesTransformer {
         private final boolean skipMisconfigured;
+		private final Collection<WFSExtendedCapabilitiesProvider> extCapsProviders;
+		private final String baseUrl;
         
-        public WFS1_1(WFSInfo wfs, Catalog catalog) {
-            this(wfs, WFSInfo.Version.V_11, catalog);
+        public WFS1_1(WFSInfo wfs, String baseUrl, Catalog catalog, Collection<WFSExtendedCapabilitiesProvider> extCapsProviders) {
+            this(wfs, WFSInfo.Version.V_11, baseUrl, catalog, extCapsProviders);
         }
         
-        public WFS1_1(WFSInfo wfs, WFSInfo.Version version, Catalog catalog) {
+        public WFS1_1(WFSInfo wfs, WFSInfo.Version version, String baseUrl, Catalog catalog, Collection<WFSExtendedCapabilitiesProvider> extCapsProviders) {
             super(wfs, version, catalog);
             skipMisconfigured = ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS.equals(
                     wfs.getGeoServer().getGlobal().getResourceErrorHandling());
+
+            this.extCapsProviders = extCapsProviders;
+            this.baseUrl = baseUrl;
         }
 
         public Translator createTranslator(ContentHandler handler) {
-            return new CapabilitiesTranslator1_1(handler);
+            return new CapabilitiesTranslator1_1(handler, baseUrl, wfs, extCapsProviders);
         }
 
         class CapabilitiesTranslator1_1 extends TranslatorSupport {
             private static final String GML_3_1_1_FORMAT = "text/xml; subtype=gml/3.1.1";
             GetCapabilitiesRequest request;
+			private Collection<WFSExtendedCapabilitiesProvider> extCapsProviders;
+			private final WFSInfo wfs;
+			private final String schemaBaseURL;
             
-            public CapabilitiesTranslator1_1(ContentHandler handler) {
+            public CapabilitiesTranslator1_1(ContentHandler handler, String baseUrl, WFSInfo wfs, Collection<WFSExtendedCapabilitiesProvider> extCapsProviders) {
                 super(handler, null, null);
+                this.wfs = wfs;
+                this.extCapsProviders = extCapsProviders;
+                this.schemaBaseURL = baseUrl;
+
+                // register namespaces provided by extended capabilities
+                for (WFSExtendedCapabilitiesProvider cp : extCapsProviders) {
+                    cp.registerNamespaces(getNamespaceSupport());
+                }
             }
 
             public void encode(Object object) throws IllegalArgumentException {
@@ -886,17 +906,33 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 
                 verifyUpdateSequence(request);
                 
+                StringBuilder schemaLocation = new StringBuilder();
+                schemaLocation.append(org.geoserver.wfs.xml.v1_1_0.WFS.NAMESPACE);
+                schemaLocation.append(" ");
+                if (wfs.isCanonicalSchemaLocation()) {
+                    schemaLocation
+                            .append(org.geoserver.wfs.xml.v1_1_0.WFS.CANONICAL_SCHEMA_LOCATION);
+                } else {
+                    schemaLocation
+                            .append(buildSchemaURL(request.getBaseUrl(), "wfs/1.1.0/wfs.xsd"));
+                }
+                addExtensionSchemaLocation(schemaLocation);
+
                 AttributesImpl attributes = attributes(new String[] {
                             "version", "1.1.0", "xmlns:xsi", XSI_URI, "xmlns", WFS_URI, "xmlns:wfs",
                             WFS_URI, "xmlns:ows", OWS.NAMESPACE, "xmlns:gml", GML.NAMESPACE,
                             "xmlns:ogc", OGC.NAMESPACE, "xmlns:xlink", XLINK.NAMESPACE,
                             "xsi:schemaLocation",
-                            org.geoserver.wfs.xml.v1_1_0.WFS.NAMESPACE + " " +
-                            (wfs.isCanonicalSchemaLocation()?
-                                    org.geoserver.wfs.xml.v1_1_0.WFS.CANONICAL_SCHEMA_LOCATION:
-                                        (buildSchemaURL(request.getBaseUrl(), "wfs/1.1.0/wfs.xsd")))
+                            schemaLocation.toString()
                             });
 
+                @SuppressWarnings("rawtypes")
+                Enumeration prefixes = getNamespaceSupport().getPrefixes();
+                while (prefixes.hasMoreElements()) {
+                    String prefix = (String) prefixes.nextElement();
+                    attributes.addAttribute(null, null, "xmlns:" + prefix, null,
+                            getNamespaceSupport().getURI(prefix));
+                }
                 registerNamespaces(attributes);
                 updateSequence(attributes);
 
@@ -910,6 +946,40 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 filterCapabilities();
 
                 end("wfs:WFS_Capabilities");
+            }
+
+            String addExtensionSchemaLocation(StringBuilder schemaLocation) {
+                for (WFSExtendedCapabilitiesProvider cp : extCapsProviders) {
+                    String[] locations = cp.getSchemaLocations(schemaBaseURL);
+                    try {
+                        for (int i = 0; i < locations.length - 1; i += 2) {
+                            schemaLocation.append(" ");
+                            schemaLocation.append(schemaLocation(locations[i], locations[i + 1]));
+                        }
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        throw new ServiceException(
+                                "Extended capabilities provider returned improper "
+                                        + "set of namespace,location pairs from getSchemaLocations()",
+                                e);
+                    }
+                }
+
+                return schemaLocation.toString();
+            }
+
+            String schemaLocation(String namespace, String uri) {
+                String location = null;
+                try {
+                    new URL(uri);
+
+                    // external location
+                    location = uri;
+                } catch (MalformedURLException e) {
+                    // means the url is relative
+                    location = buildSchemaURL(schemaBaseURL, uri);
+                }
+
+                return namespace + " " + location;
             }
 
             /**
@@ -1117,6 +1187,8 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                     transaction();
                 }
 
+                extendedCapabilities();
+
                 end("ows:OperationsMetadata");
             }
 
@@ -1219,7 +1291,33 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 Map.Entry[] parameters = new Map.Entry[] {        };
                 operation("GetGmlObject", parameters, true, true);
             }
-            
+
+            private void extendedCapabilities() {
+                for (WFSExtendedCapabilitiesProvider cp : this.extCapsProviders) {
+                    try {
+                        cp.encode(new WFSExtendedCapabilitiesProvider.Translator() {
+                            public void start(String element) {
+                                CapabilitiesTranslator1_1.this.start(element);
+                            }
+
+                            public void start(String element, Attributes attributes) {
+                                CapabilitiesTranslator1_1.this.start(element, attributes);
+                            }
+
+                            public void chars(String text) {
+                                CapabilitiesTranslator1_1.this.chars(text);
+                            }
+
+                            public void end(String element) {
+                                CapabilitiesTranslator1_1.this.end(element);
+                            }
+                        }, wfs, request);
+                    } catch (Exception e) {
+                        throw new ServiceException("Extended capabilities provider threw error", e);
+                    }
+                }
+            }
+
             /**
                  * Encdoes the wfs:FeatureTypeList element.
                  *<p>
@@ -1732,14 +1830,19 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
         /** filter namespace + prefix */
         protected static final String FES_PREFIX = "fes";
         protected static final String FES_URI = FES.NAMESPACE;
-        
-        public WFS2_0(WFSInfo wfs, Catalog catalog) {
+        private final Collection<WFSExtendedCapabilitiesProvider> extCapsProviders;
+        private final String baseUrl;
+
+        public WFS2_0(WFSInfo wfs, String baseUrl, Catalog catalog,
+                Collection<WFSExtendedCapabilitiesProvider> extCapsProviders) {
             super(wfs, WFSInfo.Version.V_20, catalog);
+            this.extCapsProviders = extCapsProviders;
+            this.baseUrl = baseUrl;
         }
         
         @Override
         public Translator createTranslator(ContentHandler handler) {
-            return new CapabilitiesTranslator2_0(handler);
+            return new CapabilitiesTranslator2_0(handler, baseUrl, wfs, this.extCapsProviders);
         }
         
         class CapabilitiesTranslator2_0 extends TranslatorSupport {
@@ -1747,33 +1850,55 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             GetCapabilitiesRequest request;
             WFS1_1.CapabilitiesTranslator1_1 delegate;
             
-            public CapabilitiesTranslator2_0(ContentHandler handler) {
+            public CapabilitiesTranslator2_0(ContentHandler handler, String baseUrl, WFSInfo wfs, Collection<WFSExtendedCapabilitiesProvider> extCapsProviders) {
                 super(handler, null, null);
 
                 //register schema mappings for function return + argument types
                 getNamespaceSupport().declarePrefix("xs", XS.NAMESPACE);
                 getNamespaceSupport().declarePrefix("gml", org.geotools.gml3.v3_2.GML.NAMESPACE);
-                
+
+                // register namespaces provided by extended capabilities
+                for (WFSExtendedCapabilitiesProvider cp : extCapsProviders) {
+                    cp.registerNamespaces(getNamespaceSupport());
+                }
+
                 //wfs 1.1 already does a lot of the capabilities work, use that transformer 
                 // as a delegate
                 delegate = 
-                    (CapabilitiesTranslator1_1) new WFS1_1(wfs, version, catalog).createTranslator(handler);
+                    (CapabilitiesTranslator1_1) new WFS1_1(wfs, version, baseUrl, catalog, extCapsProviders).createTranslator(handler);
             }
 
             public void encode(Object o) throws IllegalArgumentException {
                 request = GetCapabilitiesRequest.adapt(o);
+                delegate.request = request;
                 
-                AttributesImpl attributes = attributes(new String[] { "version", "2.0.0", 
+                StringBuilder schemaLocation = new StringBuilder();
+                schemaLocation.append(WFS20_URI);
+                schemaLocation.append(" ");
+                if (wfs.isCanonicalSchemaLocation()) {
+                    schemaLocation.append(org.geotools.wfs.v2_0.WFS.CANONICAL_SCHEMA_LOCATION);
+                } else {
+                    schemaLocation.append(buildSchemaURL(request.getBaseUrl(), "wfs/2.0/wfs.xsd"));
+                }
+
+                delegate.addExtensionSchemaLocation(schemaLocation);
+
+                AttributesImpl attributes = attributes(new String[] { "version", "2.0.0",
                     "xmlns:xsi", XSI_URI, "xmlns", WFS20_URI, "xmlns:wfs", WFS20_URI, 
                     "xmlns:ows", org.geotools.ows.v1_1.OWS.NAMESPACE, 
                     "xmlns:gml", org.geotools.gml3.v3_2.GML.NAMESPACE,
                     "xmlns:fes", FES_URI, "xmlns:xlink", XLINK.NAMESPACE,
                     "xmlns:xs", XS.NAMESPACE,
-                    "xsi:schemaLocation", WFS20_URI + " " +
-                        (wfs.isCanonicalSchemaLocation()
-                                ? org.geotools.wfs.v2_0.WFS.CANONICAL_SCHEMA_LOCATION
-                                : (buildSchemaURL(request.getBaseUrl(), "wfs/2.0/wfs.xsd")))
+                    "xsi:schemaLocation", schemaLocation.toString()
                 });
+
+                @SuppressWarnings("rawtypes")
+                Enumeration prefixes = getNamespaceSupport().getPrefixes();
+                while (prefixes.hasMoreElements()) {
+                    String prefix = (String) prefixes.nextElement();
+                    attributes.addAttribute(null, null, "xmlns:" + prefix, null,
+                            getNamespaceSupport().getURI(prefix));
+                }
 
                 registerNamespaces(attributes);
                 updateSequence(attributes);
@@ -1815,10 +1940,14 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 }
 
                 constraints();
+
+                delegate.extendedCapabilities();
+
                 end("ows:OperationsMetadata");
             }
-            
-            void operation(String name, Map.Entry[] parameters, Map.Entry[] constraints, boolean get, boolean post) {
+
+            void operation(String name, Map.Entry[] parameters, Map.Entry[] constraints,
+                    boolean get, boolean post) {
                 start("ows:Operation", attributes(new String[] { "name", name }));
 
                 String serviceURL = buildURL(request.getBaseUrl(), "wfs", null, URLType.SERVICE);

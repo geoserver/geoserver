@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -162,10 +162,6 @@ public class StatusPage extends ServerAdminPage {
                 target.addComponent(feedbackPanel);
             }
         });
-        
-        add(new Label("reload.date.geoserver", "Jul 14, 3:07 PM"));
-        add(new Label("reload.date.configuration", "Jul 14, 3:07 PM"));
-        add(new Label("reload.date.xml", "Mar 14, 2:15 PM"));
     }
 
     private void updateModel() {

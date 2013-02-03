@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.geosearch.rest;
@@ -180,7 +180,7 @@ public class GeoSearchLayer extends AbstractResource {
                     + " LayerGroup's bounds to EPSG:4326", e);
             latLonBoundingBox = new ReferencedEnvelope(DefaultGeographicCRS.WGS84);
             try {
-                for (LayerInfo li : lgi.getLayers()) {
+                for (LayerInfo li : lgi.layers()) {
                     ReferencedEnvelope llbb = li.getResource().getLatLonBoundingBox();
                     latLonBoundingBox.expandToInclude(llbb.transform(DefaultGeographicCRS.WGS84,
                             true));
@@ -201,7 +201,7 @@ public class GeoSearchLayer extends AbstractResource {
         if (info instanceof LayerInfo) {
             layers.add(new MapLayerInfo((LayerInfo) info));
         } else {
-            for (LayerInfo l : ((LayerGroupInfo) info).getLayers()) {
+            for (LayerInfo l : ((LayerGroupInfo) info).layers()) {
                 layers.add(new MapLayerInfo(l));
             }
         }
@@ -210,7 +210,7 @@ public class GeoSearchLayer extends AbstractResource {
 
     private String[] getKeyWords(LayerGroupInfo lgi) {
         Set<String> kws = new TreeSet<String>();
-        for (LayerInfo li : lgi.getLayers()) {
+        for (LayerInfo li : lgi.layers()) {
             List<String> keywords = li.getResource().keywordValues();
             if (keywords != null) {
                 kws.addAll(keywords);
@@ -221,7 +221,7 @@ public class GeoSearchLayer extends AbstractResource {
 
     private String getDescription(LayerGroupInfo lgi) {
         StringBuilder desc = new StringBuilder();
-        for (LayerInfo li : lgi.getLayers()) {
+        for (LayerInfo li : lgi.layers()) {
             desc.append(li.getResource().getPrefixedName());
             desc.append(": ");
             String lidesc = li.getResource().getAbstract();
@@ -235,7 +235,7 @@ public class GeoSearchLayer extends AbstractResource {
 
     private String getTitle(LayerGroupInfo lgi) {
         StringBuilder title = new StringBuilder("Layer Group composed of: ");
-        for (LayerInfo li : lgi.getLayers()) {
+        for (LayerInfo li : lgi.layers()) {
             title.append("\"").append(li.getResource().getTitle()).append("\"  ");
         }
         return title.toString();

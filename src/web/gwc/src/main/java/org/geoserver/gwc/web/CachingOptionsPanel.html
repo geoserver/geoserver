@@ -14,6 +14,15 @@
       <div wicket:id="configs">
         <ul>
           <li>
+            <div style="width: 50%">
+              <label><wicket:message key="GWCSettingsPage.lockProvider">lockProvider:</wicket:message></label>
+            </div>
+            <div>
+              <select class="select" id="lockProvider" wicket:id="lockProvider"></select>
+            </div>
+            <br>
+          </li>
+          <li>
             <input id="cacheNonDefaultStyles" class="field checkbox" type="checkbox" wicket:id="cacheNonDefaultStyles" /> 
             <label for="cacheNonDefaultStyles" class="choice">
               <wicket:message key="GWCSettingsPage.cacheNonDefaultStyles">Automatically cache non default styles</wicket:message>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+ * Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -30,6 +30,7 @@ import org.geoserver.test.SystemTest;
 import org.geotools.data.DataAccess;
 import org.geotools.factory.GeoTools;
 import org.geotools.feature.NameImpl;
+import org.geotools.util.SoftValueHashMap;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opengis.feature.Feature;
@@ -50,7 +51,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
      * constructed for the same {@link FeatureTypeInfo}, Bad Things Happen (TM).
      */
     @Test public void testFeatureTypeCacheInstance() throws Exception {
-        ResourcePool pool = new ResourcePool(getCatalog());
+        ResourcePool pool = ResourcePool.create(getCatalog());
         FeatureTypeInfo info = getCatalog().getFeatureTypeByName(
                 MockData.LAKES.getNamespaceURI(), MockData.LAKES.getLocalPart());
         FeatureType ft1 = pool.getFeatureType(info);
@@ -62,7 +63,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
     
     @Test public void testAttributeCache() throws Exception {
         final Catalog catalog = getCatalog();
-        ResourcePool pool = new ResourcePool(catalog);
+        ResourcePool pool = ResourcePool.create(catalog);
         
         // clean up the lakes type
         FeatureTypeInfo oldInfo = catalog.getFeatureTypeByName(
@@ -175,7 +176,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         gs.save(global);
 
         Catalog catalog = getCatalog();
-        assertEquals(200, catalog.getResourcePool().featureTypeCache.getHardReferencesCount());
+        assertEquals(200, ((SoftValueHashMap)catalog.getResourcePool().getFeatureTypeCache()).getHardReferencesCount());
     }
     
     @Test public void testDropCoverageStore() throws Exception {

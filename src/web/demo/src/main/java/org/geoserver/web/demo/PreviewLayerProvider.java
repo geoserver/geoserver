@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -68,14 +68,16 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
 
         final List<LayerGroupInfo> layerGroups = getCatalog().getLayerGroups();
         for (LayerGroupInfo group :layerGroups ) {
-            boolean enabled = true;
-            layers = group.getLayers();
-            for (LayerInfo layer :layers ) {
-                // ask for enabled() instead of isEnabled() to account for disabled resource/store
-                enabled &= layer.enabled();
+            if (!LayerGroupInfo.Mode.CONTAINER.equals(group.getMode())) {            
+                boolean enabled = true;
+                for (LayerInfo layer : group.layers()) {
+                    // ask for enabled() instead of isEnabled() to account for disabled resource/store
+                    enabled &= layer.enabled();
+                }
+                
+                if (enabled && group.layers().size() > 0)
+                    result.add(new PreviewLayer(group));
             }
-            if (enabled)
-                result.add(new PreviewLayer(group));
         }
 
         return result;

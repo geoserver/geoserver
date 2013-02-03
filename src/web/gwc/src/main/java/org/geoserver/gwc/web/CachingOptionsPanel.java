@@ -1,11 +1,13 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.gwc.web;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -27,6 +29,10 @@ import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
 import org.geoserver.gwc.config.GWCConfig;
+import org.geoserver.web.GeoServerApplication;
+import org.geoserver.web.wicket.LocalizedChoiceRenderer;
+import org.geowebcache.locks.LockProvider;
+import org.springframework.context.ApplicationContext;
 
 public class CachingOptionsPanel extends Panel {
     private static final long serialVersionUID = 1L;
@@ -65,6 +71,16 @@ public class CachingOptionsPanel extends Panel {
                 target.addComponent(container);
             }
         });
+        
+        IModel<String> lockProviderModel = new PropertyModel<String>(gwcConfigModel, "lockProviderName");
+        ApplicationContext applicationContext = GeoServerApplication.get().getApplicationContext();
+        String[] lockProviders = applicationContext.getBeanNamesForType(LockProvider.class);
+        List<String> lockProviderChoices = new ArrayList<String>(Arrays.asList(lockProviders));
+        Collections.sort(lockProviderChoices); // make sure we get a stable listing order
+        DropDownChoice<String> lockProviderChoice = new DropDownChoice<String>("lockProvider", lockProviderModel,
+                lockProviderChoices, new LocalizedChoiceRenderer(this));
+        configs.add(lockProviderChoice);
+
 
         IModel<Boolean> nonDefaultStylesModel;
         nonDefaultStylesModel = new PropertyModel<Boolean>(gwcConfigModel, "cacheNonDefaultStyles");

@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -39,6 +39,7 @@ import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LayerInfo.Type;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
@@ -65,6 +66,7 @@ import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.grid.OutsideCoverageException;
 import org.geowebcache.io.Resource;
 import org.geowebcache.layer.meta.LayerMetaInformation;
+import org.geowebcache.locks.MemoryLockProvider;
 import org.geowebcache.mime.MimeType;
 import org.geowebcache.storage.StorageBroker;
 import org.geowebcache.storage.TileObject;
@@ -105,6 +107,8 @@ public class GeoServerTileLayerTest {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void setUp() throws Exception {
         mockGWC = mock(GWC.class);
+        MemoryLockProvider lockProvider = new MemoryLockProvider();
+        when(mockGWC.getLockProvider()).thenReturn(lockProvider);
         GWC.set(mockGWC);
 
         final String layerInfoId = "mock-layer-info";
@@ -156,7 +160,7 @@ public class GeoServerTileLayerTest {
         final String layerGroupId = "mock-layergroup-id";
         layerGroup.setId(layerGroupId);
         layerGroup.setName("MockLayerGroup");
-        layerGroup.setLayers(Collections.singletonList((LayerInfo) layerInfo));
+        layerGroup.setLayers(Collections.singletonList((PublishedInfo) layerInfo));
 
         defaults = GWCConfig.getOldDefaults();
 

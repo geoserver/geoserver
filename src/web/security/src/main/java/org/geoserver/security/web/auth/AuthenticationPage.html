@@ -8,17 +8,6 @@
 <wicket:extend>
   <form wicket:id="form">
     <ul style="padding-top: 1em;">
-     <!--li>
-       <fieldset>
-        <legend><span><wicket:message key="anonymousAuth"></wicket:message></span></legend>
-        <ul>
-          <li>
-            <input id="anonymous" wicket:id="anonymousAuth" type="checkbox" class="field checkbox"></input>
-            <label for="anonymous" class="choice"><wicket:message key="enabled"></wicket:message></label>
-          </li>
-        </ul>
-       </fieldset>
-     </li-->
      <li>   
      	<fieldset>
      	<legend><span><wicket:message key="logoutSettings"></wicket:message></span></legend>
@@ -30,6 +19,17 @@
           </ul>
          </fieldset>      
      </li>
+     <li>   
+        <fieldset>
+        <legend><span><wicket:message key="sslSettings"></wicket:message></span></legend>
+         <ul>
+            <li>
+                <label for="sslPort" ><wicket:message key="sslPort"></wicket:message></label>   
+                <input id="sslPort" wicket:id="sslPort" type="text" class="text"></input>
+            </li>
+          </ul>
+         </fieldset>      
+     </li>     
      <li>
        <fieldset>
         <legend>
@@ -42,12 +42,23 @@
      <li>
        <fieldset>
          <legend>
+          <span><wicket:message key="authChains"></wicket:message></span>
+          <a href="#" wicket:id="authChainsHelp" class="help-link"></a>
+         </legend>
+         <div wicket:id="authChains"></div>
+       </fieldset>
+     </li>
+     
+     <li>
+       <fieldset>
+         <legend>
           <span><wicket:message key="filterChain"></wicket:message></span>
           <a href="#" wicket:id="filterChainHelp" class="help-link"></a>
          </legend>
          <div wicket:id="filterChain"></div>
        </fieldset>
      </li>
+     
      <li>
        <fieldset>
         <legend>

@@ -1,7 +1,11 @@
 package org.geoserver.wcs2_0.post;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.File;
+
+import org.apache.commons.io.FileUtils;
 import org.geoserver.wcs2_0.WCSTestSupport;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -9,20 +13,37 @@ import org.w3c.dom.Document;
 public class DescribeCoverageTest extends WCSTestSupport {
 
     @Test
-    public void testDescribeCoveragePOST() throws Exception {
-        String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
-        		"<wcs:DescribeCoverage xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'\n" + 
-        		"  xmlns:wcs='http://www.opengis.net/wcs/2.0' xmlns:gml='http://www.opengis.net/gml/3.2'\n" + 
-        		"  xsi:schemaLocation='http://www.opengis.net/wcs/2.0 http://schemas.opengis.net/wcs/2.0/wcsAll.xsd'\n" + 
-        		"  service=\"WCS\" version=\"2.0.1\">\n" + 
-        		"  <wcs:CoverageId>wcs__BlueMarble</wcs:CoverageId>\n" + 
-        		"</wcs:DescribeCoverage>";
+    public void testDescribeCoverageSimple() throws Exception {
+
+        final File xml= new File("./src/test/resources/testDescribeCoverage.xml");
+        final String request= FileUtils.readFileToString(xml);                
         
         Document dom = postAsDOM("wcs", request);
         assertNotNull(dom);
-        print(dom, System.out);
+        // print(dom, System.out);
         
+        // validate
         checkValidationErrors(dom, WCS20_SCHEMA);
         
+        // check it is good
+        assertXpathEvaluatesTo("wcs__BlueMarble", "//wcs:CoverageDescription//wcs:CoverageId", dom);
+        assertXpathEvaluatesTo("3", "count(//wcs:CoverageDescription//gmlcov:rangeType//swe:DataRecord//swe:field)", dom);
+        
+    }
+    
+    @Test
+    public void testDescribeCoverageMultiband() throws Exception {
+        final File xml= new File("./src/test/resources/testDescribeCoverageMultiBand.xml");
+        final String request= FileUtils.readFileToString(xml);  
+        
+        Document dom = postAsDOM("wcs", request);
+        assertNotNull(dom);
+        // print(dom, System.out);
+        
+        checkValidationErrors(dom, WCS20_SCHEMA);
+
+        // check it is good
+        assertXpathEvaluatesTo("wcs__multiband", "//wcs:CoverageDescription//wcs:CoverageId", dom);
+        assertXpathEvaluatesTo("9", "count(//wcs:CoverageDescription//gmlcov:rangeType//swe:DataRecord//swe:field)", dom);
     }
 }

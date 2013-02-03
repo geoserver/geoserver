@@ -1,10 +1,11 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.web.catalogstresstool;
 
 import java.io.Serializable;
+import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
 
@@ -353,10 +354,13 @@ public class CatalogStressTester extends GeoServerSecuredPage {
             }
         }
 
-        System.out.println("added " + numCopies + " copies of " + original + " in " + globalTime);
 
-        progress.setDefaultModelObject("Inserted " + numCopies + " copies of " + original + "in "
-                + globalTime);
+        String localizerString = this.getLocalizer().getString("CatalogStressTester.progressStatusMessage", this,  "Inserted {0} copies of {1} in {2}");
+        String progressMessage = MessageFormat.format(localizerString, numCopies, original, globalTime);
+        
+        System.out.println(progressMessage);
+        progress.setDefaultModelObject(progressMessage);
+        
         target.addComponent(progress);
     }
 

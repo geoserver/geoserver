@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -454,6 +454,80 @@ public class GetCoverageTest extends AbstractGetCoverageTest {
         ImageReader reader = ImageIO.getImageReadersByFormatName("tiff").next();
         reader.setInput(ImageIO.createImageInputStream(coveragePart.getInputStream()));
         RenderedImage image = reader.read(0);
+    }
+    
+    /**
+     * This tests just ended up throwing an exception as the coverage being encoded
+     * was too large due to a bug in the scales estimation
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testRotatedPost() throws Exception {
+        String request = "<GetCoverage xmlns=\"http://www.opengis.net/wcs/1.1.1\" xmlns:gml=\"http://www.opengis.net/gml\"\n" + 
+                "             xmlns:ows11=\"http://www.opengis.net/ows/1.1\"\n" + 
+                "             xmlns:ows=\"http://www.opengis.net/ows/1.1\"\n" +
+                "             xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \r\n" + //
+                "             xmlns:wcs=\"http://schemas.opengis.net/wcs/1.1.1\"\n" + 
+                "             xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n" + 
+                "             service=\"WCS\"\n" + 
+                "             version=\"1.1.1\"\n" + 
+                "             xsi:schemaLocation=\"http://www.opengis.net/wcs/1.1.1 http://schemas.opengis.net/wcs/1.1.1/wcsAll.xsd\">\n" + 
+                "   <ows11:Identifier>RotatedCad</ows11:Identifier>\n" + 
+                "   <DomainSubset>\n" + 
+                "      <ows11:BoundingBox crs=\"urn:ogc:def:crs:OGC:1.3:CRS84\">\n" + 
+                "         <ows11:LowerCorner>7.7634301664746515 45.14713380418506</ows11:LowerCorner>\n" + 
+                "         <ows11:UpperCorner>7.764350661575157 45.14763319238466</ows11:UpperCorner>\n" + 
+                "      </ows11:BoundingBox>\n" + 
+                "   </DomainSubset>\n" + 
+                "   <Output format=\"image/tiff\"/>\n" + 
+                "</GetCoverage>";
+        
+        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+
+        // parse the multipart, check there are two parts
+        Multipart multipart = getMultipart(response);
+        assertEquals(2, multipart.getCount());
+        BodyPart coveragePart = multipart.getBodyPart(1);
+        assertEquals("image/tiff", coveragePart.getContentType());
+        assertEquals("<theCoverage>", coveragePart.getHeader("Content-ID")[0]);
+
+        // make sure we can read the coverage back
+        ImageReader reader = ImageIO.getImageReadersByFormatName("tiff").next();
+        reader.setInput(ImageIO.createImageInputStream(coveragePart.getInputStream()));
+        RenderedImage image = reader.read(0);
+        
+        // check the image is suitably small (without requiring an exact size)
+        assertTrue(image.getWidth() < 1000);
+        assertTrue(image.getHeight() < 1000);
+    }
+    
+    /**
+     * This tests just ended up throwing an exception as the coverage being encoded
+     * was too large due to a bug in the scales estimation
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testRotatedGet() throws Exception {
+        String request = "wcs?&service=WCS&request=GetCoverage&version=1.1.1&identifier=RotatedCad&BoundingBox=7.7634071540971386,45.14712131948007,7.76437367395267,45.14764567708965,urn:ogc:def:crs:OGC:1.3:CRS84&Format=image/tiff";
+        MockHttpServletResponse response = getAsServletResponse(request);
+
+        // parse the multipart, check there are two parts
+        Multipart multipart = getMultipart(response);
+        assertEquals(2, multipart.getCount());
+        BodyPart coveragePart = multipart.getBodyPart(1);
+        assertEquals("image/tiff", coveragePart.getContentType());
+        assertEquals("<theCoverage>", coveragePart.getHeader("Content-ID")[0]);
+
+        // make sure we can read the coverage back
+        ImageReader reader = ImageIO.getImageReadersByFormatName("tiff").next();
+        reader.setInput(ImageIO.createImageInputStream(coveragePart.getInputStream()));
+        RenderedImage image = reader.read(0);
+        
+        // check the image is suitably small (without requiring an exact size)
+        assertTrue(image.getWidth() < 1000);
+        assertTrue(image.getHeight() < 1000);
     }
 
 }

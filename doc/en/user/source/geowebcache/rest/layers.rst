@@ -247,6 +247,6 @@ To delete a layer, use the HTTP DELETE method against the layer resource:
 
 .. note::
 
-   If trying to delete a tile layer that is an integrated ``GeoServerLayer``, only the GeoWebCache layer definition will be deleted; the GeoServer definition is left untouched. To delete a layer in GeoServer, use the :ref:`GeoServer REST API <rest_extension>` to manipulate GeoServer resources. 
+   If trying to delete a tile layer that is an integrated ``GeoServerLayer``, only the GeoWebCache layer definition will be deleted; the GeoServer definition is left untouched. To delete a layer in GeoServer, use the GeoServer :ref:`rest` to manipulate GeoServer resources. 
 
    On the other hand, deleting a GeoServer layer via the GeoServer REST API *will* automatically delete the associated tile layer.

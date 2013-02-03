@@ -1,18 +1,30 @@
-/* Copyright (c) 2001 - 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security.web.auth;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.logging.Level;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
-import org.apache.wicket.markup.html.form.CheckBox;
-import org.apache.wicket.markup.html.form.ChoiceRenderer;
+import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
@@ -23,17 +35,16 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.model.ResourceModel;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityFilterChain;
-import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.security.GeoServerSecurityFilterChainProxy;
+import org.geoserver.security.HTTPMethod;
 import org.geoserver.security.RequestFilterChain;
-import org.geoserver.security.VariableFilterChain;
 import org.geoserver.security.config.LogoutFilterConfig;
+import org.geoserver.security.config.SSLFilterConfig;
 import org.geoserver.security.config.SecurityManagerConfig;
-import org.geoserver.security.filter.GeoServerRoleFilter;
 import org.geoserver.security.web.AbstractSecurityPage;
 import org.geoserver.web.wicket.HelpLink;
-import org.springframework.util.StringUtils;
 
 /**
  * Main menu page for authentication.
@@ -44,6 +55,9 @@ public class AuthenticationPage extends AbstractSecurityPage {
 
     Form<SecurityManagerConfig> form;
     LogoutFilterConfig logoutFilterConfig;
+    SSLFilterConfig sslFilterConfig;
+    SecurityManagerConfig config;
+    AuthFilterChainPanel authFilterChainPanel;
     
     public AuthenticationPage() {
         initComponents();
@@ -52,7 +66,7 @@ public class AuthenticationPage extends AbstractSecurityPage {
     void initComponents() {
         
         // The request filter chain objects have to be cloned
-        SecurityManagerConfig config = getSecurityManager().getSecurityConfig();
+        config = getSecurityManager().getSecurityConfig();
         List<RequestFilterChain> clones = new ArrayList<RequestFilterChain>();
         
         for (RequestFilterChain chain : config.getFilterChain().getRequestChains()) {            
@@ -74,14 +88,25 @@ public class AuthenticationPage extends AbstractSecurityPage {
             throw new RuntimeException(e1);
         }
         form.add(new TextField<String>("redirectURL",new PropertyModel<String>(this, "logoutFilterConfig.redirectURL")));
+        
+        try {
+            sslFilterConfig= (SSLFilterConfig) getSecurityManager().loadFilterConfig(GeoServerSecurityFilterChain.SSL_FILTER);
+        } catch (IOException e1) {
+            throw new RuntimeException(e1);
+        }
+        form.add(new TextField<Integer>("sslPort",new PropertyModel<Integer>(this, "sslFilterConfig.sslPort")));
+
 
         form.add(new AuthenticationFiltersPanel("authFilters"));
         form.add(new HelpLink("authFiltersHelp").setDialog(dialog));
 
         form.add(new AuthenticationProvidersPanel("authProviders"));
         form.add(new HelpLink("authProvidersHelp").setDialog(dialog));
+        
+        form.add(new SecurityFilterChainsPanel("authChains",config)); 
+        form.add(new HelpLink("authChainsHelp").setDialog(dialog));
 
-        form.add(new AuthFilterChainPanel("filterChain", 
+        form.add(authFilterChainPanel = new AuthFilterChainPanel("filterChain", 
             new PropertyModel<GeoServerSecurityFilterChain>(form.getModel(), "filterChain")));
         form.add(new HelpLink("filterChainHelp").setDialog(dialog));
 
@@ -95,6 +120,7 @@ public class AuthenticationPage extends AbstractSecurityPage {
                     getSecurityManager()
                         .saveSecurityConfig((SecurityManagerConfig) getForm().getModelObject());
                     getSecurityManager().saveFilter(logoutFilterConfig);
+                    getSecurityManager().saveFilter(sslFilterConfig);
                     doReturn();
                 } catch (Exception e) {
                     LOGGER.log(Level.WARNING, "Error saving authentication config", e);
@@ -109,6 +135,10 @@ public class AuthenticationPage extends AbstractSecurityPage {
             }
         });
     }
+    
+    public void updateChainComponents() {                
+        form.replace(new SecurityFilterChainsPanel("authChains", config));
+    }
 
     class AuthenticationChainPanel extends FormComponentPanel {
 
@@ -119,151 +149,240 @@ public class AuthenticationPage extends AbstractSecurityPage {
         }
     }
 
-    class RequestChainDropDownChoice extends DropDownChoice<VariableFilterChain> {
-
-        public RequestChainDropDownChoice(String id, IModel<VariableFilterChain> model, 
-            IModel<List<VariableFilterChain>> choices) {
-            super(id, model, choices, new ChoiceRenderer<VariableFilterChain>() {
-                @Override
-                public Object getDisplayValue(VariableFilterChain object) {
-                    String name = object.getName();
-                    return new ResourceModel(RequestFilterChain.class.getSimpleName()+"."+name,name).getObject();
-                }
-                @Override
-                public String getIdValue(VariableFilterChain object, int index) {
-                    return object.getName();
-                }
-            });
-        }
-    }
 
     class AuthFilterChainPanel extends FormComponentPanel {
-
-        VariableFilterChain requestChain;
-        String antPatterns;
-        AuthFilterChainPalette palette;
-        RequestChainDropDownChoice dropDownChoice;
-        DropDownChoice<String> roleFilterChoice;
-        CheckBox disabled,allowSessionCreation;
-        TextField<String> antPatternField;
+        
+        DropDownChoice<HTTPMethod> httpMethodChoice;
+        TextField<String> urlPathField,chainTestResultField;
+        String urlPath,chainTestResult;
+        HTTPMethod httpMethod=HTTPMethod.GET;
 
         public AuthFilterChainPanel(String id, IModel<GeoServerSecurityFilterChain> model) {
             super(id, new Model());
 
             this.setOutputMarkupId(true);
-            setRequestChain((VariableFilterChain) model.getObject().getRequestChainByName("web"));
-            dropDownChoice=new RequestChainDropDownChoice("requestChain", new PropertyModel(this, "requestChain"), 
-                    new PropertyModel<List<VariableFilterChain>>(model, "variableRequestChains"));
-            add(dropDownChoice);
-            dropDownChoice.add(
-                new OnChangeAjaxBehavior() {
+            
+            add(urlPathField=new TextField<String>("urlPath",new PropertyModel<String>(this,"urlPath")));            
+            urlPathField.setOutputMarkupId(true);
+            urlPathField.add(
+                    new OnChangeAjaxBehavior() {
+                        @Override
+                        protected void onUpdate(AjaxRequestTarget target) {
+                        }
+                    });
+                                                 
+            add(chainTestResultField=new TextField<String>("chainTestResult",new PropertyModel<String>(this,"chainTestResult")));
+            chainTestResultField.setEnabled(false);
+            chainTestResultField.setOutputMarkupId(true);
+           
+            
+            add(httpMethodChoice=new DropDownChoice<HTTPMethod>("httpMethod",
+                    new PropertyModel<HTTPMethod>(this,"httpMethod"),
+                    Arrays.asList(HTTPMethod.values())));
+            httpMethodChoice.setOutputMarkupId(true);
+            httpMethodChoice.setNullValid(false);
+            httpMethodChoice.add(
+                    new OnChangeAjaxBehavior() {
+                        @Override
+                        protected void onUpdate(AjaxRequestTarget target) {
+                        }
+                    });
+        
+            add(new AjaxSubmitLink("chainTest") {
                 @Override
-                protected void onUpdate(AjaxRequestTarget target) {
-                    palette.setChain(dropDownChoice.getModelObject());
-                    target.addComponent(roleFilterChoice);
-                    target.addComponent(palette);
-                    target.addComponent(disabled);
-                    target.addComponent(allowSessionCreation);
-                    target.addComponent(antPatternField);
-                    //target.addComponent(AuthFilterChainPanel.this);
+                protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    try {
+                        String result="NONE";
+                        HttpServletRequest request = getHttpRequest();
+                        for (RequestFilterChain chain : config.getFilterChain().getRequestChains()) {
+                            if (httpMethod!=null && urlPath!=null) {
+                                if (getProxy().matcherForChain(chain).matches(request)) {
+                                    result=chain.getName();
+                                    break;
+                                }
+                            }
+                        }        
+                        chainTestResultField.getModel().setObject(result);
+                        target.addComponent(chainTestResultField);
+                    }
+                    catch(Exception e) {
+                        error(e);
+                        LOGGER.log(Level.WARNING, "Connection error", e);
+                        target.addComponent(feedbackPanel);
+                    }
                 }
-                    
-            }); 
-            
-            add(antPatternField=new TextField<String>("antPatterns",new PropertyModel<String>(this,"antPatterns")));
-            antPatternField.setEnabled(false);
-            antPatternField.setOutputMarkupId(true);
-                    
-            add(allowSessionCreation=new CheckBox("allowSessionCreation",new PropertyModel<Boolean>(this,"requestChain.allowSessionCreation")));
-            allowSessionCreation.setOutputMarkupId(true);
-            allowSessionCreation.add(
-                    new OnChangeAjaxBehavior() {
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                    }                        
-                });              
-            
-            add(disabled=new CheckBox("disabled",new PropertyModel<Boolean>(this,"requestChain.disabled")));
-            disabled.setOutputMarkupId(true);
-            disabled.add(
-                    new OnChangeAjaxBehavior() {
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                       palette.setEnabled(!requestChain.isDisabled());
-                       roleFilterChoice.setEnabled(!requestChain.isDisabled());
-                       target.addComponent(palette);
-                       target.addComponent(roleFilterChoice);
-                    }                        
-                });              
-
-            
-            add(palette=new AuthFilterChainPalette("authFilterChain", new AuthFilterNamesModel(model)));            
-            palette.setOutputMarkupId(true);
-            palette.setChain(requestChain);
-            // the OnChangeAjaxBehavior is added in the AuthFilterChainPalette class  
-            
-            
-            List<String> roleFilterNames=null;
-            try {
-                roleFilterNames = new ArrayList<String>(
-                        getSecurityManager().listFilters(GeoServerRoleFilter.class));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }            
-            add(roleFilterChoice=new DropDownChoice<String>("roleFilterChoice",
-                    new PropertyModel<String>(this,"requestChain.roleFilterName"),
-                    roleFilterNames));
-            roleFilterChoice.setOutputMarkupId(true);
-            roleFilterChoice.setNullValid(true);
-            roleFilterChoice.add(
-                    new OnChangeAjaxBehavior() {
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {                        
-                    }                        
-                });              
-        }
-        
-        
-
-        class AuthFilterNamesModel implements IModel<List<String>> {
-
-            IModel<GeoServerSecurityFilterChain> filterChainModel;
-
-            AuthFilterNamesModel(IModel<GeoServerSecurityFilterChain> filterChainModel) {
-                this.filterChainModel = filterChainModel;
-            }
-
-            @Override
-            public List<String> getObject() {
+                protected GeoServerSecurityFilterChainProxy getProxy() {
+                    return GeoServerExtensions.bean(GeoServerSecurityFilterChainProxy.class);
+                }
                 
-                GeoServerSecurityManager secMgr = getSecurityManager();
-                List<String> filters = new ArrayList<String>(requestChain.getFilterNames());
-                try {
-                    filters.retainAll(requestChain.listFilterCandidates(secMgr));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                HttpServletRequest getHttpRequest() {
+                    return new HttpServletRequest() {
+                        public void setCharacterEncoding(String env) throws UnsupportedEncodingException {
+                        }
+                        public void setAttribute(String name, Object o) {
+                        }
+                        public void removeAttribute(String name) {
+                        }
+                        public boolean isSecure() {
+                            return false;
+                        }
+                        public int getServerPort() {
+                            return 0;
+                        }
+                        public String getServerName() {
+                            return null;
+                        }
+                        public String getScheme() {
+                            return null;
+                        }
+                        public RequestDispatcher getRequestDispatcher(String path) {
+                            return null;
+                        }
+                        public int getRemotePort() {
+                            return 0;
+                        }
+                        public String getRemoteHost() {
+                            return null;
+                        }
+                        public String getRemoteAddr() {
+                            return null;
+                        }
+                        public String getRealPath(String path) {
+                            return null;
+                        }
+                        public BufferedReader getReader() throws IOException {
+                            return null;
+                        }
+                        public String getProtocol() {
+                            return null;
+                        }
+                        public String[] getParameterValues(String name) {
+                            return null;
+                        }
+                        public Enumeration getParameterNames() {
+                            return null;
+                        }
+                        public Map getParameterMap() {
+                            return null;
+                        }
+                        public String getParameter(String name) {
+                            return null;
+                        }
+                        public Enumeration getLocales() {
+                            return null;
+                        }
+                        public Locale getLocale() {
+                            return null;
+                        }
+                        public int getLocalPort() {
+                            return 0;
+                        }
+                        public String getLocalName() {
+                            return null;
+                        }
+                        public String getLocalAddr() {
+                            return null;
+                        }
+                        public ServletInputStream getInputStream() throws IOException {
+                            return null;
+                        }
+                        public String getContentType() {
+                            return null;
+                        }
+                        public int getContentLength() {
+                            return 0;
+                        }
+                        public String getCharacterEncoding() {
+                            return null;
+                        }
+                        public Enumeration getAttributeNames() {
+                            return null;
+                        }
+                        public Object getAttribute(String name) {
+                            return null;
+                        }
+                        public boolean isUserInRole(String role) {
+                            return false;
+                        }
+                        public boolean isRequestedSessionIdValid() {
+                            return false;
+                        }
+                        public boolean isRequestedSessionIdFromUrl() {
+                            return false;
+                        }
+                        public boolean isRequestedSessionIdFromURL() {
+                            return false;
+                        }
+                        public boolean isRequestedSessionIdFromCookie() {
+                            return false;
+                        }
+                        public Principal getUserPrincipal() {
+                            return null;
+                        }
+                        public HttpSession getSession(boolean create) {
+                            return null;
+                        }
+                        public HttpSession getSession() {
+                            return null;
+                        }
+                        public String getServletPath() {
+                            return "";
+                        }
+                        public String getRequestedSessionId() {
+                            return null;
+                        }
+                        public StringBuffer getRequestURL() {
+                            return null;
+                        }
+                        public String getRequestURI() {
+                            return null;
+                        }
+                        public String getRemoteUser() {
+                            return null;
+                        }
+                        public String getQueryString() {
+                            return null;
+                        }
+                        public String getPathTranslated() {
+                            return null;
+                        }
+                        public String getPathInfo() {
+                            return urlPath;
+                        }
+                        public String getMethod() {
+                            return httpMethod.toString();
+                        }
+                        public int getIntHeader(String name) {
+                            return 0;
+                        }
+                        public Enumeration getHeaders(String name) {
+                            return null;
+                        }
+                        public Enumeration getHeaderNames() {
+                            return null;
+                        }
+                        public String getHeader(String name) {
+                            return null;
+                        }
+                        public long getDateHeader(String name) {
+                            return 0;
+                        }
+                        public Cookie[] getCookies() {
+                            return null;
+                        }
+                        public String getContextPath() {
+                            return null;
+                        }
+                        public String getAuthType() {
+                            return null;
+                        }
+                    }; 
                 }
-                return filters;
-            }
-    
-            @Override
-            public void setObject(List<String> object) {
-                requestChain.setFilterNames(object);
-            }
+
+            }.setDefaultFormProcessing(false));
+
             
-            @Override
-            public void detach() {
-                filterChainModel.detach();
-            }
-        }
-
-        public VariableFilterChain getRequestChain() {
-            return requestChain;
-        }
-
-        public void setRequestChain(VariableFilterChain requestChain) {            
-            this.requestChain = requestChain;
-            this.antPatterns=StringUtils.collectionToDelimitedString(requestChain.getPatterns(), "  ");            
-        }
+        }    
+                
     }
 }

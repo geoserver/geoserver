@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -55,6 +55,7 @@ import org.geotools.data.DataUtilities;
 import org.geotools.data.property.PropertyDataStore;
 import org.geotools.data.property.PropertyDataStoreFactory;
 import org.geotools.feature.NameImpl;
+import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
@@ -76,6 +77,9 @@ import org.springframework.context.ApplicationContext;
  *
  */
 public class SystemTestData extends CiteTestData {
+    
+    /** Multiband tiff */
+    private static final QName MULTIBAND = new QName(WCS_URI, "multiband", WCS_PREFIX);
     
     static final Logger LOGGER = Logging.getLogger(SystemTestData.class);
 
@@ -152,6 +156,7 @@ public class SystemTestData extends CiteTestData {
         addDefaultRasterLayer(TASMANIA_BM, catalog);
         addDefaultRasterLayer(ROTATED_CAD, catalog);
         addDefaultRasterLayer(WORLD, catalog);
+        addDefaultRasterLayer(MULTIBAND,catalog);
     }
 
     public void setUpWcs10RasterLayers() throws IOException {
@@ -598,6 +603,9 @@ public class SystemTestData extends CiteTestData {
         else if (name.equals(WORLD)) {
             addRasterLayer(name, "world.tiff", null, catalog);
         }
+        else if (name.equals(MULTIBAND)) {
+            addRasterLayer(name, "multiband.tiff", null, catalog);
+        }
         else {
             throw new IllegalArgumentException("Unknown default raster layer: " + name);
         }
@@ -741,7 +749,13 @@ public class SystemTestData extends CiteTestData {
             CoverageInfo coverage = null;
             
             try {
-                coverage = builder.buildCoverage(reader, null);
+
+                coverage = builder.buildCoverage(reader,null );
+                // coverage read params
+                if (format instanceof ImageMosaicFormat) {
+                    //  make sure we work in immediate mode
+                    coverage.getParameters().put(AbstractGridFormat.USE_JAI_IMAGEREAD.getName().getCode(), Boolean.FALSE);
+                } 
             } catch (Exception e) {
                 throw new IOException(e);
             }
@@ -890,7 +904,7 @@ public class SystemTestData extends CiteTestData {
     
     @Override
     public void tearDown() throws Exception {
-        FileUtils.deleteDirectory(data);
+        FileUtils.deleteDirectory(data);        
     }
     
     @Override

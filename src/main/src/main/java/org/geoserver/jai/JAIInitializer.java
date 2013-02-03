@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -64,6 +64,12 @@ public class JAIInitializer implements GeoServerInitializer {
             final ConcurrentTileFactory recyclingFactory = new ConcurrentTileFactory();
             jaiDef.setRenderingHint(JAI.KEY_TILE_FACTORY, recyclingFactory);
             jaiDef.setRenderingHint(JAI.KEY_TILE_RECYCLER, recyclingFactory);
+        } else {
+            if(!jai.isRecycling()){
+                final PassThroughTileFactory passThroughFactory = new PassThroughTileFactory();
+                jaiDef.setRenderingHint(JAI.KEY_TILE_FACTORY, passThroughFactory);
+                jaiDef.setRenderingHint(JAI.KEY_TILE_RECYCLER, passThroughFactory);
+            }
         }
         
         // Setting up Cache Capacity

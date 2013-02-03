@@ -1,21 +1,53 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security.validation;
 
-import static org.geoserver.security.validation.SecurityConfigException.*;
+import static org.geoserver.security.validation.SecurityConfigException.ANONYMOUS_NOT_LAST_$1;
+import static org.geoserver.security.validation.SecurityConfigException.AUTH_PROVIDER_ACTIVE_$1;
+import static org.geoserver.security.validation.SecurityConfigException.AUTH_PROVIDER_ALREADY_EXISTS_$1;
+import static org.geoserver.security.validation.SecurityConfigException.AUTH_PROVIDER_NOT_FOUND_$1;
+import static org.geoserver.security.validation.SecurityConfigException.CLASSNAME_REQUIRED;
+import static org.geoserver.security.validation.SecurityConfigException.CLASS_NOT_FOUND_$1;
+import static org.geoserver.security.validation.SecurityConfigException.CLASS_WRONG_TYPE_$2;
+import static org.geoserver.security.validation.SecurityConfigException.FILTER_CHAIN_EMPTY_$1;
+import static org.geoserver.security.validation.SecurityConfigException.FILTER_CHAIN_NAME_MANDATORY;
+import static org.geoserver.security.validation.SecurityConfigException.INVALID_CONFIG_PASSWORD_ENCODER_$1;
+import static org.geoserver.security.validation.SecurityConfigException.INVALID_MAX_LENGTH;
+import static org.geoserver.security.validation.SecurityConfigException.INVALID_MIN_LENGTH;
+import static org.geoserver.security.validation.SecurityConfigException.INVALID_PASSWORD_ENCODER_$1;
+import static org.geoserver.security.validation.SecurityConfigException.INVALID_STRONG_CONFIG_PASSWORD_ENCODER;
+import static org.geoserver.security.validation.SecurityConfigException.INVALID_STRONG_PASSWORD_ENCODER;
+import static org.geoserver.security.validation.SecurityConfigException.NAME_REQUIRED;
+import static org.geoserver.security.validation.SecurityConfigException.NOT_AN_AUTHENTICATION_FILTER_$2;
+import static org.geoserver.security.validation.SecurityConfigException.NOT_A_SERVICE_AUTHENTICATION_FILTER_$2;
+import static org.geoserver.security.validation.SecurityConfigException.PASSWD_ENCODER_REQUIRED_$1;
+import static org.geoserver.security.validation.SecurityConfigException.PASSWD_POLICY_ACTIVE_$2;
+import static org.geoserver.security.validation.SecurityConfigException.PASSWD_POLICY_ALREADY_EXISTS_$1;
+import static org.geoserver.security.validation.SecurityConfigException.PASSWD_POLICY_MASTER_DELETE;
+import static org.geoserver.security.validation.SecurityConfigException.PASSWD_POLICY_NOT_FOUND_$1;
+import static org.geoserver.security.validation.SecurityConfigException.PASSWD_POLICY_REQUIRED_$1;
+import static org.geoserver.security.validation.SecurityConfigException.PASSWORD_ENCODER_REQUIRED;
+import static org.geoserver.security.validation.SecurityConfigException.PATTERN_LIST_EMPTY_$1;
+import static org.geoserver.security.validation.SecurityConfigException.RESERVED_ROLE_NAME;
+import static org.geoserver.security.validation.SecurityConfigException.ROLE_SERVICE_ACTIVE_$1;
+import static org.geoserver.security.validation.SecurityConfigException.ROLE_SERVICE_ALREADY_EXISTS_$1;
+import static org.geoserver.security.validation.SecurityConfigException.ROLE_SERVICE_NOT_FOUND_$1;
+import static org.geoserver.security.validation.SecurityConfigException.UNKNOWN_FILTER_$2;
+import static org.geoserver.security.validation.SecurityConfigException.UNKNOWN_ROLE_FILTER_$2;
+import static org.geoserver.security.validation.SecurityConfigException.USERGROUP_SERVICE_ACTIVE_$2;
+import static org.geoserver.security.validation.SecurityConfigException.USERGROUP_SERVICE_ALREADY_EXISTS_$1;
+import static org.geoserver.security.validation.SecurityConfigException.USERGROUP_SERVICE_NOT_FOUND_$1;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
 
-import org.geoserver.filters.GeoServerFilter;
 import org.geoserver.security.GeoServerAuthenticationProvider;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerUserGroupService;
-import org.geoserver.security.HtmlLoginFilterChain;
 import org.geoserver.security.ServiceLoginFilterChain;
 import org.geoserver.security.auth.UsernamePasswordAuthenticationProvider;
 import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
@@ -36,10 +68,12 @@ import org.geoserver.security.password.PasswordValidator;
 import org.geoserver.security.xml.XMLRoleService;
 import org.geoserver.security.xml.XMLUserGroupService;
 import org.geoserver.test.GeoServerMockTestSupport;
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Test;
 
-public class SecurityConfigValidatorTest extends GeoServerMockTestSupport {
-
+public class SecurityConfigValidatorTest extends GeoServerSystemTestSupport {
+    
+    
     @Test
     public void testMasterConfigValidation() throws Exception{
         SecurityManagerConfig config = new SecurityManagerConfig();
@@ -48,11 +82,11 @@ public class SecurityConfigValidatorTest extends GeoServerMockTestSupport {
         config.getAuthProviderNames().add(GeoServerAuthenticationProvider.DEFAULT_NAME);
 
         SecurityConfigValidator validator = new SecurityConfigValidator(getSecurityManager());
-        validator.validateManagerConfig(config);
+        validator.validateManagerConfig(config,new SecurityManagerConfig());
 
         try {
             config.setConfigPasswordEncrypterName("abc");
-            validator.validateManagerConfig(config);
+            validator.validateManagerConfig(config,new SecurityManagerConfig());
             fail("invalid password encoder should fail");
         } catch (SecurityConfigException ex){
             assertEquals(INVALID_PASSWORD_ENCODER_$1,ex.getId());
@@ -60,7 +94,7 @@ public class SecurityConfigValidatorTest extends GeoServerMockTestSupport {
 
         try {
             config.setConfigPasswordEncrypterName(null);
-            validator.validateManagerConfig(config);
+            validator.validateManagerConfig(config,new SecurityManagerConfig());
             fail("no password encoder should fail");
         } catch (SecurityConfigException ex){
             assertEquals(PASSWORD_ENCODER_REQUIRED,ex.getId());
@@ -69,7 +103,7 @@ public class SecurityConfigValidatorTest extends GeoServerMockTestSupport {
         if (getSecurityManager().isStrongEncryptionAvailable()==false) {
             config.setConfigPasswordEncrypterName(getStrongPBEPasswordEncoder().getName());
             try {
-                validator.validateManagerConfig(config);
+                validator.validateManagerConfig(config,new SecurityManagerConfig());
                 fail("invalid strong password encoder should fail");
             } catch (SecurityConfigException ex){
                 assertEquals(INVALID_STRONG_CONFIG_PASSWORD_ENCODER,ex.getId());
@@ -80,7 +114,7 @@ public class SecurityConfigValidatorTest extends GeoServerMockTestSupport {
         config.setRoleServiceName("XX");
 
         try {
-            validator.validateManagerConfig(config);
+            validator.validateManagerConfig(config,new SecurityManagerConfig());
             fail("unknown role service should fail");
         } catch (SecurityConfigException ex){
             assertEquals(ROLE_SERVICE_NOT_FOUND_$1,ex.getId());
@@ -88,7 +122,7 @@ public class SecurityConfigValidatorTest extends GeoServerMockTestSupport {
         
         config.setRoleServiceName(null);
         try {
-            validator.validateManagerConfig(config);
+            validator.validateManagerConfig(config,new SecurityManagerConfig());
             fail("null role service should fail");
         } catch (SecurityConfigException ex){
             assertEquals(ROLE_SERVICE_NOT_FOUND_$1,ex.getId());
@@ -98,7 +132,7 @@ public class SecurityConfigValidatorTest extends GeoServerMockTestSupport {
         config.getAuthProviderNames().add("XX");
 
         try {
-            validator.validateManagerConfig(config);
+            validator.validateManagerConfig(config,new SecurityManagerConfig());
             fail("unknown auth provider should fail");
         } catch (SecurityConfigException ex){
             assertEquals(AUTH_PROVIDER_NOT_FOUND_$1,ex.getId());
@@ -121,7 +155,7 @@ public class SecurityConfigValidatorTest extends GeoServerMockTestSupport {
         filterChain.getRequestChains().add(chain);
         
         try {
-            validator.validateManagerConfig(config);
+            validator.validateManagerConfig(config,new SecurityManagerConfig());
             fail("chain with no name should fail");
         } catch (SecurityConfigException ex){
             assertEquals(FILTER_CHAIN_NAME_MANDATORY,ex.getId());
@@ -132,7 +166,7 @@ public class SecurityConfigValidatorTest extends GeoServerMockTestSupport {
         chain.setName(chainName);
         
         try {
-            validator.validateManagerConfig(config);
+            validator.validateManagerConfig(config,new SecurityManagerConfig());
             fail("chain with no patterns should fail");
         } catch (SecurityConfigException ex){
             assertEquals(PATTERN_LIST_EMPTY_$1,ex.getId());
@@ -141,11 +175,11 @@ public class SecurityConfigValidatorTest extends GeoServerMockTestSupport {
         }
         chain.getPatterns().add("/**");        
         chain.setDisabled(true);
-        validator.validateManagerConfig(config);
+        validator.validateManagerConfig(config,new SecurityManagerConfig());
         chain.setDisabled(false);
         
         try {
-            validator.validateManagerConfig(config);
+            validator.validateManagerConfig(config,new SecurityManagerConfig());
             fail("enabled authentication chain with no filter should fail");
         } catch (SecurityConfigException ex){
             assertEquals(FILTER_CHAIN_EMPTY_$1,ex.getId());
@@ -157,7 +191,7 @@ public class SecurityConfigValidatorTest extends GeoServerMockTestSupport {
         chain.getFilterNames().add(unknownFilter);
         chain.setRoleFilterName("XX");
         try {
-            validator.validateManagerConfig(config);
+            validator.validateManagerConfig(config,new SecurityManagerConfig());
             fail("unknown role filter should fail");
         } catch (SecurityConfigException ex){
             assertEquals(UNKNOWN_ROLE_FILTER_$2,ex.getId());
@@ -169,7 +203,7 @@ public class SecurityConfigValidatorTest extends GeoServerMockTestSupport {
         chain.setRoleFilterName(GeoServerSecurityFilterChain.ROLE_FILTER);
         chain.getFilterNames().add(0,GeoServerSecurityFilterChain.ANONYMOUS_FILTER);
         try {
-            validator.validateManagerConfig(config);
+            validator.validateManagerConfig(config,new SecurityManagerConfig());
             fail("anonymous not last should fail");
         } catch (SecurityConfigException ex){
             assertEquals(ANONYMOUS_NOT_LAST_$1,ex.getId());
@@ -181,7 +215,7 @@ public class SecurityConfigValidatorTest extends GeoServerMockTestSupport {
         chain.getFilterNames().add(GeoServerSecurityFilterChain.ANONYMOUS_FILTER);
 
         try {
-            validator.validateManagerConfig(config);
+            validator.validateManagerConfig(config,new SecurityManagerConfig());
             fail("unknown  filter should fail");
         } catch (SecurityConfigException ex){
             assertEquals(UNKNOWN_FILTER_$2,ex.getId());
@@ -194,7 +228,7 @@ public class SecurityConfigValidatorTest extends GeoServerMockTestSupport {
         chain.getFilterNames().add(0,GeoServerSecurityFilterChain.ROLE_FILTER);
 
         try {
-            validator.validateManagerConfig(config);
+            validator.validateManagerConfig(config,new SecurityManagerConfig());
             fail("no authentication filter should fail");
         } catch (SecurityConfigException ex){
             assertEquals(NOT_AN_AUTHENTICATION_FILTER_$2,ex.getId());
@@ -207,7 +241,7 @@ public class SecurityConfigValidatorTest extends GeoServerMockTestSupport {
         chain.getFilterNames().add(0,GeoServerSecurityFilterChain.FORM_LOGIN_FILTER);
         
         try {
-            validator.validateManagerConfig(config);
+            validator.validateManagerConfig(config,new SecurityManagerConfig());
             fail("form login filter should fail");
         } catch (SecurityConfigException ex){
             assertEquals(NOT_A_SERVICE_AUTHENTICATION_FILTER_$2,ex.getId());
@@ -218,7 +252,7 @@ public class SecurityConfigValidatorTest extends GeoServerMockTestSupport {
 
         chain.getFilterNames().remove(GeoServerSecurityFilterChain.FORM_LOGIN_FILTER);
         chain.getFilterNames().add(0,GeoServerSecurityFilterChain.BASIC_AUTH_FILTER);
-        validator.validateManagerConfig(config);
+        validator.validateManagerConfig(config,new SecurityManagerConfig());
 
     }
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -6,13 +6,15 @@ package org.geoserver.security.web.auth;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.extensions.markup.html.form.palette.Palette;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.ResourceModel;
 import org.geoserver.web.GeoServerApplication;
 
 /**
@@ -68,4 +70,22 @@ public class AuthenticationChainPalette extends Palette<String> {
             throw new UnsupportedOperationException();
         }
     }
+    /**
+     * Override otherwise the header is not i18n'ized
+     */
+    @Override
+    public Component newSelectedHeader(final String componentId) {
+        return new Label(componentId, new ResourceModel(
+                "AuthenticationChainPalette.selectedHeader"));
+    }
+
+    /**
+     * Override otherwise the header is not i18n'ized
+     */
+    @Override
+    public Component newAvailableHeader(final String componentId) {
+        return new Label(componentId, new ResourceModel(
+                "AuthenticationChainPalette.availableHeader"));
+    }
+
 }

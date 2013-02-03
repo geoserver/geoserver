@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 
@@ -13,15 +13,22 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.apache.xerces.parsers.SAXParser;
+import javax.xml.XMLConstants;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
-import org.xml.sax.helpers.DefaultHandler;
 
 
 public class SLDValidator {
@@ -40,7 +47,7 @@ public class SLDValidator {
      */
     @Deprecated
     public List validateSLD(InputStream xml, String baseUrl) {
-        return validateSLD(new InputSource(xml));
+        return validateSLD(xml);
     }
     
     /**
@@ -189,65 +196,7 @@ public class SLDValidator {
      * @return list of SAXExceptions (0 if the file's okay)
      */
     public List validateSLD(InputSource xml) {
-        SAXParser parser = new SAXParser();
-
-        try {
-            String schemaUrl = SLDValidator.class.getResource("/schemas/sld/StyledLayerDescriptor.xsd").toExternalForm();
-
-            //     1. tell the parser to validate the XML document vs the schema
-            //     2. does not validate the schema (the GML schema is *not* valid.  This is
-            //        			an OGC blunder)
-            //     3. tells the validator that the tags without a namespace are actually
-            //        			SLD tags.
-            //     4. tells the validator to 'override' the SLD schema that a user may
-            //        			include with the one inside geoserver.
-            parser.setFeature("http://xml.org/sax/features/validation", true);
-            parser.setFeature("http://apache.org/xml/features/validation/schema", true);
-            parser.setFeature("http://apache.org/xml/features/validation/schema-full-checking",
-                false);
-
-            parser.setProperty("http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation",
-                schemaUrl);
-            parser.setProperty("http://apache.org/xml/properties/schema/external-schemaLocation",
-                "http://www.opengis.net/sld " + schemaUrl);
-
-            //parser.setProperty("http://apache.org/xml/properties/schema/external-schemaLocation","http://www.opengis.net/ows "+SchemaUrl);
-            Validator handler = new Validator();
-            parser.setErrorHandler(handler);
-            parser.parse(xml);
-
-            return handler.errors;
-        } catch (java.io.IOException ioe) {
-            ArrayList al = new ArrayList();
-            al.add(new SAXParseException(ioe.getLocalizedMessage(), null));
-
-            return al;
-        } catch (SAXException e) {
-            ArrayList al = new ArrayList();
-            al.add(new SAXParseException(e.getLocalizedMessage(), null));
-
-            return al;
-        }
-    }
-
-    // errors in the document will be put in "errors".
-    // if errors.size() ==0  then there were no errors.
-    private class Validator extends DefaultHandler {
-        public ArrayList errors = new ArrayList();
-
-        public void error(SAXParseException exception)
-            throws SAXException {
-            errors.add(exception);
-        }
-
-        public void fatalError(SAXParseException exception)
-            throws SAXException {
-            errors.add(exception);
-        }
-
-        public void warning(SAXParseException exception)
-            throws SAXException {
-            //do nothing
-        }
+        URL schemaURL = SLDValidator.class.getResource("/schemas/sld/StyledLayerDescriptor.xsd");
+        return ResponseUtils.validate(xml, schemaURL, false);
     }
 }

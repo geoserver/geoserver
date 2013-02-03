@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -616,6 +616,10 @@
 	<bean id="geoJSONGetFeatureResponse" class="org.geoserver.wfs.json.GeoJSONGetFeatureResponse">
 		<constructor-arg ref="geoServer" />
 		<constructor-arg value="application/json" />
+	</bean>
+	<bean id="geoSimpleJSONGetFeatureResponse" class="org.geoserver.wfs.json.GeoJSONGetFeatureResponse">
+		<constructor-arg ref="geoServer" />
+		<constructor-arg value="json" />
 	</bean>
 
 	<!-- DescribeFeatureType JSONP -->

@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -48,6 +48,7 @@ import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.util.CoverageStoreUtils;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.feature.retype.RetypingFeatureSource;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.data.DataAccess;
@@ -95,6 +96,7 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
+import org.springframework.context.ApplicationContext;
 import org.vfny.geoserver.global.GeoServerFeatureLocking;
 import org.vfny.geoserver.global.GeoserverDataDirectory;
 import org.vfny.geoserver.util.DataStoreUtils;
@@ -147,38 +149,209 @@ public class ResourcePool {
     private static final String IMAGE_MOSAIC = "ImageMosaic";
 
     Catalog catalog;
-    HashMap<String, CoordinateReferenceSystem> crsCache;
-    DataStoreCache dataStoreCache;
-    FeatureTypeCache featureTypeCache;
-    FeatureTypeAttributeCache featureTypeAttributeCache;
-    WMSCache wmsCache;
-    CoverageReaderCache coverageReaderCache;
-    CoverageHintReaderCache hintCoverageReaderCache;
-    HashMap<StyleInfo,Style> styleCache;
+    Map<String, CoordinateReferenceSystem> crsCache;
+    Map<String, DataAccess> dataStoreCache;
+    Map<String, FeatureType> featureTypeCache;
+    Map<String, List<AttributeTypeInfo>> featureTypeAttributeCache;
+    Map<String, WebMapServer> wmsCache;
+    Map<String, GridCoverageReader>  coverageReaderCache;
+    Map<CoverageHintReaderKey, GridCoverageReader> hintCoverageReaderCache;
+    Map<StyleInfo,Style> styleCache;
     List<Listener> listeners;
     ThreadPoolExecutor coverageExecutor;
     CatalogRepository repository;
-    
-    public ResourcePool(Catalog catalog) {
+
+    /**
+     * Creates a new instance of the resource pool.
+     */
+    public static ResourcePool create(Catalog catalog) {
+        return create(catalog, null);
+    }
+
+    /**
+     * Creates a new instance of the resource pool explicitly supplying the application 
+     * context.
+     */
+    public static ResourcePool create(Catalog catalog, ApplicationContext appContext) {
+        //look for an implementation in spring context
+        ResourcePool pool = appContext == null ? GeoServerExtensions.bean(ResourcePool.class) : 
+            GeoServerExtensions.bean(ResourcePool.class, appContext);
+        if (pool == null) {
+            pool = new ResourcePool();
+        }
+        pool.setCatalog(catalog);
+        return pool;
+    }
+
+    protected ResourcePool() {
+        crsCache = createCrsCache();
+        dataStoreCache = createDataStoreCache();
+        featureTypeCache = createFeatureTypeCache(FEATURETYPE_CACHE_SIZE_DEFAULT);
+        
+        featureTypeAttributeCache = createFeatureTypeAttributeCache(FEATURETYPE_CACHE_SIZE_DEFAULT);
+        coverageReaderCache = createCoverageReaderCache();
+        hintCoverageReaderCache = createHintCoverageReaderCache();
+        
+        wmsCache = createWmsCache();
+        styleCache = createStyleCache();
+
+        listeners = new CopyOnWriteArrayList<Listener>();
+    }
+
+    /**
+     * Creates the resource pool.
+     * <p>
+     * Client code should use {@link ResourcePool#create(Catalog)} instead of calling
+     * this constructor directly.
+     * </p>
+     */
+    protected ResourcePool(Catalog catalog) {
+        this();
+        setCatalog(catalog);
+    }
+
+    public Catalog getCatalog() {
+        return catalog;
+    }
+
+    public void setCatalog(Catalog catalog) {
         this.catalog = catalog;
         this.repository = new CatalogRepository(catalog);
 
-        crsCache = new HashMap<String, CoordinateReferenceSystem>();
-        dataStoreCache = new DataStoreCache();
-        featureTypeCache = new FeatureTypeCache(FEATURETYPE_CACHE_SIZE_DEFAULT);
-        
-        featureTypeAttributeCache = new FeatureTypeAttributeCache(FEATURETYPE_CACHE_SIZE_DEFAULT);
-        coverageReaderCache = new CoverageReaderCache();
-        hintCoverageReaderCache = new CoverageHintReaderCache();
-        
-        wmsCache = new WMSCache();
-        
-        styleCache = new HashMap<StyleInfo, Style>();
-        listeners = new CopyOnWriteArrayList<Listener>();
-        
-        catalog.addListener( new CacheClearingListener() );
+        catalog.removeListeners(CacheClearingListener.class);
+        catalog.addListener(new CacheClearingListener());
+    }
+
+    /**
+     * Returns the cache for {@link CoordinateReferenceSystem} objects.
+     * <p>
+     * The cache key is the CRS identifier (see {@link #getCRS(String)}) for allowable forms.
+     * </p>
+     * <p>
+     * The concrete Map implementation is determined by {@link #createCrsCache()}.
+     * </p>
+     */
+    public Map<String, CoordinateReferenceSystem> getCrsCache() {
+        return crsCache;
+    }
+
+    protected Map<String,CoordinateReferenceSystem> createCrsCache() {
+        return new HashMap<String, CoordinateReferenceSystem>();
+    }
+
+    /**
+     * Returns the cache for {@link DataAccess} objects.
+     * <p>
+     * The cache key is the corresponding DataStoreInfo id ({@link CatalogInfo#getId()}).
+     * </p>
+     * <p>
+     * The concrete Map implementation is determined by {@link #createDataStoreCache()}.
+     * </p>
+     */
+    public Map<String, DataAccess> getDataStoreCache() {
+        return dataStoreCache;
+    }
+
+    protected Map<String,DataAccess> createDataStoreCache() {
+        return new DataStoreCache();
+    }
+
+    /**
+     * Returns the cache for {@link FeatureType} objects.
+     * <p>
+     * The cache key is the corresponding FeatureTypeInfo id ({@link CatalogInfo#getId()}.
+     * </p>
+     * <p>
+     * The concrete Map implementation is determined by {@link #createFeatureTypeCache(int)}.
+     * </p>
+     */
+    public Map<String, FeatureType> getFeatureTypeCache() {
+        return featureTypeCache;
+    }
+
+    protected Map<String,FeatureType> createFeatureTypeCache(int size) {
+        return new FeatureTypeCache(size);
+    }
+
+    /**
+     * Returns the cache for {@link AttributeTypeInfo} objects for a particular feature type.
+     * <p>
+     * The cache key is the corresponding FeatureTypeInfo id ({@link CatalogInfo#getId()}.
+     * </p>
+     * <p>
+     * The concrete Map implementation is determined by {@link #createFeatureTypeAttributeCache(int)}
+     * </p>
+     */
+    public Map<String, List<AttributeTypeInfo>> getFeatureTypeAttributeCache() {
+        return featureTypeAttributeCache;
+    }
+
+    protected Map<String, List<AttributeTypeInfo>> createFeatureTypeAttributeCache(int size) {
+        return new FeatureTypeAttributeCache(size);
+    }
+
+    /**
+     * Returns the cache for {@link GridCoverageReader} objects for a particular coverage.
+     * <p>
+     * The cache key is the corresponding Coverage id ({@link CatalogInfo#getId()}.
+     * </p>
+     * <p>
+     * The concrete Map implementation is determined by {@link #createCoverageReaderCache()}
+     * </p>
+     */
+    public Map<String, GridCoverageReader> getCoverageReaderCache() {
+        return coverageReaderCache;
+    }
+
+    protected Map<String, GridCoverageReader> createCoverageReaderCache() {
+        return new CoverageReaderCache();
+    }
+
+    /**
+     * Returns the cache for {@link GridCoverageReader} objects for a particular coverage hint.
+     * <p>
+     * The concrete Map implementation is determined by {@link #createHintCoverageReaderCache()}
+     * </p>
+     */
+    public Map<CoverageHintReaderKey, GridCoverageReader> getHintCoverageReaderCache() {
+        return hintCoverageReaderCache;
     }
     
+    protected Map<CoverageHintReaderKey, GridCoverageReader> createHintCoverageReaderCache() {
+        return new CoverageHintReaderCache();
+    }
+
+    /**
+     * Returns the cache for {@link Style} objects for a particular style.
+     * <p>
+     * The concrete Map implementation is determined by {@link #createStyleCache()}
+     * </p>
+     */
+    public Map<StyleInfo, Style> getStyleCache() {
+        return styleCache;
+    }
+
+    protected Map<StyleInfo, Style> createStyleCache() {
+        return new HashMap<StyleInfo, Style>();
+    }
+
+    /**
+     * Returns the cache for {@link WebMapServer} objects for a particular {@link WMSStoreInfo}.
+     * <p>
+     * The cache key is the corresponding {@link WMSStoreInfo} id ({@link CatalogInfo#getId()}.
+     * </p>
+     * <p>
+     * The concrete Map implementation is determined by {@link #createWmsCache()}
+     * </p>
+     */
+    public Map<String, WebMapServer> getWmsCache() {
+        return wmsCache;
+    }
+
+    protected Map<String, WebMapServer> createWmsCache() {
+        return new WMSCache();
+    }
+
     /**
      * Sets the size of the feature type cache.
      * <p>
@@ -188,9 +361,9 @@ public class ResourcePool {
     public void setFeatureTypeCacheSize(int featureTypeCacheSize) {
         synchronized (this) {
             featureTypeCache.clear();
-            featureTypeCache = new FeatureTypeCache(featureTypeCacheSize);
+            featureTypeCache = createFeatureTypeCache(featureTypeCacheSize);
             featureTypeAttributeCache.clear();
-            featureTypeAttributeCache = new FeatureTypeAttributeCache(featureTypeCacheSize);
+            featureTypeAttributeCache = createFeatureTypeAttributeCache(featureTypeCacheSize);
         }
     }
     
@@ -1575,7 +1748,7 @@ public class ResourcePool {
      * 
      * @author Andrea Aime - GeoSolutions
      */
-    static class CoverageHintReaderKey {
+    public static class CoverageHintReaderKey {
         String id;
         Hints hints;
         

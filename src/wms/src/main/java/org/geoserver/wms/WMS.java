@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms;
@@ -21,6 +21,7 @@ import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
@@ -30,6 +31,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
@@ -771,9 +773,15 @@ public class WMS implements ApplicationContextAware {
     }
 
     public boolean isQueryable(LayerGroupInfo layerGroup) {
-        for (LayerInfo layer : layerGroup.getLayers()) {
-            if (!isQueryable(layer)) {
-                return false;
+        for (PublishedInfo published : layerGroup.getLayers()) {
+            if (published instanceof LayerInfo) {
+                if (!isQueryable((LayerInfo) published)) {
+                    return false;
+                }
+            } else {
+                if (!isQueryable((LayerGroupInfo) published)) {
+                    return false;
+                }
             }
         }
         return true;
@@ -871,7 +879,12 @@ public class WMS implements ApplicationContextAware {
                                 DimensionInfo.class);
                         if (dimensions.hasDomain(name) && customInfo != null && customInfo.isEnabled()) {
                             final ArrayList<String> val = new ArrayList<String>(1);
-                            val.add(kvp.getValue());
+                            if(kvp.getValue().indexOf(",")>0){
+                                String[] elements = kvp.getValue().split(",");
+                                val.addAll(Arrays.asList(elements));
+                            }else{
+                                val.add(kvp.getValue());
+                            }
                             readParameters = CoverageUtils.mergeParameter(
                                 parameterDescriptors, readParameters, val, name);
                         }

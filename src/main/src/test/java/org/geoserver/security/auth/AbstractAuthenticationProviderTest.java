@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -219,8 +219,7 @@ public abstract class AbstractAuthenticationProviderTest extends AbstractSecurit
         RequestFilterChain chain = config.getFilterChain().find(pattern);
         chain.setDisabled(disabled);
         chain.setAllowSessionCreation(allowSessionCreation);
-        if (chain instanceof VariableFilterChain)
-            ((VariableFilterChain) chain).setRoleFilterName(roleFilterName);
+        chain.setRoleFilterName(roleFilterName);
         
         getSecurityManager().saveSecurityConfig(config);
         return;

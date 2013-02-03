@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms;
@@ -269,9 +269,10 @@ public class GetLegendGraphicRequest extends WMSRequest {
      * rendering. Anything of the following works: "yes", "true", "1". Anything else means false.
      * <li><code>forceLabels</code>: "on" means labels will always be drawn, even if only one rule
      * is available. "off" means labels will never be drawn, even if multiple rules are available.
-     * <li><code>forceTitles</code>: "on" means layer titles for layergroups will always be drawn, 
-     * even if only one layer is available. "off" means titles will never be drawn, even if multiple
-     * layers are available.
+     * <li><code>forceTitles</code>: "off" means titles will never be drawn, even if multiple layers
+     * are available.
+     * <li><code>minSymbolSize</code>: a number defining the minimum size to be rendered for a 
+     * symbol (defaults to 3).
      * </ul>
      * </p>
      * 

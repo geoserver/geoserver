@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms;
@@ -9,10 +9,11 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.IndexColorModel;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.image.palette.InverseColorMapOp;
 import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
 import org.geotools.renderer.lite.RendererUtilities;
@@ -54,6 +55,8 @@ public class WMSMapContent extends MapContent {
 
     /** map rotation in degrees */
     private double angle;
+    
+    private List<GetMapCallback> callbacks;
 
     public int getTileSize() {
         return tileSize;
@@ -87,13 +90,6 @@ public class WMSMapContent extends MapContent {
         request = req;
     }
 
-
-    public WMSMapContent(Layer[] layers) {
-        super();
-        for (Layer layer : layers) {
-            addLayer(layer);
-        }
-    }
 
     public Color getBgColor() {
         return this.bgColor;
@@ -162,6 +158,50 @@ public class WMSMapContent extends MapContent {
 
     public void setAngle(double rotation) {
         this.angle = rotation;
+    }
+    
+    @Override
+    public boolean addLayer(Layer layer) {
+        layer = fireLayerCallbacks(layer);
+        if(layer != null) {
+            return super.addLayer(layer);
+        } else {
+            return false;
+        }
+    }
+    
+    private Layer fireLayerCallbacks(Layer layer) {
+        // if no callbacks, return the layer as is
+        if(callbacks == null) {
+            return layer;
+        }
+        
+        // process through the callbacks
+        for (GetMapCallback callback : callbacks) {
+            layer = callback.beforeLayer(this, layer);
+            if(layer == null) {
+                return null;
+            }
+        }
+        
+        return layer;
+    }
+
+    @Override
+    public int addLayers(Collection<? extends Layer> layers) {
+        List<Layer> filtered = new ArrayList<Layer>(layers.size());
+        for (Layer layer : layers) {
+            layer = fireLayerCallbacks(layer);
+            if(layer != null) {
+                filtered.add(layer);
+            }
+        }
+        
+        if(filtered.size() > 0) {
+            return super.addLayers(filtered);
+        } else {
+            return 0;
+        }
     }
 
     /**
@@ -289,4 +329,7 @@ public class WMSMapContent extends MapContent {
         getUserData().put("abstract", contextAbstract);
     }
 
+    public void setGetMapCallbacks(final List<GetMapCallback> callbacks) {
+        this.callbacks = callbacks;
+    }
 }

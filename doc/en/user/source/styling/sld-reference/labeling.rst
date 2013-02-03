@@ -155,7 +155,9 @@ To label linear features (such as a road or river), the ``<LinePlacement>`` elem
 This indicates that the styler should determine the best placement and rotation for the labels 
 along the lines. 
 
-The LinePlacement element provides one optional sub-element, ``<PerpendicularOffset>``.
+The standard SLD LinePlacement element provides one optional sub-element, ``<PerpendicularOffset>``.
+GeoServer provides much more control over line label placement via vendor-specific options;
+see below for details.
 
 PerpendicularOffset
 ^^^^^^^^^^^^^^^^^^^
@@ -189,7 +191,10 @@ Examples:
 Composing labels from multiple attributes
 -----------------------------------------
 
-The ``<Label>`` element in TextSymbolizer is said to be mixed, that is, its content can be a mixture of plain text and OGC Expressions. The mix gets interepreted as a concatenation, this means you can leverage it to get complex labels out of multiple attributes.
+The ``<Label>`` element in `<TextSymbolizer>` allows mixed content.
+This means its content can be a mixture of plain text and :ref:`Filter Expressions <sld_reference_parameter_expressions>`. 
+The mix gets interepreted as a concatenation.
+You can leverage this to create complex labels out of multiple attributes.
 
 For example, if you want both a state name and its abbreviation to appear in a label, you can do the following:
 
@@ -199,9 +204,10 @@ For example, if you want both a state name and its abbreviation to appear in a l
     <ogc:PropertyName>STATE_NAME</ogc:PropertyName> (<ogc:PropertyName>STATE_ABBR</ogc:PropertyName>)
   </Label>
 
-and you'll get a label such as **Texas (TX)**.
+and you'll get a label looking like ``Texas (TX)``.
 
-If you need to add extra white space or newline, you'll stumble into an xml oddity.  The whitespace handling in the Label element is following a XML mandated rule called "collapse", in which all leading and trailing whitespaces have to be removed, whilst all whitespaces (and newlines) in the middle of the xml element are collapsed into a single whitespace.
+If you need to add extra white space or newline, you'll stumble into an XML oddity.  
+The whitespace handling in the Label element is following a XML rule called "collapse", in which all leading and trailing whitespaces have to be removed, whilst all whitespaces (and newlines) in the middle of the xml element are collapsed into a single whitespace.
 
 So, what if you need to insert a newline or a sequence of two or more spaces between your property names? Enter CDATA. CDATA is a special XML section that has to be returned to the interpreter as-is, without following any whitespace handling rule.
 So, for example, if you wanted to have the state abbreviation sitting on the next line you'd use the following:
@@ -228,17 +234,21 @@ These options are specified as subelements of ``<TextSymbolizer>``.
 Priority Labeling 
 ^^^^^^^^^^^^^^^^^
 
-The optional ``<Priority>`` element allows specifying label priority based on 
-an attribute of a dataset. 
-This allows controlling how conflicts (overlaps) between feature labels
-are resolved during rendering.
-The content of the ``<Priority>`` element is a *Filter Expression* 
-to retrieve or calculate a priority value for each feature.
+The optional ``<Priority>`` element allows specifying label priority.
+This controls how conflicts (overlaps) between labels are resolved during rendering.
+The element content may be an :ref:`expression <sld_reference_parameter_expressions>` 
+to retrieve or calculate a relative priority value for each feature in a layer.
+Alternatively, the content may be a constant value,
+to set the priority of a layer's labels relative to other layers on a rendered map.
+
+The default priority for labels is 1000.
+
 
 .. note:: **Standard SLD Conflict Resolution**
 
-  If the ``<Priority>`` element is not present, then standard SLD label conflict resolution is used.
-  Under this strategy, in a group of conflicting labels the label to display is chosen essentially at random.
+  If the ``<Priority>`` element is not present, or if a group of labels all have the same priority,
+  then standard SLD label conflict resolution is used.
+  Under this strategy, the label to display out of a group of conflicting labels is chosen essentially at random.
 
 For example, take the following dataset of cities::
 
@@ -254,8 +264,8 @@ For example, take the following dataset of cities::
 
 *City locations (large scale map)*
 
-Most people know where New York City is, but don't know where Yonkers is. 
-Thus we want to give the label "New York" priority so it will be visible when in conflict with (overlapping) "Yonkers".
+More people know where New York City is than where Jersey City is. 
+Thus we want to give the label "New York" priority so it will be visible when in conflict with (overlapping) "Jersey City".
 To do this we include the following code in the ``<TextSymbolizer>``:
 
 .. code-block:: xml 
@@ -264,14 +274,14 @@ To do this we include the following code in the ``<TextSymbolizer>``:
       <PropertyName>population</PropertyName>
   </Priority>
   
-This ensures that at small scales New York is labeled in preference to the less populated cities: 
+This ensures that at small scales New York is labeled in preference to the less populous cities nearby: 
 
 .. figure:: img/priority_some.png
    :align: center
 
 *City locations (small scale map)*
    
-Without priority labeling, Yonkers could be labeled in preference to New York, 
+Without priority labeling, Jersey City could be labeled in preference to New York, 
 making it difficult to interpret the map.
 At scales showing many features, 
 priority labeling is essential to ensure that larger cities are more visible than smaller cities.
@@ -282,8 +292,8 @@ priority labeling is essential to ensure that larger cities are more visible tha
 
 .. _labeling_group:
 
-Grouping Features
-^^^^^^^^^^^^^^^^^
+Grouping Features (group)
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The ``group`` option allows displaying a single label for multiple features
 in a logical group.
@@ -313,7 +323,7 @@ If desired the labeller can be forced to label every element in a group by speci
 .. warning::  
    Be careful that the labels truly indicate features that should be grouped together. 
    For example, grouping on city name alone might end up creating a group
-   containing both Paris (France) and Paris (Texas).
+   containing both *Paris* (France) and *Paris* (Texas).
 
 Road data is a classic example to show why grouping is useful.  
 It is usually desirable to display only a single label for all of "Main Street", 
@@ -332,16 +342,29 @@ This produces a much less cluttered map:
 .. figure:: img/group_yes.png
    :align: center
 
+.. _labeling_all_group:
+
+labelAllGroup
+^^^^^^^^^^^^^
+
+The ``labelAllGroup`` option can be used in conjunction with the ``group`` option (see :ref:`labeling_group`).
+It causes *all* of the disjoint paths in a line group to be labeled, not just the longest one.
+
+.. code-block:: xml
+
+  <VendorOption name="labelAllGroup">true</VendorOption>
+
+
 
 .. _labeling_space_around:
 
-Overlapping and Separating Labels (<VendorOption name="spaceAround">)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Overlapping and Separating Labels (spaceAround)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 By default GeoServer will not render labels "on top of each other". 
 By using the ``spaceAround`` option you can either allow labels to overlap,
 or add extra space around labels.
-The value supplied for the option is a positive or negative size in pixels.
+The value supplied for the option is a positive or negative size, in pixels.
 
 .. code-block:: xml
  
@@ -352,25 +375,24 @@ Using the default value of 0, the bounding box of a label cannot overlap the bou
 .. figure:: img/space_0.png
    :align: center
 
-With a negative spaceAround value, overlapping is allowed:
+With a negative ``spaceAround`` value, overlapping is allowed:
 
 .. figure:: img/space_neg.png
    :align: center
 
-With a positive ``spaceAround`` value of 10, each label will be 20 pixels apart from each other:
+With a positive ``spaceAround`` value of 10, each label is at least 20 pixels apart from others:
 
 .. figure:: img/space_10.png
    :align: center
 
-
 Positive ``spaceAround`` values actually provide twice the space that you might expect. 
 This is because you can specify a spaceAround for one label as 5, and for another label (in another TextSymbolizer) as 3. 
-The total distance between them will be 8. 
+The total distance between them is 8. 
 Two labels in the first symbolizer ("5") will each be 5 pixels apart from each other, for a total of 10 pixels.
 
 .. note:: **Interaction between values in different TextSymbolizers**
 
-  You can have multiple TextSymbolizers in your SLD file, each with a different spaceAround option. This will normally do what you would think if all your spaceAround options are >=0. If you have negative values ('allow overlap') then these labels can overlap labels that you've said should not be overlapping. If you dont like this behavior, its not too difficult to change - feel free to submit a patch!
+  You can have multiple TextSymbolizers in your SLD file, each with a different ``spaceAround`` option. If all the ``spaceAround`` options are >=0, this will do what you would normally expect. If you have negative values ('allow overlap') then these labels can overlap labels that you've said should not be overlapping. If you don't like this behavior, it's not difficult to change - feel free to submit a patch!
 
 .. _labeling_follow_line:
 
@@ -383,7 +405,7 @@ The ``followLine`` option forces a label to follow the curve of the line. To use
   
   <VendorOption name="followLine">true</VendorOption>  
 
-It is required to use ``<LinePlacement>`` along with this option to ensure that labels are placd along lines:
+It is required to use ``<LinePlacement>`` along with this option to ensure that labels are placed along lines:
 
 .. code-block:: xml
 
@@ -397,8 +419,9 @@ maxDisplacement
 ^^^^^^^^^^^^^^^
 
 The ``maxDisplacement`` option controls the displacement of the label along a line. 
-Normally GeoServer labels a line at its center point only, provided the location is not occupied by another label, and not label it at all otherwise. 
-When this option is enabled the labeller will attempt to avoid conflict by using an alternate location within **maxDisplacement** pixels from the pre-computed label point.
+Normally GeoServer labels a line at its center point only.
+If this label conflicts with another one it may not be displayed at all. 
+When this option is enabled the labeller will attempt to avoid conflict by using an alternate location within **maxDisplacement** pixels along the line from the pre-computed label point.
 
 If used in conjunction with :ref:`labeling_repeat`, the value for ``maxDisplacement`` should always be **lower** than the value for ``repeat``.
 
@@ -411,26 +434,15 @@ If used in conjunction with :ref:`labeling_repeat`, the value for ``maxDisplacem
 repeat
 ^^^^^^
 
-The ``repeat`` option determines how often GeoServer labels a line. 
+The ``repeat`` option determines how often GeoServer displays labels along a line. 
 Normally GeoServer labels each line only once, regardless of length. 
 Specifying a positive value for this option makes the labeller attempt to draw the label every **repeat** pixels.
+For long or complex lines (such as contour lines) this makes labeling more informative.
 
 .. code-block:: xml
 
   <VendorOption name="repeat">100</VendorOption>
 
-
-.. _labeling_all_group:
-
-labelAllGroup
-^^^^^^^^^^^^^
-
-The ``labelAllGroup`` option can be used in conjunction with the ``group`` option (see :ref:`labeling_group`).
-It causes *all* of the disjoint paths in a line group to be labeled, not just the longest one.
-
-.. code-block:: xml
-
-  <VendorOption name="labelAllGroup">true</VendorOption>
 
 .. _labeling_max_angle_delta:
 
@@ -448,18 +460,25 @@ When used in conjunction with :ref:`labeling_follow_line`, the ``maxAngleDelta``
 autoWrap
 ^^^^^^^^
 
-The ``autoWrap`` option wraps labels when they exceed the given value, given in pixels. Make sure to give a dimension wide enough to accommodate the longest word other wise this option will split words over multiple lines.
+The ``autoWrap`` option wraps labels when they exceed the given width (in pixels). 
+The size should be wide enough to accommodate the longest word, otherwise single words will be split over multiple lines.
 
 .. code-block:: xml
 
   <VendorOption name="autoWrap">50</VendorOption>
+
+.. figure:: img/label_autoWrap.png	
+
+*Labeling with autoWrap enabled* 
 
 .. _labeling_force_left_to_right:
 
 forceLeftToRight
 ^^^^^^^^^^^^^^^^
 
-The labeller always tries to draw labels so that they can be read, meaning the label does not always follow the line orientation, but sometimes it's flipped 180° instead to allow for normal reading. This may get in the way if the label is a directional arrow, and you're trying to show one way directions (assuming the geometry is oriented along the one way, and that you have a flag to discern one ways from streets with both circulations).
+The renderer tries to draw labels along lines so that the text is upright, for maximum legibility.  
+This means a label may not follow the line orientation, but instead may be rotated 180° to display the text the right way up. 
+In some cases altering the orientation of the label is not desired; for example, if the label is a directional arrow showing the orientation of the line.
 
 The ``forceLeftToRight`` option can be set to ``false`` to disable label flipping, making the label always follow the inherent orientation of the line being labelled:
 
@@ -482,8 +501,8 @@ This means the label will be drawn even if it overlaps with other labels, and ot
 
 .. _labeling_goodness_of_fit:
 
-Goodness of Fit
-^^^^^^^^^^^^^^^
+goodnessOfFit
+^^^^^^^^^^^^^
 
 Geoserver will remove labels if they are a particularly bad fit for the geometry they are labeling.
 
@@ -505,10 +524,11 @@ The default value is 0.5, but it can be modified using:
 
   <VendorOption name="goodnessOfFit">0.3</VendorOption>
   
-Polygon alignment
-^^^^^^^^^^^^^^^^^
+polygonAlign
+^^^^^^^^^^^^
 
-GeoServer normally tries to place horizontal labels within a polygon, and give up in case the label position is busy or if the label does not fit enough in the polygon. This options allows GeoServer to try alternate rotations for the labels.
+GeoServer normally tries to place labels horizontally within a polygon, and gives up if the label position is busy or if the label does not fit enough in the polygon. 
+This option allows GeoServer to try alternate rotations for the labels.
 
 .. code-block:: xml
 
@@ -520,12 +540,59 @@ GeoServer normally tries to place horizontal labels within a polygon, and give u
 
    * - **Option** 
      - **Description**
-   * - manual
-     - The default value, only the rotation manually specified in the ``<Rotation>`` tag will be used
-   * - ortho
-     - If the label does not fit horizontally and the polygon is taller than wider the vertical alignement will also be tried
-   * - mbr
+   * - ``manual``
+     - The default value. Only a rotation manually specified in the ``<Rotation>`` tag will be used
+   * - ``ortho``
+     - If the label does not fit horizontally and the polygon is taller than wider then vertical alignment will also be tried
+   * - ``mbr``
      - If the label does not fit horizontally the minimum bounding rectangle will be computed and a label aligned to it will be tried out as well
      
      
+.. _labeling_graphic_resize:
+
+graphic-resize
+^^^^^^^^^^^^^^
+
+When a ``<Graphic>`` is specified for a label by default it is displayed at its native size
+and aspect ratio.
+The ``graphic-resize`` option instructs the renderer to magnify or stretch the graphic to fully contain the text of the label.
+If this option is used the ``graphic-margin`` option may also be specified.
+
+.. code-block:: xml
+
+  <VendorOption name="graphic-resize">stretch</VendorOption>
+
+
+.. list-table::
+   :widths: 30 70 
+
+   * - **Option** 
+     - **Description**
+   * - ``none``
+     - Graphic is displayed at its native size (default)
+   * - ``proportional``
+     - Graphic size is increased uniformly to contain the label text
+   * - ``stretch``
+     - Graphic size is increased anisotropically to contain the label text
+     
+.. cssclass:: no-border
+
+   =============================================  ================================================
+   .. figure:: img/label_graphic-resize_none.png  .. figure:: img/label_graphic-resize_stretch.png
+   =============================================  ================================================
+  
+*Labeling with a Graphic Mark "square" - L) at native size; R) with "graphic-resize"=stretch and "graphic-margin"=3* 
+     
+.. _labeling_graphic_margin:
+
+graphic-margin
+^^^^^^^^^^^^^^
+
+The ``graphic-margin`` options specifies a margin (in pixels) to use around the label text 
+when the ``graphic-resize`` option is specified.
+
+.. code-block:: xml
+
+  <VendorOption name="graphic-margin">margin</VendorOption>
+
      

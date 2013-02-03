@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.kml;
@@ -24,6 +24,7 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.data.test.MockData;
 import org.geoserver.ows.kvp.FormatOptionsKvpParser;
+import org.geoserver.wms.WMSRequests;
 import org.geoserver.wms.WMSTestSupport;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -132,6 +133,29 @@ public class KMLReflectorTest extends WMSTestSupport {
         assertEquals("att1>1000", kvp2.get("CQL_FILTER"));
     }
 
+    /**
+     * @see {@link KMLReflector#organizeFormatOptionsParams(Map, Map)}
+     * @throws Exception
+     */
+    @Test
+    public void testKmlFormatOptionsAsKVP() throws Exception {
+        final String layerName = MockData.BASIC_POLYGONS.getPrefix() + ":"
+                + MockData.BASIC_POLYGONS.getLocalPart();
+
+        final String baseUrl = "wms/kml?layers=" + layerName + "&styles=&mode=superoverlay";
+        final String requestUrl = baseUrl
+                + "&kmltitle=myCustomLayerTitle&kmscore=10&legend=true&kmattr=true";
+        Document dom = getAsDOM(requestUrl);
+        XPath xpath = XPathFactory.newInstance().newXPath();
+
+        // print(dom);
+        // all the kvp parameters (which should be set as format_options now are correctly parsed) 
+        assertTrue(xpath
+                .evaluate("kml/Folder/NetworkLink[1]/Link/href", dom)
+                .contains(
+                        "&format_options=LEGEND:true;SUPEROVERLAY:true;KMPLACEMARK:false;OVERLAYMODE:auto;KMSCORE:10;KMATTR:true;KMLTITLE:myCustomLayerTitle;"));
+    }
+        
     @Test
     public void testKmltitleFormatOption() throws Exception {
         final String layerName = MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart();

@@ -8,23 +8,23 @@
     <fieldset>
       <ul>
         <li>
-          <label>Workspace and Namesapce</label>
+          <label><wicket:message key="workspace">Workspace and Namespace</wicket:message></label>
           <select wicket:id="workspace" style="width: 260px;"></select>
         </li>
         <li>
-          <label>Store</label>
+          <label><wicket:message key="store">Store</wicket:message></label>
           <select wicket:id="store" style="width: 260px;"></select>
         </li>
         <li>
-          <label>Resource and Layer</label>
+          <label><wicket:message key="resourceAndLayer">Resource and Layer</wicket:message></label>
           <select wicket:id="resourceAndLayer" style="width: 260px;"></select>
         </li>
         <li>
-          <label># of times to duplicate the selected CatalogInfo</label>
+          <label><wicket:message key="duplicateCount"># of times to duplicate the selected CatalogInfo</wicket:message></label>
           <input type="text" class="text" wicket:id="duplicateCount" style="width: 260px;"/>
         </li>
         <li>
-          <label>Sufix to append to the resource name (plus the count)</label>
+          <label><wicket:message key="sufix">Sufix to append to the resource name (plus the count)</wicket:message></label>
           <input type="text" class="text" wicket:id="sufix" style="width: 260px;"/>
         </li>
       </ul>
@@ -32,9 +32,9 @@
    </li>
    <li>
     <div class="button-group selfclear">
-       <a href="#" wicket:id="submit">Start</a>
-       <a href="#" wicket:id="cancel">Cancel</a>
-       <span wicket:id="progress">progress</span>
+       <a href="#" wicket:id="submit"><wicket:message key="submit">Start</wicket:message></a>
+       <a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
+       <span wicket:id="progress"></span>
     </div>
    </li>
   </ul>

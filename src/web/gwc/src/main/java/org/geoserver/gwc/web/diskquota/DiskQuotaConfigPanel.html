@@ -39,6 +39,29 @@
           </ul>
           </div>
         </li>
+        <li wicket:id="quotaStoreContainer">
+          <label for="diskQuotaStore"><wicket:message key="diskQuotaStore">quotastore:</wicket:message></label>
+          <select class="text" id="diskQuotaStore" wicket:id="diskQuotaStore"></select>
+          <ul wicket:id="jdbcQuotaStoreContainer">
+            <li>
+	          <label for="dialectChooser"><wicket:message key="jdbcQuotaDialect">dialect:</wicket:message></label>
+	          <select class="text" id="dialectChooser" wicket:id="dialectChooser"></select>
+            </li>
+            <li>
+	          <label for="connectionTypeChooser"><wicket:message key="connectionTypeChooser">connectionType:</wicket:message></label>
+	          <select class="text" id="connectionTypeChooser" wicket:id="connectionTypeChooser"></select>
+            </li>
+            <li wicket:id="connectionTypeContainer">
+	           	<ul>
+		            <li wicket:id="jndiLocationContainer">
+			          <label for="jndiLocation"><wicket:message key="jndiLocation">jdniLocation:</wicket:message></label>
+			          <input type="text" class="text" id="jndiLocation" wicket:id="jndiLocation"></input>
+		            </li>
+		            <li wicket:id="connectionPoolConfigurator"></li>
+		        </ul>
+		    </li>
+          </ul>
+        </li>
       </ul>
     </fieldset>
 </wicket:panel>

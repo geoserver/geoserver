@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -17,6 +17,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MapInfo;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -132,8 +133,14 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
         LayerGroupInfoImpl lg = (LayerGroupInfoImpl) layerGroup;
 
         for (int i = 0; i < lg.getLayers().size(); i++) {
-            LayerInfo l = lg.getLayers().get(i);
-            LayerInfo resolved = unwrap(ResolvingProxy.resolve(getCatalog(), l));
+            PublishedInfo l = lg.getLayers().get(i);
+            PublishedInfo resolved;
+            if (l instanceof LayerGroupInfo) {
+                resolved = unwrap(ResolvingProxy.resolve(getCatalog(), (LayerGroupInfo) l));                
+            } else {
+                resolved = unwrap(ResolvingProxy.resolve(getCatalog(), (LayerInfo) l));
+            }
+            
             lg.getLayers().set(i, resolved);
         }
 

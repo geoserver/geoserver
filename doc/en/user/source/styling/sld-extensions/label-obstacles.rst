@@ -3,10 +3,11 @@
 Label Obstacles
 ===============
 
-GeoServer contains a number of internal algorithims for doing label conflict 
-resolution that prevent labels from overlapping one another. However by default
-these algorithims only account for other labels. This can result in labels 
-overlapping other symbolizers and that effect may be unintended. 
+GeoServer implements an algorithm for label conflict 
+resolution, to prevent labels from overlapping one another. 
+By default this algorithm only considers conflicts with other labels. 
+This can result in labels 
+overlapping other symbolizers, which may produce an undesirable effect. 
 
 .. cssclass:: no-border
 
@@ -15,9 +16,9 @@ overlapping other symbolizers and that effect may be unintended.
    ======================================  ======================================
 
 
-GeoServer supports a vendor option called ``labelObstacle`` that allows one to
-mark a symbolizer as an obstacle that tells the labeller to avoid rendering
-a label that overlaps with it.
+GeoServer supports a vendor option called ``labelObstacle`` that allows
+marking a symbolizer as an obstacle.
+This tells the labeller to avoid rendering labels that overlap it.
 
 .. code-block:: xml
 

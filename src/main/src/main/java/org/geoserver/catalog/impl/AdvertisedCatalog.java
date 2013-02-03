@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -14,6 +14,7 @@ import org.geoserver.catalog.LayerGroupVisibilityPolicy;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.Predicates;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -108,7 +109,18 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
             return null;
         }
 
-        final List<LayerInfo> filteredLayers = filterLayers(group.getLayers());
+        final List<PublishedInfo> filteredLayers = new ArrayList<PublishedInfo>();
+        for (PublishedInfo p : group.getLayers()) {
+            if (p instanceof LayerInfo) {
+                p = checkAccess((LayerInfo) p);
+            } else {
+                p = checkAccess((LayerGroupInfo) p);                
+            }
+            
+            if (p != null) {
+                filteredLayers.add(p);
+            }
+        }
         
         if (layerGroupPolicy.hideLayerGroup(group, filteredLayers)) {
             return null;
@@ -116,7 +128,7 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
             if (group.getLayers().size() != filteredLayers.size()) {
                 return new DecoratingLayerGroupInfo(group) {
                     @Override
-                    public List<LayerInfo> getLayers() {
+                    public List<PublishedInfo> getLayers() {
                         return filteredLayers;
                     }
                 };

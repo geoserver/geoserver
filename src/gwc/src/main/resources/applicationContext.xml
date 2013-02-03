@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -21,10 +21,10 @@
     <constructor-arg ref="gwcTLDispatcher" />
     <constructor-arg ref="gwcGridSetBroker" />
     <constructor-arg ref="gwcTileBreeder" />
-    <constructor-arg ref="DiskQuotaStore" />
     <constructor-arg ref="DiskQuotaMonitor" />
     <constructor-arg ref="dispatcher" />
     <constructor-arg ref="catalog" />
+    <constructor-arg ref="gwcDefaultStorageFinder"/>
   </bean>
 
   <bean id="gwcWMSExtendedCapabilitiesProvider" class="org.geoserver.gwc.wms.CachingExtendedCapabilitiesProvider">

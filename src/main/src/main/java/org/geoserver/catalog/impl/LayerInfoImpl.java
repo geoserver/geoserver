@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -22,6 +22,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geotools.util.logging.Logging;
 
+
 public class LayerInfoImpl implements LayerInfo {
     
     static final Logger LOGGER = Logging.getLogger(LayerInfoImpl.class);
@@ -35,13 +36,17 @@ public class LayerInfoImpl implements LayerInfo {
     // TODO: revert to normal property when the resource/publishing split is done
     transient protected String name;
 
+    private String title;
+    
+    private String abstractTxt;
+    
     protected String path;
 
     protected LayerInfo.Type type;
 
     protected StyleInfo defaultStyle;
 
-    protected Set styles = new HashSet();
+    protected Set<StyleInfo> styles = new HashSet<StyleInfo>();
 
     protected ResourceInfo resource;
 
@@ -75,6 +80,7 @@ public class LayerInfoImpl implements LayerInfo {
      */
     protected List<LayerIdentifierInfo> identifiers = new ArrayList<LayerIdentifierInfo>(1);
 
+    @Override
     public String getId() {
         return id;
     }
@@ -82,7 +88,8 @@ public class LayerInfoImpl implements LayerInfo {
     public void setId(String id) {
         this.id = id;
     }
-    
+
+    @Override    
     public String getName() {
         if (resource == null) {
             throw new NullPointerException("Unable to get Layer name without an underlying resource");
@@ -92,6 +99,7 @@ public class LayerInfoImpl implements LayerInfo {
         // return name;
     }
 
+    @Override    
     public void setName(String name) {
         // TODO: remove this log and reinstate field assignment when resource/publish split is complete
         LOGGER.log(Level.FINE, "Warning, some code is setting the LayerInfo name, but that will be ignored");
@@ -103,66 +111,80 @@ public class LayerInfoImpl implements LayerInfo {
         resource.setName(name);
     }
 
+    @Override    
     public String prefixedName() {
         return this.getResource().getStore().getWorkspace().getName() + ":" + getName();
     }
 
+    @Override    
     public Type getType() {
         return type;
     }
-
+    
+    @Override
     public void setType(Type type) {
         this.type = type;
     }
 
+    @Override    
     public String getPath() {
         return path;
     }
-
+    
+    @Override
     public void setPath(String path) {
         this.path = path;
     }
-
+    
+    @Override
     public StyleInfo getDefaultStyle() {
         return defaultStyle;
     }
 
+    @Override    
     public void setDefaultStyle(StyleInfo defaultStyle) {
         this.defaultStyle = defaultStyle;
     }
 
-    public Set getStyles() {
+    public Set<StyleInfo> getStyles() {
         return styles;
     }
 
-    public void setStyles(Set styles) {
+    public void setStyles(Set<StyleInfo> styles) {
         this.styles = styles;
     }
 
+    @Override
     public ResourceInfo getResource() {
         return resource;
     }
 
+    @Override
     public void setResource(ResourceInfo resource) {
         this.resource = resource;
     }
 
+    @Override
     public LegendInfo getLegend() {
         return legend;
     }
 
+    @Override
     public void setLegend(LegendInfo legend) {
         this.legend = legend;
     }
 
+    @Override
     public AttributionInfo getAttribution() {
         return attribution;
     }
 
+    @Override
     public void setAttribution(AttributionInfo attribution) {
         this.attribution = attribution;
     }
 
+    @Override
     public boolean isEnabled() {
         return enabled;
     }
@@ -170,6 +192,7 @@ public class LayerInfoImpl implements LayerInfo {
     /**
      * @see LayerInfo#enabled()
      */
+    @Override
     public boolean enabled() {
         ResourceInfo resource = getResource();
         boolean resourceEnabled = resource != null && resource.enabled();
@@ -177,6 +200,7 @@ public class LayerInfoImpl implements LayerInfo {
         return resourceEnabled && thisEnabled;
     }
 
+    @Override
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
         ResourceInfo resource = getResource();
@@ -185,14 +209,16 @@ public class LayerInfoImpl implements LayerInfo {
         }
     }
 
+    @Override
     public MetadataMap getMetadata() {
         return metadata;
     }
-
+    
     public void setMetadata(MetadataMap metadata) {
         this.metadata = metadata;
     }
     
+    @Override
     public void accept(CatalogVisitor visitor) {
         visitor.visit(this);
     }
@@ -219,6 +245,7 @@ public class LayerInfoImpl implements LayerInfo {
         return result;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
@@ -296,10 +323,12 @@ public class LayerInfoImpl implements LayerInfo {
                 ", resource:").append(resource).append(']').toString();
     }
 
+    @Override
     public void setQueryable(boolean queryable) {
         this.queryable = queryable;
     }
 
+    @Override
     public boolean isQueryable() {
         return this.queryable == null? true : this.queryable.booleanValue();
     }
@@ -348,4 +377,23 @@ public class LayerInfoImpl implements LayerInfo {
         this.identifiers = identifiers;
     }
 
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
+    @Override
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    @Override
+    public String getAbstract() {
+        return abstractTxt;
+    }
+
+    @Override
+    public void setAbstract(String abstractTxt) {
+        this.abstractTxt = abstractTxt;
+    }
 }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -13,14 +13,14 @@ import org.geoserver.security.config.AnonymousAuthenticationFilterConfig;
 import org.geoserver.security.config.BasicAuthenticationFilterConfig;
 import org.geoserver.security.config.DigestAuthenticationFilterConfig;
 import org.geoserver.security.config.ExceptionTranslationFilterConfig;
-import org.geoserver.security.config.RoleFilterConfig;
 import org.geoserver.security.config.J2eeAuthenticationFilterConfig;
 import org.geoserver.security.config.LogoutFilterConfig;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
-import org.geoserver.security.config.SecurityFilterConfig;
 import org.geoserver.security.config.RememberMeAuthenticationFilterConfig;
 import org.geoserver.security.config.RequestHeaderAuthenticationFilterConfig;
+import org.geoserver.security.config.RoleFilterConfig;
 import org.geoserver.security.config.SecurityContextPersistenceFilterConfig;
+import org.geoserver.security.config.SecurityFilterConfig;
 import org.geoserver.security.config.SecurityInterceptorFilterConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.config.UsernamePasswordAuthenticationFilterConfig;

@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,6 +8,8 @@ import static org.geoserver.inspire.wms.WMSExtendedCapabilitiesProvider.NAMESPAC
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import org.geoserver.inspire.InspireMetadata;
+import org.geoserver.test.GeoServerTestSupport;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wms.WMSInfo;
 import org.junit.Test;

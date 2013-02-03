@@ -1,17 +1,19 @@
-/* Copyright (c) 2001 - 2009 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.data.test.SystemTestData;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.junit.Before;
@@ -27,6 +29,9 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         removeLayerGroup(null, "sfLayerGroup");
         removeLayerGroup("sf", "foo");
         removeLayerGroup(null, "newLayerGroup");
+        removeLayerGroup(null, "newLayerGroupWithTypeCONTAINER");
+        removeLayerGroup(null, "newLayerGroupWithTypeEO");
+        removeLayerGroup(null, "nestedLayerGroupTest");
         
         LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
         lg.setName( "sfLayerGroup" );
@@ -82,7 +87,7 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         Document dom = getAsDOM( "/rest/layergroups/sfLayerGroup.xml");
         assertEquals( "layerGroup", dom.getDocumentElement().getNodeName() );
         assertXpathEvaluatesTo("sfLayerGroup", "/layerGroup/name", dom );
-        assertXpathEvaluatesTo( "2", "count(//layer)", dom );
+        assertXpathEvaluatesTo( "2", "count(//published)", dom );
         assertXpathEvaluatesTo( "2", "count(//style)", dom );
     }
 
@@ -141,6 +146,96 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
         assertNotNull( lg.getBounds() );
     }
 
+    @Test
+    public void testPostWithNestedGroups() throws Exception {
+        String xml = 
+                "<layerGroup>" + 
+                    "<name>nestedLayerGroupTest</name>" +
+                    "<publishables>" +
+                      "<published type=\"layer\">Ponds</published>" +
+                      "<published type=\"layer\">Forests</published>" +
+                      "<published type=\"layerGroup\">sfLayerGroup</published>" +
+                    "</publishables>" +
+                    "<styles>" +
+                      "<style>polygon</style>" +
+                      "<style>point</style>" +
+                      "<style></style>" +                      
+                    "</styles>" +
+                  "</layerGroup>";
+            
+            MockHttpServletResponse response = postAsServletResponse("/rest/layergroups", xml );
+            assertEquals( 201, response.getStatusCode() );
+            
+            assertNotNull( response.getHeader( "Location") );
+            assertTrue( response.getHeader("Location").endsWith( "/layergroups/nestedLayerGroupTest" ) );
+
+            LayerGroupInfo lg = catalog.getLayerGroupByName( "nestedLayerGroupTest");
+            assertNotNull( lg );
+            
+            assertEquals( 3, lg.getLayers().size() );
+            assertEquals( "Ponds", lg.getLayers().get( 0 ).getName() );
+            assertEquals( "Forests", lg.getLayers().get( 1 ).getName() );
+            assertEquals( "sfLayerGroup", lg.getLayers().get( 2 ).getName() );
+            assertEquals( 3, lg.getStyles().size() );
+            assertEquals( "polygon", lg.getStyles().get( 0 ).getName() );
+            assertEquals( "point", lg.getStyles().get( 1 ).getName() );
+            assertNull( lg.getStyles().get( 2 ) );
+            
+            assertNotNull( lg.getBounds() );
+    }
+    
+    @Test
+    public void testPostWithTypeContainer() throws Exception {
+        String xml = 
+            "<layerGroup>" + 
+                "<name>newLayerGroupWithTypeCONTAINER</name>" +
+                "<mode>CONTAINER</mode>" + 
+                "<layers>" +
+                  "<layer>Ponds</layer>" +
+                  "<layer>Forests</layer>" +
+                "</layers>" +
+                "<styles>" +
+                  "<style>polygon</style>" +
+                  "<style>point</style>" +
+                "</styles>" +
+              "</layerGroup>";
+        
+        MockHttpServletResponse response = postAsServletResponse("/rest/layergroups", xml);
+        assertEquals(201, response.getStatusCode());
+        
+        LayerGroupInfo lg = catalog.getLayerGroupByName("newLayerGroupWithTypeCONTAINER");
+        assertNotNull(lg);
+        
+        assertEquals(LayerGroupInfo.Mode.CONTAINER, lg.getMode());
+    }  
+    
+    @Test
+    public void testPostWithTypeEO() throws Exception {
+        String xml = 
+            "<layerGroup>" + 
+                "<name>newLayerGroupWithTypeEO</name>" +
+                "<mode>EO</mode>" + 
+                "<rootLayer>Ponds</rootLayer>" + 
+                "<rootLayerStyle>polygon</rootLayerStyle>" + 
+                "<layers>" +
+                  "<layer>Forests</layer>" +
+                "</layers>" +
+                "<styles>" +
+                  "<style>point</style>" +
+                "</styles>" +
+              "</layerGroup>";
+        
+        MockHttpServletResponse response = postAsServletResponse("/rest/layergroups", xml);
+        assertEquals(201, response.getStatusCode());
+        
+        LayerGroupInfo lg = catalog.getLayerGroupByName("newLayerGroupWithTypeEO");
+        assertNotNull(lg);
+        
+        assertEquals(LayerGroupInfo.Mode.EO, lg.getMode());
+        assertEquals("Ponds", lg.getRootLayer().getName());
+        assertEquals("polygon", lg.getRootLayerStyle().getName());
+    }
+    
     @Test
     public void testPostNoStyles() throws Exception {
         

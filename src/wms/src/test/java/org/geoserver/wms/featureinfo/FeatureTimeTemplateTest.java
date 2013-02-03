@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.featureinfo;
@@ -40,6 +40,8 @@ public class FeatureTimeTemplateTest extends WMSTestSupport {
     
     @Test 
     public void testEmpty() throws Exception {
+        setupTemplate(MockData.PRIMITIVEGEOFEATURE,"time.ftl","");
+        
         FeatureTimeTemplate template = new FeatureTimeTemplate();
         String[] result = template.execute( feature );
         

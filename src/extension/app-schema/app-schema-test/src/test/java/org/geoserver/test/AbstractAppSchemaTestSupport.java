@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001 - 2009 TOPP - www.openplans.org. All rights reserved.
+ * Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -23,8 +23,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.xml.serialize.OutputFormat;
-import org.apache.xml.serialize.XMLSerializer;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -407,15 +411,11 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
      *            stream to which output is written
      */
     protected void prettyPrint(Document document, OutputStream output) {
-        OutputFormat format = new OutputFormat(document);
-        // setIndenting must be first as it resets indent and line width
-        format.setIndenting(true);
-        format.setIndent(4);
-        format.setLineWidth(200);
-        XMLSerializer serializer = new XMLSerializer(output, format);
         try {
-            serializer.serialize(document);
-        } catch (IOException e) {
+            Transformer tx = TransformerFactory.newInstance().newTransformer();
+            tx.setOutputProperty(OutputKeys.INDENT, "yes");
+            tx.transform(new DOMSource(document), new StreamResult(output));
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

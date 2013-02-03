@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security.xml;
@@ -34,10 +34,14 @@ import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.xml.serialize.OutputFormat;
-import org.apache.xml.serialize.XMLSerializer;
+
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.file.LockFile;
 import org.geoserver.security.impl.AbstractRoleStore;
@@ -148,18 +152,18 @@ public class XMLRoleStore extends AbstractRoleStore {
 //                XMLValidator.Singleton.validateRoleRegistry(doc);
 //            }
 
-             OutputFormat of = new OutputFormat("XML","UTF-8",true);
-             XMLSerializer serializer = new XMLSerializer();
-             serializer.setOutputFormat(of);
+            Transformer tx = TransformerFactory.newInstance().newTransformer();
+            tx.setOutputProperty(OutputKeys.METHOD, "XML");
+            tx.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+            tx.setOutputProperty(OutputKeys.INDENT, "yes");
 
              OutputStream out = new BufferedOutputStream(new FileOutputStream(roleFile));
              try {
-                 serializer.setOutputByteStream(out);
-                 serializer.serialize(doc);
+                 tx.transform(new DOMSource(doc), new StreamResult(out));
                  out.flush();
              }
              finally {
-            IOUtils.closeQuietly(out);
+                 IOUtils.closeQuietly(out);
              }
             
             /* standard java, but there is no possibility to set 

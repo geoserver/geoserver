@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -59,7 +59,7 @@
       <constructor-arg ref="wms"/>
 	</bean>	
 		
-	<bean id="wmsGetMap" class="org.geoserver.wms.GetMap">
+	<bean id="wmsGetMap" class="org.geoserver.wms.GetMap" depends-on="extensions">
 	    <constructor-arg ref="wms"/>
         <property name="filterFactory" ref="filterFactory">
           <description>Use the same filter factory declared in the WFS module</description>

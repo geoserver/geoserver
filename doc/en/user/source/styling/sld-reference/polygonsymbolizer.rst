@@ -70,7 +70,7 @@ It can contain the sub-elements:
      - Renders the fill of the polygon with a repeated pattern.
    * - ``<CssParameter>``
      - 0..N
-     - Determines the fill styling parameters.
+     - Specifies parameters for filling with a solid color.
 
 GraphicFill
 ^^^^^^^^^^^
@@ -101,10 +101,10 @@ The following parameters are supported:
      - **Description**
    * - ``name="fill"``
      - No
-     - Specifies the fill color for the polygon, in the form ``#RRGGBB``.  Default is grey (``#808080``).
+     - Specifies the fill color, in the form ``#RRGGBB``.  Default is grey (``#808080``).
    * - ``name="fill-opacity"``
      - No
-     - Specifies the opacity (transparency) of the fill of the polygon.  The value is a number between ``0`` (completely transparent) and ``1`` (completely opaque).  Default is ``1``.
+     - Specifies the opacity (transparency) of the fill.  The value is a decimal number between ``0`` (completely transparent) and ``1`` (completely opaque).  Default is ``1``.
 
 
 

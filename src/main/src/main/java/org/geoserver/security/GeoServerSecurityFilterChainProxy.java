@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,6 +26,7 @@ import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.filter.GeoServerAnonymousAuthenticationFilter;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.security.web.FilterChainProxy;
@@ -130,15 +132,13 @@ public class GeoServerSecurityFilterChainProxy extends FilterChainProxy
         // adding required providers like GeoServerRootAuthenticationProvider
         filterChain.postConfigure(securityManager);
 
-        //build up the actual filter chain
-        Map<String,List<String>> rawFilterChainMap = filterChain.compileFilterMap();
-
         Map<RequestMatcher,List<Filter>> filterChainMap = 
                 new LinkedHashMap<RequestMatcher,List<Filter>>();
 
-        for (String pattern : rawFilterChainMap.keySet()) {
+        for (RequestFilterChain chain : filterChain.getRequestChains()) {
+            RequestMatcher matcher = matcherForChain(chain);
             List<Filter> filters = new ArrayList<Filter>();
-            for (String filterName : rawFilterChainMap.get(pattern)) {
+            for (String filterName : chain.getCompiledFilterNames()) {
                 try {
                     Filter filter = lookupFilter(filterName);
                     if (filter == null) {
@@ -151,12 +151,9 @@ public class GeoServerSecurityFilterChainProxy extends FilterChainProxy
                     LOGGER.log(Level.SEVERE, "Error loading filter: " + filterName, ex);
                 }
             }
-            //JD: we probably want to actually have seperate filter instances for each pattern 
-            // component
-            for (String p : pattern.split(",")) {
-                filterChainMap.put(new AntPathRequestMatcher(p), filters);
-            }
+            filterChainMap.put(matcher, filters);
         }
+        
 
         synchronized (this) {
             // first, call destroy of all current filters        
@@ -178,14 +175,51 @@ public class GeoServerSecurityFilterChainProxy extends FilterChainProxy
     }
 
     /**
+     * Creates a {@link GeoServerRequestMatcher} object for 
+     * the specified {@link RequestFilterChain}
+     * 
+     * @param chain
+     * @return
+     */
+    public GeoServerRequestMatcher matcherForChain(RequestFilterChain chain) {
+        
+        Set<HTTPMethod> methods = chain.getHttpMethods();
+        if (chain.isMatchHTTPMethod()==false)
+            methods=null;
+        
+        List<String> tmp =chain.getPatterns();
+        
+        if (tmp==null)
+            return new GeoServerRequestMatcher(methods, (RequestMatcher[])null);
+        
+        // resolve multiple patterns separated by a comma
+        List<String> patterns=new ArrayList<String>();
+        for (String pattern : tmp) {
+            String[] array = pattern.split(",");
+            for (String singlePattern : array)
+                patterns.add(singlePattern);
+        }
+        
+        AntPathRequestMatcher[] matchers=new AntPathRequestMatcher[patterns.size()];
+        for (int i = 0;i<matchers.length;i++) {
+            matchers[i]=new AntPathRequestMatcher(patterns.get(i));
+        }
+        return new GeoServerRequestMatcher(methods,matchers); 
+    }
+    
+    /**
      * looks up a named filter  
      */
-    Filter lookupFilter(String filterName) throws IOException {
+    public Filter lookupFilter(String filterName) throws IOException {
         Filter filter = securityManager.loadFilter(filterName);
         if (filter == null) {
-            Object obj = GeoServerExtensions.bean(filterName, appContext);
-            if (obj != null && obj instanceof Filter) {
-                filter = (Filter) obj;
+            try {
+                Object obj = GeoServerExtensions.bean(filterName, appContext);
+                if (obj != null && obj instanceof Filter) {
+                    filter = (Filter) obj;
+                }
+            } catch (NoSuchBeanDefinitionException ex) {
+                  // do nothing
             }
         }
         return filter;

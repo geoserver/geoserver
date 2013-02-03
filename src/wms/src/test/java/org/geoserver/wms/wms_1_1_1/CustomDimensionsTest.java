@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -101,7 +101,7 @@ public class CustomDimensionsTest extends WMSTestSupport {
         // check we have the extent
         assertXpathEvaluatesTo(DIMENSION_NAME, "//Layer/Extent/@name", dom);
         assertXpathEvaluatesTo("CustomDimValueA", "//Layer/Extent/@default", dom);
-        assertXpathEvaluatesTo("CustomDimValueA,CustomDimValueB", "//Layer/Extent", dom);
+        assertXpathEvaluatesTo("CustomDimValueA,CustomDimValueB,CustomDimValueC", "//Layer/Extent", dom);
     }
     
     @Test
@@ -118,7 +118,7 @@ public class CustomDimensionsTest extends WMSTestSupport {
         // check we have the extent
         assertXpathEvaluatesTo(DIMENSION_NAME, "//Layer/Extent/@name", dom);
         assertXpathEvaluatesTo("CustomDimValueA", "//Layer/Extent/@default", dom);
-        assertXpathEvaluatesTo("CustomDimValueA,CustomDimValueB", "//Layer/Extent", dom);
+        assertXpathEvaluatesTo("CustomDimValueA,CustomDimValueB,CustomDimValueC", "//Layer/Extent", dom);
     }
     
     @Test
@@ -134,12 +134,13 @@ public class CustomDimensionsTest extends WMSTestSupport {
         assertTrue(isEmpty(image));
         
         // check that we get data when requesting a correct value for custom dimension
-        response = getAsServletResponse("wms?bbox=" + BBOX + "&styles="
-                + "&layers=" + LAYERS + "&Format=image/png" + "&request=GetMap" + "&width=550"
+        response = getAsServletResponse("wms?bbox=" + BBOX + "&styles=raster"
+                + "&layers=" + LAYERS + "&Format=image/tiff" + "&request=GetMap" + "&width=550"
                 + "&height=250" + "&srs=EPSG:4326" + "&VALIDATESCHEMA=true"
-                + "&DIM_" + DIMENSION_NAME + "=CustomDimValueB");
+                + "&DIM_" + DIMENSION_NAME + "=CustomDimValueB,CustomDimValueC,CustomDimValueA");
         image = ImageIO.read(getBinaryInputStream(response));
         assertFalse(isEmpty(image));
+        assertTrue(image.getSampleModel().getNumBands()==3);
     }
     
     @Test

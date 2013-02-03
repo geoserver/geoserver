@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -38,7 +38,12 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
@@ -47,8 +52,6 @@ import net.sf.json.JSON;
 import net.sf.json.JSONSerializer;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.xml.serialize.OutputFormat;
-import org.apache.xml.serialize.XMLSerializer;
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -1673,15 +1676,11 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      *            stream to which output is written
      */
     protected void print(Document document, OutputStream output) {
-        OutputFormat format = new OutputFormat(document);
-        // setIndenting must be first as it resets indent and line width
-        format.setIndenting(true);
-        format.setIndent(4);
-        format.setLineWidth(200);
-        XMLSerializer serializer = new XMLSerializer(output, format);
         try {
-            serializer.serialize(document);
-        } catch (IOException e) {
+            Transformer tx = TransformerFactory.newInstance().newTransformer();
+            tx.setOutputProperty(OutputKeys.INDENT, "yes");
+            tx.transform(new DOMSource(document), new StreamResult(output));
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

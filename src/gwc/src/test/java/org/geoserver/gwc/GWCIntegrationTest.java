@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,7 +8,6 @@ import static junit.framework.Assert.*;
 import static org.geoserver.data.test.MockData.*;
 import static org.geoserver.gwc.GWC.*;
 
-import java.io.IOException;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletResponse;
@@ -16,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.httpclient.util.DateUtil;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.layer.CatalogConfiguration;

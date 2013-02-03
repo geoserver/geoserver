@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -554,7 +554,7 @@ public class MockCatalogBuilder {
         expect(lg.getId()).andReturn(newId()).anyTimes();
         expect(lg.getName()).andReturn(name).anyTimes();
 
-        List<LayerInfo> grpLayers = new ArrayList<LayerInfo>();
+        List<PublishedInfo> grpLayers = new ArrayList<PublishedInfo>();
         List<StyleInfo> grpStyles = new ArrayList<StyleInfo>();
         for (int i = 0; i < layerNames.size(); i++) {
             String layerName = layerNames.get(i);

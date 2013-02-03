@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -13,6 +13,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -111,6 +112,13 @@ public class ResolvingProxy extends ProxyBase {
                     }
                     return (T) l; 
                 }
+                if ( object instanceof LayerGroupInfo ) {
+                    Object g = catalog.getLayerGroup( ref );
+                    if ( g == null ) {
+                        g = catalog.getLayerGroupByName( ref );
+                    }
+                    return (T) g; 
+                }                
                 if ( object instanceof StyleInfo ) {
                     Object s = catalog.getStyle( ref );
                     if ( s == null ) {

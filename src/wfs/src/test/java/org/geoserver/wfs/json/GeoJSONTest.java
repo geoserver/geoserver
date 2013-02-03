@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001 - 2010 TOPP - www.openplans.org.  All rights reserved.
+ * Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -80,6 +80,17 @@ public class GeoJSONTest extends WFSTestSupport {
     	JSONArray featureCol = rootObject.getJSONArray("features");
     	JSONObject aFeature = featureCol.getJSONObject(0);
     	assertEquals(aFeature.getString("geometry_name"),"surfaceProperty");
+    }
+    
+    @Test
+    public void testGetSimpleJson() throws Exception {    
+        String out = getAsString("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat="+JSONType.simple_json);
+        
+        JSONObject rootObject = JSONObject.fromObject( out );
+        assertEquals(rootObject.get("type"),"FeatureCollection");
+        JSONArray featureCol = rootObject.getJSONArray("features");
+        JSONObject aFeature = featureCol.getJSONObject(0);
+        assertEquals(aFeature.getString("geometry_name"),"surfaceProperty");
     }
 
     @Test

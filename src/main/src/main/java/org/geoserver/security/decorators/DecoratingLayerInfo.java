@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -152,5 +152,25 @@ public class DecoratingLayerInfo extends AbstractDecorator<LayerInfo> implements
     @Override
     public List<LayerIdentifierInfo> getIdentifiers() {
         return delegate.getIdentifiers();
+    }
+
+    @Override
+    public String getTitle() {
+        return delegate.getTitle();
+    }
+
+    @Override
+    public void setTitle(String title) {
+        delegate.setTitle(title);
+    }
+
+    @Override
+    public String getAbstract() {
+        return delegate.getAbstract();
+    }
+
+    @Override
+    public void setAbstract(String abstractTxt) {
+        delegate.setAbstract(abstractTxt);
     }
 }

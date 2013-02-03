@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.monitor.ows;
@@ -38,9 +38,9 @@ public class MonitorCallback implements DispatcherCallback {
     
     Monitor monitor;
     
-    public MonitorCallback(Monitor monitor) {
+    public MonitorCallback(Monitor monitor, Catalog catalog) {
         this.monitor = monitor;
-        Catalog catalog = monitor.getServer().getCatalog();
+        
         //wfs
         handlers.add(new DescribeFeatureTypeHandler(monitor.getConfig(), catalog));
         handlers.add(new GetFeatureHandler(monitor.getConfig(), catalog));

@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,10 +8,12 @@ import java.util.List;
 
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
 
 public class SecuredLayerGroupInfo extends DecoratingLayerGroupInfo {
 
-    private List<LayerInfo> layers;
+    private LayerInfo rootLayer;
+    private List<PublishedInfo> layers;
 
     /**
      * Overrides the layer group layer list with the one provided (which is
@@ -21,14 +23,19 @@ public class SecuredLayerGroupInfo extends DecoratingLayerGroupInfo {
      * @param delegate
      * @param layers
      */
-    public SecuredLayerGroupInfo(LayerGroupInfo delegate, List<LayerInfo> layers) {
+    public SecuredLayerGroupInfo(LayerGroupInfo delegate, LayerInfo rootLayer, List<PublishedInfo> layers) {
         super(delegate);
+        this.rootLayer = rootLayer;
         this.layers = layers;
     }
 
     @Override
-    public List<LayerInfo> getLayers() {
+    public LayerInfo getRootLayer() {
+        return rootLayer;
+    }
+    
+    @Override
+    public List<PublishedInfo> getLayers() {
         return layers;
     }
-
 }

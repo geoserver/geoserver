@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,13 +8,16 @@ package org.geoserver.security.validation;
 import static org.geoserver.security.validation.SecurityConfigException.*;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerAuthenticationProvider;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerSecurityFilterChain;
+import org.geoserver.security.GeoServerSecurityFilterChainProxy;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerSecurityProvider;
 import org.geoserver.security.GeoServerUserGroupService;
@@ -68,9 +71,11 @@ public class SecurityConfigValidator extends AbstractSecurityValidator{
      * Checks the {@link SecurityManagerConfig} object
      * 
      * @param config
+     * @param oldConfig
      * @throws SecurityConfigException
      */
-    public void validateManagerConfig(SecurityManagerConfig config) throws SecurityConfigException{
+    public void validateManagerConfig(SecurityManagerConfig config, 
+            SecurityManagerConfig oldConfig) throws SecurityConfigException{
         
         String encrypterName =config.getConfigPasswordEncrypterName();
         if (isNotEmpty(encrypterName)==false) {
@@ -121,11 +126,37 @@ public class SecurityConfigValidator extends AbstractSecurityValidator{
         }
         
         // check the filter chain
+        
+        
         GeoServerSecurityFilterChain chain = config.getFilterChain();
+        GeoServerSecurityFilterChain oldChain = oldConfig.getFilterChain();
         if (chain == null) {
-            throw createSecurityException(SecurityConfigException.FILTER_CHAIN_NULL_ERROR);
+            throw createSecurityException(SecurityConfigException.FILTER_CHAIN_NULL_ERROR);            
         }
 
+        // check for remove
+        for (RequestFilterChain oldRequestChain : oldChain.getRequestChains()) {
+            if (chain.getRequestChainByName(oldRequestChain.getName())==null) {
+                if (oldRequestChain.canBeRemoved()==false) {
+                    throw createSecurityException(
+                            SecurityConfigException.FILTER_CHAIN_NOT_REMOVEABLE_$1,oldRequestChain.getName());
+                }
+            }
+        }
+        // check for unique chain names
+        for (RequestFilterChain requestChain : chain.getRequestChains()) {
+            Set<String> chainNames = new HashSet<String> ();
+            // valid name
+            if (isNotEmpty(requestChain.getName())==false) {
+                  throw createSecurityException(SecurityConfigException.FILTER_CHAIN_NAME_MANDATORY);
+            }
+            if (chainNames.contains(requestChain.getName())) {
+                throw createSecurityException(
+                        SecurityConfigException.FILTER_CHAIN_NAME_NOT_UNIQUE_$1,requestChain.getName());
+            }
+            chainNames.add(requestChain.getName());
+        }
+        
         for (RequestFilterChain requestChain : chain.getRequestChains()) {
             validateRequestFilterChain(requestChain);
         }
@@ -139,19 +170,52 @@ public class SecurityConfigValidator extends AbstractSecurityValidator{
         if (requestChain.getPatterns().isEmpty()) {
             throw createSecurityException(SecurityConfigException.PATTERN_LIST_EMPTY_$1,requestChain.getName());
         }
+        
+        GeoServerSecurityFilterChainProxy proxy = GeoServerExtensions.bean(GeoServerSecurityFilterChainProxy.class);
+        
+        String roleFilterName =  requestChain.getRoleFilterName();
+        if (StringUtils.hasLength(roleFilterName)) {
+            try {
+                if (proxy.lookupFilter(roleFilterName)==null) {                
+                    throw createSecurityException(SecurityConfigException.UNKNOWN_ROLE_FILTER_$2,requestChain.getName(),roleFilterName);
+                }                
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+        
+        
+
         if (requestChain instanceof VariableFilterChain) {
             if (requestChain.isDisabled()==false && requestChain.getFilterNames().isEmpty())
                 throw createSecurityException(SecurityConfigException.FILTER_CHAIN_EMPTY_$1,requestChain.getName());
             
-            String roleFilterName = ((VariableFilterChain) requestChain).getRoleFilterName();
-            if (StringUtils.hasLength(roleFilterName)) {
+            String interceptorFilterName =  ((VariableFilterChain) requestChain).getInterceptorName();
+            if (StringUtils.hasLength(interceptorFilterName)) {
                 try {
-                    if (manager.loadFilter(roleFilterName)==null)
-                        throw createSecurityException(SecurityConfigException.UNKNOWN_ROLE_FILTER_$2,requestChain.getName(),roleFilterName);
+                    if (proxy.lookupFilter(interceptorFilterName)==null) {                
+                        throw createSecurityException(SecurityConfigException.UNKNOWN_INTERCEPTOR_FILTER_$2,requestChain.getName(),interceptorFilterName);
+                    }
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
+            } else {
+                throw createSecurityException(SecurityConfigException.INTERCEPTOR_FILTER_MANDATORY_$1,requestChain.getName());
             }
+            
+            String exceptionTranslationName =  ((VariableFilterChain) requestChain).getExceptionTranslationName();
+            if (StringUtils.hasLength(exceptionTranslationName)) {
+                try {
+                    if (proxy.lookupFilter(exceptionTranslationName)==null) {                
+                        throw createSecurityException(SecurityConfigException.UNKNOWN_EXCEPTION_FILTER_$2,requestChain.getName(),exceptionTranslationName);
+                    }
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            } else {
+                throw createSecurityException(SecurityConfigException.EXCEPTION_FILTER_MANDATORY_$1,requestChain.getName());
+            }
+
             
             int index = requestChain.getFilterNames().indexOf(GeoServerSecurityFilterChain.ANONYMOUS_FILTER);
             if (index!=-1 && index != requestChain.getFilterNames().size()-1)
@@ -161,7 +225,7 @@ public class SecurityConfigValidator extends AbstractSecurityValidator{
             for (String filterName : requestChain.getFilterNames()) {
                     GeoServerSecurityFilter filter=null; 
                     try {
-                        filter = manager.loadFilter(filterName);
+                        filter = (GeoServerSecurityFilter)proxy.lookupFilter(filterName);
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }

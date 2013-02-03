@@ -1,12 +1,12 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.inspire.wms;
 
-import static org.geoserver.inspire.wms.InspireMetadata.LANGUAGE;
-import static org.geoserver.inspire.wms.InspireMetadata.SERVICE_METADATA_URL;
-import static org.geoserver.inspire.wms.InspireMetadata.SERVICE_METADATA_TYPE;
+import static org.geoserver.inspire.InspireMetadata.LANGUAGE;
+import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_URL;
+import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_TYPE;
 
 import java.io.IOException;
 import java.util.Collections;

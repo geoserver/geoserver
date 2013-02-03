@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -27,6 +27,7 @@ import org.opengis.coverage.grid.GridCoverage;
  * Default implementation of the Web Coverage Service 2.0
  * 
  * @author Emanuele Tajariol (etj) - GeoSolutions
+ * @author Simone Giannecchini, GeoSolutions
  */
 public class DefaultWebCoverageService20 implements WebCoverageService20 {
 

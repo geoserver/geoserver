@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -317,6 +317,24 @@
           <key><value>/reset</value></key>
           <value>catalogResetter</value>
         </entry>
+        
+        <entry>
+          <key><value>/about/manifest.{format}</value></key>
+          <value>aboutManifestFinder</value>
+        </entry>
+        <entry>
+          <key><value>/about/manifest</value></key>
+          <value>aboutManifestFinder</value>
+        </entry>
+        <entry>
+          <key><value>/about/version.{format}</value></key>
+          <value>aboutVersionFinder</value>
+        </entry>
+        <entry>
+          <key><value>/about/version</value></key>
+          <value>aboutVersionFinder</value>
+        </entry>
+        
         <entry>
           <key><value>/fonts.{format}</value></key>
           <value>fontFinder</value>
@@ -523,5 +541,8 @@
   <bean id="wmsSettingsFinder" class="org.geoserver.service.rest.WMSSettingsFinder" parent="abstractGeoServerFinder"/>
   <bean id="wfsSettingsFinder" class="org.geoserver.service.rest.WFSSettingsFinder" parent="abstractGeoServerFinder"/>
   <bean id="wcsSettingsFinder" class="org.geoserver.service.rest.WCSSettingsFinder" parent="abstractGeoServerFinder"/>
+
+  <bean id="aboutManifestFinder" class="org.geoserver.rest.AboutManifestFinder" />
+  <bean id="aboutVersionFinder" class="org.geoserver.rest.AboutVersionFinder" />
 
 </beans>

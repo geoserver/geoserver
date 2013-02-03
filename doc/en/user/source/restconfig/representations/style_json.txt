@@ -1,8 +1,0 @@
-
-   {
-     style: {
-       name: "population", 
-       filename: "popshade.sld"
-     }
-   }
-   

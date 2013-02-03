@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs;
@@ -79,7 +79,7 @@ public class DefaultWebFeatureService20 implements WebFeatureService20, Applicat
     }
 
     public TransformerBase getCapabilities(GetCapabilitiesType request) throws WFSException {
-        return new GetCapabilities(getServiceInfo(), getCatalog())
+        return new GetCapabilities(getServiceInfo(), getCatalog(), WFSExtensions.findExtendedCapabilitiesProviders(context))
         .run(new GetCapabilitiesRequest.WFS20(request));
     }
     

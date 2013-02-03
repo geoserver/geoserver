@@ -1,11 +1,12 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import net.opengis.wfs.GetCapabilitiesType;
@@ -13,6 +14,9 @@ import net.opengis.wfs.GetCapabilitiesType;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.ows.util.RequestUtils;
 import org.geoserver.wfs.request.GetCapabilitiesRequest;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 /**
  * Web Feature Service GetCapabilities operation.
@@ -36,15 +40,19 @@ public class GetCapabilities {
      */
     Catalog catalog;
 
+	private final Collection<WFSExtendedCapabilitiesProvider> extendedCapabilitiesProviders;
+
     /**
      * Creates a new wfs 1.0/1.1 GetCapabilitis operation.
      *
      * @param wfs The wfs configuration
      * @param catalog The geoserver catalog.
+     * @param extendedCapabilitiesProviders the providers for adding extra metadata to the capabilities documents
      */
-    public GetCapabilities(WFSInfo wfs, Catalog catalog) {
+    public GetCapabilities(WFSInfo wfs, Catalog catalog, Collection<WFSExtendedCapabilitiesProvider> extendedCapabilitiesProviders) {
         this.wfs = wfs;
         this.catalog = catalog;
+        this.extendedCapabilitiesProviders = extendedCapabilitiesProviders;
     }
 
     public CapabilitiesTransformer run(GetCapabilitiesRequest request)
@@ -71,7 +79,29 @@ public class GetCapabilities {
             }
         }
 
-        //do the version negotiation dance
+        String version = version(request);
+
+        String baseUrl = request.getBaseUrl();
+        final CapabilitiesTransformer capsTransformer;
+        if ("1.0.0".equals(version)) {
+            capsTransformer = new CapabilitiesTransformer.WFS1_0(wfs, catalog);
+        } else {
+            if ("1.1.0".equals(version)) {
+                capsTransformer = new CapabilitiesTransformer.WFS1_1(wfs, baseUrl, catalog,
+                        extendedCapabilitiesProviders);
+            } else if ("2.0.0".equals(version)) {
+                capsTransformer = new CapabilitiesTransformer.WFS2_0(wfs, baseUrl, catalog,
+                        extendedCapabilitiesProviders);
+            } else {
+                throw new WFSException(request, "Could not understand version:" + version);
+            }
+        }
+        capsTransformer.setEncoding(Charset.forName(wfs.getGeoServer().getSettings().getCharset()));
+        return capsTransformer;
+    }
+
+    public static String version(GetCapabilitiesRequest request) {
+        // do the version negotiation dance
         List<String> provided = new ArrayList<String>();
         provided.add("1.0.0");
         provided.add("1.1.0");
@@ -83,20 +113,6 @@ public class GetCapabilities {
         List<String> accepted = request.getAcceptVersions();
 
         String version = RequestUtils.getVersionPreOws(provided, accepted);
-
-        final CapabilitiesTransformer capsTransformer;
-        if ("1.0.0".equals(version)) {
-            capsTransformer = new CapabilitiesTransformer.WFS1_0(wfs, catalog);
-        }else if ("1.1.0".equals(version)) {
-            capsTransformer = new CapabilitiesTransformer.WFS1_1(wfs, catalog);
-        }else if ("2.0.0".equals(version)) {
-            capsTransformer = new CapabilitiesTransformer.WFS2_0(wfs, catalog);
-        }else{
-            throw new WFSException(request, "Could not understand version:" + version);
-        }
-        capsTransformer.setEncoding(Charset.forName( wfs.getGeoServer().getSettings().getCharset() ));
-        return capsTransformer;
-    }
-    
-    
+		return version;
+	}
 }

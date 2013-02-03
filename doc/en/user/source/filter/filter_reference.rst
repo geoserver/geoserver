@@ -114,7 +114,8 @@ It contains the element:
 PropertyIsBetweeen operator
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The ``<PropertyIsBetween>`` operator tests whether an expression value lies within a range.
+The ``<PropertyIsBetween>`` operator tests whether an expression value lies within a range
+given by a lower and upper bound (inclusive).
 It contains the elements:
 
 .. list-table::
@@ -316,7 +317,7 @@ Examples
 Expression
 ----------
 
-**Filter expressions** perform computation on data values.
+**Filter expressions** specify constant, variable or computed data values.
 An expression is formed from one of the following elements
 (some of which contain sub-expressions,
 meaning that expressions may be of arbitrary depth):
@@ -362,14 +363,17 @@ It contains data of one of the following types:
    * - **Type**
      - **Description**
    * - Numeric
-     - A string representing a numeric value.
+     - A string representing a numeric value (integer or decimal).
+   * - Boolean
+     - A boolean value of ``true`` or ``false``.
    * - String
      - A string value.
-       ``CDATA`` sections may be used to include non-XML compatible text
+       XML-incompatible text may be included by using 
+       **character entities** or ``<![CDATA[`` ``]]>`` delimiters.
    * - Date
      - A string representing a date.
    * - Geometry
-     - An element specifying a geometry in GML 3 format.
+     - An element specifying a geometry in GML3 format.
 
 
 

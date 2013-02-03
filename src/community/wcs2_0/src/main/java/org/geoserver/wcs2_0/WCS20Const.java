@@ -1,5 +1,5 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wcs2_0;
@@ -18,7 +18,9 @@ public class WCS20Const {
     public static final String V111 = "1.1.1";
     public static final String V110 = "1.1.0";
 
-    static final String CUR_VERSION = WCS20Const.V20x;
+    public static final String CUR_VERSION = WCS20Const.V20x;
+    
+    public static final String SERVICE_NAME = "WCS";
 
     protected static final String URI_WCS = "http://www.opengis.net/wcs/2.0";
 

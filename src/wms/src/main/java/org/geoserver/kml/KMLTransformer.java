@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.kml;
@@ -16,7 +16,9 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
+import org.geotools.map.RasterLayer;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
@@ -26,6 +28,7 @@ import org.xml.sax.ContentHandler;
  * Transformer to create a KML document from a {@link WMSMapContent}.
  * 
  * @author Justin Deoliveira
+ * @author Carlo Cancellieri - GeoSolutions SAS
  * 
  * @version $Id$
  * @see KMLVectorTransformer
@@ -99,8 +102,14 @@ public class KMLTransformer extends TransformerBase {
 
             // if we have more than one layer ( or a legend was requested ),
             // use the name "GeoServer" to group them
-            boolean group = (layers.size() > 1) || request.getLegend();
-
+            boolean group;
+            Boolean legend = (Boolean) request.getFormatOptions().get("legend");
+            if (legend != null) {
+                group = (layers.size() > 1) || legend.booleanValue();
+            } else {
+                group = (layers.size() > 1);
+            }
+            
             if (group) {
                 StringBuffer sb = new StringBuffer();
                 for (int i = 0; i < layers.size(); i++) {
@@ -117,7 +126,6 @@ public class KMLTransformer extends TransformerBase {
             for (int i = 0; i < layers.size(); i++) {
                 // layer and info
                 Layer layer = layers.get(i);
-                MapLayerInfo layerInfo = mapContent.getRequest().getLayers().get(i);
 
                 // was a super overlay requested?
                 Boolean superoverlay = (Boolean) mapContent.getRequest().getFormatOptions()
@@ -128,10 +136,10 @@ public class KMLTransformer extends TransformerBase {
                     encodeSuperOverlayLayer(mapContent, layer);
                 } else {
                     // figure out which type of layer this is, raster or vector
-                    if (layerInfo.getType() != MapLayerInfo.TYPE_RASTER) {
+                    if (layer instanceof FeatureLayer) {
                         // vector
                         encodeVectorLayer(mapContent, layer, lookAtOpts);
-                    } else {
+                    } else if(layer instanceof RasterLayer){
                         // encode as normal ground overlay
                         encodeRasterLayer(mapContent, layer, lookAtOpts);
                     }
@@ -139,7 +147,7 @@ public class KMLTransformer extends TransformerBase {
             }
 
             // legend suppoer
-            if (request.getLegend()) {
+            if (legend != null && legend.booleanValue()) {
                 // for every layer specified in the request
                 for (int i = 0; i < layers.size(); i++) {
                     // layer and info

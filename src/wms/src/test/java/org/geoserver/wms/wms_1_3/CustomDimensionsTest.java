@@ -9,6 +9,7 @@ import static org.custommonkey.xmlunit.XMLAssert.*;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -92,7 +93,7 @@ public class CustomDimensionsTest extends WMSTestSupport {
     public void testCapabilities() throws Exception {
         setupRasterDimension(DIMENSION_NAME, DimensionPresentation.LIST, null, null);
         Document dom = dom(get(CAPABILITIES_REQUEST), false);
-        // print(dom);
+//         print(dom);
         
         // check dimension has been declared
         assertXpathEvaluatesTo("1", "count(//wms:Layer/wms:Dimension)", dom);        
@@ -131,12 +132,14 @@ public class CustomDimensionsTest extends WMSTestSupport {
         assertTrue(isEmpty(image));
         
         // check that we get data when requesting a correct value for custom dimension
-        response = getAsServletResponse("wms?bbox=" + BBOX + "&styles="
-                + "&layers=" + LAYERS + "&Format=image/png" + "&request=GetMap" + "&width=550"
+        response = getAsServletResponse("wms?bbox=" + BBOX + "&styles=raster"
+                + "&layers=" + LAYERS + "&Format=image/tiff" + "&request=GetMap" + "&width=550"
                 + "&height=250" + "&srs=EPSG:4326" + "&VALIDATESCHEMA=true"
-                + "&DIM_" + DIMENSION_NAME + "=CustomDimValueB");
+                + "&DIM_" + DIMENSION_NAME + "=CustomDimValueB,CustomDimValueC,CustomDimValueA");
         image = ImageIO.read(getBinaryInputStream(response));
+        ImageIO.write(image, "TIFF", new File("C:\\t.tiff"));
         assertFalse(isEmpty(image));
+        assertTrue(image.getSampleModel().getNumBands()==3);
     }
     
     private void setupRasterDimension(String metadata, DimensionPresentation presentation, String units, String unitSymbol) {

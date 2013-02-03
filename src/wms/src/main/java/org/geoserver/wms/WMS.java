@@ -879,7 +879,12 @@ public class WMS implements ApplicationContextAware {
                                 DimensionInfo.class);
                         if (dimensions.hasDomain(name) && customInfo != null && customInfo.isEnabled()) {
                             final ArrayList<String> val = new ArrayList<String>(1);
-                            val.add(kvp.getValue());
+                            if(kvp.getValue().indexOf(",")>0){
+                                String[] elements = kvp.getValue().split(",");
+                                val.addAll(Arrays.asList(elements));
+                            }else{
+                                val.add(kvp.getValue());
+                            }
                             readParameters = CoverageUtils.mergeParameter(
                                 parameterDescriptors, readParameters, val, name);
                         }

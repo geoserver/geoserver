@@ -100,7 +100,7 @@ public class CustomDimensionsTest extends WMSTestSupport {
         assertXpathEvaluatesTo(DIMENSION_NAME, "//wms:Layer/wms:Dimension/@name", dom);
         
         // check we have the dimension values
-        assertXpathEvaluatesTo("CustomDimValueA,CustomDimValueB", "//wms:Layer/wms:Dimension", dom);
+        assertXpathEvaluatesTo("CustomDimValueA,CustomDimValueB,CustomDimValueC", "//wms:Layer/wms:Dimension", dom);
         assertXpathEvaluatesTo("CustomDimValueA", "//wms:Layer/wms:Dimension/@default", dom);
     }
     
@@ -115,7 +115,7 @@ public class CustomDimensionsTest extends WMSTestSupport {
         assertXpathEvaluatesTo(DIMENSION_NAME, "//wms:Layer/wms:Dimension/@name", dom);
         
         // check we have the dimension values
-        assertXpathEvaluatesTo("CustomDimValueA,CustomDimValueB", "//wms:Layer/wms:Dimension", dom);
+        assertXpathEvaluatesTo("CustomDimValueA,CustomDimValueB,CustomDimValueC", "//wms:Layer/wms:Dimension", dom);
         assertXpathEvaluatesTo("nano meters", "//wms:Layer/wms:Dimension/@units", dom);
         assertXpathEvaluatesTo("nm", "//wms:Layer/wms:Dimension/@unitSymbol", dom);
     }
@@ -137,7 +137,6 @@ public class CustomDimensionsTest extends WMSTestSupport {
                 + "&height=250" + "&srs=EPSG:4326" + "&VALIDATESCHEMA=true"
                 + "&DIM_" + DIMENSION_NAME + "=CustomDimValueB,CustomDimValueC,CustomDimValueA");
         image = ImageIO.read(getBinaryInputStream(response));
-        ImageIO.write(image, "TIFF", new File("C:\\t.tiff"));
         assertFalse(isEmpty(image));
         assertTrue(image.getSampleModel().getNumBands()==3);
     }

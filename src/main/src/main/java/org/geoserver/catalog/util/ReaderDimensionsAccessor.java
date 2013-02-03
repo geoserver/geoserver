@@ -26,7 +26,6 @@ import java.util.logging.Logger;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
-import org.opengis.parameter.ParameterDescriptor;
 
 /**
  * Centralizes the metadata extraction and parsing used to read dimension informations out of a

@@ -3,6 +3,7 @@ package org.geoserver.wms.web.data;
 import java.io.FileReader;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
@@ -77,6 +78,17 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         
         tester.assertRenderedPage(StylePage.class);
         assertNotNull(getCatalog().getStyleByName("test"));
+    }
+    
+    public void testNewStyleNoSLD() throws Exception {
+        
+        FormTester form = tester.newFormTester("form");
+        File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
+        form.setValue("name", "test");
+        form.submit();
+        
+        tester.assertRenderedPage(StyleNewPage.class);
+        assertTrue(tester.getMessages(FeedbackMessage.ERROR).size() > 0);
     }
     
 //    Cannot make this one to work, the sld text area is not filled in the test

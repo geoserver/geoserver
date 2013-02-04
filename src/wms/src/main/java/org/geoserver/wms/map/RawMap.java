@@ -6,8 +6,10 @@ package org.geoserver.wms.map;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 
@@ -23,6 +25,8 @@ public class RawMap extends WebMap {
 
     private ByteArrayOutputStream buffer;
 
+    private InputStream stream;
+
     public RawMap(final WMSMapContent mapContent, final byte[] mapContents, final String mimeType) {
         super(mapContent);
         this.mapContents = mapContents;
@@ -36,11 +40,19 @@ public class RawMap extends WebMap {
         setMimeType(mimeType);
     }
 
+    public RawMap(final WMSMapContent mapContent, final InputStream stream, final String mimeType) {
+        super(mapContent);
+        this.stream = stream;
+        setMimeType(mimeType);
+    }
+
     public void writeTo(OutputStream out) throws IOException {
         if (mapContents != null) {
             out.write(mapContents);
         } else if (buffer != null) {
             buffer.writeTo(out);
+        } else if (stream != null) {
+            IOUtils.copy(stream, out);
         } else {
             throw new IllegalStateException();
         }

@@ -228,25 +228,29 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         File root = getTestData().getDataDirectoryRoot();
         File target = new File(root, "workspaces/" + MockData.FORESTS.getPrefix() + "/content.ftl");
         File source = new File("./src/test/resources/org/geoserver/wms/content.ftl");
-        assertTrue(source.exists());
-        FileUtils.copyFile(source, target);
-        
-        // request with default style, just one rule
-        String layer = getLayerId(MockData.FORESTS);
-        String request = "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg&info_format=text/html&request=GetFeatureInfo&layers="
-                + layer + "&query_layers=" + layer + "&width=20&height=20&i=10&j=10";
-        Document dom = getAsDOM(request);
-        // print(dom);
-        
-        assertXpathExists("/html/body/ul/li/b[text() = 'Type: Forests']", dom);
-        
-        // request with a style having 21 rules, used to fail, see GEOS-5534
-        request = "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=forestsManyRules&format=jpeg&info_format=text/html&request=GetFeatureInfo&layers="
-                + layer + "&query_layers=" + layer + "&width=20&height=20&i=10&j=10";
-        dom = getAsDOM(request);
-        // print(dom);
-        
-        assertXpathExists("/html/body/ul/li/b[text() = 'Type: Forests']", dom);
+        try {
+            assertTrue(source.exists());
+            FileUtils.copyFile(source, target);
+
+            // request with default style, just one rule
+            String layer = getLayerId(MockData.FORESTS);
+            String request = "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg&info_format=text/html&request=GetFeatureInfo&layers="
+                    + layer + "&query_layers=" + layer + "&width=20&height=20&i=10&j=10";
+            Document dom = getAsDOM(request);
+            // print(dom);
+
+            assertXpathExists("/html/body/ul/li/b[text() = 'Type: Forests']", dom);
+
+            // request with a style having 21 rules, used to fail, see GEOS-5534
+            request = "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=forestsManyRules&format=jpeg&info_format=text/html&request=GetFeatureInfo&layers="
+                    + layer + "&query_layers=" + layer + "&width=20&height=20&i=10&j=10";
+            dom = getAsDOM(request);
+            // print(dom);
+
+            assertXpathExists("/html/body/ul/li/b[text() = 'Type: Forests']", dom);
+        } finally {
+            FileUtils.deleteQuietly(target);
+        }
     }
 
     /**

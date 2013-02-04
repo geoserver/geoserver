@@ -18,8 +18,12 @@
             <includes>
                 <!-- gt-app-schema and gt-app-schema-resolver jars-->
                 <include>gt-app-schema-*.jar</include>
+                <include>gt-complex-*.jar</include>
                 <include>xml-commons-resolver-*.jar</include>
             </includes>
+            <excludes>
+                <exclude>gt-complex-*-tests.jar</exclude>
+            </excludes>
         </fileSet>
         <fileSet>
             <directory>release/extensions</directory>

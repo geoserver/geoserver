@@ -7,6 +7,7 @@ package org.geoserver.wcs2_0;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import java.awt.geom.AffineTransform;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
@@ -17,14 +18,14 @@ import java.util.Map;
 
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.xml.XMLConstants;
-import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
 import junit.framework.Assert;
 
-import org.apache.xerces.dom.DOMInputImpl;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -33,7 +34,6 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wcs.WCSInfo;
-import org.geoserver.wcs2_0.WCS20Const;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.imageio.geotiff.GeoTiffConstants;
 import org.geotools.data.DataUtilities;
@@ -48,6 +48,7 @@ import org.opengis.coverage.grid.GridGeometry;
 import org.opengis.referencing.operation.MathTransform;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
 import org.xml.sax.SAXParseException;
@@ -99,11 +100,31 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         try {
             final SchemaFactory factory = SchemaFactory
                     .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            
             factory.setResourceResolver(new LSResourceResolver() {
+                
+                DOMImplementationLS dom;
+                
+                {
+                    try {
+                        // ok, this is ugly.. the only way I've found to create an InputLS without
+                        // having to really implement every bit of it is to create a DOMImplementationLS
+                        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance(); 
+                        builderFactory.setNamespaceAware( true );
+                       
+                        DocumentBuilder builder = builderFactory.newDocumentBuilder();
+                        // fake xml to parse
+                        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><empty></empty>";
+                        dom = (DOMImplementationLS) builder.parse(new ByteArrayInputStream(xml.getBytes())).getImplementation();
+                    } catch(Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                
                 @Override
                 public LSInput resolveResource(String type, String namespaceURI, String publicId,
                         String systemId, String baseURI) {
-
+                    
                     String localPosition = namespaceMap.get(namespaceURI);
                     if (localPosition != null) {
                         try {
@@ -114,7 +135,9 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
                             if (file.exists()) {
                                 URL url = DataUtilities.fileToURL(file);
                                 systemId = url.toURI().toASCIIString();
-                                DOMInputImpl input = new DOMInputImpl(publicId, systemId, null);
+                                LSInput input = dom.createLSInput();
+                                input.setPublicId(publicId);
+                                input.setSystemId(systemId);
                                 return input;
                             }
                         } catch (Exception e) {

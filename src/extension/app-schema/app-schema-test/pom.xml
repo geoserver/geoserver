@@ -218,7 +218,4 @@
 	        </build>
 	    </profile>
 	</profiles>
-    <properties>
-      <test.exclude.pattern>**/SecondaryNamespaceExceptionTest.*</test.exclude.pattern>
-    </properties>
 </project>

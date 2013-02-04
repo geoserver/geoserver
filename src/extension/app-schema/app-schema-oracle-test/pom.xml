@@ -151,6 +151,7 @@
 		        <!-- These tests are already run on the parent module-->
 			        <excludes>
 				        <exclude>**/onlineTest/*.java</exclude>
+				        <exclude>${test.exclude.pattern}</exclude>
 				    </excludes>
 				    <argLine>-Xmx${test.maxHeapSize} -XX:MaxPermSize=${test.maxPermSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dapp-schema.joining=true -DtestDatabase=oracle -DSC4OUser=${SC4OUser}</argLine>
 				</configuration>

@@ -44,6 +44,7 @@
  <properties> 
     <!-- Relative to online test modules -->
     <app-schema-test-dir>../app-schema-test</app-schema-test-dir>
+    <test.exclude.pattern>**/SecondaryNamespaceExceptionTest.*</test.exclude.pattern>
 </properties> 
 
 </project>

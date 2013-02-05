@@ -3,7 +3,7 @@
 Global settings
 ===============
 
-Allows accessing of GeoServer global settings.
+Allows access to GeoServer's global settings.
 
 ``/settings[.<format>]``
 ------------------------

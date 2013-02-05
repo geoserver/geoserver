@@ -11,7 +11,7 @@ package org.opengeo.gsr.core.symbol;
  */
 public enum SimpleMarkerSymbolEnum {
 
-    CIRCLE("SMSCircle"), SQUARE("SMSSquare"), CROSS("SMSCross"), X("SMSX"), DIAMOND("SMSDiamond");
+    CIRCLE("esriSMSCircle"), SQUARE("esriSMSSquare"), CROSS("esriSMSCross"), X("esriSMSX"), DIAMOND("esriSMSDiamond");
     private final String style;
 
     public String getStyle() {

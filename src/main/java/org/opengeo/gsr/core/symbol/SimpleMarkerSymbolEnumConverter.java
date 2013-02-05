@@ -24,19 +24,19 @@ public class SimpleMarkerSymbolEnumConverter extends EnumTypeConverter {
             SimpleMarkerSymbolEnum fieldType = (SimpleMarkerSymbolEnum) obj;
             switch (fieldType) {
             case CIRCLE:
-                str = "SMSCircle";
+                str = "esriSMSCircle";
                 break;
             case CROSS:
-                str = "SMSCross";
+                str = "esriSMSCross";
                 break;
             case DIAMOND:
-                str = "SMSDiamond";
+                str = "esriSMSDiamond";
                 break;
             case SQUARE:
-                str = "SMSSquare";
+                str = "esriSMSSquare";
                 break;
             case X:
-                str = "SMSX";
+                str = "esriSMSX";
                 break;
             }
         }

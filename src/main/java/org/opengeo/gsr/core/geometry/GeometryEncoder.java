@@ -178,10 +178,10 @@ public final class GeometryEncoder {
             throw new JSONException("An envelope must be encoded as a JSON Object");
         }
         JSONObject obj = (JSONObject) json;
-        double minx = obj.getDouble("minx");
-        double miny = obj.getDouble("miny");
-        double maxx = obj.getDouble("maxx");
-        double maxy = obj.getDouble("maxx");
+        double minx = obj.getDouble("xmin");
+        double miny = obj.getDouble("ymin");
+        double maxx = obj.getDouble("xmax");
+        double maxy = obj.getDouble("ymax");
         return new Envelope(minx, maxx, miny, maxy);
     }
 

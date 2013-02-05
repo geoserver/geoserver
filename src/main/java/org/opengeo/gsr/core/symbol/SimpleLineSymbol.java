@@ -42,7 +42,7 @@ public class SimpleLineSymbol extends Symbol {
     }
 
     public SimpleLineSymbol(SimpleLineSymbolEnum style, int[] color, double width) {
-        super("SLS");
+        super("esriSLS");
         this.style = style;
         this.color = color;
         this.width = width;

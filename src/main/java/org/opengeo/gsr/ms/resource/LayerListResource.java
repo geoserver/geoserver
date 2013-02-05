@@ -50,6 +50,8 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
 
+import com.vividsolutions.jts.geom.Geometry;
+
 public class LayerListResource extends Resource {
     public static final Variant JSON = new Variant(new MediaType("application/json"));
     private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(LayerListResource.class);
@@ -93,17 +95,22 @@ public class LayerListResource extends Resource {
         if (workspace == null) {
             throw new NoSuchElementException("No workspace known by name: " + workspaceName);
         }
-        List<LayerOrTable> layersInWorkspace = new ArrayList<LayerOrTable>();
-        List<LayerOrTable> tablesInWorkspace = new ArrayList<LayerOrTable>();
+        List<LayerOrTable> layers = new ArrayList<LayerOrTable>();
+        List<LayerOrTable> tables = new ArrayList<LayerOrTable>();
         int idCounter = 0;
-        for (ResourceInfo resource : catalog.getResourcesByNamespace(workspaceName, ResourceInfo.class)) {
-            List<LayerInfo> layersForType = catalog.getLayers(resource);
+        List<LayerInfo> layersInWorkspace = new ArrayList<LayerInfo>();
+        for (LayerInfo l : catalog.getLayers()) {
+            if (l.getType() == LayerInfo.Type.VECTOR && l.getResource().getStore().getWorkspace().getName().equals(workspaceName)) {
+                layersInWorkspace.add(l);
+            }
+        }
+        Collections.sort(layersInWorkspace, LayerNameComparator.INSTANCE);
+        for (LayerInfo l : layersInWorkspace) {
+            ResourceInfo resource = l.getResource();
             try {
                 if (resource instanceof CoverageInfo) {
-                    for (LayerInfo layer : layersForType) {
-                        layersInWorkspace.add(new LayerOrTable(layer, idCounter, GeometryTypeEnum.POLYGON));
+                        layers.add(new LayerOrTable(l, idCounter, GeometryTypeEnum.POLYGON));
                         idCounter++;
-                    }
                 } else if (resource instanceof FeatureTypeInfo) {
                     final GeometryTypeEnum gtype;
                     GeometryDescriptor gDesc = ((FeatureTypeInfo)resource).getFeatureType().getGeometryDescriptor();
@@ -112,20 +119,18 @@ public class LayerListResource extends Resource {
                     } else { 
                         gtype = GeometryTypeEnum.forJTSClass(gDesc.getType().getBinding());
                     }
-                    for (LayerInfo layer : layersForType) {
-                        if (gtype == null) {
-                            tablesInWorkspace.add(new LayerOrTable(layer, idCounter, gtype));
-                        } else {
-                            layersInWorkspace.add(new LayerOrTable(layer, idCounter, gtype));
-                        }
-                        idCounter++;
+                    if (gtype == null) {
+                        tables.add(new LayerOrTable(l, idCounter, gtype));
+                    } else {
+                        layers.add(new LayerOrTable(l, idCounter, gtype));
                     }
+                    idCounter++;
                 }
             } catch (IOException e) {
-                idCounter += layersForType.size();
+                idCounter += 1;
             }
         }
-        return new JsonLayersRepresentation(Collections.unmodifiableList(layersInWorkspace), Collections.unmodifiableList(tablesInWorkspace));
+        return new JsonLayersRepresentation(Collections.unmodifiableList(layers), Collections.unmodifiableList(tables));
     }
     
     private static class JsonLayersRepresentation extends OutputRepresentation {
@@ -177,9 +182,15 @@ public class LayerListResource extends Resource {
             json.key("currentVersion").value(2.24);
             json.key("defaultVisibility").value(false);
             json.key("definitionExpression").value("");
-            json.key("description").value(layer.getResource().getAbstract());
-            json.key("copyrightText").value(null);
+            final String description = layer.getResource().getAbstract();
+            json.key("description").value(description != null ? description : "");
+            json.key("displayField").value(null); // TODO: Extract displayField from the Style
+            json.key("copyrightText").value("");
             json.key("relationships").array().endArray();
+            json.key("parentLayer").value(null);
+            json.key("subLayers").array().endArray();
+            json.key("typeIdField").value(null);
+            json.key("types").value(null);
             if (layerOrTable.gtype != null) {
                 json.key("geometryType").value(layerOrTable.gtype.getGeometryType());
                 json.key("minScale").value(null);
@@ -296,7 +307,7 @@ public class LayerListResource extends Resource {
                 json.endObject();
             }
             json.key("hasAttachments").value(false);
-            json.key("htmlPopupType").value("ServerHTMLPopupTypeNone");
+            json.key("htmlPopupType").value("esriServerHTMLPopupTypeNone");
             if (layer.getResource() instanceof FeatureTypeInfo) {
                 try {
                     FeatureType ftype = ((FeatureTypeInfo) layer.getResource()).getFeatureType();
@@ -315,11 +326,16 @@ public class LayerListResource extends Resource {
     private static void encodeSchemaProperties(JSONBuilder json, FeatureType ftype) {
         json.array();
         for (PropertyDescriptor desc : ftype.getDescriptors()) {
-            json.object();
-            json.key("name").value(desc.getName().getLocalPart());
-            json.key("type").value(FieldTypeEnum.forClass(desc.getType().getBinding()).getFieldType());
-            json.key("editable").value(false);
-            json.endObject();
+            if (!Geometry.class.isAssignableFrom(desc.getType().getBinding())) {
+                json.object();
+                json.key("name").value(desc.getName().getLocalPart());
+                json.key("type").value(FieldTypeEnum.forClass(desc.getType().getBinding()).getFieldType());
+                json.key("editable").value(false);
+                if (String.class.equals(desc.getType().getBinding())) {
+                    json.key("length").value(4000);
+                }
+                json.endObject();
+            }
         }
         json.endArray();
     }

@@ -53,7 +53,7 @@ public class SimpleMarkerSymbol extends MarkerSymbol {
 
     public SimpleMarkerSymbol(SimpleMarkerSymbolEnum style, int[] color, double size, double angle,
             double xoffset, double yoffset, SimpleLineSymbol outline) {
-        super("SMS", angle, xoffset, yoffset);
+        super("esriSMS", angle, xoffset, yoffset);
         this.style = style;
         this.color = color;
         this.size = size;

@@ -56,4 +56,14 @@ public class SpatialReferenceEncoder {
         
         throw new JSONException("Could not determine spatial reference from JSON: " + json);
     }
+
+    public static CoordinateReferenceSystem fromJson(JSONObject sr) throws FactoryException {
+        if (sr.containsKey("wkid")) {
+            return CRS.decode("EPSG:" + sr.getString("wkid"));
+        } else if (sr.containsKey("wkt")) {
+            return CRS.parseWKT(sr.getString("wkid"));
+        } else {
+            return null;
+        }
+    }
 }

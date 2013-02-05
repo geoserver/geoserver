@@ -15,6 +15,8 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.GeometryAttribute;
 import org.opengis.feature.Property;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.feature.type.GeometryType;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.referencing.FactoryException;
 
@@ -36,8 +38,14 @@ public class FeatureEncoder {
           .key("globalIdFieldName").value("");
         
         if (returnGeometry) {
-            GeometryTypeEnum geometryType = GeometryTypeEnum.forJTSClass(schema.getGeometryDescriptor().getType().getBinding());
-            json.key("geometryType").value(geometryType.getGeometryType());
+            GeometryDescriptor geometryDescriptor = schema.getGeometryDescriptor();
+            if (geometryDescriptor == null) throw new RuntimeException("No geometry descriptor for type " + schema + "; " + schema.getDescriptors());
+            GeometryType geometryType = geometryDescriptor.getType();
+            if (geometryType == null) throw new RuntimeException("No geometry type for type " + schema);
+            Class<?> binding = geometryType.getBinding();
+            if (binding == null) throw new RuntimeException("No binding for geometry type " + schema);
+            GeometryTypeEnum geometryTypeEnum = GeometryTypeEnum.forJTSClass(binding);
+            json.key("geometryType").value(geometryTypeEnum.getGeometryType());
         }
         
         if (schema.getCoordinateReferenceSystem() != null) {

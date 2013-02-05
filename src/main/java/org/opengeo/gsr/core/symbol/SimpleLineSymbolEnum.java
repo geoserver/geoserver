@@ -11,8 +11,8 @@ package org.opengeo.gsr.core.symbol;
  */
 public enum SimpleLineSymbolEnum {
 
-    SOLID("SLSSolid"), DASH("SLSDash"), DOT("SLSDot"), DASH_DOT("SLSDashDot"), DASH_DOT_DOT(
-            "SLSDashDotDot"), NULL("SLSNull"), INSIDE_FRAME("SLSInsideFrame");
+    SOLID("esriSLSSolid"), DASH("esriSLSDash"), DOT("esriSLSDot"), DASH_DOT("esriSLSDashDot"), DASH_DOT_DOT(
+            "esriSLSDashDotDot"), NULL("esriSLSNull"), INSIDE_FRAME("esriSLSInsideFrame");
     private final String style;
 
     public String getStyle() {

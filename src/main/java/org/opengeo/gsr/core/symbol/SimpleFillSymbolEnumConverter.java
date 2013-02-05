@@ -24,28 +24,28 @@ public class SimpleFillSymbolEnumConverter extends EnumTypeConverter {
             SimpleFillSymbolEnum fieldType = (SimpleFillSymbolEnum) obj;
             switch (fieldType) {
             case BACKWARD_DIAGONAL:
-                str = "SFSBackwardDiagonal";
+                str = "esriSFSBackwardDiagonal";
                 break;
             case CROSS:
-                str = "SFSCross";
+                str = "esriSFSCross";
                 break;
             case DIAGONAL_CROSS:
-                str = "SFSDiagonalCross";
+                str = "esriSFSDiagonalCross";
                 break;
             case FORWARD_DIAGONAL:
-                str = "SFSForwardDiagonal";
+                str = "esriSFSForwardDiagonal";
                 break;
             case HOLLOW:
-                str = "SFSHollow";
+                str = "esriSFSHollow";
                 break;
             case NULL:
-                str = "SFSNull";
+                str = "esriSFSNull";
                 break;
             case SOLID:
-                str = "SFSSolid";
+                str = "esriSFSSolid";
                 break;
             case VERTICAL:
-                str = "SFSVertical";
+                str = "esresriiSFSVertical";
                 break;
             }
         }

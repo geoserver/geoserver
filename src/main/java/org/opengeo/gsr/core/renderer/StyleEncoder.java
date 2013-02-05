@@ -33,13 +33,13 @@ public class StyleEncoder {
         json.object()
           .key("type").value("simple")
           .key("symbol").object()
-            .key("type").value("SFS")
-            .key("style").value("SFSSolid")
+            .key("type").value("esriSFS")
+            .key("style").value("esriSFSSolid")
             .key("color");
-            color(json, 255, 0, 0, 0);
+            color(json, 255, 0, 0, 255);
             json.key("outline").object()
-              .key("type").value("SLS")
-              .key("style").value("SLSSolid")
+              .key("type").value("esriSLS")
+              .key("style").value("esriSLSSolid")
               .key("color");
               color(json, 0,  0, 0, 255);
               json.key("width").value(1)
@@ -54,12 +54,12 @@ public class StyleEncoder {
         json.object()
           .key("type").value("simple")
           .key("symbol").object()
-            .key("type").value("SFS")
-            .key("style").value("SFSSolid")
+            .key("type").value("esriSFS")
+            .key("style").value("esriSFSSolid")
             .key("color").value(null)
             .key("outline").object()
-              .key("type").value("SLS")
-              .key("style").value("SLSSolid")
+              .key("type").value("esriSLS")
+              .key("style").value("esriSLSSolid")
               .key("color").value(null)
               .key("width").value(1)
             .endObject()
@@ -83,13 +83,13 @@ public class StyleEncoder {
         json.object()
           .key("type").value("simple")
           .key("symbol").object()
-            .key("type").value("SMS")
-            .key("style").value("SMSCircle")
+            .key("type").value("esriSMS")
+            .key("style").value("esriSMSCircle")
             .key("color");
             color(json, 255, 0, 0, 255);
             json.key("outline").object()
-              .key("type").value("SLS")
-              .key("style").value("SLSSolid")
+              .key("type").value("esriSLS")
+              .key("style").value("esriSLSSolid")
               .key("color");
               color(json, 0, 0, 0, 255);
               json.key("width").value("1");
@@ -295,7 +295,7 @@ public class StyleEncoder {
 
     private static void encodeFillSymbol(JSONBuilder json, SimpleFillSymbol sym) {
         json.object()
-          .key("type").value("SFS")
+          .key("type").value("esriSFS")
           .key("style").value(sym.getStyle().getStyle())
           .key("color");
           writeInts(json, sym.getColor());
@@ -324,18 +324,22 @@ public class StyleEncoder {
 
     private static void encodeMarkerSymbol(JSONBuilder json, SimpleMarkerSymbol sms) {
       json.object()
-        .key("type").value("SMS")
+        .key("type").value("esriSMS")
         .key("style").value(sms.getStyle().getStyle())
         .key("color");
         writeInts(json, sms.getColor());
         json.key("outline");
         encodeLineStyle(json, sms.getOutline());
+        json.key("angle").value(sms.getAngle());
+        json.key("size").value(sms.getSize());
+        json.key("xoffset").value(sms.getXoffset());
+        json.key("yoffset").value(sms.getYoffset());
       json.endObject();
     }
 
     private static void encodeLineStyle(JSONBuilder json, SimpleLineSymbol symbol) {
         json.object()
-          .key("type").value("SLS")
+          .key("type").value("esriSLS")
           .key("style").value(symbol.getStyle().getStyle())
           .key("color");
           writeInts(json, symbol.getColor());

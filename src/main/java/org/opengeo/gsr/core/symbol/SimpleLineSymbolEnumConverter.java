@@ -24,25 +24,25 @@ public class SimpleLineSymbolEnumConverter extends EnumTypeConverter {
             SimpleLineSymbolEnum fieldType = (SimpleLineSymbolEnum) obj;
             switch (fieldType) {
             case DASH:
-                str = "SLSDash";
+                str = "esriSLSDash";
                 break;
             case DASH_DOT:
-                str = "SLSDashDot";
+                str = "esriSLSDashDot";
                 break;
             case DASH_DOT_DOT:
-                str = "SLSDashDotDot";
+                str = "esriSLSDashDotDot";
                 break;
             case DOT:
-                str = "SLSDot";
+                str = "esriSLSDot";
                 break;
             case INSIDE_FRAME:
-                str = "SLSInsideFrame";
+                str = "esriSLSInsideFrame";
                 break;
             case NULL:
-                str = "SLSNull";
+                str = "esriSLSNull";
                 break;
             case SOLID:
-                str = "SLSSolid";
+                str = "esriSLSSolid";
                 break;
             }
         }

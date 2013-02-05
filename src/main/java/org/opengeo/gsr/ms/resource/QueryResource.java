@@ -6,14 +6,17 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 import net.sf.json.util.JSONBuilder;
 
@@ -41,6 +44,7 @@ import org.opengeo.gsr.core.geometry.SpatialRelationship;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.identity.FeatureId;
@@ -77,6 +81,7 @@ public class QueryResource extends Resource {
     private final Catalog catalog;
     private final String format;
     private static final FilterFactory2 FILTERS = CommonFactoryFinder.getFilterFactory2();
+    private static final Logger LOG = org.geotools.util.logging.Logging.getLogger("org.geoserver.global");
     
     @Override
     public Representation getRepresentation(Variant variant) {
@@ -145,7 +150,6 @@ public class QueryResource extends Resource {
         
         String inSRText = form.getFirstValue("inSR");
         String outSRText = form.getFirstValue("outSR");
-        final CoordinateReferenceSystem inSR = parseSpatialReference(inSRText);
         final CoordinateReferenceSystem outSR = parseSpatialReference(outSRText);
         
         String spatialRelText = form.getFirstValue("spatialRel", "SpatialRelIntersects");
@@ -156,6 +160,7 @@ public class QueryResource extends Resource {
 
         String geometryTypeName = form.getFirstValue("geometryType", "GeometryPoint");
         String geometryText = form.getFirstValue("geometry");
+        final CoordinateReferenceSystem inSR = parseSpatialReference(inSRText, geometryText);
         String relatePattern = form.getFirstValue("relationParam");
         Filter filter = buildGeometryFilter(geometryTypeName, geometryProperty, geometryText, spatialRel, relatePattern, inSR, nativeCRS);
         
@@ -246,6 +251,7 @@ public class QueryResource extends Resource {
             this.returnGeometry = returnGeometry;
             this.outCRS = outCRS;
             this.properties = properties;
+            LOG.info("Created JsonQueryRepresentation with " + Arrays.asList(featureType, geometryFilter, returnIdsOnly, returnGeometry, outCRS, Arrays.<String>asList(properties)));
         }
         
         @Override
@@ -254,7 +260,15 @@ public class QueryResource extends Resource {
             JSONBuilder json = new JSONBuilder(writer);
             FeatureSource<? extends FeatureType, ? extends Feature> source =
                     featureType.getFeatureSource(null, null);
-            Query query = properties == null ? new Query(featureType.getName(), geometryFilter) : new Query(featureType.getName(), geometryFilter, properties);
+            final String[] effectiveProperties = adjustProperties(returnGeometry, properties, source.getSchema());
+            LOG.info("Effective priorities" + Arrays.<String>asList(effectiveProperties));
+
+            final Query query;
+            if (effectiveProperties == null) {
+                query = new Query(featureType.getName(), geometryFilter);
+            } else {
+                query = new Query(featureType.getName(), geometryFilter, effectiveProperties);
+            }
             query.setCoordinateSystemReproject(outCRS);
             
             if (returnIdsOnly) {
@@ -266,9 +280,43 @@ public class QueryResource extends Resource {
             writer.flush();
             writer.close();
         }
+        
+        private String[] adjustProperties(boolean addGeometry, String[] originalProperties, FeatureType schema) {
+            if (originalProperties == null) {
+                return null;
+            }
+            
+            String[] effectiveProperties =
+                new String[originalProperties.length + (addGeometry ? 1 : 0)];
+            for (int i = 0; i < originalProperties.length; i++) {
+                effectiveProperties[i] = adjustOneProperty(originalProperties[i], schema);
+            }
+            if (addGeometry){ 
+                effectiveProperties[effectiveProperties.length - 1] =
+                        schema.getGeometryDescriptor().getLocalName();
+            }
+            
+            return effectiveProperties;
+        }
+
+        private String adjustOneProperty(String name, FeatureType schema) {
+            List<String> candidates = new ArrayList<String>();
+            for (PropertyDescriptor d : schema.getDescriptors()) {
+                String pname = d.getName().getLocalPart();
+                if (pname.equals(name)) {
+                    return name;
+                } else if (pname.equalsIgnoreCase(name)) {
+                    candidates.add(pname);
+                }
+            }
+            if (candidates.size() == 1) return candidates.get(0);
+            if (candidates.size() == 0) throw new NoSuchElementException("No property " + name + " in " + schema);
+            throw new NoSuchElementException("Ambiguous request: " + name + " corresponds to " + candidates);
+        }
     }
     
     private static Filter buildGeometryFilter(String geometryType, String geometryProperty, String geometryText, SpatialRelationship spatialRel, String relationPattern, CoordinateReferenceSystem requestCRS, CoordinateReferenceSystem nativeCRS) {
+        LOG.info("Transforming geometry filter: " + requestCRS + " => " + nativeCRS);
         final MathTransform mathTx;
         if (requestCRS != null) {
             try {
@@ -279,8 +327,7 @@ public class QueryResource extends Resource {
         } else {
             mathTx = null;
         }
-        
-        if ("GeometryEnvelope".equals(geometryType)) {
+        if ("esriGeometryEnvelope".equals(geometryType)) {
             Envelope e = parseShortEnvelope(geometryText);
             if (e == null) {
                 e = parseJsonEnvelope(geometryText);
@@ -295,7 +342,7 @@ public class QueryResource extends Resource {
                 }
                 return spatialRel.createEnvelopeFilter(geometryProperty, e, relationPattern);
             }
-        } else if ("GeometryPoint".equals(geometryType)) {
+        } else if ("esriGeometryPoint".equals(geometryType)) {
             com.vividsolutions.jts.geom.Point p = parseShortPoint(geometryText);
             if (p == null) {
                 p = parseJsonPoint(geometryText);
@@ -413,6 +460,26 @@ public class QueryResource extends Resource {
             } catch (JSONException e) {
                 throw new IllegalArgumentException("Failed to parse JSON spatial reference: " + srText);
             }
+        }
+    }
+    
+    /**
+     * Read the input spatial reference. This may be specified as an attribute
+     * of the geometry (if the geometry is sent as JSON) or else in the 'inSR'
+     * query parameter. If both are provided, the JSON property wins.
+     */
+    private static CoordinateReferenceSystem parseSpatialReference(String srText, String geometryText) {
+        try {
+            JSONObject jsonObject = JSONObject.fromObject(geometryText);
+            Object sr = jsonObject.get("spatialReference");
+            if (sr instanceof JSONObject)
+                return SpatialReferenceEncoder.fromJson((JSONObject) sr);
+            else
+                return parseSpatialReference(srText);
+        } catch (JSONException e) {
+            return parseSpatialReference(srText);
+        } catch (FactoryException e) {
+            throw new NoSuchElementException("Could not find spatial reference for id " + srText);
         }
     }
     

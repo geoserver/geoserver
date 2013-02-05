@@ -183,7 +183,7 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
         WMSMapContent map = new WMSMapContent(createGetMapRequest(MockData.BUILDINGS));
         Document document;
         try {
-        	FeatureLayer layer = createMapLayer(MockData.BUILDINGS);
+            FeatureLayer layer = (FeatureLayer) createMapLayer(MockData.BUILDINGS);
             Filter f = ff.equals(ff.property("ADDRESS"), ff.literal("215 Main Street"));
             layer.setQuery(new Query(MockData.BUILDINGS.getLocalPart(), f));
             map.addLayer(layer);

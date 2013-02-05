@@ -3,13 +3,12 @@ package org.geoserver.wms.map;
 import static org.easymock.classextension.EasyMock.*;
 import java.io.InputStream;
 
+import junit.framework.TestCase;
 
 import org.geoserver.wms.WMSMapContent;
-import org.junit.Test;
 
-public class RawMapTest {
+public class RawMapTest extends TestCase {
 
-    @Test
     public void testInputStream() throws Exception {
         InputStream stream = createMock(InputStream.class);
         expect(stream.read((byte[])anyObject())).andReturn(-1).once();

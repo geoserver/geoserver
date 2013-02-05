@@ -935,6 +935,16 @@
       <artifactId>guava</artifactId>
       <version>11.0.1</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi</artifactId>
+      <version>${poi.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi-ooxml</artifactId>
+      <version>${poi.version}</version>
+    </dependency>
   </dependencies>
  </dependencyManagement>
 
@@ -1413,6 +1423,7 @@
   <gwc.version>1.4-SNAPSHOT</gwc.version>
   <spring.version>3.1.1.RELEASE</spring.version>
   <spring.security.version>3.1.0.RELEASE</spring.security.version> 
+  <poi.version>3.8</poi.version>
   <wicket.version>1.4.12</wicket.version>
   <ant.version>1.8.4</ant.version>
   <java.awt.headless>true</java.awt.headless>

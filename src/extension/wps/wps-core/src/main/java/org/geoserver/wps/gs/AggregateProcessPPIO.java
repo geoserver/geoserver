@@ -4,6 +4,8 @@
  */
 package org.geoserver.wps.gs;
 
+import javax.xml.namespace.QName;
+
 import org.geoserver.wps.ppio.XStreamPPIO;
 import org.geotools.process.vector.AggregateProcess;
 
@@ -16,8 +18,10 @@ import com.thoughtworks.xstream.mapper.MapperWrapper;
  */
 public class AggregateProcessPPIO extends XStreamPPIO {
 
+    static final QName AggregationResults = new QName("AggregationResults");
+
     protected AggregateProcessPPIO() {
-        super(AggregateProcess.Results.class);
+        super(AggregateProcess.Results.class, AggregationResults);
     }
     
     @Override
@@ -27,7 +31,7 @@ public class AggregateProcessPPIO extends XStreamPPIO {
                 return new UppercaseTagMapper(next);
             };
         };
-        xstream.alias("AggregationResults", AggregateProcess.Results.class);
+        xstream.alias(AggregationResults.getLocalPart(), AggregateProcess.Results.class);
         return xstream;
     }
     

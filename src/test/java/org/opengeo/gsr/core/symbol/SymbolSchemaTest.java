@@ -32,7 +32,7 @@ public class SymbolSchemaTest extends JsonSchemaTest {
     public void testSimpleMarkerSymbolJsonSchema() throws Exception {
         int[] color = { 67, 0, 255, 40 };
         int[] outlineColor = { 152, 230, 0, 255 };
-        SimpleLineSymbol outline = new SimpleLineSymbol(SimpleLineSymbolEnum.SOLID, outlineColor, 1);
+        Outline outline = new Outline(outlineColor, 1);
         SimpleMarkerSymbol sms = new SimpleMarkerSymbol(SimpleMarkerSymbolEnum.SQUARE, color, 8, 0,
                 0, 0, outline);
         String json = getJson(sms);

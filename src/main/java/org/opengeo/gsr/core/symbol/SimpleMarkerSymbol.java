@@ -17,7 +17,7 @@ public class SimpleMarkerSymbol extends MarkerSymbol {
 
     private double size;
 
-    private SimpleLineSymbol outline;
+    private Outline outline;
 
     public SimpleMarkerSymbolEnum getStyle() {
         return style;
@@ -43,16 +43,16 @@ public class SimpleMarkerSymbol extends MarkerSymbol {
         this.size = size;
     }
 
-    public SimpleLineSymbol getOutline() {
+    public Outline getOutline() {
         return outline;
     }
 
-    public void setOutline(SimpleLineSymbol outline) {
+    public void setOutline(Outline outline) {
         this.outline = outline;
     }
 
     public SimpleMarkerSymbol(SimpleMarkerSymbolEnum style, int[] color, double size, double angle,
-            double xoffset, double yoffset, SimpleLineSymbol outline) {
+            double xoffset, double yoffset, Outline outline) {
         super("esriSMS", angle, xoffset, yoffset);
         this.style = style;
         this.color = color;

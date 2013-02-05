@@ -1,6 +1,7 @@
 package org.opengeo.gsr.core.renderer;
 
 import java.awt.Color;
+import java.util.Arrays;
 import java.util.Set;
 
 import org.geotools.styling.Displacement;
@@ -15,6 +16,7 @@ import org.geotools.styling.Stroke;
 import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
 import org.opengeo.gsr.core.symbol.MarkerSymbol;
+import org.opengeo.gsr.core.symbol.Outline;
 import org.opengeo.gsr.core.symbol.SimpleFillSymbol;
 import org.opengeo.gsr.core.symbol.SimpleFillSymbolEnum;
 import org.opengeo.gsr.core.symbol.SimpleLineSymbol;
@@ -188,7 +190,16 @@ public class StyleEncoder {
                 yoffset = 0d;
             }
             
-            final SimpleLineSymbol outline = strokeToLineSymbol(mark.getStroke());
+            final Outline outline;
+            final Stroke stroke = mark.getStroke();
+            if (stroke != null) {
+                Color strokeColor = evaluateWithDefault(stroke.getColor(), Color.BLACK);
+                double strokeOpacity = evaluateWithDefault(stroke.getOpacity(), 1d);
+                double strokeWidth = evaluateWithDefault(stroke.getWidth(), 1d);
+                outline = new Outline(components(strokeColor, strokeOpacity), (int)Math.round(strokeWidth));
+            } else {
+                outline = new Outline(components(Color.BLACK, 1d), 1);
+            }
             return new SimpleMarkerSymbol(
                 equivalentSMS(markName),
                 components(color, opacity),
@@ -321,15 +332,20 @@ public class StyleEncoder {
             encodeMarkerSymbol(json, (SimpleMarkerSymbol)markSymbol);
         }
     }
-
+    
     private static void encodeMarkerSymbol(JSONBuilder json, SimpleMarkerSymbol sms) {
       json.object()
         .key("type").value("esriSMS")
         .key("style").value(sms.getStyle().getStyle())
         .key("color");
         writeInts(json, sms.getColor());
-        json.key("outline");
-        encodeLineStyle(json, sms.getOutline());
+        json.key("outline").object()
+          .key("type").value("SLS")
+          .key("style").value("SLSSolid");
+          json.key("color");
+          writeInts(json, sms.getOutline().getColor());
+          json.key("width").value(sms.getOutline().getWidth())
+        .endObject();
         json.key("angle").value(sms.getAngle());
         json.key("size").value(sms.getSize());
         json.key("xoffset").value(sms.getXoffset());

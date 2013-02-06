@@ -261,7 +261,7 @@ public class QueryResource extends Resource {
             FeatureSource<? extends FeatureType, ? extends Feature> source =
                     featureType.getFeatureSource(null, null);
             final String[] effectiveProperties = adjustProperties(returnGeometry, properties, source.getSchema());
-            LOG.info("Effective priorities" + Arrays.<String>asList(effectiveProperties));
+            LOG.info("Effective properties" + Arrays.<String>asList(effectiveProperties));
 
             final Query query;
             if (effectiveProperties == null) {

@@ -945,6 +945,11 @@
       <artifactId>poi-ooxml</artifactId>
       <version>${poi.version}</version>
     </dependency>
+    <dependency>
+      <groupId>jfree</groupId>
+      <artifactId>jfreechart</artifactId>
+      <version>1.0.10</version>
+    </dependency>
   </dependencies>
  </dependencyManagement>
 

@@ -11,6 +11,8 @@ import org.geoserver.wms.featureinfo.GML3FeatureInfoOutputFormat;
 /**
  * A GetFeatureInfo response handler specialized in producing xml data for a GetFeatureInfo request.
  * It will produce GML 3 data using 'text/xml' as mime type.
+ * 
+ * @author Davide Savazzi - geo-solutions.it
  */
 public class XMLFeatureInfoOutputFormat extends GML3FeatureInfoOutputFormat {
     

@@ -19,11 +19,12 @@ public class LayerGroupEditPage extends AbstractLayerGroupPage {
 
     public static final String GROUP = "group";
     public static final String WORKSPACE = "workspace";
-    
+
     public LayerGroupEditPage(PageParameters parameters) {
-        String groupName = parameters.getString(GROUP);
-        String wsName = parameters.getString(WORKSPACE);
-        
+        this(parameters.getString(GROUP), parameters.getString(WORKSPACE));
+    }
+    
+    public LayerGroupEditPage(String wsName, String groupName) {
         LayerGroupInfo lg = wsName != null ? getCatalog().getLayerGroupByName(wsName, groupName) :  
             getCatalog().getLayerGroupByName(groupName);
         

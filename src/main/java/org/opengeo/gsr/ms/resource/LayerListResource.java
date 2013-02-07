@@ -64,6 +64,16 @@ public class LayerListResource extends Resource {
     
     private final Catalog catalog;
     private final String format;
+
+    private final static CoordinateReferenceSystem LAT_LON;
+
+    static {
+        try {
+            LAT_LON = CRS.decode("EPSG:4326");
+        } catch (FactoryException e) {
+            throw new RuntimeException(e);
+        }
+    }
     
     @Override
     public Representation getRepresentation(Variant variant) {
@@ -201,15 +211,15 @@ public class LayerListResource extends Resource {
                         json.key("extent");
                         CoordinateReferenceSystem WEB_MERCATOR = CRS.decode("EPSG:3785");
                         try {
-                            double minx = Math.max(boundingBox.getMinX(), -179.95);
-                            double maxx = Math.min(boundingBox.getMaxX(), 179.95);
-                            double miny = Math.max(boundingBox.getMinY(), -89.95);
-                            double maxy = Math.min(boundingBox.getMaxY(), 89.95);
-                            ReferencedEnvelope sphericalMercatorBoundingBox = new ReferencedEnvelope(minx, maxx, miny, maxy, boundingBox.getCoordinateReferenceSystem());
+                            double minx = Math.max(boundingBox.getMinX(), -85);
+                            double maxx = Math.min(boundingBox.getMaxX(), 85);
+                            double miny = Math.max(boundingBox.getMinY(), -180);
+                            double maxy = Math.min(boundingBox.getMaxY(), 180);
+                            ReferencedEnvelope sphericalMercatorBoundingBox = new ReferencedEnvelope(minx, maxx, miny, maxy, LAT_LON);
                             sphericalMercatorBoundingBox = sphericalMercatorBoundingBox.transform(WEB_MERCATOR, true);
                             GeometryEncoder.referencedEnvelopeToJson(sphericalMercatorBoundingBox, SpatialReferences.fromCRS(WEB_MERCATOR), json);
                         } catch (TransformException e) {
-                            e.printStackTrace();
+                            throw new RuntimeException(e);
                         }
                     }
                 } catch (FactoryException e) {

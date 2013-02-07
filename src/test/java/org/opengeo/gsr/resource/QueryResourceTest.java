@@ -6,6 +6,8 @@ import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import static org.junit.Assert.*;
+
 public class QueryResourceTest extends ResourceTest {
     private final String query(String service, int layerId, String params) {
         return baseURL + service + "/MapServer/" + layerId + "/query" + params;

@@ -10,16 +10,18 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.rest.CatalogRESTTestSupport;
+import org.geoserver.data.test.SystemTestData;
 import org.opengeo.gsr.validation.JSONValidator;
+
+import static org.junit.Assert.*;
 
 public class ResourceTest extends CatalogRESTTestSupport {
 
     protected Catalog catalog;
 
     protected String baseURL;
-
     @Override
-    public void setUpInternal() throws Exception {
+    protected void setUpTestData(SystemTestData testData) throws Exception {
         baseURL = "/gsr/services/";
         catalog = getCatalog();
         CatalogFactory catalogFactory = catalog.getFactory();

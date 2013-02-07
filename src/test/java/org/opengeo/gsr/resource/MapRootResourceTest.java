@@ -2,6 +2,8 @@ package org.opengeo.gsr.resource;
 
 import org.opengeo.gsr.JsonSchemaTest;
 
+import static org.junit.Assert.*;
+
 public class MapRootResourceTest extends ResourceTest {
     private final String query(String service, String params) {
         return baseURL + service + "/MapServer" + params;

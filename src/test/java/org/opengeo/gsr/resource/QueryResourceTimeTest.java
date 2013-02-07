@@ -1,6 +1,7 @@
 package org.opengeo.gsr.resource;
 
 import java.util.Collections;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 
@@ -13,25 +14,24 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.opengeo.gsr.JsonSchemaTest;
+
+import static org.junit.Assert.*;
 
 public class QueryResourceTimeTest extends ResourceTest {
     public static final QName TIME_ELEVATION = 
             new QName(MockData.CITE_URI, "TimeElevation", MockData.CITE_PREFIX);
 
     @Override
-    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-        super.populateDataDirectory(dataDirectory);
-        dataDirectory.addPropertiesType(
-            TIME_ELEVATION,
-            getClass().getResource("TimeElevation.properties"),
-            Collections.emptyMap());
-    };
-    
-    
-    @Override
-    public void setUpInternal() throws Exception {
-        super.setUpInternal();
+    @SuppressWarnings("rawtypes")
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        // TODO Auto-generated method stub
+        super.setUpTestData(testData);
+        Map<LayerProperty, Object> props = Collections.emptyMap();
+        testData.addVectorLayer(TIME_ELEVATION, props, "TimeElevation.properties", QueryResourceTimeTest.class, getCatalog());
+
         FeatureTypeInfo info = getCatalog().getFeatureTypeByName(
                 TIME_ELEVATION.getNamespaceURI(),
                 TIME_ELEVATION.getLocalPart());

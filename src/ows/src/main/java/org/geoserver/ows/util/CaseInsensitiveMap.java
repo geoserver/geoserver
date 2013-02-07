@@ -5,9 +5,9 @@
 package org.geoserver.ows.util;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
 
 /**
  * Map decorator which makes String keys case-insensitive.
@@ -16,10 +16,10 @@ import java.util.Set;
  *
  */
 public class CaseInsensitiveMap implements Map {
-    Map delegate;
+    Map delegate = new HashMap();
 
-    public CaseInsensitiveMap(Map delegate) {
-        this.delegate = delegate;
+    public CaseInsensitiveMap(Map input) {
+        putAll(input);
     }
 
     public void clear() {
@@ -63,7 +63,11 @@ public class CaseInsensitiveMap implements Map {
     }
 
     public void putAll(Map t) {
-        delegate.putAll(t);
+        for(Object entry : t.entrySet()) {
+            Object key = ((Entry) entry).getKey();
+            Object value = ((Entry) entry).getValue();
+            put(key, value);
+        }
     }
 
     public Object remove(Object key) {

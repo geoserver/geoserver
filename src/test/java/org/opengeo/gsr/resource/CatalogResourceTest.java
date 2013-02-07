@@ -3,6 +3,7 @@ package org.opengeo.gsr.resource;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import static org.junit.Assert.*;
 
 public class CatalogResourceTest extends ResourceTest {
 

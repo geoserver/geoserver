@@ -8,6 +8,8 @@ import org.junit.Test;
 import org.opengeo.gsr.resource.ResourceTest;
 import org.opengis.style.Style;
 
+import static org.junit.Assert.*;
+
 public class RendererEncoderTest extends ResourceTest {
     @Test
     public void testPolygonRendererJsonSchema() throws Exception {

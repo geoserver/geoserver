@@ -1,7 +1,6 @@
 package org.opengeo.gsr.core.renderer;
 
 import java.awt.Color;
-import java.util.Arrays;
 import java.util.Set;
 
 import org.geotools.styling.Displacement;

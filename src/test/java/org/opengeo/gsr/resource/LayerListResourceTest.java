@@ -5,6 +5,8 @@ import org.opengeo.gsr.JsonSchemaTest;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import static org.junit.Assert.*;
+
 public class LayerListResourceTest extends ResourceTest {
     private final String query(String service, String params) {
         return baseURL + service + "/MapServer/layers" + params;

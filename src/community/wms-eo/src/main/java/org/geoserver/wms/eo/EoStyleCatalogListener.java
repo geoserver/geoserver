@@ -18,6 +18,7 @@ package org.geoserver.wms.eo;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
@@ -33,6 +34,15 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.util.logging.Logging;
 
 
+/**
+ * Catalog Listener that set up WMS-EO required styles.
+ * 
+ * If the styles are not present in the Catalog they will be added at initialization.
+ * If they are deleted, the Listener will create them again.
+ * If they are modified, the Listener will prevent changes to be saved.
+ * 
+ * @author Davide Savazzi - geo-solutions.it
+ */
 public class EoStyleCatalogListener implements CatalogListener {
 
     private final Catalog catalog;
@@ -48,6 +58,13 @@ public class EoStyleCatalogListener implements CatalogListener {
     };
     
     
+    /**
+     * Create WMS-EO styles if they are not present in the Catalog and start listening to Catalog events.
+     * 
+     * @param catalog
+     * @param resourceLoader
+     * @throws IOException
+     */
     public EoStyleCatalogListener(Catalog catalog, GeoServerResourceLoader resourceLoader) throws IOException {
         this.catalog = catalog;
         this.resourceLoader = resourceLoader;
@@ -56,6 +73,10 @@ public class EoStyleCatalogListener implements CatalogListener {
     }
     
     
+    /**
+     * Create WMS-EO styles if they are not present in the Catalog
+     * @throws IOException
+     */
     private void initializeStyles() throws IOException {
         for (int i = 0; i < STYLE_NAMES.length; i++) {
             if (catalog.getStyleByName(STYLE_NAMES[i]) == null) {
@@ -83,6 +104,9 @@ public class EoStyleCatalogListener implements CatalogListener {
         catalog.add(s);
     }
 
+    /**
+     * Recreate WMS-EO styles that have been deleted
+     */
     @Override
     public void handleRemoveEvent(CatalogRemoveEvent event) throws CatalogException {
         if (event.getSource() instanceof StyleInfo) {
@@ -93,13 +117,20 @@ public class EoStyleCatalogListener implements CatalogListener {
             } catch (RuntimeException e) {
                 // style creation could fail with a RuntimeExecption 
                 // in the remote possibility that style has already been recreated
-                LOGGER.warning(e.getMessage());
+                if (LOGGER.isLoggable(Level.WARNING)) {
+                    LOGGER.log(Level.WARNING, e.getMessage(), e);
+                }
             } catch (Exception e) {
-                LOGGER.warning(e.getMessage());                
+                if (LOGGER.isLoggable(Level.WARNING)) {
+                    LOGGER.log(Level.WARNING, e.getMessage(), e);
+                }
             }
         }
     }
 
+    /**
+     * Prevent changes to WMS-EO styles
+     */
     @Override
     public void handleModifyEvent(CatalogModifyEvent event) throws CatalogException {
         if (event.getSource() instanceof StyleInfo) {

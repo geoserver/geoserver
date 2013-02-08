@@ -23,7 +23,7 @@ import org.geoserver.web.GeoServerApplication;
  * @author Gabriel Roldan - OpenGeo
  */
 @SuppressWarnings("serial")
-class StoreNameValidator implements IFormValidator {
+public class StoreNameValidator implements IFormValidator {
 
     FormComponent workspaceComponent;
 

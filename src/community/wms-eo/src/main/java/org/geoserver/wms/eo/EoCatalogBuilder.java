@@ -90,8 +90,10 @@ public class EoCatalogBuilder {
         layerGroup.setMode(LayerGroupInfo.Mode.EO);
         layerGroup.setRootLayer(browseLayer);
         layerGroup.setRootLayerStyle(browseLayer.getDefaultStyle());
-        layerGroup.getLayers().add(bandsLayer);
         layerGroup.getLayers().add(outlineLayer);
+        layerGroup.getStyles().add(outlineLayer.getDefaultStyle());        
+        layerGroup.getLayers().add(bandsLayer);
+        layerGroup.getStyles().add(bandsLayer.getDefaultStyle());
         if (masksLayer != null) {
             layerGroup.getLayers().add(masksLayer);            
         }
@@ -228,7 +230,7 @@ public class EoCatalogBuilder {
         }        
     }
     
-    protected LayerInfo createEoMosaicLayer(WorkspaceInfo ws, String name, EoLayerType type, String url) {
+    public LayerInfo createEoMosaicLayer(WorkspaceInfo ws, String name, EoLayerType type, String url) {
         if (StringUtils.isEmpty(url)) {
             return null;
         }

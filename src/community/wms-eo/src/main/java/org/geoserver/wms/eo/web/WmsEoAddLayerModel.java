@@ -18,55 +18,46 @@ package org.geoserver.wms.eo.web;
 
 import java.io.Serializable;
 
-import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.LayerGroupInfo;
 
 
 /**
- * Model for wicket page WmsEoCreateGroupPage.
+ * Model for wicket page WmsEoAddLayerPage.
  * 
  * @author Davide Savazzi - geo-solutions.it
  */
-public class WmsEoCreateGroupModel implements Serializable {
+public class WmsEoAddLayerModel implements Serializable {
 
-    private String name;
-    private WorkspaceInfo workspace;
-    private String browseImageUrl;
-    private String bandsUrl;
+    private LayerGroupInfo eoGroup; 
+    private String parametersLayerName;
     private String parametersUrl;
+    private String masksLayerName;
     private String masksUrl;
 
 
-    public String getName() {
-        return name;
+    public LayerGroupInfo getGroup() {
+        return eoGroup;
     }
     
-    public void setName(String name) {
-        this.name = name;
+    public void setGroup(LayerGroupInfo eoGroup) {
+        this.eoGroup = eoGroup;
     }
     
-    public WorkspaceInfo getWorkspace() {
-        return workspace;
+    public String getParametersLayerName() {
+        return parametersLayerName;
     }
-    
-    public void setWorkspace(WorkspaceInfo workspace) {
-        this.workspace = workspace;
+
+    public void setParametersLayerName(String parametersLayerName) {
+        this.parametersLayerName = parametersLayerName;
     }
-    
-    public String getBrowseImageUrl() {
-        return browseImageUrl;
+
+    public String getMasksLayerName() {
+        return masksLayerName;
     }
-    
-    public void setBrowseImageUrl(String browseImageUrl) {
-        this.browseImageUrl = browseImageUrl;
+
+    public void setMasksLayerName(String masksLayerName) {
+        this.masksLayerName = masksLayerName;
     }
-    
-    public String getBandsUrl() {
-        return bandsUrl;
-    }
-    
-    public void setBandsUrl(String bandsUrl) {
-        this.bandsUrl = bandsUrl;
-    }    
     
     public String getParametersUrl() {
         return parametersUrl;

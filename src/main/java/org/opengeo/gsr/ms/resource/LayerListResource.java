@@ -25,6 +25,8 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.styling.FeatureTypeStyle;
+import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.opengeo.gsr.core.exception.ServiceError;
 import org.opengeo.gsr.core.feature.FieldTypeEnum;
@@ -53,6 +55,16 @@ import org.restlet.resource.Variant;
 import com.vividsolutions.jts.geom.Geometry;
 
 public class LayerListResource extends Resource {
+    private static class ScaleRange {
+        public final Double minScale;
+        public final Double maxScale;
+
+        public ScaleRange(Double minScale, Double maxScale) {
+            this.minScale = minScale;
+            this.maxScale = maxScale;
+        }
+    }
+
     public static final Variant JSON = new Variant(new MediaType("application/json"));
     private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(LayerListResource.class);
     public LayerListResource(Context context, Request request, Response response, Catalog catalog, String format) {
@@ -203,8 +215,9 @@ public class LayerListResource extends Resource {
             json.key("types").value(null);
             if (layerOrTable.gtype != null) {
                 json.key("geometryType").value(layerOrTable.gtype.getGeometryType());
-                json.key("minScale").value(null);
-                json.key("maxScale").value(null);
+                ScaleRange range = extractScaleRange(layerOrTable.layer.getDefaultStyle().getStyle());
+                json.key("minScale").value(range.minScale);
+                json.key("maxScale").value(range.maxScale);
                 try {
                     ReferencedEnvelope boundingBox = layer.getResource().getLatLonBoundingBox();
                     if (boundingBox != null) {
@@ -333,6 +346,23 @@ public class LayerListResource extends Resource {
         json.endArray();
     }
     
+    private static ScaleRange extractScaleRange(Style style) {
+        Double minScale = null, maxScale = null;
+        for (FeatureTypeStyle ft : style.featureTypeStyles()) {
+            for (Rule r : ft.rules()) {
+                double minS = r.getMinScaleDenominator();
+                double maxS = r.getMaxScaleDenominator();
+                if (minScale == null || minS > minScale) {
+                    minScale = minS;
+                }
+                if (maxScale == null || maxS < maxScale) {
+                    maxScale = maxS;
+                }
+            }
+        }
+        return new ScaleRange(minScale, maxScale);
+    }
+
     private static void encodeSchemaProperties(JSONBuilder json, FeatureType ftype) {
         json.array();
         for (PropertyDescriptor desc : ftype.getDescriptors()) {

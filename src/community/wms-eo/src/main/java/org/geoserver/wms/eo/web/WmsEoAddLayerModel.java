@@ -29,10 +29,10 @@ import org.geoserver.catalog.LayerGroupInfo;
 public class WmsEoAddLayerModel implements Serializable {
 
     private LayerGroupInfo eoGroup; 
-    private String parametersLayerName;
-    private String parametersUrl;
-    private String masksLayerName;
-    private String masksUrl;
+    private String parameterLayerName;
+    private String parameterUrl;
+    private String bitmaskLayerName;
+    private String bitmaskUrl;
 
 
     public LayerGroupInfo getGroup() {
@@ -43,35 +43,35 @@ public class WmsEoAddLayerModel implements Serializable {
         this.eoGroup = eoGroup;
     }
     
-    public String getParametersLayerName() {
-        return parametersLayerName;
+    public String getParameterLayerName() {
+        return parameterLayerName;
     }
 
-    public void setParametersLayerName(String parametersLayerName) {
-        this.parametersLayerName = parametersLayerName;
+    public void setParameterLayerName(String parameterLayerName) {
+        this.parameterLayerName = parameterLayerName;
     }
 
-    public String getMasksLayerName() {
-        return masksLayerName;
+    public String getBitmaskLayerName() {
+        return bitmaskLayerName;
     }
 
-    public void setMasksLayerName(String masksLayerName) {
-        this.masksLayerName = masksLayerName;
+    public void setBitmaskLayerName(String bitmaskLayerName) {
+        this.bitmaskLayerName = bitmaskLayerName;
     }
     
-    public String getParametersUrl() {
-        return parametersUrl;
+    public String getParameterUrl() {
+        return parameterUrl;
     }
 
-    public void setParametersUrl(String parametersUrl) {
-        this.parametersUrl = parametersUrl;
+    public void setParameterUrl(String parameterUrl) {
+        this.parameterUrl = parameterUrl;
     }
 
-    public String getMasksUrl() {
-        return masksUrl;
+    public String getBitmaskUrl() {
+        return bitmaskUrl;
     }
 
-    public void setMasksUrl(String masksUrl) {
-        this.masksUrl = masksUrl;
+    public void setBitmaskUrl(String bitmaskUrl) {
+        this.bitmaskUrl = bitmaskUrl;
     }    
 }

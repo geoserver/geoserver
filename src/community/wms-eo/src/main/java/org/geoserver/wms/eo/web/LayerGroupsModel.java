@@ -25,7 +25,7 @@ public class LayerGroupsModel extends LoadableDetachableModel<List<LayerGroupInf
     
     private LayerGroupInfoFilter filter;
 
-    
+
     public LayerGroupsModel() {
         this.filter = new LayerGroupInfoFilter() {
             @Override
@@ -34,7 +34,7 @@ public class LayerGroupsModel extends LoadableDetachableModel<List<LayerGroupInf
             }
         };
     }
-    
+
     public LayerGroupsModel(LayerGroupInfoFilter filter) {
         this.filter = filter;
     }

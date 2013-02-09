@@ -22,7 +22,8 @@ import org.geoserver.web.data.store.panel.ParamPanel;
 @SuppressWarnings("serial")
 public class LayerGroupPanel extends Panel implements ParamPanel {
 
-    private DropDownChoice<LayerGroupInfo> choice;
+    protected DropDownChoice<LayerGroupInfo> choice;
+    
     
     public LayerGroupPanel(final String id, final IModel<LayerGroupInfo> layerGroupModel,
             final IModel<String> paramLabelModel, final boolean required,
@@ -49,6 +50,7 @@ public class LayerGroupPanel extends Panel implements ParamPanel {
         add(feedback);
     }
 
+    
     /**
      * Returns the form component used in the panel in case it is needed for related form components
      * validation

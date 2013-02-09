@@ -34,12 +34,8 @@ import org.apache.wicket.model.ResourceModel;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.layergroup.LayerGroupEditPage;
 import org.geoserver.web.data.store.StorePage;
-import org.geoserver.web.data.store.panel.DirectoryParamPanel;
-import org.geoserver.web.data.store.panel.TextParamPanel;
-import org.geoserver.web.wicket.FileExistsValidator;
 import org.geoserver.wms.eo.EoCatalogBuilder;
 import org.geoserver.wms.eo.EoLayerType;
 
@@ -49,7 +45,7 @@ import org.geoserver.wms.eo.EoLayerType;
  * 
  * @author Davide Savazzi - geo-solutions.it
  */
-public class WmsEoAddLayerPage extends GeoServerSecuredPage {
+public class WmsEoAddLayerPage extends EoPage {
 
     public WmsEoAddLayerPage() {
         IModel<WmsEoAddLayerModel> model = new Model<WmsEoAddLayerModel>(new WmsEoAddLayerModel());
@@ -58,19 +54,19 @@ public class WmsEoAddLayerPage extends GeoServerSecuredPage {
         Form<WmsEoAddLayerModel> paramsForm = new Form<WmsEoAddLayerModel>("addLayerForm", model);
         add(paramsForm);
         
-        LayerGroupPanel workspacePanel = new LayerGroupPanel("groupPanel", new PropertyModel<LayerGroupInfo>(model, "group"), 
+        LayerGroupPanel groupPanel = new LayerGroupPanel("groupPanel", new PropertyModel<LayerGroupInfo>(model, "group"), 
                 new ResourceModel("group", "WMS-EO Group"), true, new LayerGroupInfoFilter() {
                     @Override
                     public boolean accept(LayerGroupInfo group) {
                         return LayerGroupInfo.Mode.EO.equals(group.getMode());
                     }            
         });
-        paramsForm.add(workspacePanel);
+        paramsForm.add(groupPanel);
 
-        paramsForm.add(getTextParamPanel("parametersLayerName", "Parameters Layer Name", model, false));
-        paramsForm.add(getDirectoryPanel("parametersUrl", "Parameters URL", model, false));
-        paramsForm.add(getTextParamPanel("masksLayerName", "Masks Layer Name", model, false));        
-        paramsForm.add(getDirectoryPanel("masksUrl", "Masks URL", model, false));
+        paramsForm.add(getTextParamPanel("parameterLayerName",  GEOPHYSICAL_PARAMETER.getObject() + " Layer Name", model, false));
+        paramsForm.add(getDirectoryPanel("parameterUrl", GEOPHYSICAL_PARAMETER.getObject() + " URL", model, false));
+        paramsForm.add(getTextParamPanel("bitmaskLayerName", BITMASK.getObject() + " Layer Name", model, false));        
+        paramsForm.add(getDirectoryPanel("bitmaskUrl", BITMASK.getObject() + " URL", model, false));
                 
         // cancel / submit buttons
         AjaxSubmitLink submitLink = saveLink(paramsForm);
@@ -80,16 +76,6 @@ public class WmsEoAddLayerPage extends GeoServerSecuredPage {
 
         // feedback panel for error messages
         paramsForm.add(new FeedbackPanel("feedback"));
-    }
-    
-    private TextParamPanel getTextParamPanel(String name, String label, IModel<WmsEoAddLayerModel> model, boolean required) {
-        return new TextParamPanel(name, new PropertyModel<String>(model, name),
-                new ResourceModel(name, label), required);
-    }
-    
-    private DirectoryParamPanel getDirectoryPanel(String name, String label, IModel<WmsEoAddLayerModel> model, boolean required) {
-        return new DirectoryParamPanel(name, new PropertyModel<String>(model, name), 
-                new ResourceModel(name, label), required, new FileExistsValidator());
     }
     
     private AjaxSubmitLink saveLink(Form<WmsEoAddLayerModel> paramsForm) {
@@ -107,12 +93,12 @@ public class WmsEoAddLayerPage extends GeoServerSecuredPage {
                 
                 EoCatalogBuilder builder = new EoCatalogBuilder(getCatalog());
                 
-                if (StringUtils.isEmpty(model.getMasksLayerName()) && !StringUtils.isEmpty(model.getMasksUrl())) {
-                    paramsForm.error("Field 'Masks Layer Name' is required.");
+                if (StringUtils.isEmpty(model.getBitmaskLayerName()) && !StringUtils.isEmpty(model.getBitmaskUrl())) {
+                    paramsForm.error("Field '" + BITMASK.getObject() + " Layer Name' is required.");
                 }
                 
-                if (StringUtils.isEmpty(model.getParametersLayerName()) && !StringUtils.isEmpty(model.getParametersUrl())) {
-                    paramsForm.error("Field 'Parameters Layer Name' is required.");                    
+                if (StringUtils.isEmpty(model.getParameterLayerName()) && !StringUtils.isEmpty(model.getParameterUrl())) {
+                    paramsForm.error("Field '" + GEOPHYSICAL_PARAMETER.getObject() + " Layer Name' is required.");                    
                 }
                 
                 if (paramsForm.hasError()) {
@@ -122,15 +108,15 @@ public class WmsEoAddLayerPage extends GeoServerSecuredPage {
                         // load layers in group
                         group = getCatalog().getLayerGroupByName(group.getWorkspace(), group.getName());
                         
-                        LayerInfo layer = builder.createEoMosaicLayer(group.getWorkspace(), model.getMasksLayerName(), 
-                                EoLayerType.BITMASK, model.getMasksUrl());
+                        LayerInfo layer = builder.createEoMosaicLayer(group.getWorkspace(), model.getBitmaskLayerName(), 
+                                EoLayerType.BITMASK, model.getBitmaskUrl());
                         if (layer != null) {
                             group.getLayers().add(layer);
                             group.getStyles().add(layer.getDefaultStyle());
                         }
                         
-                        layer = builder.createEoMosaicLayer(group.getWorkspace(), model.getParametersLayerName(), 
-                                EoLayerType.GEOPHYSICAL_PARAMETER, model.getParametersUrl());                    
+                        layer = builder.createEoMosaicLayer(group.getWorkspace(), model.getParameterLayerName(), 
+                                EoLayerType.GEOPHYSICAL_PARAMETER, model.getParameterUrl());                    
                         if (layer != null) {
                             group.getLayers().add(layer);
                             group.getStyles().add(layer.getDefaultStyle());

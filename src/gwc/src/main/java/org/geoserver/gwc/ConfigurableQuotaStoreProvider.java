@@ -4,10 +4,13 @@
  */
 package org.geoserver.gwc;
 
+import static org.geowebcache.diskquota.DiskQuotaMonitor.*;
+
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.config.ConfigurationException;
 import org.geowebcache.diskquota.ConfigLoader;
@@ -30,14 +33,28 @@ public class ConfigurableQuotaStoreProvider extends QuotaStoreProvider {
     
     Exception exception;
     TilePageCalculator calculator;
+
+    boolean diskQuotaEnabled;
     
     public ConfigurableQuotaStoreProvider(ConfigLoader loader, TilePageCalculator calculator) {
         super(loader);
         this.calculator = calculator;
+        
+        boolean disabled = Boolean.valueOf(GeoServerExtensions.getProperty(GWC_DISKQUOTA_DISABLED)).booleanValue();
+        if (disabled) {
+            LOGGER.warning(" -- Found environment variable " + GWC_DISKQUOTA_DISABLED
+                    + " set to true. DiskQuotaMonitor is disabled.");
+        }
+        this.diskQuotaEnabled = !disabled;
     }
     
     @Override
     public void reloadQuotaStore() throws ConfigurationException, IOException {
+        if(!diskQuotaEnabled) {
+            store = null;
+            return;
+        }
+        
         // get the quota store name
         DiskQuotaConfig config = loader.loadConfig();
         String quotaStoreName = config.getQuotaStore();

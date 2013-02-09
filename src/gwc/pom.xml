@@ -46,6 +46,12 @@
     <dependency>
       <groupId>org.geowebcache</groupId>
       <artifactId>gwc-georss</artifactId>
+      <exclusions>
+        <exclusion>
+           <groupId>com.vividsolutions</groupId>
+           <artifactId>jts</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.geowebcache</groupId>

@@ -992,7 +992,14 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         monitor.saveConfig(config);
         
         File configFile = new File(storageFinder.getDefaultPath(), "geowebcache-diskquota-jdbc.xml");
-        JDBCConfiguration.store(jdbcConfig, configFile);
+        if("JDBC".equals(config.getQuotaStore())) {
+            JDBCConfiguration.store(jdbcConfig, configFile);
+        } else {
+            if(configFile.exists() && !configFile.delete()) {
+                log.log(Level.SEVERE, "Failed to delete " + configFile 
+                        + ", this might cause misbehavior on GeoServer restart");
+            }
+        }
         // GeoServer own GWC is wired up to use the ConfigurableQuotaStoreProvider
         ConfigurableQuotaStoreProvider provider = (ConfigurableQuotaStoreProvider) monitor.getQuotaStoreProvider();
         provider.reloadQuotaStore();
@@ -1847,7 +1854,12 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         if (!configFile.exists()) {
             return null;
         }
-        return JDBCConfiguration.load(configFile);
+        try {
+            return JDBCConfiguration.load(configFile);
+        } catch(Exception e) {
+            log.log(Level.SEVERE, "Failed to load geowebcache-diskquota-jdbc.xml", e);
+            return null;
+        }
     }
     
     /**

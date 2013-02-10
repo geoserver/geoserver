@@ -41,6 +41,10 @@ public class ConfigurableQuotaStore implements QuotaStore {
 
         this.delegate = delegate;
     }
+    
+    public QuotaStore getStore() {
+        return delegate;
+    }
 
     public ConfigurableQuotaStore(QuotaStore delegate) {
         this.delegate = delegate;

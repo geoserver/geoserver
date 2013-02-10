@@ -57,22 +57,29 @@ public class ConfigurableQuotaStoreProvider extends QuotaStoreProvider {
         
         // get the quota store name
         DiskQuotaConfig config = loader.loadConfig();
-        String quotaStoreName = config.getQuotaStore();
-        // in case it's null GeoServer defaults to H2 store, we don't have the
-        // BDB store in the classpath
-        if(quotaStoreName == null) {
-            quotaStoreName = JDBCQuotaStoreFactory.H2_STORE;
-        }
-
         QuotaStore store  = null;
-        try {
-            store = getQuotaStoreByName(quotaStoreName);
-            exception = null;
-        } catch(Exception e) {
-            LOGGER.log(Level.SEVERE, "Failed to get a quota store, " +
-            		"the GeoWebCache disk quota subsystem will stop working now", e);
-            this.exception = e;
+        if(!config.isEnabled()) {
+            // it would be nice to just return null, but the other portions of the 
+            // disk quota system will throw exceptions if we did while the quota store
+            // is not disable via system variable. Let's just give it a dummy quota store instead.
             store = new DummyQuotaStore(calculator);
+        } else {
+            String quotaStoreName = config.getQuotaStore();
+            // in case it's null GeoServer defaults to H2 store, we don't have the
+            // BDB store in the classpath
+            if(quotaStoreName == null) {
+                quotaStoreName = JDBCQuotaStoreFactory.H2_STORE;
+            }
+            
+            try {
+                store = getQuotaStoreByName(quotaStoreName);
+                exception = null;
+            } catch(Exception e) {
+                LOGGER.log(Level.SEVERE, "Failed to get a quota store, " +
+                		"the GeoWebCache disk quota subsystem will stop working now", e);
+                this.exception = e;
+                store = new DummyQuotaStore(calculator);
+            }
         }
         
         if (this.store == null) {

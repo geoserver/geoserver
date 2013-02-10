@@ -8,13 +8,17 @@ import static junit.framework.Assert.*;
 import static org.geoserver.data.test.MockData.*;
 import static org.geoserver.gwc.GWC.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.httpclient.util.DateUtil;
+import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.layer.CatalogConfiguration;
@@ -22,6 +26,12 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.GeoWebCacheExtensions;
+import org.geowebcache.config.ConfigurationException;
+import org.geowebcache.diskquota.DiskQuotaConfig;
+import org.geowebcache.diskquota.QuotaStore;
+import org.geowebcache.diskquota.jdbc.JDBCConfiguration;
+import org.geowebcache.diskquota.jdbc.JDBCQuotaStore;
+import org.geowebcache.diskquota.jdbc.JDBCConfiguration.ConnectionPoolConfiguration;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.grid.GridSubset;
@@ -364,6 +374,58 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         } catch (GeoWebCacheException gwce) {
             // fine
         }
+    }
+    
+    @Test
+    public void testDiskQuotaStorage() throws Exception {
+        // normal state, quota is not enabled by default
+        GWC gwc = GWC.get();
+        ConfigurableQuotaStoreProvider provider = GeoServerExtensions.bean(ConfigurableQuotaStoreProvider.class);
+        DiskQuotaConfig quota = gwc.getDiskQuotaConfig();
+        JDBCConfiguration jdbc = gwc.getJDBCDiskQuotaConfig();
+        assertFalse("Disk quota is enabled??", quota.isEnabled());
+        assertNull("jdbc quota config should be missing", jdbc);
+        assertTrue(getActualStore(provider) instanceof DummyQuotaStore);
+        
+        // enable disk quota in H2 mode
+        quota.setEnabled(true);
+        quota.setQuotaStore("H2");
+        gwc.saveDiskQuotaConfig(quota, null);
+        GeoServerDataDirectory dd = GeoServerExtensions.bean(GeoServerDataDirectory.class);
+        assertNull("jdbc config should not be there", dd.findDataFile("gwc/geowebcache-diskquota-jdbc.xml"));
+        File h2DefaultStore = dd.findDataFile("gwc/diskquota_page_store_h2");
+        assertNotNull("jdbc store should be there", h2DefaultStore);
+        assertTrue(getActualStore(provider) instanceof JDBCQuotaStore);
+        
+        // disable again and clean up
+        quota.setEnabled(false);
+        gwc.saveDiskQuotaConfig(quota, null);
+        FileUtils.deleteDirectory(h2DefaultStore);
+        
+        // now enable it in JDBC mode, with H2 local storage
+        quota.setEnabled(true);
+        quota.setQuotaStore("JDBC");
+        jdbc = new JDBCConfiguration();
+        jdbc.setDialect("H2");
+        ConnectionPoolConfiguration pool = new ConnectionPoolConfiguration();
+        pool.setDriver("org.h2.Driver");
+        pool.setUrl("jdbc:h2:./target/quota-h2");
+        pool.setUsername("sa");
+        pool.setPassword("");
+        pool.setMinConnections(1);
+        pool.setMaxConnections(1);
+        pool.setMaxOpenPreparedStatements(50);
+        jdbc.setConnectionPool(pool);
+        gwc.saveDiskQuotaConfig(quota, jdbc);
+        assertNotNull("jdbc config should be there", dd.findDataFile("gwc/geowebcache-diskquota-jdbc.xml"));
+        assertNull("jdbc store should be there", dd.findDataFile("gwc/diskquota_page_store_h2"));
+        File newQuotaStore = new File("./target/quota-h2.data.db");
+        assertTrue(newQuotaStore.exists());
+    }
+
+    private QuotaStore getActualStore(ConfigurableQuotaStoreProvider provider)
+            throws ConfigurationException, IOException {
+        return ((ConfigurableQuotaStore) provider.getQuotaStore()).getStore();
     }
     
 }

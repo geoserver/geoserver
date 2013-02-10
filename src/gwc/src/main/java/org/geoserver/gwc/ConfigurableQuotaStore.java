@@ -30,15 +30,6 @@ public class ConfigurableQuotaStore implements QuotaStore {
     private QuotaStore delegate;
 
     public void setStore(QuotaStore delegate) {
-        if (this.delegate != null) {
-            try {
-                this.delegate.close();
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE,
-                        "An error occurred while closing up the previous quota store", e);
-            }
-        }
-
         this.delegate = delegate;
     }
     

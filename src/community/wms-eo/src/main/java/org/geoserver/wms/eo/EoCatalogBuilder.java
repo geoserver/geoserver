@@ -38,6 +38,9 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFactorySpi;
@@ -63,40 +66,49 @@ public class EoCatalogBuilder {
     }
     
     
-    public LayerGroupInfo createEoLayerGroup(WorkspaceInfo ws, String name, 
+    public LayerGroupInfo createEoLayerGroup(WorkspaceInfo ws, String groupName, 
+            String outlineLayerName,
+            String browseLayerName, 
             String browseImageUrl,
+            String bandsLayerName,
             String bandsUrl,
+            String masksLayerName,
             String masksUrl,
+            String parametersLayerName,
             String parametersUrl) {
         
-        LayerInfo browseLayer = createEoMosaicLayer(ws, name, EoLayerType.EO_PRODUCT, browseImageUrl);
-        LayerInfo bandsLayer = createEoMosaicLayer(ws, name + " Bands", EoLayerType.BAND_COVERAGE, bandsUrl);
-        LayerInfo masksLayer = createEoMosaicLayer(ws, name + " Masks", EoLayerType.BITMASK, masksUrl);
-        LayerInfo paramsLayer = createEoMosaicLayer(ws, name + " Parameters", EoLayerType.GEOPHYSICAL_PARAMETER, parametersUrl);
+        LayerInfo browseLayer = createEoMosaicLayer(ws, browseLayerName, EoLayerType.EO_PRODUCT, browseImageUrl);
+        LayerInfo bandsLayer = createEoMosaicLayer(ws, bandsLayerName, EoLayerType.BAND_COVERAGE, bandsUrl);
+        LayerInfo masksLayer = createEoMosaicLayer(ws, masksLayerName, EoLayerType.BITMASK, masksUrl);
+        LayerInfo paramsLayer = createEoMosaicLayer(ws, parametersLayerName, EoLayerType.GEOPHYSICAL_PARAMETER, parametersUrl);
         
         LayerInfo outlineLayer;
         try {
-            outlineLayer = createEoOutlineLayer(bandsUrl, ws, name + " Outline");
+            outlineLayer = createEoOutlineLayer(bandsUrl, ws, outlineLayerName);
         } catch (RuntimeException e) {
-            throw new IllegalArgumentException("The layer '" + name + " Outline' could not be created. Failure message: " + e.getMessage(), e);
+            throw new IllegalArgumentException("The layer '" + outlineLayerName + "' could not be created. Failure message: " + e.getMessage(), e);
         } catch (Exception e) {
-            throw new IllegalArgumentException("The layer '" + name + " Outline' could not be created. Failure message: " + e.getMessage(), e);
+            throw new IllegalArgumentException("The layer '" + outlineLayerName + "' could not be created. Failure message: " + e.getMessage(), e);
         }
-            
+
         // create layer group
         LayerGroupInfo layerGroup = catalog.getFactory().createLayerGroup();
         layerGroup.setWorkspace(ws);
-        layerGroup.setName(name + " Group");
+        layerGroup.setName(groupName);
         layerGroup.setMode(LayerGroupInfo.Mode.EO);
         layerGroup.setRootLayer(browseLayer);
         layerGroup.setRootLayerStyle(browseLayer.getDefaultStyle());
-        layerGroup.getLayers().add(bandsLayer);
         layerGroup.getLayers().add(outlineLayer);
+        layerGroup.getStyles().add(outlineLayer.getDefaultStyle());        
+        layerGroup.getLayers().add(bandsLayer);
+        layerGroup.getStyles().add(bandsLayer.getDefaultStyle());
         if (masksLayer != null) {
-            layerGroup.getLayers().add(masksLayer);            
+            layerGroup.getLayers().add(masksLayer);    
+            layerGroup.getStyles().add(masksLayer.getDefaultStyle());
         }
         if (paramsLayer != null) {
             layerGroup.getLayers().add(paramsLayer);            
+            layerGroup.getStyles().add(paramsLayer.getDefaultStyle());            
         }
         
         try {
@@ -106,9 +118,9 @@ public class EoCatalogBuilder {
             catalog.add(layerGroup);
             return layerGroup;
         } catch (RuntimeException e) {
-            throw new IllegalArgumentException("The layer group '" + name + " Group' could not be created. Failure message: " + e.getMessage(), e);
+            throw new IllegalArgumentException("The layer group '" + groupName + "' could not be created. Failure message: " + e.getMessage(), e);
         } catch (Exception e) {
-            throw new IllegalArgumentException("The layer group '" + name + " Group' could not be created. Failure message: " + e.getMessage(), e);
+            throw new IllegalArgumentException("The layer group '" + groupName + "' could not be created. Failure message: " + e.getMessage(), e);
         }        
     }
     
@@ -123,24 +135,12 @@ public class EoCatalogBuilder {
         return properties;
     }
     
-    private Object createNewInstance(String className) throws Exception {
-        try {
-            return Class.forName(className).newInstance();
-        } catch (InstantiationException e) {
-            throw new Exception(e);
-        } catch (IllegalAccessException e) {
-            throw new Exception(e);
-        } catch (ClassNotFoundException e) {
-            throw new Exception(e);
-        }
-    }
-
     protected DataStoreFactorySpi getOutlineDataStoreFactory(File dir) throws Exception {
         File datastorePropertiesFile = new File(dir, "datastore.properties");
         if (datastorePropertiesFile.exists()) {
             Properties datastoreProperties = loadProperties(datastorePropertiesFile);
             String SPIClass = datastoreProperties.getProperty("SPI");
-            return (DataStoreFactorySpi) createNewInstance(SPIClass);
+            return (DataStoreFactorySpi) Class.forName(SPIClass).newInstance();
         } else {
             return new ShapefileDataStoreFactory();
         }        
@@ -228,7 +228,7 @@ public class EoCatalogBuilder {
         }        
     }
     
-    protected LayerInfo createEoMosaicLayer(WorkspaceInfo ws, String name, EoLayerType type, String url) {
+    public LayerInfo createEoMosaicLayer(WorkspaceInfo ws, String name, EoLayerType type, String url) {
         if (StringUtils.isEmpty(url)) {
             return null;
         }
@@ -256,6 +256,32 @@ public class EoCatalogBuilder {
             throw new IllegalArgumentException("The layer '" + name + "' could not be created. Failure message: " + e.getMessage(), e);
         } catch (Exception e) {
             throw new IllegalArgumentException("The layer '" + name + "' could not be created. Failure message: " + e.getMessage(), e);
+        }
+    }
+
+    private void delete(LayerInfo layer) {
+        ResourceInfo resource = layer.getResource();
+        StoreInfo store = resource.getStore();
+        catalog.remove(layer);
+        catalog.remove(resource);
+        catalog.remove(store);                    
+    }
+    
+    public void delete(LayerGroupInfo group) {
+        // load layers in group
+        group = catalog.getLayerGroupByName(group.getWorkspace(), group.getName());
+        try {
+            catalog.remove(group);
+            delete(group.getRootLayer());            
+            for (PublishedInfo p : group.getLayers()) {
+                if (p instanceof LayerGroupInfo) {
+                    delete(group);
+                } else {
+                    delete((LayerInfo) p);
+                }
+            }            
+        } catch (RuntimeException e) {
+            throw new IllegalArgumentException("The group '" + group.getName() + "' could not be removed. Failure message: " + e.getMessage(), e);
         }
     }   
 }

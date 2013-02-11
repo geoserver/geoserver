@@ -28,8 +28,30 @@
     	<property name="componentClass" value="org.geoserver.wms.eo.web.WmsEoCreateGroupPage" />
     	<property name="category" ref="wmsEoWebMenuCategory" />
     	<property name="icon" value="../../../web/img/icons/silk/layers.png" />
-    	<property name="order" value="25" />
+    	<property name="order" value="10" />
     	<property name="authorizer" ref="workspaceAdminAuthorizer"/>
-  </bean>
+  	</bean>
+
+  	<bean id="wmsEoAddLayerMenuPage" class="org.geoserver.web.MenuPageInfo">
+    	<property name="id" value="wmsEoAddLayerMenuPage" />
+    	<property name="titleKey" value="wmsEoAddLayerMenuPage.title" />
+    	<property name="descriptionKey" value="wmsEoAddLayerMenuPage.description" />
+    	<property name="componentClass" value="org.geoserver.wms.eo.web.WmsEoAddLayerPage" />
+    	<property name="category" ref="wmsEoWebMenuCategory" />
+    	<property name="icon" value="../../../web/img/icons/silk/layers.png" />
+    	<property name="order" value="20" />
+    	<property name="authorizer" ref="workspaceAdminAuthorizer"/>
+  	</bean>
+
+  	<bean id="wmsEoDeleteGroupMenuPage" class="org.geoserver.web.MenuPageInfo">
+    	<property name="id" value="wmsEoDeleteGroupMenuPage" />
+    	<property name="titleKey" value="wmsEoDeleteGroupMenuPage.title" />
+    	<property name="descriptionKey" value="wmsEoDeleteGroupMenuPage.description" />
+    	<property name="componentClass" value="org.geoserver.wms.eo.web.WmsEoDeleteGroupPage" />
+    	<property name="category" ref="wmsEoWebMenuCategory" />
+    	<property name="icon" value="../../../web/img/icons/silk/layers.png" />
+    	<property name="order" value="30" />
+    	<property name="authorizer" ref="workspaceAdminAuthorizer"/>
+  	</bean>
 
 </beans>

@@ -22,19 +22,64 @@ import org.geoserver.catalog.WorkspaceInfo;
 
 
 /**
- * Model for wicket page WmsEoCreatePage.
+ * Model for wicket page WmsEoCreateGroupPage.
  * 
  * @author Davide Savazzi - geo-solutions.it
  */
 public class WmsEoCreateGroupModel implements Serializable {
 
-    private String name;
     private WorkspaceInfo workspace;
-    private String browseImageUrl;
-    private String bandsUrl;
-    private String parametersUrl;
-    private String masksUrl;
+    private String name;
+    private String outlineLayerName;
+    private String productLayerName;
+    private String productUrl;
+    private String bandLayerName;
+    private String bandUrl;
+    private String parameterLayerName;
+    private String parameterUrl;
+    private String bitmaskLayerName;
+    private String bitmaskUrl;
 
+
+    public String getOutlineLayerName() {
+        return outlineLayerName;
+    }
+
+    public void setOutlineLayerName(String outlineLayerName) {
+        this.outlineLayerName = outlineLayerName;
+    }
+
+    public String getProductLayerName() {
+        return productLayerName;
+    }
+
+    public void setProductLayerName(String productLayerName) {
+        this.productLayerName = productLayerName;
+    }
+
+    public String getBandLayerName() {
+        return bandLayerName;
+    }
+
+    public void setBandLayerName(String bandLayerName) {
+        this.bandLayerName = bandLayerName;
+    }
+
+    public String getParameterLayerName() {
+        return parameterLayerName;
+    }
+
+    public void setParameterLayerName(String parameterLayerName) {
+        this.parameterLayerName = parameterLayerName;
+    }
+
+    public String getBitmaskLayerName() {
+        return bitmaskLayerName;
+    }
+
+    public void setBitMaskLayerName(String bitmaskLayerName) {
+        this.bitmaskLayerName = bitmaskLayerName;
+    }
 
     public String getName() {
         return name;
@@ -52,35 +97,35 @@ public class WmsEoCreateGroupModel implements Serializable {
         this.workspace = workspace;
     }
     
-    public String getBrowseImageUrl() {
-        return browseImageUrl;
+    public String getProductUrl() {
+        return productUrl;
     }
     
-    public void setBrowseImageUrl(String browseImageUrl) {
-        this.browseImageUrl = browseImageUrl;
+    public void setProductUrl(String productUrl) {
+        this.productUrl = productUrl;
     }
     
-    public String getBandsUrl() {
-        return bandsUrl;
+    public String getBandUrl() {
+        return bandUrl;
     }
     
-    public void setBandsUrl(String bandsUrl) {
-        this.bandsUrl = bandsUrl;
+    public void setBandUrl(String bandUrl) {
+        this.bandUrl = bandUrl;
     }    
     
-    public String getParametersUrl() {
-        return parametersUrl;
+    public String getParameterUrl() {
+        return parameterUrl;
     }
 
-    public void setParametersUrl(String parametersUrl) {
-        this.parametersUrl = parametersUrl;
+    public void setParameterUrl(String parameterUrl) {
+        this.parameterUrl = parameterUrl;
     }
 
-    public String getMasksUrl() {
-        return masksUrl;
+    public String getBitmaskUrl() {
+        return bitmaskUrl;
     }
 
-    public void setMasksUrl(String masksUrl) {
-        this.masksUrl = masksUrl;
+    public void setBitmaskUrl(String bitmaskUrl) {
+        this.bitmaskUrl = bitmaskUrl;
     }    
 }

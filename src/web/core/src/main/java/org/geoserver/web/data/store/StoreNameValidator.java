@@ -31,6 +31,8 @@ public class StoreNameValidator implements IFormValidator {
 
     private String edittingStoreId;
 
+    private boolean required;
+
     /**
      * 
      * @param workspaceFormComponent
@@ -44,9 +46,28 @@ public class StoreNameValidator implements IFormValidator {
      */
     public StoreNameValidator(final FormComponent workspaceFormComponent,
             final FormComponent storeNameFormComponent, final String edittingStoreId) {
+        this(workspaceFormComponent, storeNameFormComponent, edittingStoreId, true);
+    }
+    
+    /**
+     * 
+     * @param workspaceFormComponent
+     *            the form component for the {@link WorkspaceInfo} assigned to the {@link StoreInfo}
+     *            being edited
+     * @param storeNameFormComponent
+     *            the form component for the name assigned to the {@link StoreInfo}
+     * @param edittingStoreId
+     *            the id for the store being edited. May be {@code null} if we're talking of a new
+     *            Store
+     * @param required
+     *            true if store name is required
+     */
+    public StoreNameValidator(final FormComponent workspaceFormComponent,
+            final FormComponent storeNameFormComponent, final String edittingStoreId, boolean required) {
         this.workspaceComponent = workspaceFormComponent;
         this.storeNameComponent = storeNameFormComponent;
         this.edittingStoreId = edittingStoreId;
+        this.required = required;
     }
 
     public FormComponent[] getDependentFormComponents() {
@@ -72,9 +93,11 @@ public class StoreNameValidator implements IFormValidator {
         String name = (String) nameComponent.getConvertedInput();
         
         if(name == null) {
-            ValidationError error = new ValidationError();
-            error.addMessageKey("StoreNameValidator.storeNameRequired");
-            nameComponent.error((IValidationError) error);
+            if(required) {
+                ValidationError error = new ValidationError();
+                error.addMessageKey("StoreNameValidator.storeNameRequired");
+                nameComponent.error((IValidationError) error);
+            }
             return;
         }
 

@@ -11,7 +11,7 @@
 			"title":"marker type",
 			"type":"string",
 			"required":true,
-			"enum":["SLS"]
+			"enum":["esriSLS"]
 		},
 		"style":{
 			"title":"marker style",

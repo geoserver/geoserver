@@ -12,6 +12,7 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.rest.CatalogRESTTestSupport;
 import org.geoserver.data.test.SystemTestData;
 import org.opengeo.gsr.validation.JSONValidator;
+import org.junit.Test;
 
 import static org.junit.Assert.*;
 
@@ -19,10 +20,14 @@ public class ResourceTest extends CatalogRESTTestSupport {
 
     protected Catalog catalog;
 
-    protected String baseURL;
+    protected String baseURL = "/gsr/services/";
+    
     @Override
-    protected void setUpTestData(SystemTestData testData) throws Exception {
-        baseURL = "/gsr/services/";
+    final protected void setUpTestData(SystemTestData testData) throws Exception {
+        testData.setUpDefault();
+    }
+    
+    public void onSetUp(SystemTestData testData) {
         catalog = getCatalog();
         CatalogFactory catalogFactory = catalog.getFactory();
 
@@ -41,7 +46,7 @@ public class ResourceTest extends CatalogRESTTestSupport {
 
         FeatureTypeInfo ft1 = catalogFactory.createFeatureType();
         ft1.setEnabled(true);
-        ft1.setName("ftName");
+        ft1.setName("layer1");
         ft1.setAbstract("ftAbstract");
         ft1.setDescription("ftDescription");
         ft1.setStore(ds);
@@ -53,7 +58,7 @@ public class ResourceTest extends CatalogRESTTestSupport {
 
         FeatureTypeInfo ft2 = catalogFactory.createFeatureType();
         ft2.setEnabled(true);
-        ft2.setName("ftName2");
+        ft2.setName("layer2");
         ft2.setAbstract("ftAbstract2");
         ft2.setDescription("ftDescription2");
         ft2.setStore(ds);
@@ -63,10 +68,16 @@ public class ResourceTest extends CatalogRESTTestSupport {
         layer2.setResource(ft2);
         layer2.setName("layer2");
 
+        catalog.add(ns);
+        catalog.add(ws);
+        catalog.add(ds);
+        catalog.add(ft1);
+        catalog.add(ft2);
         catalog.add(layer1);
         catalog.add(layer2);
     }
 
+    @Test
     public void testConfig() {
         assertEquals("/gsr/services/", this.baseURL);
     }

@@ -77,16 +77,6 @@ public class LayerListResource extends Resource {
     private final Catalog catalog;
     private final String format;
 
-    private final static CoordinateReferenceSystem LAT_LON;
-
-    static {
-        try {
-            LAT_LON = CRS.decode("EPSG:4326");
-        } catch (FactoryException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    
     @Override
     public Representation getRepresentation(Variant variant) {
         if (variant == JSON) {
@@ -206,7 +196,7 @@ public class LayerListResource extends Resource {
             json.key("definitionExpression").value("");
             final String description = layer.getResource().getAbstract();
             json.key("description").value(description != null ? description : "");
-            json.key("displayField").value(null); // TODO: Extract displayField from the Style
+            json.key("displayField").value(""); // TODO: Extract displayField from the Style
             json.key("copyrightText").value("");
             json.key("relationships").array().endArray();
             json.key("parentLayer").value(null);
@@ -217,18 +207,19 @@ public class LayerListResource extends Resource {
                 json.key("geometryType").value(layerOrTable.gtype.getGeometryType());
                 ScaleRange range = extractScaleRange(layerOrTable.layer.getDefaultStyle().getStyle());
                 json.key("minScale").value(range.minScale);
-                json.key("maxScale").value(range.maxScale);
+                json.key("maxScale").value(Double.isInfinite(range.maxScale) ? null : range.maxScale);
                 try {
+                    CoordinateReferenceSystem lonLat = CRS.decode("EPSG:4326");
                     ReferencedEnvelope boundingBox = layer.getResource().getLatLonBoundingBox();
                     if (boundingBox != null) {
                         json.key("extent");
                         CoordinateReferenceSystem WEB_MERCATOR = CRS.decode("EPSG:3785");
                         try {
-                            double minx = Math.max(boundingBox.getMinX(), -85);
-                            double maxx = Math.min(boundingBox.getMaxX(), 85);
-                            double miny = Math.max(boundingBox.getMinY(), -180);
-                            double maxy = Math.min(boundingBox.getMaxY(), 180);
-                            ReferencedEnvelope sphericalMercatorBoundingBox = new ReferencedEnvelope(minx, maxx, miny, maxy, LAT_LON);
+                            double minx = Math.max(boundingBox.getMinX(), -180);
+                            double maxx = Math.min(boundingBox.getMaxX(), 180);
+                            double miny = Math.max(boundingBox.getMinY(), -85);
+                            double maxy = Math.min(boundingBox.getMaxY(), 85);
+                            ReferencedEnvelope sphericalMercatorBoundingBox = new ReferencedEnvelope(minx, maxx, miny, maxy, lonLat);
                             sphericalMercatorBoundingBox = sphericalMercatorBoundingBox.transform(WEB_MERCATOR, true);
                             GeometryEncoder.referencedEnvelopeToJson(sphericalMercatorBoundingBox, SpatialReferences.fromCRS(WEB_MERCATOR), json);
                         } catch (TransformException e) {

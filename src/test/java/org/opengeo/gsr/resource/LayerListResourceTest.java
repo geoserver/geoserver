@@ -4,6 +4,7 @@ import org.opengeo.gsr.JsonSchemaTest;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.junit.Test;
 
 import static org.junit.Assert.*;
 
@@ -12,6 +13,7 @@ public class LayerListResourceTest extends ResourceTest {
         return baseURL + service + "/MapServer/layers" + params;
     }
     
+    @Test
     public void testStreamsQuery() throws Exception {
         String result = getAsString(query("cite", "?f=json"));
         assertTrue("validates", JsonSchemaTest.validateJSON(result, "/gsr-ms/1.0/allLayersAndTables.json"));

@@ -1,5 +1,6 @@
 package org.opengeo.gsr.resource;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 
@@ -17,6 +18,8 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.opengeo.gsr.JsonSchemaTest;
+import org.junit.Test;
+import org.junit.Before;
 
 import static org.junit.Assert.*;
 
@@ -24,40 +27,45 @@ public class QueryResourceTimeTest extends ResourceTest {
     public static final QName TIME_ELEVATION = 
             new QName(MockData.CITE_URI, "TimeElevation", MockData.CITE_PREFIX);
 
+
     @Override
     @SuppressWarnings("rawtypes")
-    protected void setUpTestData(SystemTestData testData) throws Exception {
-        // TODO Auto-generated method stub
-        super.setUpTestData(testData);
-        Map<LayerProperty, Object> props = Collections.emptyMap();
-        testData.addVectorLayer(TIME_ELEVATION, props, "TimeElevation.properties", QueryResourceTimeTest.class, getCatalog());
+    public void onSetUp(SystemTestData testData) {
+        try {
+            Map<LayerProperty, Object> props = Collections.emptyMap();
+            testData.addVectorLayer(TIME_ELEVATION, props, "TimeElevation.properties", QueryResourceTimeTest.class, getCatalog());
 
-        FeatureTypeInfo info = getCatalog().getFeatureTypeByName(
-                TIME_ELEVATION.getNamespaceURI(),
-                TIME_ELEVATION.getLocalPart());
-        DimensionInfo di = new DimensionInfoImpl();
-        
-        di.setEnabled(true);
-        di.setAttribute("time");
-        di.setPresentation(DimensionPresentation.CONTINUOUS_INTERVAL);
-        info.getMetadata().put(ResourceInfo.TIME, di);
-        getCatalog().save(info);
+            FeatureTypeInfo info = getCatalog().getFeatureTypeByName(
+                    TIME_ELEVATION.getNamespaceURI(),
+                    TIME_ELEVATION.getLocalPart());
+            DimensionInfo di = new DimensionInfoImpl();
+            
+            di.setEnabled(true);
+            di.setAttribute("time");
+            di.setPresentation(DimensionPresentation.CONTINUOUS_INTERVAL);
+            info.getMetadata().put(ResourceInfo.TIME, di);
+            getCatalog().save(info);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
     
+    @Test
     public void testRootResource() throws Exception {
-        FeatureTypeInfo typeInfo = catalog.getFeatureTypeByName(TIME_ELEVATION.getNamespaceURI(), TIME_ELEVATION.getLocalPart());
+        FeatureTypeInfo typeInfo = getCatalog().getFeatureTypeByName(TIME_ELEVATION.getNamespaceURI(), TIME_ELEVATION.getLocalPart());
         assertNotNull(typeInfo);
         DimensionInfo dimensionInfo = typeInfo.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
         assertNotNull(dimensionInfo);
         assertTrue(dimensionInfo.isEnabled());
         assertEquals("time", dimensionInfo.getAttribute());
-        assertNotNull(catalog.getLayerByName(TIME_ELEVATION.getLocalPart()));
+        assertNotNull(getCatalog().getLayerByName(TIME_ELEVATION.getLocalPart()));
         String rootResource = getAsString(baseURL + "cite/MapServer?f=json");
         assertTrue(JsonSchemaTest.validateJSON(rootResource, "gsr-ms/1.0/root.json"));
         JSONObject json = JSONObject.fromObject(rootResource);
         assertTrue(json.containsKey("timeInfo"));
     }
     
+    @Test
     public void testTimeQuery() throws Exception {
         String query = 
                 baseURL +
@@ -65,7 +73,7 @@ public class QueryResourceTimeTest extends ResourceTest {
                 "/MapServer/" +
                 "12" +
                 "/query" + 
-                "?f=json&geometryType=GeometryEnvelope&geometry=-180,-90,180,90";
+                "?f=json&geometryType=esriGeometryEnvelope&geometry=-180,-90,180,90";
         String result;
         result = getAsString(query + "&time=1304294400000"); // 2011-05-02Z in milliseconds since UNIX epoch
         assertNFeatures(result, 1);

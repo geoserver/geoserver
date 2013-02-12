@@ -3,10 +3,12 @@ package org.opengeo.gsr.resource;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class CatalogResourceTest extends ResourceTest {
 
+    @Test
     public void testServiceException() throws Exception {
         if (baseURL != null) {
             JSON json = getAsJSON(baseURL + "?f=xxx");
@@ -28,6 +30,7 @@ public class CatalogResourceTest extends ResourceTest {
      * A.1.1 catalog/request, catalog/parameters
      * @throws Exception
      */
+    @Test
     public void testCatalogResponse() throws Exception {
         JSON json = getAsJSON(baseURL + "?f=json");
         assertTrue(json instanceof JSONObject);
@@ -41,6 +44,7 @@ public class CatalogResourceTest extends ResourceTest {
         assertEquals("GeometryServer", geometryService.get("type"));
     }
 
+    @Test
     public void testCatalogResponseSchema() throws Exception {
         JSON json = getAsJSON(baseURL + "?f=json");
         assertTrue(json instanceof JSONObject);

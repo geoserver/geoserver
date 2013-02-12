@@ -28,26 +28,32 @@ public class JSONValidator {
         ValidationReport report = null;
         final String baseURI = "file:///" + schemaFile.getAbsolutePath();
         
+        JsonSchema schema;
         try {
             JsonSchemaFactory factory = new JsonSchemaFactory.Builder().setNamespace(baseURI)
                     .build();
             JsonNode rawSchema = JsonLoader.fromFile(schemaFile);
             SchemaContainer schemaContainer = factory.registerSchema(rawSchema);
-            JsonSchema schema = factory.createSchema(schemaContainer);
-            Reader reader = new StringReader(json);
-            JsonNode jsonNode = JsonLoader.fromReader(reader);
-            report = schema.validate(jsonNode);
-            isValid = report.isSuccess();
-            if (!isValid) {
-                System.out.println("ERROR validating Json Schema in " + schemaFile);
-                for (String msg : report.getMessages()) {
-                    System.out.println(msg);
-                }
-            }
+            schema = factory.createSchema(schemaContainer);
         } catch (Exception e) {
-            System.err.println("Failed to load json schema from " + baseURI);
-            e.printStackTrace();
-            report.getMessages().add(e.getMessage());
+            throw new RuntimeException("Failed to load JSON Schema from " + baseURI, e);
+        }
+
+        JsonNode jsonNode;
+        try {
+            Reader reader = new StringReader(json);
+            jsonNode = JsonLoader.fromReader(reader);
+        } catch (Exception e) {
+            throw new RuntimeException("Couldn't load (" + json + ") as JSON");
+        }
+
+        report = schema.validate(jsonNode);
+        isValid = report.isSuccess();
+        if (!isValid) {
+            System.out.println("ERROR validating Json Schema in " + schemaFile);
+            for (String msg : report.getMessages()) {
+                System.out.println(msg);
+            }
         }
         return isValid;
     }

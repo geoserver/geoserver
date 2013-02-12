@@ -124,7 +124,8 @@ public class MapResource extends Resource {
             Writer writer = new OutputStreamWriter(outputStream, "UTF-8");
             JSONBuilder json = new JSONBuilder(writer);
             json.object();
-            json.key("mapName").value(service.getTitle());
+            String title = service.getTitle() != null ? service.getTitle() : service.getName();
+            json.key("mapName").value(title);
             json.key("layers");
             encodeLayers(json, layers);
             

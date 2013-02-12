@@ -11,7 +11,7 @@
 			"title":"marker type",
 			"type":"string",
 			"required":true,
-			"enum":["SMS"]
+			"enum":["esriSMS"]
 		},
 		"style":{
 			"title":"marker style",

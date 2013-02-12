@@ -250,7 +250,7 @@ public class QueryResource extends Resource {
             this.returnGeometry = returnGeometry;
             this.outCRS = outCRS;
             this.properties = properties;
-            LOG.info("Created JsonQueryRepresentation with " + Arrays.asList(featureType, geometryFilter, returnIdsOnly, returnGeometry, outCRS, Arrays.<String>asList(properties)));
+            LOG.info("Created JsonQueryRepresentation with " + Arrays.asList(featureType, geometryFilter, returnIdsOnly, returnGeometry, outCRS, properties == null ? null : Arrays.<String>asList(properties)));
         }
         
         @Override
@@ -260,7 +260,7 @@ public class QueryResource extends Resource {
             FeatureSource<? extends FeatureType, ? extends Feature> source =
                     featureType.getFeatureSource(null, null);
             final String[] effectiveProperties = adjustProperties(returnGeometry, properties, source.getSchema());
-            LOG.info("Effective properties" + Arrays.<String>asList(effectiveProperties));
+            LOG.info("Effective properties" + (effectiveProperties == null ? null : Arrays.<String>asList(effectiveProperties)));
 
             final Query query;
             if (effectiveProperties == null) {

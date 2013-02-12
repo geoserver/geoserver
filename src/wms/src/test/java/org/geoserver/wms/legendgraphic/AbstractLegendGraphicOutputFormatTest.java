@@ -15,6 +15,7 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import javax.imageio.ImageIO;
 import javax.media.jai.PlanarImage;
 import javax.xml.namespace.QName;
 
@@ -693,6 +695,30 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         assertPixel(image, 1, 61, new Color(255, 255, 255));
         assertPixel(image, 7, 67, new Color(255, 0, 0));
         assertPixel(image, 10, 70, new Color(255, 0, 0));
+    }
+    
+    @org.junit.Test
+    public void testExternalGraphic() throws Exception {
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+        FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName(
+                MockData.MPOINTS.getNamespaceURI(), MockData.MPOINTS.getLocalPart());
+
+        List<FeatureType> layers = new ArrayList<FeatureType>();
+        layers.add(ftInfo.getFeatureType());
+        req.setLayers(layers);
+
+        List<Style> styles = new ArrayList<Style>();
+        req.setStyles(styles);
+
+        styles.add(readSLD("ExternalGraphic.sld"));
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+
+        assertNotBlank("testExternalGraphic", image, LegendUtils.DEFAULT_BG_COLOR);
+       
+        assertPixel(image, 10, 3, new Color(0, 150, 0));
+        assertPixel(image, 10, 10, new Color(128, 203, 128));
+        assertPixel(image, 10, 16, new Color(0, 150, 0));
+        
     }
     
     /**

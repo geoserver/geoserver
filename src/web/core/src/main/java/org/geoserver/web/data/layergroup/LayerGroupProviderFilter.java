@@ -14,7 +14,7 @@
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *    Lesser General Public License for more details.
  */
-package org.geoserver.wms.eo.web;
+package org.geoserver.web.data.layergroup;
 
 import java.io.Serializable;
 
@@ -26,7 +26,7 @@ import org.geoserver.catalog.LayerGroupInfo;
  * 
  * @author Davide Savazzi - geo-solutions.it
  */
-public interface LayerGroupInfoFilter extends Serializable {
+public interface LayerGroupProviderFilter extends Serializable {
 
     boolean accept(LayerGroupInfo group);
     

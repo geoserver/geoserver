@@ -1,18 +1,6 @@
-/*
- *    GeoTools - The Open Source Java GIS Toolkit
- *    http://geotools.org
- *
- *    (C) 2013, Open Source Geospatial Foundation (OSGeo)
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the GNU Lesser General Public
- *    License as published by the Free Software Foundation;
- *    version 2.1 of the License.
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *    Lesser General Public License for more details.
+/* Copyright (c) 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 package org.geoserver.wms.eo.web;
 
@@ -32,8 +20,7 @@ import org.geoserver.web.wicket.FileExistsValidator;
  */
 public abstract class EoPage extends GeoServerSecuredPage {
 
-    protected final ResourceModel OUTLINE = new ResourceModel("outline", "Outline");
-    protected final ResourceModel PRODUCT = new ResourceModel("product", "Product");
+    protected final ResourceModel BROWSE_IMAGE = new ResourceModel("browseImage", "Browse Image");
     protected final ResourceModel BAND = new ResourceModel("band", "Band Coverage");
     protected final ResourceModel GEOPHYSICAL_PARAMETER = new ResourceModel("parameter", "Geophysical Parameter");
     protected final ResourceModel BITMASK = new ResourceModel("bitmask", "Bitmask");    

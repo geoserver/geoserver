@@ -40,7 +40,7 @@ import org.xml.sax.helpers.AttributesImpl;
  * 
  * @author Andrea Aime - GeoSolutions
  */
-abstract class DimensionHelper {
+public abstract class DimensionHelper {
 
     static final Logger LOGGER = Logging.getLogger(DimensionHelper.class);
 
@@ -331,7 +331,7 @@ abstract class DimensionHelper {
      * @param values
      * @return
      */
-    String getTemporalDomainRepresentation(DimensionInfo dimension, TreeSet<Date> values) {
+    public static String getTemporalDomainRepresentation(DimensionInfo dimension, TreeSet<Date> values) {
         String timeMetadata = null;
 
         final StringBuilder buff = new StringBuilder();

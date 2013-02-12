@@ -1,18 +1,6 @@
-/*
- *    GeoTools - The Open Source Java GIS Toolkit
- *    http://geotools.org
- *
- *    (C) 2013, Open Source Geospatial Foundation (OSGeo)
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the GNU Lesser General Public
- *    License as published by the Free Software Foundation;
- *    version 2.1 of the License.
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *    Lesser General Public License for more details.
+/* Copyright (c) 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 package org.geoserver.wms.eo;
 
@@ -43,18 +31,23 @@ import org.geotools.util.logging.Logging;
  * 
  * @author Davide Savazzi - geo-solutions.it
  */
-public class EoStyleCatalogListener implements CatalogListener {
+public class EoStyleCatalogListener implements CatalogListener, EoStyles {
 
     private final Catalog catalog;
     private final GeoServerResourceLoader resourceLoader;
     private static final Logger LOGGER = Logging.getLogger(EoStyleCatalogListener.class);    
-    public static final String[] STYLE_NAMES = new String[] {
-        "eo-point",
-        "eo-lines"
-    };
-    private static final String[] STYLE_FILES = new String[] {
-        "eo_point.sld",
-        "eo_line.sld"
+
+    private static final String[] EO_STYLE_FILES = new String[] {
+        "black.sld",
+        "blue.sld",
+        "brown.sld",
+        "cyan.sld",
+        "green.sld",
+        "magenta.sld",
+        "orange.sld",
+        "red.sld",
+        "white.sld",
+        "yellow.sld"
     };
     
     
@@ -78,9 +71,9 @@ public class EoStyleCatalogListener implements CatalogListener {
      * @throws IOException
      */
     private void initializeStyles() throws IOException {
-        for (int i = 0; i < STYLE_NAMES.length; i++) {
-            if (catalog.getStyleByName(STYLE_NAMES[i]) == null) {
-                initializeStyle(STYLE_NAMES[i], STYLE_FILES[i]);
+        for (int i = 0; i < EO_STYLE_NAMES.length; i++) {
+            if (catalog.getStyleByName(EO_STYLE_NAMES[i]) == null) {
+                initializeStyle(EO_STYLE_NAMES[i], EO_STYLE_FILES[i]);
             }
         }
     }
@@ -101,7 +94,13 @@ public class EoStyleCatalogListener implements CatalogListener {
         StyleInfo s = catalog.getFactory().createStyle();
         s.setName(styleName);
         s.setFilename(sld);
-        catalog.add(s);
+        try {
+            catalog.add(s);
+        } catch (RuntimeException e) {
+            if (LOGGER.isLoggable(Level.WARNING)) {
+                LOGGER.log(Level.WARNING, e.getMessage(), e);
+            }
+        }
     }
 
     /**
@@ -114,13 +113,7 @@ public class EoStyleCatalogListener implements CatalogListener {
             try {
                 // try to find if a required style has been deleted and recreate it
                 initializeStyles();                
-            } catch (RuntimeException e) {
-                // style creation could fail with a RuntimeExecption 
-                // in the remote possibility that style has already been recreated
-                if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.log(Level.WARNING, e.getMessage(), e);
-                }
-            } catch (Exception e) {
+            } catch (IOException e) {
                 if (LOGGER.isLoggable(Level.WARNING)) {
                     LOGGER.log(Level.WARNING, e.getMessage(), e);
                 }
@@ -133,14 +126,15 @@ public class EoStyleCatalogListener implements CatalogListener {
      */
     @Override
     public void handleModifyEvent(CatalogModifyEvent event) throws CatalogException {
+        /*
         if (event.getSource() instanceof StyleInfo) {
             StyleInfo style = (StyleInfo) event.getSource();
-            for (String styleName : STYLE_NAMES) {
+            for (String styleName : EO_STYLE_NAMES) {
                 if (styleName.equals(style.getName())) {
                     throw new CatalogException("Style " + styleName + " is used by module WMS-EO and is read-only");
                 }
             }
-        }
+        } */        
     }
 
     @Override

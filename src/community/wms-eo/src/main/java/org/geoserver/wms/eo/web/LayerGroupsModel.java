@@ -13,6 +13,7 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.web.GeoServerApplication;
+import org.geoserver.web.data.layergroup.LayerGroupProviderFilter;
 
 
 /**
@@ -23,11 +24,11 @@ import org.geoserver.web.GeoServerApplication;
 @SuppressWarnings("serial")
 public class LayerGroupsModel extends LoadableDetachableModel<List<LayerGroupInfo>> {
     
-    private LayerGroupInfoFilter filter;
+    private LayerGroupProviderFilter filter;
 
 
     public LayerGroupsModel() {
-        this.filter = new LayerGroupInfoFilter() {
+        this.filter = new LayerGroupProviderFilter() {
             @Override
             public boolean accept(LayerGroupInfo group) {
                 return true;
@@ -35,7 +36,7 @@ public class LayerGroupsModel extends LoadableDetachableModel<List<LayerGroupInf
         };
     }
 
-    public LayerGroupsModel(LayerGroupInfoFilter filter) {
+    public LayerGroupsModel(LayerGroupProviderFilter filter) {
         this.filter = filter;
     }
     

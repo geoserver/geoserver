@@ -39,6 +39,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerGroupInfo.Mode;
 import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
@@ -63,6 +64,7 @@ import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geoserver.catalog.impl.LayerIdentifier;
 import org.geoserver.catalog.impl.LayerInfoImpl;
+import org.geoserver.catalog.impl.LegendInfoImpl;
 import org.geoserver.catalog.impl.MetadataLinkInfoImpl;
 import org.geoserver.catalog.impl.NamespaceInfoImpl;
 import org.geoserver.catalog.impl.ResolvingProxy;
@@ -287,6 +289,7 @@ public class XStreamPersister {
         xs.alias("wmsStore", WMSStoreInfo.class);
         xs.alias("coverageStore", CoverageStoreInfo.class);
         xs.alias("style",StyleInfo.class);
+        xs.alias( "legend", LegendInfo.class);
         xs.alias( "featureType", FeatureTypeInfo.class);
         xs.alias( "coverage", CoverageInfo.class);
         xs.alias( "wmsLayer", WMSLayerInfo.class);
@@ -389,7 +392,7 @@ public class XStreamPersister {
         xs.registerLocalConverter( impl(LayerInfo.class), "defaultStyle", new ReferenceConverter( StyleInfo.class) );
         xs.registerLocalConverter( impl(LayerInfo.class), "styles", new ReferenceCollectionConverter( StyleInfo.class ) );
         xs.registerLocalConverter( impl(LayerInfo.class), "metadata", new MetadataMapConverter() );
-        
+                
         // LayerGroupInfo
         xs.registerLocalConverter(impl(LayerGroupInfo.class), "workspace", new ReferenceConverter(WorkspaceInfo.class));
         xs.registerLocalConverter(impl(LayerGroupInfo.class), "rootLayer", new ReferenceConverter(LayerInfo.class));
@@ -600,6 +603,7 @@ public class XStreamPersister {
         xs.addDefaultImplementation(WMSStoreInfoImpl.class, WMSStoreInfo.class);
         xs.addDefaultImplementation(CoverageStoreInfoImpl.class, CoverageStoreInfo.class);
         xs.addDefaultImplementation(StyleInfoImpl.class, StyleInfo.class);
+        xs.addDefaultImplementation(LegendInfoImpl.class, LegendInfo.class);
         xs.addDefaultImplementation(FeatureTypeInfoImpl.class, FeatureTypeInfo.class );
         xs.addDefaultImplementation(CoverageInfoImpl.class, CoverageInfo.class);
         xs.addDefaultImplementation(WMSLayerInfoImpl.class, WMSLayerInfo.class);

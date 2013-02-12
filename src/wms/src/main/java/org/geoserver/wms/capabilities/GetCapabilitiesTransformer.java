@@ -906,7 +906,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 element("Name", defaultStyle.getName());
                 element("Title", ftStyle.getTitle());
                 element("Abstract", ftStyle.getAbstract());
-                handleLegendURL(layer.getName(), layer.getLegend(), null);
+                handleLegendURL(layer.getName(), defaultStyle.getLegend(), null);
                 end("Style");
 
                 Set<StyleInfo> styles = layer.getStyles();
@@ -921,7 +921,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                     element("Name", styleInfo.getName());
                     element("Title", ftStyle.getTitle());
                     element("Abstract", ftStyle.getAbstract());
-                    handleLegendURL(layer.getName(), null, styleInfo);
+                    handleLegendURL(layer.getName(), styleInfo.getLegend(), styleInfo);
                     end("Style");
                 }
             }

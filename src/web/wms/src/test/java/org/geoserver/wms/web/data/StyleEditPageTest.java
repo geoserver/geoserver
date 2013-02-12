@@ -20,6 +20,7 @@ import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.junit.Before;
 import org.junit.Test;
 import org.vfny.geoserver.global.GeoserverDataDirectory;
@@ -53,6 +54,11 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         
         tester.assertComponent("form:name", TextField.class);
         tester.assertComponent("form:SLD:editorContainer:editor", TextArea.class);
+        
+        tester.assertComponent("form:onlineResource", TextField.class);
+        tester.assertComponent("form:width", TextField.class);
+        tester.assertComponent("form:height", TextField.class);
+        tester.assertComponent("form:verifyImage", GeoServerAjaxFormLink.class);
         
         tester.assertModelValue("form:name", "Buildings");
 

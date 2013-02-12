@@ -6,6 +6,7 @@ package org.geoserver.wms.legendgraphic;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -84,12 +85,15 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
-        Catalog catalog = getCatalog();
+        Catalog catalog = getCatalog();           
         testData.addRasterLayer(new QName("http://www.geo-solutions.it", "world", "gs")
             , "world.tiff", "tiff", new HashMap(), MockData.class,catalog);
         testData.addStyle("rainfall",MockData.class,catalog);
         testData.addStyle("rainfall_ramp",MockData.class,catalog);
         testData.addStyle("rainfall_classes",MockData.class,catalog);
+        //add raster layer for rendering transform test                
+        testData.addRasterLayer(new QName("http://www.opengis.net/wcs/1.1.1", "DEM", "wcs"), 
+        		"tazdem.tiff", "tiff", new HashMap(), MockData.class, catalog);	        
     }
     
     @Before
@@ -564,7 +568,7 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         assertPixel(image, 1, 61, new Color(255, 255, 255));        
         assertPixel(image, 6, 68, new Color(255, 255, 255));
         assertPixel(image, 10, 70, new Color(255, 0, 0));
-    }
+    }   
     
     /**
      * Tests that symbols relative sizes are proportional also if using uoms.
@@ -689,6 +693,89 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         assertPixel(image, 1, 61, new Color(255, 255, 255));
         assertPixel(image, 7, 67, new Color(255, 0, 0));
         assertPixel(image, 10, 70, new Color(255, 0, 0));
+    }
+    
+    /**
+     * Test that the legend is not the same if there is a rendering transformation that 
+     * converts the rendered layer from raster to vector
+     */
+    @org.junit.Test
+    public void testRenderingTransformationRasterVector() throws Exception {
+    	           
+        Style transformStyle = readSLD("RenderingTransformRasterVector.sld");
+        
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+        CoverageInfo cInfo = getCatalog()
+                .getCoverageByName(MockData.TASMANIA_DEM.getNamespaceURI(),
+                        MockData.TASMANIA_DEM.getLocalPart());
+        assertNotNull(cInfo);
+
+        GridCoverage coverage = cInfo.getGridCoverage(null, null);
+        try {
+            SimpleFeatureCollection feature;
+            feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            req.setLayer(feature.getSchema());
+            req.setStyle(transformStyle);
+            req.setLegendOptions(new HashMap());
+            
+            this.legendProducer.buildLegendGraphic(req);
+
+            BufferedImage image = this.legendProducer.buildLegendGraphic(req);   
+            
+            // ImageIO.write(image, "PNG", new File("/tmp/rv.png"));
+
+            assertNotBlank("testRenderingTransform", image, LegendUtils.DEFAULT_BG_COLOR);
+                       
+            assertPixel(image, 1, 1, new Color(255, 255, 255));
+            assertPixel(image, 10, 10, new Color (0, 0, 0));            
+            assertPixel(image, 19, 19, new Color (255, 255, 255));
+            
+        }catch(Exception e){
+        	fail(e.getMessage());           
+        } finally {
+            RenderedImage ri = coverage.getRenderedImage();
+            if(coverage instanceof GridCoverage2D) {
+                ((GridCoverage2D) coverage).dispose(true);
+            }
+            if(ri instanceof PlanarImage) {
+                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            }
+        }
+    	
+    	
+    }
+    
+    
+    /**
+     * Test that the legend is not the same if there is a rendering transformation that 
+     * converts the rendered layer from vector to raster
+     */
+    @org.junit.Test
+    public void testRenderingTransformationVectorRaster() throws Exception {
+    	           
+        Style transformStyle = readSLD("RenderingTransformVectorRaster.sld");
+        
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+        FeatureTypeInfo ftInfo = getCatalog()
+                .getFeatureTypeByName(MockData.NAMED_PLACES.getNamespaceURI(),
+                        MockData.NAMED_PLACES.getLocalPart());
+        assertNotNull(ftInfo);
+         
+        req.setLayer(ftInfo.getFeatureType());
+        req.setStyle(transformStyle);
+        req.setLegendOptions(new HashMap());
+        
+        this.legendProducer.buildLegendGraphic(req);
+
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+        
+        // ImageIO.write(image, "PNG", new File("/tmp/vr.png"));
+
+        assertNotBlank("testRenderingTransform", image, LegendUtils.DEFAULT_BG_COLOR);
+        
+        assertPixel(image, 10, 70, new Color(188, 188, 255));
+        assertPixel(image, 10, 80, new Color (68, 68, 255));            
+        assertPixel(image, 10, 130, new Color (255, 152, 0));    	
     }
 
     /**

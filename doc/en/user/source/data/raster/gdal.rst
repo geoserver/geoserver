@@ -38,27 +38,27 @@ Moreover, in order for GeoServer to leverage these libraries, the GDAL (binary) 
 
 Installing GDAL native libraries
 ````````````````````````````````
-The ImageIO-Ext GDAL plugin for geoserver master uses ImageIO-Ext 1.1.5 whose artifacts can be downloaded from `here <http://demo.geo-solutions.it/share/github/imageio-ext/releases/1.1.X/1.1.5/>`_.
+The ImageIO-Ext GDAL plugin for geoserver master uses ImageIO-Ext 1.1.6 whose artifacts can be downloaded from `here <http://demo.geo-solutions.it/share/github/imageio-ext/releases/1.1.X/1.1.6/>`_.
 
-Browse to the native and then gdal directory for the `link <http://demo.geo-solutions.it/share/github/imageio-ext/releases/1.1.X/1.1.5/>`_. Now you should see a list of artifacts that can be downloaded. We need to download two things now:
+Browse to the native and then gdal directory for the `link <http://demo.geo-solutions.it/share/github/imageio-ext/releases/1.1.X/1.1.6/>`_. Now you should see a list of artifacts that can be downloaded. We need to download two things now:
 
   #. The CRS definitions
   #. The native libraries matching the target operating system
   
 Let's now install the CRS definitions.
 
-* Click on the "gdal_data173.zip" to download the CRS definitions archive.
+* Click on the "gdal_data.zip" to download the CRS definitions archive.
 * Extract this archive on disk and place it in a proper directory on your system.
 * Create a GDAL_DATA environment variable to the folder where you have extracted this file. Make also sure that this directory is reachable and readable by the application server process's user.
 
 We now have to install the native libraries.
 
-* Assuming you are on a 64 bits Linux Operating System, click on the "gdal1.7.3-linux64-base-gcc43.tar.gz" to download the native libraries archive.
+* Assuming you are on a 64 bits Ubuntu 11 Linux Operating System (as an instance), click on the linux folder and then on "gdal192-Ubuntu11-gcc4.5.2-x86_64.tar.gz" to download the native libraries archive (Before doing this, make sure to read and agree with the ECWEULA if you intend to use ECW).
 * Extract the archive on disk and place it in a proper directory on your system.
 
    .. warning:: If you are on Windows, make sure that the GDAL DLL files are on your PATH. If you are on Linux, be sure to set the LD_LIBRARY_PATH environment variable to refer to the folder where the SOs are extracted.
 
-   .. note:: The native libraries contains the GDAL GDALinfo utility which can be used to test whether or not the libs are corrupted. This can be done by browsing to the directory where the libs have been extracted and performing a *gdalinfo* command with the *formats*  options that shows all the formats supported.
+   .. note:: The native libraries contains the GDAL GDALinfo utility which can be used to test whether or not the libs are corrupted. This can be done by browsing to the directory where the libs have been extracted and performing a *gdalinfo* command with the *formats* options that shows all the formats supported.
 
 Once these steps have been completed, restart GeoServer.  If all the steps have been performed  correctly, new data formats will be in the :guilabel:`Raster Data Sources` list when creating a new data store as shown here below.
 

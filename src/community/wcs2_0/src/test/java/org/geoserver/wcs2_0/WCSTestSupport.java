@@ -55,7 +55,7 @@ import org.xml.sax.SAXParseException;
 /**
  * Base support class for wcs tests.
  * 
- * @author Andrea Aime, TOPP
+ * @author Andrea Aime, GeoSolutions
  * 
  */
 @SuppressWarnings("serial")

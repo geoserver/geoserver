@@ -309,16 +309,6 @@
         <configId>release</configId>
       </properties>
     </profile>
-    <profile>
-      <id>bxml</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.gvsig</groupId>
-          <artifactId>bxml-geoserver</artifactId> 
-          <version>1.0-SNAPSHOT</version>
-        </dependency>
-      </dependencies>
-    </profile>
 
     <profile>
       <id>arcsde</id>

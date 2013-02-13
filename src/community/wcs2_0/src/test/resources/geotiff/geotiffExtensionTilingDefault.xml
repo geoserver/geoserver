@@ -9,7 +9,6 @@
 	service="WCS" version="2.0.1">
 	<wcs:Extension>
 		<wcsgeotiff:tiling>true</wcsgeotiff:tiling>
-		// Use default
 	</wcs:Extension>
 	<wcs:CoverageId>wcs__BlueMarble</wcs:CoverageId>
 	<wcs:format>image/tiff</wcs:format>

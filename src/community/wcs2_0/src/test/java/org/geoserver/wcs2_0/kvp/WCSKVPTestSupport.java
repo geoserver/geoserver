@@ -30,7 +30,7 @@ import org.geoserver.wcs2_0.WCSTestSupport;
  * @author Simone Giannecchini, GeoSolutions SAS
  *
  */
-public abstract class WCSKVPTestSupport extends WCSTestSupport {
+abstract class WCSKVPTestSupport extends WCSTestSupport {
 
     /**
      * 

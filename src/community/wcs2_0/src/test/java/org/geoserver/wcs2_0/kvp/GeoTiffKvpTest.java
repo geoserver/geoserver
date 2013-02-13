@@ -1,9 +1,18 @@
 package org.geoserver.wcs2_0.kvp;
 
-import static org.junit.Assert.assertEquals;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+import it.geosolutions.imageio.plugins.tiff.BaselineTIFFTagSet;
+import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageMetadata;
+import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
+import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReaderSpi;
 
 import java.io.File;
 import java.util.Map;
+
+import javax.imageio.metadata.IIOMetadataNode;
+import javax.imageio.stream.FileImageInputStream;
 
 import net.opengis.wcs20.GetCoverageType;
 
@@ -66,7 +75,214 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
                 "&interleave=pixel&tiling=true&tileheight=256&tilewidth=256");
         
         assertEquals("application/xml", response.getContentType());
-        checkOws20Exception(response, 404, WcsExceptionCode.PredictorInvalid.toString(), "101");
+        checkOws20Exception(response, 404, WcsExceptionCode.JpegQualityInvalid.toString(), "101");
+    }
+    
+    @Test
+    public void jpeg() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
+                        "&coverageId=wcs__BlueMarble&compression=JPEG&jpeg_quality=75");
+        
+        assertEquals("image/tiff", response.getContentType());
+        byte[] tiffContents = getBinary(response);
+        File file = File.createTempFile("bm_gtiff", "bm_gtiff.tiff", new File("./target"));
+        FileUtils.writeByteArrayToFile(file, tiffContents);
+        
+        // TODO: check the tiff structure is the one requested
+        final TIFFImageReader reader = (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
+        reader.setInput(new FileImageInputStream(file));       
+        
+        // compression
+        final TIFFImageMetadata metadata=(TIFFImageMetadata) reader.getImageMetadata(0);
+        assertNotNull(metadata);
+        IIOMetadataNode root = (IIOMetadataNode)reader.getImageMetadata(0).getAsTree(TIFFImageMetadata.nativeMetadataFormatName);
+        IIOMetadataNode field = getTiffField(root, BaselineTIFFTagSet.TAG_COMPRESSION);
+        assertNotNull(field);
+        assertEquals("JPEG", field.getFirstChild().getFirstChild().getAttributes().item(1).getNodeValue());
+        assertEquals("7", field.getFirstChild().getFirstChild().getAttributes().item(0).getNodeValue());
+        
+        IIOMetadataNode node = metadata.getStandardDataNode();
+        assertNotNull(node);
+        assertEquals("PlanarConfiguration", node.getFirstChild().getNodeName());
+        assertEquals("PixelInterleaved", node.getFirstChild().getAttributes().item(0).getNodeValue());
+        
+        
+        // clean up
+        reader.dispose();
+    }
+    
+    @Test
+    public void interleaving() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
+                        "&coverageId=wcs__BlueMarble&interleave=pixel");
+        
+        assertEquals("image/tiff", response.getContentType());
+        byte[] tiffContents = getBinary(response);
+        File file = File.createTempFile("bm_gtiff", "bm_gtiff.tiff", new File("./target"));
+        FileUtils.writeByteArrayToFile(file, tiffContents);
+        
+        // TODO: check the tiff structure is the one requested
+        final TIFFImageReader reader = (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
+        reader.setInput(new FileImageInputStream(file));       
+        
+        // compression
+        final TIFFImageMetadata metadata=(TIFFImageMetadata) reader.getImageMetadata(0);
+        assertNotNull(metadata);
+        
+        IIOMetadataNode node = metadata.getStandardDataNode();
+        assertNotNull(node);
+        assertEquals("PlanarConfiguration", node.getFirstChild().getNodeName());
+        assertEquals("PixelInterleaved", node.getFirstChild().getAttributes().item(0).getNodeValue());
+        
+        
+        // clean up
+        reader.dispose();
+        
+        //unsupported or wrong
+        response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
+                "&coverageId=wcs__BlueMarble&interleave=band");
+
+        assertEquals("application/xml", response.getContentType());
+        checkOws20Exception(response, 404, WcsExceptionCode.InterleavingNotSupported.toString(), "band");      
+        
+        response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
+        "&coverageId=wcs__BlueMarble&interleave=asds");
+
+        assertEquals("application/xml", response.getContentType());
+        checkOws20Exception(response, 404, WcsExceptionCode.InterleavingInvalid.toString(), "asds");    
+    }
+    
+    @Test
+    public void deflate() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
+                        "&coverageId=wcs__BlueMarble&compression=DEFLATE");
+        
+        assertEquals("image/tiff", response.getContentType());
+        byte[] tiffContents = getBinary(response);
+        File file = File.createTempFile("bm_gtiff", "bm_gtiff.tiff", new File("./target"));
+        FileUtils.writeByteArrayToFile(file, tiffContents);
+        
+        // TODO: check the tiff structure is the one requested
+        final TIFFImageReader reader = (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
+        reader.setInput(new FileImageInputStream(file));       
+        
+        // compression
+        final TIFFImageMetadata metadata=(TIFFImageMetadata) reader.getImageMetadata(0);
+        assertNotNull(metadata);
+        IIOMetadataNode root = (IIOMetadataNode)reader.getImageMetadata(0).getAsTree(TIFFImageMetadata.nativeMetadataFormatName);
+        IIOMetadataNode field = getTiffField(root, BaselineTIFFTagSet.TAG_COMPRESSION);
+        assertNotNull(field);
+        assertEquals("Deflate", field.getFirstChild().getFirstChild().getAttributes().item(1).getNodeValue());
+        assertEquals("32946", field.getFirstChild().getFirstChild().getAttributes().item(0).getNodeValue());
+        
+        IIOMetadataNode node = metadata.getStandardDataNode();
+        assertNotNull(node);
+        assertEquals("PlanarConfiguration", node.getFirstChild().getNodeName());
+        assertEquals("PixelInterleaved", node.getFirstChild().getAttributes().item(0).getNodeValue());
+        
+        
+        // clean up
+        reader.dispose();
+    }
+    
+    @Test
+    public void lzw() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
+                        "&coverageId=wcs__BlueMarble&compression=LZW&jpeg_quality=75");
+        
+        assertEquals("image/tiff", response.getContentType());
+        byte[] tiffContents = getBinary(response);
+        File file = File.createTempFile("bm_gtiff", "bm_gtiff.tiff", new File("./target"));
+        FileUtils.writeByteArrayToFile(file, tiffContents);
+        
+        // TODO: check the tiff structure is the one requested
+        final TIFFImageReader reader = (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
+        reader.setInput(new FileImageInputStream(file));       
+        
+        // compression
+        final TIFFImageMetadata metadata=(TIFFImageMetadata) reader.getImageMetadata(0);
+        assertNotNull(metadata);
+        IIOMetadataNode root = (IIOMetadataNode)reader.getImageMetadata(0).getAsTree(TIFFImageMetadata.nativeMetadataFormatName);
+        IIOMetadataNode field = getTiffField(root, BaselineTIFFTagSet.TAG_COMPRESSION);
+        assertNotNull(field);
+        assertEquals("LZW", field.getFirstChild().getFirstChild().getAttributes().item(1).getNodeValue());
+        assertEquals("5", field.getFirstChild().getFirstChild().getAttributes().item(0).getNodeValue());
+        
+        IIOMetadataNode node = metadata.getStandardDataNode();
+        assertNotNull(node);
+        assertEquals("PlanarConfiguration", node.getFirstChild().getNodeName());
+        assertEquals("PixelInterleaved", node.getFirstChild().getAttributes().item(0).getNodeValue());
+        
+        
+        // clean up
+        reader.dispose();
+    }
+    
+    @Test
+    public void tiling() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
+                        "&coverageId=wcs__BlueMarble&tiling=true&tileheight=256&tilewidth=256");
+        
+        assertEquals("image/tiff", response.getContentType());
+        byte[] tiffContents = getBinary(response);
+        File file = File.createTempFile("bm_gtiff", "bm_gtiff.tiff", new File("./target"));
+        FileUtils.writeByteArrayToFile(file, tiffContents);
+        
+        // TODO: check the tiff structure is the one requested
+        final TIFFImageReader reader = (TIFFImageReader) new TIFFImageReaderSpi().createReaderInstance();
+        reader.setInput(new FileImageInputStream(file));
+        
+        // tiling
+        assertTrue(reader.isImageTiled(0));
+        assertEquals(256, reader.getTileHeight(0));
+        assertEquals(256, reader.getTileWidth(0));
+        
+        IIOMetadataNode node =((TIFFImageMetadata) reader.getImageMetadata(0)).getStandardDataNode();
+        assertNotNull(node);
+        assertEquals("PlanarConfiguration", node.getFirstChild().getNodeName());
+        assertEquals("PixelInterleaved", node.getFirstChild().getAttributes().item(0).getNodeValue());
+
+        
+        // wrong values
+        response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
+                "&coverageId=wcs__BlueMarble" +
+                "&interleave=pixel&tiling=true&tileheight=13&tilewidth=256");
+
+        assertEquals("application/xml", response.getContentType());
+        checkOws20Exception(response, 404, WcsExceptionCode.TilingInvalid.toString(), "13");
+        
+        
+        response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
+                "&coverageId=wcs__BlueMarble" +
+                "&interleave=pixel&tiling=true&tileheight=13&tilewidth=11");
+
+        assertEquals("application/xml", response.getContentType());
+        checkOws20Exception(response, 404, WcsExceptionCode.TilingInvalid.toString(), "11");
+        
+        // default
+        response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
+        "&coverageId=wcs__BlueMarble&tiling=true");
+
+        assertEquals("image/tiff", response.getContentType());
+        tiffContents = getBinary(response);
+        file = File.createTempFile("bm_gtiff", "bm_gtiff.tiff", new File("./target"));
+        FileUtils.writeByteArrayToFile(file, tiffContents);
+        
+        // TODO: check the tiff structure is the one requested
+        reader.setInput(new FileImageInputStream(file));
+        
+        // tiling
+        assertTrue(reader.isImageTiled(0));
+        assertEquals(512, reader.getTileHeight(0));
+        assertEquals(512, reader.getTileWidth(0));
+        
+        node =((TIFFImageMetadata) reader.getImageMetadata(0)).getStandardDataNode();
+        assertNotNull(node);
+        assertEquals("PlanarConfiguration", node.getFirstChild().getNodeName());
+        assertEquals("PixelInterleaved", node.getFirstChild().getAttributes().item(0).getNodeValue());
+        
+        // clean up
+        reader.dispose();        
     }
     
     @Test
@@ -76,7 +292,7 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
                         "&interleave=pixel&tiling=true&tileheight=256&tilewidth=256");
         
         assertEquals("application/xml", response.getContentType());
-        checkOws20Exception(response, 404, WcsExceptionCode.CompressionInvalid.toString(), "-2");
+        checkOws20Exception(response, 404, WcsExceptionCode.CompressionInvalid.toString(), "aaaG");
     }
     
     

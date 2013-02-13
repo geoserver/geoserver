@@ -65,6 +65,7 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
         return gc;
     }
 
+
     private void parseGeoTiffExtension(GetCoverageType gc, Map kvp) {
         List<String> geoTiffParams = Arrays.asList("compression", "jpeg_quality", "predictor",
                 "interleave", "tiling", "tileheight", "tilewidth");

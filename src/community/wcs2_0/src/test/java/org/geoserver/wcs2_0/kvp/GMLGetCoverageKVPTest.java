@@ -1,11 +1,9 @@
-package org.geoserver.wcs2_0.xml;
-
+package org.geoserver.wcs2_0.kvp;
 import static junit.framework.Assert.assertEquals;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 
-import org.apache.commons.io.FileUtils;
 import org.geoserver.wcs2_0.WCSTestSupport;
 import org.geoserver.wcs2_0.response.GMLCoverageResponseDelegate;
 import org.junit.Test;
@@ -18,15 +16,14 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
  * @author Simone Giannecchini, GeoSolutions SAS
  *
  */
-public class GMLGetCoverageTest extends WCSTestSupport {
+public class GMLGetCoverageKVPTest extends WCSTestSupport {
 
    
     @Test 
-    public void testGMLExtension() throws Exception {
-        final File xml= new File("./src/test/resources/requestGetCoverageGML.xml");
-        final String request= FileUtils.readFileToString(xml);
-
-        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+    public void gmlFormat() throws Exception {
+        MockHttpServletResponse response = 
+            getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
+        "&coverageId=wcs__BlueMarble&format=application%2Fgml%2Bxml");
         
         assertEquals("application/gml+xml", response.getContentType());
         Document dom = dom(new ByteArrayInputStream(response.getOutputStreamContent().getBytes()));     
@@ -36,8 +33,8 @@ public class GMLGetCoverageTest extends WCSTestSupport {
 //        checkValidationErrors(dom, WCS20_SCHEMA);
         
         // check it is good
-//        assertXpathEvaluatesTo("wcs__BlueMarble", "//wcs:CoverageDescription//wcs:CoverageId", dom);
-//        assertXpathEvaluatesTo("3", "count(//wcs:CoverageDescription//gmlcov:rangeType//swe:DataRecord//swe:field)", dom);
+        assertXpathEvaluatesTo("3", "count(//gml:RectifiedGridCoverage//gml:rangeType//swe:DataRecord)", dom);
+        assertXpathEvaluatesTo("1", "count(//gml:RectifiedGridCoverage)", dom);
 
     }
 }

@@ -1,4 +1,4 @@
-package org.geoserver.wcs2_0.post;
+package org.geoserver.wcs2_0.xml;
 
 import static junit.framework.Assert.assertEquals;
 

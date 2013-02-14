@@ -31,7 +31,7 @@ import org.geoserver.test.onlineTest.setup.AppSchemaTestOracleSetup;
 import org.geoserver.test.onlineTest.setup.AppSchemaTestPostgisSetup;
 import org.geoserver.test.onlineTest.support.AbstractReferenceDataSetup;
 import org.geotools.data.complex.AppSchemaDataAccessTest;
-import org.geotools.xml.AppSchemaCatalog;
+import org.geotools.xml.resolver.SchemaCatalog;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -161,9 +161,9 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
     private String onlineTestId;
     
     /**
-     * AppSchemaCatalog to work with AppSchemaValidator for test requests validation. 
+     * SchemaCatalog to work with AppSchemaValidator for test requests validation. 
      */
-    private AppSchemaCatalog catalog;
+    private SchemaCatalog catalog;
 
     /**
      * True if running 3D online test. Only matters for Oracle, since a special wkt parser is needed.
@@ -211,23 +211,22 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
     }
 
     /**
-     * Set AppSchemaCatalog based on catalog location relative to test-data directory.
      * 
      * @param catalogLocation
      *            file location relative to test-data dir.
      */
-    protected void setAppSchemaCatalog(String catalogLocation) {
+    protected void setSchemaCatalog(String catalogLocation) {
         if (catalogLocation != null) {
             URL resolvedCatalogLocation = getClass().getResource(TEST_DATA + catalogLocation);
             if (resolvedCatalogLocation == null) {
                 throw new RuntimeException(
                         "Test catalog location must be relative to test-data directory!");
             }
-            this.catalog = AppSchemaCatalog.build(resolvedCatalogLocation);
+            this.catalog = SchemaCatalog.build(resolvedCatalogLocation);
         }
     }
 
-    public AppSchemaCatalog getAppSchemaCatalog() {
+    public SchemaCatalog getSchemaCatalog() {
         return catalog;
     }
 

@@ -6,6 +6,9 @@
  -->
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
+
+	<bean id="wpsFactoryExtension" class="org.geoserver.wps.WPSFactoryExtension"/>
+	
     <!-- depend on the process factory so we can properly initialize the WPSInfo object with the 
         appropriate factory/group info-->
     <bean id="wpsServiceLoader" class="org.geoserver.wps.WPSXStreamLoader" 

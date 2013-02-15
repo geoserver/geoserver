@@ -48,6 +48,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.util.CoverageUtils;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
@@ -196,7 +197,7 @@ public class GetCoverage {
                 double scaleFactor=scaleByFactorType.getScaleFactor();
                 
                 // checks
-                if(scaleFactor<0){
+                if(scaleFactor<=0){
                     throw new WCS20Exception("Invalid scale factor", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, String.valueOf(scaleFactor));
                 }
                 
@@ -271,11 +272,11 @@ public class GetCoverage {
                 }
                 final int sizeX=(int) xSize.getTargetSize();// TODO should this be int?
                 if(sizeX<=0){
-                    throw new WCS20Exception("Invalid target size", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, Integer.toString(sizeX));
+                    throw new WCS20Exception("Invalid target size", WCS20Exception.WCS20ExceptionCode.InvalidExtent, Integer.toString(sizeX));
                 }
                 final int sizeY=(int) ySize.getTargetSize();// TODO should this be int?
                 if(sizeY<=0){
-                    throw new WCS20Exception("Invalid target size", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, Integer.toString(sizeY));
+                    throw new WCS20Exception("Invalid target size", WCS20Exception.WCS20ExceptionCode.InvalidExtent, Integer.toString(sizeY));
                 }
                 
                 // scale
@@ -342,10 +343,10 @@ public class GetCoverage {
                     }
                 }
                 if(xExtent==null){
-                    throw new WCS20Exception("Missing extent along i", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, "");
+                    throw new WCS20Exception("Missing extent along i", WCS20Exception.WCS20ExceptionCode.InvalidExtent, "Null");
                 }
                 if(yExtent==null){
-                    throw new WCS20Exception("Missing extent along j", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, "");
+                    throw new WCS20Exception("Missing extent along j", WCS20Exception.WCS20ExceptionCode.InvalidExtent, "Null");
                 }  
                 
                 final int minx=(int) targetAxisExtentElements.get(0).getLow();// TODO should this be int?
@@ -433,18 +434,18 @@ public class GetCoverage {
                     }
                 }
                 if(xScale==null){
-                    throw new WCS20Exception("Missing scale factor along i", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, "");
+                    throw new WCS20Exception("Missing scale factor along i", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, "Null");
                 }
                 if(yScale==null){
-                    throw new WCS20Exception("Missing scale factor along j", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, "");
+                    throw new WCS20Exception("Missing scale factor along j", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, "Null");
                 }                
 
-                final double scaleFactorX= xScale.getScaleFactor();// TODO should this be int?
-                if(scaleFactorX<0){
+                final double scaleFactorX= xScale.getScaleFactor();
+                if(scaleFactorX<=0){
                     throw new WCS20Exception("Invalid scale factor", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, Double.toString(scaleFactorX));
                 }   
-                final double scaleFactorY= yScale.getScaleFactor();// TODO should this be int?
-                if(scaleFactorY<0){
+                final double scaleFactorY= yScale.getScaleFactor();
+                if(scaleFactorY<=0){
                     throw new WCS20Exception("Invalid scale factor", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, Double.toString(scaleFactorY));
                 }                  
                 
@@ -649,6 +650,8 @@ public class GetCoverage {
             // Output limits checks
             // We need to enforce them once again as it might be that no scaling or rangesubsetting is requested
             WCSUtils.checkOutputLimits(wcs, coverage.getGridGeometry().getGridRange2D(), coverage.getRenderedImage().getSampleModel());
+        } catch(ServiceException e) {
+            throw e;
         } catch(Exception e) {
             throw new WCS20Exception("Failed to read the coverage " + request.getCoverageId(), e);
         } finally {

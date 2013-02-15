@@ -711,7 +711,7 @@ public class GetCoverage {
      * 
      * @param outputCRS the final {@link CoordinateReferenceSystem} for the data as per the request 
      * 
-     * @return <code>tue</code> in case we need to swap axes, <code>false</code> otherwise.
+     * @return <code>true</code> in case we need to swap axes, <code>false</code> otherwise.
      */
     private boolean requestingLatLonAxesOrder(CoordinateReferenceSystem outputCRS) {
        

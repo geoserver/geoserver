@@ -8,6 +8,7 @@ import org.apache.commons.io.FileUtils;
 import org.geoserver.wcs2_0.exception.WCS20Exception.WCS20ExceptionCode;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -402,6 +403,41 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
             }
         }
         
+        // test coverage directly to make sure we respect LLC & URC
+        try {
+            targetCoverage = (GridCoverage2D) executeGetCoverage("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
+                    "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT=http://www.opengis.net/def/axis/OGC/1/i(100,1099)," +
+                        "http://www.opengis.net/def/axis/OGC/1/j(100,1099)");
+            Assert.assertNotNull(targetCoverage);            
+            sourceCoverage=(GridCoverage2D) this.getCatalog().getCoverageByName("BlueMarble").getGridCoverageReader(null, null).read(null);
+            
+            // checks
+            assertEquals(sourceCoverage.getCoordinateReferenceSystem(), targetCoverage.getCoordinateReferenceSystem());
+            assertEnvelopeEquals(sourceCoverage, targetCoverage);
+            assertEquals(1000, targetCoverage.getGridGeometry().getGridRange().getSpan(0));
+            assertEquals(1000, targetCoverage.getGridGeometry().getGridRange().getSpan(1));
+            
+            assertEquals(100, targetCoverage.getGridGeometry().getGridRange().getLow(0));
+            assertEquals(100, targetCoverage.getGridGeometry().getGridRange().getLow(1));
+            assertEquals(1099, targetCoverage.getGridGeometry().getGridRange().getHigh(0));
+            assertEquals(1099, targetCoverage.getGridGeometry().getGridRange().getHigh(1));
+        } finally {
+            try{
+                readerTarget.dispose();
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+            try{
+                scheduleForCleaning(targetCoverage);
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+            try{
+                scheduleForCleaning(sourceCoverage);
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+        }        
         
         // error minx > maxx
         response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
@@ -433,10 +469,7 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
                         "http://www.opengis.net/def/axis/OGC/1/i(0,1000)");
         
         assertEquals("application/xml", response.getContentType());
-        checkOws20Exception(response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "1000");
-        
-        
-        
-        
+        checkOws20Exception(response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "1000");      
     }
+    
 }

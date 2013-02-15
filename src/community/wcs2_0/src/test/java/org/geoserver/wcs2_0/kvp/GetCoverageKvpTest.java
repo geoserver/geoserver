@@ -1,6 +1,9 @@
 package org.geoserver.wcs2_0.kvp;
 
+import static org.geoserver.data.test.MockData.TASMANIA_BM;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.InvalidParameterValue;
 
 import java.util.Map;
 
@@ -18,9 +21,11 @@ import net.opengis.wcs20.TargetAxisExtentType;
 import net.opengis.wcs20.TargetAxisSizeType;
 
 import org.eclipse.emf.common.util.EList;
+import org.geoserver.wcs.kvp.GridType;
 import org.geotools.wcs.v2_0.RangeSubset;
 import org.geotools.wcs.v2_0.Scaling;
 import org.junit.Test;
+import org.vfny.geoserver.wcs.WcsException;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
@@ -171,7 +176,6 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
     
         checkOws20Exception(response, 404, "NoSuchCoverage", "coverageId");
     }
-
     
     
 }

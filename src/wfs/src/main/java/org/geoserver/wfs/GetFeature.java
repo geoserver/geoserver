@@ -280,7 +280,17 @@ public class GetFeature {
 
         // take into consideration the wfs max features
         int maxFeatures = Math.min(request.getMaxFeatures().intValue(), wfs.getMaxFeatures());
-
+        
+        // if this is only a HITS request AND the wfs setting flag 
+        // hitsIgnoreMaxFeatures is set, then set the maxFeatures to be the 
+        // maximum supported value from geotools.  This is currently
+        // the maximum value of java.lang.Integer.MAX_VALUE so it is impossible
+        // to return more then this value even if there are matching values 
+        // without either changing geotools to use a long or paging the results.
+        if (wfs.isHitsIgnoreMaxFeatures() && request.isResultTypeHits()) {
+            maxFeatures = org.geotools.data.Query.DEFAULT_MAX;
+        }
+        
         // grab the view params is any
         List<Map<String, String>> viewParams = null;
         if(request.getMetadata() != null) {

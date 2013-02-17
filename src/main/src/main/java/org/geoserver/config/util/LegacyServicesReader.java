@@ -183,6 +183,7 @@ public class LegacyServicesReader {
         value( "serviceLevel", wfsElement, wfs, Integer.class );
         value( "srsXmlStyle", wfsElement, wfs, Boolean.class, false, Boolean.TRUE );
         value( "featureBounding", wfsElement, wfs, Boolean.class, false, Boolean.FALSE );
+        value( "hitsIgnoreMaxFeatures", wfsElement, wfs, Boolean.class, false, Boolean.FALSE);
         
         return wfs;
     }

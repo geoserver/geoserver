@@ -1383,9 +1383,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
                 request.setupAddParameter(key, (String) value);
             } else {
                 String[] values = (String[]) value;
-                for (String v : values) {
-                    request.setupAddParameter(key, v);
-                }
+                request.setupAddParameter(key, values);
             }
         }
          

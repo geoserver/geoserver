@@ -524,7 +524,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
     @Test 
     public void testGroupWorkspaceQualified() throws Exception {
         // check the group works without workspace qualification
-        String url = "wms?request=getmap&service=wms&version=1.1.1"
+        String url = "wms?service=wms&version=1.1.1"
                 + "&layers=nature&width=100&height=100&format=image/png"
                 + "&srs=epsg:4326&bbox=-0.002,-0.003,0.005,0.002&info_format=text/plain" +
                 		"&request=GetFeatureInfo&query_layers=nature&x=50&y=50&feature_count=2";

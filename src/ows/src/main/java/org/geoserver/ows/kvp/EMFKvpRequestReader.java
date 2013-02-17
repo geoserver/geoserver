@@ -97,7 +97,8 @@ public class EMFKvpRequestReader extends KvpRequestReader {
                 } catch(Exception ex) {
                     throw new ServiceException("Failed to set property " + property 
                             + " in request object using value " + value 
-                            + (value != null ? " of type " + value.getClass() : ""), ex);
+                            + (value != null ? " of type " + value.getClass() : ""), ex, 
+                            ServiceException.INVALID_PARAMETER_VALUE, property);
                 }
             }
         }

@@ -56,6 +56,7 @@ public class GetRecordsKvpRequestReader extends CSWKvpRequestReader implements A
 
     public GetRecordsKvpRequestReader() {
         super(GetRecordsType.class);
+        setRepeatedParameters(true);
     }
 
     @Override

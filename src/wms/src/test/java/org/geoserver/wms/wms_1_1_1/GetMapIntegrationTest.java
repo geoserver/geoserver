@@ -39,6 +39,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.wms.GetMap;
 import org.geoserver.wms.WMSTestSupport;

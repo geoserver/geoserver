@@ -17,6 +17,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMSTestSupport;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -164,7 +165,27 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 Collections.EMPTY_MAP,"states.properties",org.geoserver.wms.wms_1_1_1.GetMapIntegrationTest.class,catalog);
     } 
      
-
+    @Test
+    public void testRepeatedValues() throws Exception {
+        String baseRequest = "wms?service=wms&version=1.3.0&bbox=" + bbox
+                + "&styles=&layers=" + layers + "&format=image/png" + "&request=GetMap"
+                + "&width=550" + "&height=250" + "&srs=EPSG:4326";
+        
+        // parameter repeated, but with the same value, should work
+        MockHttpServletResponse response = getAsServletResponse(baseRequest + "&format=image/png");
+        checkImage(response);
+        
+        // parameter repeated 2 times, but with the same value, should work
+        response = getAsServletResponse(baseRequest + "&format=image/png&format=image/png");
+        checkImage(response);
+        
+        // parameter repeated with 2 different values, should throw an exception
+        Document dom = getAsDOM(baseRequest + "&format=image/jpeg");
+        assertEquals("ServiceExceptionReport", dom.getDocumentElement().getNodeName()); 
+        Element serviceException = (Element) dom.getDocumentElement().getElementsByTagName("ServiceException").item(0);
+        assertEquals("InvalidParameterValue", serviceException.getAttribute("code"));
+        assertEquals("FORMAT", serviceException.getAttribute("locator"));
+    }
     
     @Test
     public void testSldBody10() throws Exception {

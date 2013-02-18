@@ -122,10 +122,5 @@
       <constructor-arg ref="envelopeDimensionsMapper" />
       <constructor-arg ref="geoServer"/>
   </bean>
-  
 
-  <!-- multibple key dispatcher callback -->
-  <bean id="multiKeyCatcher" class="org.geoserver.wcs2_0.kvp.WCS20SubsetCatcher">
-  	<constructor-arg ref="wcs20subsetKvpParser"/>
-  </bean>  
 </beans>

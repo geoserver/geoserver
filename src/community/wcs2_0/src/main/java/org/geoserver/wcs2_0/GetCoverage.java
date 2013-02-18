@@ -357,10 +357,10 @@ public class GetCoverage {
                 // check on source geometry
                 final GridEnvelope2D sourceGE=sourceGC.getGridGeometry().getGridRange2D();
 
-                if(minx>maxx){
+                if(minx>=maxx){
                     throw new WCS20Exception("Invalid Extent for dimension:"+targetAxisExtentElements.get(0).getAxis() , WCS20Exception.WCS20ExceptionCode.InvalidExtent, String.valueOf(maxx));
                 }
-                if(miny>maxy){
+                if(miny>=maxy){
                     throw new WCS20Exception("Invalid Extent for dimension:"+targetAxisExtentElements.get(1).getAxis() , WCS20Exception.WCS20ExceptionCode.InvalidExtent, String.valueOf(maxy));
                 }                
                 final Rectangle destinationRectangle= new Rectangle(minx, miny,maxx-minx+1, maxy-miny+1);
@@ -1326,9 +1326,19 @@ public class GetCoverage {
         // parse dimensions
         for(DimensionSubsetType dim:dimensions){
             // get basic information
-            final String dimension=dim.getDimension(); // this is the dimension name which we compare to axes abbreviations from geotools
+            String dimension=dim.getDimension(); // this is the dimension name which we compare to axes abbreviations from geotools
+            
+            // remove prefix
+            if(dimension.startsWith("http://www.opengis.net/def/axis/OGC/0/")){
+                dimension=dimension.substring("http://www.opengis.net/def/axis/OGC/0/".length());
+            } else if (dimension.startsWith("http://opengis.net/def/axis/OGC/0/")){
+                dimension=dimension.substring("http://opengis.net/def/axis/OGC/0/".length());
+            }
+            
+            
+            // checks
             if(dimension==null||dimension.length()<=0||!axesNames.contains(dimension)){//TODO synonyms on axes labels
-                throw new WCS20Exception("Empty axis label provided",WCS20Exception.WCS20ExceptionCode.InvalidAxisLabel,dimension==null?"Null":dimension);
+                throw new WCS20Exception("Empty or wrong axis label provided",WCS20Exception.WCS20ExceptionCode.InvalidAxisLabel,dimension==null?"Null":dimension);
             }
             
             // did we already do something with this dimension?

@@ -95,7 +95,7 @@ public class DefaultWebCoverageService20 implements WebCoverageService20 {
             throw new WCS20Exception("Missing version", OWS20Exception.OWSExceptionCode.MissingParameterValue, version);
         }
 
-        if ( ! WCS20Const.V20x.equals(version) && ! WCS20Const.V20.equals(version)) {
+        if ( ! WCS20Const.V201.equals(version) && ! WCS20Const.V20.equals(version)) {
             throw new WCS20Exception("Could not understand version:" + version);
         }
     }

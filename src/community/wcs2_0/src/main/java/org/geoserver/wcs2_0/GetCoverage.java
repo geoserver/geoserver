@@ -1284,6 +1284,7 @@ public class GetCoverage {
             AbstractGridCoverage2DReader reader, 
             GetCoverageType request, 
             CoordinateReferenceSystem subsettingCRS) {
+        
         //default envelope in subsettingCRS
         final CoordinateReferenceSystem sourceCRS=reader.getCrs();
         GeneralEnvelope envelope=new GeneralEnvelope(reader.getOriginalEnvelope());
@@ -1324,6 +1325,7 @@ public class GetCoverage {
         final List<String> foundDimensions= new ArrayList<String>();
         
         // parse dimensions
+        final GeneralEnvelope sourceEnvelope = new GeneralEnvelope(reader.getOriginalEnvelope());  
         for(DimensionSubsetType dim:dimensions){
             // get basic information
             String dimension=dim.getDimension(); // this is the dimension name which we compare to axes abbreviations from geotools
@@ -1348,13 +1350,21 @@ public class GetCoverage {
             foundDimensions.add(dimension);
             
             // now decide what to do
-            final String CRS= dim.getCRS();// TODO HOW DO WE USE THIS???
+            final String CRS= dim.getCRS();// TODO HOW DO WE USE THIS???          
             if(dim instanceof DimensionTrimType){
                 
                 // TRIMMING
                 final DimensionTrimType trim = (DimensionTrimType) dim;
                 final double low = Double.parseDouble(trim.getTrimLow());
                 final double high = Double.parseDouble(trim.getTrimHigh());
+                
+                // low > high???
+                if(low>high){
+                    throw new WCS20Exception(
+                            "Low greater than High", 
+                            WCS20Exception.WCS20ExceptionCode.InvalidSubsetting,
+                            trim.getTrimLow());
+                }
 
                 final int axisIndex=envelopeDimensionsMapper.getAxisIndex(envelope, dimension);
                 if(axisIndex<0){
@@ -1368,7 +1378,7 @@ public class GetCoverage {
                 // SLICING
                 final DimensionSliceType slicing= (DimensionSliceType) dim;
                 final String slicePointS = slicing.getSlicePoint();
-                final double slicePoint=Double.parseDouble(slicePointS);
+                final double slicePoint=Double.parseDouble(slicePointS);            
                 
                 final int axisIndex=envelopeDimensionsMapper.getAxisIndex(envelope, dimension);
                 if(axisIndex<0){
@@ -1378,6 +1388,14 @@ public class GetCoverage {
                 AffineTransform affineTransform = RequestUtils.getAffineTransform(reader.getOriginalGridToWorld(PixelInCell.CELL_CENTER));
                 final double scale=axisIndex==0?affineTransform.getScaleX():-affineTransform.getScaleY();
                 envelope.setRange(axisIndex, slicePoint, slicePoint+scale);
+                
+                // slice point outside coverave
+                if(sourceEnvelope.getMinimum(axisIndex)>slicePoint||slicePoint>sourceEnvelope.getMaximum(axisIndex)){
+                    throw new WCS20Exception(
+                            "SlicePoint outside coverage envelope", 
+                            WCS20Exception.WCS20ExceptionCode.InvalidSubsetting,
+                            slicePointS);
+                }    
                 
             } else {
                 throw new WCS20Exception(
@@ -1390,7 +1408,6 @@ public class GetCoverage {
         //
         // intersect with original envelope to make sure the subsetting is valid
         //
-        final GeneralEnvelope sourceEnvelope = new GeneralEnvelope(reader.getOriginalEnvelope());
         if(CRS.equalsIgnoreMetadata(envelope.getCoordinateReferenceSystem(), sourceEnvelope.getCoordinateReferenceSystem())){
             envelope.intersect(sourceEnvelope);
             envelope.setCoordinateReferenceSystem(reader.getCrs());
@@ -1415,6 +1432,7 @@ public class GetCoverage {
             } 
         }        
 
+        // provided trim extent does not intersect coverage envelope
         if(envelope.isEmpty()){
             throw new WCS20Exception(
                     "Empty intersection after subsetting", 

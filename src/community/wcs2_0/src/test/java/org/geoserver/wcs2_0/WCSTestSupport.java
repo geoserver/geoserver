@@ -245,7 +245,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
     protected void checkFullCapabilitiesDocument(Document dom) throws Exception {
         checkValidationErrors(dom, WCS20_SCHEMA);
         
-        // todo: check all the layers are here, the profiles, and so on
+        // TODO: check all the layers are here, the profiles, and so on
         
         // check that we have the crs extension
         assertXpathEvaluatesTo("1", "count(//ows:ServiceIdentification[ows:Profile='http://www.opengis.net/spec/WCS_service-extension_crs/1.0/conf/crs'])", dom);

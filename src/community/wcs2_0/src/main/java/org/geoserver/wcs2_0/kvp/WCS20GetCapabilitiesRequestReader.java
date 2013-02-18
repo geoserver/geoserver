@@ -19,6 +19,7 @@ import org.geoserver.ows.kvp.EMFKvpRequestReader;
  * @author Emanuele Tajariol (etj) - GeoSolutions
  * 
  */
+@SuppressWarnings(value={"rawtypes","unchecked"})
 public class WCS20GetCapabilitiesRequestReader extends EMFKvpRequestReader {
     public WCS20GetCapabilitiesRequestReader() {
         super(GetCapabilitiesType.class, Wcs20Factory.eINSTANCE);

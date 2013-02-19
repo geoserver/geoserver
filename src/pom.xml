@@ -149,6 +149,12 @@
    </dependency>
    <dependency>
     <groupId>org.geoserver</groupId>
+    <artifactId>wms</artifactId>
+    <version>${gs.version}</version>
+    <classifier>tests</classifier>
+   </dependency>
+   <dependency>
+    <groupId>org.geoserver</groupId>
     <artifactId>gwc</artifactId>
     <version>${gs.version}</version>
     <exclusions>
@@ -1413,6 +1419,7 @@
   <module>wcs1_1</module>
   <module>wfs</module>
   <module>wms</module>
+  <module>kml</module>
   <module>ows</module>
   <module>gwc</module>
   <module>rest</module>

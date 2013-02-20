@@ -4,14 +4,18 @@
  */
 package org.geoserver.kml;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import javax.imageio.ImageIO;
 import javax.xml.transform.TransformerException;
 
+import org.geoserver.kml.icons.IconRenderer;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMS;
@@ -22,6 +26,7 @@ import org.geoserver.wms.map.RenderedImageMap;
 import org.geoserver.wms.map.RenderedImageMapOutputFormat;
 import org.geoserver.wms.map.XMLTransformerMap;
 import org.geotools.map.Layer;
+import org.geotools.styling.Style;
 import org.geotools.xml.transform.TransformerBase;
 import org.springframework.util.Assert;
 
@@ -138,6 +143,19 @@ public class KMZMapResponse extends AbstractMapResponse {
                 zip.closeEntry();
             }
             zip.closeEntry();// close the images/ folder
+            
+            Map<String, Style> embeddedIcons = transformer.getEmbeddedIcons();
+            ZipEntry icons = new ZipEntry("icons/");
+            zip.putNextEntry(icons);
+            for (Map.Entry<String, Style> namedStyle : embeddedIcons.entrySet()) {
+                final String name = namedStyle.getKey();
+                final Style style = namedStyle.getValue();
+                BufferedImage icon = IconRenderer.renderIcon(style);
+                entry = new ZipEntry("icons/" + name + ".png");
+                zip.putNextEntry(entry);
+                ImageIO.write(icon, "PNG", zip);
+            }
+            zip.closeEntry();
 
             zip.finish();
             zip.flush();

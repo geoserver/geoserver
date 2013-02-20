@@ -492,6 +492,14 @@
             <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/coverages/{coverage}/templates/{template}.ftl</value></key>
             <value>freemarkerTemplateFinder</value>
         </entry>
+        <entry>
+            <key><value>/render/kml/icon/{workspace}/{style}</value></key>
+            <value>kmlIconFinder</value>
+        </entry>
+        <entry>
+            <key><value>/render/kml/icon/{style}</value></key>
+            <value>kmlIconFinder</value>
+        </entry>
   </map>
 </property>
 </bean>
@@ -544,5 +552,7 @@
 
   <bean id="aboutManifestFinder" class="org.geoserver.rest.AboutManifestFinder" />
   <bean id="aboutVersionFinder" class="org.geoserver.rest.AboutVersionFinder" />
-
+  <bean id="kmlIconFinder" class="org.geoserver.rest.KMLIconFinder">
+      <constructor-arg ref="catalog"/>
+  </bean>
 </beans>

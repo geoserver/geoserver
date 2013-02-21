@@ -13,7 +13,6 @@ import java.util.concurrent.TimeUnit;
 
 import net.opengis.wfs.FeatureCollectionType;
 
-import org.geoserver.kml.KMLReflector;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.sld.GetStyles;
@@ -22,8 +21,6 @@ import org.geoserver.wms.animate.Animator;
 import org.geoserver.wms.capabilities.Capabilities_1_3_0_Transformer;
 import org.geoserver.wms.capabilities.GetCapabilitiesTransformer;
 import org.geoserver.wms.describelayer.DescribeLayerModel;
-import org.geoserver.wms.describelayer.DescribeLayerTransformer;
-import org.geotools.data.ows.LayerDescription;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -386,12 +383,7 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
     }
 
     public WebMap kml(GetMapRequest getMap) {
-        try {
-            return KMLReflector.doWms(getMap, this, wms);
-            // return response;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        throw new ServiceException("kml service is not available, please include a KML module in WEB-INF/lib");
     }
 
     /**

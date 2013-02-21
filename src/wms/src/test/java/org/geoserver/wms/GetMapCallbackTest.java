@@ -42,8 +42,8 @@ public class GetMapCallbackTest extends WMSDimensionsTestSupport {
         getMap.setGetMapCallbacks(Arrays.asList((GetMapCallback) callback));
 
         // request a layer group with two layers
-        Document dom = getAsDOM("wms?request=reflect&layers=nature&format=kml");
-        assertXpathExists("/kml:kml/kml:Document/kml:name[text() = 'cite:Lakes,cite:Forests']", dom);
+        Document dom = getAsDOM("wms?request=reflect&layers=nature&format=rss");
+        assertXpathExists("rss/channel/title[text() = 'cite:Lakes,cite:Forests']", dom);
 
         assertEquals(1, callback.requests.size());
         assertEquals(1, callback.mapContentsInited.size());
@@ -65,7 +65,7 @@ public class GetMapCallbackTest extends WMSDimensionsTestSupport {
         getMap.setGetMapCallbacks(Arrays.asList((GetMapCallback) callback));
 
         // request a layer group with two layers
-        Document dom = getAsDOM("wms?request=reflect&layers=nature&format=kml&version=1.1.0");
+        Document dom = getAsDOM("wms?request=reflect&layers=nature&format=rss&version=1.1.0");
         // print(dom);
         assertXpathExists("/ServiceExceptionReport", dom);
 
@@ -95,9 +95,9 @@ public class GetMapCallbackTest extends WMSDimensionsTestSupport {
         getMap.setGetMapCallbacks(Arrays.asList((GetMapCallback) callback));
         
         // request a layer group with two layers
-        Document dom = getAsDOM("wms?request=reflect&layers=nature&format=kml&version=1.1.0");
+        Document dom = getAsDOM("wms?request=reflect&layers=nature&format=rss&version=1.1.0");
         // print(dom);
-        assertXpathExists("/kml:kml/kml:Document/kml:name[text() = 'cite:Lakes,cite:Forests,extra']", dom);
+        assertXpathExists("rss/channel/title[text() = 'cite:Lakes,cite:Forests,extra']", dom);
 
         assertEquals(1, callback.requests.size());
         assertEquals(1, callback.mapContentsInited.size());
@@ -124,9 +124,9 @@ public class GetMapCallbackTest extends WMSDimensionsTestSupport {
         getMap.setGetMapCallbacks(Arrays.asList((GetMapCallback) callback));
         
         // request a layer group with two layers
-        Document dom = getAsDOM("wms?request=reflect&layers=nature&format=kml&version=1.1.0");
+        Document dom = getAsDOM("wms?request=reflect&layers=nature&format=rss&version=1.1.0");
         // print(dom);
-        assertXpathExists("/kml:kml/kml:Document/kml:name[text() = 'cite:Forests']", dom);
+        assertXpathExists("rss/channel/title[text() = 'cite:Forests']", dom);
 
         assertEquals(1, callback.requests.size());
         assertEquals(1, callback.mapContentsInited.size());

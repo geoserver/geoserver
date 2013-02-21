@@ -586,21 +586,6 @@
       <constructor-arg ref="wms" />
     </bean>
 
-	<bean id="KMLMapProducer" 
-		class="org.geoserver.kml.KMLMapOutputFormat">
-      <constructor-arg index="0" ref="wms"/>
-	</bean>
-
-    <bean id="KMZMapProducer" class="org.geoserver.kml.KMZMapOutputFormat">
-      <constructor-arg ref="wms" />
-    </bean>
-    <bean id="KMZMapResponse" class="org.geoserver.kml.KMZMapResponse">
-      <constructor-arg ref="wms" />
-    </bean>
-    <bean id="NetworkLinkMapProducer" class="org.geoserver.kml.NetworkLinkMapOutputFormat">
-      <constructor-arg ref="wms" />
-    </bean>
-
     <bean id="OpenLayersMapProducer" class="org.geoserver.wms.map.OpenLayersMapOutputFormat">
       <constructor-arg index="0" ref="wms" />
     </bean>
@@ -641,19 +626,6 @@
     </constructor-arg>
   </bean>
  	
-	<!-- http url mapping -->
-	<bean id="kmlURLMapping" 
-		class="org.geoserver.ows.OWSHandlerMapping">
-		<constructor-arg ref="catalog"/>
-		<property name="alwaysUseFullPath" value="true"/>
-		<property name="mappings">
-			<props>
-				<prop key="/kml">dispatcher</prop>
-				<prop key="/kml/*">dispatcher</prop>
-			</props>
-		</property>
-	</bean>
-	
 	<bean id="animateURLMapping" 
 		class="org.geoserver.ows.OWSHandlerMapping">
 		<constructor-arg ref="catalog"/>
@@ -666,56 +638,8 @@
 		</property>
 	</bean>
 	
-	<!-- kml kvp parsers -->
- 	<bean id="superOverlayKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
-		<constructor-arg value="superoverlay"/>
- 	</bean>
- 	<bean id="legendKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
-		<constructor-arg value="legend"/>
- 	</bean>
- 	<bean id="kmatrrKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
-		<constructor-arg value="kmattr"/>
- 	</bean>
- 	<bean id="kmscoreKvpParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
-		<constructor-arg value="kmscore"/>
- 	</bean>
- 	<bean id="kmplacemarkKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
-		<constructor-arg value="kmplacemark"/>
- 	</bean>
-  
     <!-- the meta tile cache, registered here because it's also a WFS transaction listener -->
     <bean id="metaTileCache" class="org.geoserver.wms.map.QuickTileCache">
-      <constructor-arg ref="geoServer"/>
-    </bean>
-
-    <bean id="nativeSortingRegionator"
-        class="org.geoserver.kml.ReflectiveRegionatingStrategyFactory">
-      <constructor-arg value="native-sorting"/>
-      <constructor-arg value="org.geoserver.kml.NativeSortRegionatingStrategy"/>
-      <constructor-arg ref="geoServer"/>
-    </bean>
-    <bean id="externalSortingRegionator"
-        class="org.geoserver.kml.ReflectiveRegionatingStrategyFactory">
-      <constructor-arg value="external-sorting"/>
-      <constructor-arg value="org.geoserver.kml.ExternalSortRegionatingStrategy"/>
-      <constructor-arg ref="geoServer"/>
-    </bean>
-    <bean id="geometryRegionator"
-        class="org.geoserver.kml.ReflectiveRegionatingStrategyFactory">
-      <constructor-arg value="geometry"/>
-      <constructor-arg value="org.geoserver.kml.GeometryRegionatingStrategy"/>
-      <constructor-arg ref="geoServer"/>
-    </bean>
-    <bean id="randomRegionator"
-        class="org.geoserver.kml.ReflectiveRegionatingStrategyFactory">
-      <constructor-arg value="random"/>
-      <constructor-arg value="org.geoserver.kml.RandomRegionatingStrategy"/>
-      <constructor-arg ref="geoServer"/>
-    </bean>
-    <bean id="bestGuessRegionator"
-        class="org.geoserver.kml.ReflectiveRegionatingStrategyFactory">
-      <constructor-arg value="best_guess"/>
-      <constructor-arg value="org.geoserver.kml.BestGuessRegionatingStrategy"/>
       <constructor-arg ref="geoServer"/>
     </bean>
 

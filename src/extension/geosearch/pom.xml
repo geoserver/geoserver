@@ -37,7 +37,7 @@
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>wms</artifactId>
+   <artifactId>kml</artifactId>
    <version>2.4-SNAPSHOT</version>
   </dependency>
   <dependency>

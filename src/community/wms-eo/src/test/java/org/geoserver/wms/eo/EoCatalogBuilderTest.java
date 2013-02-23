@@ -118,6 +118,7 @@ public class EoCatalogBuilderTest extends GeoServerSystemTestSupport {
         LayerInfo layer = builder.createEoOutlineLayer(getUrl("EO_Nat"), ws, groupName);
         assertNotNull(layer);
         assertEquals(groupName + "_OUTLINES", layer.getName());
+        checkTimeDimension(layer);
         
         layer = catalog.getLayerByName(layer.getName());
         assertEquals(EoLayerType.COVERAGE_OUTLINE, layer.getMetadata().get(EoLayerType.KEY));        

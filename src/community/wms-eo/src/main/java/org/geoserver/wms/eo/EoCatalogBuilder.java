@@ -41,10 +41,12 @@ import org.geotools.data.DataAccessFactory.Param;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFactorySpi;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.FeatureSource;
 import org.geotools.data.shapefile.ShapefileDataStoreFactory;
+import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.gce.imagemosaic.Utils;
 import org.geotools.jdbc.JDBCDataStoreFactory;
+import org.geotools.util.NullProgressListener;
+import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
 
 
@@ -182,9 +184,7 @@ public class EoCatalogBuilder implements EoStyles {
             
             catalog.add(layerGroup);
             return layerGroup;
-        } catch (RuntimeException e) {
-            throw new IllegalArgumentException("The layer group '" + groupName + "' could not be created. Failure message: " + e.getMessage(), e);
-        } catch (Exception e) {
+        }  catch (Exception e) {
             throw new IllegalArgumentException("The layer group '" + groupName + "' could not be created. Failure message: " + e.getMessage(), e);
         }        
     }
@@ -284,8 +284,8 @@ public class EoCatalogBuilder implements EoStyles {
             ws = catalog.getDefaultWorkspace();
         }
         
+        // store creation from bands directory
         String storeName = dir.getName();
-
         String layerName = groupName + "_OUTLINES";
         
         CatalogBuilder builder = new CatalogBuilder(catalog);
@@ -304,28 +304,30 @@ public class EoCatalogBuilder implements EoStyles {
 
         builder.setStore(storeInfo);        
         
-        DataStore dataStore = dataStoreFactory.createDataStore(parameters);
-        try {
-            FeatureSource featureSource = dataStore.getFeatureSource(storeName);
-            FeatureTypeInfo featureType = builder.buildFeatureType(featureSource);
-            featureType.setName(layerName);
-            builder.setupBounds(featureType, featureSource);
-            catalog.add(featureType);
-            
-            LayerInfo layer = builder.buildLayer(featureType);
-            layer.setName(layerName);
-            layer.setTitle(layerName);
-            layer.setEnabled(true);
-            layer.setQueryable(true);
-            layer.setType(LayerInfo.Type.VECTOR);
-            layer.getMetadata().put(EoLayerType.KEY, EoLayerType.COVERAGE_OUTLINE);
-            addEoStyles(layer, DEFAULT_OUTLINE_STYLE);
-            catalog.add(layer);
-            
-            return layer;
-        } finally {
-            dataStore.dispose();
+        // featuretyepinfo and layerinfo
+        DataStore dataStore = (DataStore) storeInfo.getDataStore(new NullProgressListener());
+        SimpleFeatureSource featureSource = dataStore.getFeatureSource(storeName);
+        FeatureTypeInfo featureType = builder.buildFeatureType(featureSource);
+        featureType.setName(layerName);
+        builder.setupBounds(featureType, featureSource);
+        catalog.add(featureType);
+        
+        // dimensions
+        boolean foundTime=enableDimensions(featureType, loadProperties(new File(dir,storeName+".properties")));
+        if(!foundTime){
+            throw new IllegalArgumentException("Unable to enable TIME dimension on outline layer:"+ layerName);
         }
+        LayerInfo layer = builder.buildLayer(featureType);
+        layer.setName(layerName);
+        layer.setTitle(layerName);
+        layer.setEnabled(true);
+        layer.setQueryable(true);
+        layer.setType(LayerInfo.Type.VECTOR);
+        layer.getMetadata().put(EoLayerType.KEY, EoLayerType.COVERAGE_OUTLINE);
+        addEoStyles(layer, DEFAULT_OUTLINE_STYLE);
+        catalog.add(layer);
+        
+        return layer;
     }
     
     /**
@@ -429,8 +431,6 @@ public class EoCatalogBuilder implements EoStyles {
             catalog.add(layer);
             
             return layer;
-        } catch (RuntimeException e) {
-            throw new IllegalArgumentException("The layer '" + name + "' could not be created. Failure message: " + e.getMessage(), e);
         } catch (Exception e) {
             throw new IllegalArgumentException("The layer '" + name + "' could not be created. Failure message: " + e.getMessage(), e);
         }
@@ -443,61 +443,64 @@ public class EoCatalogBuilder implements EoStyles {
     private boolean enableDimensions(CoverageInfo ci) {
         boolean timeDimension = false;
         boolean customDimension = false;
-        
+        AbstractGridCoverage2DReader reader=null;
         try {
-            AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) ci.getGridCoverageReader(null, null);
-            try {
-                ReaderDimensionsAccessor ra = new ReaderDimensionsAccessor(reader);
-                for (String domain : ra.getCustomDomains()) {
-                    if (LOGGER.isLoggable(Level.FINE)) {
-                        boolean hasRange = ra.hasRange(domain);
-                        boolean hasResolution = ra.hasResolution(domain);
-                        LOGGER.fine(ci.getName() + ": found " + domain + " dimension (hasRange: " + hasRange + ", hasResolution: " + hasResolution + ")");
-                    }
-                    
-                    DimensionInfo dimension = new DimensionInfoImpl();
-                    dimension.setEnabled(true);
-                    dimension.setPresentation(DimensionPresentation.LIST);
-                    ci.getMetadata().put(ResourceInfo.CUSTOM_DIMENSION_PREFIX + domain, dimension);
-                    
-                    customDimension = true;
-                }
-                
-                String elev = reader.getMetadataValue(AbstractGridCoverage2DReader.HAS_ELEVATION_DOMAIN);
-                if (Boolean.parseBoolean(elev)) {
-                    if (LOGGER.isLoggable(Level.FINE)) {
-                        LOGGER.fine(ci.getName() + ": found ELEVATION dimension");
-                    }
-
-                    DimensionInfo dimension = new DimensionInfoImpl();
-                    dimension.setEnabled(true);
-                    dimension.setPresentation(DimensionPresentation.LIST);
-                    ci.getMetadata().put(ResourceInfo.ELEVATION, dimension);
-                    
-                    customDimension = true;
-                }
-                
-                String time = reader.getMetadataValue(AbstractGridCoverage2DReader.HAS_TIME_DOMAIN);
-                if (Boolean.parseBoolean(time)) {
-                    if (LOGGER.isLoggable(Level.FINE)) {
-                        LOGGER.fine(ci.getName() + ": found TIME dimension");
-                    }
-
-                    DimensionInfo dimension = new DimensionInfoImpl();
-                    dimension.setEnabled(true);
-                    dimension.setPresentation(DimensionPresentation.LIST);
-                    ci.getMetadata().put(ResourceInfo.TIME, dimension);                    
-                    
-                    timeDimension = true;                      
-                }           
-            } finally {
-                reader.dispose();
+            // acquire a reader
+            reader = (AbstractGridCoverage2DReader) ci.getGridCoverageReader(null, null);
+            if(reader==null){
+                throw new RuntimeException("Unable to acquire reader for this coverageinfo: "+ci.getName());
             }
+            
+            // inspect dimensions
+            final ReaderDimensionsAccessor ra = new ReaderDimensionsAccessor(reader);
+            for (String domain : ra.getCustomDomains()) {
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    boolean hasRange = ra.hasRange(domain);
+                    boolean hasResolution = ra.hasResolution(domain);
+                    LOGGER.fine(ci.getName() + ": found " + domain + " dimension (hasRange: " + hasRange + ", hasResolution: " + hasResolution + ")");
+                }
+                
+                DimensionInfo dimension = new DimensionInfoImpl();
+                dimension.setEnabled(true);
+                dimension.setPresentation(DimensionPresentation.LIST);
+                ci.getMetadata().put(ResourceInfo.CUSTOM_DIMENSION_PREFIX + domain, dimension);
+                
+                customDimension = true;
+            }
+            
+            String elev = reader.getMetadataValue(AbstractGridCoverage2DReader.HAS_ELEVATION_DOMAIN);
+            if (Boolean.parseBoolean(elev)) {
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.fine(ci.getName() + ": found ELEVATION dimension");
+                }
+
+                DimensionInfo dimension = new DimensionInfoImpl();
+                dimension.setEnabled(true);
+                dimension.setPresentation(DimensionPresentation.LIST);
+                ci.getMetadata().put(ResourceInfo.ELEVATION, dimension);
+                
+                customDimension = true;
+            }
+            
+            String time = reader.getMetadataValue(AbstractGridCoverage2DReader.HAS_TIME_DOMAIN);
+            if (Boolean.parseBoolean(time)) {
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.fine(ci.getName() + ": found TIME dimension");
+                }
+
+                DimensionInfo dimension = new DimensionInfoImpl();
+                dimension.setEnabled(true);
+                dimension.setPresentation(DimensionPresentation.LIST);
+                ci.getMetadata().put(ResourceInfo.TIME, dimension);                    
+                
+                timeDimension = true;                      
+            } 
         } catch (IOException e) {
             if (LOGGER.isLoggable(Level.SEVERE)) {
                 LOGGER.log(Level.SEVERE, "Failed to access coverage reader custom dimensions", e);
             }
-        }
+            
+        } 
         
         return timeDimension && customDimension;
     }
@@ -536,5 +539,59 @@ public class EoCatalogBuilder implements EoStyles {
         } catch (RuntimeException e) {
             throw new IllegalArgumentException("The group '" + group.getName() + "' could not be removed. Failure message: " + e.getMessage(), e);
         }
+    }
+
+
+    /**
+     * Check presence of TIME dimension .
+     * Enable all dimensions found. 
+     */
+    private boolean enableDimensions(FeatureTypeInfo fi,Properties mosaicProperties) {
+        Utilities.ensureNonNull("FeatureTypeInfo", fi);
+        Utilities.ensureNonNull("mosaicProperties", mosaicProperties);
+        boolean timeDimension = false;
+        try {
+            
+            // inspect dimensions           
+            
+            // elevation
+            boolean elevationDimension = mosaicProperties.containsKey("ElevationAttribute");
+            if (elevationDimension) {
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.fine(fi.getName() + ": found ELEVATION dimension");
+                }
+    
+                DimensionInfo dimension = new DimensionInfoImpl();
+                dimension.setEnabled(true);
+                dimension.setPresentation(DimensionPresentation.LIST);
+                dimension.setAttribute((String)mosaicProperties.get("ElevationAttribute"));
+                fi.getMetadata().put(ResourceInfo.ELEVATION, dimension);
+                
+            }
+            
+
+            // time
+            timeDimension=mosaicProperties.containsKey("TimeAttribute");
+            if (timeDimension) {
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.fine(fi.getName() + ": found TIME dimension");
+                }
+    
+                DimensionInfo dimension = new DimensionInfoImpl();
+                dimension.setEnabled(true);
+                dimension.setPresentation(DimensionPresentation.LIST);
+                dimension.setAttribute((String)mosaicProperties.get("TimeAttribute"));
+                fi.getMetadata().put(ResourceInfo.TIME, dimension);                    
+                
+                timeDimension = true;                      
+            } 
+        } catch (Exception e) {
+            if (LOGGER.isLoggable(Level.SEVERE)) {
+                LOGGER.log(Level.SEVERE, "Failed to access coverage reader custom dimensions", e);
+            }
+            
+        } 
+        
+        return timeDimension;
     }   
 }

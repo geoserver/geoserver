@@ -15,7 +15,7 @@ import org.w3c.dom.NodeList;
 /**
  * Test the setting for ignoring max features for hit counts
  */
-public class GetFeatureHitsIgnoreMaxFeatures extends WFSTestSupport {
+public class GetFeatureHitsIgnoreMaxFeaturesTest extends WFSTestSupport {
     
    
     /**

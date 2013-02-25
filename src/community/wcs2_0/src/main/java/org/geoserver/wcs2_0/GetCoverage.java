@@ -64,6 +64,7 @@ import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.processing.CoverageProcessor;
+import org.geotools.coverage.processing.operation.Scale;
 import org.geotools.factory.GeoTools;
 import org.geotools.factory.Hints;
 import org.geotools.geometry.GeneralEnvelope;
@@ -89,7 +90,7 @@ import org.opengis.referencing.datum.PixelInCell;
 import org.vfny.geoserver.util.WCSUtils;
 
 /**
- * Implementation of the WCS 2.0 GetCoverage request
+ * Implementation of the WCS 2.0.1 GetCoverage request
  * 
  * @author Andrea Aime - GeoSolutions
  * @author Simone Giannecchini, GeoSolutions
@@ -99,6 +100,7 @@ public class GetCoverage {
     /** Logger.*/
     private Logger LOGGER= Logging.getLogger(GetCoverage.class);
     
+    /** enum that representation the possible interpolation values.**/
     private enum InterpolationPolicy{
         linear("http://www.opengis.net/def/interpolation/OGC/1/linear") {
             @Override
@@ -167,12 +169,25 @@ public class GetCoverage {
             //method not found
             throw new WCS20Exception("Interpolation method not supported",WCS20ExceptionCode.InterpolationMethodNotSupported,interpolationMethod);
         }  
-            
+        /**
+         * Default interpolation policy for this implementation.
+         * @return an instance of {@link InterpolationPolicy} which is actually the default one.
+         */
         static InterpolationPolicy getDefaultPolicy(){
             return nearestneighbor;
         }
     }
     
+    /**
+     * {@link Enum} for implementing the management of the various scaling options available 
+     * for the scaling extension.
+     * 
+     * <p>
+     * This enum works as a factory to separate the code that handles the scaling operations.
+     * 
+     * @author Simone Giannecchini, GeoSolutions
+     *
+     */
     private enum ScalingPolicy{
         DoNothing{
 
@@ -185,6 +200,12 @@ public class GetCoverage {
             }
             
         },
+        /**
+         * In this case we scale each axis by the same factor. 
+         * 
+         * <p>
+         * We do rely on the {@link Scale} operation.
+         */
         ScaleByFactor{
 
             @Override
@@ -244,6 +265,14 @@ public class GetCoverage {
             }
             
         },
+        
+        /**
+         * In this case we scale each axis bto a predefined size. 
+         * 
+         * <p>
+         * We do rely on the {@link org.geotools.coverage.processing.operation.Warp} operation as the final 
+         * size must be respected on each axis.
+         */        
         ScaleToSize{
 
             /**
@@ -319,6 +348,13 @@ public class GetCoverage {
             }
 
         },
+        /**
+         * In this case we scale each axis bìto a predefined extent. 
+         * 
+         * <p>
+         * We do rely on the {@link org.geotools.coverage.processing.operation.Warp} operation as the final 
+         * extent must be respected on each axis.
+         */  
         ScaleToExtent{
 
             @Override
@@ -407,7 +443,13 @@ public class GetCoverage {
                 return (GridCoverage2D) CoverageProcessor.getInstance().doOperation(parameters,hints);
             }
             
-        },        
+        },   
+        /**
+         * In this case we scale each axis by the a provided factor. 
+         * 
+         * <p>
+         * We do rely on the {@link Scale} operation.
+         */
         ScaleAxesByFactor{
 
             @Override
@@ -527,12 +569,18 @@ public class GetCoverage {
     
 
     private WCSInfo wcs;
+    
     private Catalog catalog;
     
     /** Utility class to map envelope dimension*/
     private EnvelopeAxesLabelsMapper envelopeDimensionsMapper;
+    
+    /** A URI authorithy with lonlat order.*/
     private CRSAuthorityFactory lonLatCRSFactory;
+    
+    /** A URI authorithy with latlon order.*/
     private CRSAuthorityFactory latLonCRSFactory;
+    
     public final static String SRS_STARTER="http://www.opengis.net/def/crs/EPSG/0/";
 
     public GetCoverage(WCSInfo serviceInfo, Catalog catalog, EnvelopeAxesLabelsMapper envelopeDimensionsMapper) {
@@ -540,6 +588,7 @@ public class GetCoverage {
         this.catalog = catalog;
         this.envelopeDimensionsMapper=envelopeDimensionsMapper;
         
+        // building the needed URI CRS Factories
         Hints hints = GeoTools.getDefaultHints().clone();
         hints.add(new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER,Boolean.TRUE));
         hints.add(new Hints(Hints.FORCE_AXIS_ORDER_HONORING, "http-uri"));
@@ -551,6 +600,12 @@ public class GetCoverage {
         
     }
 
+    /**
+     * Executes the provided {@link GetCoverageType}.
+     * 
+     * @param request the {@link GetCoverageType} to be executed.
+     * @return the {@link GridCoverage} produced by the chain of operations specified by the provided {@link GetCoverageType}.
+     */
     public GridCoverage run(GetCoverageType request) {
 
         //
@@ -561,13 +616,17 @@ public class GetCoverage {
             throw new WCS20Exception("Could not locate coverage " + request.getCoverageId(), 
                     WCS20Exception.WCS20ExceptionCode.NoSuchCoverage, "coverageId");
         } 
-        
         final CoverageInfo cinfo = (CoverageInfo) linfo.getResource();
+        if(LOGGER.isLoggable(Level.FINE)){
+            LOGGER.fine("Executing GetCoverage request on coverage :"+linfo.toString());
+        }
+        
+        // === k, now start the execution
         GridCoverage2D coverage = null;
         try {
             
             // === extract all extensions for later usage
-            Map<String, ExtensionItemType> extensions = extractExtensions(coverage,request);
+            Map<String, ExtensionItemType> extensions = extractExtensions(request);
 
             // === prepare the hints to use
             // here I find if I can use overviews and do subsampling
@@ -945,11 +1004,20 @@ public class GetCoverage {
     }
 
     /**
-     * @param coverage
-     * @param request
-     * @return
+     * This method id responsible for extracting the extensions from the incoming request to 
+     * facilitate the work of successive methods.
+     * 
+     * @param request the {@link GetCoverageType} request to execute.
+     * 
+     * @return a {@link Map} that maps extension names to {@link ExtensionType}s.
      */
-    private Map<String, ExtensionItemType> extractExtensions(GridCoverage2D coverage, GetCoverageType request) {
+    private Map<String, ExtensionItemType> extractExtensions(GetCoverageType request) {
+        // === checks
+        Utilities.ensureNonNull("request", request);
+        if(LOGGER.isLoggable(Level.FINE)){
+            LOGGER.fine("Extracting extensions from provided request");
+        }
+        
         // look for subsettingCRS Extension extension
         final ExtensionType extension = request.getExtension();
         
@@ -963,20 +1031,38 @@ public class GetCoverage {
                 if (extensionName == null || extensionName.length() <= 0) {
                     throw new WCS20Exception("Null extension");
                 }
+                if(LOGGER.isLoggable(Level.FINE)){
+                    LOGGER.fine("Parsing extension "+extensionName);
+                }                
                 if (extensionName.equals("subsettingCrs")) {
                     parsedExtensions.put("subsettingCrs", extensionItem);
+                    if(LOGGER.isLoggable(Level.FINE)){
+                        LOGGER.fine("Added extension subsettingCrs");
+                    }                     
                 } else if (extensionName.equals("outputCrs")) {
                     parsedExtensions.put("outputCrs", extensionItem);
+                    if(LOGGER.isLoggable(Level.FINE)){
+                        LOGGER.fine("Added extension outputCrs");
+                    }    
                 } else if (extensionName.equals("Scaling")) {
                     parsedExtensions.put("Scaling", extensionItem);
+                    if(LOGGER.isLoggable(Level.FINE)){
+                        LOGGER.fine("Added extension Scaling");
+                    }    
                 } else if (extensionName.equals("Interpolation")) {
                     parsedExtensions.put("Interpolation", extensionItem);
-                } else if (extensionName.equals("rangeSubset")) {
-                    parsedExtensions.put("rangeSubset", extensionItem);
+                    if(LOGGER.isLoggable(Level.FINE)){
+                        LOGGER.fine("Added extension Interpolation");
+                    }     
                 } else if (extensionName.equals("rangeSubset")||extensionName.equals("RangeSubset")) {
                     parsedExtensions.put("rangeSubset", extensionItem);
+                    if(LOGGER.isLoggable(Level.FINE)){
+                        LOGGER.fine("Added extension rangeSubset");
+                    }    
                 } 
             }
+        } else if(LOGGER.isLoggable(Level.FINE)){
+            LOGGER.fine("No extensions found in provided request");
         }
         return parsedExtensions;
     }
@@ -1063,17 +1149,18 @@ public class GetCoverage {
     }
 
     /**
-     * @param coverage
-     * @param outputCRS
-     * @param spatialInterpolation 
-     * @param hints 
-     * @return
+     * This method is responsible for handling reprojection of the source coverage to a certain CRS.
+     * @param coverage the {@link GridCoverage} to reproject.
+     * @param targetCRS the target {@link CoordinateReferenceSystem}
+     * @param spatialInterpolation the {@link Interpolation} to adopt.
+     * @param hints {@link Hints} to control the process.
+     * @return a new instance of {@link GridCoverage} reprojeted to the targetCRS.
      */
-    private GridCoverage2D handleReprojection(GridCoverage2D coverage, CoordinateReferenceSystem outputCRS, Interpolation spatialInterpolation, Hints hints) {
+    private GridCoverage2D handleReprojection(GridCoverage2D coverage, CoordinateReferenceSystem targetCRS, Interpolation spatialInterpolation, Hints hints) {
         // checks
         Utilities.ensureNonNull("interpolation", spatialInterpolation);
         // check the two crs tosee if we really need to do anything
-        if(CRS.equalsIgnoreMetadata(coverage.getCoordinateReferenceSystem2D(), outputCRS)){
+        if(CRS.equalsIgnoreMetadata(coverage.getCoordinateReferenceSystem2D(), targetCRS)){
             return coverage;
         }
 
@@ -1082,7 +1169,7 @@ public class GetCoverage {
         final Operation operation = processor.getOperation("Resample");
         final ParameterValueGroup parameters = operation.getParameters();
         parameters.parameter("Source").setValue(coverage);
-        parameters.parameter("CoordinateReferenceSystem").setValue(outputCRS);
+        parameters.parameter("CoordinateReferenceSystem").setValue(targetCRS);
         parameters.parameter("GridGeometry").setValue(null);
         parameters.parameter("InterpolationType").setValue(spatialInterpolation);
         return (GridCoverage2D) processor.doOperation(parameters);
@@ -1196,12 +1283,14 @@ public class GetCoverage {
     }
 
     /**
-     * @param coverage
-     * @param request
-     * @param subsettingCRS 
-     * @param subset 
-     * @param hints 
-     * @return
+     * This method is reponsible for cropping the providede {@link GridCoverage} using the provided subset envelope.
+     * 
+     * <p>
+     * The subset envelope at this stage should be in the native crs.
+     * 
+     * @param coverage the source {@link GridCoverage}
+     * @param subset  an instance of {@link GeneralEnvelope} that drives the crop operation.
+     * @return a cropped version of the source {@link GridCoverage}
      */
     private GridCoverage2D handleSubsettingExtension(
             GridCoverage2D coverage, 

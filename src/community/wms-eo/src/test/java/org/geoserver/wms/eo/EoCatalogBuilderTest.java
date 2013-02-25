@@ -144,6 +144,24 @@ public class EoCatalogBuilderTest extends GeoServerSystemTestSupport {
     }
     
     @Test
+    public void testEoBandsLayerUsage() {
+        try {
+            builder.createEoMosaicLayer(ws, "EO-Band", EoLayerType.BAND_COVERAGE, getUrl("EO_Airmass"), true);
+            fail("The layer must not be created because it doesn't have custom dimensions");
+        } catch (IllegalArgumentException e) {
+        }
+        
+        LayerInfo layer = builder.createEoMosaicLayer(ws, "EO-Band", EoLayerType.BAND_COVERAGE, getUrl("EO_Channels"), true);
+        layer = catalog.getLayerByName("EO-Band");
+        assertEquals(EoLayerType.BAND_COVERAGE, layer.getMetadata().get(EoLayerType.KEY));
+        
+        // check dimensions
+        checkTimeDimension(layer);
+        DimensionInfo customDimension = (DimensionInfo) layer.getResource().getMetadata().get(ResourceInfo.CUSTOM_DIMENSION_PREFIX + "CHANNEL");
+        assertNotNull(customDimension);        
+    }
+    
+    @Test
     public void testStoreCreation() throws URISyntaxException {
         CoverageStoreInfo store = builder.createEoMosaicStore(ws, "EO-store", getUrl("EO_Airmass"));
         try {

@@ -32,4 +32,12 @@
     	<property name="authorizer" ref="workspaceAdminAuthorizer"/>
   	</bean>
 
+	<!-- GetMap callback -->
+	<bean id="getMapCallback" class="org.geoserver.wms.eo.EOGetMapChecker">
+	   <constructor-arg ref="catalog"/>  
+	</bean>
+	
+
+    <!-- Massage GetFeatureInfo Requests -->
+    <bean id="featureInfoMassager" class="org.geoserver.wms.eo.EOGetFeatureInfoChecker"/>	
 </beans>

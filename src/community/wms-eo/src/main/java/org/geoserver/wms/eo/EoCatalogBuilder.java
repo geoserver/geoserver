@@ -95,6 +95,7 @@ public class EoCatalogBuilder implements EoStyles {
      * @return created layer
      */
     public LayerInfo createEoMasksLayer(WorkspaceInfo ws, String groupName, String masksName, String masksUrl) {
+        Utilities.ensureNonNull("groupName", groupName);
         String masksLayerName = groupName + "_" + masksName;
         LayerInfo masksLayer = createEoMosaicLayer(ws, masksLayerName, EoLayerType.BITMASK, masksUrl, false);
         if (masksLayer != null) {
@@ -104,6 +105,7 @@ public class EoCatalogBuilder implements EoStyles {
     }
     
     private LayerInfo createEoBandsLayer(WorkspaceInfo ws, String groupName, String bandsUrl) {
+        Utilities.ensureNonNull("groupName", groupName);
         String bandsLayerName = groupName + "_BANDS";
         return createEoMosaicLayer(ws, bandsLayerName, EoLayerType.BAND_COVERAGE, bandsUrl, true);
     }    
@@ -113,6 +115,7 @@ public class EoCatalogBuilder implements EoStyles {
          * Browse Image layer name must be different from EO group name (otherwise GWC will complain)
          * In GetCapabilities this name will not appear
          */
+        Utilities.ensureNonNull("groupName", groupName);
         String browseLayerName = groupName + "_BROWSE";
         return createEoMosaicLayer(ws, browseLayerName, EoLayerType.BROWSE_IMAGE, browseImageUrl, false);
     }
@@ -137,11 +140,7 @@ public class EoCatalogBuilder implements EoStyles {
             String masksName,
             String masksUrl,
             String parametersName,
-            String parametersUrl) {
-        
-        // TODO how to read dates:
-        // ReaderDimensionsAccessor dimensions = new ReaderDimensionsAccessor(reader);
-        // TreeSet<Date> temporalDomain = dimensions.getTimeDomain();          
+            String parametersUrl) {       
         
         LayerInfo bandsLayer = createEoBandsLayer(ws, groupName, bandsUrl);
         LayerInfo browseLayer = createEoBrowseImageLayer(ws, groupName, browseImageUrl);
@@ -151,9 +150,7 @@ public class EoCatalogBuilder implements EoStyles {
         LayerInfo outlineLayer;
         try {
             outlineLayer = createEoOutlineLayer(bandsUrl, ws, groupName);
-        } catch (RuntimeException e) {
-            throw new IllegalArgumentException("The Outline layer could not be created. Failure message: " + e.getMessage(), e);
-        } catch (Exception e) {
+        }  catch (Exception e) {
             throw new IllegalArgumentException("The Outline layer could not be created. Failure message: " + e.getMessage(), e);
         }
 
@@ -310,13 +307,14 @@ public class EoCatalogBuilder implements EoStyles {
         FeatureTypeInfo featureType = builder.buildFeatureType(featureSource);
         featureType.setName(layerName);
         builder.setupBounds(featureType, featureSource);
-        catalog.add(featureType);
-        
         // dimensions
         boolean foundTime=enableDimensions(featureType, loadProperties(new File(dir,storeName+".properties")));
         if(!foundTime){
             throw new IllegalArgumentException("Unable to enable TIME dimension on outline layer:"+ layerName);
         }
+        catalog.add(featureType);
+        
+        // layer        
         LayerInfo layer = builder.buildLayer(featureType);
         layer.setName(layerName);
         layer.setTitle(layerName);

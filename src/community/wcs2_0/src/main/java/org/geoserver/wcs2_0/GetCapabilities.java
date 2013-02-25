@@ -36,7 +36,7 @@ public class GetCapabilities {
 
     public static final List<String> PROVIDED_VERSIONS =
             Collections.unmodifiableList(Arrays.asList(
-                WCS20Const.V20x,
+                WCS20Const.V201,
                 WCS20Const.V20,
                 WCS20Const.V111,
                 WCS20Const.V110));
@@ -56,7 +56,7 @@ public class GetCapabilities {
             WCSCapsTransformer capsTransformer = new WCSCapsTransformer(wcs.getGeoServer());
             capsTransformer.setEncoding(Charset.forName((wcs.getGeoServer().getSettings().getCharset())));
             return capsTransformer;
-        } else if (WCS20Const.V20.equals(negotiatedVersion) || WCS20Const.V20x.equals(negotiatedVersion)) {
+        } else if (WCS20Const.V20.equals(negotiatedVersion) || WCS20Const.V201.equals(negotiatedVersion)) {
             WCS20GetCapabilitiesTransformer capsTransformer = new WCS20GetCapabilitiesTransformer(wcs.getGeoServer(), responseFactory);
             capsTransformer.setEncoding(Charset.forName((wcs.getGeoServer().getSettings().getCharset())));
             return capsTransformer;

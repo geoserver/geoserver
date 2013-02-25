@@ -6,8 +6,6 @@ package org.geoserver.wcs2_0.kvp;
 
 import java.util.List;
 
-import net.opengis.wcs20.ScaleAxisByFactorType;
-import net.opengis.wcs20.ScaleAxisType;
 import net.opengis.wcs20.ScaleToSizeType;
 import net.opengis.wcs20.TargetAxisSizeType;
 import net.opengis.wcs20.Wcs20Factory;

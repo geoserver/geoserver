@@ -48,6 +48,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.util.CoverageUtils;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
@@ -196,7 +197,7 @@ public class GetCoverage {
                 double scaleFactor=scaleByFactorType.getScaleFactor();
                 
                 // checks
-                if(scaleFactor<0){
+                if(scaleFactor<=0){
                     throw new WCS20Exception("Invalid scale factor", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, String.valueOf(scaleFactor));
                 }
                 
@@ -271,11 +272,11 @@ public class GetCoverage {
                 }
                 final int sizeX=(int) xSize.getTargetSize();// TODO should this be int?
                 if(sizeX<=0){
-                    throw new WCS20Exception("Invalid target size", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, Integer.toString(sizeX));
+                    throw new WCS20Exception("Invalid target size", WCS20Exception.WCS20ExceptionCode.InvalidExtent, Integer.toString(sizeX));
                 }
                 final int sizeY=(int) ySize.getTargetSize();// TODO should this be int?
                 if(sizeY<=0){
-                    throw new WCS20Exception("Invalid target size", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, Integer.toString(sizeY));
+                    throw new WCS20Exception("Invalid target size", WCS20Exception.WCS20ExceptionCode.InvalidExtent, Integer.toString(sizeY));
                 }
                 
                 // scale
@@ -342,10 +343,10 @@ public class GetCoverage {
                     }
                 }
                 if(xExtent==null){
-                    throw new WCS20Exception("Missing extent along i", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, "");
+                    throw new WCS20Exception("Missing extent along i", WCS20Exception.WCS20ExceptionCode.InvalidExtent, "Null");
                 }
                 if(yExtent==null){
-                    throw new WCS20Exception("Missing extent along j", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, "");
+                    throw new WCS20Exception("Missing extent along j", WCS20Exception.WCS20ExceptionCode.InvalidExtent, "Null");
                 }  
                 
                 final int minx=(int) targetAxisExtentElements.get(0).getLow();// TODO should this be int?
@@ -356,10 +357,10 @@ public class GetCoverage {
                 // check on source geometry
                 final GridEnvelope2D sourceGE=sourceGC.getGridGeometry().getGridRange2D();
 
-                if(minx>maxx){
+                if(minx>=maxx){
                     throw new WCS20Exception("Invalid Extent for dimension:"+targetAxisExtentElements.get(0).getAxis() , WCS20Exception.WCS20ExceptionCode.InvalidExtent, String.valueOf(maxx));
                 }
-                if(miny>maxy){
+                if(miny>=maxy){
                     throw new WCS20Exception("Invalid Extent for dimension:"+targetAxisExtentElements.get(1).getAxis() , WCS20Exception.WCS20ExceptionCode.InvalidExtent, String.valueOf(maxy));
                 }                
                 final Rectangle destinationRectangle= new Rectangle(minx, miny,maxx-minx+1, maxy-miny+1);
@@ -433,18 +434,18 @@ public class GetCoverage {
                     }
                 }
                 if(xScale==null){
-                    throw new WCS20Exception("Missing scale factor along i", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, "");
+                    throw new WCS20Exception("Missing scale factor along i", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, "Null");
                 }
                 if(yScale==null){
-                    throw new WCS20Exception("Missing scale factor along j", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, "");
+                    throw new WCS20Exception("Missing scale factor along j", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, "Null");
                 }                
 
-                final double scaleFactorX= xScale.getScaleFactor();// TODO should this be int?
-                if(scaleFactorX<0){
+                final double scaleFactorX= xScale.getScaleFactor();
+                if(scaleFactorX<=0){
                     throw new WCS20Exception("Invalid scale factor", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, Double.toString(scaleFactorX));
                 }   
-                final double scaleFactorY= yScale.getScaleFactor();// TODO should this be int?
-                if(scaleFactorY<0){
+                final double scaleFactorY= yScale.getScaleFactor();
+                if(scaleFactorY<=0){
                     throw new WCS20Exception("Invalid scale factor", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, Double.toString(scaleFactorY));
                 }                  
                 
@@ -649,6 +650,8 @@ public class GetCoverage {
             // Output limits checks
             // We need to enforce them once again as it might be that no scaling or rangesubsetting is requested
             WCSUtils.checkOutputLimits(wcs, coverage.getGridGeometry().getGridRange2D(), coverage.getRenderedImage().getSampleModel());
+        } catch(ServiceException e) {
+            throw e;
         } catch(Exception e) {
             throw new WCS20Exception("Failed to read the coverage " + request.getCoverageId(), e);
         } finally {
@@ -708,7 +711,7 @@ public class GetCoverage {
      * 
      * @param outputCRS the final {@link CoordinateReferenceSystem} for the data as per the request 
      * 
-     * @return <code>tue</code> in case we need to swap axes, <code>false</code> otherwise.
+     * @return <code>true</code> in case we need to swap axes, <code>false</code> otherwise.
      */
     private boolean requestingLatLonAxesOrder(CoordinateReferenceSystem outputCRS) {
        
@@ -970,7 +973,7 @@ public class GetCoverage {
                     parsedExtensions.put("Interpolation", extensionItem);
                 } else if (extensionName.equals("rangeSubset")) {
                     parsedExtensions.put("rangeSubset", extensionItem);
-                } else if (extensionName.equals("rangeSubset")) {
+                } else if (extensionName.equals("rangeSubset")||extensionName.equals("RangeSubset")) {
                     parsedExtensions.put("rangeSubset", extensionItem);
                 } 
             }
@@ -1281,6 +1284,7 @@ public class GetCoverage {
             AbstractGridCoverage2DReader reader, 
             GetCoverageType request, 
             CoordinateReferenceSystem subsettingCRS) {
+        
         //default envelope in subsettingCRS
         final CoordinateReferenceSystem sourceCRS=reader.getCrs();
         GeneralEnvelope envelope=new GeneralEnvelope(reader.getOriginalEnvelope());
@@ -1321,11 +1325,22 @@ public class GetCoverage {
         final List<String> foundDimensions= new ArrayList<String>();
         
         // parse dimensions
+        final GeneralEnvelope sourceEnvelope = new GeneralEnvelope(reader.getOriginalEnvelope());  
         for(DimensionSubsetType dim:dimensions){
             // get basic information
-            final String dimension=dim.getDimension(); // this is the dimension name which we compare to axes abbreviations from geotools
+            String dimension=dim.getDimension(); // this is the dimension name which we compare to axes abbreviations from geotools
+            
+            // remove prefix
+            if(dimension.startsWith("http://www.opengis.net/def/axis/OGC/0/")){
+                dimension=dimension.substring("http://www.opengis.net/def/axis/OGC/0/".length());
+            } else if (dimension.startsWith("http://opengis.net/def/axis/OGC/0/")){
+                dimension=dimension.substring("http://opengis.net/def/axis/OGC/0/".length());
+            }
+            
+            
+            // checks
             if(dimension==null||dimension.length()<=0||!axesNames.contains(dimension)){//TODO synonyms on axes labels
-                throw new WCS20Exception("Empty axis label provided",WCS20Exception.WCS20ExceptionCode.InvalidAxisLabel,dimension==null?"Null":dimension);
+                throw new WCS20Exception("Empty or wrong axis label provided",WCS20Exception.WCS20ExceptionCode.InvalidAxisLabel,dimension==null?"Null":dimension);
             }
             
             // did we already do something with this dimension?
@@ -1335,13 +1350,21 @@ public class GetCoverage {
             foundDimensions.add(dimension);
             
             // now decide what to do
-            final String CRS= dim.getCRS();// TODO HOW DO WE USE THIS???
+            final String CRS= dim.getCRS();// TODO HOW DO WE USE THIS???          
             if(dim instanceof DimensionTrimType){
                 
                 // TRIMMING
                 final DimensionTrimType trim = (DimensionTrimType) dim;
                 final double low = Double.parseDouble(trim.getTrimLow());
                 final double high = Double.parseDouble(trim.getTrimHigh());
+                
+                // low > high???
+                if(low>high){
+                    throw new WCS20Exception(
+                            "Low greater than High", 
+                            WCS20Exception.WCS20ExceptionCode.InvalidSubsetting,
+                            trim.getTrimLow());
+                }
 
                 final int axisIndex=envelopeDimensionsMapper.getAxisIndex(envelope, dimension);
                 if(axisIndex<0){
@@ -1355,7 +1378,7 @@ public class GetCoverage {
                 // SLICING
                 final DimensionSliceType slicing= (DimensionSliceType) dim;
                 final String slicePointS = slicing.getSlicePoint();
-                final double slicePoint=Double.parseDouble(slicePointS);
+                final double slicePoint=Double.parseDouble(slicePointS);            
                 
                 final int axisIndex=envelopeDimensionsMapper.getAxisIndex(envelope, dimension);
                 if(axisIndex<0){
@@ -1365,6 +1388,14 @@ public class GetCoverage {
                 AffineTransform affineTransform = RequestUtils.getAffineTransform(reader.getOriginalGridToWorld(PixelInCell.CELL_CENTER));
                 final double scale=axisIndex==0?affineTransform.getScaleX():-affineTransform.getScaleY();
                 envelope.setRange(axisIndex, slicePoint, slicePoint+scale);
+                
+                // slice point outside coverave
+                if(sourceEnvelope.getMinimum(axisIndex)>slicePoint||slicePoint>sourceEnvelope.getMaximum(axisIndex)){
+                    throw new WCS20Exception(
+                            "SlicePoint outside coverage envelope", 
+                            WCS20Exception.WCS20ExceptionCode.InvalidSubsetting,
+                            slicePointS);
+                }    
                 
             } else {
                 throw new WCS20Exception(
@@ -1377,7 +1408,6 @@ public class GetCoverage {
         //
         // intersect with original envelope to make sure the subsetting is valid
         //
-        final GeneralEnvelope sourceEnvelope = new GeneralEnvelope(reader.getOriginalEnvelope());
         if(CRS.equalsIgnoreMetadata(envelope.getCoordinateReferenceSystem(), sourceEnvelope.getCoordinateReferenceSystem())){
             envelope.intersect(sourceEnvelope);
             envelope.setCoordinateReferenceSystem(reader.getCrs());
@@ -1402,6 +1432,7 @@ public class GetCoverage {
             } 
         }        
 
+        // provided trim extent does not intersect coverage envelope
         if(envelope.isEmpty()){
             throw new WCS20Exception(
                     "Empty intersection after subsetting", 

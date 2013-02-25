@@ -122,4 +122,5 @@
       <constructor-arg ref="envelopeDimensionsMapper" />
       <constructor-arg ref="geoServer"/>
   </bean>
+
 </beans>

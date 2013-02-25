@@ -25,6 +25,7 @@ import org.geotools.wcs.v2_0.Scaling;
  * 
  * @author Andrea Aime - GeoSolutions
  */
+@SuppressWarnings("rawtypes")
 public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
 
     private static final Wcs20Factory WCS20_FACTORY = Wcs20Factory.eINSTANCE;
@@ -64,6 +65,7 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
 
         return gc;
     }
+
 
     private void parseGeoTiffExtension(GetCoverageType gc, Map kvp) {
         List<String> geoTiffParams = Arrays.asList("compression", "jpeg_quality", "predictor",

@@ -26,7 +26,6 @@ import net.opengis.wcs20.GetCapabilitiesType;
 
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.KeywordInfo;
-import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ResourceErrorHandling;
@@ -52,7 +51,7 @@ import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * Transformer for GetCapabilities
- * TODO review
+ * 
  * @author Emanuele Tajariol (etj) - GeoSolutions
  * @author Simone Giannecchini, GeoSolutions 
  */
@@ -60,7 +59,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
 
     private static final Logger LOGGER = Logging.getLogger(WCS20GetCapabilitiesTransformer.class);
 
-    protected static final String CUR_VERSION = WCS20Const.V20x;
+    protected static final String CUR_VERSION = WCS20Const.V201;
 
     private WCSInfo wcs;
 
@@ -245,6 +244,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             element("int:interpolationSupported", "http://www.opengis.net/def/interpolation/OGC/1/nearest-neighbor");
             element("int:interpolationSupported", "http://www.opengis.net/def/interpolation/OGC/1/linear");
             element("int:interpolationSupported", "http://www.opengis.net/def/interpolation/OGC/1/cubic");
+            
             end("wcs:Extension");
             
             end("wcs:ServiceMetadata");
@@ -268,13 +268,12 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             handleKeywords(wcs.getKeywords());
 
             element("ows:ServiceType", "urn:ogc:service:wcs"); // TODO: check this: some docs specify a "OGC WCS" string
-            element("ows:ServiceTypeVersion", WCS20Const.V20x);
+            element("ows:ServiceTypeVersion", WCS20Const.V201);
             element("ows:ServiceTypeVersion", WCS20Const.V111);
             element("ows:ServiceTypeVersion", WCS20Const.V110);
 
             element("ows:Profile", "http://www.opengis.net/spec/WCS/2.0/conf/core");
-            element("ows:Profile", "http://www.opengis.net/spec/WCS_protocol-binding_get-kvp/1.0"); // requirement #1 in OGC 09-147r1
-            // element("ows:Profile", "http://www.opengis.net/spec/WCS_protocol-binding_get-kvp/1.0/conf/get-kvp"); // sample getCapa in OGC 09-110r4
+            element("ows:Profile", "http://www.opengis.net/spec/WCS_protocol-binding_get-kvp/1.0.1"); // requirement #1 in OGC 09-147r3
             element("ows:Profile", "http://www.opengis.net/spec/WCS_protocol-binding_post-xml/1.0");
 
             
@@ -583,45 +582,6 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
                     .toString());    
             end("ows:BoundingBox");
             
-        }
-
-        /**
-         * Converts each metadata URL to XML.
-         *
-         * @param links
-         *              a collection of links
-         * @param linkType
-         *              the type of links
-         */
-        private void handleMetadataLinks(List<MetadataLinkInfo> links, String linkType) {
-            for (MetadataLinkInfo  mdl : links) {
-                if (mdl != null) {
-                    handleMetadataLink(mdl, linkType);
-                }
-            }
-        }
-
-        private void handleMetadataLink(MetadataLinkInfo mdl, String linkType) {
-            AttributesImpl attributes = new AttributesImpl();
-
-            if ( isNotBlank(mdl.getAbout())) {
-                attributes.addAttribute("", "about", "about", "", mdl.getAbout());
-            }
-
-            if ( isNotBlank(mdl.getMetadataType()) ) {
-                attributes.addAttribute("", "metadataType", "metadataType", "", mdl
-                        .getMetadataType());
-            }
-
-            if ( isNotBlank(linkType) ) {
-                attributes.addAttribute("", "xlink:type", "xlink:type", "", linkType);
-            }
-
-            if ( isNotBlank(mdl.getContent()) ) {
-                attributes.addAttribute("", "xlink:href", "xlink:href",
-                        "", mdl.getContent());
-                element("ows:Metadata", null, attributes);
-            }
         }
 
         private void handleLanguages() {

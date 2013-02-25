@@ -15,6 +15,7 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import javax.imageio.ImageIO;
 import javax.media.jai.PlanarImage;
 import javax.xml.namespace.QName;
 
@@ -724,6 +726,10 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
             BufferedImage image = this.legendProducer.buildLegendGraphic(req);            
 
             assertNotBlank("testRenderingTransform", image, LegendUtils.DEFAULT_BG_COLOR);
+                       
+            assertPixel(image, 1, 1, new Color(255, 255, 255));
+            assertPixel(image, 10, 10, new Color (112, 112, 112));            
+            assertPixel(image, 9, 9, new Color (143, 143, 143));
             
         }catch(Exception e){
         	fail(e.getMessage());           
@@ -755,8 +761,7 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
                 .getFeatureTypeByName(MockData.NAMED_PLACES.getNamespaceURI(),
                         MockData.NAMED_PLACES.getLocalPart());
         assertNotNull(ftInfo);
-
-        SimpleFeatureCollection feature;            
+         
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(transformStyle);
         req.setLegendOptions(new HashMap());
@@ -767,8 +772,9 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
 
         assertNotBlank("testRenderingTransform", image, LegendUtils.DEFAULT_BG_COLOR);
         
-        
-    	
+        assertPixel(image, 10, 70, new Color(188, 188, 255));
+        assertPixel(image, 10, 80, new Color (68, 68, 255));            
+        assertPixel(image, 10, 130, new Color (255, 152, 0));    	
     	
     }
 

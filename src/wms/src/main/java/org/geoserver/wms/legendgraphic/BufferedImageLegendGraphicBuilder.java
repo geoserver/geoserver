@@ -36,6 +36,7 @@ import org.geotools.feature.type.GeometryTypeImpl;
 import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.jts.LiteShape2;
 import org.geotools.process.ProcessFactory;
+import org.geotools.process.function.ProcessFunction;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.renderer.lite.StyledShapePainter;
 import org.geotools.renderer.style.SLDStyleFactory;
@@ -260,7 +261,7 @@ public class BufferedImageLegendGraphicBuilder {
                     Name processName = processFunction.getProcessName();
                     ProcessFactory processFactory = GeoServerProcessors
                             .createProcessFactory(processName);
-                    if (processFactory != null) {
+                    if (processFactory == null) {
                         throw new ServiceException(processName + " process is not available");
                     }
                     Map<String, Parameter<?>> outputs = processFactory.getResultInfo(processName,

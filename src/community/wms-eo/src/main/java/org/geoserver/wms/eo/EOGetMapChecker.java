@@ -50,7 +50,7 @@ import org.opengis.referencing.ReferenceIdentifier;
  */
 public class EOGetMapChecker extends GetMapCallbackAdapter implements GetMapCallback {
     /** BAND_COVERAGE_VALUE */
-    private static final String BAND_COVERAGE_VALUE = EoLayerType.BAND_COVERAGE.toString();
+    private static final String BAND_COVERAGE_VALUE = EoLayerType.BAND_COVERAGE.name();
     Catalog catalog;
     
     public EOGetMapChecker(Catalog catalog) {

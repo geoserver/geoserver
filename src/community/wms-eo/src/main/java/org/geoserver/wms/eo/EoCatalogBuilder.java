@@ -104,13 +104,13 @@ public class EoCatalogBuilder implements EoStyles {
         return masksLayer;
     }
     
-    private LayerInfo createEoBandsLayer(WorkspaceInfo ws, String groupName, String bandsUrl) {
+    public LayerInfo createEoBandsLayer(WorkspaceInfo ws, String groupName, String bandsUrl) {
         Utilities.ensureNonNull("groupName", groupName);
         String bandsLayerName = groupName + "_BANDS";
         return createEoMosaicLayer(ws, bandsLayerName, EoLayerType.BAND_COVERAGE, bandsUrl, true);
     }    
     
-    protected LayerInfo createEoBrowseImageLayer(WorkspaceInfo ws, String groupName, String browseImageUrl) {
+    public LayerInfo createEoBrowseImageLayer(WorkspaceInfo ws, String groupName, String browseImageUrl) {
         /*
          * Browse Image layer name must be different from EO group name (otherwise GWC will complain)
          * In GetCapabilities this name will not appear
@@ -274,7 +274,7 @@ public class EoCatalogBuilder implements EoStyles {
      * @return created layer
      * @throws Exception
      */
-    protected LayerInfo createEoOutlineLayer(String url, WorkspaceInfo ws, String groupName) throws Exception {
+    public LayerInfo createEoOutlineLayer(String url, WorkspaceInfo ws, String groupName) throws Exception {
         File dir = DataUtilities.urlToFile(new URL(url));
         
         if (ws == null) {
@@ -306,6 +306,7 @@ public class EoCatalogBuilder implements EoStyles {
         SimpleFeatureSource featureSource = dataStore.getFeatureSource(storeName);
         FeatureTypeInfo featureType = builder.buildFeatureType(featureSource);
         featureType.setName(layerName);
+        featureType.setTitle(layerName);
         builder.setupBounds(featureType, featureSource);
         // dimensions
         boolean foundTime=enableDimensions(featureType, loadProperties(new File(dir,storeName+".properties")));
@@ -321,7 +322,7 @@ public class EoCatalogBuilder implements EoStyles {
         layer.setEnabled(true);
         layer.setQueryable(true);
         layer.setType(LayerInfo.Type.VECTOR);
-        layer.getMetadata().put(EoLayerType.KEY, EoLayerType.COVERAGE_OUTLINE);
+        layer.getMetadata().put(EoLayerType.KEY, EoLayerType.COVERAGE_OUTLINE.name());
         addEoStyles(layer, DEFAULT_OUTLINE_STYLE);
         catalog.add(layer);
         
@@ -417,6 +418,7 @@ public class EoCatalogBuilder implements EoStyles {
             }
             
             resource.setName(name);
+            resource.setTitle(name);
             catalog.add(resource);
             
             LayerInfo layer = builder.buildLayer(resource);
@@ -425,7 +427,7 @@ public class EoCatalogBuilder implements EoStyles {
             layer.setEnabled(true);
             layer.setQueryable(true);
             layer.setType(LayerInfo.Type.RASTER);
-            layer.getMetadata().put(EoLayerType.KEY, type);
+            layer.getMetadata().put(EoLayerType.KEY, type.name());
             catalog.add(layer);
             
             return layer;

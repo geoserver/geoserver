@@ -86,7 +86,7 @@ public class EoCatalogBuilderTest extends GeoServerSystemTestSupport {
         assertEquals(groupName + "_" + maskName, layer.getName());
         
         layer = catalog.getLayerByName(layer.getName());
-        assertEquals(EoLayerType.BITMASK, layer.getMetadata().get(EoLayerType.KEY));        
+        assertEquals(EoLayerType.BITMASK.name(), layer.getMetadata().get(EoLayerType.KEY));        
         checkTimeDimension(layer);
         checkStyles(layer);
     }
@@ -101,7 +101,7 @@ public class EoCatalogBuilderTest extends GeoServerSystemTestSupport {
         assertEquals(groupName + "_" + paramName, layer.getName());
         
         layer = catalog.getLayerByName(layer.getName());
-        assertEquals(EoLayerType.GEOPHYSICAL_PARAMETER, layer.getMetadata().get(EoLayerType.KEY));
+        assertEquals(EoLayerType.GEOPHYSICAL_PARAMETER.name(), layer.getMetadata().get(EoLayerType.KEY));
         checkTimeDimension(layer);
     }
     
@@ -112,7 +112,7 @@ public class EoCatalogBuilderTest extends GeoServerSystemTestSupport {
         LayerInfo browseLayer = builder.createEoBrowseImageLayer(ws, groupName, getUrl("EO_Nat"));
         assertNotNull(browseLayer);
         assertEquals(groupName + "_BROWSE", browseLayer.getName());
-        assertEquals(EoLayerType.BROWSE_IMAGE, browseLayer.getMetadata().get(EoLayerType.KEY));   
+        assertEquals(EoLayerType.BROWSE_IMAGE.name(), browseLayer.getMetadata().get(EoLayerType.KEY));   
         checkTimeDimension(browseLayer);
         
         LayerInfo layer = builder.createEoOutlineLayer(getUrl("EO_Nat"), ws, groupName);
@@ -121,7 +121,7 @@ public class EoCatalogBuilderTest extends GeoServerSystemTestSupport {
         checkTimeDimension(layer);
         
         layer = catalog.getLayerByName(layer.getName());
-        assertEquals(EoLayerType.COVERAGE_OUTLINE, layer.getMetadata().get(EoLayerType.KEY));        
+        assertEquals(EoLayerType.COVERAGE_OUTLINE.name(), layer.getMetadata().get(EoLayerType.KEY));        
         checkStyles(layer);
     }
     
@@ -135,7 +135,7 @@ public class EoCatalogBuilderTest extends GeoServerSystemTestSupport {
         
         LayerInfo layer = builder.createEoMosaicLayer(ws, "EO-Band", EoLayerType.BAND_COVERAGE, getUrl("EO_Channels"), true);
         layer = catalog.getLayerByName("EO-Band");
-        assertEquals(EoLayerType.BAND_COVERAGE, layer.getMetadata().get(EoLayerType.KEY));
+        assertEquals(EoLayerType.BAND_COVERAGE.name(), layer.getMetadata().get(EoLayerType.KEY));
         
         // check dimensions
         checkTimeDimension(layer);
@@ -146,14 +146,14 @@ public class EoCatalogBuilderTest extends GeoServerSystemTestSupport {
     @Test
     public void testEoBandsLayerUsage() {
         try {
-            builder.createEoMosaicLayer(ws, "EO-Band", EoLayerType.BAND_COVERAGE, getUrl("EO_Airmass"), true);
+            builder.createEoMosaicLayer(ws, "EO-Band-2", EoLayerType.BAND_COVERAGE, getUrl("EO_Airmass"), true);
             fail("The layer must not be created because it doesn't have custom dimensions");
         } catch (IllegalArgumentException e) {
         }
         
-        LayerInfo layer = builder.createEoMosaicLayer(ws, "EO-Band", EoLayerType.BAND_COVERAGE, getUrl("EO_Channels"), true);
-        layer = catalog.getLayerByName("EO-Band");
-        assertEquals(EoLayerType.BAND_COVERAGE, layer.getMetadata().get(EoLayerType.KEY));
+        LayerInfo layer = builder.createEoMosaicLayer(ws, "EO-Band-2", EoLayerType.BAND_COVERAGE, getUrl("EO_Channels"), true);
+        layer = catalog.getLayerByName("EO-Band-2");
+        assertEquals(EoLayerType.BAND_COVERAGE.name(), layer.getMetadata().get(EoLayerType.KEY));
         
         // check dimensions
         checkTimeDimension(layer);

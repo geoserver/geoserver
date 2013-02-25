@@ -112,7 +112,7 @@ public class EOGetFeatureInfoChecker extends AbstractDispatcherCallback implemen
             
             // is it a BANDS Layer?
             final MetadataMap metadata = layerInfo.getMetadata();
-            if(metadata.containsKey(EoLayerType.KEY)&&metadata.get(EoLayerType.KEY).equals(EoLayerType.BAND_COVERAGE.toString())){
+            if(metadata.containsKey(EoLayerType.KEY)&&metadata.get(EoLayerType.KEY).equals(EoLayerType.BAND_COVERAGE.name())){
                 
                 // check the MERGE_BEHAVIOR as flat (this is harmless anyway)
                 Map<String, Serializable> params = cInfo.getParameters();

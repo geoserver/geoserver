@@ -20,18 +20,18 @@ import org.geoserver.web.wicket.FileExistsValidator;
  */
 public abstract class EoPage extends GeoServerSecuredPage {
 
-    protected final ResourceModel BROWSE_IMAGE = new ResourceModel("browseImage", "Browse Image");
-    protected final ResourceModel BAND = new ResourceModel("band", "Band Coverage");
-    protected final ResourceModel GEOPHYSICAL_PARAMETER = new ResourceModel("parameter", "Geophysical Parameter");
-    protected final ResourceModel BITMASK = new ResourceModel("bitmask", "Bitmask");    
+    protected static final ResourceModel BROWSE_IMAGE = new ResourceModel("browseImage", "Browse Image");
+    protected static final ResourceModel BAND = new ResourceModel("band", "Band Coverage");
+    protected static final ResourceModel GEOPHYSICAL_PARAMETER = new ResourceModel("parameter", "Geophysical Parameter");
+    protected static final ResourceModel BITMASK = new ResourceModel("bitmask", "Bitmask");    
     
 
-    protected TextParamPanel getTextParamPanel(String name, String label, IModel model, boolean required) {
+    protected static TextParamPanel getTextParamPanel(String name, String label, IModel model, boolean required) {
         return new TextParamPanel(name, new PropertyModel<String>(model, name),
                 new ResourceModel(name, label), required);
     }    
     
-    protected DirectoryParamPanel getDirectoryPanel(String name, String label, IModel model, boolean required) {
+    protected static DirectoryParamPanel getDirectoryPanel(String name, String label, IModel model, boolean required) {
         return new DirectoryParamPanel(name, new PropertyModel<String>(model, name), 
                 new ResourceModel(name, label), required, new FileExistsValidator());
     }

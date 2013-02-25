@@ -5,55 +5,68 @@
 package org.geoserver.wms.eo.web;
 
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.model.ResourceModel;
-import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.web.GeoServerApplication;
 import org.geoserver.wms.eo.EoCatalogBuilder;
+import org.geotools.util.logging.Logging;
 
 
 /**
- * Wicket page to add a new layer to a WMS-EO layer group.
+ * Wicket panel to add a new layer to a WMS-EO layer group.
  * 
  * @author Davide Savazzi - geo-solutions.it
  */
-public class AddEoLayerPage extends EoPage {
+public abstract class AddEoLayerPanel extends Panel {
 
-    public AddEoLayerPage(LayerGroupInfo group) {
+    private static final Logger LOGGER = Logging.getLogger(AddEoLayerPanel.class);
+    
+    public AddEoLayerPanel(String id, LayerGroupInfo group) {
+        super(id);
+        
         IModel<AddEoLayerModel> model = new Model<AddEoLayerModel>(new AddEoLayerModel(group));
 
         // build the form
         Form<AddEoLayerModel> paramsForm = new Form<AddEoLayerModel>("addLayerForm", model);
         add(paramsForm);
         
-        EoLayerGroupPanel groupPanel = new EoLayerGroupPanel("groupPanel", new PropertyModel<LayerGroupInfo>(model, "group"), 
-                new ResourceModel("group", "WMS-EO Group"), true, EoLayerGroupProviderFilter.INSTANCE);
-        paramsForm.add(groupPanel);
-
-        paramsForm.add(getTextParamPanel("parameterName",  GEOPHYSICAL_PARAMETER.getObject() + " Name", model, false));
-        paramsForm.add(getDirectoryPanel("parameterUrl", GEOPHYSICAL_PARAMETER.getObject() + " URL", model, false));
-        paramsForm.add(getTextParamPanel("bitmaskName", BITMASK.getObject() + " Name", model, false));        
-        paramsForm.add(getDirectoryPanel("bitmaskUrl", BITMASK.getObject() + " URL", model, false));
+        paramsForm.add(EoPage.getTextParamPanel("parameterName",  EoPage.GEOPHYSICAL_PARAMETER.getObject() + " Name", model, false));
+        paramsForm.add(EoPage.getDirectoryPanel("parameterUrl", EoPage.GEOPHYSICAL_PARAMETER.getObject() + " URL", model, false));
+        paramsForm.add(EoPage.getTextParamPanel("bitmaskName", EoPage.BITMASK.getObject() + " Name", model, false));        
+        paramsForm.add(EoPage.getDirectoryPanel("bitmaskUrl", EoPage.BITMASK.getObject() + " URL", model, false));
                 
         // cancel / submit buttons
+        
         AjaxSubmitLink submitLink = saveLink(paramsForm);
-        paramsForm.add(new BookmarkablePageLink<EoLayerGroupPage>("cancel", EoLayerGroupPage.class));
         paramsForm.add(submitLink);
         paramsForm.setDefaultButton(submitLink);
-
+        
+        paramsForm.add(new AjaxLink("cancel") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                onCancel(target);
+            }
+        });
+        
         // feedback panel for error messages
         paramsForm.add(new FeedbackPanel("feedback"));
     }
+    
+    protected abstract void onCancel(AjaxRequestTarget target);
+    
+    protected abstract void onSubmit(AjaxRequestTarget target, LayerInfo maskLayer, LayerInfo paramsLayer);
     
     private AjaxSubmitLink saveLink(Form<AddEoLayerModel> paramsForm) {
         return new AjaxSubmitLink("save", paramsForm) {
@@ -71,38 +84,21 @@ public class AddEoLayerPage extends EoPage {
                 EoCatalogBuilder builder = new EoCatalogBuilder(getCatalog());
                 
                 if (StringUtils.isEmpty(model.getBitmaskName()) && !StringUtils.isEmpty(model.getBitmaskUrl())) {
-                    paramsForm.error("Field '" + BITMASK.getObject() + " Name' is required.");
+                    paramsForm.error("Field '" + EoPage.BITMASK.getObject() + " Name' is required.");
                 }
                 
                 if (StringUtils.isEmpty(model.getParameterName()) && !StringUtils.isEmpty(model.getParameterUrl())) {
-                    paramsForm.error("Field '" + GEOPHYSICAL_PARAMETER.getObject() + " Name' is required.");                    
+                    paramsForm.error("Field '" + EoPage.GEOPHYSICAL_PARAMETER.getObject() + " Name' is required.");                    
                 }
                 
                 if (paramsForm.hasError()) {
                     target.addComponent(paramsForm);
                 } else {                
                     try {
-                        // load layers in group
-                        group = getCatalog().getLayerGroupByName(group.getWorkspace(), group.getName());
-                        
-                        LayerInfo layer = builder.createEoMasksLayer(group.getWorkspace(), group.getName(), model.getBitmaskName(), model.getBitmaskUrl());
-                        if (layer != null) {
-                            group.getLayers().add(layer);
-                            group.getStyles().add(layer.getDefaultStyle());
-                        }
-                        
-                        layer = builder.createEoParametersLayer(group.getWorkspace(), group.getName(), model.getParameterName(), model.getParameterUrl());                    
-                        if (layer != null) {
-                            group.getLayers().add(layer);
-                            group.getStyles().add(layer.getDefaultStyle());
-                        }
+                        LayerInfo maskLayer = builder.createEoMasksLayer(group.getWorkspace(), group.getName(), model.getBitmaskName(), model.getBitmaskUrl());                        
+                        LayerInfo paramsLayer = builder.createEoParametersLayer(group.getWorkspace(), group.getName(), model.getParameterName(), model.getParameterUrl());                    
         
-                        CatalogBuilder catalogBuilder = new CatalogBuilder(getCatalog());
-                        catalogBuilder.calculateLayerGroupBounds(group);
-                        
-                        getCatalog().save(group);
-                        
-                        setResponsePage(EoLayerGroupPage.class);
+                        AddEoLayerPanel.this.onSubmit(target, maskLayer, paramsLayer);                        
                     } catch (RuntimeException e) {
                         if (LOGGER.isLoggable(Level.INFO)) {
                             LOGGER.log(Level.INFO, e.getMessage(), e);
@@ -121,5 +117,13 @@ public class AddEoLayerPage extends EoPage {
                 }
             }
         };
+    }  
+    
+    protected Catalog getCatalog() {
+        return getGeoServerApplication().getCatalog();
+    }
+    
+    private GeoServerApplication getGeoServerApplication() {
+        return (GeoServerApplication) getApplication();
     }    
 }

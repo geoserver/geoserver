@@ -13,7 +13,6 @@ import org.apache.wicket.model.Model;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
-import org.geoserver.web.data.layergroup.LayerGroupEditPage;
 import org.geoserver.web.data.layergroup.LayerGroupProvider;
 import org.geoserver.web.data.layergroup.LayerGroupProviderFilter;
 import org.geoserver.web.data.workspace.WorkspaceEditPage;
@@ -94,8 +93,8 @@ public class LayerGroupTablePanel extends GeoServerTablePanel<LayerGroupInfo> {
         String groupName = (String) groupNameModel.getObject();
         String wsName = (String) wsModel.getObject();
 
-        return new SimpleBookmarkableLink(id, LayerGroupEditPage.class, groupNameModel,
-                LayerGroupEditPage.GROUP, groupName, LayerGroupEditPage.WORKSPACE, wsName);
+        return new SimpleBookmarkableLink(id, EoLayerGroupEditPage.class, groupNameModel,
+                EoLayerGroupEditPage.GROUP, groupName, EoLayerGroupEditPage.WORKSPACE, wsName);
     }
 
     protected Component createWorkspaceLink(String id, IModel itemModel) {

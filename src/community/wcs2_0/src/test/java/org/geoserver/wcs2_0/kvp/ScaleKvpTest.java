@@ -1,6 +1,7 @@
 package org.geoserver.wcs2_0.kvp;
 
 import static junit.framework.Assert.assertEquals;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import java.io.File;
 import java.util.logging.Level;
@@ -13,6 +14,7 @@ import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.util.logging.Logging;
 import org.junit.Assert;
 import org.junit.Test;
+import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 /**
@@ -23,6 +25,28 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
 public class ScaleKvpTest extends WCSKVPTestSupport {
 
     private Logger LOGGER= Logging.getLogger(ScaleKvpTest.class);
+    
+
+    @Test
+    public void capabilties() throws Exception {
+        final File xml= new File("./src/test/resources/getcapabilities/getCap.xml");
+        final String request= FileUtils.readFileToString(xml);
+        Document dom = postAsDOM("wcs", request);
+//         print(dom);
+        
+        // check the KVP extension 1.0.1
+        assertXpathEvaluatesTo("1", "count(//ows:ServiceIdentification[ows:Profile='http://www.opengis.net/spec/WCS_service-extension_range-subsetting/1.0/conf/record-subsetting'])", dom);
+        
+        // proper case enforcing on values
+        dom = getAsDOM("wcs?request=Getcapabilities&service=wCS");
+        // print(dom);
+        
+        // check that we have the crs extension
+        assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport)", dom);
+        assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport//ows:Exception)", dom);
+        assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport//ows:Exception[@exceptionCode='InvalidParameterValue'])", dom);
+        assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport//ows:Exception[@locator='wCS'])", dom); 
+    }
 
     @Test
     public void scaleFactor() throws Exception {

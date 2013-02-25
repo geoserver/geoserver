@@ -230,7 +230,11 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
             start("wcs:ServiceParameters");
             element("wcs:CoverageSubtype", "RectifiedGridCoverage");
             
-            element("wcs:nativeFormat",mimemapper.mapNativeFormat(ci));
+            final String mapNativeFormat = mimemapper.mapNativeFormat(ci);
+            if(mapNativeFormat==null){
+                throw new WCS20Exception("Unable to create mime type for coverainfo: "+ci.toString());
+            }
+            element("wcs:nativeFormat",mapNativeFormat);
             end("wcs:ServiceParameters");
         }
 

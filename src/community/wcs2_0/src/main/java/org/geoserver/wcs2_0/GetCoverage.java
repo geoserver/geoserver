@@ -349,7 +349,7 @@ public class GetCoverage {
 
         },
         /**
-         * In this case we scale each axis bìto a predefined extent. 
+         * In this case we scale each axis to a predefined extent. 
          * 
          * <p>
          * We do rely on the {@link org.geotools.coverage.processing.operation.Warp} operation as the final 

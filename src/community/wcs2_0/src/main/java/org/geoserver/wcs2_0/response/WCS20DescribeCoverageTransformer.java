@@ -4,10 +4,17 @@
  */
 package org.geoserver.wcs2_0.response;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
 import javax.measure.unit.Unit;
 import javax.measure.unit.UnitFormat;
 
@@ -28,6 +35,7 @@ import org.geoserver.wcs2_0.util.RequestUtils;
 import org.geoserver.wcs2_0.util.StringUtils;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.data.DataUtilities;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.util.logging.Logging;
@@ -49,7 +57,8 @@ import org.xml.sax.helpers.AttributesImpl;
 public class WCS20DescribeCoverageTransformer extends GMLTransformer {
     public static final Logger LOGGER = Logging.getLogger(WCS20DescribeCoverageTransformer.class
             .getPackage().getName());
-
+    
+    private MIMETypeMapper mimemapper;
     private WCSInfo wcs;
 
     private Catalog catalog;
@@ -58,13 +67,15 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
     
     /**
      * Creates a new WFSCapsTransformer object.
+     * @param mimemapper 
      */
-    public WCS20DescribeCoverageTransformer(WCSInfo wcs, Catalog catalog, CoverageResponseDelegateFinder responseFactory,EnvelopeAxesLabelsMapper envelopeDimensionsMapper) {
+    public WCS20DescribeCoverageTransformer(WCSInfo wcs, Catalog catalog, CoverageResponseDelegateFinder responseFactory,EnvelopeAxesLabelsMapper envelopeDimensionsMapper, MIMETypeMapper mimemapper) {
 
         super(envelopeDimensionsMapper);
         this.wcs = wcs;
         this.catalog = catalog;
         this.responseFactory = responseFactory;
+        this.mimemapper=mimemapper;
         setNamespaceDeclarationEnabled(false);
     }
 
@@ -215,10 +226,11 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
             }
         }
 
-        private void handleServiceParameters(CoverageInfo ci) {
+        private void handleServiceParameters(CoverageInfo ci) throws IOException {
             start("wcs:ServiceParameters");
             element("wcs:CoverageSubtype", "RectifiedGridCoverage");
-            element("wcs:nativeFormat", ci.getNativeFormat());
+            
+            element("wcs:nativeFormat",mimemapper.mapNativeFormat(ci));
             end("wcs:ServiceParameters");
         }
 

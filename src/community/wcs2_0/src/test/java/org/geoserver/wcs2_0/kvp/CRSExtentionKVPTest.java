@@ -1,4 +1,4 @@
-package org.geoserver.wcs2_0.xml;
+package org.geoserver.wcs2_0.kvp;
 
 import static junit.framework.Assert.assertEquals;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
@@ -8,7 +8,6 @@ import java.io.File;
 import junit.framework.Assert;
 
 import org.apache.commons.io.FileUtils;
-import org.geoserver.wcs2_0.WCSTestSupport;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.geometry.GeneralEnvelope;
@@ -24,13 +23,12 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
  * @author Simone Giannecchini, GeoSolutions SAS
  *
  */
-public class CRSExtentionTest extends WCSTestSupport {
+public class CRSExtentionKVPTest extends WCSKVPTestSupport {
+
     @Test
-    public void capabilties() throws Exception {    
-        final File xml= new File("./src/test/resources/getcapabilities/getCap.xml");
-        final String request= FileUtils.readFileToString(xml);
-        Document dom = postAsDOM("wcs", request);
-//         print(dom);
+    public void capabilties() throws Exception {
+        Document dom = getAsDOM("wcs?reQueSt=GetCapabilities&seErvIce=WCS");
+         print(dom);
         
         // check the KVP extension 1.0.1
         assertXpathEvaluatesTo("1", "count(//ows:ServiceIdentification[ows:Profile='http://www.opengis.net/spec/WCS_service-extension_crs/1.0/conf/crs'])", dom);
@@ -47,10 +45,10 @@ public class CRSExtentionTest extends WCSTestSupport {
     }
     
     @Test
-    public void reprojectTo3857XML() throws Exception {
-        final File xml= new File("./src/test/resources/crs/requestGetCoverageOutputCRS.xml");
-        final String request= FileUtils.readFileToString(xml);
-        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+    public void reprojectTo3857() throws Exception {
+        // subsample
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
+                        "&coverageId=wcs__BlueMarble&&Format=image/tiff&OUTPUTCRS=http://www.opengis.net/def/crs/EPSG/0/3857");
 
         assertEquals("image/tiff", response.getContentType());
         byte[] tiffContents = getBinary(response);
@@ -92,10 +90,14 @@ public class CRSExtentionTest extends WCSTestSupport {
     }
     
     @Test
-    public void testGetCoverageSubsettingCRSFullXML() throws Exception {
-        final File xml= new File("./src/test/resources/crs/requestGetCoverageSubsettingCRS.xml");
-        final String request= FileUtils.readFileToString(xml);
-        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+    public void subsettingNativeCRSReprojectTo3857() throws Exception {
+
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
+                        "&coverageId=wcs__BlueMarble&&Format=image/tiff&" +
+                        "OUTPUTCRS=http://www.opengis.net/def/crs/EPSG/0/3857&" +
+                        "SUBSETTINGCRS=http://www.opengis.net/def/crs/EPSG/0/4326" +
+                        "&subset=http://www.opengis.net/def/axis/OGC/0/Long(146.5,147.0)"+
+                        "&subset=http://www.opengis.net/def/axis/OGC/0/Lat(-43.5,-43.0)");  
 
         assertEquals("image/tiff", response.getContentType());
         byte[] tiffContents = getBinary(response);
@@ -135,12 +137,14 @@ public class CRSExtentionTest extends WCSTestSupport {
             }
         }       
     }
-
+    
     @Test
-    public void testGetCoverageSubsettingTrimCRSXML() throws Exception {
-        final File xml= new File("./src/test/resources/crs/requestGetCoverageSubsettingTrimCRS.xml");
-        final String request= FileUtils.readFileToString(xml);
-        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+    public void implicitRerpojectionTo3857() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
+                "&coverageId=wcs__BlueMarble&&Format=image/tiff&" +
+                "SUBSETTINGCRS=http://www.opengis.net/def/crs/EPSG/0/3857" +
+                "&subset=http://www.opengis.net/def/axis/OGC/0/X(1.6308305401213994E7,1.6475284637403902E7)"+
+                "&subset=http://www.opengis.net/def/axis/OGC/0/Y(-5543147.203861462,-5311971.846945147)");  
     
         assertEquals("image/tiff", response.getContentType());
         byte[] tiffContents = getBinary(response);
@@ -179,13 +183,16 @@ public class CRSExtentionTest extends WCSTestSupport {
                 // TODO: handle exception
             }
         }       
-    }
-
+    }   
+    
     @Test
-    public void subsettingNativeCRSReprojectTo3857() throws Exception {
-        final File xml= new File("./src/test/resources/crs/requestGetCoverageSubsettingTrimCRS2.xml");
-        final String request= FileUtils.readFileToString(xml);
-        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+    public void testGetCoverageSubsettingTrimCRS() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
+                "&coverageId=wcs__BlueMarble&&Format=image/tiff&" +
+                "OUTPUTCRS=http://www.opengis.net/def/crs/EPSG/0/3857&" +
+                "SUBSETTINGCRS=http://www.opengis.net/def/crs/EPSG/0/3857" +
+                "&subset=http://www.opengis.net/def/axis/OGC/0/X(1.6308305401213994E7,1.6475284637403902E7)"+
+                "&subset=http://www.opengis.net/def/axis/OGC/0/Y(-5543147.203861462,-5311971.846945147)");  
     
         assertEquals("image/tiff", response.getContentType());
         byte[] tiffContents = getBinary(response);

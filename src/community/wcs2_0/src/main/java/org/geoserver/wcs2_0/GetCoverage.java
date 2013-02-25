@@ -646,7 +646,7 @@ public class GetCoverage {
             // Extract CRS values for relative extension
             //
             final CoordinateReferenceSystem subsettingCRS=extractSubsettingCRS(reader,extensions);
-            final CoordinateReferenceSystem outputCRS=extractOutputCRS(reader,extensions);
+            final CoordinateReferenceSystem outputCRS=extractOutputCRS(reader,extensions,subsettingCRS);
             final boolean enforceLatLonAxesOrder=requestingLatLonAxesOrder(outputCRS);
             // extract subsetting
             final GeneralEnvelope subset=extractSubsettingEnvelope(reader,request,subsettingCRS);
@@ -943,48 +943,48 @@ public class GetCoverage {
     }
 
     /**
-     * @param reader
-     * @param extensions
-     * @return
+     * This method is responsible for etracting the outputCRS.
+     * 
+     * <p>
+     * In case it is not provided the subsettingCRS falls back on the subsettingCRS.
+     * @param reader the {@link AbstractGridCoverage2DReader} to be used
+     * @param extensions the {@link Map} of extension for this request.
+     * @param subsettingCRS  the subsettingCRS as a {@link CoordinateReferenceSystem}
+     * @return the outputCRS as a {@link CoordinateReferenceSystem}
      */
     private CoordinateReferenceSystem extractOutputCRS(AbstractGridCoverage2DReader reader,
-            Map<String, ExtensionItemType> extensions) {
-        return extractCRS(reader,extensions,false);
+            Map<String, ExtensionItemType> extensions, CoordinateReferenceSystem subsettingCRS) {
+        return extractCRSInternal(extensions, subsettingCRS,true);   
     }
 
     /**
-     * @param reader
-     * @param extensions
-     * @return
+     * Extract the specified crs being it subsetting or output with proper defaults.
+     * 
+     * @param extensions the {@link Map}of extensions for this request.
+     * @param defaultCRS the defaultCRS as a {@link CoordinateReferenceSystem} for this extraction
+     * @param isOutputCRS a <code>boolean</code> which tells me whether the CRS we are looking for is a subsetting or an OutputCRS
+     * @return a {@link CoordinateReferenceSystem}.
+     * @throws WCS20Exception
      */
-    private CoordinateReferenceSystem extractSubsettingCRS(AbstractGridCoverage2DReader reader,Map<String, ExtensionItemType> extensions) {
-        return extractCRS(reader,extensions,true);
-    }
-
-    /**
-     * @param reader
-     * @param extensions
-     * @param b
-     * @return
-     */
-    private CoordinateReferenceSystem extractCRS(AbstractGridCoverage2DReader reader, Map<String, ExtensionItemType> extensions,
-            boolean subsettingCRS) {
-        
+    private CoordinateReferenceSystem extractCRSInternal(Map<String, ExtensionItemType> extensions,
+            CoordinateReferenceSystem defaultCRS, boolean isOutputCRS) throws WCS20Exception {
+        Utilities.ensureNonNull("defaultCRS", defaultCRS);
+        final String identifier=isOutputCRS?"outputCrs":"subsettingCrs";
         // look for subsettingCRS Extension extension
-        if(extensions==null||extensions.size()==0||!extensions.containsKey(subsettingCRS ? "subsettingCrs" : "outputCrs")){
+        if(extensions==null||extensions.size()==0||!extensions.containsKey( identifier)){
              // NO extension at hand
-            return reader.getCrs();
+            return defaultCRS;
         }
         
-        // look for an interpolation extension
-        final ExtensionItemType extensionItem=extensions.get(subsettingCRS ? "subsettingCrs" : "outputCrs");
-        if (extensionItem.getName().equals(subsettingCRS ? "subsettingCrs" : "outputCrs")) {
+        // look for an crs extension
+        final ExtensionItemType extensionItem=extensions.get(identifier);
+        if (extensionItem.getName().equals(identifier)) {
             // get URI
             String crsName = extensionItem.getSimpleContent();
 
             // checks
             if (crsName == null) {
-                throw new WCS20Exception(subsettingCRS ? "Subsetting" : "Output" + " CRS was null",
+                throw new WCS20Exception(identifier+" was null",
                         WCS20ExceptionCode.NotACrs, "null");
             }
 
@@ -992,16 +992,34 @@ public class GetCoverage {
             try {
                 return lonLatCRSFactory.createCoordinateReferenceSystem(crsName);
             } catch (Exception e) {
-                final WCS20Exception exception = new WCS20Exception("Invalid "
-                        + (subsettingCRS ? "subsetting" : "output") + " CRS",
-                        WCS20Exception.WCS20ExceptionCode.NotACrs, crsName);
+                final WCS20Exception exception = new WCS20Exception("Invalid "+identifier,
+                        isOutputCRS?WCS20Exception.WCS20ExceptionCode.OutputCrsNotSupported:WCS20Exception.WCS20ExceptionCode.SubsettingCrsNotSupported,
+                                crsName);
                 exception.initCause(e);
                 throw exception;
             }        
 
         }
-        return reader.getCrs();
+        
+        // should not happen
+        return defaultCRS;
     }
+
+    /**
+     * This method is responsible for extracting the subsettingCRS.
+     * 
+     * <p>
+     * In case it is not provided the subsettingCRS falls back on the nativeCRS.
+     * 
+     * @param reader the {@link AbstractGridCoverage2DReader} to be used
+     * @param extensions the {@link Map} of extension for this request.
+     * @return the subsettingCRS as a {@link CoordinateReferenceSystem}
+     */
+    private CoordinateReferenceSystem extractSubsettingCRS(AbstractGridCoverage2DReader reader,Map<String, ExtensionItemType> extensions) {
+        Utilities.ensureNonNull("reader", reader);
+        return extractCRSInternal(extensions, reader.getCrs(),false);       
+    }
+
 
     /**
      * This method id responsible for extracting the extensions from the incoming request to 

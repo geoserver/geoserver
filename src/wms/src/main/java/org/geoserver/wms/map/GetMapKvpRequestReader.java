@@ -27,6 +27,7 @@ import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.NoExternalEntityResolver;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
@@ -75,6 +76,7 @@ import org.opengis.filter.identity.FeatureId;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.vfny.geoserver.util.Requests;
 import org.vfny.geoserver.util.SLDValidator;
+import org.xml.sax.EntityResolver;
 
 public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServletRequestAware {
 
@@ -108,12 +110,14 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
      * the first style that can be applied to a given layer. This is for backwards compatibility
      */
     private boolean laxStyleMatchAllowed = true;
-
+    
+    
     public GetMapKvpRequestReader(WMS wms) {
         super(GetMapRequest.class);
         this.wms = wms;
     }
 
+    
     /**
      * Implements {@link HttpServletRequestAware#setHttpRequest(HttpServletRequest)} to gather
      * request information for some properties like {@link GetMapRequest#isGet()} and
@@ -546,35 +550,50 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
     }
 
     /**
+     * Creates an XML Entity Resolver for SLD parsing.
+     * 
+     * @return
+     */
+    protected EntityResolver getSldEntityResolver() {
+        boolean externalEntitiesEnabled = wms.getSldExternalEntities();
+        if (externalEntitiesEnabled) {
+            // default behaviour: XML parser will try to resolve entities
+            return null;
+        } else {
+            // entities disabled
+            return new NoExternalEntityResolver();
+        }
+    }    
+    
+    /**
      * validates an sld document.
      * 
      */
     private List validateSld(InputStream stream, GetMapRequest getMap) {
         try {
             if (getMap.getSldVersion() != null) {
-                return Styles.validate(stream, new Version(getMap.getSldVersion()));
+                return Styles.validate(stream, getSldEntityResolver(), new Version(getMap.getSldVersion()));
             }
             else {
-                return Styles.validate(stream);
+                return Styles.validate(stream, getSldEntityResolver());
             }
         } 
         catch (IOException e) {
             throw new ServiceException("Error validating style", e);
         }
     }
-
+    
     /**
      * Parses an sld document.
      */
     private StyledLayerDescriptor parseSld(GetMapRequest getMap, InputStream stream) {
-       
         StyledLayerDescriptor sld;
         try {
             if (getMap.getSldVersion() != null) {
-                sld = Styles.parse(stream, new Version(getMap.getSldVersion()));
+                sld = Styles.parse(stream, getSldEntityResolver(), new Version(getMap.getSldVersion()));
             }
             else {
-                sld = Styles.parse(stream);
+                sld = Styles.parse(stream, getSldEntityResolver());
             }
         }
         catch(IOException e) {

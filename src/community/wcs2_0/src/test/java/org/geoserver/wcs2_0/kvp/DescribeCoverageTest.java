@@ -1,5 +1,6 @@
 package org.geoserver.wcs2_0.kvp;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertNotNull;
 
 import org.geoserver.wcs2_0.WCSTestSupport;
@@ -13,17 +14,21 @@ public class DescribeCoverageTest extends WCSTestSupport {
     public void testBasicKVP() throws Exception {
         Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=wcs__BlueMarble");
         assertNotNull(dom);
-        print(dom, System.out);
+//        print(dom, System.out);
         
         checkValidationErrors(dom, WCS20_SCHEMA);
+        assertXpathEvaluatesTo("3", "count(//wcs:CoverageDescription//gmlcov:rangeType//swe:DataRecord//swe:field)", dom);
+        assertXpathEvaluatesTo("image/tiff", "//wcs:CoverageDescriptions//wcs:CoverageDescription[1]//wcs:ServiceParameters//wcs:nativeFormat", dom);
     }
     
     @Test
     public void testMultiBandKVP() throws Exception {
         Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=wcs__multiband");
         assertNotNull(dom);
-        print(dom, System.out);
+//        print(dom, System.out);
         
-        checkValidationErrors(dom, WCS20_SCHEMA);
+        checkValidationErrors(dom, WCS20_SCHEMA);       
+        assertXpathEvaluatesTo("9", "count(//wcs:CoverageDescription//gmlcov:rangeType//swe:DataRecord//swe:field)", dom);        
+        assertXpathEvaluatesTo("image/tiff", "//wcs:CoverageDescriptions//wcs:CoverageDescription[1]//wcs:ServiceParameters//wcs:nativeFormat", dom);
     }
 }

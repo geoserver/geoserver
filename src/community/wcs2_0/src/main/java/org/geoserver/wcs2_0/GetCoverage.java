@@ -973,7 +973,7 @@ public class GetCoverage {
                     parsedExtensions.put("Interpolation", extensionItem);
                 } else if (extensionName.equals("rangeSubset")) {
                     parsedExtensions.put("rangeSubset", extensionItem);
-                } else if (extensionName.equals("rangeSubset")) {
+                } else if (extensionName.equals("rangeSubset")||extensionName.equals("RangeSubset")) {
                     parsedExtensions.put("rangeSubset", extensionItem);
                 } 
             }

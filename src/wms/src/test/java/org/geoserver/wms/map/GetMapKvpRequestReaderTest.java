@@ -10,7 +10,6 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +31,7 @@ import org.geoserver.test.ows.KvpRequestReaderTestSupport;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
+import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.kvp.PaletteManager;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.Style;
@@ -82,6 +82,36 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         reader = new GetMapKvpRequestReader(wms);
     }
 
+    public void testSldEntityResolver() throws Exception {
+        WMS wms = new WMS(getGeoServer());
+        WMSInfo wmsInfo = wms.getServiceInfo();
+        try {
+            // enable entities in external SLD files
+            wmsInfo.getMetadata().put(WMS.SLD_EXTERNAL_ENTITIES, true);
+            getGeoServer().save(wmsInfo);
+
+            // test setting has been saved
+            assertNotNull(wms.getServiceInfo().getMetadata().get(WMS.SLD_EXTERNAL_ENTITIES));
+            assertTrue((Boolean) wms.getServiceInfo().getMetadata().get(WMS.SLD_EXTERNAL_ENTITIES));
+            
+            // test no custom entity resolver will be used
+            GetMapKvpRequestReader reader = new GetMapKvpRequestReader(wms);
+            assertNull(reader.getSldEntityResolver());
+
+            // disable entities
+            wmsInfo.getMetadata().put(WMS.SLD_EXTERNAL_ENTITIES, false);
+            getGeoServer().save(wmsInfo);
+
+            // since XML entities are disabled for external SLD files
+            // I need an entity resolver which enforce this
+            reader = new GetMapKvpRequestReader(wms);
+            assertNotNull(reader.getSldEntityResolver());
+        } finally {
+            wmsInfo.getMetadata().put(WMS.SLD_EXTERNAL_ENTITIES, WMS.SLD_EXTERNAL_ENTITIES_DEFAULT);
+            getGeoServer().save(wmsInfo);            
+        }
+    }
+    
     public void testCreateRequest() throws Exception {
         GetMapRequest request = (GetMapRequest) reader.createRequest();
         assertNotNull(request);

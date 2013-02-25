@@ -4,20 +4,24 @@
  */
 package org.geoserver.wms.wms_1_3;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.net.URL;
 import java.util.Collections;
 
+import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.platform.ServiceException;
+import org.geoserver.wms.WMS;
+import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -154,7 +158,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
          "  </UserStyle> "+
          " </NamedLayer> "+
          "</StyledLayerDescriptor>";
-    
+     
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
@@ -340,5 +344,41 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         } finally {
             catalog.remove(group);
         }
-    }       
+    }   
+    
+    @Test
+    public void testSldExternalEntities() throws Exception {
+        URL sldUrl = GetMapIntegrationTest.class.getResource("../externalEntities.sld");
+        String url = "wms?bbox=" + bbox + "&styles="
+                + "&layers=" + layers + "&Format=image/png" + "&request=GetMap" + "&width=550"
+                + "&height=250" + "&srs=EPSG:4326" + "&sld=" + sldUrl.toString();
+
+        WMS wms = new WMS(getGeoServer());
+        WMSInfo wmsInfo = wms.getServiceInfo();
+        try {
+            // enable entities in external SLD files
+            wmsInfo.getMetadata().put(WMS.SLD_EXTERNAL_ENTITIES, true);
+            getGeoServer().save(wmsInfo);
+            
+            // if entities evaluation is enabled
+            // the parser will try to read a file on the local file system
+            // if the file is found, its content will be used to replace the entity
+            // if the file is not found the parser will throw a FileNotFoundException
+            String response = getAsString(url);            
+            assertTrue(response.indexOf("java.io.FileNotFoundException") > -1);
+            
+            // disable entities
+            wmsInfo.getMetadata().put(WMS.SLD_EXTERNAL_ENTITIES, false);
+            getGeoServer().save(wmsInfo);
+
+            // if entities evaluation is disabled
+            // the parser will throw a MalformedURLException when it finds an entity
+            response = getAsString(url);
+            assertTrue(response.indexOf("java.net.MalformedURLException") > -1);
+
+        } finally {
+            wmsInfo.getMetadata().put(WMS.SLD_EXTERNAL_ENTITIES, WMS.SLD_EXTERNAL_ENTITIES_DEFAULT);
+            getGeoServer().save(wmsInfo);            
+        }
+    }    
 }

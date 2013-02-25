@@ -153,6 +153,9 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         TextField<Integer> kmScoreField = new TextField<Integer>("kml.kmscore", kmScore, Integer.class);
         kmScoreField.add(new RangeValidator<Integer>(0, 100));
         form.add(kmScoreField);
+        
+        // SLD configuration
+        form.add(new CheckBox("sld.externalentities", defaultedModel(metadataModel, WMS.SLD_EXTERNAL_ENTITIES, WMS.SLD_EXTERNAL_ENTITIES_DEFAULT)));
     }
     
     MapModel defaultedModel(IModel baseModel, String key, Object defaultValue) {

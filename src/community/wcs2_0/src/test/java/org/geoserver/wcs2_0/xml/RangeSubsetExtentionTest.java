@@ -1,4 +1,4 @@
-package org.geoserver.wcs2_0.post;
+package org.geoserver.wcs2_0.xml;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -8,6 +8,7 @@ import junit.framework.Assert;
 
 import org.apache.commons.io.FileUtils;
 import org.geoserver.wcs2_0.WCSTestSupport;
+import org.geoserver.wcs2_0.exception.WCS20Exception.WCS20ExceptionCode;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.referencing.CRS;
@@ -49,9 +50,9 @@ public class RangeSubsetExtentionTest extends WCSTestSupport {
     }
     
     @Test
-    public void testRange() throws Exception {
+    public void mixed() throws Exception {
         
-        final File xml= new File("./src/test/resources/rangesubset/requestGetCoverageRangeSubsettingInterval.xml");
+        final File xml= new File("./src/test/resources/rangesubset/requestGetCoverageRangeSubsettingInterval2.xml");
         final String request= FileUtils.readFileToString(xml);
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
@@ -65,7 +66,7 @@ public class RangeSubsetExtentionTest extends WCSTestSupport {
         assertEquals(360, reader.getOriginalGridRange().getSpan(0));
         assertEquals(360, reader.getOriginalGridRange().getSpan(1));
         final GridCoverage2D coverage = reader.read(null);
-        assertEquals(3, coverage.getSampleDimensions().length);
+        assertEquals(5, coverage.getSampleDimensions().length);
         
         GridCoverage2D sourceCoverage = (GridCoverage2D) this.getCatalog().getCoverageByName("BlueMarble").getGridCoverageReader(null, null).read(null);
         assertEnvelopeEquals(sourceCoverage, coverage);
@@ -83,6 +84,7 @@ public class RangeSubsetExtentionTest extends WCSTestSupport {
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
         assertEquals("application/xml", response.getContentType());
+        checkOws20Exception(response, 404, WCS20ExceptionCode.NoSuchField.getExceptionCode(), "Band1");        
     }    
     
     @Test
@@ -157,6 +159,32 @@ public class RangeSubsetExtentionTest extends WCSTestSupport {
         assertEquals(7, coverage.getSampleDimensions().length);
         
         GridCoverage2D sourceCoverage = (GridCoverage2D) this.getCatalog().getCoverageByName("multiband").getGridCoverageReader(null, null).read(null);
+        assertEnvelopeEquals(sourceCoverage, coverage);
+        reader.dispose();  
+        scheduleForCleaning(coverage);
+        scheduleForCleaning(sourceCoverage);   
+    }
+
+    @Test
+    public void testRange() throws Exception {
+        
+        final File xml= new File("./src/test/resources/rangesubset/requestGetCoverageRangeSubsettingInterval.xml");
+        final String request= FileUtils.readFileToString(xml);
+        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+    
+        assertEquals("image/tiff", response.getContentType());
+        byte[] tiffContents = getBinary(response);
+        File file = File.createTempFile("bm_gtiff", "bm_gtiff.tiff", new File("./target"));
+        FileUtils.writeByteArrayToFile(file, tiffContents);
+    
+        final GeoTiffReader reader = new GeoTiffReader(file);
+        Assert.assertTrue(CRS.equalsIgnoreMetadata(reader.getCrs(), CRS.decode("EPSG:4326",true)));
+        assertEquals(360, reader.getOriginalGridRange().getSpan(0));
+        assertEquals(360, reader.getOriginalGridRange().getSpan(1));
+        final GridCoverage2D coverage = reader.read(null);
+        assertEquals(3, coverage.getSampleDimensions().length);
+        
+        GridCoverage2D sourceCoverage = (GridCoverage2D) this.getCatalog().getCoverageByName("BlueMarble").getGridCoverageReader(null, null).read(null);
         assertEnvelopeEquals(sourceCoverage, coverage);
         reader.dispose();  
         scheduleForCleaning(coverage);

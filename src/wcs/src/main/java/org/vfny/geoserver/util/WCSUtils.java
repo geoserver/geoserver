@@ -140,7 +140,14 @@ public class WCSUtils {
     public static GridCoverage2D crop(
             final GridCoverage2D coverage,
             final Envelope bounds) {
-        Polygon polygon = JTS.toGeometry(new ReferencedEnvelope(bounds));
+        
+        // checks
+        final ReferencedEnvelope cropBounds = new ReferencedEnvelope(bounds);
+        final ReferencedEnvelope coverageBounds = new ReferencedEnvelope(coverage.getEnvelope());
+        if(cropBounds.contains((com.vividsolutions.jts.geom.Envelope)coverageBounds)){
+            return coverage;
+        }
+        Polygon polygon = JTS.toGeometry(cropBounds);
         Geometry roi = polygon.getFactory().createMultiPolygon(new Polygon[] {polygon});
 
         // perform the crops

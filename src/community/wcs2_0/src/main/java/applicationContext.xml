@@ -13,6 +13,7 @@
     <constructor-arg ref="geoServer" />
     <constructor-arg ref="coverageResponseDelegateFactory"/>
     <constructor-arg ref="envelopeDimensionsMapper"/>
+    <constructor-arg ref="MIMETYPEMapper"/>
   </bean>
 <!--  
     <bean id="wcsLogger" class="org.geoserver.ows.util.EMFLogger">
@@ -122,4 +123,9 @@
       <constructor-arg ref="envelopeDimensionsMapper" />
       <constructor-arg ref="geoServer"/>
   </bean>
+
+	<bean id="MIMETYPEMapper"
+		class="org.geoserver.wcs2_0.response.MIMETypeMapper">
+	</bean>
+
 </beans>

@@ -1,4 +1,4 @@
-package org.geoserver.wcs2_0.post;
+package org.geoserver.wcs2_0.xml;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
@@ -16,7 +16,7 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         final File xml= new File("./src/test/resources/getcapabilities/getCap.xml");
         final String request= FileUtils.readFileToString(xml);
         Document dom = postAsDOM("wcs", request);
-        print(dom);
+//        print(dom);
         
         checkFullCapabilitiesDocument(dom);
     }

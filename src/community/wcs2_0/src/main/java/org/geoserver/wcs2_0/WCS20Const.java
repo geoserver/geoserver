@@ -13,12 +13,12 @@ import org.xml.sax.helpers.AttributesImpl;
  * @author Emanuele Tajariol (etj) - GeoSolutions
  */
 public class WCS20Const {
-    public static final String V20x = "2.0.1"; // current
+    public static final String V201 = "2.0.1"; // current
     public static final String V20 = "2.0.0"; // old and deprecated, but tested by CITE
     public static final String V111 = "1.1.1";
     public static final String V110 = "1.1.0";
 
-    public static final String CUR_VERSION = WCS20Const.V20x;
+    public static final String CUR_VERSION = WCS20Const.V201;
     
     public static final String SERVICE_NAME = "WCS";
 

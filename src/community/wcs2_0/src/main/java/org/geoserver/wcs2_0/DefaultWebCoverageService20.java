@@ -17,6 +17,7 @@ import org.geoserver.platform.OWS20Exception;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
+import org.geoserver.wcs2_0.response.MIMETypeMapper;
 import org.geoserver.wcs2_0.response.WCS20DescribeCoverageTransformer;
 import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
 import org.geotools.util.logging.Logging;
@@ -32,6 +33,8 @@ import org.opengis.coverage.grid.GridCoverage;
 public class DefaultWebCoverageService20 implements WebCoverageService20 {
 
     protected Logger LOGGER = Logging.getLogger(DefaultWebCoverageService20.class);
+    
+    private MIMETypeMapper mimemapper;
 
     private Catalog catalog;
 
@@ -42,11 +45,12 @@ public class DefaultWebCoverageService20 implements WebCoverageService20 {
     /** Utility class to map envelope dimension*/
     private EnvelopeAxesLabelsMapper envelopeAxesMapper;
 
-    public DefaultWebCoverageService20(GeoServer geoServer, CoverageResponseDelegateFinder responseFactory, EnvelopeAxesLabelsMapper envelopeDimensionsMapper) {
+    public DefaultWebCoverageService20(GeoServer geoServer, CoverageResponseDelegateFinder responseFactory, EnvelopeAxesLabelsMapper envelopeDimensionsMapper,MIMETypeMapper mimemappe) {
         this.geoServer = geoServer;
         this.catalog = geoServer.getCatalog();
         this.responseFactory = responseFactory;
         this.envelopeAxesMapper=envelopeDimensionsMapper;
+        this.mimemapper=mimemappe;
     }
     
     @Override
@@ -73,7 +77,7 @@ public class DefaultWebCoverageService20 implements WebCoverageService20 {
 
         WCSInfo wcs = getServiceInfo();
 
-        WCS20DescribeCoverageTransformer describeTransformer = new WCS20DescribeCoverageTransformer(wcs, catalog, responseFactory,envelopeAxesMapper);
+        WCS20DescribeCoverageTransformer describeTransformer = new WCS20DescribeCoverageTransformer(wcs, catalog, responseFactory,envelopeAxesMapper,mimemapper);
         describeTransformer.setEncoding(Charset.forName(wcs.getGeoServer().getSettings().getCharset()));
         return describeTransformer;
     }
@@ -95,7 +99,7 @@ public class DefaultWebCoverageService20 implements WebCoverageService20 {
             throw new WCS20Exception("Missing version", OWS20Exception.OWSExceptionCode.MissingParameterValue, version);
         }
 
-        if ( ! WCS20Const.V20x.equals(version) && ! WCS20Const.V20.equals(version)) {
+        if ( ! WCS20Const.V201.equals(version) && ! WCS20Const.V20.equals(version)) {
             throw new WCS20Exception("Could not understand version:" + version);
         }
     }

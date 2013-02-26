@@ -4,15 +4,11 @@
  */
 package org.geoserver.wcs2_0.kvp;
 
-import java.util.Collection;
 import net.opengis.ows20.AcceptVersionsType;
 import net.opengis.ows20.Ows20Factory;
 
-import org.eclipse.emf.ecore.EObject;
 import org.geoserver.ows.kvp.AcceptVersionsKvpParser;
-import org.geoserver.ows.util.KvpUtils;
 import org.geotools.util.Version;
-import org.geotools.xml.EMFUtils;
 
 /**
  * Parses the OWS 2.0 capabilities negotiation related AcceptVersion parameter

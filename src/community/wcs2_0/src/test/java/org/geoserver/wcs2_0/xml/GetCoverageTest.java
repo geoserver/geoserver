@@ -118,13 +118,18 @@ public class GetCoverageTest extends WCSTestSupport {
             }
         }
     }
+    
     @Test
     public void testGetFullCoverageXML() throws Exception {
         final File xml= new File("./src/test/resources/requestGetFullCoverage.xml");
         final String request= FileUtils.readFileToString(xml);
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
         
+        // check the headers
         assertEquals("image/tiff", response.getContentType());
+        String contentDisposition = response.getHeader("Content-disposition");
+        assertEquals("inline; filename=wcs__BlueMarble.tif", contentDisposition);
+        
         byte[] tiffContents = getBinary(response);
         File file = File.createTempFile("bm_gtiff", "bm_gtiff.tiff", new File("./target"));
         FileUtils.writeByteArrayToFile(file, tiffContents);

@@ -13,6 +13,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.logging.Logger;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -25,11 +26,8 @@ import org.geotools.util.logging.Logging;
  * and in memory one, and a file system one (this class is so marginal that
  * I did not do so right away, in memory access is mostly handy for testing)
  */
-public class ServiceAccessRuleDAO extends AbstractAccessRuleDAO<ServiceAccessRule> { 
-
-    static {
-        LOGGER = Logging.getLogger(ServiceAccessRuleDAO.class);
-    }
+public class ServiceAccessRuleDAO extends AbstractAccessRuleDAO<ServiceAccessRule> {
+    private final static Logger LOGGER = Logging.getLogger(ServiceAccessRuleDAO.class);
 
     /**
      * property file name

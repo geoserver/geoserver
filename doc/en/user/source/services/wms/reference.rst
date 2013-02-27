@@ -63,7 +63,7 @@ Formats in which WMS can report exceptions. The supported values for exceptions 
      - ``EXCEPTIONS=application/vnd.ogc.se_xml``
      - Xml output. (The default format)
    * - PNG
-     - ``EXCEPTIONS=application/vnd.ogc.inimage``
+     - ``EXCEPTIONS=application/vnd.ogc.se_inimage``
      - Generates an image
    * - Blank
      - ``EXCEPTIONS=application/vnd.ogc.se_blank``

@@ -87,6 +87,8 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CRSAuthorityFactory;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.PixelInCell;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 import org.vfny.geoserver.util.WCSUtils;
 
 /**
@@ -344,7 +346,10 @@ public class GetCoverage {
                 parameters.parameter("warp").setValue(warp);
                 parameters.parameter("interpolation").setValue(interpolation!=null?interpolation:InterpolationPolicy.getDefaultPolicy().getInterpolation());
                 parameters.parameter( "backgroundValues").setValue(CoverageUtilities.getBackgroundValues(sourceGC));// TODO check and improve
-                return (GridCoverage2D) CoverageProcessor.getInstance().doOperation(parameters,hints);
+
+                GridCoverage2D gc = (GridCoverage2D) CoverageProcessor.getInstance().doOperation(parameters,hints);
+//                RenderedImageBrowser.showChain(gc.getRenderedImage(),false);
+                return gc;
             }
 
         },
@@ -440,7 +445,9 @@ public class GetCoverage {
                 parameters.parameter("warp").setValue(warp);
                 parameters.parameter("interpolation").setValue(interpolation!=null?interpolation:InterpolationPolicy.getDefaultPolicy().getInterpolation());
                 parameters.parameter( "backgroundValues").setValue(CoverageUtilities.getBackgroundValues(sourceGC));// TODO check and improve
-                return (GridCoverage2D) CoverageProcessor.getInstance().doOperation(parameters,hints);
+                GridCoverage2D gc = (GridCoverage2D) CoverageProcessor.getInstance().doOperation(parameters,hints);
+//                RenderedImageBrowser.showChain(gc.getRenderedImage(),false);
+                return gc;
             }
             
         },   
@@ -1382,9 +1389,12 @@ public class GetCoverage {
     }
 
     /**
+     * This method is responsible for extracting the subsettingEvelope from the 
+     * incoming request.
+     * 
      * @param reader
      * @param request
-     * @param subsettingCRS 
+     * @param subsettingCRS
      * @return
      */
     private GeneralEnvelope extractSubsettingEnvelope(
@@ -1394,16 +1404,16 @@ public class GetCoverage {
         
         //default envelope in subsettingCRS
         final CoordinateReferenceSystem sourceCRS=reader.getCrs();
-        GeneralEnvelope envelope=new GeneralEnvelope(reader.getOriginalEnvelope());
-        envelope.setCoordinateReferenceSystem(sourceCRS);
+        GeneralEnvelope sourceEnvelopeInSubsettingCRS=new GeneralEnvelope(reader.getOriginalEnvelope());
+        sourceEnvelopeInSubsettingCRS.setCoordinateReferenceSystem(sourceCRS);
         if(!(subsettingCRS==null||CRS.equalsIgnoreMetadata(subsettingCRS,sourceCRS))){
             
-            // reproject source coverage to subsetting crs for initialization
+            // reproject source envelope to subsetting crs for initialization
             try {
-                envelope= CRS.transform(
+                sourceEnvelopeInSubsettingCRS= CRS.transform(
                         CRS.findMathTransform(reader.getCrs(), subsettingCRS), 
                         reader.getOriginalEnvelope());
-                envelope.setCoordinateReferenceSystem(subsettingCRS);
+                sourceEnvelopeInSubsettingCRS.setCoordinateReferenceSystem(subsettingCRS);
             } catch (Exception e) {
                 final WCS20Exception exception= new WCS20Exception(
                         "Unable to initialize subsetting envelope",
@@ -1417,7 +1427,7 @@ public class GetCoverage {
         // check if we have to subset, if not let's send back the basic coverage
         final EList<DimensionSubsetType> dimensions = request.getDimensionSubset();
         if(dimensions==null||dimensions.size()<=0){
-            return envelope;
+            return sourceEnvelopeInSubsettingCRS;
         }
         
         // TODO remove when we handle time and elevation
@@ -1428,11 +1438,13 @@ public class GetCoverage {
         }
         
         // put aside the dimensions that we have for double checking
-        final List<String> axesNames = envelopeDimensionsMapper.getAxesNames(envelope, true);
+        final List<String> axesNames = envelopeDimensionsMapper.getAxesNames(sourceEnvelopeInSubsettingCRS, true);
         final List<String> foundDimensions= new ArrayList<String>();
         
-        // parse dimensions
-        final GeneralEnvelope sourceEnvelope = new GeneralEnvelope(reader.getOriginalEnvelope());  
+        // === parse dimensions 
+        // the subsetting envelope is initialized with the source envelope in subsetting CRS
+        GeneralEnvelope subsettingEnvelope = new GeneralEnvelope(sourceEnvelopeInSubsettingCRS);  
+        subsettingEnvelope.setCoordinateReferenceSystem(subsettingCRS);
         for(DimensionSubsetType dim:dimensions){
             // get basic information
             String dimension=dim.getDimension(); // this is the dimension name which we compare to axes abbreviations from geotools
@@ -1473,13 +1485,13 @@ public class GetCoverage {
                             trim.getTrimLow());
                 }
 
-                final int axisIndex=envelopeDimensionsMapper.getAxisIndex(envelope, dimension);
+                final int axisIndex=envelopeDimensionsMapper.getAxisIndex(sourceEnvelopeInSubsettingCRS, dimension);
                 if(axisIndex<0){
                     throw new WCS20Exception("Invalid axis provided",WCS20Exception.WCS20ExceptionCode.InvalidAxisLabel,dimension);
                 }
                 
                 // notice how we choose the order of the axes
-                envelope.setRange(axisIndex, low, high);
+                subsettingEnvelope.setRange(axisIndex, low, high);
             } else if(dim instanceof DimensionSliceType){
                 
                 // SLICING
@@ -1487,17 +1499,17 @@ public class GetCoverage {
                 final String slicePointS = slicing.getSlicePoint();
                 final double slicePoint=Double.parseDouble(slicePointS);            
                 
-                final int axisIndex=envelopeDimensionsMapper.getAxisIndex(envelope, dimension);
+                final int axisIndex=envelopeDimensionsMapper.getAxisIndex(sourceEnvelopeInSubsettingCRS, dimension);
                 if(axisIndex<0){
                     throw new WCS20Exception("Invalid axis provided",WCS20Exception.WCS20ExceptionCode.InvalidAxisLabel,dimension);
                 }
                 // notice how we choose the order of the axes
                 AffineTransform affineTransform = RequestUtils.getAffineTransform(reader.getOriginalGridToWorld(PixelInCell.CELL_CENTER));
                 final double scale=axisIndex==0?affineTransform.getScaleX():-affineTransform.getScaleY();
-                envelope.setRange(axisIndex, slicePoint, slicePoint+scale);
+                subsettingEnvelope.setRange(axisIndex, slicePoint, slicePoint+scale);
                 
-                // slice point outside coverave
-                if(sourceEnvelope.getMinimum(axisIndex)>slicePoint||slicePoint>sourceEnvelope.getMaximum(axisIndex)){
+                // slice point outside coverage
+                if(sourceEnvelopeInSubsettingCRS.getMinimum(axisIndex)>slicePoint||slicePoint>sourceEnvelopeInSubsettingCRS.getMaximum(axisIndex)){
                     throw new WCS20Exception(
                             "SlicePoint outside coverage envelope", 
                             WCS20Exception.WCS20ExceptionCode.InvalidSubsetting,
@@ -1515,37 +1527,58 @@ public class GetCoverage {
         //
         // intersect with original envelope to make sure the subsetting is valid
         //
-        if(CRS.equalsIgnoreMetadata(envelope.getCoordinateReferenceSystem(), sourceEnvelope.getCoordinateReferenceSystem())){
-            envelope.intersect(sourceEnvelope);
-            envelope.setCoordinateReferenceSystem(reader.getCrs());
-        } else {
-            // reproject envelope  to native crs for cropping
-            try {
-                envelope= CRS.transform(
-                        CRS.findMathTransform(subsettingCRS,sourceCRS), 
-                        envelope);
-                envelope.setCoordinateReferenceSystem(sourceCRS);
-                
-                // intersect
-                envelope.intersect(sourceEnvelope);
-                envelope.setCoordinateReferenceSystem(sourceCRS);                
-            } catch (Exception e) {
-                final WCS20Exception exception= new WCS20Exception(
-                        "Unable to initialize subsetting envelope",
-                        WCS20Exception.WCS20ExceptionCode.SubsettingCrsNotSupported,
-                        subsettingCRS.toWKT()); // TODO extract code
-                exception.initCause(e);
-                throw exception;
-            } 
-        }        
+        GeneralEnvelope sourceEnvelope = reader.getOriginalEnvelope();
 
-        // provided trim extent does not intersect coverage envelope
-        if(envelope.isEmpty()){
-            throw new WCS20Exception(
-                    "Empty intersection after subsetting", 
-                    WCS20Exception.WCS20ExceptionCode.InvalidSubsetting,"");// TODO spit our envelope trimmed
-        }
-        return envelope;
+        // reproject envelope  to native crs for cropping
+        try {
+            if(!CRS.equalsIgnoreMetadata(subsettingEnvelope.getCoordinateReferenceSystem(), reader.getOriginalEnvelope())){
+                // look for transform
+                final MathTransform mathTransform = CRS.findMathTransform(subsettingCRS,sourceCRS);
+                if(!mathTransform.isIdentity()){ // do we really need to reproject?
+                final GeneralEnvelope subsettingEnvelopeInSourceCRS = CRS.transform(
+                            mathTransform, 
+                            subsettingEnvelope);
+                    subsettingEnvelopeInSourceCRS.setCoordinateReferenceSystem(sourceCRS);
+                    
+                    // intersect
+                    subsettingEnvelopeInSourceCRS.intersect(sourceEnvelope);
+                    subsettingEnvelopeInSourceCRS.setCoordinateReferenceSystem(sourceCRS);          
+    
+                    // provided trim extent does not intersect coverage envelope
+                    if(subsettingEnvelopeInSourceCRS.isEmpty()){
+                        throw new WCS20Exception(
+                                "Empty intersection after subsetting", 
+                                WCS20Exception.WCS20ExceptionCode.InvalidSubsetting,"");// TODO spit our envelope trimmed
+                    }      
+                    return subsettingEnvelopeInSourceCRS;
+                }     
+            }    
+            // we are reprojecting
+            subsettingEnvelope.intersect(sourceEnvelope);
+            subsettingEnvelope.setCoordinateReferenceSystem(reader.getCrs());      
+
+            // provided trim extent does not intersect coverage envelope
+            if(subsettingEnvelope.isEmpty()){
+                throw new WCS20Exception(
+                        "Empty intersection after subsetting", 
+                        WCS20Exception.WCS20ExceptionCode.InvalidSubsetting,"");// TODO spit our envelope trimmed
+            }
+            return subsettingEnvelope;
+        } catch (FactoryException e) {
+            final WCS20Exception exception= new WCS20Exception(
+                    "Unable to initialize subsetting envelope",
+                    WCS20Exception.WCS20ExceptionCode.SubsettingCrsNotSupported,
+                    subsettingCRS.toWKT()); // TODO extract code
+            exception.initCause(e);
+            throw exception;
+        } catch (TransformException e) {
+            final WCS20Exception exception= new WCS20Exception(
+                    "Unable to initialize subsetting envelope",
+                    WCS20Exception.WCS20ExceptionCode.SubsettingCrsNotSupported,
+                    subsettingCRS.toWKT()); // TODO extract code
+            exception.initCause(e);
+            throw exception;
+        } 
     }
 
 }

@@ -48,6 +48,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.util.CoverageUtils;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
@@ -63,6 +64,7 @@ import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.processing.CoverageProcessor;
+import org.geotools.coverage.processing.operation.Scale;
 import org.geotools.factory.GeoTools;
 import org.geotools.factory.Hints;
 import org.geotools.geometry.GeneralEnvelope;
@@ -85,10 +87,12 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CRSAuthorityFactory;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.PixelInCell;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 import org.vfny.geoserver.util.WCSUtils;
 
 /**
- * Implementation of the WCS 2.0 GetCoverage request
+ * Implementation of the WCS 2.0.1 GetCoverage request
  * 
  * @author Andrea Aime - GeoSolutions
  * @author Simone Giannecchini, GeoSolutions
@@ -98,6 +102,7 @@ public class GetCoverage {
     /** Logger.*/
     private Logger LOGGER= Logging.getLogger(GetCoverage.class);
     
+    /** enum that representation the possible interpolation values.**/
     private enum InterpolationPolicy{
         linear("http://www.opengis.net/def/interpolation/OGC/1/linear") {
             @Override
@@ -166,12 +171,25 @@ public class GetCoverage {
             //method not found
             throw new WCS20Exception("Interpolation method not supported",WCS20ExceptionCode.InterpolationMethodNotSupported,interpolationMethod);
         }  
-            
+        /**
+         * Default interpolation policy for this implementation.
+         * @return an instance of {@link InterpolationPolicy} which is actually the default one.
+         */
         static InterpolationPolicy getDefaultPolicy(){
             return nearestneighbor;
         }
     }
     
+    /**
+     * {@link Enum} for implementing the management of the various scaling options available 
+     * for the scaling extension.
+     * 
+     * <p>
+     * This enum works as a factory to separate the code that handles the scaling operations.
+     * 
+     * @author Simone Giannecchini, GeoSolutions
+     *
+     */
     private enum ScalingPolicy{
         DoNothing{
 
@@ -184,6 +202,12 @@ public class GetCoverage {
             }
             
         },
+        /**
+         * In this case we scale each axis by the same factor. 
+         * 
+         * <p>
+         * We do rely on the {@link Scale} operation.
+         */
         ScaleByFactor{
 
             @Override
@@ -196,7 +220,7 @@ public class GetCoverage {
                 double scaleFactor=scaleByFactorType.getScaleFactor();
                 
                 // checks
-                if(scaleFactor<0){
+                if(scaleFactor<=0){
                     throw new WCS20Exception("Invalid scale factor", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, String.valueOf(scaleFactor));
                 }
                 
@@ -243,6 +267,14 @@ public class GetCoverage {
             }
             
         },
+        
+        /**
+         * In this case we scale each axis bto a predefined size. 
+         * 
+         * <p>
+         * We do rely on the {@link org.geotools.coverage.processing.operation.Warp} operation as the final 
+         * size must be respected on each axis.
+         */        
         ScaleToSize{
 
             /**
@@ -271,11 +303,11 @@ public class GetCoverage {
                 }
                 final int sizeX=(int) xSize.getTargetSize();// TODO should this be int?
                 if(sizeX<=0){
-                    throw new WCS20Exception("Invalid target size", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, Integer.toString(sizeX));
+                    throw new WCS20Exception("Invalid target size", WCS20Exception.WCS20ExceptionCode.InvalidExtent, Integer.toString(sizeX));
                 }
                 final int sizeY=(int) ySize.getTargetSize();// TODO should this be int?
                 if(sizeY<=0){
-                    throw new WCS20Exception("Invalid target size", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, Integer.toString(sizeY));
+                    throw new WCS20Exception("Invalid target size", WCS20Exception.WCS20ExceptionCode.InvalidExtent, Integer.toString(sizeY));
                 }
                 
                 // scale
@@ -314,10 +346,20 @@ public class GetCoverage {
                 parameters.parameter("warp").setValue(warp);
                 parameters.parameter("interpolation").setValue(interpolation!=null?interpolation:InterpolationPolicy.getDefaultPolicy().getInterpolation());
                 parameters.parameter( "backgroundValues").setValue(CoverageUtilities.getBackgroundValues(sourceGC));// TODO check and improve
-                return (GridCoverage2D) CoverageProcessor.getInstance().doOperation(parameters,hints);
+
+                GridCoverage2D gc = (GridCoverage2D) CoverageProcessor.getInstance().doOperation(parameters,hints);
+//                RenderedImageBrowser.showChain(gc.getRenderedImage(),false);
+                return gc;
             }
 
         },
+        /**
+         * In this case we scale each axis to a predefined extent. 
+         * 
+         * <p>
+         * We do rely on the {@link org.geotools.coverage.processing.operation.Warp} operation as the final 
+         * extent must be respected on each axis.
+         */  
         ScaleToExtent{
 
             @Override
@@ -342,10 +384,10 @@ public class GetCoverage {
                     }
                 }
                 if(xExtent==null){
-                    throw new WCS20Exception("Missing extent along i", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, "");
+                    throw new WCS20Exception("Missing extent along i", WCS20Exception.WCS20ExceptionCode.InvalidExtent, "Null");
                 }
                 if(yExtent==null){
-                    throw new WCS20Exception("Missing extent along j", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, "");
+                    throw new WCS20Exception("Missing extent along j", WCS20Exception.WCS20ExceptionCode.InvalidExtent, "Null");
                 }  
                 
                 final int minx=(int) targetAxisExtentElements.get(0).getLow();// TODO should this be int?
@@ -356,10 +398,10 @@ public class GetCoverage {
                 // check on source geometry
                 final GridEnvelope2D sourceGE=sourceGC.getGridGeometry().getGridRange2D();
 
-                if(minx>maxx){
+                if(minx>=maxx){
                     throw new WCS20Exception("Invalid Extent for dimension:"+targetAxisExtentElements.get(0).getAxis() , WCS20Exception.WCS20ExceptionCode.InvalidExtent, String.valueOf(maxx));
                 }
-                if(miny>maxy){
+                if(miny>=maxy){
                     throw new WCS20Exception("Invalid Extent for dimension:"+targetAxisExtentElements.get(1).getAxis() , WCS20Exception.WCS20ExceptionCode.InvalidExtent, String.valueOf(maxy));
                 }                
                 final Rectangle destinationRectangle= new Rectangle(minx, miny,maxx-minx+1, maxy-miny+1);
@@ -403,10 +445,18 @@ public class GetCoverage {
                 parameters.parameter("warp").setValue(warp);
                 parameters.parameter("interpolation").setValue(interpolation!=null?interpolation:InterpolationPolicy.getDefaultPolicy().getInterpolation());
                 parameters.parameter( "backgroundValues").setValue(CoverageUtilities.getBackgroundValues(sourceGC));// TODO check and improve
-                return (GridCoverage2D) CoverageProcessor.getInstance().doOperation(parameters,hints);
+                GridCoverage2D gc = (GridCoverage2D) CoverageProcessor.getInstance().doOperation(parameters,hints);
+//                RenderedImageBrowser.showChain(gc.getRenderedImage(),false);
+                return gc;
             }
             
-        },        
+        },   
+        /**
+         * In this case we scale each axis by the a provided factor. 
+         * 
+         * <p>
+         * We do rely on the {@link Scale} operation.
+         */
         ScaleAxesByFactor{
 
             @Override
@@ -433,18 +483,18 @@ public class GetCoverage {
                     }
                 }
                 if(xScale==null){
-                    throw new WCS20Exception("Missing scale factor along i", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, "");
+                    throw new WCS20Exception("Missing scale factor along i", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, "Null");
                 }
                 if(yScale==null){
-                    throw new WCS20Exception("Missing scale factor along j", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, "");
+                    throw new WCS20Exception("Missing scale factor along j", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, "Null");
                 }                
 
-                final double scaleFactorX= xScale.getScaleFactor();// TODO should this be int?
-                if(scaleFactorX<0){
+                final double scaleFactorX= xScale.getScaleFactor();
+                if(scaleFactorX<=0){
                     throw new WCS20Exception("Invalid scale factor", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, Double.toString(scaleFactorX));
                 }   
-                final double scaleFactorY= yScale.getScaleFactor();// TODO should this be int?
-                if(scaleFactorY<0){
+                final double scaleFactorY= yScale.getScaleFactor();
+                if(scaleFactorY<=0){
                     throw new WCS20Exception("Invalid scale factor", WCS20Exception.WCS20ExceptionCode.InvalidScaleFactor, Double.toString(scaleFactorY));
                 }                  
                 
@@ -526,12 +576,18 @@ public class GetCoverage {
     
 
     private WCSInfo wcs;
+    
     private Catalog catalog;
     
     /** Utility class to map envelope dimension*/
     private EnvelopeAxesLabelsMapper envelopeDimensionsMapper;
+    
+    /** A URI authorithy with lonlat order.*/
     private CRSAuthorityFactory lonLatCRSFactory;
+    
+    /** A URI authorithy with latlon order.*/
     private CRSAuthorityFactory latLonCRSFactory;
+    
     public final static String SRS_STARTER="http://www.opengis.net/def/crs/EPSG/0/";
 
     public GetCoverage(WCSInfo serviceInfo, Catalog catalog, EnvelopeAxesLabelsMapper envelopeDimensionsMapper) {
@@ -539,6 +595,7 @@ public class GetCoverage {
         this.catalog = catalog;
         this.envelopeDimensionsMapper=envelopeDimensionsMapper;
         
+        // building the needed URI CRS Factories
         Hints hints = GeoTools.getDefaultHints().clone();
         hints.add(new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER,Boolean.TRUE));
         hints.add(new Hints(Hints.FORCE_AXIS_ORDER_HONORING, "http-uri"));
@@ -550,6 +607,12 @@ public class GetCoverage {
         
     }
 
+    /**
+     * Executes the provided {@link GetCoverageType}.
+     * 
+     * @param request the {@link GetCoverageType} to be executed.
+     * @return the {@link GridCoverage} produced by the chain of operations specified by the provided {@link GetCoverageType}.
+     */
     public GridCoverage run(GetCoverageType request) {
 
         //
@@ -560,13 +623,17 @@ public class GetCoverage {
             throw new WCS20Exception("Could not locate coverage " + request.getCoverageId(), 
                     WCS20Exception.WCS20ExceptionCode.NoSuchCoverage, "coverageId");
         } 
-        
         final CoverageInfo cinfo = (CoverageInfo) linfo.getResource();
+        if(LOGGER.isLoggable(Level.FINE)){
+            LOGGER.fine("Executing GetCoverage request on coverage :"+linfo.toString());
+        }
+        
+        // === k, now start the execution
         GridCoverage2D coverage = null;
         try {
             
             // === extract all extensions for later usage
-            Map<String, ExtensionItemType> extensions = extractExtensions(coverage,request);
+            Map<String, ExtensionItemType> extensions = extractExtensions(request);
 
             // === prepare the hints to use
             // here I find if I can use overviews and do subsampling
@@ -586,7 +653,7 @@ public class GetCoverage {
             // Extract CRS values for relative extension
             //
             final CoordinateReferenceSystem subsettingCRS=extractSubsettingCRS(reader,extensions);
-            final CoordinateReferenceSystem outputCRS=extractOutputCRS(reader,extensions);
+            final CoordinateReferenceSystem outputCRS=extractOutputCRS(reader,extensions,subsettingCRS);
             final boolean enforceLatLonAxesOrder=requestingLatLonAxesOrder(outputCRS);
             // extract subsetting
             final GeneralEnvelope subset=extractSubsettingEnvelope(reader,request,subsettingCRS);
@@ -649,6 +716,8 @@ public class GetCoverage {
             // Output limits checks
             // We need to enforce them once again as it might be that no scaling or rangesubsetting is requested
             WCSUtils.checkOutputLimits(wcs, coverage.getGridGeometry().getGridRange2D(), coverage.getRenderedImage().getSampleModel());
+        } catch(ServiceException e) {
+            throw e;
         } catch(Exception e) {
             throw new WCS20Exception("Failed to read the coverage " + request.getCoverageId(), e);
         } finally {
@@ -708,7 +777,7 @@ public class GetCoverage {
      * 
      * @param outputCRS the final {@link CoordinateReferenceSystem} for the data as per the request 
      * 
-     * @return <code>tue</code> in case we need to swap axes, <code>false</code> otherwise.
+     * @return <code>true</code> in case we need to swap axes, <code>false</code> otherwise.
      */
     private boolean requestingLatLonAxesOrder(CoordinateReferenceSystem outputCRS) {
        
@@ -881,48 +950,48 @@ public class GetCoverage {
     }
 
     /**
-     * @param reader
-     * @param extensions
-     * @return
+     * This method is responsible for etracting the outputCRS.
+     * 
+     * <p>
+     * In case it is not provided the subsettingCRS falls back on the subsettingCRS.
+     * @param reader the {@link AbstractGridCoverage2DReader} to be used
+     * @param extensions the {@link Map} of extension for this request.
+     * @param subsettingCRS  the subsettingCRS as a {@link CoordinateReferenceSystem}
+     * @return the outputCRS as a {@link CoordinateReferenceSystem}
      */
     private CoordinateReferenceSystem extractOutputCRS(AbstractGridCoverage2DReader reader,
-            Map<String, ExtensionItemType> extensions) {
-        return extractCRS(reader,extensions,false);
+            Map<String, ExtensionItemType> extensions, CoordinateReferenceSystem subsettingCRS) {
+        return extractCRSInternal(extensions, subsettingCRS,true);   
     }
 
     /**
-     * @param reader
-     * @param extensions
-     * @return
+     * Extract the specified crs being it subsetting or output with proper defaults.
+     * 
+     * @param extensions the {@link Map}of extensions for this request.
+     * @param defaultCRS the defaultCRS as a {@link CoordinateReferenceSystem} for this extraction
+     * @param isOutputCRS a <code>boolean</code> which tells me whether the CRS we are looking for is a subsetting or an OutputCRS
+     * @return a {@link CoordinateReferenceSystem}.
+     * @throws WCS20Exception
      */
-    private CoordinateReferenceSystem extractSubsettingCRS(AbstractGridCoverage2DReader reader,Map<String, ExtensionItemType> extensions) {
-        return extractCRS(reader,extensions,true);
-    }
-
-    /**
-     * @param reader
-     * @param extensions
-     * @param b
-     * @return
-     */
-    private CoordinateReferenceSystem extractCRS(AbstractGridCoverage2DReader reader, Map<String, ExtensionItemType> extensions,
-            boolean subsettingCRS) {
-        
+    private CoordinateReferenceSystem extractCRSInternal(Map<String, ExtensionItemType> extensions,
+            CoordinateReferenceSystem defaultCRS, boolean isOutputCRS) throws WCS20Exception {
+        Utilities.ensureNonNull("defaultCRS", defaultCRS);
+        final String identifier=isOutputCRS?"outputCrs":"subsettingCrs";
         // look for subsettingCRS Extension extension
-        if(extensions==null||extensions.size()==0||!extensions.containsKey(subsettingCRS ? "subsettingCrs" : "outputCrs")){
+        if(extensions==null||extensions.size()==0||!extensions.containsKey( identifier)){
              // NO extension at hand
-            return reader.getCrs();
+            return defaultCRS;
         }
         
-        // look for an interpolation extension
-        final ExtensionItemType extensionItem=extensions.get(subsettingCRS ? "subsettingCrs" : "outputCrs");
-        if (extensionItem.getName().equals(subsettingCRS ? "subsettingCrs" : "outputCrs")) {
+        // look for an crs extension
+        final ExtensionItemType extensionItem=extensions.get(identifier);
+        if (extensionItem.getName().equals(identifier)) {
             // get URI
             String crsName = extensionItem.getSimpleContent();
 
             // checks
             if (crsName == null) {
-                throw new WCS20Exception(subsettingCRS ? "Subsetting" : "Output" + " CRS was null",
+                throw new WCS20Exception(identifier+" was null",
                         WCS20ExceptionCode.NotACrs, "null");
             }
 
@@ -930,23 +999,50 @@ public class GetCoverage {
             try {
                 return lonLatCRSFactory.createCoordinateReferenceSystem(crsName);
             } catch (Exception e) {
-                final WCS20Exception exception = new WCS20Exception("Invalid "
-                        + (subsettingCRS ? "subsetting" : "output") + " CRS",
-                        WCS20Exception.WCS20ExceptionCode.NotACrs, crsName);
+                final WCS20Exception exception = new WCS20Exception("Invalid "+identifier,
+                        isOutputCRS?WCS20Exception.WCS20ExceptionCode.OutputCrsNotSupported:WCS20Exception.WCS20ExceptionCode.SubsettingCrsNotSupported,
+                                crsName);
                 exception.initCause(e);
                 throw exception;
             }        
 
         }
-        return reader.getCrs();
+        
+        // should not happen
+        return defaultCRS;
     }
 
     /**
-     * @param coverage
-     * @param request
-     * @return
+     * This method is responsible for extracting the subsettingCRS.
+     * 
+     * <p>
+     * In case it is not provided the subsettingCRS falls back on the nativeCRS.
+     * 
+     * @param reader the {@link AbstractGridCoverage2DReader} to be used
+     * @param extensions the {@link Map} of extension for this request.
+     * @return the subsettingCRS as a {@link CoordinateReferenceSystem}
      */
-    private Map<String, ExtensionItemType> extractExtensions(GridCoverage2D coverage, GetCoverageType request) {
+    private CoordinateReferenceSystem extractSubsettingCRS(AbstractGridCoverage2DReader reader,Map<String, ExtensionItemType> extensions) {
+        Utilities.ensureNonNull("reader", reader);
+        return extractCRSInternal(extensions, reader.getCrs(),false);       
+    }
+
+
+    /**
+     * This method id responsible for extracting the extensions from the incoming request to 
+     * facilitate the work of successive methods.
+     * 
+     * @param request the {@link GetCoverageType} request to execute.
+     * 
+     * @return a {@link Map} that maps extension names to {@link ExtensionType}s.
+     */
+    private Map<String, ExtensionItemType> extractExtensions(GetCoverageType request) {
+        // === checks
+        Utilities.ensureNonNull("request", request);
+        if(LOGGER.isLoggable(Level.FINE)){
+            LOGGER.fine("Extracting extensions from provided request");
+        }
+        
         // look for subsettingCRS Extension extension
         final ExtensionType extension = request.getExtension();
         
@@ -960,20 +1056,38 @@ public class GetCoverage {
                 if (extensionName == null || extensionName.length() <= 0) {
                     throw new WCS20Exception("Null extension");
                 }
+                if(LOGGER.isLoggable(Level.FINE)){
+                    LOGGER.fine("Parsing extension "+extensionName);
+                }                
                 if (extensionName.equals("subsettingCrs")) {
                     parsedExtensions.put("subsettingCrs", extensionItem);
+                    if(LOGGER.isLoggable(Level.FINE)){
+                        LOGGER.fine("Added extension subsettingCrs");
+                    }                     
                 } else if (extensionName.equals("outputCrs")) {
                     parsedExtensions.put("outputCrs", extensionItem);
+                    if(LOGGER.isLoggable(Level.FINE)){
+                        LOGGER.fine("Added extension outputCrs");
+                    }    
                 } else if (extensionName.equals("Scaling")) {
                     parsedExtensions.put("Scaling", extensionItem);
+                    if(LOGGER.isLoggable(Level.FINE)){
+                        LOGGER.fine("Added extension Scaling");
+                    }    
                 } else if (extensionName.equals("Interpolation")) {
                     parsedExtensions.put("Interpolation", extensionItem);
-                } else if (extensionName.equals("rangeSubset")) {
+                    if(LOGGER.isLoggable(Level.FINE)){
+                        LOGGER.fine("Added extension Interpolation");
+                    }     
+                } else if (extensionName.equals("rangeSubset")||extensionName.equals("RangeSubset")) {
                     parsedExtensions.put("rangeSubset", extensionItem);
-                } else if (extensionName.equals("rangeSubset")) {
-                    parsedExtensions.put("rangeSubset", extensionItem);
+                    if(LOGGER.isLoggable(Level.FINE)){
+                        LOGGER.fine("Added extension rangeSubset");
+                    }    
                 } 
             }
+        } else if(LOGGER.isLoggable(Level.FINE)){
+            LOGGER.fine("No extensions found in provided request");
         }
         return parsedExtensions;
     }
@@ -1060,17 +1174,18 @@ public class GetCoverage {
     }
 
     /**
-     * @param coverage
-     * @param outputCRS
-     * @param spatialInterpolation 
-     * @param hints 
-     * @return
+     * This method is responsible for handling reprojection of the source coverage to a certain CRS.
+     * @param coverage the {@link GridCoverage} to reproject.
+     * @param targetCRS the target {@link CoordinateReferenceSystem}
+     * @param spatialInterpolation the {@link Interpolation} to adopt.
+     * @param hints {@link Hints} to control the process.
+     * @return a new instance of {@link GridCoverage} reprojeted to the targetCRS.
      */
-    private GridCoverage2D handleReprojection(GridCoverage2D coverage, CoordinateReferenceSystem outputCRS, Interpolation spatialInterpolation, Hints hints) {
+    private GridCoverage2D handleReprojection(GridCoverage2D coverage, CoordinateReferenceSystem targetCRS, Interpolation spatialInterpolation, Hints hints) {
         // checks
         Utilities.ensureNonNull("interpolation", spatialInterpolation);
         // check the two crs tosee if we really need to do anything
-        if(CRS.equalsIgnoreMetadata(coverage.getCoordinateReferenceSystem2D(), outputCRS)){
+        if(CRS.equalsIgnoreMetadata(coverage.getCoordinateReferenceSystem2D(), targetCRS)){
             return coverage;
         }
 
@@ -1079,7 +1194,7 @@ public class GetCoverage {
         final Operation operation = processor.getOperation("Resample");
         final ParameterValueGroup parameters = operation.getParameters();
         parameters.parameter("Source").setValue(coverage);
-        parameters.parameter("CoordinateReferenceSystem").setValue(outputCRS);
+        parameters.parameter("CoordinateReferenceSystem").setValue(targetCRS);
         parameters.parameter("GridGeometry").setValue(null);
         parameters.parameter("InterpolationType").setValue(spatialInterpolation);
         return (GridCoverage2D) processor.doOperation(parameters);
@@ -1193,12 +1308,14 @@ public class GetCoverage {
     }
 
     /**
-     * @param coverage
-     * @param request
-     * @param subsettingCRS 
-     * @param subset 
-     * @param hints 
-     * @return
+     * This method is reponsible for cropping the providede {@link GridCoverage} using the provided subset envelope.
+     * 
+     * <p>
+     * The subset envelope at this stage should be in the native crs.
+     * 
+     * @param coverage the source {@link GridCoverage}
+     * @param subset  an instance of {@link GeneralEnvelope} that drives the crop operation.
+     * @return a cropped version of the source {@link GridCoverage}
      */
     private GridCoverage2D handleSubsettingExtension(
             GridCoverage2D coverage, 
@@ -1272,27 +1389,31 @@ public class GetCoverage {
     }
 
     /**
+     * This method is responsible for extracting the subsettingEvelope from the 
+     * incoming request.
+     * 
      * @param reader
      * @param request
-     * @param subsettingCRS 
+     * @param subsettingCRS
      * @return
      */
     private GeneralEnvelope extractSubsettingEnvelope(
             AbstractGridCoverage2DReader reader, 
             GetCoverageType request, 
             CoordinateReferenceSystem subsettingCRS) {
+        
         //default envelope in subsettingCRS
         final CoordinateReferenceSystem sourceCRS=reader.getCrs();
-        GeneralEnvelope envelope=new GeneralEnvelope(reader.getOriginalEnvelope());
-        envelope.setCoordinateReferenceSystem(sourceCRS);
+        GeneralEnvelope sourceEnvelopeInSubsettingCRS=new GeneralEnvelope(reader.getOriginalEnvelope());
+        sourceEnvelopeInSubsettingCRS.setCoordinateReferenceSystem(sourceCRS);
         if(!(subsettingCRS==null||CRS.equalsIgnoreMetadata(subsettingCRS,sourceCRS))){
             
-            // reproject source coverage to subsetting crs for initialization
+            // reproject source envelope to subsetting crs for initialization
             try {
-                envelope= CRS.transform(
+                sourceEnvelopeInSubsettingCRS= CRS.transform(
                         CRS.findMathTransform(reader.getCrs(), subsettingCRS), 
                         reader.getOriginalEnvelope());
-                envelope.setCoordinateReferenceSystem(subsettingCRS);
+                sourceEnvelopeInSubsettingCRS.setCoordinateReferenceSystem(subsettingCRS);
             } catch (Exception e) {
                 final WCS20Exception exception= new WCS20Exception(
                         "Unable to initialize subsetting envelope",
@@ -1306,7 +1427,7 @@ public class GetCoverage {
         // check if we have to subset, if not let's send back the basic coverage
         final EList<DimensionSubsetType> dimensions = request.getDimensionSubset();
         if(dimensions==null||dimensions.size()<=0){
-            return envelope;
+            return sourceEnvelopeInSubsettingCRS;
         }
         
         // TODO remove when we handle time and elevation
@@ -1317,15 +1438,28 @@ public class GetCoverage {
         }
         
         // put aside the dimensions that we have for double checking
-        final List<String> axesNames = envelopeDimensionsMapper.getAxesNames(envelope, true);
+        final List<String> axesNames = envelopeDimensionsMapper.getAxesNames(sourceEnvelopeInSubsettingCRS, true);
         final List<String> foundDimensions= new ArrayList<String>();
         
-        // parse dimensions
+        // === parse dimensions 
+        // the subsetting envelope is initialized with the source envelope in subsetting CRS
+        GeneralEnvelope subsettingEnvelope = new GeneralEnvelope(sourceEnvelopeInSubsettingCRS);  
+        subsettingEnvelope.setCoordinateReferenceSystem(subsettingCRS);
         for(DimensionSubsetType dim:dimensions){
             // get basic information
-            final String dimension=dim.getDimension(); // this is the dimension name which we compare to axes abbreviations from geotools
+            String dimension=dim.getDimension(); // this is the dimension name which we compare to axes abbreviations from geotools
+            
+            // remove prefix
+            if(dimension.startsWith("http://www.opengis.net/def/axis/OGC/0/")){
+                dimension=dimension.substring("http://www.opengis.net/def/axis/OGC/0/".length());
+            } else if (dimension.startsWith("http://opengis.net/def/axis/OGC/0/")){
+                dimension=dimension.substring("http://opengis.net/def/axis/OGC/0/".length());
+            }
+            
+            
+            // checks
             if(dimension==null||dimension.length()<=0||!axesNames.contains(dimension)){//TODO synonyms on axes labels
-                throw new WCS20Exception("Empty axis label provided",WCS20Exception.WCS20ExceptionCode.InvalidAxisLabel,dimension==null?"Null":dimension);
+                throw new WCS20Exception("Empty or wrong axis label provided",WCS20Exception.WCS20ExceptionCode.InvalidAxisLabel,dimension==null?"Null":dimension);
             }
             
             // did we already do something with this dimension?
@@ -1335,36 +1469,52 @@ public class GetCoverage {
             foundDimensions.add(dimension);
             
             // now decide what to do
-            final String CRS= dim.getCRS();// TODO HOW DO WE USE THIS???
+            final String CRS= dim.getCRS();// TODO HOW DO WE USE THIS???          
             if(dim instanceof DimensionTrimType){
                 
                 // TRIMMING
                 final DimensionTrimType trim = (DimensionTrimType) dim;
                 final double low = Double.parseDouble(trim.getTrimLow());
                 final double high = Double.parseDouble(trim.getTrimHigh());
+                
+                // low > high???
+                if(low>high){
+                    throw new WCS20Exception(
+                            "Low greater than High", 
+                            WCS20Exception.WCS20ExceptionCode.InvalidSubsetting,
+                            trim.getTrimLow());
+                }
 
-                final int axisIndex=envelopeDimensionsMapper.getAxisIndex(envelope, dimension);
+                final int axisIndex=envelopeDimensionsMapper.getAxisIndex(sourceEnvelopeInSubsettingCRS, dimension);
                 if(axisIndex<0){
                     throw new WCS20Exception("Invalid axis provided",WCS20Exception.WCS20ExceptionCode.InvalidAxisLabel,dimension);
                 }
                 
                 // notice how we choose the order of the axes
-                envelope.setRange(axisIndex, low, high);
+                subsettingEnvelope.setRange(axisIndex, low, high);
             } else if(dim instanceof DimensionSliceType){
                 
                 // SLICING
                 final DimensionSliceType slicing= (DimensionSliceType) dim;
                 final String slicePointS = slicing.getSlicePoint();
-                final double slicePoint=Double.parseDouble(slicePointS);
+                final double slicePoint=Double.parseDouble(slicePointS);            
                 
-                final int axisIndex=envelopeDimensionsMapper.getAxisIndex(envelope, dimension);
+                final int axisIndex=envelopeDimensionsMapper.getAxisIndex(sourceEnvelopeInSubsettingCRS, dimension);
                 if(axisIndex<0){
                     throw new WCS20Exception("Invalid axis provided",WCS20Exception.WCS20ExceptionCode.InvalidAxisLabel,dimension);
                 }
                 // notice how we choose the order of the axes
                 AffineTransform affineTransform = RequestUtils.getAffineTransform(reader.getOriginalGridToWorld(PixelInCell.CELL_CENTER));
                 final double scale=axisIndex==0?affineTransform.getScaleX():-affineTransform.getScaleY();
-                envelope.setRange(axisIndex, slicePoint, slicePoint+scale);
+                subsettingEnvelope.setRange(axisIndex, slicePoint, slicePoint+scale);
+                
+                // slice point outside coverage
+                if(sourceEnvelopeInSubsettingCRS.getMinimum(axisIndex)>slicePoint||slicePoint>sourceEnvelopeInSubsettingCRS.getMaximum(axisIndex)){
+                    throw new WCS20Exception(
+                            "SlicePoint outside coverage envelope", 
+                            WCS20Exception.WCS20ExceptionCode.InvalidSubsetting,
+                            slicePointS);
+                }    
                 
             } else {
                 throw new WCS20Exception(
@@ -1377,37 +1527,58 @@ public class GetCoverage {
         //
         // intersect with original envelope to make sure the subsetting is valid
         //
-        final GeneralEnvelope sourceEnvelope = new GeneralEnvelope(reader.getOriginalEnvelope());
-        if(CRS.equalsIgnoreMetadata(envelope.getCoordinateReferenceSystem(), sourceEnvelope.getCoordinateReferenceSystem())){
-            envelope.intersect(sourceEnvelope);
-            envelope.setCoordinateReferenceSystem(reader.getCrs());
-        } else {
-            // reproject envelope  to native crs for cropping
-            try {
-                envelope= CRS.transform(
-                        CRS.findMathTransform(subsettingCRS,sourceCRS), 
-                        envelope);
-                envelope.setCoordinateReferenceSystem(sourceCRS);
-                
-                // intersect
-                envelope.intersect(sourceEnvelope);
-                envelope.setCoordinateReferenceSystem(sourceCRS);                
-            } catch (Exception e) {
-                final WCS20Exception exception= new WCS20Exception(
-                        "Unable to initialize subsetting envelope",
-                        WCS20Exception.WCS20ExceptionCode.SubsettingCrsNotSupported,
-                        subsettingCRS.toWKT()); // TODO extract code
-                exception.initCause(e);
-                throw exception;
-            } 
-        }        
+        GeneralEnvelope sourceEnvelope = reader.getOriginalEnvelope();
 
-        if(envelope.isEmpty()){
-            throw new WCS20Exception(
-                    "Empty intersection after subsetting", 
-                    WCS20Exception.WCS20ExceptionCode.InvalidSubsetting,"");// TODO spit our envelope trimmed
-        }
-        return envelope;
+        // reproject envelope  to native crs for cropping
+        try {
+            if(!CRS.equalsIgnoreMetadata(subsettingEnvelope.getCoordinateReferenceSystem(), reader.getOriginalEnvelope())){
+                // look for transform
+                final MathTransform mathTransform = CRS.findMathTransform(subsettingCRS,sourceCRS);
+                if(!mathTransform.isIdentity()){ // do we really need to reproject?
+                final GeneralEnvelope subsettingEnvelopeInSourceCRS = CRS.transform(
+                            mathTransform, 
+                            subsettingEnvelope);
+                    subsettingEnvelopeInSourceCRS.setCoordinateReferenceSystem(sourceCRS);
+                    
+                    // intersect
+                    subsettingEnvelopeInSourceCRS.intersect(sourceEnvelope);
+                    subsettingEnvelopeInSourceCRS.setCoordinateReferenceSystem(sourceCRS);          
+    
+                    // provided trim extent does not intersect coverage envelope
+                    if(subsettingEnvelopeInSourceCRS.isEmpty()){
+                        throw new WCS20Exception(
+                                "Empty intersection after subsetting", 
+                                WCS20Exception.WCS20ExceptionCode.InvalidSubsetting,"");// TODO spit our envelope trimmed
+                    }      
+                    return subsettingEnvelopeInSourceCRS;
+                }     
+            }    
+            // we are reprojecting
+            subsettingEnvelope.intersect(sourceEnvelope);
+            subsettingEnvelope.setCoordinateReferenceSystem(reader.getCrs());      
+
+            // provided trim extent does not intersect coverage envelope
+            if(subsettingEnvelope.isEmpty()){
+                throw new WCS20Exception(
+                        "Empty intersection after subsetting", 
+                        WCS20Exception.WCS20ExceptionCode.InvalidSubsetting,"");// TODO spit our envelope trimmed
+            }
+            return subsettingEnvelope;
+        } catch (FactoryException e) {
+            final WCS20Exception exception= new WCS20Exception(
+                    "Unable to initialize subsetting envelope",
+                    WCS20Exception.WCS20ExceptionCode.SubsettingCrsNotSupported,
+                    subsettingCRS.toWKT()); // TODO extract code
+            exception.initCause(e);
+            throw exception;
+        } catch (TransformException e) {
+            final WCS20Exception exception= new WCS20Exception(
+                    "Unable to initialize subsetting envelope",
+                    WCS20Exception.WCS20ExceptionCode.SubsettingCrsNotSupported,
+                    subsettingCRS.toWKT()); // TODO extract code
+            exception.initCause(e);
+            throw exception;
+        } 
     }
 
 }

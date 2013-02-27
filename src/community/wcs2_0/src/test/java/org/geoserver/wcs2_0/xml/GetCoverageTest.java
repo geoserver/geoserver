@@ -33,7 +33,7 @@ public class GetCoverageTest extends WCSTestSupport {
      */
     @Test
     public void testCoverageTrimmingLatitudeNativeCRSXML() throws Exception {
-        final File xml= new File("./src/test/resources/requestGetCoverageTrimmingLatitudeNativeCRSXML.xml");
+        final File xml= new File("./src/test/resources/trimming/requestGetCoverageTrimmingLatitudeNativeCRSXML.xml");
         final String request= FileUtils.readFileToString(xml);
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
         
@@ -77,7 +77,7 @@ public class GetCoverageTest extends WCSTestSupport {
     
     @Test
     public void testCoverageTrimmingNativeCRSXML() throws Exception {
-        final File xml= new File("./src/test/resources/requestGetCoverageTrimmingNativeCRSXML.xml");
+        final File xml= new File("./src/test/resources/trimming/requestGetCoverageTrimmingNativeCRSXML.xml");
         final String request= FileUtils.readFileToString(xml);
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
         
@@ -197,7 +197,7 @@ public class GetCoverageTest extends WCSTestSupport {
      */
     @Test
     public void testCoverageTrimmingLongitudeNativeCRSXML() throws Exception {
-        final File xml= new File("./src/test/resources/requestGetCoverageTrimmingLongNativeCRSXML.xml");
+        final File xml= new File("./src/test/resources/trimming/requestGetCoverageTrimmingLongNativeCRSXML.xml");
         final String request= FileUtils.readFileToString(xml);
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
         
@@ -240,7 +240,7 @@ public class GetCoverageTest extends WCSTestSupport {
     }
     @Test
     public void testCoverageTrimmingSlicingNativeCRSXML() throws Exception {
-        final File xml= new File("./src/test/resources/requestGetCoverageTrimmingSlicingNativeCRSXML.xml");
+        final File xml= new File("./src/test/resources/trimming/requestGetCoverageTrimmingSlicingNativeCRSXML.xml");
         final String request= FileUtils.readFileToString(xml);
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
         
@@ -285,7 +285,7 @@ public class GetCoverageTest extends WCSTestSupport {
     
     @Test
     public void testCoverageTrimmingDuplicatedNativeCRSXML() throws Exception {
-        final File xml= new File("./src/test/resources/requestGetCoverageTrimmingDuplicatedNativeCRSXML.xml");
+        final File xml= new File("./src/test/resources/trimming/requestGetCoverageTrimmingDuplicatedNativeCRSXML.xml");
         final String request= FileUtils.readFileToString(xml);
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
         
@@ -296,7 +296,7 @@ public class GetCoverageTest extends WCSTestSupport {
 
     @Test
     public void testCoverageSlicingLongitudeNativeCRSXML() throws Exception {
-        final File xml= new File("./src/test/resources/requestGetCoverageSlicingLongitudeNativeCRSXML.xml");
+        final File xml= new File("./src/test/resources/trimming/requestGetCoverageSlicingLongitudeNativeCRSXML.xml");
         final String request= FileUtils.readFileToString(xml);
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
         
@@ -341,7 +341,7 @@ public class GetCoverageTest extends WCSTestSupport {
 
     @Test
     public void testCoverageSlicingLatitudeNativeCRSXML() throws Exception {
-        final File xml= new File("./src/test/resources/requestGetCoverageSlicingLatitudeNativeCRSXML.xml");
+        final File xml= new File("./src/test/resources/trimming/requestGetCoverageSlicingLatitudeNativeCRSXML.xml");
         final String request= FileUtils.readFileToString(xml);
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
         

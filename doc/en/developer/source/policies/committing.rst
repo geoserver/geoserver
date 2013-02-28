@@ -108,7 +108,7 @@ in GeoServer. But over time some rules and conventions have emerged:
    formatting rules. This means spaces instead of tabs, 100 character line break,
    etc...
 
-   If using Eclipse ensure you have configured it with the `template and formatter <http://docs.geotools.org/latest/developer/guide/conventions/code/style.html#use-of-formatting-tools>`_
+   If using Eclipse ensure you have configured it with the `template and formatter <http://docs.geotools.org/latest/developer/conventions/code/style.html#use-of-formatting-tools>`_
    used for GeoTools.
 
 

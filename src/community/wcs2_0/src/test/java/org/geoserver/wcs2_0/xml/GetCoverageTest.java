@@ -1,20 +1,31 @@
 package org.geoserver.wcs2_0.xml;
 
-import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.*;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.io.IOException;
+
+import javax.mail.BodyPart;
+import javax.mail.Multipart;
 
 import junit.framework.Assert;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.geoserver.wcs2_0.GetCoverage;
 import org.geoserver.wcs2_0.WCSTestSupport;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.data.DataSourceException;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.referencing.CRS;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridEnvelope;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
+import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 /**
@@ -39,6 +50,49 @@ public class GetCoverageTest extends WCSTestSupport {
         
         assertEquals("image/tiff", response.getContentType());
         byte[] tiffContents = getBinary(response);
+        checkCoverageTrimmingLatitudeNativeCRS(tiffContents);
+    }
+    
+    /**
+     * Trimming only on Longitude, plus multipart encoding
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testCoverageTrimmingLatitudeNativeCRSXMLMultipart() throws Exception {
+        final File xml= new File("./src/test/resources/requestGetCoverageTrimmingLatitudeNativeCRSXMLMultipart.xml");
+        final String request= FileUtils.readFileToString(xml);
+        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+        
+        assertEquals("multipart/related", response.getContentType());
+        
+        // parse the multipart, check there are two parts
+        Multipart multipart = getMultipart(response);
+        assertEquals(2, multipart.getCount());
+        BodyPart xmlPart = multipart.getBodyPart(0);
+        assertEquals("application/gml+xml", xmlPart.getHeader("Content-Type")[0]);
+        assertEquals("wcs", xmlPart.getHeader("Content-ID")[0]);
+        Document gml = dom(xmlPart.getInputStream());
+        // print(gml);
+        
+        // check the gml part refers to the file as its range
+        assertXpathEvaluatesTo("fileReference", "//gml:rangeSet/gml:File/gml:rangeParameters/@xlink:arcrole", gml);
+        assertXpathEvaluatesTo("cid:/coverages/wcs__BlueMarble.tif", "//gml:rangeSet/gml:File/gml:rangeParameters/@xlink:href", gml);
+        assertXpathEvaluatesTo("http://www.opengis.net/spec/GMLCOV_geotiff-coverages/1.0/conf/geotiff-coverage", "//gml:rangeSet/gml:File/gml:rangeParameters/@xlink:role", gml);
+        assertXpathEvaluatesTo("cid:/coverages/wcs__BlueMarble.tif", "//gml:rangeSet/gml:File/gml:fileReference", gml);
+        assertXpathEvaluatesTo("image/tiff", "//gml:rangeSet/gml:File/gml:mimeType", gml);
+        
+        BodyPart coveragePart = multipart.getBodyPart(1);
+        assertEquals("/coverages/wcs__BlueMarble.tif", coveragePart.getHeader("Content-ID")[0]);
+        assertEquals("image/tiff", coveragePart.getContentType());
+
+        // make sure we can read the coverage back and perform checks on it
+        byte[] tiffContents = IOUtils.toByteArray(coveragePart.getInputStream());
+        checkCoverageTrimmingLatitudeNativeCRS(tiffContents);
+    }
+
+    private void checkCoverageTrimmingLatitudeNativeCRS(byte[] tiffContents) throws IOException,
+            DataSourceException, NoSuchAuthorityCodeException, FactoryException {
         File file = File.createTempFile("bm_gtiff", "bm_gtiff.tiff", new File("./target"));
         FileUtils.writeByteArrayToFile(file, tiffContents);
 

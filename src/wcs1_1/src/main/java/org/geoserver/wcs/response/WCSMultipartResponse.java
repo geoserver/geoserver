@@ -6,6 +6,7 @@ package org.geoserver.wcs.response;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Collections;
 
 import javax.activation.DataHandler;
 import javax.mail.BodyPart;
@@ -23,6 +24,7 @@ import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs.response.CoveragesHandler.CoveragesData;
+import org.geoserver.wcs.responses.CoverageEncoder;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -100,14 +102,14 @@ public class WCSMultipartResponse extends Response {
             // the data handlers kills some of them)
             BodyPart coveragesPart = new MimeBodyPart();
             final CoveragesData coveragesData = new CoveragesData(coverageInfo, request);
-            coveragesPart.setDataHandler(new DataHandler(coveragesData, "geoserver/coverages"));
+            coveragesPart.setDataHandler(new DataHandler(coveragesData, "geoserver/coverages11"));
             coveragesPart.setHeader("Content-ID", "<urn:ogc:wcs:1.1:coverages>");
             coveragesPart.setHeader("Content-Type", "text/xml");
             multipart.addBodyPart(coveragesPart);
 
             // the actual coverage
             BodyPart coveragePart = new MimeBodyPart();
-            CoverageEncoder encoder = new CoverageEncoder(delegate, coverage, outputFormat);
+            CoverageEncoder encoder = new CoverageEncoder(delegate, coverage, outputFormat, Collections.EMPTY_MAP);
             coveragePart.setDataHandler(new DataHandler(encoder, "geoserver/coverageDelegate"));
             coveragePart.setHeader("Content-ID", "<theCoverage>");
             coveragePart.setHeader("Content-Type", delegate.getMimeType(outputFormat));

@@ -4,4 +4,4 @@
 # Content handlers (for two fake mime types, the content handlers will return
 # the actual mime type
 #
-geoserver/coverages11;;		x-java-content-handler=org.geoserver.wcs.response.CoveragesHandler
+geoserver/coverages20;;		x-java-content-handler=org.geoserver.wcs2_0.response.GMLCovHandler

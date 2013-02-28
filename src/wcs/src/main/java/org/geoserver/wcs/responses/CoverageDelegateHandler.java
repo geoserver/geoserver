@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.wcs.response;
+package org.geoserver.wcs.responses;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -11,6 +11,7 @@ import java.io.OutputStream;
 
 import javax.activation.DataContentHandler;
 import javax.activation.DataSource;
+
 
 /**
  * A data handler for the fake "geoserver/coverageDelegate" mime type. Uses a

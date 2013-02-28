@@ -1,22 +1,32 @@
 package org.geoserver.wcs2_0.kvp;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import it.geosolutions.imageio.plugins.tiff.BaselineTIFFTagSet;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageMetadata;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReaderSpi;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Map;
 
+import javax.imageio.IIOException;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.FileImageInputStream;
+import javax.mail.BodyPart;
+import javax.mail.Multipart;
 
 import net.opengis.wcs20.GetCoverageType;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.geoserver.wcs.WCSInfo;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.factory.Hints;
@@ -28,6 +38,7 @@ import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.resources.coverage.CoverageUtilities;
 import org.junit.Test;
 import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
+import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
@@ -35,8 +46,6 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
 
     @Test
     public void extensionGeotiff() throws Exception {
-        
-        
         // complete
         GetCoverageType gc = parse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
         		"&coverageId=theCoverage&compression=JPEG&jpeg_quality=75&predictor=None" +
@@ -85,6 +94,43 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         
         assertEquals("image/tiff", response.getContentType());
         byte[] tiffContents = getBinary(response);
+        checkJpegTiff(tiffContents);
+    }
+    
+    @Test
+    public void jpegMediaType() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
+                        "&coverageId=wcs__BlueMarble&compression=JPEG&jpeg_quality=75&mediaType=multipart/related");
+        
+        assertEquals("multipart/related", response.getContentType());
+        
+        // parse the multipart, check there are two parts
+        Multipart multipart = getMultipart(response);
+        assertEquals(2, multipart.getCount());
+        BodyPart xmlPart = multipart.getBodyPart(0);
+        assertEquals("application/gml+xml", xmlPart.getHeader("Content-Type")[0]);
+        assertEquals("wcs", xmlPart.getHeader("Content-ID")[0]);
+        Document gml = dom(xmlPart.getInputStream());
+        // print(gml);
+        
+        // check the gml part refers to the file as its range
+        assertXpathEvaluatesTo("fileReference", "//gml:rangeSet/gml:File/gml:rangeParameters/@xlink:arcrole", gml);
+        assertXpathEvaluatesTo("cid:/coverages/wcs__BlueMarble.tif", "//gml:rangeSet/gml:File/gml:rangeParameters/@xlink:href", gml);
+        assertXpathEvaluatesTo("http://www.opengis.net/spec/GMLCOV_geotiff-coverages/1.0/conf/geotiff-coverage", "//gml:rangeSet/gml:File/gml:rangeParameters/@xlink:role", gml);
+        assertXpathEvaluatesTo("cid:/coverages/wcs__BlueMarble.tif", "//gml:rangeSet/gml:File/gml:fileReference", gml);
+        assertXpathEvaluatesTo("image/tiff", "//gml:rangeSet/gml:File/gml:mimeType", gml);
+        
+        BodyPart coveragePart = multipart.getBodyPart(1);
+        assertEquals("/coverages/wcs__BlueMarble.tif", coveragePart.getHeader("Content-ID")[0]);
+        assertEquals("image/tiff", coveragePart.getContentType());
+
+        // make sure we can read the coverage back and perform checks on it
+        byte[] tiffContents = IOUtils.toByteArray(coveragePart.getInputStream());
+        checkJpegTiff(tiffContents);
+    }
+
+    private void checkJpegTiff(byte[] tiffContents) throws IOException,
+            FileNotFoundException, IIOException {
         File file = File.createTempFile("bm_gtiff", "bm_gtiff.tiff", new File("./target"));
         FileUtils.writeByteArrayToFile(file, tiffContents);
         

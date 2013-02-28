@@ -118,5 +118,13 @@ public abstract class BaseCoverageResponseDelegate implements CoverageResponseDe
     public boolean isAvailable() {
         return true;
     }
+    
+    /**
+     * Provides a fallback, a value that looks like a GMLCOV conformance class. Delegates that can
+     * be actually associated to an official conformance class should override this method
+     */
+    public String getConformanceClass(String format) {
+        return "http://www.opengis.net/spec/WCS_coverage-encoding-x" + getMimeType(format);
+    }
 
 }

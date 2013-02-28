@@ -21,7 +21,6 @@ import org.geoserver.wcs.responses.CoverageResponseDelegate;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.map.Layer;
 import org.opengis.coverage.grid.GridCoverage;
 
 /**
@@ -90,14 +89,25 @@ public class WCS20GetCoverageResponse extends Response {
 
         // grab the delegate
         CoverageResponseDelegate delegate = responseFactory.encoderFor(format);
+        
+        // check the media type, do we have to perform a multipart response?
+        boolean multipart = false;
+        String mediaType = getCoverage.getMediaType();
+        if(mediaType != null) {
+            if(!mediaType.equals("multipart/related")) {
+                throw new WCS20Exception("Invalid media type, only valid value is " +
+                		"'multipart/related', but got: " + mediaType, 
+                		OWSExceptionCode.InvalidParameterValue, "MediaType");
+            }
+            multipart = true;
+        }
+
+        
         delegate.encode(coverage, format,encodingParameters, output);
     }
     
     @Override
     public String getAttachmentFileName(Object value, Operation operation) {
-        // grab the coverage
-        GridCoverage2D coverage = (GridCoverage2D) value;
-        
         // grab the format
         GetCoverageType getCoverage = (GetCoverageType) operation.getParameters()[0];
         String format = getCoverage.getFormat();

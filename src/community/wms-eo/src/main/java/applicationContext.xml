@@ -15,43 +15,29 @@
 	<bean id="wmsGetFeatureInfoXML" class="org.geoserver.wms.eo.XMLFeatureInfoOutputFormat">
 		<constructor-arg ref="wms" />
 	</bean>
-
-  	<bean id="wmsEoWebMenuCategory" class="org.geoserver.web.Category">
+ 
+   	<bean id="wmsEoWebMenuCategory" class="org.geoserver.web.Category">
 		<property name="nameKey" value="category.wmseo" />
     	<property name="order" value="210" />
 	</bean>
-
-  	<bean id="wmsEoCreateGroupMenuPage" class="org.geoserver.web.MenuPageInfo">
-    	<property name="id" value="wmsEoCreateGroupMenuPage" />
-    	<property name="titleKey" value="wmsEoCreateGroupMenuPage.title" />
-    	<property name="descriptionKey" value="wmsEoCreateGroupMenuPage.description" />
-    	<property name="componentClass" value="org.geoserver.wms.eo.web.WmsEoCreateGroupPage" />
+ 
+  	<bean id="wmsEoLayerGroupMenuPage" class="org.geoserver.web.MenuPageInfo">
+    	<property name="id" value="wmsEoLayerGroupMenuPage" />
+    	<property name="titleKey" value="wmsEoLayerGroupMenuPage.title" />
+    	<property name="descriptionKey" value="wmsEoLayerGroupMenuPage.description" />
+    	<property name="componentClass" value="org.geoserver.wms.eo.web.EoLayerGroupPage" />
     	<property name="category" ref="wmsEoWebMenuCategory" />
     	<property name="icon" value="../../../web/img/icons/silk/layers.png" />
-    	<property name="order" value="10" />
+    	<property name="order" value="26" />
     	<property name="authorizer" ref="workspaceAdminAuthorizer"/>
   	</bean>
 
-  	<bean id="wmsEoAddLayerMenuPage" class="org.geoserver.web.MenuPageInfo">
-    	<property name="id" value="wmsEoAddLayerMenuPage" />
-    	<property name="titleKey" value="wmsEoAddLayerMenuPage.title" />
-    	<property name="descriptionKey" value="wmsEoAddLayerMenuPage.description" />
-    	<property name="componentClass" value="org.geoserver.wms.eo.web.WmsEoAddLayerPage" />
-    	<property name="category" ref="wmsEoWebMenuCategory" />
-    	<property name="icon" value="../../../web/img/icons/silk/layers.png" />
-    	<property name="order" value="20" />
-    	<property name="authorizer" ref="workspaceAdminAuthorizer"/>
-  	</bean>
+	<!-- GetMap callback -->
+	<bean id="getMapCallback" class="org.geoserver.wms.eo.EOGetMapChecker">
+	   <constructor-arg ref="catalog"/>  
+	</bean>
+	
 
-  	<bean id="wmsEoDeleteGroupMenuPage" class="org.geoserver.web.MenuPageInfo">
-    	<property name="id" value="wmsEoDeleteGroupMenuPage" />
-    	<property name="titleKey" value="wmsEoDeleteGroupMenuPage.title" />
-    	<property name="descriptionKey" value="wmsEoDeleteGroupMenuPage.description" />
-    	<property name="componentClass" value="org.geoserver.wms.eo.web.WmsEoDeleteGroupPage" />
-    	<property name="category" ref="wmsEoWebMenuCategory" />
-    	<property name="icon" value="../../../web/img/icons/silk/layers.png" />
-    	<property name="order" value="30" />
-    	<property name="authorizer" ref="workspaceAdminAuthorizer"/>
-  	</bean>
-
+    <!-- Massage GetFeatureInfo Requests -->
+    <bean id="featureInfoMassager" class="org.geoserver.wms.eo.EOGetFeatureInfoChecker"/>	
 </beans>

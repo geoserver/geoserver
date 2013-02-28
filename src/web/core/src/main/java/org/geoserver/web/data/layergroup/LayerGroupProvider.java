@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.data.layergroup;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,9 +26,28 @@ public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
 
     static List PROPERTIES = Arrays.asList(NAME, WORKSPACE);
     
+    protected LayerGroupProviderFilter groupFilter = null;
+    
+    public LayerGroupProvider() {
+    }
+    
+    public LayerGroupProvider(LayerGroupProviderFilter groupFilter) {
+        this.groupFilter = groupFilter;
+    }
+    
     @Override
     protected List<LayerGroupInfo> getItems() {
-        return getCatalog().getLayerGroups();
+        List<LayerGroupInfo> groups = getCatalog().getLayerGroups();
+        if (groupFilter != null) {
+            List<LayerGroupInfo> filtered = new ArrayList<LayerGroupInfo>(groups.size());
+            for (LayerGroupInfo group : groups) {
+                if (groupFilter.accept(group)) {
+                    filtered.add(group);
+                }
+            }
+            groups = filtered;
+        }
+        return groups;
     }
 
     @Override

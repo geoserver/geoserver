@@ -1,18 +1,6 @@
-/*
- *    GeoTools - The Open Source Java GIS Toolkit
- *    http://geotools.org
- *
- *    (C) 2013, Open Source Geospatial Foundation (OSGeo)
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the GNU Lesser General Public
- *    License as published by the Free Software Foundation;
- *    version 2.1 of the License.
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *    Lesser General Public License for more details.
+/* Copyright (c) 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 package org.geoserver.wms.eo;
 
@@ -24,7 +12,7 @@ package org.geoserver.wms.eo;
  */
 public enum EoLayerType {
 
-    EO_PRODUCT, COVERAGE_OUTLINE, BAND_COVERAGE, GEOPHYSICAL_PARAMETER, BITMASK;
+    BROWSE_IMAGE, COVERAGE_OUTLINE, BAND_COVERAGE, GEOPHYSICAL_PARAMETER, BITMASK;
 
     /**
      * Key used in LayerInfo metadata to store EO Layer type

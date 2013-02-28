@@ -11,6 +11,7 @@ import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.web.data.layergroup.LayerGroupProviderFilter;
 import org.geoserver.web.data.store.panel.ParamPanel;
 
 
@@ -20,14 +21,14 @@ import org.geoserver.web.data.store.panel.ParamPanel;
  * @author Davide Savazzi - geo-solutions.it
  */
 @SuppressWarnings("serial")
-public class LayerGroupPanel extends Panel implements ParamPanel {
+public class EoLayerGroupPanel extends Panel implements ParamPanel {
 
     protected DropDownChoice<LayerGroupInfo> choice;
     
     
-    public LayerGroupPanel(final String id, final IModel<LayerGroupInfo> layerGroupModel,
+    public EoLayerGroupPanel(final String id, final IModel<LayerGroupInfo> layerGroupModel,
             final IModel<String> paramLabelModel, final boolean required,
-            LayerGroupInfoFilter filter) {
+            LayerGroupProviderFilter filter) {
         // make the value of the combo field the model of this panel, for easy
         // value retriaval
         super(id, layerGroupModel);

@@ -62,7 +62,10 @@ public class LookAtDecoratorFactory implements KmlDecoratorFactory {
         public Feature decorate(Feature feature, KmlEncodingContext context) {
             Placemark pm = (Placemark) feature;
             Geometry geometry = (Geometry) context.getCurrentFeature().getDefaultGeometry();
-            Envelope bounds = geometry.getEnvelopeInternal();
+            Envelope bounds = null;
+            if(geometry != null) {
+                bounds = geometry.getEnvelopeInternal();
+            }
             LookAt lookAt = buildLookAt(bounds, context.getLookAtOptions(), true);
             pm.setAbstractView(lookAt);
             
@@ -79,7 +82,7 @@ public class LookAtDecoratorFactory implements KmlDecoratorFactory {
             lookAtEnvelope = lookAtGeometry.getEnvelopeInternal();
         }
         
-        if (lookAtEnvelope.isNull()) {
+        if (lookAtEnvelope == null || lookAtEnvelope.isNull()) {
             return null;
         }
         

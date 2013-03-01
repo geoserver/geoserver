@@ -40,7 +40,9 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
             SimpleFeature sf = context.getCurrentFeature();
             Geometry geometry = (Geometry) sf.getDefaultGeometry();
 
-            pm.setGeometry(encodeGeometry(geometry));
+            if(geometry != null) {
+                pm.setGeometry(encodeGeometry(geometry));
+            }
 
             return feature;
         }

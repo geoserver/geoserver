@@ -11,12 +11,15 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.IndexColorModel;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
 import org.geotools.renderer.lite.RendererUtilities;
+import org.geotools.renderer.lite.StreamingRenderer;
 
 /**
  * Extends DefaultMapContext to provide the whole set of request parameters a WMS GetMap request can

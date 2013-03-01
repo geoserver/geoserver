@@ -118,11 +118,7 @@ public class ScaleLineDecoration implements MapDecoration {
     	// Set the font size.
     	g2d.setFont(oldFont.deriveFont(this.fontSize));
     	
-    	double scaleDenominator = RendererUtilities.calculateOGCScale(
-            mapContent.getRenderingArea(),
-            mapContent.getRequest().getWidth(),
-            new HashMap()
-        );
+    	double scaleDenominator = mapContent.getScaleDenominator();
     	
     	String curMapUnits = "m";
     	

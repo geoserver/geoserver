@@ -1316,8 +1316,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * @return
      */
     static List<RasterSymbolizer> getRasterSymbolizers(WMSMapContent mc, int layerIndex) {
-        double scaleDenominator = RendererUtilities.calculateOGCScale(mc.getRenderingArea(),
-                mc.getMapWidth(), null);
+        double scaleDenominator = mc.getScaleDenominator();
         Layer layer = mc.layers().get(layerIndex);
         FeatureType featureType = layer.getFeatureSource().getSchema();
         Style style = layer.getStyle();

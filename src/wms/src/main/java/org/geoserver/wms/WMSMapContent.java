@@ -332,4 +332,20 @@ public class WMSMapContent extends MapContent {
     public void setGetMapCallbacks(final List<GetMapCallback> callbacks) {
         this.callbacks = callbacks;
     }
+    
+    public double getScaleDenominator() {
+        return getScaleDenominator(false);
+    }
+
+    public double getScaleDenominator(boolean considerDPI) {
+        Map<String, Object> hints = new HashMap<String, Object>();
+        if(considerDPI) {
+            double dpi = RendererUtilities.getDpi(getRequest().getFormatOptions());
+            hints.put(StreamingRenderer.DPI_KEY, dpi);
+        }
+        return RendererUtilities.calculateOGCScale(
+                getRenderingArea(),
+                getRequest().getWidth(),
+                hints);
+    }
 }

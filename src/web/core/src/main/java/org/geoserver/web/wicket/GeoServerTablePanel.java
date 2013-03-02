@@ -30,6 +30,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.markup.repeater.IItemReuseStrategy;
 import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.markup.repeater.OddEvenItem;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.IModel;
@@ -139,13 +140,15 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         dataView = new DataView("items", dataProvider) {
 
             @Override
+            protected Item newItem(String id, int index, IModel model) {
+                // TODO Auto-generated method stub
+                return new OddEvenItem<T>(id, index, model);
+            }
+            
+            @Override
             protected void populateItem(Item item) {
                 final IModel itemModel = item.getModel();
 
-                // odd/even style
-                item.add(new SimpleAttributeModifier("class", item.getIndex() % 2 == 0 ? "even"
-                        : "odd"));
-                
                 // add row selector (visible only if selection is active)
                 WebMarkupContainer cnt = new WebMarkupContainer("selectItemContainer");
                 cnt.add(selectOneCheckbox(item));

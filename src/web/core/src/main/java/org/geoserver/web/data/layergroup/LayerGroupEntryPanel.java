@@ -15,6 +15,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.panel.Fragment;
@@ -263,7 +264,7 @@ public class LayerGroupEntryPanel extends Panel {
         private ImageAjaxLink upLink;
         private ImageAjaxLink downLink;        
         
-        public PositionPanel( String id, LayerGroupEntry entry ) {
+        public PositionPanel( String id, final LayerGroupEntry entry ) {
             super( id );
             this.entry = entry;
             this.setOutputMarkupId(true);
@@ -278,6 +279,15 @@ public class LayerGroupEntryPanel extends Panel {
                     target.addComponent(this);
                     target.addComponent(downLink);   
                     target.addComponent(upLink);                    
+                }
+                
+                @Override
+                protected void onComponentTag(ComponentTag tag) {
+                    if ( items.indexOf( entry ) == 0 ) {
+                        tag.put("style", "visibility:hidden");
+                    } else {
+                        tag.put("style", "visibility:visible");
+                    }
                 }
             };
             upLink.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("up", upLink)));
@@ -294,6 +304,15 @@ public class LayerGroupEntryPanel extends Panel {
                     target.addComponent(this);                    
                     target.addComponent(downLink);   
                     target.addComponent(upLink);                    
+                }
+                
+                @Override
+                protected void onComponentTag(ComponentTag tag) {
+                    if ( items.indexOf( entry ) == items.size() - 1) {
+                        tag.put("style", "visibility:hidden");
+                    } else {
+                        tag.put("style", "visibility:visible");
+                    }
                 }
             };
             downLink.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("down", downLink)));

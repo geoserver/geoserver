@@ -21,14 +21,22 @@ import java.util.Map;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.map.ImageUtils;
+import org.geoserver.wps.process.GeoServerProcessors;
+import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.data.DataUtilities;
+import org.geotools.data.Parameter;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.SchemaException;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.feature.type.GeometryDescriptorImpl;
 import org.geotools.feature.type.GeometryTypeImpl;
+import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.jts.LiteShape2;
+import org.geotools.process.ProcessFactory;
+import org.geotools.process.function.ProcessFunction;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.renderer.lite.StyledShapePainter;
 import org.geotools.renderer.style.SLDStyleFactory;
@@ -55,7 +63,9 @@ import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.GeometryType;
+import org.opengis.feature.type.Name;
 import org.opengis.filter.FilterFactory;
+import org.opengis.geometry.Envelope;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Literal;
 import org.opengis.util.InternationalString;
@@ -73,13 +83,13 @@ import com.vividsolutions.jts.geom.Polygon;
  * GeoTools' {@link GeoTools' {@link http
  * ://svn.geotools.org/geotools/trunk/gt/module/main/src/org/geotools
  * /renderer/lite/StyledShapePainter.java StyledShapePainter} that produces a BufferedImage with the
- * appropiate legend graphic for a given GetLegendGraphic WMS request.
+ * appropriate legend graphic for a given GetLegendGraphic WMS request.
  * 
  * <p>
  * It should be enough for a subclass to implement {@linkPlain
  * org.vfny.geoserver.responses.wms.GetLegendGraphicProducer#writeTo(OutputStream)} and
  * <code>getContentType()</code> in order to encode the BufferedImage produced by this class to the
- * appropiate output format.
+ * appropriate output format.
  * </p>
  * 
  * <p>
@@ -143,7 +153,7 @@ public class BufferedImageLegendGraphicBuilder {
 
     /**
      * Takes a GetLegendGraphicRequest and produces a BufferedImage that then can be used by a
-     * subclass to encode it to the appropiate output format.
+     * subclass to encode it to the appropriate output format.
      * 
      * @param request
      *            the "parsed" request, where "parsed" means that it's values are already validated
@@ -239,8 +249,43 @@ public class BufferedImageLegendGraphicBuilder {
                 titleImage=getLayerTitle(layer,  w, h, transparent, request);
             }
             
-            final boolean buildRasterLegend = (!strict && layer == null && LegendUtils
-                    .checkRasterSymbolizer(gt2Style)) || LegendUtils.checkGridLayer(layer);
+            // Check for rendering transformation
+            boolean hasVectorTransformation = false;
+            boolean hasRasterTransformation = false;
+            List<FeatureTypeStyle> ftsList = gt2Style.featureTypeStyles();
+            for (int i=0; i<ftsList.size(); i++) {
+                FeatureTypeStyle fts = ftsList.get(i);
+                Expression exp = fts.getTransformation();
+                if (exp != null) {
+                    ProcessFunction processFunction = (ProcessFunction) exp;
+                    Name processName = processFunction.getProcessName();
+                    ProcessFactory processFactory = GeoServerProcessors
+                            .createProcessFactory(processName);
+                    if (processFactory == null) {
+                        throw new ServiceException(processName + " process is not available");
+                    }
+                    Map<String, Parameter<?>> outputs = processFactory.getResultInfo(processName,
+                            null);
+                    if (outputs.isEmpty()) {
+                        continue;
+                    }
+                    Parameter<?> output = outputs.values().iterator().next(); // we assume there is only one output
+                    if (SimpleFeatureCollection.class.isAssignableFrom(output.getType())) {
+                        hasVectorTransformation = true;
+                        break;
+                    } else if (GridCoverage2D.class.isAssignableFrom(output.getType())) {
+                        hasRasterTransformation = true;
+                        break;
+                    }
+                
+                }
+            }
+
+            final boolean buildRasterLegend = 
+            		(!strict && layer == null && LegendUtils.checkRasterSymbolizer(gt2Style)) || 
+            		(LegendUtils.checkGridLayer(layer) && !hasVectorTransformation) || 
+            		hasRasterTransformation;
+            		                   
             if (buildRasterLegend) {
                 final RasterLayerLegendHelper rasterLegendHelper = new RasterLayerLegendHelper(request,gt2Style,ruleName);
                 final BufferedImage image = rasterLegendHelper.getLegend();

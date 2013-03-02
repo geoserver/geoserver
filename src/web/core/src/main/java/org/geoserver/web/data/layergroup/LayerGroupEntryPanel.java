@@ -260,56 +260,45 @@ public class LayerGroupEntryPanel extends Panel {
     class PositionPanel extends Panel {
         
         LayerGroupEntry entry;
+        private ImageAjaxLink upLink;
+        private ImageAjaxLink downLink;        
+        
         public PositionPanel( String id, LayerGroupEntry entry ) {
             super( id );
             this.entry = entry;
+            this.setOutputMarkupId(true);
             
-            if ( items.indexOf( entry ) > 0 ) {
-                ImageAjaxLink upLink = new ImageAjaxLink( "up", new ResourceReference( getClass(), "../../img/icons/silk/arrow_up.png") ) {
-                    @Override
-                    protected void onClick(AjaxRequestTarget target) {
-                        int index = items.indexOf( PositionPanel.this.entry );
-                        items.remove( index );
-                        items.add( index-1, PositionPanel.this.entry );
-                        target.addComponent( layerTable );
-                    }
-                };
-                upLink.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("up", upLink)));
-                add( upLink);
-            }
-            else {
-                ImageAjaxLink blankLink = new ImageAjaxLink( "up", new ResourceReference( getClass(), "../../img/icons/blank.png") ) {
-                    @Override
-                    protected void onClick(AjaxRequestTarget target) {
-                    }
-                };
-                blankLink.getImage().add(new AttributeModifier("alt", true, new Model("")));
-                add(blankLink);
-            }
-            
-            if ( items.indexOf( entry ) < items.size() - 1 ) {
-                ImageAjaxLink downLink = new ImageAjaxLink( "down", new ResourceReference( getClass(), "../../img/icons/silk/arrow_down.png") ) {
-                    @Override
-                    protected void onClick(AjaxRequestTarget target) {
-                        int index = items.indexOf( PositionPanel.this.entry );
-                        items.remove( index );
-                        items.add( index+1, PositionPanel.this.entry );
-                        target.addComponent( layerTable );
-                    }
-                };
-                downLink.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("down", downLink)));
-                add( downLink);
-            }
-            else {
-                ImageAjaxLink blankLink = new ImageAjaxLink( "down", new ResourceReference( getClass(), "../../img/icons/blank.png") ) {
-                    @Override
-                    protected void onClick(AjaxRequestTarget target) {
-                        
-                    }
-                };
-                blankLink.getImage().add(new AttributeModifier("alt", true, new Model("")));
-                add( blankLink);
-            }
+            upLink = new ImageAjaxLink( "up", new ResourceReference( getClass(), "../../img/icons/silk/arrow_up.png") ) {
+                @Override
+                protected void onClick(AjaxRequestTarget target) {
+                    int index = items.indexOf( PositionPanel.this.entry );
+                    items.remove( index );
+                    items.add(Math.max(0, index - 1), PositionPanel.this.entry);
+                    target.addComponent( layerTable );
+                    target.addComponent(this);
+                    target.addComponent(downLink);   
+                    target.addComponent(upLink);                    
+                }
+            };
+            upLink.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("up", upLink)));
+            upLink.setOutputMarkupId(true);
+            add( upLink);            
+
+            downLink = new ImageAjaxLink( "down", new ResourceReference( getClass(), "../../img/icons/silk/arrow_down.png") ) {
+                @Override
+                protected void onClick(AjaxRequestTarget target) {
+                    int index = items.indexOf( PositionPanel.this.entry );
+                    items.remove( index );
+                    items.add(Math.min(items.size(), index + 1), PositionPanel.this.entry);
+                    target.addComponent( layerTable );
+                    target.addComponent(this);                    
+                    target.addComponent(downLink);   
+                    target.addComponent(upLink);                    
+                }
+            };
+            downLink.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("down", downLink)));
+            downLink.setOutputMarkupId(true);
+            add( downLink);
         }
     }
 }

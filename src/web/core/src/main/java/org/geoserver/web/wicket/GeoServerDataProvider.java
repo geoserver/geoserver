@@ -302,7 +302,10 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider {
      * @return
      */
     protected Comparator<T> getComparator(SortParam sort) {
-
+        if(sort == null) {
+            return null;
+        }
+        
         Property<T> property = getProperty(sort);
         if (property != null) {
             Comparator<T> comparator = property.getComparator();

@@ -104,6 +104,12 @@
   <bean id="wcs201GetCoverageResponse" class="org.geoserver.wcs2_0.response.WCS20GetCoverageResponse">
       <constructor-arg ref="coverageResponseDelegateFactory"/>
   </bean>
+  
+  <bean id="wcs201MultipartGetCoverageResponse" class="org.geoserver.wcs2_0.response.WCS20GetCoverageMultipartResponse">
+      <constructor-arg ref="coverageResponseDelegateFactory"/>
+      <constructor-arg ref="envelopeDimensionsMapper" />
+  </bean>
+  
 
   <!-- Exception handler, we need to output ows 2.0 exceptions -->
 <!--  <bean id="wcs20ExceptionHandler" class="org.geoserver.ows.OWS20ServiceExceptionHandler">-->

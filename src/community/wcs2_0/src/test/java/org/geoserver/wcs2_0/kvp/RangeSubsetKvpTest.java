@@ -4,7 +4,6 @@ import static junit.framework.Assert.assertEquals;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import java.io.File;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import junit.framework.Assert;
@@ -13,7 +12,6 @@ import org.apache.commons.io.FileUtils;
 import org.geoserver.wcs2_0.exception.WCS20Exception.WCS20ExceptionCode;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
-import org.geotools.geometry.Envelope2D;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.junit.Test;

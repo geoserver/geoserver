@@ -89,6 +89,37 @@ public class WCS20GetCoverageResponse extends Response {
 
         // grab the delegate
         CoverageResponseDelegate delegate = responseFactory.encoderFor(format);
+        
+        // check the media type, do we have to perform a multipart response?
+        boolean multipart = false;
+        String mediaType = getCoverage.getMediaType();
+        if(mediaType != null) {
+            if(!mediaType.equals("multipart/related")) {
+                throw new WCS20Exception("Invalid media type, only valid value is " +
+                		"'multipart/related', but got: " + mediaType, 
+                		OWSExceptionCode.InvalidParameterValue, "MediaType");
+            }
+            multipart = true;
+        }
+
+        
         delegate.encode(coverage, format,encodingParameters, output);
+    }
+    
+    @Override
+    public String getAttachmentFileName(Object value, Operation operation) {
+        // grab the format
+        GetCoverageType getCoverage = (GetCoverageType) operation.getParameters()[0];
+        String format = getCoverage.getFormat();
+        if (format == null) {
+            format = "image/tiff";
+        } 
+        
+        // grab the delegate and thus the extension
+        CoverageResponseDelegate delegate = responseFactory.encoderFor(format);
+        String extension = delegate.getFileExtension(format);
+        
+        // collect the name of the coverages that have been requested
+        return getCoverage.getCoverageId() + "." + extension;
     }
 }

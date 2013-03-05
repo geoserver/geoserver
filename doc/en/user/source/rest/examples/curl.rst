@@ -309,6 +309,24 @@ The new style can be viewed with the same WMS request as above::
 
   http://localhost:8080/geoserver/wms/reflect?layers=acme:roads
 
+Note that if you want to upload the style in a workspace (ie, not making it a global style),
+and then assign this style to a layer in that workspace, you need first to create the style in the given workspace::
+
+  curl -u admin:geoserver -XPOST -H 'Content-type: text/xml' \
+    -d '<style><name>roads_style</name><filename>roads.sld</filename></style>' 
+    http://localhost:8080/geoserver/rest/workspaces/acme/styles
+
+Upload the file within the workspace::
+
+  curl -u admin:geoserver -XPUT -H 'Content-type: application/vnd.ogc.sld+xml' \
+    -d @roads.sld http://localhost:8080/geoserver/rest/workspaces/acme/styles/roads_style
+
+And finally apply that style to the layer. Note the use of the ``<workspace>`` tag in the XML::
+
+  curl -u admin:geoserver -XPUT -H 'Content-type: text/xml' \
+    -d '<layer><defaultStyle><name>roads_style</name><workspace>acme</workspace></defaultStyle></layer>' \
+    http://localhost:8080/geoserver/rest/layers/acme:roads
+
 .. todo:: The WMS request above results in an "Internal error featureType: acme:roads does not have a properly configured datastore"  Tested on 2.2.2.
 
 

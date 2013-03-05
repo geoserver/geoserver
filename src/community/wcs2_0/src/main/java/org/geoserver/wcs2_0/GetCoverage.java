@@ -3,6 +3,8 @@ package org.geoserver.wcs2_0;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -332,11 +334,29 @@ public class GetCoverage {
                 WCSUtils.checkOutputLimits(wcsinfo, new GridEnvelope2D(0,0,sizeX,sizeY), sourceGC.getRenderedImage().getSampleModel());
                 
                 // create final warp
-                final Warp warp= new  WarpAffine(AffineTransform.getScaleInstance(sourceGE.width/sizeX, sourceGE.height/sizeY));
+                final double scaleX = 1.0*sizeX/sourceGE.width;
+                final double scaleY = 1.0*sizeY/sourceGE.height;
+                final RenderedImage sourceImage= sourceGC.getRenderedImage();
+                final int sourceMinX = sourceImage.getMinX();
+                final int sourceMinY = sourceImage.getMinY();
+                final AffineTransform affineTransform = new AffineTransform(
+                        scaleX,
+                        0,
+                        0, 
+                        scaleY,
+                        sourceMinX-scaleX*sourceMinX,   //preserve sourceImage.getMinX() 
+                        sourceMinY-scaleY*sourceMinY);  //preserve sourceImage.getMinY() as per spec
+                Warp warp;
+                try {
+                    warp = new  WarpAffine(
+                            affineTransform.createInverse());
+                } catch (NoninvertibleTransformException e) {
+                    throw new RuntimeException(e);
+                }
                 // impose final 
                 final ImageLayout2 layout = new ImageLayout2(
-                        sourceGE.x,
-                        sourceGE.y,
+                        sourceMinX,
+                        sourceMinY,
                         sizeX,
                         sizeY);
                 hints.add(new Hints(JAI.KEY_IMAGE_LAYOUT, layout));                
@@ -346,9 +366,7 @@ public class GetCoverage {
                 parameters.parameter("warp").setValue(warp);
                 parameters.parameter("interpolation").setValue(interpolation!=null?interpolation:InterpolationPolicy.getDefaultPolicy().getInterpolation());
                 parameters.parameter( "backgroundValues").setValue(CoverageUtilities.getBackgroundValues(sourceGC));// TODO check and improve
-
                 GridCoverage2D gc = (GridCoverage2D) CoverageProcessor.getInstance().doOperation(parameters,hints);
-//                RenderedImageBrowser.showChain(gc.getRenderedImage(),false);
                 return gc;
             }
 
@@ -428,9 +446,26 @@ public class GetCoverage {
                         new GridEnvelope2D(destinationRectangle), sourceGC.getRenderedImage().getSampleModel());
                 
                 // create final warp
-                final Warp warp= new  WarpAffine(AffineTransform.getScaleInstance(
-                        sourceGE.width/destinationRectangle.width, 
-                        sourceGE.height/destinationRectangle.height)); // TODO check
+                final double scaleX = 1.0*destinationRectangle.width/sourceGE.width;
+                final double scaleY = 1.0*destinationRectangle.height/sourceGE.height;
+                final RenderedImage sourceImage= sourceGC.getRenderedImage();
+                final int sourceMinX = sourceImage.getMinX();
+                final int sourceMinY = sourceImage.getMinY();
+                final AffineTransform affineTransform = new AffineTransform(
+                        scaleX,
+                        0,
+                        0, 
+                        scaleY,
+                        destinationRectangle.x-scaleX*sourceMinX,   //preserve sourceImage.getMinX() 
+                        destinationRectangle.y-scaleY*sourceMinY);  //preserve sourceImage.getMinY() as per spec
+                Warp warp;
+                try {
+                    warp = new  WarpAffine(
+                            affineTransform.createInverse());
+                } catch (NoninvertibleTransformException e) {
+                    throw new RuntimeException(e);
+                }
+                
                 // impose size
                 final ImageLayout2 layout = new ImageLayout2(
                         destinationRectangle.x,
@@ -795,10 +830,15 @@ public class GetCoverage {
     }
 
     /**
+     * This method is responsible for extracting the spatial interpolation from the provided {@link GetCoverageType} 
+     * request.
      * 
-     * @param axesInterpolations
-     * @param envelope
-     * @return
+     * <p>
+     * We don't support mixed interpolation at this time and we will never support it for grid axes.
+     * 
+     * @param axesInterpolations the association between axes URIs and the requested interpolations.
+     * @param envelope the original envelope for the source {@link GridCoverage}.
+     * @return the requested {@link Interpolation}
      */
     private Interpolation extractSpatialInterpolation(
             Map<String, InterpolationPolicy> axesInterpolations, Envelope envelope) {

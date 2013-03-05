@@ -1,18 +1,6 @@
-/*
- *    GeoTools - The Open Source Java GIS Toolkit
- *    http://geotools.org
- *
- *    (C) 2002-2011, Open Source Geospatial Foundation (OSGeo)
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the GNU Lesser General Public
- *    License as published by the Free Software Foundation;
- *    version 2.1 of the License.
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *    Lesser General Public License for more details.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 package org.geoserver.wcs2_0.response;
 
@@ -36,48 +24,43 @@ import org.vfny.geoserver.wcs.WcsException;
  * Encoding a {@link GridCoverage2D} as per WCS 2.0 GML format.
  * 
  * @author Simone Giannecchini, GeoSolutions SAS
- *
+ * 
  */
-public class GMLCoverageResponseDelegate extends BaseCoverageResponseDelegate implements CoverageResponseDelegate {
+public class GMLCoverageResponseDelegate extends BaseCoverageResponseDelegate implements
+        CoverageResponseDelegate {
 
     /** FILE_EXTENSION */
     private static final String FILE_EXTENSION = "gml";
-    
+
     /** MIME_TYPE */
     private static final String MIME_TYPE = "application/gml+xml";
-    
-    /** Can be used to map dimensions name to indexes*/
-    private EnvelopeAxesLabelsMapper envelopeDimensionsMapper;
-    
 
+    /** Can be used to map dimensions name to indexes */
+    private EnvelopeAxesLabelsMapper envelopeDimensionsMapper;
 
     @SuppressWarnings("serial")
-    public GMLCoverageResponseDelegate(EnvelopeAxesLabelsMapper envelopeDimensionsMapper, GeoServer geoserver) {
-        super(
-                geoserver,
-                Arrays.asList(FILE_EXTENSION,MIME_TYPE), //output formats
-                new HashMap<String, String>(){ // file extensions
+    public GMLCoverageResponseDelegate(EnvelopeAxesLabelsMapper envelopeDimensionsMapper,
+            GeoServer geoserver) {
+        super(geoserver, Arrays.asList(FILE_EXTENSION, MIME_TYPE), // output formats
+                new HashMap<String, String>() { // file extensions
                     {
                         put(MIME_TYPE, FILE_EXTENSION);
                         put(FILE_EXTENSION, FILE_EXTENSION);
                     }
-                },
-                new HashMap<String, String>(){ //mime types
+                }, new HashMap<String, String>() { // mime types
                     {
                         put(MIME_TYPE, MIME_TYPE);
                         put(FILE_EXTENSION, MIME_TYPE);
                     }
-                });  
-        this.envelopeDimensionsMapper=envelopeDimensionsMapper;
-    }    
+                });
+        this.envelopeDimensionsMapper = envelopeDimensionsMapper;
+    }
 
     @Override
     public void encode(GridCoverage2D coverage, String outputFormat,
             Map<String, String> econdingParameters, OutputStream output) throws ServiceException,
             IOException {
-        
-        
-        final GMLTransformer transformer= new GMLTransformer(envelopeDimensionsMapper);
+        final GMLTransformer transformer = new GMLTransformer(envelopeDimensionsMapper);
         transformer.setIndentation(4);
         try {
             transformer.transform(coverage, output);

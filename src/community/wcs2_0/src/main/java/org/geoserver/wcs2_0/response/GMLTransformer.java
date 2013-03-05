@@ -1,18 +1,6 @@
-/*
- *    GeoTools - The Open Source Java GIS Toolkit
- *    http://geotools.org
- *
- *    (C) 2002-2011, Open Source Geospatial Foundation (OSGeo)
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the GNU Lesser General Public
- *    License as published by the Free Software Foundation;
- *    version 2.1 of the License.
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *    Lesser General Public License for more details.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 package org.geoserver.wcs2_0.response;
 
@@ -63,8 +51,17 @@ import org.xml.sax.helpers.AttributesImpl;
 class GMLTransformer extends TransformerBase {
 
     protected final EnvelopeAxesLabelsMapper envelopeDimensionsMapper;
+    
+    protected FileReference fileReference;
+    
+    protected String mimeType;
+    
     public GMLTransformer(EnvelopeAxesLabelsMapper envelopeDimensionsMapper) {
         this.envelopeDimensionsMapper=envelopeDimensionsMapper;
+    }
+    
+    public void setFileReference(FileReference fileReference) {
+        this.fileReference = fileReference;
     }
 
     class GMLTranslator extends TranslatorSupport {
@@ -296,9 +293,35 @@ class GMLTransformer extends TransformerBase {
          * @param gc2d the {@link GridCoverage2D} for which to encode the Range.
          */
         public void handleRange(GridCoverage2D gc2d) {
-
             // preamble
             start("gml:rangeSet");
+            
+            if(fileReference != null) {
+                encodeFileReference(fileReference);
+            } else {
+                encodeAsDataBlocks(gc2d);
+            }
+            end("gml:rangeSet");
+
+        }
+
+        private void encodeFileReference(FileReference fileReference) {
+            start("gml:File");
+            
+            final AttributesImpl atts = new AttributesImpl();
+            atts.addAttribute("", "xlink:arcrole", "xlink:arcrole", "", "fileReference");
+            atts.addAttribute("", "xlink:href", "xlink:href", "", "cid:" + fileReference.getReference());
+            atts.addAttribute("", "xlink:role", "xlink:role", "", fileReference.getConformanceClass());
+            element("gml:rangeParameters", "", atts);
+            element("gml:fileReference", "cid:" + fileReference.getReference());
+            element("gml:fileStructure", "");
+            element("gml:mimeType", fileReference.getMimeType());
+            
+            end("gml:File");
+            
+        }
+
+        private void encodeAsDataBlocks(GridCoverage2D gc2d) {
             start("gml:DataBlock");
             start("gml:rangeParameters");
             end("gml:rangeParameters");
@@ -355,8 +378,6 @@ class GMLTransformer extends TransformerBase {
 
             end("tupleList");
             end("gml:DataBlock");
-            end("gml:rangeSet");
-
         }
 
         /**
@@ -611,5 +632,6 @@ class GMLTransformer extends TransformerBase {
     public Translator createTranslator(ContentHandler handler) {
         return new GMLTranslator(handler);
     }
+
 
 }

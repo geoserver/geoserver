@@ -352,4 +352,9 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
         }
     }
 
+    
+    @Override
+    public String getConformanceClass(String format) {
+        return "http://www.opengis.net/spec/GMLCOV_geotiff-coverages/1.0/conf/geotiff-coverage";
+    }
 }

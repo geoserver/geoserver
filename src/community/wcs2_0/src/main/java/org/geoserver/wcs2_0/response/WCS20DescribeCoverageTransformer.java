@@ -232,7 +232,7 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
             
             final String mapNativeFormat = mimemapper.mapNativeFormat(ci);
             if(mapNativeFormat==null){
-                throw new WCS20Exception("Unable to create mime type for coverainfo: "+ci.toString());
+                throw new WCS20Exception("Unable to create mime type for coverageinfo: "+ci.toString());
             }
             element("wcs:nativeFormat",mapNativeFormat);
             end("wcs:ServiceParameters");

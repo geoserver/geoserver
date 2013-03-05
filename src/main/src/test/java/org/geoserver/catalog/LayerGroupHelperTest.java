@@ -1,8 +1,6 @@
 package org.geoserver.catalog;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.Arrays;
@@ -12,7 +10,6 @@ import java.util.Stack;
 import javax.xml.namespace.QName;
 
 import org.geoserver.catalog.LayerGroupInfo.Mode;
-import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.MockTestData;
 import org.geoserver.test.GeoServerMockTestSupport;
@@ -67,8 +64,7 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
     }
 
     private LayerGroupInfo buildGroup(String name, PublishedInfo... publisheds) {
-        LayerGroupInfoImpl group = (LayerGroupInfoImpl) getCatalog().getFactory().createLayerGroup();
-        group.setId(name);
+        LayerGroupInfo group = getCatalog().getFactory().createLayerGroup();
         group.setName(name);
         group.getLayers().addAll(Arrays.asList(publisheds));
 
@@ -149,27 +145,6 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
         path = helper.checkLoops();
         Assert.assertNotNull(path);
         Assert.assertEquals("/loop2/ponds/loop2", helper.getLoopAsString(path));        
-    }
-    
-    @Test
-    public void testSimpleLoopWithNotEqualGroups() {
-        LayerGroupInfo myLoop = buildGroup("myLoop", forestLayer);
-         LayerGroupInfo loopClone = buildGroup("myLoop", forestLayer);
-         assertTrue(myLoop.equals(loopClone));
-            
-         // change the LayerGroup
-         myLoop.setTitle("new title");
-         // now the two groups aren't equal anymore
-         assertFalse(myLoop.equals(loopClone));
-            
-         // create loop
-         myLoop.getLayers().add(loopClone);
-
-         // validate
-         LayerGroupHelper helper = new LayerGroupHelper(myLoop);
-         Stack<LayerGroupInfo> path = helper.checkLoops();
-         Assert.assertNotNull(path);
-         Assert.assertEquals("/myLoop/myLoop", helper.getLoopAsString(path));
     }
     
     @Test

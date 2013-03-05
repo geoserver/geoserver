@@ -245,7 +245,7 @@ public class LayerGroupHelper {
         
         for (PublishedInfo child : group.getLayers()) {
             if (child instanceof LayerGroupInfo) {
-                if (isGroupInStack((LayerGroupInfo) child, path)) {
+                if (path.contains(child)) {
                     path.push((LayerGroupInfo) child);
                     return true;
                 } else if (checkLoops((LayerGroupInfo) child, path)) {
@@ -255,16 +255,6 @@ public class LayerGroupHelper {
         }
         
         path.pop();
-        return false;
-    }
-    
-    private static boolean isGroupInStack(LayerGroupInfo group, Stack<LayerGroupInfo> path) {
-        for (LayerGroupInfo groupInPath : path) {
-            if (groupInPath.getId().equals(group.getId())) {
-                return true;
-            }
-        }
-        
         return false;
     }
 }

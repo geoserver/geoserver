@@ -5,6 +5,8 @@
 package org.geoserver.wcs2_0;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import net.opengis.wcs20.DescribeCoverageType;
@@ -12,6 +14,7 @@ import net.opengis.wcs20.GetCapabilitiesType;
 import net.opengis.wcs20.GetCoverageType;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.OWS20Exception;
 import org.geoserver.wcs.WCSInfo;
@@ -20,6 +23,8 @@ import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geoserver.wcs2_0.response.MIMETypeMapper;
 import org.geoserver.wcs2_0.response.WCS20DescribeCoverageTransformer;
 import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
+import org.geoserver.wcs2_0.util.NCNameResourceCodec;
+import org.geoserver.wcs2_0.util.StringUtils;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.transform.TransformerBase;
 import org.opengis.coverage.grid.GridCoverage;
@@ -73,6 +78,21 @@ public class DefaultWebCoverageService20 implements WebCoverageService20 {
         
         if( request.getCoverageId() == null || request.getCoverageId().isEmpty() ) {
             throw new OWS20Exception("Required parameter coverageId missing", WCS20Exception.WCS20ExceptionCode.EmptyCoverageIdList, "coverageId");
+        }
+        
+        // check coverages are legit
+        List<String> badCoverageIds = new ArrayList<String>();
+
+        for (String encodedCoverageId : (List<String>)request.getCoverageId()) {
+            LayerInfo layer = NCNameResourceCodec.getCoverage(catalog, encodedCoverageId);
+            if(layer == null) {
+                badCoverageIds.add(encodedCoverageId);
+            }
+        }
+        if(!badCoverageIds.isEmpty()) {
+            String mergedIds = StringUtils.merge(badCoverageIds);
+            throw new WCS20Exception("Could not find the requested coverage(s): " + mergedIds
+                    , WCS20Exception.WCS20ExceptionCode.NoSuchCoverage, "coverageId");
         }
 
         WCSInfo wcs = getServiceInfo();

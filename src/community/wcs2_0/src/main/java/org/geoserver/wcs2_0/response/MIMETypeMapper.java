@@ -4,135 +4,143 @@
  */
 package org.geoserver.wcs2_0.response;
 
-import java.io.File;
+import it.geosolutions.imageio.utilities.SoftValueHashMap;
+
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
-
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogVisitorAdapter;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.event.CatalogAddEvent;
+import org.geoserver.catalog.event.CatalogListener;
+import org.geoserver.catalog.event.CatalogModifyEvent;
+import org.geoserver.catalog.event.CatalogPostModifyEvent;
+import org.geoserver.catalog.event.CatalogRemoveEvent;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.wcs.responses.CoverageResponseDelegate;
+import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 /**
- * Simple mapping utility to map native formats to Mime Types using ImageIO reader capabilities. 
+ * Simple mapping utility to map native formats to Mime Types using ImageIO reader capabilities.
  * 
- * It does perform caching of the mappings. Tha cache should be very small, hence it uses hard references.
+ * It does perform caching of the mappings. Tha cache should be very small, hence it uses hard
+ * references.
  * 
  * @author Simone Giannechini, GeoSolutions
- *
+ * 
  */
-public class MIMETypeMapper {
-    
+public class MIMETypeMapper implements ApplicationContextAware {
+
+    private static final String NO_MIME_TYPE = "NoMimeType";
+
     private Logger LOGGER = Logging.getLogger(MIMETypeMapper.class);
 
-    private final ConcurrentHashMap<String, String> mapping = new ConcurrentHashMap<String, String>(10,0.9f,1);
+    private final SoftValueHashMap<String, String> mimeTypeCache = new SoftValueHashMap<String, String>(
+            100);
+
+    private final Set<String> outputMimeTypes = new HashSet<String>();
+
+    private List<CoverageMimeTypeMapper> mappers;
 
     /**
      * Constructor.
      * 
      */
-    private MIMETypeMapper() {
+    private MIMETypeMapper(CoverageResponseDelegateFinder finder, Catalog catalog) {
+        // collect all of the output mime types
+        for (String of : finder.getOutputFormats()) {
+            CoverageResponseDelegate delegate = finder.encoderFor(of);
+            String mime = delegate.getMimeType(of);
+            outputMimeTypes.add(mime);
+        }
+        catalog.addListener(new MimeTypeCacheClearingListener());
     }
-    
-    
+
     /**
-     * Returns a mime types or null for the provided {@link CoverageInfo} using the {@link CoverageInfo#getNativeFormat()}
-     * as its key.
+     * Returns a mime types or null for the provided {@link CoverageInfo} using the
+     * {@link CoverageInfo#getNativeFormat()} as its key.
      * 
      * @param cInfo the {@link CoverageInfo} to find a mime type for
-     * @return a mime types or null for the provided {@link CoverageInfo} using the {@link CoverageInfo#getNativeFormat()}
-     * as its key.
+     * @return a mime types or null for the provided {@link CoverageInfo} using the
+     *         {@link CoverageInfo#getNativeFormat()} as its key.
      * @throws IOException in case we don't manage to open the underlying file
      */
-    public String mapNativeFormat(final CoverageInfo cInfo) throws IOException{
-        // checks 
+    public String mapNativeFormat(final CoverageInfo cInfo) throws IOException {
+        // checks
         Utilities.ensureNonNull("cInfo", cInfo);
         
-        //=== k, let's se if we have a mapping for the MIME TYPE
-        final String nativeFormat=cInfo.getNativeFormat();       
-        if(LOGGER.isLoggable(Level.FINE)){
-            LOGGER.fine("Trying to map mime type for coverageinfo: "+cInfo.toString());
+        String mime = mimeTypeCache.get(cInfo.getId());
+        if(mime != null) {
+            if(NO_MIME_TYPE.equals(mime)) {
+                return null;
+            } else {
+                return mime;
+            }
         }
-        if(mapping.containsKey(nativeFormat)){
-
-            final String mime = mapping.get(nativeFormat);
-            if(LOGGER.isLoggable(Level.FINE)){
-                LOGGER.fine("Found mapping for nativeFormat: "+nativeFormat+ mime);
+        
+        for (CoverageMimeTypeMapper mapper : mappers) {
+            mime = mapper.getMimeType(cInfo);
+            if(mime != null) {
+                break;
+            }
+        }
+        
+        if (mime != null && outputMimeTypes.contains(mime)) {
+            mimeTypeCache.put(cInfo.getId(), mime);
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.fine("Added mapping for mime: " + mime);
             }
             return mime;
-        }
-        
-        if(LOGGER.isLoggable(Level.FINE)){
-            LOGGER.fine("Unable to find mapping , let's open an ImageReader to the original source");
-        }
-        // no mapping let's go with the ImageIO reader code
-        final File sourceFile = GeoserverDataDirectory.findDataFile(cInfo.getStore().getURL());
-        if(sourceFile==null){ 
-            if(LOGGER.isLoggable(Level.FINE)){
-                LOGGER.fine("Original source is null");
-            }
-            return null;
         } else {
-            if(LOGGER.isLoggable(Level.FINE)){
-                LOGGER.fine("Original source: "+sourceFile.getAbsolutePath());
-            }            
+            // we either don't have a clue about the mime, or we don't have an encoder, 
+            // save the response as null
+            mimeTypeCache.put(cInfo.getId(), NO_MIME_TYPE);
+            return null;
         }
-        
-        ImageInputStream inStream=null;
-        ImageReader reader=null;
-        try{
-            inStream=ImageIO.createImageInputStream(sourceFile);
-            if(inStream==null){
-                LOGGER.warning("Unable to create an imageinputstream for this file:"+sourceFile.getAbsolutePath());
-                return null;
-            }
-            Iterator<ImageReader> readers = ImageIO.getImageReaders(inStream);
-            if(readers.hasNext()){
-                reader=readers.next();
-                if(LOGGER.isLoggable(Level.FINE)){
-                    LOGGER.fine("Found reader for format: "+reader.getFormatName());
-                }                  
-                mapping.putIfAbsent(nativeFormat, reader.getOriginatingProvider().getMIMETypes()[0]);
-                if(LOGGER.isLoggable(Level.FINE)){
-                    LOGGER.fine("Added mapping: "+mapping.get(nativeFormat));
-                }                  
-                return mapping.get(nativeFormat);
-            } else {
-                LOGGER.warning("Unable to create a reader for this file:"+sourceFile.getAbsolutePath());
-            }
-        }catch (Exception e) {
-            if(LOGGER.isLoggable(Level.WARNING)){
-                LOGGER.warning("Unable to map mime type for coverage: "+cInfo.toString());
-            }
-        } finally{
-            try{
-                if(inStream!=null){
-                    inStream.close();
-                }
-            }catch (Exception e) {
-                if(LOGGER.isLoggable(Level.FINE)){
-                    LOGGER.log(Level.FINE,e.getLocalizedMessage(),e);
-                }
-            }
-            
-            try{
-                if(reader!=null){
-                    reader.dispose();
-                }
-            }catch (Exception e) {
-                if(LOGGER.isLoggable(Level.FINE)){
-                    LOGGER.log(Level.FINE,e.getLocalizedMessage(),e);
-                }
-            }            
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        mappers = GeoServerExtensions.extensions(CoverageMimeTypeMapper.class, applicationContext);
+    }
+    
+    /**
+     * Cleans the mime type cache contents on reload
+     * @author Andrea Aime - GeoSolutions
+     */
+    public class MimeTypeCacheClearingListener extends CatalogVisitorAdapter implements CatalogListener {
+
+        public void handleAddEvent(CatalogAddEvent event) {
         }
-        return null;
-        
+
+        public void handleModifyEvent(CatalogModifyEvent event) {
+        }
+
+        public void handlePostModifyEvent(CatalogPostModifyEvent event) {
+            event.getSource().accept( this );
+        }
+
+        public void handleRemoveEvent(CatalogRemoveEvent event) {
+            event.getSource().accept( this );
+        }
+
+        public void reloaded() {
+            outputMimeTypes.clear();
+        }
+       
+        @Override
+        public void visit(CoverageInfo coverage) {
+            outputMimeTypes.remove(coverage.getId());
+        }
     }
 }

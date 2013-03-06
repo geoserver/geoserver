@@ -26,6 +26,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
+import org.geoserver.wcs.responses.GeoTIFFCoverageResponseDelegate;
 import org.geoserver.wcs2_0.GetCoverage;
 import org.geoserver.wcs2_0.WCS20Const;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
@@ -100,7 +101,7 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
         public void encode(Object o) throws IllegalArgumentException {
             
             if (!(o instanceof DescribeCoverageType)) {
-                throw new IllegalArgumentException(new StringBuffer("Not a GetCapabilitiesType: ")
+                throw new IllegalArgumentException(new StringBuffer("Not a DescribeCoverageType: ")
                         .append(o).toString());
             }
 
@@ -110,7 +111,6 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
             attributes.addAttribute("", "xmlns:swe", "xmlns:swe", "", "http://www.opengis.net/swe/2.0");
 
             // collect coverages
-            List<String> badCoverageIds = new ArrayList<String>();
             List<LayerInfo> coverages = new ArrayList<LayerInfo>();
 
             for (String encodedCoverageId : (List<String>)request.getCoverageId()) {
@@ -118,15 +118,12 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
                 if(layer != null) {
                     coverages.add(layer);
                 } else {
-                    badCoverageIds.add(encodedCoverageId);
+                    // if we get there there is an internal error, the coverage existence is
+                    // checked before creating the transformer
+                    throw new IllegalArgumentException("Failed to locate coverage " 
+                            + encodedCoverageId + ", unexpected, the coverage existance has been " +
+                            		"checked earlier in the request lifecycle");
                 }
-            }
-
-            // any error?
-            if( ! badCoverageIds.isEmpty() ) {
-                String mergedIds = StringUtils.merge(badCoverageIds);
-                throw new WCS20Exception("Could not find the requested coverage(s): " + mergedIds
-                        , WCS20Exception.WCS20ExceptionCode.NoSuchCoverage, mergedIds);
             }
 
             // ok: build the response
@@ -230,9 +227,10 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
             start("wcs:ServiceParameters");
             element("wcs:CoverageSubtype", "RectifiedGridCoverage");
             
-            final String mapNativeFormat = mimemapper.mapNativeFormat(ci);
+            String mapNativeFormat = mimemapper.mapNativeFormat(ci);
             if(mapNativeFormat==null){
-                throw new WCS20Exception("Unable to create mime type for coverageinfo: "+ci.toString());
+                // fall back on GeoTiff when a native format cannot be determined
+                mapNativeFormat = GeoTIFFCoverageResponseDelegate.GEOTIFF_CONTENT_TYPE;
             }
             element("wcs:nativeFormat",mapNativeFormat);
             end("wcs:ServiceParameters");

@@ -56,7 +56,7 @@ public class NCNameResourceCodec {
         LayerInfo ret = null;
 
         for (LayerInfo layer : layers) {
-            if ( layer.getType() == LayerInfo.Type.RASTER) {
+            if (layer != null && layer.getType() == LayerInfo.Type.RASTER) {
                 if(ret == null) {
                     ret = layer;
                 } else {
@@ -94,15 +94,16 @@ public class NCNameResourceCodec {
 
             LOGGER.info(" Checking pair " + namespace + " : " + covName );
 
+            String fullName = namespace+":"+covName;
             NamespaceInfo nsInfo = catalog.getNamespaceByPrefix(namespace);
             if(nsInfo != null) {
                 LOGGER.info(" - Namespace found " + namespace);
-                LayerInfo layer = catalog.getLayerByName(namespace+":"+covName);
+                LayerInfo layer = catalog.getLayerByName(fullName);
                 if(layer != null) {
                     LOGGER.info(" - Collecting layer " + layer.prefixedName());
                     ret.add(layer);
                 } else {
-                    LOGGER.info(" - Ignoring layer " + layer.prefixedName());
+                    LOGGER.info(" - Ignoring layer " + fullName);
                 }
             } else {
                 LOGGER.info(" - Namespace not found " + namespace);

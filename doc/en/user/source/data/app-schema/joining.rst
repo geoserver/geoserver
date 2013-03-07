@@ -24,13 +24,15 @@ When using app-schema with Joining turned on, the following restrictions exist w
 
 Configuration
 -------------
-Joining is turned on by adding this simple line to your app-schema.properties file (see :ref:`app-schema.property-interpolation`) ::
+Joining is turned on by default. It is disabled by adding this simple line to your app-schema.properties file (see :ref:`app-schema.property-interpolation`) ::
 
-     app-schema.joining = true
+     app-schema.joining = false
 
-Or, alternatively, by setting the value of the Java System Property "app-schema.joining" to "true", for example ::
+Or, alternatively, by setting the value of the Java System Property "app-schema.joining" to "false", for example ::
 
-     java -DGEOSERVER_DATA_DIR=... -Dapp-schema.joining=true Start
+     java -DGEOSERVER_DATA_DIR=... -Dapp-schema.joining=false Start
+
+Not specifying "app-schema.joining" parameter will enable joining by default. 
 
 Database Design Guidelines
 --------------------------

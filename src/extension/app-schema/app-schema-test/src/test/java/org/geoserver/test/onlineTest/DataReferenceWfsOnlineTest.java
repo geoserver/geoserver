@@ -19,6 +19,7 @@ import org.geotools.data.FeatureSource;
 import org.geotools.data.complex.AppSchemaDataAccessRegistry;
 import org.geotools.data.complex.MappingFeatureCollection;
 import org.geotools.data.complex.MappingFeatureSource;
+import org.geotools.data.complex.config.AppSchemaDataAccessConfigurator;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.Types;
@@ -31,7 +32,11 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Expression;
 import org.w3c.dom.Document;
-
+/**
+ * 
+ * @author Victor Tey(CSIRO Earth Science and Resource Engineering)
+ *
+ */
 public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWfsTest {
     private boolean printDoc=false;
     public DataReferenceWfsOnlineTest() throws Exception {
@@ -1673,7 +1678,7 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
     @Test
     public void testPredicates() {
         //predicates currently only works with complex post-filters used in joining
-        if (AppSchemaDataAccessRegistry.getAppSchemaProperties().getProperty ("app-schema.joining") == "true") {
+        if (AppSchemaDataAccessConfigurator.isJoining()) {
                 
             //test with slash in predicate
             String xml = //

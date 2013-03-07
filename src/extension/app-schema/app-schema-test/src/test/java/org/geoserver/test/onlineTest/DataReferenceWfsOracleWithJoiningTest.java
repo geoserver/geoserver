@@ -7,9 +7,12 @@ package org.geoserver.test.onlineTest;
 import org.junit.Test;
 
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.test.NamespaceTestData;
 import org.geotools.data.complex.AppSchemaDataAccessRegistry;
-
+/**
+ * 
+ * @author Victor Tey(CSIRO Earth Science and Resource Engineering)
+ *
+ */
 public class DataReferenceWfsOracleWithJoiningTest extends DataReferenceWfsOracleTest {
 
     public DataReferenceWfsOracleWithJoiningTest() throws Exception {

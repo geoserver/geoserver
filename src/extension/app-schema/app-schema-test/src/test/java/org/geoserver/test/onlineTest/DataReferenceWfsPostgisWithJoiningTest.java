@@ -8,7 +8,11 @@ import org.junit.Test;
 
 import org.geoserver.data.test.SystemTestData;
 import org.geotools.data.complex.AppSchemaDataAccessRegistry;
-
+/**
+ * 
+ * @author Victor Tey(CSIRO Earth Science and Resource Engineering)
+ *
+ */
 public class DataReferenceWfsPostgisWithJoiningTest extends DataReferenceWfsPostgisTest {
 
     public DataReferenceWfsPostgisWithJoiningTest() throws Exception {

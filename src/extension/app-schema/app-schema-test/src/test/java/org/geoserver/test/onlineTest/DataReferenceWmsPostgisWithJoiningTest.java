@@ -4,10 +4,8 @@
  */
 package org.geoserver.test.onlineTest;
 
-import org.junit.Test;
 
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.test.NamespaceTestData;
 import org.geotools.data.complex.AppSchemaDataAccessRegistry;
 
 /**

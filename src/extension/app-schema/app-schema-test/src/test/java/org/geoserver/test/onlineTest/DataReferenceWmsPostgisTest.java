@@ -4,7 +4,6 @@
  */
 package org.geoserver.test.onlineTest;
 
-import org.geoserver.test.NamespaceTestData;
 import org.geoserver.test.onlineTest.setup.AppSchemaWmsReferenceMockData;
 import org.geoserver.test.onlineTest.setup.ReferenceDataPostgisSetup;
 import org.geoserver.test.onlineTest.support.AbstractReferenceDataSetup;

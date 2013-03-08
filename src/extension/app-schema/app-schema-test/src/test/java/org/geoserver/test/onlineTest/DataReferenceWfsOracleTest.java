@@ -5,35 +5,22 @@
 package org.geoserver.test.onlineTest;
 
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.test.onlineTest.setup.AppSchemaReferenceMockData;
-import org.geoserver.test.onlineTest.setup.ReferenceDataOracleSetup;
-import org.geoserver.test.onlineTest.support.AbstractReferenceDataSetup;
 import org.geotools.data.complex.AppSchemaDataAccessRegistry;
 /**
  * 
  * @author Victor Tey(CSIRO Earth Science and Resource Engineering)
  *
  */
-public class DataReferenceWfsOracleTest extends DataReferenceWfsOnlineTest {
+public class DataReferenceWfsOracleTest extends DataReferenceWfsOracleWithJoiningTest {
 
     public DataReferenceWfsOracleTest() throws Exception {
         super();
     }
     
     @Override
-    protected void onSetUp(SystemTestData testData) throws Exception {
-        AppSchemaDataAccessRegistry.getAppSchemaProperties().setProperty ("app-schema.joining", "false");
-        super.onSetUp(testData);
-    }
-
-    @Override
-    protected AppSchemaReferenceMockData createTestData() {
-        return new AppSchemaReferenceMockData();
-    }
-
-    @Override
-    public AbstractReferenceDataSetup getReferenceDataSetup() throws Exception {
-        return new ReferenceDataOracleSetup();
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+    	AppSchemaDataAccessRegistry.getAppSchemaProperties().setProperty ("app-schema.joining", "false");                
+        super.setUpTestData(testData);
     }
 
 }

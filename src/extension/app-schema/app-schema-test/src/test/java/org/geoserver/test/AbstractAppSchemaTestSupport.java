@@ -112,7 +112,7 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
      */
     @Override
     protected abstract AbstractAppSchemaMockData createTestData();
-    
+     
     /**
      * Configure WFS to encode canonical schema location and use featureMember.
      * 

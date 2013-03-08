@@ -10,10 +10,8 @@ import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
-import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.onlineTest.support.AbstractDataReferenceWfsTest;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.complex.AppSchemaDataAccessRegistry;
 import org.geotools.image.test.ImageAssert;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -29,13 +27,7 @@ public abstract class DataReferenceWmsOnlineTest extends AbstractDataReferenceWf
 
     public DataReferenceWmsOnlineTest() throws Exception {
         super();
-    }
-    
-    @Override
-    protected void onSetUp(SystemTestData testData) throws Exception {
-        AppSchemaDataAccessRegistry.getAppSchemaProperties().setProperty ("app-schema.joining", "false");
-        super.onSetUp(testData);
-    }
+    }    
       
     @Test
     public void testGetMapSimpleLithology() throws Exception

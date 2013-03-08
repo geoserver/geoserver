@@ -41,7 +41,6 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
     private boolean printDoc=false;
     public DataReferenceWfsOnlineTest() throws Exception {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -1854,11 +1853,14 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
                 doc);
         assertTrue(isEqualGeometry(orig, expected, 5));
         
-    }
-    
+    }    
     
     @Test
     public void testFilteringSplit() throws Exception {
+    	if (AppSchemaDataAccessConfigurator.isJoining()) {
+    		// this is non joining test
+    		return;
+    	}
         FeatureSource<FeatureType, Feature> featureSource;
         try {
             Name gu = Types.typeName("urn:cgi:xmlns:CGI:GeoSciML:2.0", "GeologicUnit");

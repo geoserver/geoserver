@@ -7,12 +7,9 @@ package org.geoserver.wms.capabilities;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,6 +23,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.util.ISO8601Formatter;
 import org.geoserver.wms.WMS;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.factory.GeoTools;
@@ -529,63 +527,5 @@ abstract class DimensionHelper {
             
             element("Dimension", metadata, dim);
         }
-    }
-
-    static class ISO8601Formatter {
-
-        private final GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
-        
-        private void pad(StringBuilder buf, int value, int amt) {
-            if (amt == 2 && value < 10) {
-                buf.append('0');
-            } else if (amt == 4 && value < 1000) {
-                if (value >= 100) {
-                    buf.append("0");
-                } else if (value >= 10) {
-                    buf.append("00");
-                } else {
-                    buf.append("000");
-                }
-            } else if (amt == 3 && value < 100) {
-                if (value >= 10) {
-                    buf.append('0');
-                } else {
-                    buf.append("00");
-                }
-            }
-            buf.append(value);
-        }
-        
-        public String format(Date date) {
-            return format(date, new StringBuilder()).toString();
-        }
-
-        public StringBuilder format(Date date, StringBuilder buf) {
-            cal.setTime(date);
-            int year = cal.get(Calendar.YEAR);
-            if (cal.get(Calendar.ERA) == GregorianCalendar.BC) {
-                if (year > 1) {
-                    buf.append('-');
-                }
-                year = year - 1;
-            }
-            pad(buf, year, 4);
-            buf.append('-');
-            pad(buf, cal.get(Calendar.MONTH) + 1, 2);
-            buf.append('-');
-            pad(buf, cal.get(Calendar.DAY_OF_MONTH), 2);
-            buf.append('T');
-            pad(buf, cal.get(Calendar.HOUR_OF_DAY), 2);
-            buf.append(':');
-            pad(buf, cal.get(Calendar.MINUTE), 2);
-            buf.append(':');
-            pad(buf, cal.get(Calendar.SECOND), 2);
-            buf.append('.');
-            pad(buf, cal.get(Calendar.MILLISECOND), 3);
-            buf.append('Z');
-            
-            return buf;
-        }
-        
     }
 }

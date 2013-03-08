@@ -1,6 +1,5 @@
 package org.geoserver.wcs2_0.xml;
 
-import static junit.framework.Assert.*;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
 
@@ -9,18 +8,28 @@ import java.io.IOException;
 
 import javax.mail.BodyPart;
 import javax.mail.Multipart;
+import javax.xml.namespace.QName;
 
 import junit.framework.Assert;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.DimensionPresentation;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wcs2_0.GetCoverage;
 import org.geoserver.wcs2_0.WCSTestSupport;
+import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.data.DataSourceException;
 import org.geotools.gce.geotiff.GeoTiffReader;
+import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.referencing.CRS;
+import org.junit.Before;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.referencing.FactoryException;
@@ -36,6 +45,25 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
  *
  */
 public class GetCoverageTest extends WCSTestSupport {
+    
+    protected static QName WATTEMP = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
+    
+    @Before
+    public void clearDimensions() {
+        clearDimensions(getLayerId(WATTEMP));
+    }
+    
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        testData.addRasterLayer(WATTEMP, "watertemp.zip", null, null, SystemTestData.class, getCatalog());
+        CoverageInfo coverage = getCatalog().getCoverageByName(getLayerId(WATTEMP));
+        // force sorting on elevation to get predictable results
+        String sortByKey = ImageMosaicFormat.SORT_BY.getName().toString();
+        coverage.getParameters().put(sortByKey, "elevation");
+        getCatalog().save(coverage);
+    }
+
 
     /**
      * Trimming only on Longitude
@@ -435,6 +463,98 @@ public class GetCoverageTest extends WCSTestSupport {
             } catch (Exception e) {
                 // TODO: handle exception
             }
+        }
+    }
+    
+    @Test
+    public void testCoverageTimeSlicingNoTimeConfigured() throws Exception {
+        final File xml= new File("./src/test/resources/trimming/requestGetCoverageTimeSlicingXML.xml");
+        final String request= FileUtils.readFileToString(xml);
+        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+        checkOws20Exception(response, 404, WCS20Exception.WCS20ExceptionCode.InvalidAxisLabel.getExceptionCode(), null);
+    }
+    
+    @Test
+    public void testCoverageTimeSlicingTimeBefore() throws Exception {
+        setupRasterDimension(getLayerId(WATTEMP), ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        final File xml = new File("./src/test/resources/trimming/requestGetCoverageTimeSlicingXML.xml");
+        String request= FileUtils.readFileToString(xml);
+        request = request.replace("${slicePoint}", "2000-10-31T00:00:00.000Z");
+        // nearest neighbor match, lowest time returned
+        checkWaterTempValue(request, 14.89799975766800344);
+    }
+    
+    @Test
+    public void testCoverageTimeSlicingTimeFirst() throws Exception {
+        setupRasterDimension(getLayerId(WATTEMP), ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        final File xml = new File("./src/test/resources/trimming/requestGetCoverageTimeSlicingXML.xml");
+        String request= FileUtils.readFileToString(xml);
+        request = request.replace("${slicePoint}", "2008-10-31T00:00:00.000Z");
+        checkWaterTempValue(request, 14.89799975766800344);
+    }
+    
+    @Test
+    public void testCoverageTimeSlicingTimeClosest() throws Exception {
+        setupRasterDimension(getLayerId(WATTEMP), ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        final File xml = new File("./src/test/resources/trimming/requestGetCoverageTimeSlicingXML.xml");
+        String request= FileUtils.readFileToString(xml);
+        request = request.replace("${slicePoint}", "2000-10-31T11:30:00.000Z");
+        // nearest neighbor match, lowest time returned
+        checkWaterTempValue(request, 14.89799975766800344);
+    }
+    
+    @Test
+    public void testCoverageTimeSlicingTimeSecond() throws Exception {
+        setupRasterDimension(getLayerId(WATTEMP), ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        final File xml = new File("./src/test/resources/trimming/requestGetCoverageTimeSlicingXML.xml");
+        String request= FileUtils.readFileToString(xml);
+        request = request.replace("${slicePoint}", "2008-11-01T00:00:00.000Z");
+        checkWaterTempValue(request, 14.52999974018894136);
+    }
+    
+    @Test
+    public void testCoverageTimeSlicingTimeAfter() throws Exception {
+        setupRasterDimension(getLayerId(WATTEMP), ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        final File xml = new File("./src/test/resources/trimming/requestGetCoverageTimeSlicingXML.xml");
+        String request= FileUtils.readFileToString(xml);
+        request = request.replace("${slicePoint}", "2011-11-01T00:00:00.000Z");
+        // nearest neighbor match, highest time returned
+        checkWaterTempValue(request, 14.52999974018894136);
+    }
+
+    private void checkWaterTempValue(String request, double expectedValue) throws Exception, IOException,
+            DataSourceException {
+        MockHttpServletResponse response = postAsServletResponse("wcs", request);
+        
+        assertEquals("image/tiff", response.getContentType());
+        byte[] tiffContents = getBinary(response);
+        File file = File.createTempFile("bm_gtiff", "bm_gtiff.tiff", new File("./target"));
+        FileUtils.writeByteArrayToFile(file, tiffContents);
+
+        GeoTiffReader readerTarget = new GeoTiffReader(file);
+        GridCoverage2D targetCoverage = null;
+        try {
+            targetCoverage = readerTarget.read(null);
+
+            // checks spatial consistency
+            AbstractGridCoverage2DReader sourceReader = (AbstractGridCoverage2DReader) getCatalog().getCoverageByName(getLayerId(WATTEMP)).getGridCoverageReader(null, null);
+            GeneralEnvelope expectedEnvelope  = sourceReader.getOriginalEnvelope();
+            assertEnvelopeEquals(expectedEnvelope, 1.0,(GeneralEnvelope) targetCoverage.getEnvelope(), 1.0);
+            Assert.assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), expectedEnvelope.getCoordinateReferenceSystem()));
+            
+            // check raster space consistency
+            final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
+            GridEnvelope expectedGridRange = sourceReader.getOriginalGridRange();
+            assertEquals(gridRange.getSpan(0), expectedGridRange.getSpan(0));
+            assertEquals(gridRange.getSpan(1), expectedGridRange.getSpan(1));
+            
+            // check the reference pixel 
+            double[] pixel = new double[1];
+            targetCoverage.getRenderedImage().getData().getPixel(1, 24, pixel);
+            assertEquals(expectedValue, pixel[0], 1e-6);
+        } finally {
+            readerTarget.dispose();
+            scheduleForCleaning(targetCoverage);
         }
     }
 }

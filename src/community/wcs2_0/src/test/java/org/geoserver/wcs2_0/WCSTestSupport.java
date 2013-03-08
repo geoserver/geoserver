@@ -10,6 +10,7 @@ import java.awt.geom.AffineTransform;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,6 +35,11 @@ import junit.framework.Assert;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.catalog.DimensionPresentation;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
@@ -201,6 +207,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         namespaces.put("gmlcov", "http://www.opengis.net/gmlcov/1.0");
         namespaces.put("swe", "http://www.opengis.net/swe/2.0");
         namespaces.put("gml", "http://www.opengis.net/gml/3.2");
+        namespaces.put("wcsgs", "http://www.geoserver.org/wcsgs/2.0");
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
         xpath = XMLUnit.newXpathEngine();
 
@@ -385,5 +392,39 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         return multipart;
     }
 
+    /**
+     * Configures the specified dimension for a coverage
+     * 
+     * @param coverageName
+     * @param metadataKey
+     * @param presentation
+     * @param resolution
+     */
+    protected void setupRasterDimension(String coverageName, String metadataKey, DimensionPresentation presentation, Double resolution) {
+        CoverageInfo info = getCatalog().getCoverageByName(coverageName);
+        DimensionInfo di = new DimensionInfoImpl();
+        di.setEnabled(true);
+        di.setPresentation(presentation);
+        if(resolution != null) {
+            di.setResolution(new BigDecimal(resolution));
+        }
+        info.getMetadata().put(metadataKey, di);
+        getCatalog().save(info);
+    }
+    
+    /**
+     * Clears dimension information from the specified coverage
+     * 
+     * @param coverageName
+     * @param metadataKey
+     * @param presentation
+     * @param resolution
+     */
+    protected void clearDimensions(String coverageName) {
+        CoverageInfo info = getCatalog().getCoverageByName(coverageName);
+        info.getMetadata().remove(ResourceInfo.TIME);
+        info.getMetadata().remove(ResourceInfo.ELEVATION);
+        getCatalog().save(info);
+    }
     
 }

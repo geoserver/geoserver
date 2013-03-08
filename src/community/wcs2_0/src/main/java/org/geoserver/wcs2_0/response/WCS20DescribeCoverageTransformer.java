@@ -5,16 +5,10 @@
 package org.geoserver.wcs2_0.response;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
 import javax.measure.unit.Unit;
 import javax.measure.unit.UnitFormat;
 
@@ -22,7 +16,9 @@ import net.opengis.wcs20.DescribeCoverageType;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
@@ -33,10 +29,8 @@ import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
 import org.geoserver.wcs2_0.util.NCNameResourceCodec;
 import org.geoserver.wcs2_0.util.RequestUtils;
-import org.geoserver.wcs2_0.util.StringUtils;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.data.DataUtilities;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.util.logging.Logging;
@@ -109,6 +103,7 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
 
             final AttributesImpl attributes = WCS20Const.getDefaultNamespaces();
             attributes.addAttribute("", "xmlns:swe", "xmlns:swe", "", "http://www.opengis.net/swe/2.0");
+            attributes.addAttribute("", "xmlns:wcsgs", "xmlns:wcsgs", "", "http://www.geoserver.org/wcsgs/2.0");
 
             // collect coverages
             List<LayerInfo> coverages = new ArrayList<LayerInfo>();
@@ -148,6 +143,15 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
             // read a small portion of the underlying coverage
             GridCoverage2D gc2d = null;
             try {
+                String encodedId = NCNameResourceCodec.encode(ci);
+                
+                // see if we have to handle time
+                TimeDimensionHelper timeHelper = null;
+                DimensionInfo time = ci.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
+                if(time != null && time.isEnabled()) {
+                    timeHelper = new TimeDimensionHelper(time, RequestUtils.getCoverageReader(ci), encodedId);
+                }
+                
                 gc2d = RequestUtils.readSampleGridCoverage(ci);
                 if (gc2d == null) {
                     throw new WCS20Exception("Unable to read sample coverage for " + ci.getName());
@@ -175,7 +179,6 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
 
                 // encoding ID of the coverage
                 final AttributesImpl coverageAttributes = new AttributesImpl();
-                String encodedId = NCNameResourceCodec.encode(ci);
                 coverageAttributes.addAttribute("", "gml:id", "gml:id", "", encodedId);
 
                 // starting encoding
@@ -186,8 +189,11 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
                 for (String axisName : axesNames) {
                     builder.append(axisName).append(" ");
                 }
+                if(timeHelper != null) {
+                    builder.append("time ");
+                }
                 String axesLabel = builder.substring(0, builder.length() - 1);
-                handleBoundedBy(gc2d, axisSwap, srsName, axesLabel);
+                handleBoundedBy(gc2d, axisSwap, srsName, axesLabel, timeHelper);
 
                 // coverage id
                 element("wcs:CoverageId", encodedId);
@@ -196,7 +202,7 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
                 handleCoverageFunction(gc2d, axisSwap);
 
                 // metadata
-                handleMetadata(gc2d);
+                handleMetadata(gc2d, timeHelper);
 
                 // handle domain
                 builder.setLength(0);

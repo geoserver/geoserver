@@ -33,6 +33,8 @@ import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.test.RunTestSetup;
 import org.geoserver.test.SystemTest;
+import org.geoserver.test.TestSetup;
+import org.geoserver.test.TestSetupFrequency;
 import org.geotools.data.Base64;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -45,6 +47,7 @@ import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 @Category(SystemTest.class)
+@TestSetup(run=TestSetupFrequency.REPEAT)
 public class AuthenticationCacheFilterTest extends AbstractAuthenticationProviderTest {
     
     public final static String testFilterName = "basicAuthTestFilter";
@@ -53,8 +56,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
     public final static String testFilterName4 = "requestHeaderTestFilter";
     public final static String testFilterName5 = "basicAuthTestFilterWithRememberMe";
     public final static String testFilterName8 = "x509TestFilter";
-
-
+    
     Authentication getAuth(String filterName, String user, Integer idleTime, Integer liveTime) {
         
         Map<String,byte[]> map= getCache().cache.get(filterName);

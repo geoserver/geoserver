@@ -38,6 +38,8 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         super.setUp();
 
         populateCatalog();
+        
+        Dispatcher.REQUEST.remove();
     }
 
     @Test 

@@ -6,17 +6,36 @@ package org.geoserver.kml;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.logging.Level;
 
+import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
 import org.geotools.util.logging.Logging;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 public class GeoSearchKMLTest extends RegionatingTestSupport {
+    
+    @Before 
+    public void resetMetadata() throws IOException {
+        FeatureTypeInfo fti = getFeatureTypeInfo(TILE_TESTS);
+        fti.getMetadata().remove("kml.regionateFeatureLimit");
+        getCatalog().save(fti);
+    }
+    
+    @After
+    public void cleanupRegionationDatabases() throws IOException {
+        File dir = getDataDirectory().findOrCreateDir("geosearch");
+        FileUtils.deleteDirectory(dir);
+    }
+    
     @Test
     public void testOutput() throws Exception {
         final String path = 
@@ -128,8 +147,6 @@ public class GeoSearchKMLTest extends RegionatingTestSupport {
         Document document = getAsDOM(path + "&bbox=0,-90,180,90");
         assertEquals("kml", document.getDocumentElement().getTagName());
         assertEquals(1, document.getDocumentElement().getElementsByTagName("Placemark").getLength());
-
-        
     }
 
     /**

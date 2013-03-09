@@ -140,7 +140,7 @@ import com.mockrunner.mock.web.MockServletOutputStream;
  * a different test setup frequency should annotate themselves with the appropriate {@link TestSetup}
  * annotation. For example to implement a repeated setup:
  * <code><pre> 
- *  {@literal @}TestSetup(run=TestSetupFrequency.REPEATED}
+ *  {@literal @}TestSetup(run=TestSetupFrequency.REPEAT)
  *  public class MyTest extends GeoServerSystemTestSupport {
  *  
  *  }

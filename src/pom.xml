@@ -563,7 +563,7 @@
    <dependency>
     <groupId>junit</groupId>
     <artifactId>junit</artifactId>
-    <version>4.10</version>
+    <version>4.11</version>
    </dependency>
    <dependency>
     <groupId>xmlunit</groupId>
@@ -1136,6 +1136,7 @@
     <artifactId>maven-surefire-plugin</artifactId>
     <version>2.12.3</version>
     <configuration>
+     <runOrder>alphabetical</runOrder>
      <source>1.5</source>
      <target>1.5</target>
      <includes>

@@ -64,6 +64,11 @@ public class AdvancedDispatchFilter implements Filter {
             }
             
             String path = delegate.getPathInfo();
+            
+            if (path == null) {
+                return;
+            }
+            
             int slash = path.indexOf('/', 1);
             if (slash > -1 ) {
                 this.servletPath = path.substring(0, slash);

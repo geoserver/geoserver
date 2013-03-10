@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Arrays;
 
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
@@ -202,11 +203,7 @@ public class RESTfulDefinitionSource implements FilterInvocationSecurityMetadata
                 } 
             }
             if (log.isDebugEnabled()) {
-                log.debug("methodList = " + methodList );
-                if ( methodList != null ) {
-                    for( int ii=0; ii <  methodList.length; ii++ ) 
-                        log.debug("method[" + ii + "]: " +  methodList[ii] );   
-                }
+                log.debug("methodList = " + Arrays.toString(methodList) );
             }
 
             // Should all be lowercase; check each character

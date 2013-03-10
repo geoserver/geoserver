@@ -30,7 +30,7 @@ public class ScaleLineDecorationTest extends DecorationTestSupport {
 
         // check we get a transparent background in the same location
         BufferedImage bi2 = paintOnImage(d);
-        ImageIO.write(bi2, "PNG", new File("/tmp/test.png"));
+        // ImageIO.write(bi2, "PNG", new File("/tmp/test.png"));
         assertPixel(bi2, 190, 160, new Color(0, 0, 0, 0));
     }
 

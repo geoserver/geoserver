@@ -12,7 +12,6 @@ import junit.framework.Assert;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.map.RenderedImageMapOutputFormat;
 import org.geoserver.wms.map.RenderedImageMapResponse;
-import org.junit.Test;
 
 /**
  * Specific {@link RenderedImageMapResponse} for JPEG using LibJPEGTurbo.
@@ -30,7 +29,6 @@ public class TurboJPEGMapResponseTest extends WMSTestSupport {
     /**
      * Make sure we find the {@link TurboJPEGMapResponse}.
      */
-    @Test
     public void testFindTurboJPEGMapResponse(){
         
         // look for the turbojpegmapresponses

@@ -43,15 +43,20 @@ import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
+import org.geoserver.catalog.impl.ResourceInfoImpl;
+import org.geoserver.catalog.impl.WMSLayerInfoImpl;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
+import org.geoserver.web.data.resource.MetadataLinkEditor;
 import org.geoserver.web.data.style.StyleDetachableModel;
 import org.geoserver.web.data.workspace.WorkspaceChoiceRenderer;
 import org.geoserver.web.data.workspace.WorkspacesModel;
 import org.geoserver.web.wicket.CodeMirrorEditor;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.geoserver.wms.WMSInfoImpl;
 import org.geoserver.wms.web.publish.StyleChoiceRenderer;
 import org.geoserver.wms.web.publish.StylesModel;
 import org.xml.sax.SAXParseException;
@@ -123,48 +128,9 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         editor.setRequired(true);
         styleForm.add(editor);
 
-        // add the Legend fields
-        final TextField onlineResource = new TextField("onlineResource", styleModel.bind("legend.onlineResource"));
-        onlineResource.add(new UrlValidator());
-        onlineResource.setOutputMarkupId(true);
-        styleForm.add(onlineResource);
-
-        final TextField format = new TextField("format", styleModel.bind("legend.format"));
-        format.setOutputMarkupId(true);
-        styleForm.add(format);
-
-        final TextField width = new TextField("width", styleModel.bind("legend.width"), Integer.class);
-        width.add(NumberValidator.minimum(0));
-        width.setOutputMarkupId(true);
-        styleForm.add(width);
-
-        final TextField height = new TextField("height", styleModel.bind("legend.height"), Integer.class);
-        height.add(NumberValidator.minimum(0));
-        height.setOutputMarkupId(true);
-        styleForm.add(height);
-
-        // add the verify legend image button
-        styleForm.add(new GeoServerAjaxFormLink("verifyImage", styleForm) {
-            @Override
-            public void onClick(AjaxRequestTarget target, Form form) {
-                onlineResource.processInput();
-                if (onlineResource.getModelObject() != null) {
-                    try {
-                        URL url = new URL(onlineResource.getModelObject().toString());
-                        URLConnection conn = url.openConnection();
-                        format.setModelValue(conn.getContentType());
-                        BufferedImage image = ImageIO.read(conn.getInputStream());
-                        width.setModelValue("" + image.getWidth());
-                        height.setModelValue("" + image.getHeight());
-                    } catch (Exception e) {
-                    }
-                }
-
-                target.addComponent(format);
-                target.addComponent(width);
-                target.addComponent(height);
-            }
-        });
+        // add the Legend fields        
+        ExternalGraphicPanel legend = new ExternalGraphicPanel("legend", styleModel, styleForm);
+        styleForm.add(legend);
 
         if (style != null) {
             try {

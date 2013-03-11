@@ -280,5 +280,17 @@
         <module>kml2</module>
       </modules>
     </profile>
+		<profile>
+			<id>turbojpeg</id>
+			<activation>
+				<property>
+					<name>all</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<modules>
+				<module>libjpeg-turbo</module>
+			</modules>
+		</profile>    
   </profiles>
 </project>

@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.geoserver.catalog.NoExternalEntityResolver;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.XmlRequestReader;
 import org.geoserver.platform.ServiceException;
@@ -21,6 +22,7 @@ import org.geotools.util.Version;
 import org.geotools.wfs.v2_0.WFS;
 import org.geotools.wfs.v2_0.WFSConfiguration;
 import org.geotools.xml.Parser;
+import org.xml.sax.EntityResolver;
 
 /**
  * Xml reader for wfs 2.0 xml requests.
@@ -37,12 +39,27 @@ public class WfsXmlReader extends XmlRequestReader {
         this.gs = gs;
     }
     
+    /**
+     * Creates an XML Entity Resolver.
+     */
+    protected EntityResolver getEntityResolver() {
+        Boolean externalEntitiesEnabled = gs.getGlobal().getXmlExternalEntitiesEnabled();
+        if (externalEntitiesEnabled != null && externalEntitiesEnabled.booleanValue()) {
+            // XML parser will try to resolve entities
+            return null;
+        } else {
+            // default behaviour: entities disabled
+            return new NoExternalEntityResolver();
+        }
+    }    
+    
     @Override
     public Object read(Object request, Reader reader, Map kvp) throws Exception {
         WFSConfiguration config = new WFSConfiguration();
         WFSXmlUtils.initWfsConfiguration(config, gs, new FeatureTypeSchemaBuilder.GML32(gs));
         
         Parser parser = new Parser(config);
+        parser.setEntityResolver(getEntityResolver());
         parser.getURIHandlers().add(0, new WFSURIHandler(gs));
         
         WFSInfo wfs = wfs();

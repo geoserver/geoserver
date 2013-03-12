@@ -933,7 +933,7 @@
       </dependencies>
     </profile>
 		<profile>
-			<id>turbojpeg</id>
+			<id>libjpeg-turbo</id>
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>

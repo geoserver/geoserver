@@ -305,9 +305,12 @@ public class ResourceConfigurationPage extends GeoServerSecuredPage {
             } else {
                 ResourceInfo oldState = catalog.getResource(resourceInfo.getId(),
                         ResourceInfo.class);
+                // synch up enabled and advertised with layer
+                LayerInfo layer = getLayerInfo();
+                resourceInfo.setEnabled(layer.isEnabled());
+                resourceInfo.setAdvertised(layer.isAdvertised());
                 catalog.save(resourceInfo);
                 try {
-                    LayerInfo layer = getLayerInfo();
                     layer.setResource(resourceInfo);
                     catalog.save(layer);
                 } catch (IllegalArgumentException e) {

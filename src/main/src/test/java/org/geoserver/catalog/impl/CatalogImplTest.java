@@ -135,8 +135,8 @@ public class CatalogImplTest {
         s.setFilename( "styleFilename" );
         
         l = factory.createLayer();
-        l.setEnabled(true);
         l.setResource( ft );
+        l.setEnabled(true);
         l.setDefaultStyle( s );
 
         lg = factory.createLayerGroup();
@@ -1113,8 +1113,8 @@ public class CatalogImplTest {
         
         addStyle();
         LayerInfo l = catalog.getFactory().createLayer();
-        l.setEnabled(true);
         l.setResource(ft);
+        l.setEnabled(true);
         l.setDefaultStyle( s );
         
         catalog.add(l);
@@ -1739,8 +1739,8 @@ public class CatalogImplTest {
         catalog.add(s2);
         
         LayerInfo l2 = factory.createLayer();
-        l2.setEnabled(true);
         l2.setResource(ft2);
+        l2.setEnabled(true);
         l2.setDefaultStyle(s2);
         catalog.add(l2);
         

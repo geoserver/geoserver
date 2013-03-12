@@ -139,8 +139,8 @@ public class GeoServerTileLayerTest {
 
         layerInfo = new LayerInfoImpl();
         layerInfo.setId(layerInfoId);
-        layerInfo.setEnabled(true);
         layerInfo.setResource(resource);
+        layerInfo.setEnabled(true);
         layerInfo.setName("MockLayerInfoName");
         layerInfo.setType(Type.VECTOR);
         StyleInfo defaultStyle = new StyleInfoImpl(null);

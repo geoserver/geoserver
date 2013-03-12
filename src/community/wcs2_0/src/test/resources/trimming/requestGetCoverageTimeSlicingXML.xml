@@ -7,7 +7,7 @@
                   http://www.opengis.net/wcs/geotiff/1.0 
                   http://schemas.opengis.net/wcs/geotiff/1.0/wcsGeotiff.xsd"
   service="WCS" version="2.0.1">
-  <wcs:CoverageId>sf__watertemp</wcs:CoverageId>
+  <wcs:CoverageId>${coverageId}</wcs:CoverageId>
   <wcs:DimensionSlice>
     <wcs:Dimension>Time</wcs:Dimension>
     <wcs:SlicePoint>${slicePoint}</wcs:SlicePoint>

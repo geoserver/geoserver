@@ -232,7 +232,7 @@ public class GetCapabilitiesTest extends WCSTestSupport {
     
     @Test
     public void testTimeCoverage() throws Exception {
-        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null);
         
         Document dom = getAsDOM(BASEPATH + "?request=GetCapabilities&service=WCS&version=1.0.0");
         // print(dom);
@@ -242,5 +242,19 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         String base = "//wcs:CoverageOfferingBrief[wcs:name='wcs:watertemp']//wcs:lonLatEnvelope";
         assertXpathEvaluatesTo("2008-10-31T00:00:00.000Z", base + "/gml:timePosition[1]", dom);
         assertXpathEvaluatesTo("2008-11-01T00:00:00.000Z", base + "/gml:timePosition[2]", dom);
+    }
+    
+    @Test
+    public void testTimeRangeCoverage() throws Exception {
+        setupRasterDimension(TIMERANGES, ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        
+        Document dom = getAsDOM(BASEPATH + "?request=GetCapabilities&service=WCS&version=1.0.0");
+        // print(dom);
+        checkValidationErrors(dom, WCS10_GETCAPABILITIES_SCHEMA);
+        
+        // check the envelopes
+        String base = "//wcs:CoverageOfferingBrief[wcs:name='sf:timeranges']//wcs:lonLatEnvelope";
+        assertXpathEvaluatesTo("2008-10-31T00:00:00.000Z", base + "/gml:timePosition[1]", dom);
+        assertXpathEvaluatesTo("2008-11-07T00:00:00.000Z", base + "/gml:timePosition[2]", dom);
     }
 }

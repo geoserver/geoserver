@@ -6,8 +6,10 @@ package org.geoserver.wcs2_0.response;
 
 import java.awt.image.DataBuffer;
 import java.awt.image.RenderedImage;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TreeSet;
 
 import javax.measure.unit.Unit;
 import javax.measure.unit.UnitFormat;
@@ -28,6 +30,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.resources.coverage.CoverageUtilities;
+import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
@@ -224,15 +227,23 @@ class GMLTransformer extends TransformerBase {
                         // TODO: check if we are in the list of instants case, or in the list of periods case
                         
                         // list case
-                        List<String> instants = timeHelper.getInstantsList();
+                        TreeSet<Object> domain = timeHelper.getTimeDomain();
                         int i = 0;
-                        for (String instant : instants) {
+                        for (Object item : domain) {
                             // gml:id is mandatory for time instant...
                             final AttributesImpl atts = new AttributesImpl();
-                            atts.addAttribute("", "gml:id", "gml:id", "", timeHelper.getCoverageId() + "_ti_" + i);
-                            start("gml:TimeInstant", atts);
-                            element("gml:timePosition", instant);
-                            end("gml:TimeInstant");
+                            atts.addAttribute("", "gml:id", "gml:id", "", timeHelper.getCoverageId() + "_td_" + i);
+                            if(item instanceof Date) {
+                                start("gml:TimeInstant", atts);
+                                element("gml:timePosition", timeHelper.format((Date) item));
+                                end("gml:TimeInstant");
+                            } else if(item instanceof DateRange) {
+                                DateRange range = (DateRange) item;
+                                start("gml:TimePeriod", atts);
+                                element("gml:beginPosition", timeHelper.format(range.getMinValue()));
+                                element("gml:endPosition", timeHelper.format(range.getMaxValue()));
+                                end("gml:TimePeriod");
+                            }
                             i++;
                         }
                         break;

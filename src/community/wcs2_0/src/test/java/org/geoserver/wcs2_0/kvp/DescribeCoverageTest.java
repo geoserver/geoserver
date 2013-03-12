@@ -10,6 +10,7 @@ import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.TestData;
 import org.geoserver.wcs2_0.WCSTestSupport;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,9 +27,12 @@ public class DescribeCoverageTest extends WCSTestSupport {
     
     protected static QName WATTEMP = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
     
+    protected static QName TIMERANGES = new QName(MockData.SF_URI, "timeranges", MockData.SF_PREFIX);
+    
     @Before
     public void clearDimensions() {
         clearDimensions(getLayerId(WATTEMP));
+        clearDimensions(getLayerId(TIMERANGES));
     }
     
     @Override
@@ -37,6 +41,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         testData.addRasterLayer(MOSAIC, "raster-filter-test.zip", null, getCatalog());
         testData.addRasterLayer(RAIN, "rain.zip", "asc", getCatalog());
         testData.addRasterLayer(WATTEMP, "watertemp.zip", null, null, SystemTestData.class, getCatalog());
+        testData.addRasterLayer(TIMERANGES, "timeranges.zip", null, null, SystemTestData.class, getCatalog());
     }
 
     @Test
@@ -115,9 +120,9 @@ public class DescribeCoverageTest extends WCSTestSupport {
         
         // check that metadata contains a list of times
         assertXpathEvaluatesTo("2", "count(//gmlcov:metadata/gmlcov:Extension/wcsgs:TimeDomain/gml:TimeInstant)", dom);
-        assertXpathEvaluatesTo("sf__watertemp_ti_0", "//gmlcov:metadata/gmlcov:Extension/wcsgs:TimeDomain/gml:TimeInstant[1]/@gml:id", dom);
+        assertXpathEvaluatesTo("sf__watertemp_td_0", "//gmlcov:metadata/gmlcov:Extension/wcsgs:TimeDomain/gml:TimeInstant[1]/@gml:id", dom);
         assertXpathEvaluatesTo("2008-10-31T00:00:00.000Z", "//gmlcov:metadata/gmlcov:Extension/wcsgs:TimeDomain/gml:TimeInstant[1]/gml:timePosition", dom);
-        assertXpathEvaluatesTo("sf__watertemp_ti_1", "//gmlcov:metadata/gmlcov:Extension/wcsgs:TimeDomain/gml:TimeInstant[2]/@gml:id", dom);
+        assertXpathEvaluatesTo("sf__watertemp_td_1", "//gmlcov:metadata/gmlcov:Extension/wcsgs:TimeDomain/gml:TimeInstant[2]/@gml:id", dom);
         assertXpathEvaluatesTo("2008-11-01T00:00:00.000Z", "//gmlcov:metadata/gmlcov:Extension/wcsgs:TimeDomain/gml:TimeInstant[2]/gml:timePosition", dom);
     }
     
@@ -152,6 +157,29 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertXpathEvaluatesTo("2008-11-01T00:00:00.000Z", "//gmlcov:metadata/gmlcov:Extension/wcsgs:TimeDomain/gml:TimePeriod/gml:endPosition", dom);
         assertXpathEvaluatesTo("1", "//gmlcov:metadata/gmlcov:Extension/wcsgs:TimeDomain/gml:TimePeriod/gml:TimeInterval", dom);
         assertXpathEvaluatesTo("day", "//gmlcov:metadata/gmlcov:Extension/wcsgs:TimeDomain/gml:TimePeriod/gml:TimeInterval/@unit", dom);
+    }
+    
+    @Test
+    public void testDescribeTimeRangeList() throws Exception {
+        setupRasterDimension(getLayerId(TIMERANGES), ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=sf__timeranges");
+        // print(dom);
+        
+        // check the envelope with time
+        assertXpathEvaluatesTo("1", "count(//gml:boundedBy/gml:EnvelopeWithTimePeriod)", dom);
+        assertXpathEvaluatesTo("lat lon time", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/@axisLabels", dom);
+        assertXpathEvaluatesTo("Deg Deg s", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/@uomLabels", dom);
+        assertXpathEvaluatesTo("2008-10-31T00:00:00.000Z", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/gml:beginPosition", dom);
+        assertXpathEvaluatesTo("2008-11-07T00:00:00.000Z", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/gml:endPosition", dom);
+        
+        // check that metadata contains a list of times
+        assertXpathEvaluatesTo("2", "count(//gmlcov:metadata/gmlcov:Extension/wcsgs:TimeDomain/gml:TimePeriod)", dom);
+        assertXpathEvaluatesTo("sf__timeranges_td_0", "//gmlcov:metadata/gmlcov:Extension/wcsgs:TimeDomain/gml:TimePeriod[1]/@gml:id", dom);
+        assertXpathEvaluatesTo("2008-10-31T00:00:00.000Z", "//gmlcov:metadata/gmlcov:Extension/wcsgs:TimeDomain/gml:TimePeriod[1]/gml:beginPosition", dom);
+        assertXpathEvaluatesTo("2008-11-04T00:00:00.000Z", "//gmlcov:metadata/gmlcov:Extension/wcsgs:TimeDomain/gml:TimePeriod[1]/gml:endPosition", dom);
+        assertXpathEvaluatesTo("sf__timeranges_td_1", "//gmlcov:metadata/gmlcov:Extension/wcsgs:TimeDomain/gml:TimePeriod[2]/@gml:id", dom);
+        assertXpathEvaluatesTo("2008-11-05T00:00:00.000Z", "//gmlcov:metadata/gmlcov:Extension/wcsgs:TimeDomain/gml:TimePeriod[2]/gml:beginPosition", dom);
+        assertXpathEvaluatesTo("2008-11-07T00:00:00.000Z", "//gmlcov:metadata/gmlcov:Extension/wcsgs:TimeDomain/gml:TimePeriod[2]/gml:endPosition", dom);
     }
 
     private void checkWaterTempEnvelope(Document dom) throws XpathException {

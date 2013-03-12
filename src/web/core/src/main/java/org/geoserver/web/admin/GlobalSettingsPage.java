@@ -31,7 +31,6 @@ import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.web.GeoServerApplication;
-import org.geoserver.web.GeoServerHomePage;
 
 public class GlobalSettingsPage extends ServerAdminPage {
     private static final long serialVersionUID = 4716657682337915996L;
@@ -67,6 +66,8 @@ public class GlobalSettingsPage extends ServerAdminPage {
         xmlPostRequestLogBufferSize.add(new MinimumValidator<Integer>(0));
         form.add(xmlPostRequestLogBufferSize);
 
+        form.add(new CheckBox("xmlExternalEntitiesEnabled"));    
+        
         form.add(new TextField<Integer>("featureTypeCacheSize").add(new MinimumValidator<Integer>(0)));
         
         Button submit = new Button("submit", new StringResourceModel("submit", this, null)) {

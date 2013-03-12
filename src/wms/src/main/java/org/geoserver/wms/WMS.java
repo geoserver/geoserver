@@ -174,13 +174,6 @@ public class WMS implements ApplicationContextAware {
     public static final String KML_KMSCORE = "kmlKmscore";
 
     public static final int KML_KMSCORE_DEFAULT = 40;
-
-    /**
-     * SLD configuration
-     */
-    public static final String SLD_EXTERNAL_ENTITIES = "sldExternalEntities";
-    
-    public static final boolean SLD_EXTERNAL_ENTITIES_DEFAULT = false;
     
     /**
      * the WMS Animator animatorExecutor service
@@ -572,21 +565,6 @@ public class WMS implements ApplicationContextAware {
     public int getKmScore() {
         return getMetadataPercentage(getServiceInfo().getMetadata(), KML_KMSCORE,
                 KML_KMSCORE_DEFAULT);
-    }
-    
-    /**
-     * If true it enables evaluation of XML entities in remote SLD files.
-     * Default if FALSE.
-     * 
-     * Enabling this feature is a security risk: a remote SLD file specified by a user could use the content 
-     * of a file in the GeoServer file system as a Label (the content of sensitive files could be exposed to the user).
-     * 
-     * @return
-     */
-    public boolean getSldExternalEntities() {
-        Boolean value = Converters.convert(getServiceInfo().getMetadata().get(SLD_EXTERNAL_ENTITIES),
-                Boolean.class);
-        return value == null ? SLD_EXTERNAL_ENTITIES_DEFAULT : value.booleanValue();
     }
 
     /**

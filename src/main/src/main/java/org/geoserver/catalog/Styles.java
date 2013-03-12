@@ -332,9 +332,11 @@ public class Styles {
             
             @Override
             public StyledLayerDescriptor parse(Object input, EntityResolver entityResolver) throws IOException {
-                SLDConfiguration sld = new SLDConfiguration(entityResolver);
+                SLDConfiguration sld = new SLDConfiguration();
                 try {
-                    return (StyledLayerDescriptor) new Parser(sld).parse(toReader(input));
+                    Parser parser = new Parser(sld);
+                    parser.setEntityResolver(entityResolver);
+                    return (StyledLayerDescriptor) parser.parse(toReader(input));
                 } 
                 catch(Exception e) {
                     if (e instanceof IOException) throw (IOException) e;
@@ -344,9 +346,10 @@ public class Styles {
             
             @Override
             protected List<Exception> validate(Object input, EntityResolver entityResolver) throws IOException {
-                SLDConfiguration sld = new SLDConfiguration(entityResolver);
+                SLDConfiguration sld = new SLDConfiguration();
                 Parser p = new Parser(sld);
                 p.setValidating(true);
+                p.setEntityResolver(entityResolver);
                 
                 try {
                     p.parse(toReader(input));

@@ -36,13 +36,13 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.wms.GetMap;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.junit.Test;
@@ -771,11 +771,11 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 + "&height=250" + "&srs=EPSG:4326" + "&sld=" + sldUrl.toString();
 
         WMS wms = new WMS(getGeoServer());
-        WMSInfo wmsInfo = wms.getServiceInfo();
+        GeoServerInfo geoserverInfo = wms.getGeoServer().getGlobal();
         try {
             // enable entities in external SLD files
-            wmsInfo.getMetadata().put(WMS.SLD_EXTERNAL_ENTITIES, true);
-            getGeoServer().save(wmsInfo);
+            geoserverInfo.setXmlExternalEntitiesEnabled(true);
+            getGeoServer().save(geoserverInfo);
             
             // if entities evaluation is enabled
             // the parser will try to read a file on the local file system
@@ -785,17 +785,26 @@ public class GetMapIntegrationTest extends WMSTestSupport {
             assertTrue(response.indexOf("java.io.FileNotFoundException") > -1);
             
             // disable entities
-            wmsInfo.getMetadata().put(WMS.SLD_EXTERNAL_ENTITIES, false);
-            getGeoServer().save(wmsInfo);
+            geoserverInfo.setXmlExternalEntitiesEnabled(false);
+            getGeoServer().save(geoserverInfo);
 
             // if entities evaluation is disabled
             // the parser will throw a MalformedURLException when it finds an entity
             response = getAsString(url);
             assertTrue(response.indexOf("java.net.MalformedURLException") > -1);
 
+            // try default value: disabled entities
+            geoserverInfo.setXmlExternalEntitiesEnabled(null);
+            getGeoServer().save(geoserverInfo);
+
+            // if entities evaluation is disabled
+            // the parser will throw a MalformedURLException when it finds an entity
+            response = getAsString(url);
+            assertTrue(response.indexOf("java.net.MalformedURLException") > -1);            
         } finally {
-            wmsInfo.getMetadata().put(WMS.SLD_EXTERNAL_ENTITIES, WMS.SLD_EXTERNAL_ENTITIES_DEFAULT);
-            getGeoServer().save(wmsInfo);            
+            // default
+            geoserverInfo.setXmlExternalEntitiesEnabled(null);
+            getGeoServer().save(geoserverInfo);     
         }
     }     
 }

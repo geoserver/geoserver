@@ -555,12 +555,12 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
      * @return
      */
     protected EntityResolver getSldEntityResolver() {
-        boolean externalEntitiesEnabled = wms.getSldExternalEntities();
-        if (externalEntitiesEnabled) {
-            // default behaviour: XML parser will try to resolve entities
+        Boolean externalEntitiesEnabled = wms.getGeoServer().getGlobal().getXmlExternalEntitiesEnabled();
+        if (externalEntitiesEnabled != null && externalEntitiesEnabled.booleanValue()) {
+            // XML parser will try to resolve entities
             return null;
         } else {
-            // entities disabled
+            // default behaviour: entities disabled
             return new NoExternalEntityResolver();
         }
     }    

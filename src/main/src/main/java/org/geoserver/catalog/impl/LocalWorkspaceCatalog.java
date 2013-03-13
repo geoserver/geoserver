@@ -15,7 +15,6 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.ows.LocalWorkspace;
@@ -112,6 +111,7 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
         super.save(unwrap(layer));
     }
 
+    
     @Override
     public void remove(LayerInfo layer) {
         super.remove(unwrap(layer));

@@ -258,12 +258,6 @@
   </bean>
 
   <!-- Layer configuration panels -->
-  <bean id="basicLayerConfigPanel" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
-    <property name="id" value="basic" />
-    <property name="titleKey" value="publish.layer.config.basic" />
-    <property name="componentClass" value="org.geoserver.web.publish.BasicLayerConfig" />
-  </bean>
-
   <bean id="httpLayerConfigPanel" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
     <property name="id" value="http" />
     <property name="titleKey" value="publish.layer.config.http" />

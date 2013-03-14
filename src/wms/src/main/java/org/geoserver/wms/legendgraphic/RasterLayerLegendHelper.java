@@ -114,9 +114,8 @@ public class RasterLayerLegendHelper {
         } else {
             applicableRules = LegendUtils.getApplicableRules(ftStyles, scaleDenominator);
         }
-        if (applicableRules.length != 1)
-            throw new IllegalArgumentException(
-                    "Unable to create a legend for this style, we need exactly 1 rule");
+        // no rules means no legend has to be produced
+        if (applicableRules.length != 0) {
 
 //        final NumberRange<Double> scaleRange = NumberRange.create(scaleDenominator,
 //                scaleDenominator);
@@ -192,6 +191,7 @@ public class RasterLayerLegendHelper {
 
         } else
             cMapLegendCreator = null;
+        }
 
     }
 
@@ -201,6 +201,9 @@ public class RasterLayerLegendHelper {
      * @return a {@link BufferedImage} that represents the legend for the provided request.
      */
     public BufferedImage getLegend() {
+        if(rasterSymbolizer == null) {
+            return null;
+        }
         return createResponse();
     }
 

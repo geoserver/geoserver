@@ -280,10 +280,12 @@ public class BufferedImageLegendGraphicBuilder {
             if (buildRasterLegend) {
                 final RasterLayerLegendHelper rasterLegendHelper = new RasterLayerLegendHelper(request,gt2Style,ruleName);
                 final BufferedImage image = rasterLegendHelper.getLegend();
-                if(image != null && titleImage != null) {
+                if(image != null) {
+                    if(titleImage != null) {
                     layersImages.add(titleImage);
                 }
                 layersImages.add(image);
+                }                
             } else {
                 
                 final Feature sampleFeature;

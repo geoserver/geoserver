@@ -90,4 +90,23 @@ public class TurboImageWorkerTest extends Assert {
         new ImageWorker(output).getBufferedImage().flush();
 
     }
+    
+    public void testWriterBandSelect() throws IOException {
+        if (SKIP_TESTS) {
+            LOGGER.warning(ERROR_LIB_MESSAGE);
+            return;
+        }
+
+        // test-data
+        final File input = TestData.file(this, "testmergba.png");
+        assertTrue("Unable to find test data", input.exists() && input.isFile() && input.canRead());
+
+        // create output file
+        final File output = TestData.temp(this, "output.jpeg");
+        new TurboJpegImageWorker(ImageIO.read(input)).writeTurboJPEG(new FileOutputStream(output),.5f);
+        assertTrue("Unable to create output file", output.exists() && output.isFile());
+
+        new ImageWorker(output).getBufferedImage().flush();
+
+    }
 }

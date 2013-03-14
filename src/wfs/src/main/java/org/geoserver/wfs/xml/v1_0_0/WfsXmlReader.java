@@ -13,15 +13,14 @@ import javax.xml.namespace.QName;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
-import org.geoserver.catalog.NoExternalEntityResolver;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.XmlRequestReader;
+import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.xml.WFSURIHandler;
 import org.geotools.util.Version;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Parser;
-import org.xml.sax.EntityResolver;
 
 /**
  * Xml reader for wfs 1.0.0 xml requests.
@@ -39,7 +38,9 @@ public class WfsXmlReader extends XmlRequestReader {
      * geoserver configuration
      */
     GeoServer geoServer;
-
+    
+    EntityResolverProvider entityResolverProvider;
+    
     public WfsXmlReader(String element, Configuration configuration, GeoServer geoServer) {
         this(element, configuration, geoServer, "wfs");
     }
@@ -48,21 +49,8 @@ public class WfsXmlReader extends XmlRequestReader {
         super(new QName(WFS.NAMESPACE, element), new Version("1.0.0"), serviceId);
         this.configuration = configuration;
         this.geoServer = geoServer;
+        this.entityResolverProvider = new EntityResolverProvider(geoServer);
     }
-
-    /**
-     * Creates an XML Entity Resolver.
-     */
-    protected EntityResolver getEntityResolver() {
-        Boolean externalEntitiesEnabled = geoServer.getGlobal().getXmlExternalEntitiesEnabled();
-        if (externalEntitiesEnabled != null && externalEntitiesEnabled.booleanValue()) {
-            // XML parser will try to resolve entities
-            return null;
-        } else {
-            // default behaviour: entities disabled
-            return new NoExternalEntityResolver();
-        }
-    }    
     
     public Object read(Object request, Reader reader, Map kvp) throws Exception {
         //TODO: refactor this method to use WFSXmlUtils
@@ -76,7 +64,7 @@ public class WfsXmlReader extends XmlRequestReader {
         
         //create the parser instance
         Parser parser = new Parser(configuration);
-        parser.setEntityResolver(getEntityResolver());
+        parser.setEntityResolver(entityResolverProvider.getEntityResolver());
         
         //"inject" namespace mappings
         List<NamespaceInfo> namespaces = catalog.getNamespaces();

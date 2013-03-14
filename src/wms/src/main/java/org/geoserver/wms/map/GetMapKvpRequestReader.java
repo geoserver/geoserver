@@ -27,7 +27,6 @@ import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
-import org.geoserver.catalog.NoExternalEntityResolver;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
@@ -37,6 +36,7 @@ import org.geoserver.ows.HttpServletRequestAware;
 import org.geoserver.ows.KvpRequestReader;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
@@ -76,7 +76,6 @@ import org.opengis.filter.identity.FeatureId;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.vfny.geoserver.util.Requests;
 import org.vfny.geoserver.util.SLDValidator;
-import org.xml.sax.EntityResolver;
 
 public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServletRequestAware {
 
@@ -106,6 +105,11 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
     private WMS wms;
 
     /**
+     * EntityResolver provider, used in SLD parsing
+     */
+    EntityResolverProvider entityResolverProvider;
+    
+    /**
      * This flags allows the kvp reader to go beyond the SLD library mode specification and match
      * the first style that can be applied to a given layer. This is for backwards compatibility
      */
@@ -115,6 +119,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
     public GetMapKvpRequestReader(WMS wms) {
         super(GetMapRequest.class);
         this.wms = wms;
+        this.entityResolverProvider = new EntityResolverProvider(wms.getGeoServer());
     }
 
     
@@ -547,23 +552,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
             filters = null;
         }
         return filters;
-    }
-
-    /**
-     * Creates an XML Entity Resolver for SLD parsing.
-     * 
-     * @return
-     */
-    protected EntityResolver getSldEntityResolver() {
-        Boolean externalEntitiesEnabled = wms.getGeoServer().getGlobal().getXmlExternalEntitiesEnabled();
-        if (externalEntitiesEnabled != null && externalEntitiesEnabled.booleanValue()) {
-            // XML parser will try to resolve entities
-            return null;
-        } else {
-            // default behaviour: entities disabled
-            return new NoExternalEntityResolver();
-        }
-    }    
+    }   
     
     /**
      * validates an sld document.
@@ -572,10 +561,10 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
     private List validateSld(InputStream stream, GetMapRequest getMap) {
         try {
             if (getMap.getSldVersion() != null) {
-                return Styles.validate(stream, getSldEntityResolver(), new Version(getMap.getSldVersion()));
+                return Styles.validate(stream, entityResolverProvider.getEntityResolver(), new Version(getMap.getSldVersion()));
             }
             else {
-                return Styles.validate(stream, getSldEntityResolver());
+                return Styles.validate(stream, entityResolverProvider.getEntityResolver());
             }
         } 
         catch (IOException e) {
@@ -590,10 +579,10 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
         StyledLayerDescriptor sld;
         try {
             if (getMap.getSldVersion() != null) {
-                sld = Styles.parse(stream, getSldEntityResolver(), new Version(getMap.getSldVersion()));
+                sld = Styles.parse(stream, entityResolverProvider.getEntityResolver(), new Version(getMap.getSldVersion()));
             }
             else {
-                sld = Styles.parse(stream, getSldEntityResolver());
+                sld = Styles.parse(stream, entityResolverProvider.getEntityResolver());
             }
         }
         catch(IOException e) {

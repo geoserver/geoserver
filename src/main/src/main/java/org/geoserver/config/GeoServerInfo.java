@@ -292,7 +292,7 @@ public interface GeoServerInfo extends Info {
      * Default is FALSE.
      * Enabling this feature is a security risk.
      */
-    Boolean getXmlExternalEntitiesEnabled();
+    Boolean isXmlExternalEntitiesEnabled();
     
     /**
      * A map of metadata for services.

@@ -248,7 +248,7 @@ public class GeoServerInfoImpl implements GeoServerInfo {
      * Default is FALSE.
      * Enabling this feature is a security risk.
      */
-    public Boolean getXmlExternalEntitiesEnabled() {
+    public Boolean isXmlExternalEntitiesEnabled() {
         return this.xmlExternalEntitiesEnabled;
     }
     

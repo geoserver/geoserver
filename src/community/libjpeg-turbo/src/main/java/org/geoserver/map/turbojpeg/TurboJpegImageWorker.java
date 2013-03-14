@@ -10,8 +10,14 @@ import it.geosolutions.imageio.plugins.turbojpeg.TurboJpegImageWriterSpi;
 import it.geosolutions.imageio.plugins.turbojpeg.TurboJpegUtilities;
 import it.geosolutions.imageio.utilities.ImageOutputStreamAdapter2;
 
+import java.awt.RenderingHints;
+import java.awt.Transparency;
+import java.awt.color.ColorSpace;
 import java.awt.image.ColorModel;
+import java.awt.image.ComponentColorModel;
+import java.awt.image.DataBuffer;
 import java.awt.image.RenderedImage;
+import java.awt.image.SampleModel;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -22,8 +28,12 @@ import javax.imageio.IIOImage;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.spi.ImageOutputStreamSpi;
 import javax.imageio.stream.ImageOutputStream;
+import javax.media.jai.ImageLayout;
+import javax.media.jai.JAI;
+import javax.media.jai.operator.FormatDescriptor;
 
 import org.geotools.image.ImageWorker;
+import org.geotools.resources.image.ImageUtilities;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -92,7 +102,12 @@ final class TurboJpegImageWorker extends ImageWorker {
         // remove transparent band
         final int numBands = image.getSampleModel().getNumBands();
         if (hasAlpha) {
-            retainBands(numBands - 1);
+            final int requestedBands = numBands - 1;
+            if (ImageUtilities.isMediaLibAvailable()) {
+                retainBands(requestedBands);
+            } else if (getNumBands() > requestedBands) {
+                removeAlpha(requestedBands);
+            }
         }
 
         // Getting a writer.
@@ -127,6 +142,33 @@ final class TurboJpegImageWorker extends ImageWorker {
                     LOGGER.log(Level.FINE, e.getLocalizedMessage(), e);
             }
         }
+    }
+
+    /**
+     * Remove the alpha band
+     * 
+     * @param requestedBands
+     */
+    private void removeAlpha(int requestedBands) {
+        // Retrieving/Setting the ImageLayout
+        final RenderingHints hints = getRenderingHints();
+        ImageLayout layout = null;
+        if (hints.containsKey(JAI.KEY_IMAGE_LAYOUT)) {
+            layout = (ImageLayout) hints.get(JAI.KEY_IMAGE_LAYOUT);
+        } else {
+            layout = new ImageLayout();
+            hints.put(JAI.KEY_IMAGE_LAYOUT, layout);
+        }
+        
+        // Forcing the colormodel with noAlpha
+        final ColorModel colorModel = new ComponentColorModel(
+                ColorSpace.getInstance(requestedBands == 3 ? ColorSpace.CS_sRGB : ColorSpace.CS_GRAY), 
+                false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
+        SampleModel sm = colorModel.createCompatibleSampleModel(image.getWidth(), image.getHeight());
+        layout.setSampleModel(sm);
+        
+        // Forcing the output format to remove the alpha Band
+        image = FormatDescriptor.create(image, DataBuffer.TYPE_BYTE, hints);
     }
 
 }

@@ -4,6 +4,7 @@
  */
 package org.geoserver.wms.legendgraphic;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
@@ -64,6 +65,8 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
+import javax.media.jai.PlanarImage;
+import org.geotools.resources.image.ImageUtilities;
 
 /**
  * Tets the functioning of the abstract legend producer for raster formats, which relies on
@@ -402,7 +405,7 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
     
     /**
      * Tests that the legend graphic is produced for multiple layers
-     * with different style for each layer.
+     * with vector and coverage layers.
      */
     @org.junit.Test
     public void testMixedGeometry() throws Exception {
@@ -455,6 +458,122 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         // PointSymbolizer
         assertPixel(image, 10, 50, new Color(255,0,0));
     
+    }
+		   
+	public void testMultipleLayersWithVectorAndCoverage() throws Exception {        
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+        
+        int titleHeight = getTitleHeight(req);
+        
+        FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName(
+                MockData.ROAD_SEGMENTS.getNamespaceURI(), MockData.ROAD_SEGMENTS.getLocalPart());
+        List<FeatureType> layers=new ArrayList<FeatureType>();
+        layers.add(ftInfo.getFeatureType());
+        
+        CoverageInfo cInfo = getCatalog().getCoverageByName("world");
+        assertNotNull(cInfo);
+
+        GridCoverage coverage = cInfo.getGridCoverage(null, null);
+        try {
+	        SimpleFeatureCollection feature;
+	        feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+	        layers.add(feature.getSchema());
+	        
+	        req.setLayers(layers);
+	        
+	        List<Style> styles=new ArrayList<Style>();
+	        Style style1= getCatalog().getStyleByName(
+	                MockData.ROAD_SEGMENTS.getLocalPart()).getStyle();
+	        styles.add(style1);
+	        
+	        Style style2= getCatalog().getStyleByName("rainfall").getStyle();
+	        styles.add(style2);
+	        req.setStyles(styles);
+	        
+	        this.legendProducer.buildLegendGraphic(req);
+	
+	        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+	
+	        
+	        // vector layer
+	        assertPixel(image, 10, 10+titleHeight, new Color(192,160,0));
+	        
+	        assertPixel(image, 10, 30+titleHeight, new Color(0,0,0));
+	        
+	        assertPixel(image, 10, 50+titleHeight, new Color(224,64,0));
+	        
+	        // coverage layer        
+	        assertPixel(image, 10, 70+titleHeight*2, new Color(115,38,0));
+		} finally {
+	        RenderedImage ri = coverage.getRenderedImage();
+	        if(coverage instanceof GridCoverage2D) {
+	            ((GridCoverage2D) coverage).dispose(true);
+	        }
+	        if(ri instanceof PlanarImage) {
+	            ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+	        }
+	    }
+
+    }
+    
+    /**
+     * Tests that the legend graphic is produced for multiple layers
+     * with vector and coverage layers, when coverage is not visible
+     * at current scale.
+     */        
+    public void testMultipleLayersWithVectorAndInvisibleCoverage() throws Exception {        
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+        req.setScale(1000);
+        int titleHeight = getTitleHeight(req);
+        
+        FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName(
+                MockData.ROAD_SEGMENTS.getNamespaceURI(), MockData.ROAD_SEGMENTS.getLocalPart());
+        List<FeatureType> layers=new ArrayList<FeatureType>();
+        layers.add(ftInfo.getFeatureType());
+        
+        CoverageInfo cInfo = getCatalog().getCoverageByName("world");
+        assertNotNull(cInfo);
+
+        GridCoverage coverage = cInfo.getGridCoverage(null, null);
+        try {
+	        SimpleFeatureCollection feature;
+	        feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+	        layers.add(feature.getSchema());
+	        
+	        req.setLayers(layers);
+	        
+	        List<Style> styles=new ArrayList<Style>();
+	        Style style1= getCatalog().getStyleByName(
+	                MockData.ROAD_SEGMENTS.getLocalPart()).getStyle();
+	        styles.add(style1);
+	        
+	        styles.add(readSLD("InvisibleRaster.sld"));
+	        
+	        
+	        req.setStyles(styles);
+	        
+	        this.legendProducer.buildLegendGraphic(req);
+	
+	        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+	        
+	        // vector layer
+	        assertPixel(image, 10, 10+titleHeight, new Color(192,160,0));
+	        
+	        assertPixel(image, 10, 30+titleHeight, new Color(0,0,0));
+	        
+	        assertPixel(image, 10, 50+titleHeight, new Color(224,64,0));
+	                
+	        // no coverage
+	        assertTrue(image.getHeight() < 70+titleHeight*2);
+	    } finally {
+	        RenderedImage ri = coverage.getRenderedImage();
+	        if(coverage instanceof GridCoverage2D) {
+	            ((GridCoverage2D) coverage).dispose(true);
+	        }
+	        if(ri instanceof PlanarImage) {
+	            ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+	        }
+	    }
     }
     
     /**

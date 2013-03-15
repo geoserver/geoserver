@@ -38,9 +38,9 @@ Moreover, in order for GeoServer to leverage these libraries, the GDAL (binary) 
 
 Installing GDAL native libraries
 ````````````````````````````````
-The ImageIO-Ext GDAL plugin for geoserver master uses ImageIO-Ext 1.1.5 whose artifacts can be downloaded from `here <http://demo.geo-solutions.it/share/github/imageio-ext/releases/1.1.X/1.1.5/>`_.
+The ImageIO-Ext GDAL plugin for geoserver master uses ImageIO-Ext 1.1.7 whose artifacts can be downloaded from `here <http://demo.geo-solutions.it/share/github/imageio-ext/releases/1.1.X/1.1.7/>`_.
 
-Browse to the native and then gdal directory for the `link <http://demo.geo-solutions.it/share/github/imageio-ext/releases/1.1.X/1.1.5/>`_. Now you should see a list of artifacts that can be downloaded. We need to download two things now:
+Browse to the native and then gdal directory for the `link <http://demo.geo-solutions.it/share/github/imageio-ext/releases/1.1.X/1.1.7/>`_. Now you should see a list of artifacts that can be downloaded. We need to download two things now:
 
   #. The CRS definitions
   #. The native libraries matching the target operating system

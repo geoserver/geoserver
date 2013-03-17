@@ -18,7 +18,7 @@
 	
 
  <properties>
-  <imageio-ext.version>1.1.6</imageio-ext.version>
+  <imageio-ext.version>1.1.7</imageio-ext.version>
  </properties>  	
 
 	<dependencies>

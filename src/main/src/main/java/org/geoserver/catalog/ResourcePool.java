@@ -1484,7 +1484,7 @@ public class ResourcePool {
                         throw new IOException( "No such file: " + info.getFilename());
                     }
                     
-                    style = Styles.style(Styles.parse(styleFile, info.getSLDVersion()));
+                    style = Styles.style(Styles.parse(styleFile, null, info.getSLDVersion()));
                     
                     //set the name of the style to be the name of hte style metadata
                     // remove this when wms works off style info

@@ -10,24 +10,35 @@ import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.ResourceErrorHandling;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geoserver.test.TestSetup;
-import org.geoserver.test.TestSetupFrequency;
+import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-@TestSetup(run=TestSetupFrequency.REPEAT)
 public class CapabilitiesModifyingTest extends GeoServerSystemTestSupport {
     
-    @Test
-    public void testMisconfiguredLayerGeneratesErrorDocumentInDefaultConfig() throws Exception {
+    @Before
+    public void resetWmsConfigChanges() {
+        GeoServerInfo global = getGeoServer().getGlobal();
+        global.setResourceErrorHandling(null);
+        getGeoServer().save(global);
+    }
+    
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        
         for (FeatureTypeInfo ft : getCatalog().getFeatureTypes()) {
             ft.setLatLonBoundingBox(null);
             getCatalog().save(ft);
         }
-        
+    }
+    
+    @Test
+    public void testMisconfiguredLayerGeneratesErrorDocumentInDefaultConfig() throws Exception {
         MockHttpServletResponse response = getAsServletResponse(
                 "wms?service=WMS&request=GetCapabilities&version=1.1.1");
         assertTrue("Response does not contain ServiceExceptionReport: " + response.getOutputStreamContent(),
@@ -40,11 +51,6 @@ public class CapabilitiesModifyingTest extends GeoServerSystemTestSupport {
         global.setResourceErrorHandling(ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS);
         getGeoServer().save(global);
         
-        for (FeatureTypeInfo ft : getCatalog().getFeatureTypes()) {
-            ft.setLatLonBoundingBox(null);
-            getCatalog().save(ft);
-        }
-        
         Document caps = getAsDOM(
                 "wms?service=WMS&request=GetCapabilities&version=1.1.1");
         
@@ -55,11 +61,6 @@ public class CapabilitiesModifyingTest extends GeoServerSystemTestSupport {
     
     @Test
     public void testMisconfiguredLayerGeneratesErrorDocumentInDefaultConfig_1_3_0() throws Exception {
-        for (FeatureTypeInfo ft : getCatalog().getFeatureTypes()) {
-            ft.setLatLonBoundingBox(null);
-            getCatalog().save(ft);
-        }
-        
         MockHttpServletResponse response = getAsServletResponse(
                 "wms?service=WMS&request=GetCapabilities&version=1.3.0");
         assertTrue("Response does not contain ServiceExceptionReport: " + response.getOutputStreamContent(),
@@ -71,11 +72,6 @@ public class CapabilitiesModifyingTest extends GeoServerSystemTestSupport {
         GeoServerInfo global = getGeoServer().getGlobal();
         global.setResourceErrorHandling(ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS);
         getGeoServer().save(global);
-        
-        for (FeatureTypeInfo ft : getCatalog().getFeatureTypes()) {
-            ft.setLatLonBoundingBox(null);
-            getCatalog().save(ft);
-        }
         
         Document caps = getAsDOM(
                 "wms?service=WMS&request=GetCapabilities&version=1.3.0");

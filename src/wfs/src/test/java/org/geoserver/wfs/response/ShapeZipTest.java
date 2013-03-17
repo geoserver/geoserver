@@ -60,7 +60,6 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
-@TestSetup(run=TestSetupFrequency.REPEAT)
 public class ShapeZipTest extends WFSTestSupport {
 
     private static final QName ALL_TYPES = new QName(SystemTestData.CITE_URI, "AllTypes",
@@ -89,6 +88,20 @@ public class ShapeZipTest extends WFSTestSupport {
     public void init() throws Exception {
         gft = WfsFactory.eINSTANCE.createGetFeatureType();
         op = new Operation("GetFeature", getServiceDescriptor10(), null, new Object[] { gft });
+    }
+    
+    @Before
+    public void cleanupTemplates() throws Exception {
+        WorkspaceInfo ws = getCatalog().getWorkspaceByName(SystemTestData.BASIC_POLYGONS.getPrefix());
+        File wsDir = getDataDirectory().findWorkspaceDir(ws);
+        new File(wsDir, "shapezip.ftl").delete();
+    }
+    
+    @Before
+    public void resetServiceConfiguration() throws Exception {
+        GeoServerInfo gs = getGeoServer().getGlobal();
+        gs.getSettings().setProxyBaseUrl(null);
+        getGeoServer().save(gs);
     }
 
     @Override

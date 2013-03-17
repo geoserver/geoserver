@@ -9,15 +9,24 @@ import static org.junit.Assert.assertEquals;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServerInfo;
-import org.geoserver.test.TestSetup;
-import org.geoserver.test.TestSetupFrequency;
+import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-@TestSetup(run=TestSetupFrequency.REPEAT)
 public class NumDecimalsTest extends WFSTestSupport {
+    
+    @Before
+    public void resetNumDecimals() {
+        Catalog cat = getCatalog();
+        FeatureTypeInfo ft1 = cat.getFeatureTypeByName("sf", "PrimitiveGeoFeature");
+        FeatureTypeInfo ft2 = cat.getFeatureTypeByName("sf", "AggregateGeoFeature");
+        ft1.setNumDecimals(0);
+        ft2.setNumDecimals(0);
+        cat.save(ft1);
+        cat.save(ft2);
+    }
 
 	@Test
     public void testDefaults() throws Exception {

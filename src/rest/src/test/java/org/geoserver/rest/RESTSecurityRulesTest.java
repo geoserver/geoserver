@@ -4,23 +4,21 @@
  */
 package org.geoserver.rest;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
 
+import org.apache.commons.io.FileUtils;
 import org.geoserver.security.RESTfulDefinitionSource;
 import org.geoserver.security.impl.RESTAccessRuleDAO;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geoserver.test.TestSetup;
-import org.geoserver.test.TestSetupFrequency;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.access.ConfigAttribute;
 
-@TestSetup(run=TestSetupFrequency.REPEAT)
 public class RESTSecurityRulesTest extends GeoServerSystemTestSupport {
 
     RESTfulDefinitionSource defSource = null;
@@ -30,13 +28,21 @@ public class RESTSecurityRulesTest extends GeoServerSystemTestSupport {
     public void setUpInternal() throws Exception {
         defSource = (RESTfulDefinitionSource) applicationContext.getBean("restFilterDefinitionMap");
         dao = (RESTAccessRuleDAO) applicationContext.getBean("restRulesDao");
+        
+        // reset the security file
+        File restProperties = new File(getDataDirectory().findSecurityRoot(), "rest.properties");
+        restProperties.delete();
+        String defaultRules = "/**;GET=ROLE_ADMINISTRATOR\n" + 
+        		"/**;POST,DELETE,PUT=ROLE_ADMINISTRATOR";
+        FileUtils.writeStringToFile(restProperties, defaultRules);
     }
+    
 
     @Test
     public void testDefault() throws Exception {
         Collection<ConfigAttribute> atts = defSource.lookupAttributes("/foo", "GET");
         assertEquals(1, atts.size());
-        assertEquals("ADMIN", atts.iterator().next().getAttribute());
+        assertEquals("ROLE_ADMINISTRATOR", atts.iterator().next().getAttribute());
     }
 
     @Test

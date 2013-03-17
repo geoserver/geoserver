@@ -42,6 +42,7 @@ import org.junit.Test;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
+import org.geoserver.gwc.layer.GeoServerTileLayer;
 
 public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
@@ -159,6 +160,33 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         httpReq.setHeader("If-Modified-Since", ifModifiedSince);
         response = dispatch(httpReq, "UTF-8");
         assertEquals(HttpServletResponse.SC_NOT_MODIFIED, response.getErrorCode());
+    }
+
+    @Test public void testDirectWMSIntegrationMaxAge() throws Exception {
+        final GWC gwc = GWC.get();
+        gwc.getConfig().setDirectWMSIntegrationEnabled(true);
+        final String layerName = BASIC_POLYGONS.getPrefix() + ":" + BASIC_POLYGONS.getLocalPart();
+        final String path = buildGetMap(true, layerName, "EPSG:4326", null) + "&tiled=true";
+        final String qualifiedName = super.getLayerId(BASIC_POLYGONS);
+        final GeoServerTileLayer tileLayer = (GeoServerTileLayer) gwc.getTileLayerByName(qualifiedName);
+        tileLayer.getLayerInfo().getResource().getMetadata().put("cachingEnabled", "true");
+        tileLayer.getLayerInfo().getResource().getMetadata().put("cacheAgeMax", 3456);
+
+        MockHttpServletResponse response = getAsServletResponse(path);
+        String cacheControl = response.getHeader("Cache-Control");
+        assertEquals("max-age=3456", cacheControl);
+        assertNotNull(response.getHeader("Last-Modified"));
+
+        tileLayer.getLayerInfo().getResource().getMetadata().put("cachingEnabled", "false");
+        response = getAsServletResponse(path);
+        cacheControl = response.getHeader("Cache-Control");
+        assertEquals("no-cache", cacheControl);
+
+        // make sure a boolean is handled, too - see comment in CachingWebMapService
+        tileLayer.getLayerInfo().getResource().getMetadata().put("cachingEnabled", Boolean.FALSE);
+        response = getAsServletResponse(path);
+        cacheControl = response.getHeader("Cache-Control");
+        assertEquals("no-cache", cacheControl);
     }
 
     @Test public void testDirectWMSIntegrationWithVirtualServices() throws Exception {

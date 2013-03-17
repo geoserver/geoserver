@@ -23,8 +23,11 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.httpclient.util.DateParseException;
 import org.apache.commons.httpclient.util.DateUtil;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataMap;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
+import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.HttpErrorCodeException;
 import org.geoserver.wms.GetMapRequest;
@@ -119,10 +122,25 @@ public class CachingWebMapService implements MethodInterceptor {
 
         RawMap map = new RawMap(null, tileBytes, mimeType);
 
-        map.setResponseHeader("Cache-Control", "no-cache");
-        map.setResponseHeader("ETag", etag);
-
         map.setContentDispositionHeader(null, "." + cachedTile.getMimeType().getFileExtension(), false);
+
+        Object cacheAgeMax = getCacheAge(layer);
+        LOGGER.log(Level.FINE, "Using cacheAgeMax {0}", cacheAgeMax);
+        if (cacheAgeMax != null) {
+            map.setResponseHeader("Cache-Control", "max-age=" + cacheAgeMax);
+        } else {
+            map.setResponseHeader("Cache-Control", "no-cache");
+        }
+
+        setConditionalGetHeaders(map, cachedTile, request, etag);
+        setCacheMetadataHeaders(map, cachedTile, layer);
+
+        return map;
+
+    }
+
+    private void setConditionalGetHeaders(RawMap map, ConveyorTile cachedTile, GetMapRequest request, String etag) {
+        map.setResponseHeader("ETag", etag);
 
         final long tileTimeStamp = cachedTile.getTSCreated();
         final String ifModSinceHeader = request.getHttpRequestHeader("If-Modified-Since");
@@ -152,7 +170,9 @@ public class CachingWebMapService implements MethodInterceptor {
                 }
             }
         }
+    }
 
+    private void setCacheMetadataHeaders(RawMap map, ConveyorTile cachedTile, TileLayer layer) {
         long[] tileIndex = cachedTile.getTileIndex();
         CacheResult cacheResult = cachedTile.getCacheResult();
         GridSubset gridSubset = layer.getGridSubset(cachedTile.getGridSetId());
@@ -165,9 +185,25 @@ public class CachingWebMapService implements MethodInterceptor {
         map.setResponseHeader("geowebcache-tile-bounds", tileBounds.toString());
         map.setResponseHeader("geowebcache-gridset", gridSubset.getName());
         map.setResponseHeader("geowebcache-crs", gridSubset.getSRS().toString());
+    }
 
-        return map;
-
+    private Object getCacheAge(TileLayer layer) {
+        Object cacheAge = null;
+        if (layer instanceof GeoServerTileLayer) {
+            LayerInfo layerInfo = ((GeoServerTileLayer) layer).getLayerInfo();
+            // configuring caching does not appear possible for layergroup
+            if (layerInfo != null) {
+                MetadataMap metadata = layerInfo.getResource().getMetadata();
+                Object enabled = metadata.get("cachingEnabled");
+                // do a string comparison since if set via REST, it will be a
+                // string, if set via the web UI and fresh in the cache, it
+                // will be a boolean ...
+                if (enabled != null && enabled.toString().equalsIgnoreCase("true")) {
+                    cacheAge = layerInfo.getResource().getMetadata().get("cacheAgeMax");
+                }
+            }
+        }
+        return cacheAge;
     }
 
     private GetMapRequest getRequest(MethodInvocation invocation) {

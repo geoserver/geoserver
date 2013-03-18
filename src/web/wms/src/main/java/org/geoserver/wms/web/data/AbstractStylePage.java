@@ -249,7 +249,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         try {
             final String sld = editor.getInput();            
             ByteArrayInputStream input = new ByteArrayInputStream(sld.getBytes());
-            List<Exception> validationErrors = Styles.validate(input);
+            List<Exception> validationErrors = Styles.validate(input, null);
             return validationErrors;
         } catch( Exception e ) {
             return Arrays.asList( e );

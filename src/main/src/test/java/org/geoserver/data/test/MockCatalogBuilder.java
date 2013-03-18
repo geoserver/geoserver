@@ -523,7 +523,7 @@ public class MockCatalogBuilder {
         expect(s.getSLDVersion()).andReturn(version).anyTimes();
         try {
             expect(s.getStyle()).andReturn(Styles.style(Styles.parse(
-                getClass().getResourceAsStream(filename), version))).anyTimes();
+                getClass().getResourceAsStream(filename), null, version))).anyTimes();
         }
         catch(IOException e) {
             throw new RuntimeException(e);

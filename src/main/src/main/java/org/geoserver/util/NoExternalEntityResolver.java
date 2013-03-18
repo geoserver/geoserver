@@ -31,9 +31,9 @@ public class NoExternalEntityResolver implements EntityResolver {
         if (LOGGER.isLoggable(Level.FINEST)) {
             LOGGER.finest("resolveEntity request: publicId=" + publicId + ", systemId=" + systemId);
         }
-
+        
         // allow schema parsing for validation
-        if (systemId != null && systemId.startsWith("jar:") && systemId.endsWith(".xsd")) {
+        if (systemId != null && systemId.endsWith(".xsd")) {
             return null;
         }
         

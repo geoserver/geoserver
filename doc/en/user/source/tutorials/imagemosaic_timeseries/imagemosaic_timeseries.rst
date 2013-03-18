@@ -9,18 +9,15 @@ Introduction
 
 This step-by-step tutorial describes all the steps for building a time-series coverage using the new ImageMosaic plugin. The ImageMosaic plugin allows the creation of a time-series layer of a raster dataset. The single images are hold in a queryable structure in order to access to a specific dataset with a temporal filter.
 
-The plugin provides two possibilities to access to time series data:
-
-* **Using a shapefile** in order to store the granules indexes. That's the default behavior without providing the *datastore.properties* file.
-* **Via mapping table**, which maps the timestamp to the corresponding raster source. The former uses an attribute for access to the granule from the mapping table. If this attribute is indexed, the access to the corresponding raster element can be obtain in logarithmic time (i.e. using B-Tree as index). 
+The concepts explained in :ref:`tutorial_imagemosaic_extension` are required in order to properly understand the steps shown here.
 
 This tutorial is organized in 4 chapter:
 
 * The first chapter, **Configuration**, describes the environment configurations needed before load an Imagemosaic store from geoserver
 * The second chapter, **Configuration examples**, describes the details, providing examples, of the configurations files needed.
-* The last 2 chapter, **Coverage based on filestore** and **Coverage based on database** describe, once the previous configurations steps are done, how to create and configure an Imagemosaic store using the geoserver GUI.
+* The last 2 chapters, **Coverage based on filestore** and **Coverage based on database** describe, once the previous configurations steps are done, how to create and configure an Imagemosaic store using the geoserver GUI.
 
-The dataset used in the tutorial can be downloaded :download:`Here <snowLZWdataset.zip>`. It contains 3 image files and a tld file representing a style needed for correct display the images.
+The dataset used in the tutorial can be downloaded :download:`Here <snowLZWdataset.zip>`. It contains 3 image files and a .tld file representing a style needed for correctly render the images.
 
 Configuration
 -------------
@@ -34,6 +31,11 @@ In order to set the time in Coordinated Universal Time (UTC) add this switch whe
 
 -Duser.timezone=GMT
 
+If a shapefile is used (see next chapter) also this switch is needed in order to manage properly the timezone::
+
+-Dorg.geotools.shapefile.datetime=true
+
+
 MOSAIC_DIR and the Configuration Files
 ``````````````````````````````````````
 
@@ -41,60 +43,76 @@ The user can name the and place the **MOSAIC_DIR** as and where he wants.
 
 The **MOSAIC_DIR** contains all mosaic granules files and the 3 needed configuration files. The files are in ``.properties`` format.
 
-.. note:: Every tif file must have a naming convention: {coveragename}_{timestamp}_[{elevation}].tif
+.. note:: Every tif file must follow the same naming convention. In this tutorial will be used {coveragename}_{timestamp}.tif
 
 In a properties file you specify your properties in a  key-value manner: e.g. `myproperty=myvalue`
 
-1. **datastore.properties**: contains all relevant information responsible for connecting to the database
-2. **indexer.properties**: specifies the name of the time-variant attribute, the elevation attribute and the type of the attributes
-3. **timeregex.properties**: specifies the regular expression pattern to access to the file
+The configuration files needed are:
 
+1. **datastore.properties**: contains all relevant information responsible for connecting to the database in which the spatial indexes of the mosaic will be stored
+2. **indexer.properties**: specifies the name of the time-variant attribute, the elevation attribute and the type of the attributes
+3. **timeregex.properties**: specifies the regular expression used to extract the time information from the filename.
+
+All the configuration files must be placed in the root of the **MOSAIC_DIR**. The granule images could be placed also in **MOSAIC_DIR** subfolders.
+
+Please note that **datastore.properties** isn't mandatory. The plugin provides two possibilities to access to time series data:
+
+* **Using a shapefile** in order to store the granules indexes. That's the default behavior without providing the *datastore.properties* file.
+* **Using a DBMS**, which maps the timestamp to the corresponding raster source. The former uses the **time** attribute for access to the granule from the mapping table. 
+
+For production installation is strong reccomended the usage of a DBMS instead of shapefile in order to improve performances. 
+
+Otherwise the usage of a shapefile could be useful in development and test environments due to less configurations are needed.
 
 datastore.properties
 """"""""""""""""""""
+
+Here is shown an example of datastore.properties suitable for Postgis.
+
 .. list-table::
-   :widths: 15 5 80
+   :widths: 15 20 75
 
    * - **Parameter**
      - **Mandatory**
      - **Description**
    * - *SPI*
-     - Y
+     - **Y**
      - The factory class used for the datastore e.g. org.geotools.data.postgis.PostgisNGDataStoreFactory
    * - *host*
-     - Y
+     - **Y**
      - The host name of the database.
    * - *port*
-     - Y
+     - **Y**
      - The port of the database
    * - *database*
-     - Y
+     - **Y**
      - The name/instance of the database.
    * - *schema*
-     - Y
+     - **Y**
      - The name of the database schema.
    * - *user*
-     - Y
+     - **Y**
      - The database user.
    * - *passwd*
-     - Y
+     - **Y**
      - The database password.    
    * - *Loose bbox*
-     - Y
+     - **N** default 'false'
      - Boolean value to specify if loosing the bounding box.    
    * - *Estimated extend*
-     - Y
+     - **N** default 'true'
      - Boolean values to specify if the extent of the data should be estimated.    
    * - *validate connections*
-     - Y
+     - **N** default 'true'
      - Boolean value to specify if the connection should be validated.    
    * - *Connection timeout*
-     - Y
+     - **N** default '20'
      - Specifies the timeout in minutes.    
    * - *preparedStatements*
-     - Y
+     - **N** default 'false'
      - Boolean flag that specifies if for the database queries prepared statements should be used. This improves performant, because the database query parser has to parse the query only once     
 
+.. note:: The first 8 parameters are valid for each DBMS used, the last 4 may vary from different DBMS. for more informations see `GeoTools JDBC documentation <http://docs.geotools.org/latest/userguide/library/jdbc/index.html>`_
  
 indexer.properties
 """"""""""""""""""
@@ -105,7 +123,7 @@ indexer.properties
      - **Mandatory**
      - **Description**
    * - *TimeAttribute*
-     - Y
+     - N
      - Specifies the name of the time-variant attribute
    * - *ElevationAttribute*
      - N
@@ -117,6 +135,8 @@ indexer.properties
      - Y
      - Specifies the extractor classes.
 
+.. warning:: **TimeAttribute** is not a mandatory param but for the purpose of this tutorial is needed.
+	 
 timeregex.properties
 """"""""""""""""""""
 .. list-table::

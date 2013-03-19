@@ -15,6 +15,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.XmlRequestReader;
+import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.xml.WFSURIHandler;
 import org.geotools.util.Version;
@@ -37,7 +38,9 @@ public class WfsXmlReader extends XmlRequestReader {
      * geoserver configuration
      */
     GeoServer geoServer;
-
+    
+    EntityResolverProvider entityResolverProvider;
+    
     public WfsXmlReader(String element, Configuration configuration, GeoServer geoServer) {
         this(element, configuration, geoServer, "wfs");
     }
@@ -46,8 +49,9 @@ public class WfsXmlReader extends XmlRequestReader {
         super(new QName(WFS.NAMESPACE, element), new Version("1.0.0"), serviceId);
         this.configuration = configuration;
         this.geoServer = geoServer;
+        this.entityResolverProvider = new EntityResolverProvider(geoServer);
     }
-
+    
     public Object read(Object request, Reader reader, Map kvp) throws Exception {
         //TODO: refactor this method to use WFSXmlUtils
         Catalog catalog = geoServer.getCatalog();
@@ -60,6 +64,7 @@ public class WfsXmlReader extends XmlRequestReader {
         
         //create the parser instance
         Parser parser = new Parser(configuration);
+        parser.setEntityResolver(entityResolverProvider.getEntityResolver());
         
         //"inject" namespace mappings
         List<NamespaceInfo> namespaces = catalog.getNamespaces();

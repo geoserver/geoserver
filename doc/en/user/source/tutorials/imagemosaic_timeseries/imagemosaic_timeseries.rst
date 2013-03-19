@@ -239,7 +239,7 @@ We specify the directory in which the property and tif files are located (path m
    
 Step 3: set Coverage Parameter
 ````````````````````````
-The relevant parameters are AllowMultithreading and USE_JAI_IMAGEREAD   
+The relevant parameters are AllowMultithreading and USE_JAI_IMAGEREAD. Do not forget to specify the background value according to your the value in your tif file.   
 
 .. figure:: img/step_2_1.png
    :align: center

@@ -13,6 +13,7 @@ import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.featureinfo.FeatureTemplate;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.map.Layer;
 import org.geotools.styling.Symbolizer;
 import org.opengis.feature.simple.SimpleFeature;
@@ -28,6 +29,8 @@ public class KmlEncodingContext {
     List<Symbolizer> currentSymbolizers;
 
     Layer currentLayer;
+    
+    SimpleFeatureCollection currentFeatureCollection;
 
     SimpleFeature currentFeature;
 
@@ -131,6 +134,14 @@ public class KmlEncodingContext {
         }
 
         return result;
+    }
+
+    public SimpleFeatureCollection getCurrentFeatureCollection() {
+        return currentFeatureCollection;
+    }
+
+    public void setCurrentFeatureCollection(SimpleFeatureCollection currentFeatureCollection) {
+        this.currentFeatureCollection = currentFeatureCollection;
     }
 
 }

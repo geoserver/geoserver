@@ -15,7 +15,6 @@ import org.geoserver.kml.KMLUtils;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.wms.GetMapRequest;
 import org.geotools.data.DataUtilities;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.renderer.style.ExpressionExtractor;
@@ -42,6 +41,7 @@ import com.vividsolutions.jts.geom.Polygon;
 
 import de.micromata.opengis.kml.v_2_2_0.ColorMode;
 import de.micromata.opengis.kml.v_2_2_0.Feature;
+import de.micromata.opengis.kml.v_2_2_0.Icon;
 import de.micromata.opengis.kml.v_2_2_0.IconStyle;
 import de.micromata.opengis.kml.v_2_2_0.LabelStyle;
 import de.micromata.opengis.kml.v_2_2_0.LineStyle;
@@ -278,6 +278,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
             Style style = pm.createAndAddStyle();
             IconStyle is = style.createAndSetIconStyle();
             is.setColorMode(ColorMode.NORMAL);
+            Icon icon = is.createAndSetIcon();
 
             // default icon
             String iconHref = null;
@@ -358,6 +359,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
             if (iconHref == null) {
                 iconHref = "http://maps.google.com/mapfiles/kml/pal4/icon25.png";
             }
+            icon.setHref(iconHref);
         }
 
         private ExternalGraphic getExternalGraphic(PointSymbolizer symbolizer) {

@@ -43,18 +43,8 @@ public class FeatureSequenceFactory implements SequenceFactory<Feature> {
 
     public FeatureSequenceFactory(KmlEncodingContext context, FeatureLayer layer) {
         this.context = context;
+        this.features = context.getCurrentFeatureCollection();
         WMSMapContent mapContent = context.getMapContent();
-        try {
-            this.features = KMLUtils.loadFeatureCollection(
-                    (SimpleFeatureSource) layer.getFeatureSource(), layer, mapContent, context.getWms(),
-                    mapContent.getScaleDenominator());
-        } catch (Exception e) {
-            if (e instanceof ServiceException) {
-                throw (ServiceException) e;
-            } else {
-                throw new ServiceException("Failed to load vector data during KML generation", e);
-            }
-        }
 
         // prepare the encoding context
         context.setCurrentLayer(layer);

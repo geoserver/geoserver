@@ -6,14 +6,18 @@ package org.geoserver.kml.sequence;
 
 import java.util.List;
 
+import org.geoserver.kml.KMLUtils;
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
 import org.geoserver.kml.decorator.KmlEncodingContext;
+import org.geoserver.platform.ServiceException;
+import org.geoserver.wms.WMSMapContent;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 
 import de.micromata.opengis.kml.v_2_2_0.Feature;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
-import de.micromata.opengis.kml.v_2_2_0.Placemark;
 
 /**
  * Creates a sequence of folders mapping the layers in the map content
@@ -50,6 +54,22 @@ public class FolderSequenceFactory implements SequenceFactory<Feature> {
                 List<Layer> layers = context.getMapContent().layers();
                 Layer layer = layers.get(i++);
                 context.setCurrentLayer(layer);
+                
+                if(layer instanceof FeatureLayer) {
+                    try {
+                        WMSMapContent mapContent = context.getMapContent();
+                        SimpleFeatureCollection fc = KMLUtils.loadFeatureCollection(
+                                (SimpleFeatureSource) layer.getFeatureSource(), layer, mapContent, context.getWms(),
+                                mapContent.getScaleDenominator());
+                        context.setCurrentFeatureCollection(fc);
+                    } catch (Exception e) {
+                        if (e instanceof ServiceException) {
+                            throw (ServiceException) e;
+                        } else {
+                            throw new ServiceException("Failed to load vector data during KML generation", e);
+                        }
+                    }
+                }
 
                 // setup the folder and let it be decorated
                 Folder folder = new Folder();
@@ -63,7 +83,14 @@ public class FolderSequenceFactory implements SequenceFactory<Feature> {
                 
                 if (layer instanceof FeatureLayer) {
                     List<Feature> features = new SequenceList<Feature>(new FeatureSequenceFactory(context, (FeatureLayer) layer));
-                    folder.setFeature(features);
+                    List<Feature> originalFeatures = folder.getFeature();
+                    if(originalFeatures == null || originalFeatures.size() == 0) {
+                        folder.setFeature(features);
+                    } else {
+                        // in this case, compose the already existing features with the dynamically
+                        // generated ones
+                        folder.setFeature(new CompositeList<Feature>(originalFeatures, features));
+                    }
                 }
 
                 return folder;

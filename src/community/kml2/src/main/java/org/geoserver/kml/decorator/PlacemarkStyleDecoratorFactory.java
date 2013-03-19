@@ -1,3 +1,7 @@
+/* Copyright (c) 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.kml.decorator;
 
 import java.awt.Color;
@@ -49,9 +53,15 @@ import de.micromata.opengis.kml.v_2_2_0.Placemark;
 import de.micromata.opengis.kml.v_2_2_0.PolyStyle;
 import de.micromata.opengis.kml.v_2_2_0.Style;
 
+/**
+ * Encodes the SLD styles into KML corresponding styles and adds them to the Placemark
+ * 
+ * @author Andrea Aime - GeoSolutions
+ */
 public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
 
-    public KmlDecorator getDecorator(Class<? extends Feature> featureClass, KmlEncodingContext context) {
+    public KmlDecorator getDecorator(Class<? extends Feature> featureClass,
+            KmlEncodingContext context) {
         if (Placemark.class.isAssignableFrom(featureClass)) {
             return new PlacemarkStyleDecorator();
         } else {

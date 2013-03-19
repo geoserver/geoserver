@@ -1,3 +1,7 @@
+/* Copyright (c) 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.kml.decorator;
 
 import java.util.ArrayList;
@@ -20,6 +24,12 @@ import org.opengis.feature.simple.SimpleFeature;
 
 import de.micromata.opengis.kml.v_2_2_0.Feature;
 
+/**
+ * A class used by {@link KmlDecorator} to get the current encoding context (request, map content,
+ * current layer, feature and so on).
+ * 
+ * @author Andrea Aime - GeoSolutions
+ */
 public class KmlEncodingContext {
 
     WMSMapContent mapContent;
@@ -29,7 +39,7 @@ public class KmlEncodingContext {
     List<Symbolizer> currentSymbolizers;
 
     Layer currentLayer;
-    
+
     SimpleFeatureCollection currentFeatureCollection;
 
     SimpleFeature currentFeature;

@@ -1,3 +1,7 @@
+/* Copyright (c) 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.kml.decorator;
 
 import java.io.IOException;
@@ -11,6 +15,11 @@ import org.opengis.feature.simple.SimpleFeature;
 import de.micromata.opengis.kml.v_2_2_0.Feature;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
 
+/**
+ * Adds template based description to Placemark objects
+ * 
+ * @author Andrea Aime - GeoSolutions
+ */
 public class PlacemarkDescriptionDecoratorFactory implements KmlDecoratorFactory {
 
     @Override

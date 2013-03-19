@@ -5,6 +5,8 @@
 package org.geoserver.wfs.xml.v1_0_0;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 
@@ -130,6 +132,13 @@ public class GetFeatureTypeBinding extends AbstractComplexBinding {
         
         //queries
         getFeature.getQuery().addAll(node.getChildValues(QueryType.class));
+        
+        // viewParams
+        if (node.hasAttribute("viewParams")) {
+            List<String> viewparams = new ArrayList<String>();
+            viewparams.add((String) node.getAttributeValue("viewParams"));
+            getFeature.getViewParams().addAll(viewparams);
+        }
 
         return getFeature;
     }

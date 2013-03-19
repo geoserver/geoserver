@@ -7,6 +7,7 @@ package org.geoserver.wfs.request;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.GetFeatureWithLockType;
@@ -42,6 +43,20 @@ public abstract class GetFeatureRequest extends RequestObject {
         return eGet(adaptee, "startIndex", BigInteger.class);
     }
 
+    public List<Map<String,String>> getViewParams() {
+        return eGet(adaptee, "viewParams", List.class);
+    }
+    
+    public void setViewParams(List<Map<String,String>> viewParams) {
+        List l = eGet(adaptee, "viewParams", List.class);
+        l.clear();
+        l.addAll(viewParams);
+        
+        List check = eGet(adaptee, "viewParams", List.class);
+        
+        
+    }
+    
     public abstract List<Query> getQueries();
     
     public abstract List<Object> getAdaptedQueries();

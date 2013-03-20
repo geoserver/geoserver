@@ -664,13 +664,10 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             }            
             try {
                 layersAlreadyProcessed = handleLayerGroups(layerGroups);
-            } catch (FactoryException e) {
+            } catch (Exception e) {
                 throw new RuntimeException("Can't obtain Envelope of Layer-Groups: "
                         + e.getMessage(), e);
-            } catch (TransformException e) {
-                throw new RuntimeException("Can't obtain Envelope of Layer-Groups: "
-                        + e.getMessage(), e);
-            }finally{
+            } finally {
                 layerGroups.close();
             }            
             
@@ -876,8 +873,10 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         }
 
         /**
+         * @throws IOException 
+         * @throws RuntimeException 
          */
-        protected void handleLayer(final LayerInfo layer) {
+        protected void handleLayer(final LayerInfo layer) throws IOException {
             boolean queryable = wmsConfig.isQueryable(layer);
             AttributesImpl qatts = attributes("queryable", queryable ? "1" : "0");
             Integer cascadedHopCount = wmsConfig.getCascadedHopCount(layer);
@@ -1019,7 +1018,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         }
         
         protected Set<LayerInfo> handleLayerGroups(Iterator<LayerGroupInfo> layerGroups) throws FactoryException,
-                TransformException {
+                TransformException, IOException {
             Set<LayerInfo> layersAlreadyProcessed = new HashSet<LayerInfo>();
             
             if (layerGroups == null) {
@@ -1061,7 +1060,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         
 
 
-        protected void handleLayerGroup(LayerGroupInfo layerGroup, Set<LayerInfo> layersAlreadyProcessed) throws TransformException, FactoryException {
+        protected void handleLayerGroup(LayerGroupInfo layerGroup, Set<LayerInfo> layersAlreadyProcessed) throws TransformException, FactoryException, IOException {
             String layerName = layerGroup.prefixedName();
 
             AttributesImpl qatts = new AttributesImpl();

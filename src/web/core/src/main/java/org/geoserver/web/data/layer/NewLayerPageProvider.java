@@ -17,6 +17,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WMSStoreInfo;
@@ -24,6 +25,7 @@ import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geotools.data.ows.Layer;
 import org.geotools.feature.NameImpl;
+import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.type.Name;
 
 /**
@@ -73,8 +75,7 @@ public class NewLayerPageProvider extends GeoServerDataProvider<Resource> {
                 // namespace qualified NameImpl
                 List<Name> names = dstore.getDataStore(null).getNames();
                 for (Name name : names) {
-                    Catalog catalog = GeoServerApplication.get().getCatalog();
-                    FeatureTypeInfo fti = catalog.getFeatureTypeByDataStore(dstore, name.getLocalPart());
+                    FeatureTypeInfo fti = getCatalog().getFeatureTypeByDataStore(dstore, name.getLocalPart());
                     // skip views, we cannot have two layers use the same feature type info, as the
                     // underlying definition is attached to the feature type info itself
                     if(fti == null || fti.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE) == null) {
@@ -83,13 +84,28 @@ public class NewLayerPageProvider extends GeoServerDataProvider<Resource> {
                 }
                 
             } else if(store instanceof CoverageStoreInfo) {
-                // getting to the coverage name without reading the whole coverage seems to
-                // be hard stuff, let's have the catalog builder to the heavy lifting
-                CatalogBuilder builder = new CatalogBuilder(getCatalog());
-                builder.setStore(store);
-                CoverageInfo ci = builder.buildCoverage();
-                Name name = ci.getQualifiedName();
-                resources.put(name.getLocalPart(), new Resource(name));
+                CoverageStoreInfo cstore = (CoverageStoreInfo) store;
+                NamespaceInfo ns = getCatalog().getNamespaceByPrefix(cstore.getWorkspace().getName());
+                GridCoverageReader reader = cstore.getGridCoverageReader(null, null);
+                try {
+                    String[] names = reader.getGridCoverageNames();
+                    for (String name : names) {
+                        Name qualified = new NameImpl(ns.getURI(), name);
+                        Resource resource = new Resource(qualified);
+                        resource.setMultiCoverageReader(true);
+                        resources.put(name, resource);
+                    }
+                } catch(UnsupportedOperationException e) {
+                    // old code, pre multi-coverage
+                    // getting to the coverage name without reading the whole coverage seems to
+                    // be hard stuff, let's have the catalog builder to the heavy lifting
+                    CatalogBuilder builder = new CatalogBuilder(getCatalog());
+                    builder.setStore(store);
+                    CoverageInfo ci = builder.buildCoverage();
+                    Name name = ci.getQualifiedName();
+                    resources.put(name.getLocalPart(), new Resource(name));
+                }
+                    
             } else if(store instanceof WMSStoreInfo) {
                 WMSStoreInfo wmsInfo = (WMSStoreInfo) store;
                 
@@ -110,9 +126,20 @@ public class NewLayerPageProvider extends GeoServerDataProvider<Resource> {
             for (ResourceInfo type : configuredTypes) {
                 // compare with native name, which is what the DataStore provides through getNames()
                 // above
-                Resource resource = resources.get(type.getNativeName());
-                if(resource != null)
+                Resource resource;
+                if(type instanceof CoverageInfo) {
+                    CoverageInfo ci = (CoverageInfo) type;
+                    if(ci.getNativeCoverageName() != null) {
+                        resource = resources.get(ci.getNativeCoverageName());
+                    } else {
+                        resource = resources.get(type.getNativeName());
+                    }
+                } else {
+                    resource = resources.get(type.getNativeName());
+                }
+                if(resource != null) {
                     resource.setPublished(true);
+                }
             }
             result = new ArrayList<Resource>(resources.values());
             

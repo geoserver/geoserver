@@ -30,8 +30,8 @@ import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.ows.CRSEnvelope;
 import org.geotools.data.ows.Layer;
@@ -421,7 +421,7 @@ public class CatalogBuilder {
      * This method calls through to {@link #doSetupBounds(ResourceInfo, Object)}.
      * </p>
      */
-    public void setupBounds(CoverageInfo cinfo, AbstractGridCoverage2DReader coverageReader) 
+    public void setupBounds(CoverageInfo cinfo, GridCoverage2DReader coverageReader) 
         throws IOException {
         doSetupBounds(cinfo, coverageReader);
     }
@@ -577,12 +577,12 @@ public class CatalogBuilder {
             // the coverage bounds computation path is a bit more linear, the
             // readers always return the bounds and in the proper CRS (afaik)
             CoverageInfo cinfo = (CoverageInfo) rinfo;            
-            AbstractGridCoverage2DReader reader = null;
-            if (data instanceof AbstractGridCoverage2DReader) {
-                reader = (AbstractGridCoverage2DReader) data;
+            GridCoverage2DReader reader = null;
+            if (data instanceof GridCoverage2DReader) {
+                reader = (GridCoverage2DReader) data;
             }
             else {
-                reader = (AbstractGridCoverage2DReader) 
+                reader = (GridCoverage2DReader) 
                     cinfo.getGridCoverageReader(null, GeoTools.getDefaultHints());
             }
 
@@ -760,7 +760,7 @@ public class CatalogBuilder {
      */
     public void initCoverage(CoverageInfo cinfo) throws Exception {
     	CoverageStoreInfo csinfo = (CoverageStoreInfo) store;
-        AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) catalog
+        GridCoverage2DReader reader = (GridCoverage2DReader) catalog
             	.getResourcePool().getGridCoverageReader(csinfo, GeoTools.getDefaultHints());
 
         initResourceInfo(cinfo);
@@ -770,7 +770,7 @@ public class CatalogBuilder {
                     + csinfo.getFormat().getName());
 
         if (cinfo.getNativeCRS() == null) {
-        	cinfo.setNativeCRS(reader.getCrs());
+        	cinfo.setNativeCRS(reader.getCoordinateReferenceSystem());
         }
 
         CoordinateReferenceSystem nativeCRS = cinfo.getNativeCRS();
@@ -806,7 +806,7 @@ public class CatalogBuilder {
             cinfo.setGrid(new GridGeometry2D(originalRange, reader.getOriginalGridToWorld(PixelInCell.CELL_CENTER), nativeCRS));
         }
     }
-
+    
     /**
      * Builds the default coverage contained in the current store
      * 
@@ -814,28 +814,51 @@ public class CatalogBuilder {
      * @throws Exception
      */
     public CoverageInfo buildCoverage() throws Exception {
+        return buildCoverage(null);
+    }
+
+    /**
+     * Builds the default coverage contained in the current store
+     * 
+     * @return
+     * @throws Exception
+     */
+    public CoverageInfo buildCoverage(String coverageName) throws Exception {
         if (store == null || !(store instanceof CoverageStoreInfo)) {
             throw new IllegalStateException("Coverage store not set.");
         }
 
         CoverageStoreInfo csinfo = (CoverageStoreInfo) store;
-        AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) catalog
+        GridCoverage2DReader reader = (GridCoverage2DReader) catalog
                 .getResourcePool().getGridCoverageReader(csinfo, GeoTools.getDefaultHints());
 
         if (reader == null)
             throw new Exception("Unable to acquire a reader for this coverage with format: "
                     + csinfo.getFormat().getName());
 
-        return buildCoverage(reader, null);
+        return buildCoverage(reader, coverageName, null);
     }
 
     /**
      * Builds a coverage from a geotools grid coverage reader.
      * @param customParameters 
      */
-    public CoverageInfo buildCoverage(AbstractGridCoverage2DReader reader, Map customParameters) throws Exception {
+    public CoverageInfo buildCoverage(GridCoverage2DReader reader, Map customParameters) throws Exception {
+        return buildCoverage(reader, null, customParameters);
+    }
+    
+    /**
+     * Builds a coverage from a geotools grid coverage reader.
+     * @param customParameters 
+     */
+    public CoverageInfo buildCoverage(GridCoverage2DReader reader, String coverageName, Map customParameters) throws Exception {
         if (store == null || !(store instanceof CoverageStoreInfo)) {
             throw new IllegalStateException("Coverage store not set.");
+        }
+        
+        // if we are dealing with a multicoverage reader, wrap to simplify code
+        if(coverageName != null) {
+            reader = new SingleGridCoverage2DReader(reader, coverageName);
         }
 
         CoverageStoreInfo csinfo = (CoverageStoreInfo) store;
@@ -851,7 +874,7 @@ public class CatalogBuilder {
         }
         cinfo.setNamespace(namespace);
 
-        CoordinateReferenceSystem nativeCRS = reader.getCrs();
+        CoordinateReferenceSystem nativeCRS = reader.getOriginalEnvelope().getCoordinateReferenceSystem();
         cinfo.setNativeCRS(nativeCRS);
 
         // mind the default projection policy, Coverages do not have a flexible
@@ -926,26 +949,9 @@ public class CatalogBuilder {
         parameters.remove(AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString());
 
         cinfo.getDimensions().addAll(getCoverageDimensions(gc.getSampleDimensions()));
-        // TODO:
-        // dimentionNames = getDimensionNames(gc);
-        /*
-         * StringBuilder cvName =null; int count = 0; while (true) { final StringBuilder key = new
-         * StringBuilder(gc.getName().toString()); if (count > 0) { key.append("_").append(count); }
-         * 
-         * Map coverages = dataConfig.getCoverages(); Set cvKeySet = coverages.keySet(); boolean
-         * key_exists = false;
-         * 
-         * for (Iterator it = cvKeySet.iterator(); it.hasNext();) { String cvKey = ((String)
-         * it.next()).toLowerCase(); if (cvKey.endsWith(key.toString().toLowerCase())) { key_exists
-         * = true; } }
-         * 
-         * if (!key_exists) { cvName = key; break; } else { count++; } }
-         * 
-         * String name = cvName.toString();
-         */
         String name = gc.getName().toString();
         cinfo.setName(name);
-        cinfo.setNativeName(name);
+        cinfo.setNativeCoverageName(coverageName);
         cinfo.setTitle(name);
         cinfo.setDescription(new StringBuilder("Generated from ").append(format.getName()).toString());
 

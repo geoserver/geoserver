@@ -61,7 +61,7 @@ import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.processing.CoverageProcessor;
 import org.geotools.factory.GeoTools;
@@ -181,7 +181,7 @@ public class GetCoverage {
             //
             //
             // get a reader for this coverage
-            final AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) cinfo.getGridCoverageReader(
+            final GridCoverage2DReader reader = (GridCoverage2DReader) cinfo.getGridCoverageReader(
                     new DefaultProgressListener(), 
                     hints);
             
@@ -248,8 +248,8 @@ public class GetCoverage {
         return coverage;
     }
 
-    private GridCoverageRequest parseGridCoverageRequest(CoverageInfo ci, AbstractGridCoverage2DReader reader,
-            GetCoverageType request, Map<String, ExtensionItemType> extensions) {
+    private GridCoverageRequest parseGridCoverageRequest(CoverageInfo ci, GridCoverage2DReader reader,
+            GetCoverageType request, Map<String, ExtensionItemType> extensions) throws IOException {
         //
         // Extract CRS values for relative extension
         //
@@ -306,9 +306,10 @@ public class GetCoverage {
      * @param request
      * @param timeDimension
      * @return
+     * @throws IOException 
      */
-    private DateRange extractTimeSubset(AbstractGridCoverage2DReader reader,
-            GetCoverageType request, DimensionInfo timeDimension) {
+    private DateRange extractTimeSubset(GridCoverage2DReader reader,
+            GetCoverageType request, DimensionInfo timeDimension) throws IOException {
         DatatypeConverterImpl xmlTimeConverter = DatatypeConverterImpl.getInstance();
         DateRange range = null;
         for (DimensionSubsetType dim : request.getDimensionSubset()) {
@@ -585,7 +586,7 @@ public class GetCoverage {
     private GridCoverage2D readCoverage(
             CoverageInfo cinfo, 
             GridCoverageRequest request, 
-            AbstractGridCoverage2DReader reader, 
+            GridCoverage2DReader reader, 
             Hints hints) throws Exception {
         // checks
         Interpolation spatialInterpolation = request.getSpatialInterpolation();
@@ -599,7 +600,7 @@ public class GetCoverage {
         // as the outputCrs can be different from the subsetCrs
         //
         // get source crs
-        final CoordinateReferenceSystem coverageCRS = reader.getCrs();
+        final CoordinateReferenceSystem coverageCRS = reader.getCoordinateReferenceSystem();
         GeneralEnvelope subset = request.getSpatialSubset();
         if(!CRS.equalsIgnoreMetadata(subset.getCoordinateReferenceSystem(), coverageCRS)){
             subset= CRS.transform(
@@ -714,12 +715,12 @@ public class GetCoverage {
      * 
      * <p>
      * In case it is not provided the subsettingCRS falls back on the subsettingCRS.
-     * @param reader the {@link AbstractGridCoverage2DReader} to be used
+     * @param reader the {@link GridCoverage2DReader} to be used
      * @param extensions the {@link Map} of extension for this request.
      * @param subsettingCRS  the subsettingCRS as a {@link CoordinateReferenceSystem}
      * @return the outputCRS as a {@link CoordinateReferenceSystem}
      */
-    private CoordinateReferenceSystem extractOutputCRS(AbstractGridCoverage2DReader reader,
+    private CoordinateReferenceSystem extractOutputCRS(GridCoverage2DReader reader,
             Map<String, ExtensionItemType> extensions, CoordinateReferenceSystem subsettingCRS) {
         return extractCRSInternal(extensions, subsettingCRS,true);   
     }
@@ -778,13 +779,13 @@ public class GetCoverage {
      * <p>
      * In case it is not provided the subsettingCRS falls back on the nativeCRS.
      * 
-     * @param reader the {@link AbstractGridCoverage2DReader} to be used
+     * @param reader the {@link GridCoverage2DReader} to be used
      * @param extensions the {@link Map} of extension for this request.
      * @return the subsettingCRS as a {@link CoordinateReferenceSystem}
      */
-    private CoordinateReferenceSystem extractSubsettingCRS(AbstractGridCoverage2DReader reader,Map<String, ExtensionItemType> extensions) {
+    private CoordinateReferenceSystem extractSubsettingCRS(GridCoverage2DReader reader,Map<String, ExtensionItemType> extensions) {
         Utilities.ensureNonNull("reader", reader);
-        return extractCRSInternal(extensions, reader.getCrs(),false);       
+        return extractCRSInternal(extensions, reader.getCoordinateReferenceSystem(),false);       
     }
 
 
@@ -857,7 +858,7 @@ public class GetCoverage {
      * @param extensions2
      * @return
      */
-    private Map<String,InterpolationPolicy> extractInterpolation(AbstractGridCoverage2DReader reader, Map<String, ExtensionItemType> extensions) {
+    private Map<String,InterpolationPolicy> extractInterpolation(GridCoverage2DReader reader, Map<String, ExtensionItemType> extensions) {
         // preparation
         final Map<String,InterpolationPolicy> returnValue= new HashMap<String, InterpolationPolicy>();
         final Envelope envelope= reader.getOriginalEnvelope();
@@ -1158,20 +1159,20 @@ public class GetCoverage {
      * @return
      */
     private GeneralEnvelope extractSubsettingEnvelope(
-            AbstractGridCoverage2DReader reader, 
+            GridCoverage2DReader reader, 
             GetCoverageType request, 
             CoordinateReferenceSystem subsettingCRS,
             boolean hasTime) {
         
         //default envelope in subsettingCRS
-        final CoordinateReferenceSystem sourceCRS=reader.getCrs();
+        final CoordinateReferenceSystem sourceCRS=reader.getCoordinateReferenceSystem();
         GeneralEnvelope sourceEnvelopeInSubsettingCRS=new GeneralEnvelope(reader.getOriginalEnvelope());
         sourceEnvelopeInSubsettingCRS.setCoordinateReferenceSystem(sourceCRS);
         if(!(subsettingCRS==null||CRS.equalsIgnoreMetadata(subsettingCRS,sourceCRS))){
             // reproject source envelope to subsetting crs for initialization
             try {
                 sourceEnvelopeInSubsettingCRS= CRS.transform(
-                        CRS.findMathTransform(reader.getCrs(), subsettingCRS), 
+                        CRS.findMathTransform(reader.getCoordinateReferenceSystem(), subsettingCRS), 
                         reader.getOriginalEnvelope());
                 sourceEnvelopeInSubsettingCRS.setCoordinateReferenceSystem(subsettingCRS);
             } catch (Exception e) {
@@ -1318,7 +1319,7 @@ public class GetCoverage {
             }    
             // we are reprojecting
             subsettingEnvelope.intersect(sourceEnvelope);
-            subsettingEnvelope.setCoordinateReferenceSystem(reader.getCrs());      
+            subsettingEnvelope.setCoordinateReferenceSystem(reader.getCoordinateReferenceSystem());      
 
             // provided trim extent does not intersect coverage envelope
             if(subsettingEnvelope.isEmpty()){

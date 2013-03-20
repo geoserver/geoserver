@@ -24,7 +24,7 @@ import org.geoserver.wcs2_0.GetCoverage;
 import org.geoserver.wcs2_0.WCSTestSupport;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.DataSourceException;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
@@ -604,7 +604,7 @@ public class GetCoverageTest extends WCSTestSupport {
             targetCoverage = readerTarget.read(null);
 
             // checks spatial consistency
-            AbstractGridCoverage2DReader sourceReader = (AbstractGridCoverage2DReader) getCatalog().getCoverageByName(getLayerId(WATTEMP)).getGridCoverageReader(null, null);
+            GridCoverage2DReader sourceReader = (GridCoverage2DReader) getCatalog().getCoverageByName(getLayerId(WATTEMP)).getGridCoverageReader(null, null);
             GeneralEnvelope expectedEnvelope  = sourceReader.getOriginalEnvelope();
             assertEnvelopeEquals(expectedEnvelope, 1.0,(GeneralEnvelope) targetCoverage.getEnvelope(), 1.0);
             Assert.assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), expectedEnvelope.getCoordinateReferenceSystem()));

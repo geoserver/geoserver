@@ -51,7 +51,7 @@ import org.geotools.coverage.grid.GeneralGridGeometry;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.GeneralEnvelope;
@@ -208,7 +208,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             // GRAB A READER
             //
             // grab the reader using the default params
-            final AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) meta
+            final GridCoverage2DReader reader = (GridCoverage2DReader) meta
                     .getGridCoverageReader(null, WCSUtils.getReaderHints(wcs));
             if (reader == null) {
                 // cannot instantiate a reader, we should return an empty array

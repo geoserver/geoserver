@@ -654,13 +654,10 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             try {
                 List<LayerGroupInfo> layerGroups = wmsConfig.getLayerGroups();
                 layersAlreadyProcessed = handleLayerGroups(new ArrayList<LayerGroupInfo>(layerGroups));
-            } catch (FactoryException e) {
+            } catch (Exception e) {
                 throw new RuntimeException("Can't obtain Envelope of Layer-Groups: "
                         + e.getMessage(), e);
-            } catch (TransformException e) {
-                throw new RuntimeException("Can't obtain Envelope of Layer-Groups: "
-                        + e.getMessage(), e);
-            }
+            } 
             
             // now encode each layer individually
             LayerTree featuresLayerTree = new LayerTree(layers);
@@ -808,13 +805,14 @@ public class GetCapabilitiesTransformer extends TransformerBase {
          * Calls super.handleFeatureType to add common FeatureType content such as Name, Title and
          * LatLonBoundingBox, and then writes WMS specific layer properties as Styles, Scale Hint,
          * etc.
+         * @throws RuntimeException 
          * 
          * @throws IOException
          * 
          * @task TODO: write wms specific elements.
          */
         @SuppressWarnings("deprecation")
-        protected void handleLayer(final LayerInfo layer) {
+        protected void handleLayer(final LayerInfo layer) throws IOException {
             // HACK: by now all our layers are queryable, since they reference
             // only featuretypes managed by this server
             AttributesImpl qatts = new AttributesImpl();
@@ -981,7 +979,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
            return srs;
         }
 
-       protected void handleLayerGroup(LayerGroupInfo layerGroup, Set<LayerInfo> layersAlreadyProcessed) throws TransformException, FactoryException {
+       protected void handleLayerGroup(LayerGroupInfo layerGroup, Set<LayerInfo> layersAlreadyProcessed) throws TransformException, FactoryException, IOException {
            //String layerName = layerGroup.getName();
            String layerName = layerGroup.prefixedName();
 
@@ -1072,7 +1070,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
        }
        
         protected Set<LayerInfo> handleLayerGroups(List<LayerGroupInfo> layerGroups) throws FactoryException,
-                TransformException {
+                TransformException, IOException {
             Set<LayerInfo> layersAlreadyProcessed = new HashSet<LayerInfo>();
             
             if (layerGroups == null || layerGroups.size() == 0) {

@@ -36,7 +36,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.DataAccessFactory.Param;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFactorySpi;
@@ -443,10 +443,10 @@ public class EoCatalogBuilder implements EoStyles {
     private boolean enableDimensions(CoverageInfo ci) {
         boolean timeDimension = false;
         boolean customDimension = false;
-        AbstractGridCoverage2DReader reader=null;
+        GridCoverage2DReader reader=null;
         try {
             // acquire a reader
-            reader = (AbstractGridCoverage2DReader) ci.getGridCoverageReader(null, null);
+            reader = (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
             if(reader==null){
                 throw new RuntimeException("Unable to acquire reader for this coverageinfo: "+ci.getName());
             }
@@ -468,7 +468,7 @@ public class EoCatalogBuilder implements EoStyles {
                 customDimension = true;
             }
             
-            String elev = reader.getMetadataValue(AbstractGridCoverage2DReader.HAS_ELEVATION_DOMAIN);
+            String elev = reader.getMetadataValue(GridCoverage2DReader.HAS_ELEVATION_DOMAIN);
             if (Boolean.parseBoolean(elev)) {
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.fine(ci.getName() + ": found ELEVATION dimension");
@@ -482,7 +482,7 @@ public class EoCatalogBuilder implements EoStyles {
                 customDimension = true;
             }
             
-            String time = reader.getMetadataValue(AbstractGridCoverage2DReader.HAS_TIME_DOMAIN);
+            String time = reader.getMetadataValue(GridCoverage2DReader.HAS_TIME_DOMAIN);
             if (Boolean.parseBoolean(time)) {
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.fine(ci.getName() + ": found TIME dimension");

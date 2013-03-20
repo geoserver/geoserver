@@ -297,4 +297,14 @@ public class DecoratingCoverageInfo extends AbstractDecorator<CoverageInfo>
     public void setAdvertised(boolean advertised) {
         delegate.setAdvertised(advertised);
     }
+
+    @Override
+    public String getNativeCoverageName() {
+        return delegate.getNativeCoverageName();
+    }
+
+    @Override
+    public void setNativeCoverageName(String nativeCoverageName) {
+        delegate.setNativeCoverageName(nativeCoverageName);
+    }
 }

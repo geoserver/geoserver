@@ -4,10 +4,16 @@
  */
 package org.geoserver.catalog.impl;
 
+import java.io.IOException;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.ProjectionPolicy;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.factory.Hints;
+import org.opengis.coverage.grid.GridCoverageReader;
+import org.opengis.util.ProgressListener;
 
 /**
  * Default implementation of {@link CoverageStoreInfo}.
@@ -44,5 +50,11 @@ public class CoverageStoreInfoImpl extends StoreInfoImpl implements
     
     public void accept(CatalogVisitor visitor) {
         visitor.visit( this );
+    }
+
+    @Override
+    public GridCoverageReader getGridCoverageReader(ProgressListener listener, Hints hints)
+            throws IOException {
+        return catalog.getResourcePool().getGridCoverageReader(this, null, hints);
     }
 }

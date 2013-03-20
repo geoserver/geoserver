@@ -289,7 +289,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
             CatalogBuilder builder = new CatalogBuilder(catalog);
             builder.setStore(store);
             if (store instanceof CoverageStoreInfo) {
-                CoverageInfo ci = builder.buildCoverage();
+                CoverageInfo ci = builder.buildCoverage(resource.getName().getLocalPart());
                 return builder.buildLayer(ci);
             } else if (store instanceof DataStoreInfo) {
                 FeatureTypeInfo fti = builder.buildFeatureType(resource.getName());

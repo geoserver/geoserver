@@ -34,7 +34,7 @@ import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
@@ -242,7 +242,7 @@ public class GetFeatureInfo {
                         times, elevations, names);
             } else if (layer.getType() == MapLayerInfo.TYPE_RASTER) {
                 final CoverageInfo cinfo = requestedLayers.get(i).getCoverage();
-                final AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) cinfo
+                final GridCoverage2DReader reader = (GridCoverage2DReader) cinfo
                         .getGridCoverageReader(new NullProgressListener(),
                                 GeoTools.getDefaultHints());
                 
@@ -338,7 +338,7 @@ public class GetFeatureInfo {
     }
 
     @SuppressWarnings("rawtypes")
-    private FeatureCollection identifyRasterLayer(AbstractGridCoverage2DReader reader,
+    private FeatureCollection identifyRasterLayer(GridCoverage2DReader reader,
             DirectPosition position, GeneralParameterValue[] parameters, CoverageInfo cinfo,
             GetMapRequest getMapReq) throws Exception {
 
@@ -375,7 +375,7 @@ public class GetFeatureInfo {
                 // could probably optimize)
                 //
                 parameter.setValue(new GridGeometry2D(new GridEnvelope2D(integerRasterArea), reader
-                        .getOriginalGridToWorld(PixelInCell.CELL_CENTER), reader.getCrs()));
+                        .getOriginalGridToWorld(PixelInCell.CELL_CENTER), reader.getCoordinateReferenceSystem()));
             }
 
         }

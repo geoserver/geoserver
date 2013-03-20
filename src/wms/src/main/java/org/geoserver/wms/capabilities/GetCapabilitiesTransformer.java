@@ -943,13 +943,11 @@ public class GetCapabilitiesTransformer extends TransformerBase {
 
         
     /**
-     * TODO insert the ScaleHint element
-     * 
+     * Inserts the ScaleHint element in the layer.
      * 
      * @param layer
      */
 	private void handleScaleHint(LayerInfo layer) {
-		
 		
 		Map<String,Double> denominators = searchMaxMinScaleDenominator(layer);
 
@@ -963,21 +961,6 @@ public class GetCapabilitiesTransformer extends TransformerBase {
         
         end(scale);
 	}
-	
-	
-	private static Style searchStyle(){
-		
-        Request request = Dispatcher.REQUEST.get();
-        if(request != null && request.getRawKvp() != null && request.getRawKvp().get("LAYERS") != null) {
-            String layers = ((String) request.getRawKvp().get("LAYERS")).trim();
-            if(layers.length() > 0) {
-            	
-            	// FIXME HACK
-            }
-        } 
-		
-		return null;
-	}
 
 	/**
 	 * Search the Max and Min scale denominators in the layer's styles
@@ -987,18 +970,17 @@ public class GetCapabilitiesTransformer extends TransformerBase {
 	 */
 	private static Map<String,Double> searchMaxMinScaleDenominator(final LayerInfo layer){
 
-		Set<StyleInfo> styles = Collections.emptySet();
-		if(styles.size() != 0){
-			styles = layer.getStyles();
-		} else {
-			styles = new HashSet<StyleInfo>(1);
-			styles.add(layer.getDefaultStyle());
+		Set<StyleInfo> styles = layer.getStyles();
+		StyleInfo defaultStyle = layer.getDefaultStyle();
+		if(!styles.contains(defaultStyle) ){
+			styles.add(defaultStyle);
 		}
 		
 		Map<String,Double> scaleDenominator = new HashMap<String,Double>(2);
 		
-		scaleDenominator.put(MIN_DENOMINATOR_KEY, 0.0);
-		scaleDenominator.put(MAX_DENOMINATOR_KEY, Double.POSITIVE_INFINITY);
+		scaleDenominator.put(MIN_DENOMINATOR_KEY, Double.POSITIVE_INFINITY);
+		
+		scaleDenominator.put(MAX_DENOMINATOR_KEY, Double.NEGATIVE_INFINITY);
 		try{
 			
 			for (StyleInfo styleInfo : styles) {
@@ -1019,6 +1001,15 @@ public class GetCapabilitiesTransformer extends TransformerBase {
 		} catch (IOException e){
             LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
 		}
+		// It the initial values weren't changed by any rule then sets default values Min=0.0 and Max=infinity 
+		if(scaleDenominator.get(MIN_DENOMINATOR_KEY) ==  Double.POSITIVE_INFINITY){
+			scaleDenominator.put(MIN_DENOMINATOR_KEY,  0.0);
+		}
+		if( scaleDenominator.get(MAX_DENOMINATOR_KEY) == Double.NEGATIVE_INFINITY){
+			scaleDenominator.put(MAX_DENOMINATOR_KEY,  Double.POSITIVE_INFINITY);
+		}
+		
+		
 	    return scaleDenominator;
 	}
 	

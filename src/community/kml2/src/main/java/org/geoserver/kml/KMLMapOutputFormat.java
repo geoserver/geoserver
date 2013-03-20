@@ -8,25 +8,17 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
 import org.geoserver.kml.decorator.KmlEncodingContext;
-import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
-import org.geoserver.kml.sequence.FolderSequenceFactory;
-import org.geoserver.kml.sequence.SequenceList;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;
-import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.util.logging.Logging;
 
-import de.micromata.opengis.kml.v_2_2_0.Document;
-import de.micromata.opengis.kml.v_2_2_0.Feature;
-import de.micromata.opengis.kml.v_2_2_0.Folder;
 import de.micromata.opengis.kml.v_2_2_0.Kml;
 
 /**
@@ -51,6 +43,8 @@ public class KMLMapOutputFormat implements GetMapOutputFormat {
                     "application/vnd.google-earth.kml xml")));
 
     private WMS wms;
+    
+    KMLBuilder builder = new KMLBuilder();
 
     public KMLMapOutputFormat(WMS wms) {
         this.wms = wms;
@@ -72,7 +66,7 @@ public class KMLMapOutputFormat implements GetMapOutputFormat {
     }
 
     /**
-     * Produce the actual map ready for outputing.
+     * Produce the actual map ready for output.
      * 
      * @param map WMSMapContext describing what layers, styles, area of interest etc are to be used
      *        when producing the map.
@@ -80,34 +74,14 @@ public class KMLMapOutputFormat implements GetMapOutputFormat {
      * @see GetMapOutputFormat#produceMap(WMSMapContent)
      */
     public KMLMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
-
-        GetMapRequest request = mapContent.getRequest();
-
-        // prepare kml, document and folder
-        Kml kml = new Kml();
-        Document document = kml.createAndSetDocument();
-        String kmltitle = (String) request.getFormatOptions().get("kmltitle");
-        document.setName(kmltitle);
-
         // initialize the kml encoding context
-        KmlEncodingContext context = new KmlEncodingContext(mapContent, request, wms);
+        KmlEncodingContext context = new KmlEncodingContext(mapContent, wms, false);
 
-        // get the callbacks for the document and let them loose
-        List<KmlDecorator> decorators = context.getDecoratorsForClass(Document.class);
-        for (KmlDecorator decorator : decorators) {
-            document = (Document) decorator.decorate(document, context);
-            if (document == null) {
-                throw new ServiceException("Coding error in decorator " + decorator
-                        + ", document objects cannot be set to null");
-            }
-        }
+        // build the kml document
+        Kml kml = builder.buildKMLDocument(context);
 
-        // create a generator that will generate a folder for each layer
-        SequenceList<Feature> folders = new SequenceList<Feature>(
-                new FolderSequenceFactory(context));
-        document.setFeature(folders);
-
-        KMLMap map = new KMLMap(mapContent, kml);
+        // return the map
+        KMLMap map = new KMLMap(mapContent, context, kml, MIME_TYPE);
         map.setContentDispositionHeader(mapContent, ".kml");
         return map;
     }

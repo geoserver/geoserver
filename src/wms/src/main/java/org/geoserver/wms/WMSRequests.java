@@ -10,6 +10,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -157,7 +158,7 @@ public class WMSRequests {
         String layerName = layer != null ? layer.getTitle() : null;
         String style = layer != null ? layer.getStyle().getName() : null;
 
-        HashMap<String,String> params = getGetMapParams(req, layerName, layerIndex, style, bbox, kvp);
+        LinkedHashMap<String,String> params = getGetMapParams(req, layerName, layerIndex, style, bbox, kvp);
         return ResponseUtils.buildURL(req.getBaseUrl(), "wms", params, URLType.SERVICE);
     }
 
@@ -234,10 +235,10 @@ public class WMSRequests {
      * Helper method for encoding GetMap request parameters.
      * 
      */
-    static HashMap<String,String> getGetMapParams(GetMapRequest req, String layer, int layerIndex,
+    static LinkedHashMap<String,String> getGetMapParams(GetMapRequest req, String layer, int layerIndex,
             String style, Envelope bbox, String[] kvp) {
         // parameters
-        HashMap<String,String> params = new HashMap<String,String>();
+        LinkedHashMap<String,String> params = new LinkedHashMap<String,String>();
 
         params.put("service", "wms");
         params.put("request", "GetMap");

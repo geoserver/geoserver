@@ -15,7 +15,6 @@ import org.geoserver.wms.DefaultWebMapService;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSRequest;
 import org.geoserver.wms.WMSRequests;
 import org.geoserver.wms.WebMapService;
 

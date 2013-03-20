@@ -4,23 +4,32 @@
  */
 package org.geoserver.kml;
 
+import org.geoserver.kml.decorator.KmlEncodingContext;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 
 import de.micromata.opengis.kml.v_2_2_0.Kml;
 
 public class KMLMap extends WebMap {
-    
+
     Kml kml;
 
-    public KMLMap(WMSMapContent context, Kml kml) {
-        super(context);
+    KmlEncodingContext kmlEncodingContext;
+
+    public KMLMap(WMSMapContent map, KmlEncodingContext kmlEncodingContext, Kml kml,
+            String mimeType) {
+        super(map);
         this.kml = kml;
+        this.kmlEncodingContext = kmlEncodingContext;
+        super.setMimeType(mimeType);
     }
 
     public Kml getKml() {
         return kml;
     }
-   
+
+    public KmlEncodingContext getKmlEncodingContext() {
+        return kmlEncodingContext;
+    }
 
 }

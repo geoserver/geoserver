@@ -8,7 +8,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.*;
 
+import java.io.ByteArrayInputStream;
 import java.util.Collections;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import javax.xml.namespace.QName;
 
@@ -27,6 +30,11 @@ public class KMLTest extends WMSTestSupport {
         
     private static final QName STORM_OBS = new QName(MockData.CITE_URI, "storm_obs", MockData.CITE_PREFIX);
 
+    @Override
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        super.setUpTestData(testData);
+        testData.setUpDefaultRasterLayers();
+    }
     
     @Override
     protected String getLogConfiguration() {
@@ -207,5 +215,55 @@ public class KMLTest extends WMSTestSupport {
         
         // the last page is same as the mid one, as the code does not have enough context to know it's hitting
         // the last one squarely
+    }
+    
+    @Test
+    public void testForceGroundOverlay() throws Exception {
+        Document dom = getAsDOM("wms?request=getmap&service=wms&version=1.1.1" + 
+                "&format=" + KMLMapOutputFormat.MIME_TYPE + 
+                "&layers=" + getLayerId(MockData.BASIC_POLYGONS) +
+                "&styles=" + MockData.BASIC_POLYGONS.getLocalPart() +
+                "&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326&format_options=kmscore:0");
+        // print(dom);
+        
+        assertXpathEvaluatesTo("0", "count(//kml:Placemark)", dom);
+        assertXpathEvaluatesTo("1", "count(//kml:GroundOverlay)", dom);
+        String pngOverlay = "http://localhost:8080/geoserver/wms?service=wms&request=GetMap&version=1.1.1&format=image%2Fpng&layers=cite%3ABasicPolygons&styles=BasicPolygons&height=1024&width=1024&transparent=true&bbox=-180.0%2C-90.0%2C180.0%2C90.0&srs=EPSG%3A4326&format_options=KMSCORE%3A0%3B";
+        assertXpathEvaluatesTo(pngOverlay, "//kml:GroundOverlay/kml:Icon/kml:href", dom);
+    }
+    
+    @Test
+    public void testRasterLayer() throws Exception {
+        Document dom = getAsDOM("wms?request=getmap&service=wms&version=1.1.1" + 
+                "&format=" + KMLMapOutputFormat.MIME_TYPE + 
+                "&layers=" + getLayerId(MockData.TASMANIA_DEM) +
+                "&styles=&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326");
+        // print(dom);
+        
+        assertXpathEvaluatesTo("0", "count(//kml:Placemark)", dom);
+        assertXpathEvaluatesTo("1", "count(//kml:GroundOverlay)", dom);
+        String pngOverlay = "http://localhost:8080/geoserver/wms?service=wms&request=GetMap&version=1.1.1&format=image%2Fpng&layers=wcs%3ADEM&styles=raster&height=1024&width=1024&transparent=true&bbox=-180.0%2C-90.0%2C180.0%2C90.0&srs=EPSG%3A4326&format_options=KMSCORE%3A0%3B";
+        assertXpathEvaluatesTo(pngOverlay, "//kml:GroundOverlay/kml:Icon/kml:href", dom);
+    }
+    
+    @Test
+    public void testKMZMixed() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wms?request=getmap&service=wms&version=1.1.1" + 
+                "&format=" + KMZMapOutputFormat.MIME_TYPE + 
+                "&layers=" + getLayerId(MockData.BASIC_POLYGONS) + "," + getLayerId(MockData.WORLD) +
+                "&styles=" + MockData.BASIC_POLYGONS.getLocalPart() + "," +
+                "&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326&format_options=kmscore:0");
+        
+        assertEquals(KMZMapOutputFormat.MIME_TYPE, response.getContentType());
+        ByteArrayInputStream bis = getBinaryInputStream(response);
+        ZipInputStream zis = new ZipInputStream(bis);
+        ZipEntry entry = zis.getNextEntry();
+        assertEquals("wms.kml", entry.getName());
+        zis.closeEntry();
+        entry = zis.getNextEntry();
+        assertEquals("images/layer_0.png", entry.getName());
+        zis.closeEntry();
+        assertNull(zis.getNextEntry());
+
     }
 }

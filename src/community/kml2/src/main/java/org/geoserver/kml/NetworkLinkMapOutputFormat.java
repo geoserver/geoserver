@@ -133,7 +133,7 @@ public class NetworkLinkMapOutputFormat extends AbstractMapOutputFormat {
             url.setViewRefreshTime(1);
         }
         
-        return new KMLMap(mapContent, kml);
+        return new KMLMap(mapContent, null, kml, KML_MIME_TYPE);
     }
     
     /**

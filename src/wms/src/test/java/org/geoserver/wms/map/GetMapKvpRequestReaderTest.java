@@ -10,7 +10,6 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +22,7 @@ import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.GeoServerLoader;
 import org.geoserver.data.test.MockData;
 import org.geoserver.ows.Dispatcher;
@@ -82,6 +82,44 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         reader = new GetMapKvpRequestReader(wms);
     }
 
+    public void testSldEntityResolver() throws Exception {
+        WMS wms = new WMS(getGeoServer());
+        GeoServerInfo geoserverInfo = wms.getGeoServer().getGlobal();
+        try {
+            // enable entities in external SLD files
+            geoserverInfo.setXmlExternalEntitiesEnabled(true);
+            getGeoServer().save(geoserverInfo);
+
+            // test setting has been saved
+            assertNotNull(wms.getGeoServer().getGlobal().isXmlExternalEntitiesEnabled());
+            assertTrue((Boolean) wms.getGeoServer().getGlobal().isXmlExternalEntitiesEnabled());
+            
+            // test no custom entity resolver will be used
+            GetMapKvpRequestReader reader = new GetMapKvpRequestReader(wms);
+            assertNull(reader.entityResolverProvider.getEntityResolver());
+
+            // disable entities
+            geoserverInfo.setXmlExternalEntitiesEnabled(false);
+            getGeoServer().save(geoserverInfo);
+
+            // since XML entities are disabled for external SLD files
+            // I need an entity resolver which enforce this
+            reader = new GetMapKvpRequestReader(wms);
+            assertNotNull(reader.entityResolverProvider.getEntityResolver());
+            
+            // try default value: entities should be disabled
+            geoserverInfo.setXmlExternalEntitiesEnabled(null);
+            getGeoServer().save(geoserverInfo);
+
+            reader = new GetMapKvpRequestReader(wms);
+            assertNotNull(reader.entityResolverProvider.getEntityResolver());            
+        } finally {
+            // reset to default
+            geoserverInfo.setXmlExternalEntitiesEnabled(null);
+            getGeoServer().save(geoserverInfo);
+        }
+    }
+    
     public void testCreateRequest() throws Exception {
         GetMapRequest request = (GetMapRequest) reader.createRequest();
         assertNotNull(request);

@@ -2,13 +2,14 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.wms.featureinfo;
+package org.geoserver.kml;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import org.geoserver.data.test.MockData;
+import org.geoserver.kml.FeatureTimeTemplate;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;

@@ -421,8 +421,7 @@ public class KMLUtils {
         Envelope envelope = mapContent.getRenderingArea();
         ReferencedEnvelope aoi = new ReferencedEnvelope(envelope, mapContent
                 .getCoordinateReferenceSystem());
-        CoordinateReferenceSystem sourceCrs = schema
-                .getCoordinateReferenceSystem();
+        CoordinateReferenceSystem sourceCrs = schema.getCoordinateReferenceSystem();
 
         boolean reprojectBBox = (sourceCrs != null)
                 && !CRS.equalsIgnoreMetadata(

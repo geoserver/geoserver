@@ -36,7 +36,6 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.featureinfo.FeatureHeightTemplate;
 import org.geoserver.wms.featureinfo.FeatureTemplate;
-import org.geoserver.wms.featureinfo.FeatureTimeTemplate;
 import org.geotools.data.DataUtilities;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.type.DateUtil;

@@ -1,9 +1,12 @@
+/* Copyright (c) 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.kml.decorator;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.geoserver.wms.GetMapRequest;
 import org.opengis.feature.simple.SimpleFeature;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -20,10 +23,17 @@ import de.micromata.opengis.kml.v_2_2_0.Feature;
 import de.micromata.opengis.kml.v_2_2_0.MultiGeometry;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
 
+/**
+ * Encodes the geometry element for Placemark elements
+ * 
+ * @author Andrea Aime - GeoSolutions
+ * 
+ */
 public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
 
     @Override
-    public KmlDecorator getDecorator(Class<? extends Feature> featureClass, KmlEncodingContext context) {
+    public KmlDecorator getDecorator(Class<? extends Feature> featureClass,
+            KmlEncodingContext context) {
         if (Placemark.class.isAssignableFrom(featureClass)) {
             return new PlacemarkGeometryDecorator();
         } else {
@@ -40,7 +50,7 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
             SimpleFeature sf = context.getCurrentFeature();
             Geometry geometry = (Geometry) sf.getDefaultGeometry();
 
-            if(geometry != null) {
+            if (geometry != null) {
                 pm.setGeometry(encodeGeometry(geometry));
             }
 

@@ -40,11 +40,9 @@ import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.ServiceAccessRule;
 import org.geoserver.security.impl.ServiceAccessRuleDAO;
 import org.geoserver.test.GeoServerMockTestSupport;
-import org.geoserver.test.TestSetup;
-import org.geoserver.test.TestSetupFrequency;
 import org.junit.Test;
 
-@TestSetup(run=TestSetupFrequency.REPEAT)
+//@TestSetup(run=TestSetupFrequency.REPEAT)
 public class RoleStoreValidationWrapperTest extends GeoServerMockTestSupport {
 
     protected void assertSecurityException(IOException ex, String id, Object... params) {

@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -48,8 +47,6 @@ import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ResourceErrorHandling;
-import org.geoserver.ows.Dispatcher;
-import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.sld.GetStylesResponse;
@@ -64,9 +61,6 @@ import org.geoserver.wms.describelayer.XMLDescribeLayerResponse;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.renderer.lite.MetaBufferEstimator;
-import org.geotools.styling.FeatureTypeStyle;
-import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
@@ -197,14 +191,15 @@ public class GetCapabilitiesTransformer extends TransformerBase {
      */
     private static class CapabilitiesTranslator extends  TranslatorSupport {
 
-        private static final String MIN_DENOMINATOR_KEY = "min";
-
-		private static final String MAX_DENOMINATOR_KEY = "max";
 
 		private static final Logger LOGGER = org.geotools.util.logging.Logging
                 .getLogger(CapabilitiesTranslator.class.getPackage().getName());
 
-        private static final String EPSG = "EPSG:";
+        private static final String MIN_DENOMINATOR_ATTR = "min";
+
+		private static final String MAX_DENOMINATOR_ATTR = "max";
+
+		private static final String EPSG = "EPSG:";
 
         private static AttributesImpl wmsVersion = new AttributesImpl();
 
@@ -943,74 +938,23 @@ public class GetCapabilitiesTransformer extends TransformerBase {
 
         
     /**
-     * Inserts the ScaleHint element in the layer.
+     * Inserts the ScaleHint element in the layer information.
      * 
      * @param layer
      */
 	private void handleScaleHint(LayerInfo layer) {
 		
-		Map<String,Double> denominators = searchMaxMinScaleDenominator(layer);
+		try {
+			Map<String, Double>  denominators = CapabilityUtil.searchMinMaxScaleDenominator(MIN_DENOMINATOR_ATTR, MAX_DENOMINATOR_ATTR, layer);
+	        AttributesImpl attrs = new AttributesImpl();
+			attrs.addAttribute("", MIN_DENOMINATOR_ATTR, MIN_DENOMINATOR_ATTR, "", String.valueOf(denominators.get(MIN_DENOMINATOR_ATTR)));
+			attrs.addAttribute("", MAX_DENOMINATOR_ATTR, MAX_DENOMINATOR_ATTR, "", String.valueOf(denominators.get(MAX_DENOMINATOR_ATTR)));
 
-        AttributesImpl attrs = new AttributesImpl();
-		attrs.addAttribute("", MIN_DENOMINATOR_KEY, MIN_DENOMINATOR_KEY, "", String.valueOf(denominators.get(MIN_DENOMINATOR_KEY)));
-		attrs.addAttribute("", MAX_DENOMINATOR_KEY, MAX_DENOMINATOR_KEY, "", String.valueOf(denominators.get(MAX_DENOMINATOR_KEY)));
-
-        String scale = "ScaleHint";
-        
-		start(scale, attrs);
-        
-        end(scale);
-	}
-
-	/**
-	 * Search the Max and Min scale denominators in the layer's styles
-	 * 
-	 * @param layer
-	 * @return Max and Min denominator
-	 */
-	private static Map<String,Double> searchMaxMinScaleDenominator(final LayerInfo layer){
-
-		Set<StyleInfo> styles = layer.getStyles();
-		StyleInfo defaultStyle = layer.getDefaultStyle();
-		if(!styles.contains(defaultStyle) ){
-			styles.add(defaultStyle);
-		}
-		
-		Map<String,Double> scaleDenominator = new HashMap<String,Double>(2);
-		
-		scaleDenominator.put(MIN_DENOMINATOR_KEY, Double.POSITIVE_INFINITY);
-		
-		scaleDenominator.put(MAX_DENOMINATOR_KEY, Double.NEGATIVE_INFINITY);
-		try{
-			
-			for (StyleInfo styleInfo : styles) {
-
-				Style style = styleInfo.getStyle();
-			    for (FeatureTypeStyle fts : style.featureTypeStyles()) {
-			    	
-			        for ( Rule rule : fts.rules() ) {
-			            if ( rule.getMinScaleDenominator() < scaleDenominator.get(MIN_DENOMINATOR_KEY) ) {
-			            	scaleDenominator.put(MIN_DENOMINATOR_KEY,  rule.getMinScaleDenominator());
-			            }
-			            if ( rule.getMaxScaleDenominator() > scaleDenominator.get(MAX_DENOMINATOR_KEY) ) {
-			            	scaleDenominator.put(MAX_DENOMINATOR_KEY,  rule.getMaxScaleDenominator());
-			            }
-			        }
-			    }
-			}
-		} catch (IOException e){
+	        element("ScaleHint", null, attrs);
+	        
+		} catch (IOException e) {
             LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
 		}
-		// It the initial values weren't changed by any rule then sets default values Min=0.0 and Max=infinity 
-		if(scaleDenominator.get(MIN_DENOMINATOR_KEY) ==  Double.POSITIVE_INFINITY){
-			scaleDenominator.put(MIN_DENOMINATOR_KEY,  0.0);
-		}
-		if( scaleDenominator.get(MAX_DENOMINATOR_KEY) == Double.NEGATIVE_INFINITY){
-			scaleDenominator.put(MAX_DENOMINATOR_KEY,  Double.POSITIVE_INFINITY);
-		}
-		
-		
-	    return scaleDenominator;
 	}
 	
 

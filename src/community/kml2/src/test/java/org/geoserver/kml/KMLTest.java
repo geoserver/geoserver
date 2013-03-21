@@ -9,12 +9,14 @@ import static org.junit.Assert.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.*;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.Collections;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import javax.xml.namespace.QName;
 
+import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -242,28 +244,49 @@ public class KMLTest extends WMSTestSupport {
         
         assertXpathEvaluatesTo("0", "count(//kml:Placemark)", dom);
         assertXpathEvaluatesTo("1", "count(//kml:GroundOverlay)", dom);
-        String pngOverlay = "http://localhost:8080/geoserver/wms?service=wms&request=GetMap&version=1.1.1&format=image%2Fpng&layers=wcs%3ADEM&styles=raster&height=1024&width=1024&transparent=true&bbox=-180.0%2C-90.0%2C180.0%2C90.0&srs=EPSG%3A4326&format_options=KMSCORE%3A0%3B";
+        String pngOverlay = "http://localhost:8080/geoserver/wms?service=wms&request=GetMap&version=1.1.1&format=image%2Fpng&layers=wcs%3ADEM&styles=raster&height=1024&width=1024&transparent=true&bbox=-180.0%2C-90.0%2C180.0%2C90.0&srs=EPSG%3A4326";
         assertXpathEvaluatesTo(pngOverlay, "//kml:GroundOverlay/kml:Icon/kml:href", dom);
     }
     
     @Test
     public void testKMZMixed() throws Exception {
+        // force vector layers to be vector dumps (kmscore 100)
         MockHttpServletResponse response = getAsServletResponse("wms?request=getmap&service=wms&version=1.1.1" + 
                 "&format=" + KMZMapOutputFormat.MIME_TYPE + 
                 "&layers=" + getLayerId(MockData.BASIC_POLYGONS) + "," + getLayerId(MockData.WORLD) +
                 "&styles=" + MockData.BASIC_POLYGONS.getLocalPart() + "," +
-                "&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326&format_options=kmscore:0");
+                "&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326&format_options=kmscore:100");
         
+        // check the contents of the zip file
         assertEquals(KMZMapOutputFormat.MIME_TYPE, response.getContentType());
         ByteArrayInputStream bis = getBinaryInputStream(response);
         ZipInputStream zis = new ZipInputStream(bis);
+        
+        // first entry, the kml document itself
         ZipEntry entry = zis.getNextEntry();
         assertEquals("wms.kml", entry.getName());
+        // we need to clone the input stream, as dom(is) closes the stream
+        byte[] data = IOUtils.toByteArray(zis);
+        Document dom = dom(new ByteArrayInputStream(data));
+        print(dom);
+        // we have the placemarks in the first folder (vector), and no ground overlays
+        assertXpathEvaluatesTo("3", "count(//kml:Folder[1]/kml:Placemark)", dom);
+        assertXpathEvaluatesTo("0", "count(//kml:Folder[1]/kml:GroundOverlay)", dom);
+        // we have only the ground overlay in the second folder
+        assertXpathEvaluatesTo("0", "count(//kml:Folder[2]/kml:Placemark)", dom);
+        assertXpathEvaluatesTo("1", "count(//kml:Folder[2]/kml:GroundOverlay)", dom);
+        assertXpathEvaluatesTo("images/layers_1.png", "//kml:Folder[2]/kml:GroundOverlay/kml:Icon/kml:href", dom);
         zis.closeEntry();
+        
+        // the images folder
         entry = zis.getNextEntry();
-        assertEquals("images/layer_0.png", entry.getName());
+        assertEquals("images/", entry.getName());
+        zis.closeEntry();
+        
+        // the ground overlay for the raster layer
+        entry = zis.getNextEntry();
+        assertEquals("images/layers_1.png", entry.getName());
         zis.closeEntry();
         assertNull(zis.getNextEntry());
-
     }
 }

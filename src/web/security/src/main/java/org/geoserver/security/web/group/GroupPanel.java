@@ -14,6 +14,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
@@ -80,6 +81,7 @@ public class GroupPanel extends Panel {
             }
 
         });
+        groups.setItemReuseStrategy(new DefaultItemReuseStrategy());
         groups.setOutputMarkupId(true);
         add(dialog = new GeoServerDialog("dialog"));
         headerComponents();
@@ -145,6 +147,13 @@ public class GroupPanel extends Panel {
                     .setReturnPage(getPage()));
             }
         };
+    }
+
+    protected void onBeforeRender() {
+        groups.clearSelection();
+        removal.setEnabled(false);
+        removalWithRoles.setEnabled(false);
+        super.onBeforeRender();
     }
 
 }

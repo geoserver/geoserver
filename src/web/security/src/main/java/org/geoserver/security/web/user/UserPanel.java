@@ -122,5 +122,13 @@ public class UserPanel extends Panel {
                     getActiveRoleService().canCreateStore());
         
     }
+    
+    protected void onBeforeRender() {
+        users.clearSelection();
+        removal.setEnabled(false);
+        removalWithRoles.setEnabled(false);
+        super.onBeforeRender();
+    }
+
 
 }

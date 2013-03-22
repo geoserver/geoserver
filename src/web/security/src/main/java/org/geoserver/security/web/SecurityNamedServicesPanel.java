@@ -83,12 +83,7 @@ public abstract class SecurityNamedServicesPanel<T extends SecurityNamedServiceC
                     dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
                         @Override
                         protected Component getContents(String id) {
-                            return new AbstractConfirmRemovalPanel<T>(id, tablePanel.getSelection()) {
-                                @Override
-                                protected String getConfirmationMessage(T object) throws Exception {
-                                    return object.getName();
-                                }
-                            };
+                            return new ConfirmRemovalNamedServicePanel(id, tablePanel.getSelection());
                         }
                         @Override
                         protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
@@ -148,16 +143,7 @@ public abstract class SecurityNamedServicesPanel<T extends SecurityNamedServiceC
      * helper for handling an exception by reporting it as an error on the feedback panel
      */
     void handleException(Exception e, Component target) {
-        Serializable msg = null;
-        if (e instanceof SecurityConfigException) {
-            SecurityConfigException sce = (SecurityConfigException)e;
-            msg = new StringResourceModel("security."+sce.getErrorId(),null,sce.getArgs()).getObject();
-        }
-        else {
-            msg = e;
-        }
-
-        (target != null ? target : getPage()).error(msg);
+        (target != null ? target : getPage()).error(e);
     }
 
     /**
@@ -267,4 +253,11 @@ public abstract class SecurityNamedServicesPanel<T extends SecurityNamedServiceC
             };
         }
     }
+    
+    protected void onBeforeRender() {
+        tablePanel.clearSelection();
+        removeLink.setEnabled(false);
+        super.onBeforeRender();
+    };
+    
 }

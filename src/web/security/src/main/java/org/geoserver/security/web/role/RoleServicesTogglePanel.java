@@ -26,7 +26,7 @@ public class RoleServicesTogglePanel
             super(id, model);
 
             add(new RolePanel("roles", model.getObject().getName())
-                .setHeaderVisible(false).setPagersVisible(false, true));
+                .setHeaderVisible(true).setPagersVisible(false, true));
         }
     }
 }

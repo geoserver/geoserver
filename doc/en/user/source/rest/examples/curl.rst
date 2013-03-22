@@ -328,6 +328,7 @@ Create a new text file and add the following content to it. This will represent 
        <port>5432</port>
        <database>nyc</database> 
        <user>bob</user>
+       <passwd>postgres</passwd>
        <dbtype>postgis</dbtype>
      </connectionParameters>
    </dataStore> 

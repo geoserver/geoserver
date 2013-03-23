@@ -358,7 +358,7 @@ public class GetCoverage {
         
         // right now we don't support trimming
         // TODO: revisit when we have some multidimensional output support
-        if(!range.getMinValue().equals(range.getMaxValue())) {
+        if(range != null && !range.getMinValue().equals(range.getMaxValue())) {
             throw new WCS20Exception("Trimming on time is not supported at the moment, only slicing is");
         }
         
@@ -463,8 +463,8 @@ public class GetCoverage {
             dimension = dimension.substring("http://www.opengis.net/def/axis/OGC/0/".length());
         } else if (dimension.startsWith("http://opengis.net/def/axis/OGC/0/")) {
             dimension = dimension.substring("http://opengis.net/def/axis/OGC/0/".length());
-        } else if (dimension.startsWith("http://opengis.net/def/crs/ISO/2004")) {
-            dimension = dimension.substring("http://opengis.net/def/crs/ISO/2004".length());
+        } else if (dimension.startsWith("http://opengis.net/def/crs/ISO/2004/")) {
+            dimension = dimension.substring("http://opengis.net/def/crs/ISO/2004/".length());
         }
 
         // checks 

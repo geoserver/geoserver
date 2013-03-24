@@ -4,8 +4,10 @@
  */
 package org.geoserver.wfs;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 
@@ -39,6 +41,71 @@ public class WFSWorkspaceQualifier extends WorkspaceQualifyingCallback {
 
     @Override
     protected void qualifyRequest(WorkspaceInfo workspace, LayerInfo layer, Service service, Request request) {
+        if (request.getContext() != null) {
+            // if a qualifying workspace exist, try to qualify the request typename
+            // parameter, if present
+            if (workspace != null && request.getKvp().containsKey("TYPENAME")) {
+                Iterable typeNames = (Iterable) request.getKvp().get("TYPENAME");
+                NamespaceInfo ns = catalog
+                        .getNamespaceByPrefix(workspace.getName());
+                if (ns != null) {
+                    List<QName> qualifiedNames = new ArrayList<QName>();
+                    for (Object name : typeNames) {
+                        if (name != null && name instanceof QName) {
+                            QName typeName = (QName) name;
+                            // no namespace specified, we can qualify
+                            if (typeName.getNamespaceURI() == null
+                                    || typeName.getNamespaceURI().equals("")) {
+                                typeName = new QName(ns.getURI(),
+                                        typeName.getLocalPart());
+                            } else if (typeName.getNamespaceURI().equals(
+                                    catalog.getDefaultNamespace().getURI())) {
+                                // more complex case, if we have the default
+                                // namespace, we have to check if it's been
+                                // specified on the request, or assigned by parser
+                                typeName = checkDefaultNamespace(request, ns,
+                                        typeName);
+                            }
+                            qualifiedNames.add(typeName);
+                        }
+                    }
+                    request.getKvp().put("TYPENAME", qualifiedNames);
+    
+                }
+            }
+        }
+    }
+
+    /**
+     * Checks if the typeName default namespace is present
+     * in the original request, or it has been overridden by
+     * parser. If it's been overridden we can qualify with
+     * the given namespace.
+     * 
+     * @param request
+     * @param ns
+     * @param typeName
+     * @return
+     */
+    private QName checkDefaultNamespace(Request request, NamespaceInfo ns,
+            QName typeName) {
+        Map<String, String[]> originalParams = request
+                .getHttpRequest().getParameterMap();
+        for (String paramName : originalParams.keySet()) {
+            if (paramName.equalsIgnoreCase("TYPENAME")) {
+                for (String originalTypeName : originalParams
+                        .get(paramName)) {
+                    if (originalTypeName.equals(typeName
+                            .getLocalPart())) {
+                        // the original typeName was not
+                        // qualified, we can qualify it
+                        typeName = new QName(ns.getURI(),
+                                typeName.getLocalPart());
+                    }
+                }
+            }
+        }
+        return typeName;
     }
     
     @Override

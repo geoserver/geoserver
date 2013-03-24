@@ -35,6 +35,8 @@ If a shapefile is used (see next chapter) also this switch is needed in order to
 
 -Dorg.geotools.shapefile.datetime=true
 
+.. note:: The above properties enables support for timestamp (date and time) data in Shapefile stores. Support for timestamp is not part of the DBF standard, which only supports Date instead, and only few applications understand it. As long as shapefiles are only used for GeoServer input that is not a problem, but the above setting will cause issues if you have WFS enabled and users also download shapefiles as GetFeature output: if the feature type extracted has timestamps the generated shapefile will have as well, making it difficult to use the generated shapefile in desktop applications. As a rule of thumb, if you also need WFS support it is advisable to use an external store (PostGIS, Oracle) instead. Of course, if all that's needed is a date, using shapefile as an index without the above property is fine as well.
+
 
 MOSAIC_DIR and the Configuration Files
 ``````````````````````````````````````
@@ -212,7 +214,7 @@ Here the user can specify the information that needs Geoserver for creating the 
 
    
 Create and Publish an Imagemosaic store:
----------------------------------------
+----------------------------------------
 
 Step 1: create new imagemosaic data store
 `````````````````````````````````````````
@@ -238,7 +240,7 @@ We specify the directory in which the property and tif files are located (path m
 
    
 Step 3: set Coverage Parameter
-````````````````````````
+``````````````````````````````
 The relevant parameters are AllowMultithreading and USE_JAI_IMAGEREAD. Do not forget to specify the background value according to your the value in your tif file.   
 
 .. figure:: img/step_2_1.png
@@ -248,7 +250,7 @@ Remember that for display correctly the images contained in the provided dataset
 
 Set as default style the *snow_style.tld* contained in the dataset archive.
 
-More information about raster styling can be found at chapter :ref:`_sld_cookbook_rasters`
+More information about raster styling can be found at chapter :ref:`sld_cookbook_rasters`
    
 Step 4: set temporal properties
 ```````````````````````````````

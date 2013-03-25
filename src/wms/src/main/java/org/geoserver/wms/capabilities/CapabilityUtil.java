@@ -4,17 +4,17 @@
 package org.geoserver.wms.capabilities;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
-import org.springframework.util.Assert;
 
 /**
  * Provides utility methods required to build the capabilities document.
@@ -50,10 +50,14 @@ final class CapabilityUtil {
 			final LayerInfo layer) 
 		throws IOException{
 
-		Set<StyleInfo> styles = layer.getStyles();
-		StyleInfo defaultStyle = layer.getDefaultStyle();
-		if(!styles.contains(defaultStyle) ){
-			styles.add(defaultStyle);
+		Set<StyleInfo> stylesCopy;
+		StyleInfo defaultStyle;
+		synchronized (layer) {
+			stylesCopy = new HashSet<StyleInfo>( layer.getStyles() );
+			defaultStyle = layer.getDefaultStyle();
+		}
+		if(!stylesCopy.contains(defaultStyle) ){
+			stylesCopy.add(defaultStyle);
 		}
 		
 		// searches the max and min denominator in the style's rules that are contained in the style set. 
@@ -61,7 +65,7 @@ final class CapabilityUtil {
 		scaleDenominator.put(minScaleDenominator, Double.POSITIVE_INFINITY);
 		scaleDenominator.put(maxScaleDenominator, Double.NEGATIVE_INFINITY);
 
-		for (StyleInfo styleInfo : styles) {
+		for (StyleInfo styleInfo : stylesCopy) {
 
 			Style style = styleInfo.getStyle();
 		    for (FeatureTypeStyle fts : style.featureTypeStyles()) {

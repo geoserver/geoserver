@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.easymock.EasyMock.*;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,6 +25,7 @@ import net.opengis.wcs11.impl.DomainSubsetTypeImpl;
 import net.opengis.wfs.DeleteElementType;
 import net.opengis.wfs.DescribeFeatureTypeType;
 import net.opengis.wfs.GetFeatureType;
+import net.opengis.wfs.InsertElementType;
 import net.opengis.wfs.LockFeatureType;
 import net.opengis.wfs.LockType;
 import net.opengis.wfs.QueryType;
@@ -70,6 +72,9 @@ import org.geotools.util.Version;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.opengis.feature.Feature;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.geometry.BoundingBox;
@@ -248,7 +253,37 @@ public class MonitorCallbackTest {
         // xMin,yMin -95.1193,40 : xMax,yMax -60,53.73        
         BBoxAsserts.assertEqualsBbox(expected, data.getBbox(), 0.01);
     }
-    
+
+    @Test
+    public void testWFSTransactionInsert() throws Exception {
+        TransactionType t = WfsFactory.eINSTANCE.createTransactionType();
+        InsertElementType ie = WfsFactory.eINSTANCE.createInsertElementType();
+        t.getInsert().add(ie);
+
+        //ie.setSrsName(new URI("epsg:4326"));
+
+        BoundingBox expected = new ReferencedEnvelope(53.73,40, -60,-95.1193,CRS.decode("EPSG:4326"));
+        
+        SimpleFeatureType ft = createNiceMock(SimpleFeatureType.class);
+        expect(ft.getTypeName()).andReturn("acme:foo").anyTimes();
+        replay(ft);
+        
+        SimpleFeature f = createNiceMock(SimpleFeature.class);
+        expect(f.getBounds()).andReturn(expected).anyTimes();
+        expect(f.getType()).andReturn(ft).anyTimes();
+        replay(f);
+
+        ie.getFeature().add(f);
+
+        Operation op = op("Transaction", "WFS", "1.1.0", t);
+        callback.operationDispatched(new Request(), op);
+        
+        assertEquals("acme:foo", data.getResources().get(0));
+        
+        // xMin,yMin -95.1193,40 : xMax,yMax -60,53.73        
+        BBoxAsserts.assertEqualsBbox(expected, data.getBbox(), 0.01);
+    }
+
     @Test
     public void testWMSGetMap() throws Exception {
         GetMapRequest gm = new GetMapRequest();

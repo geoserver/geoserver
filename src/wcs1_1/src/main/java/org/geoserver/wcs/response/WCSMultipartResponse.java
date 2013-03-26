@@ -6,6 +6,7 @@ package org.geoserver.wcs.response;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
 
 import javax.activation.DataHandler;
 import javax.mail.BodyPart;
@@ -23,6 +24,7 @@ import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs.response.CoveragesHandler.CoveragesData;
+import org.geoserver.wcs.responses.CoverageEncoder;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -47,24 +49,19 @@ public class WCSMultipartResponse extends Response {
     @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
         // javamail outputs multipart/mixed, but in our case we're producing multipart/related
-        return multipart.getContentType().replace("mixed", "related");
+        return multipart.getContentType().replace("mixed", "related").replace("\n", "").replace("\r", "");
     }
 
     @Override
-    public String[][] getHeaders(Object value, Operation operation) throws ServiceException {
+    public String getPreferredDisposition(Object value, Operation operation) {
+        return DISPOSITION_ATTACH;
+    }
+    
+    public String getAttachmentFileName(Object value, Operation operation) {
         final GetCoverageType request = (GetCoverageType) operation.getParameters()[0];
         final String identifier = request.getIdentifier().getValue();
-        return new String[][] { { "Content-Disposition",
-                "attachment;filename=\"" + identifier.replace(':', '_') + ".eml\"" } };
-    }
-
-    /**
-     * Disable Dispatcher managed content-disposition handling - not sure if quoted
-     * filenames (see getHeaders above) were necessary for something.
-     */
-    @Override
-    public String getAttachmentFileName(Object value, Operation operation) {
-        return null;
+        return identifier.replace(':', '_') + ".eml";
+        
     }
     
     @Override
@@ -107,7 +104,7 @@ public class WCSMultipartResponse extends Response {
 
             // the actual coverage
             BodyPart coveragePart = new MimeBodyPart();
-            CoverageEncoder encoder = new CoverageEncoder(delegate, coverage, outputFormat);
+            CoverageEncoder encoder = new CoverageEncoder(delegate, coverage, outputFormat, new HashMap<String, String>());
             coveragePart.setDataHandler(new DataHandler(encoder, "geoserver/coverageDelegate"));
             coveragePart.setHeader("Content-ID", "<theCoverage>");
             coveragePart.setHeader("Content-Type", delegate.getMimeType(outputFormat));

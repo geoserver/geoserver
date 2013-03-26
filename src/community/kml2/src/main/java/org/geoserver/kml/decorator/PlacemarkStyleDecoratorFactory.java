@@ -116,7 +116,6 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
                 for (Symbolizer symbolizer : polygons) {
                     addPolygonStyle(pm, sf, (PolygonSymbolizer) symbolizer, forceOutiline);
                 }
-
             }
 
             return feature;

@@ -96,6 +96,7 @@ public class FeatureSequenceFactory implements SequenceFactory<Feature> {
 
                     List<Symbolizer> symbolizers = getSymbolizers(simplified, sf);
                     if (symbolizers.size() == 0) {
+                        // skip layers that have no active symbolizers
                         continue;
                     }
                     context.setCurrentSymbolizers(symbolizers);

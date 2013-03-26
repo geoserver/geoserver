@@ -59,13 +59,16 @@
   </bean>
 
   <!-- KML decorators -->
-  <bean id="kmlRelativeLinksDecorator" class="org.geoserver.kml.decorator.FolderRelativeLinksDecoratorFactory"/>
   <bean id="kmlGeometryDecorator" class="org.geoserver.kml.decorator.PlacemarkGeometryDecoratorFactory"/>
   <bean id="kmlStyleDecorator" class="org.geoserver.kml.decorator.PlacemarkStyleDecoratorFactory"/>
   <bean id="kmlNameDecorator" class="org.geoserver.kml.decorator.PlacemarkNameDecoratorFactory"/>
   <bean id="kmlDescriptionDecorator" class="org.geoserver.kml.decorator.PlacemarkDescriptionDecoratorFactory"/>
   <bean id="kmlLookAtDecorator" class="org.geoserver.kml.decorator.LookAtDecoratorFactory"/>
   <bean id="kmlTimeDecorator" class="org.geoserver.kml.decorator.PlacemarkTimeDecoratorFactory"/>
+  
+  <!-- GeoSearch KML decorators -->
+  <bean id="kmlRelativeLinksDecorator" class="org.geoserver.kml.decorator.FolderRelativeLinksDecoratorFactory"/>
+  <bean id="kmlSelfLinksDecorator" class="org.geoserver.kml.decorator.PlacemarkSelfLinkDecoratorFactory"/>
 
   <!-- <bean id="nativeSortingRegionator" class="org.geoserver.kml.ReflectiveRegionatingStrategyFactory"> 
     <constructor-arg value="native-sorting"/> <constructor-arg value="org.geoserver.kml.NativeSortRegionatingStrategy"/> 

@@ -6,3 +6,4 @@ target
 *.class
 *.pyc
 
+/src/web/app/*.log

@@ -669,7 +669,10 @@ public class KMLUtils {
      */
     public static boolean getKMAttr(GetMapRequest request, WMS wms) {
         Object kmattr = request.getFormatOptions().get("kmattr");
-        if (kmattr != null) {
+        if (kmattr == null) {
+            kmattr = request.getRawKvp().get("kmattr");
+        }
+        if(kmattr != null) {
             return Converters.convert(kmattr, Boolean.class);
         } else {
             return wms.getKmlKmAttr();

@@ -8,6 +8,7 @@ import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
@@ -300,6 +301,29 @@ public class FeatureTemplate {
         return t;
     }
     
+    /**
+     * Returns true if the required template is empty or has its default content
+     * 
+     * @param featureType
+     * @param template
+     * @param lookup
+     * @return
+     * @throws IOException 
+     */
+    public boolean isTemplateEmpty(SimpleFeatureType featureType, String template,
+            Class<FeatureTemplate> lookup, String defaultContent) throws IOException {
+        Template t = lookupTemplate(featureType, template, lookup);
+        if(t == null) {
+            return true;
+        }
+        // check if the template is empty
+        StringWriter sw = new StringWriter();
+        t.dump(sw);
+        // an empty template canonical form is "0\n".. weird!
+        String templateText = sw.toString();
+        return "".equals(templateText) || (defaultContent != null && defaultContent.equals(templateText));
+    }
+    
     private static class TemplateKey {
         SimpleFeatureType type;
         String template;
@@ -338,4 +362,6 @@ public class FeatureTemplate {
             return true;
         }
     }
+
+    
 }

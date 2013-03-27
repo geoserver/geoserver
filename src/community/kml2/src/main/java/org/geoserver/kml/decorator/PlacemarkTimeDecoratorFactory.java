@@ -17,6 +17,7 @@ import org.geotools.feature.type.DateUtil;
 import org.geotools.util.logging.Logging;
 import org.geotools.xs.bindings.XSDateTimeBinding;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
 
 import de.micromata.opengis.kml.v_2_2_0.Feature;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
@@ -87,11 +88,22 @@ public class PlacemarkTimeDecoratorFactory implements KmlDecoratorFactory {
     @Override
     public KmlDecorator getDecorator(Class<? extends Feature> featureClass,
             KmlEncodingContext context) {
-        if (Placemark.class.isAssignableFrom(featureClass)) {
+        if (Placemark.class.isAssignableFrom(featureClass) && hasTimeTemplate(context)) {
             return new PlacemarkTimeDecorator();
         } else {
             return null;
         }
+    }
+
+    private boolean hasTimeTemplate(KmlEncodingContext context) {
+        try {
+            SimpleFeatureType schema = context.getCurrentFeatureCollection().getSchema();
+            return !context.getTemplate().isTemplateEmpty(schema, "time.ftl",
+                    FeatureTemplate.class, null);
+        } catch (IOException e) {
+            throw new ServiceException("Failed to apply time template during kml generation", e);
+        }
+
     }
 
     static class PlacemarkTimeDecorator implements KmlDecorator {

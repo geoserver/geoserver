@@ -4,24 +4,28 @@
  */
 package org.geoserver.kml;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static junit.framework.Assert.assertNull;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.Collections;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import javax.xml.namespace.QName;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.wms.WMSTestSupport;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -42,6 +46,17 @@ public class KMLTest extends WMSTestSupport {
     protected String getLogConfiguration() {
         return "/DEFAULT_LOGGING.properties";
     }
+    
+    @BeforeClass
+    public static void setTimeZone() {
+        System.setProperty("user.timezone", "UTC");
+    }
+    
+    @AfterClass
+    public static void clearTimeZone() {
+        System.clearProperty("user.timezone");
+    }
+
     
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -98,6 +113,115 @@ public class KMLTest extends WMSTestSupport {
     }
     
     @Test
+    public void testBasicVector() throws Exception {
+        Document doc = getAsDOM(
+            "wms?request=getmap&service=wms&version=1.1.1" + 
+            "&format=" + KMLMapOutputFormat.MIME_TYPE + 
+            "&layers=" + getLayerId(MockData.ROAD_SEGMENTS) +
+            "&styles=&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326&featureId=RoadSegments.1107532045088" 
+        );
+        
+        // print(doc);
+        assertXpathEvaluatesTo("1", "count(//kml:Placemark)", doc);
+        assertXpathEvaluatesTo("RoadSegments.1107532045088", "//kml:Placemark/@id", doc);
+        assertXpathEvaluatesTo("RoadSegments.1107532045088", "//kml:Placemark/kml:name", doc);
+        String expectedDescription = "<h4>RoadSegments</h4>\n" + 
+                "\n" + 
+                "<ul class=\"textattributes\">\n" + 
+                "  \n" + 
+                "  <li><strong><span class=\"atr-name\">FID</span>:</strong> <span class=\"atr-value\">102</span></li>\n" + 
+                "  <li><strong><span class=\"atr-name\">NAME</span>:</strong> <span class=\"atr-value\">Route 5</span></li>\n" + 
+                "</ul>\n";
+        assertXpathEvaluatesTo(expectedDescription, "//kml:Placemark/kml:description", doc);
+        // check look-at
+        assertXpathEvaluatesTo("-0.0020000000000095497", "//kml:Placemark/kml:LookAt/kml:longitude", doc);
+        assertXpathEvaluatesTo("5.000000003008154E-5", "//kml:Placemark/kml:LookAt/kml:latitude", doc);
+        // check style
+        assertXpathEvaluatesTo("00ffffff", "//kml:Placemark/kml:Style/kml:IconStyle/kml:color", doc);
+        assertXpathEvaluatesTo("0.4", "//kml:Placemark/kml:Style/kml:IconStyle/kml:scale", doc);
+        assertXpathEvaluatesTo("http://icons.opengeo.org/markers/icon-line.1.png", "//kml:Placemark/kml:Style/kml:IconStyle/kml:Icon/kml:href", doc);
+        assertXpathEvaluatesTo("00ffffff", "//kml:Placemark/kml:Style/kml:LabelStyle/kml:color", doc);
+        assertXpathEvaluatesTo("ff000000", "//kml:Placemark/kml:Style/kml:LineStyle/kml:color", doc);
+        assertXpathEvaluatesTo("4.0", "//kml:Placemark/kml:Style/kml:LineStyle/kml:width", doc);
+        // check geometry
+        assertXpathEvaluatesTo("-0.002000087662804264,4.997808429893395E-5", "//kml:Placemark/kml:MultiGeometry/kml:Point/kml:coordinates", doc);
+        assertXpathEvaluatesTo("-0.0042,-6.0E-4 -0.0032,-3.0E-4 -0.0026,-1.0E-4 -0.0014,2.0E-4 2.0E-4,7.0E-4", "//kml:Placemark/kml:MultiGeometry/kml:LineString/kml:coordinates", doc);
+    }
+    
+    @Test
+    public void testNoAttributes() throws Exception {
+        Document doc = getAsDOM(
+            "wms?request=getmap&service=wms&version=1.1.1" + 
+            "&format=" + KMLMapOutputFormat.MIME_TYPE + 
+            "&layers=" + getLayerId(MockData.ROAD_SEGMENTS) +
+            "&styles=&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326&featureId=RoadSegments.1107532045088&kmattr=false" 
+        );
+        
+        // print(doc);
+        assertXpathEvaluatesTo("1", "count(//kml:Placemark)", doc);
+        assertXpathEvaluatesTo("RoadSegments.1107532045088", "//kml:Placemark/@id", doc);
+        // no name or description
+        assertXpathEvaluatesTo("0", "count(//kml:Placemark/kml:name)", doc);
+        assertXpathEvaluatesTo("0", "count(//kml:Placemark/kml:description)", doc);
+        // check look-at
+        assertXpathEvaluatesTo("-0.0020000000000095497", "//kml:Placemark/kml:LookAt/kml:longitude", doc);
+        assertXpathEvaluatesTo("5.000000003008154E-5", "//kml:Placemark/kml:LookAt/kml:latitude", doc);
+        // style does not need icon information
+        assertXpathEvaluatesTo("0", "count(//kml:Placemark/kml:Style/kml:IconStyle)", doc);
+        assertXpathEvaluatesTo("0", "count(//kml:Placemark/kml:Style/kml:LabelStyle)", doc);
+        assertXpathEvaluatesTo("ff000000", "//kml:Placemark/kml:Style/kml:LineStyle/kml:color", doc);
+        assertXpathEvaluatesTo("4.0", "//kml:Placemark/kml:Style/kml:LineStyle/kml:width", doc);
+        // check geometry
+        assertXpathEvaluatesTo("0", "count(//kml:Placemark/kml:MultiGeometry)", doc);
+        assertXpathEvaluatesTo("-0.0042,-6.0E-4 -0.0032,-3.0E-4 -0.0026,-1.0E-4 -0.0014,2.0E-4 2.0E-4,7.0E-4", "//kml:Placemark/kml:LineString/kml:coordinates", doc);
+    }
+    
+    @Test
+    public void testTimeTemplate() throws Exception {
+        FeatureTypeInfo ftInfo = getCatalog().getResourceByName(getLayerId(MockData.OTHER),
+                FeatureTypeInfo.class);
+        File resourceDir = getDataDirectory().findResourceDir(ftInfo);
+        File templateFile = new File(resourceDir, "time.ftl");
+        try {
+            // create the time template
+            
+            FileUtils.writeStringToFile(templateFile, "${dates.value}");
+
+            Document doc = getAsDOM("wms?request=getmap&service=wms&version=1.1.1" + "&format="
+                    + KMLMapOutputFormat.MIME_TYPE + "&layers=" + getLayerId(MockData.OTHER)
+                    + "&styles=&height=1024&width=1024&bbox= -96.0000,0.0000,-90.0000,84.0000&srs=EPSG:4326");
+
+            // print(doc);
+            assertXpathEvaluatesTo("1", "count(//kml:Placemark)", doc);
+            assertXpathEvaluatesTo("2002-02-12T00:00:00Z", "//kml:Placemark/kml:TimeStamp/kml:when", doc);
+        } finally {
+            assertTrue(templateFile.delete());
+        }
+    }
+    
+    @Test
+    public void testHeightTemplate() throws Exception {
+        FeatureTypeInfo ftInfo = getCatalog().getResourceByName(getLayerId(MockData.OTHER),
+                FeatureTypeInfo.class);
+        File resourceDir = getDataDirectory().findResourceDir(ftInfo);
+        File templateFile = new File(resourceDir, "height.ftl");
+        try {
+            // create the height template
+            FileUtils.writeStringToFile(templateFile, "200");
+
+            Document doc = getAsDOM("wms?request=getmap&service=wms&version=1.1.1" + "&format="
+                    + KMLMapOutputFormat.MIME_TYPE + "&layers=" + getLayerId(MockData.OTHER)
+                    + "&styles=&height=1024&width=1024&bbox= -96.0000,0.0000,-90.0000,84.0000&srs=EPSG:4326");
+
+            // coordinates are reprojected and we get the height at 200
+            assertXpathEvaluatesTo("-92.99954926766114,4.52401492058674,200.0", "//kml:Placemark/kml:Point/kml:coordinates", doc);
+        } finally {
+            assertTrue(templateFile.delete());
+        }
+    }
+    
+    
+    @Test
     public void testVectorWithRemoteLayer() throws Exception {
         if(!RemoteOWSTestSupport.isRemoteWFSStatesAvailable(LOGGER))
             return;
@@ -114,7 +238,7 @@ public class KMLTest extends WMSTestSupport {
         );
         // print(doc);
         
-        assertEquals( 1, doc.getElementsByTagName("Placemark").getLength());
+        assertEquals(1, doc.getElementsByTagName("Placemark").getLength());
     }
    
     // see GEOS-1948

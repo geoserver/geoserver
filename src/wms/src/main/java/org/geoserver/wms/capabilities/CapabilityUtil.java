@@ -91,9 +91,4 @@ final class CapabilityUtil {
 
 	    return scaleDenominator;
 	}
-	
-	
-	
-	
-
 }

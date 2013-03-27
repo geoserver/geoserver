@@ -12,6 +12,7 @@
       <FeatureTypeStyle>
         <Rule>
           <Name>Large</Name>
+          <MinScaleDenominator>80000000</MinScaleDenominator>
           <MaxScaleDenominator>160000000</MaxScaleDenominator>
           <PointSymbolizer>
             <Graphic>
@@ -44,6 +45,7 @@
         <Rule>
           <Name>Small</Name>
           <MinScaleDenominator>320000000</MinScaleDenominator>
+          <MaxScaleDenominator>640000000</MaxScaleDenominator>
           <PointSymbolizer>
             <Graphic>
               <Mark>

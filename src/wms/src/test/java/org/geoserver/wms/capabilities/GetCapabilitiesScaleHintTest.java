@@ -3,12 +3,14 @@
  */
 package org.geoserver.wms.capabilities;
 
-import static org.geoserver.data.test.MockData.MPOINTS;
+import static junit.framework.Assert.assertEquals;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import javax.xml.namespace.QName;
 
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -23,10 +25,7 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wms.GetCapabilitiesRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSTestSupport;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -34,7 +33,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * 
+ * Test cases for Capabilities' ScaleHint  
  * 
  * @author Mauricio Pazos
  *
@@ -43,16 +42,18 @@ public class GetCapabilitiesScaleHintTest extends GeoServerSystemTestSupport {
 
     private final XpathEngine xpath;
 
-    /** default base url to feed a GetCapabilitiesTransformer with for it to append the DTD location */
     private static final String BASE_URL = "http://localhost/geoserver";
 
-    /** test map formats to feed a GetCapabilitiesTransformer with */
     private static final Set<String> FORMATS = Collections.singleton("image/png");
 
-    /** test legend formats to feed a GetCapabilitiesTransformer with */
     private static final Set<String> LEGEND_FORMAT = Collections.singleton("image/png");
 
-	private Catalog catalog;
+    /** Test layers */
+    public static final QName REGIONATED = new QName(MockData.SF_URI, "Regionated", MockData.SF_PREFIX);
+    public static final QName ACCIDENT = new QName(MockData.SF_URI, "Accident", MockData.SF_PREFIX);
+    
+
+    private Catalog catalog;
 
     public GetCapabilitiesScaleHintTest(){
     	
@@ -62,50 +63,56 @@ public class GetCapabilitiesScaleHintTest extends GeoServerSystemTestSupport {
         xpath = XMLUnit.newXpathEngine();
     }
 	
+
+	/**
+	 * Adds required styles to test the selection of maximum and minimum denominator from style's rules.
+	 */
 	@Override
 	protected void onSetUp(SystemTestData testData) throws Exception {
-		super.onSetUp(testData);
-
-		// TODO
-	}
-	
-	@Before
-	public void initCatalog() throws Exception{
 		
 		this.catalog = getCatalog();
 
-		final String layerName = getLayerId(MPOINTS);
-
-		LayerInfo layerInfo = this.catalog.getLayerByName(layerName);
-		
-    	final String styleName = "ScaleHintData";
-		getTestData().addStyle(styleName, this.catalog);
-		StyleInfo style = this.catalog.getStyleByName(styleName);
-		//StyleInfo defaultStyle = this.catalog.getStyleByName(styleName);
-		//layerInfo.setDefaultStyle(defaultStyle);
-		
-		layerInfo.getStyles().add(style);
-	}
-	
-	@After
-	public void revertCatalog() throws Exception{
-		
-		this.catalog = getCatalog();
-
-		final String layerName = getLayerId(MockData.MPOINTS);
-
-		LayerInfo layerInfo = this.catalog.getLayerByName(layerName);
-		if (layerInfo != null) {
-			this.catalog.remove(layerInfo);
-			getGeoServer().reload();
+		// creates the Regionated layer and adds it to the geoserver catalog
+		{
+			testData.addVectorLayer(
+		                REGIONATED,
+		                null, 
+		                REGIONATED.getLocalPart()+".properties",
+		                getClass(), 
+		                this.catalog             
+	                );
+			
+	    	final String styleName = "Regionated";
+			testData.addStyle(styleName, this.catalog);
+			
+			StyleInfo defaultStyle = this.catalog.getStyleByName(styleName);
+			
+			String layerId = getLayerId(REGIONATED);
+			LayerInfo layerInfo =  this.catalog.getLayerByName(layerId);
+			layerInfo.setDefaultStyle(defaultStyle);
 		}
-		revertLayer(MockData.MPOINTS);
+		
+		// creates the Accident layer and adds it to the geoserver catalog 
+		{
+			testData.addVectorLayer(
+	                ACCIDENT,
+	                null, 
+	                ACCIDENT.getLocalPart()+".properties",
+	                getClass(), 
+	                this.catalog             
+            );
+	
+			final String styleName = "Accident";
+			testData.addStyle(styleName, this.catalog);
+			
+			StyleInfo defaultStyle = this.catalog.getStyleByName(styleName);
+			
+			String layerId = getLayerId(ACCIDENT);
+			LayerInfo layerInfo =  this.catalog.getLayerByName(layerId);
+			layerInfo.setDefaultStyle(defaultStyle);
+		}
 	}
 
-    protected WMS getWMS() {
-        WMS wms = (WMS) applicationContext.getBean("wms");
-        return wms;
-    }
 
     /**
      * Default values for ScaleHint should be set.
@@ -117,45 +124,55 @@ public class GetCapabilitiesScaleHintTest extends GeoServerSystemTestSupport {
      * @throws Exception
      */
     @Test
-    public void testWMS_1_1_1_DefaultScaleHint()throws Exception{
+    public void scaleHintDefaultValues()throws Exception{
         
-    	GetCapabilitiesTransformer tr = new GetCapabilitiesTransformer(getWMS(), BASE_URL, FORMATS, LEGEND_FORMAT, null);
-    	GetCapabilitiesRequest req = new GetCapabilitiesRequest();
-        req.setBaseUrl(BASE_URL);
-        req.setVersion(WMS.VERSION_1_1_1.toString());
+    	Document dom = findCapabilities();
 
-    	Document dom = WMSTestSupport.transform(req, tr);
-
-    	Element root = dom.getDocumentElement();
-		Assert.assertEquals(WMS.VERSION_1_1_1.toString(), root.getAttribute("version"));
-
-		final String layerName = getLayerId(MockData.MPOLYGONS);
-
-		Element layerElement= searchLayerElement(layerName, dom);
+		Element layerElement= searchLayerElement(getLayerId(ACCIDENT), dom);
+		
 		NodeList scaleNode = layerElement.getElementsByTagName("ScaleHint");
 		Element scaleElement = (Element)scaleNode.item(0);
-		
-        String min = scaleElement.getAttribute("min");
-        String max = scaleElement.getAttribute("max");
             
-        Assert.assertEquals(0.0, Double.valueOf(min));
-        Assert.assertEquals(Double.POSITIVE_INFINITY, Double.valueOf(max));
+        assertEquals(0.0, Double.valueOf(scaleElement.getAttribute("min")));
+        assertEquals(Double.POSITIVE_INFINITY, Double.valueOf(scaleElement.getAttribute("max")));
     }
-
 
 	
     /**
      * <pre>
-     * Max is the maximum value found in the rules
-     * Min is the minimum value found in the rules
+     * Max is the maximum value found in the set of rules 
+     * Min is the minimum value found in the set of rules
      * </pre>
      * 
      * @throws Exception
      */
-    @Ignore
-    public void testWMS_1_1_1_ScaleHint()throws Exception{
+    @Test
+    public void scaleHintFoundMaxMinDenominators()throws Exception{
 
-    	GetCapabilitiesTransformer tr = new GetCapabilitiesTransformer(getWMS(), BASE_URL, FORMATS, LEGEND_FORMAT, null);
+    	Document dom = findCapabilities();
+
+		final String layerName = getLayerId(REGIONATED);
+        Element layerElement= searchLayerElement(layerName, dom);
+        
+		NodeList scaleNode = layerElement.getElementsByTagName("ScaleHint");
+		Element scaleElement = (Element)scaleNode.item(0);
+            
+        assertEquals(Double.valueOf(80000000), Double.valueOf(scaleElement.getAttribute("min")));
+	    assertEquals(Double.valueOf(640000000), Double.valueOf(scaleElement.getAttribute("max")));
+    }
+    
+    /**
+     * Retrieves the WMS's capabilities document.
+     * 
+     * @return Capabilities as {@link Document}
+     * 
+     * @throws Exception
+     */
+    private Document findCapabilities() throws Exception{
+    	
+    	WMS wms = (WMS) applicationContext.getBean("wms");
+    	
+    	GetCapabilitiesTransformer tr = new GetCapabilitiesTransformer(wms, BASE_URL, FORMATS, LEGEND_FORMAT, null);
     	GetCapabilitiesRequest req = new GetCapabilitiesRequest();
         req.setBaseUrl(BASE_URL);
         req.setVersion(WMS.VERSION_1_1_1.toString());
@@ -164,18 +181,8 @@ public class GetCapabilitiesScaleHintTest extends GeoServerSystemTestSupport {
 
     	Element root = dom.getDocumentElement();
 		Assert.assertEquals(WMS.VERSION_1_1_1.toString(), root.getAttribute("version"));
-
-		final String layerName = getLayerId(MockData.MPOINTS);
-        Element layerElement= searchLayerElement(layerName, dom);
-        
-		NodeList scaleNode = layerElement.getElementsByTagName("ScaleHint");
-		Element scaleElement = (Element)scaleNode.item(0);
-		
-        String min = scaleElement.getAttribute("min");
-        String max = scaleElement.getAttribute("max");
-            
-        Assert.assertEquals(80000000, Double.valueOf(min));
-	    Assert.assertEquals(640000000, Double.valueOf(max));
+    	
+    	return dom;
     }
 	
 

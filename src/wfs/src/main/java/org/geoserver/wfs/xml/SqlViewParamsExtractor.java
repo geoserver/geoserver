@@ -1,0 +1,39 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+package org.geoserver.wfs.xml;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import org.eclipse.emf.ecore.EObject;
+import org.geoserver.ows.kvp.ViewParamsKvpParser;
+import org.geoserver.wfs.xml.v1_0_0.WFSBindingUtils;
+import org.geotools.xml.Node;
+
+/**
+ *
+ * @author geoff
+ */
+public class SqlViewParamsExtractor {
+    private static ViewParamsKvpParser wfsSqlViewKvpParser = null;
+
+    public static ViewParamsKvpParser getWfsSqlViewKvpParser() {
+        return wfsSqlViewKvpParser;
+    }
+
+    public static void setWfsSqlViewKvpParser(ViewParamsKvpParser wfsSqlViewKvpParser) {
+        SqlViewParamsExtractor.wfsSqlViewKvpParser = wfsSqlViewKvpParser;
+    }
+            
+    public static void viewParams(EObject object, Node node) throws Exception {
+        if (node.hasAttribute("viewParams")) {
+            String rawViewParams = (String) node.getAttributeValue("viewParams");
+            List viewParams = (List) wfsSqlViewKvpParser.parse(rawViewParams);
+            WFSBindingUtils.set(object, "viewParams", viewParams);
+        }
+    }
+    
+    
+}

@@ -5,8 +5,6 @@
 package org.geoserver.wfs.xml.v1_1_0;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.namespace.QName;
 
@@ -14,6 +12,7 @@ import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.QueryType;
 import net.opengis.wfs.ResultTypeType;
 import net.opengis.wfs.WfsFactory;
+import org.geoserver.wfs.xml.SqlViewParamsExtractor;
 
 import org.geotools.util.Converters;
 import org.geotools.xml.AbstractComplexBinding;
@@ -221,11 +220,8 @@ public class GetFeatureTypeBinding extends AbstractComplexBinding {
         }
         
         // viewParams
-        if (node.hasAttribute("viewParams")) {
-            List<String> viewparams = new ArrayList<String>();
-            viewparams.add((String) node.getAttributeValue("viewParams"));
-            getFeature.getViewParams().addAll(viewparams);
-        }
+        SqlViewParamsExtractor.viewParams(getFeature, node);
+
 
         return getFeature;
     }

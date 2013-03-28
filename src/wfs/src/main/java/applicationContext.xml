@@ -644,4 +644,14 @@
       <constructor-arg value="wfs"/>
     </bean>
     
+    <!-- inject the static method with the KVP parser -->
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod" value="org.geoserver.wfs.xml.SqlViewParamsExtractor.setWfsSqlViewKvpParser"/>
+        <property name="arguments">
+            <list>
+                <ref bean="wfsSqlViewKvpParser"/>
+            </list>
+       </property>
+    </bean>
+    
 </beans>

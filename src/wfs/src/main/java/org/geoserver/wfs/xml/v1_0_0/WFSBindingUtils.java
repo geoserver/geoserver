@@ -75,7 +75,7 @@ public class WFSBindingUtils {
         set(object, "outputFormat", outputFormat);
     }
 
-    static void set(EObject object, String featureName, Object value) {
+    public static void set(EObject object, String featureName, Object value) {
         EStructuralFeature feature = object.eClass().getEStructuralFeature(featureName);
 
         if (feature != null) {

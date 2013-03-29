@@ -200,10 +200,6 @@ public class KMLReflector {
 
         wmsResponse = wms.getMap(request);
 
-        filename.setLength(filename.length() - 1);
-        String contentDisposition = "attachment; filename=" + filename.toString() + formatExtension;
-        wmsResponse.setResponseHeader("Content-Disposition", contentDisposition);
-
         return wmsResponse;
     }
     

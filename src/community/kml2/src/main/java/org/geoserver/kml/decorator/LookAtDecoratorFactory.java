@@ -13,6 +13,7 @@ import de.micromata.opengis.kml.v_2_2_0.Document;
 import de.micromata.opengis.kml.v_2_2_0.Feature;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
 import de.micromata.opengis.kml.v_2_2_0.LookAt;
+import de.micromata.opengis.kml.v_2_2_0.NetworkLink;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
 
 /**
@@ -27,8 +28,8 @@ public class LookAtDecoratorFactory implements KmlDecoratorFactory {
             KmlEncodingContext context) {
         if (Placemark.class.isAssignableFrom(featureClass)) {
             return new PlacemarkLookAtDecorator();
-        } else if (Folder.class.isAssignableFrom(featureClass)) {
-            return new FolderLookAtDecorator();
+        } else if (Folder.class.isAssignableFrom(featureClass) || NetworkLink.class.isAssignableFrom(featureClass)) {
+            return new LayerLookAtDecorator();
         } else if (Document.class.isAssignableFrom(featureClass)) {
             return new DocumentLookAtDecorator();
         } else {
@@ -51,16 +52,15 @@ public class LookAtDecoratorFactory implements KmlDecoratorFactory {
 
     }
 
-    class FolderLookAtDecorator implements KmlDecorator {
+    class LayerLookAtDecorator implements KmlDecorator {
 
         @Override
         public Feature decorate(Feature feature, KmlEncodingContext context) {
-            Folder folder = (Folder) feature;
             Envelope bounds = context.getCurrentLayer().getBounds();
             LookAt lookAt = buildLookAt(bounds, context.getLookAtOptions(), true);
-            folder.setAbstractView(lookAt);
+            feature.setAbstractView(lookAt);
 
-            return folder;
+            return feature;
         }
 
     }

@@ -41,6 +41,7 @@ import org.geotools.factory.GeoTools;
 import org.geotools.factory.Hints;
 import org.geotools.filter.Filters;
 import org.geotools.filter.function.EnvFunction;
+import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.WMSLayer;
@@ -55,8 +56,10 @@ import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.filter.And;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
+import org.opengis.filter.Or;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -326,7 +329,7 @@ public class GetMap {
             }
 
             final Style layerStyle = styles[i];
-            final Filter layerFilter = filters[i];
+            final Filter layerFilter = SimplifyingFilterVisitor.simplify(filters[i]);
 
             final org.geotools.map.Layer layer;
 

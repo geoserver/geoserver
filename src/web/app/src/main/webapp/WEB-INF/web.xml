@@ -52,7 +52,7 @@
        <param-name>GEOSERVER_DATA_DIR</param-name>
         <param-value>C:\eclipse\workspace\geoserver_trunk\cite\confCiteWFSPostGIS</param-value>
     </context-param> 
-     -->
+   -->
     
     <!-- pick up all spring application contexts -->
     <context-param>

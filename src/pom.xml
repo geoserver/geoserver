@@ -440,6 +440,11 @@
    </dependency>
    <dependency>
     <groupId>org.geotools</groupId>
+    <artifactId>gt-process-geometry</artifactId>
+    <version>${gt.version}</version>
+   </dependency>
+   <dependency>
+    <groupId>org.geotools</groupId>
     <artifactId>gt-process-raster</artifactId>
     <version>${gt.version}</version>
    </dependency>

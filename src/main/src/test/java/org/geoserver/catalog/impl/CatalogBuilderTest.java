@@ -34,9 +34,12 @@ import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.data.ResourceInfo;
 import org.geotools.feature.NameImpl;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Test;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Point;
 
@@ -370,5 +373,16 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
 
         CatalogBuilder cb = new CatalogBuilder(getCatalog());
         cb.setupMetadata(ftInfo, fs);
+    }
+    
+    @Test
+    public void testLatLonBounds() throws Exception {
+        ReferencedEnvelope nativeBounds = new ReferencedEnvelope(700000, 800000, 4000000, 4100000, null);
+        CoordinateReferenceSystem crs = CRS.decode("EPSG:32632", true);
+        CatalogBuilder cb = new CatalogBuilder(getCatalog());
+        ReferencedEnvelope re = cb.getLatLonBounds(nativeBounds, crs);
+        assertEquals(DefaultGeographicCRS.WGS84, re.getCoordinateReferenceSystem());
+        assertEquals(11.22, re.getMinX(), 0.01);
+        assertEquals(36.1, re.getMinY(), 0.01);
     }
 }

@@ -89,7 +89,6 @@ public class FeatureSequenceFactory implements SequenceFactory<Feature> {
                 try {
                     // grab the next feature, with a sentinel to tell us whether there was an
                     // exception
-                    featureRetrieved = false;
                     SimpleFeature sf = (SimpleFeature) fi.next();
                     featureRetrieved = true;
                     context.setCurrentFeature(sf);

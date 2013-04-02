@@ -44,6 +44,7 @@ public class ScaleStyleVisitor extends DuplicatingStyleVisitor {
             }
 
         }
+        copy.rules().clear();
         copy.rules().addAll(rulesCopy);
         pages.push(copy);
     }

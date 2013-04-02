@@ -5,7 +5,6 @@
 package org.geoserver.kml;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 
 import org.geoserver.kml.decorator.KmlEncodingContext;
 import org.geoserver.platform.ServiceException;

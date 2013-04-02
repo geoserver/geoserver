@@ -87,7 +87,9 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
                 // if no point symbolizers, create a default one
                 List<Symbolizer> points = classified.get(PointSymbolizer.class);
                 if (points.size() == 0) {
-                    addDefaultIconStyle(pm, sf, context);
+                    if(context.isDescriptionEnabled()) {
+                        addDefaultIconStyle(pm, sf, context);
+                    }
                 } else {
                     for (Symbolizer symbolizer : points) {
                         addIconStyle(pm, (PointSymbolizer) symbolizer, sf, context);
@@ -97,7 +99,9 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
                 // handle label styles
                 List<Symbolizer> texts = classified.get(TextSymbolizer.class);
                 if (texts.size() == 0) {
-                    addDefaultLabelStyle(pm);
+                    if(context.isDescriptionEnabled()) {
+                        addDefaultLabelStyle(pm);
+                    }
                 } else {
                     for (Symbolizer symbolizer : texts) {
                         addLabelStyle(pm, sf, (TextSymbolizer) symbolizer);

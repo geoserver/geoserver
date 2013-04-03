@@ -54,22 +54,25 @@ Configuring JNDI resources in Jetty
 
 JNDI resources such as data sources can be configured by supplying a Jetty
 server configuration file named in the system property ``jetty.config.file``,
-specified as a ``VM argument`` in the ``Arguments`` panel of the launch
-configuration for ``Start``. The path to the configuration file is relative
-to the root of the ``web-app`` module, in which the launch
-configuration runs. For example::
+specified as a line in ``VM arguments`` in the ``Arguments`` panel of the launch
+configuration for ``Start`` (separate lines are joined when the JVM is launched).
+The path to the configuration file is relative to the root of the ``web-app`` module,
+in which the launch configuration runs. Naming factory system properties must also be
+configured for Jetty. For example, ``VM arguments`` could include::
 
     -Djetty.config.file=../../../../../settings/jetty.xml
+    -Djava.naming.factory.url.pkgs=org.mortbay.naming
+    -Djava.naming.factory.initial=org.mortbay.naming.InitialContextFactory
 
 The following Jetty server configuration file
-configures a JNDI data source ``jdbc/demo`` that is a
+configures a JNDI data source ``java:comp/env/jdbc/demo`` that is a
 connection pool for an Oracle database::
 
     <?xml version="1.0"?>
     <!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
     <Configure class="org.mortbay.jetty.Server">
         <New class="org.mortbay.jetty.plus.naming.Resource">
-            <Arg>jdbc/demo</Arg>
+            <Arg>java:comp/env/jdbc/demo</Arg>
             <Arg>
                 <New class="org.apache.commons.dbcp.BasicDataSource">
                     <Set name="driverClassName">oracle.jdbc.driver.OracleDriver</Set>
@@ -87,7 +90,7 @@ connection pool for an Oracle database::
                     <Set name="maxOpenPreparedStatements">100</Set>
                     <Set name="testOnBorrow">true</Set>
                     <Set name="validationQuery">SELECT SYSDATE FROM DUAL</Set>
-                    </New>
+                </New>
             </Arg>
         </New>
     </Configure>

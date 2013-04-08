@@ -4,6 +4,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 
 import javax.mail.BodyPart;
@@ -61,7 +62,17 @@ public class GetCoverageTest extends WCSTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         testData.addRasterLayer(WATTEMP, "watertemp.zip", null, null, SystemTestData.class, getCatalog());
-        sortByElevation(WATTEMP);
+        File data = getDataDirectory().findDataDir("watertemp");
+        FilenameFilter groundElevationFilter = new FilenameFilter() {
+			
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.matches(".*_000_.*tiff") || name.matches("watertemp\\..*");
+			}
+		};
+		for(File file : data.listFiles(groundElevationFilter)) {
+        	file.delete();
+        }
         
         testData.addRasterLayer(TIMERANGES, "timeranges.zip", null, null, SystemTestData.class, getCatalog());
         sortByElevation(TIMERANGES);
@@ -523,6 +534,7 @@ public class GetCoverageTest extends WCSTestSupport {
     @Test
     public void testCoverageTimeSlicingTimeSecond() throws Exception {
         setupRasterDimension(getLayerId(WATTEMP), ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        System.out.println(getDataDirectory().root());
         final File xml = new File("./src/test/resources/trimming/requestGetCoverageTimeSlicingXML.xml");
         String request= FileUtils.readFileToString(xml);
         request = request.replace("${coverageId}", "sf__watertemp");

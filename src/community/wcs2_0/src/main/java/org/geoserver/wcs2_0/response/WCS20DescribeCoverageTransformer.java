@@ -282,7 +282,7 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
                 
                 // Description
                 start("swe:description");
-                chars(sd.toString());// TODO can we make up something better??
+                chars(sd.getDescription().toString()); // TODO can we make up something better??
                 end("swe:description");
                 
                 //UoM

@@ -55,6 +55,7 @@ public class HibernateMonitorDAO2Test extends MonitorDAOTestSupport {
     
     @AfterClass
     public static void destroy() throws Exception {
+    	dao.dispose();
     	ctx.close();
         DeleteDbFiles.execute("target/monitoring", "monitoring", false);
     }

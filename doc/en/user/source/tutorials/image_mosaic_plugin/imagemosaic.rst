@@ -7,7 +7,7 @@ Using the ImageMosaic plugin
 Introduction
 ------------
 
-This tutorial describes the process of creating a new coverage using the new ImageMosaic plugin. The ImageMosaic plugin is authored by `Simone Giannecchini <http://simboss.blogspot.com/>`_ of `GeoSolutions <http://ww.geosolutions.it>`_, and allows the creation of a mosaic from a number of georeferenced rasters. The plugin can be used with Geotiffs, as well as rasters accompanied by a world file (.pgw for png files, .jgw for jpg files, etc.). In addition, if imageio-ext GDAL extensions are properly installed we can also serve all the formats supported by it like MrSID, ECW, JPEG2000, etc... See :ref:`data_gdal` for more information on how to install them.
+This tutorial describes the process of creating a new coverage using the new ImageMosaic plugin. The ImageMosaic plugin is provided by `GeoTools <http://geotools.org/>`_, and allows the creation of a mosaic from a number of georeferenced rasters. The plugin can be used with Geotiffs, as well as rasters accompanied by a world file (.pgw for png files, .jgw for jpg files, etc.). In addition, if imageio-ext GDAL extensions are properly installed we can also serve all the formats supported by it like MrSID, ECW, JPEG2000, etc... See :ref:`data_gdal` for more information on how to install them.
 
 The JAI documentation gives a good description about what a Mosaic does:
 
@@ -17,29 +17,20 @@ Briefly the ImageMosaic plugin is responsible for composing together a set of si
 
   1. All the granules must share the same Coordinate Reference System, no reprojection is performed.  This will always be a constraint.
   2. All the granules must share the same ColorModel and SampleModel. This is a limitation/assumption of the underlying JAI Mosaic operator: it basically means that the granules must share the same pixel layout and photometric interpretation. It would be quite difficult to overcome this limitation, but to some extent it could be done. Notice that, in case of colormapped granules, if the various granules share the same colormap the code will do its best to retain it and try not to expand them in memory. This can also be controlled via a  parameter in the configuration file (se next sections)
-  3. All the granules must share the same spatial resolution and set of overviews. 
-  
-  
-.. note:: 
-
- About point 3, in the original version of the ImageMosaic plugin this assumption was entirely true since we made an assumption to work with real tiles coming from a set of adjacent images.  Lately we have been doing a substantial refactoring, so this condition could be removed, but doing so would take some more work and a few additional options in the configuration file.
-
- To be more specific, if we can't assume that all the granules share the same spatial layout and overviews set we would not be able to asses the raster dimensions (width and height) the spatial dimensions (grid-to-world and envelope) and the overviews set to the final mosaic coverage, unless we specify them somehow or we default to something. As long as we can assume that the various granules share the same spatial elements as well as the same overviews set we can inherit the first definition for the final mosaic.  This limitation can be overcome with more work.
-
-  
+  3. All the granules must share the same spatial resolution and set of overviews (if this is not true, overviews will not be used). 
   
 Granule Index
 -------------
 
 In order to configure a new CoverageStore and a new Coverage with this plugin, an index file needs to be generated first in order to associate each granule to its bounding box. Currently we support only a Shapefile as a proper index, although it would be possible to extend this and use other means to persist the index.
 
-More specifically, the following files are needed:
+More specifically, the following files make up the mosaic configuration:
 
    1. A shapefile that contains enclosing polygons for each raster file.  This shapefile needs to have a field whose values are the paths for the mosaic granules. The path can be either relative to the shapefile itself or absolute, moreover, while the default name for the shapefile attribute that contains the granules' paths is "location", such a name can be configured to be different (we'll describe this later on).
    2. A projection file (.prj) for the above-mentioned shapefile.
    3. A configuration file (.properties). This file contains properties such as cell size in x and y direction, the number of rasters for the ImageMosaic coverage, etc.. We will describe this file in the next section.
    
-Later on we will describe the process of creating an index for a set of granules.
+Normally GeoServer will create automatically those files when pointed a directory containing images, but it's importat to understand them anyways in order to get better control on how the mosaic works, and troubleshoot eventual issues.
 
 Configuration File
 -------------------   

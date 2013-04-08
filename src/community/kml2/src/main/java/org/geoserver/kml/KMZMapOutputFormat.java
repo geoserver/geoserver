@@ -5,13 +5,15 @@
 package org.geoserver.kml;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 
+import org.geoserver.kml.decorator.KmlEncodingContext;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.AbstractMapOutputFormat;
+
+import de.micromata.opengis.kml.v_2_2_0.Kml;
 
 /**
  * Handles a GetMap request that spects a map in KMZ format.
@@ -37,6 +39,8 @@ public class KMZMapOutputFormat extends AbstractMapOutputFormat {
 
     private WMS wms;
 
+    private KMLBuilder builder = new KMLBuilder();
+
     public KMZMapOutputFormat(WMS wms) {
         super(MIME_TYPE, OUTPUT_FORMATS);
         this.wms = wms;
@@ -53,7 +57,16 @@ public class KMZMapOutputFormat extends AbstractMapOutputFormat {
      * @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent)
      */
     public KMLMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
-        throw new UnsupportedOperationException("Not implemented yet");
+        // initialize the kml encoding context
+        KmlEncodingContext context = new KmlEncodingContext(mapContent, wms, true);
+
+        // build the kml document
+        Kml kml = builder.buildKMLDocument(context);
+
+        // return the map
+        KMLMap map = new KMLMap(mapContent, context, kml, MIME_TYPE);
+        map.setContentDispositionHeader(mapContent, ".kmz");
+        return map;
     }
 
     public MapProducerCapabilities getCapabilities(String format) {

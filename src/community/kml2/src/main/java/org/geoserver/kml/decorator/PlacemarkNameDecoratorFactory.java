@@ -14,6 +14,11 @@ import org.opengis.filter.expression.Expression;
 import de.micromata.opengis.kml.v_2_2_0.Feature;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
 
+/**
+ * Template driven decorator setting the name in Placemark objects 
+ * 
+ * @author Andrea Aime - GeoSolutions
+ */
 public class PlacemarkNameDecoratorFactory implements KmlDecoratorFactory {
 
     @Override

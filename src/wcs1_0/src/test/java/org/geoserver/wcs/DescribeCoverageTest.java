@@ -315,7 +315,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
     
     @Test
     public void testTimeCoverageList() throws Exception {
-        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null);
         
         Document dom = getAsDOM(BASEPATH
                 + "?request=DescribeCoverage&service=WCS&version=1.0.0&coverage="
@@ -336,7 +336,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
     
     @Test
     public void testTimeCoverageContinousInterval() throws Exception {
-        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.CONTINUOUS_INTERVAL, null);
+        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.CONTINUOUS_INTERVAL, null);
         
         Document dom = getAsDOM(BASEPATH
                 + "?request=DescribeCoverage&service=WCS&version=1.0.0&coverage="
@@ -357,7 +357,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
     
     @Test
     public void testTimeCoverageDiscreteInterval() throws Exception {
-        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.DISCRETE_INTERVAL, new Double(1000 * 60 * 60));
+        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.DISCRETE_INTERVAL, new Double(1000 * 60 * 60));
         
         Document dom = getAsDOM(BASEPATH
                 + "?request=DescribeCoverage&service=WCS&version=1.0.0&coverage="
@@ -379,7 +379,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
     
     @Test
     public void testElevationList() throws Exception {
-        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
         
         Document dom = getAsDOM(BASEPATH
                 + "?request=DescribeCoverage&service=WCS&version=1.0.0&coverage="
@@ -392,5 +392,33 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertXpathEvaluatesTo("100.0", "//wcs:AxisDescription[wcs:name = 'ELEVATION']/wcs:values/wcs:singleValue[2]", dom);
         assertXpathEvaluatesTo("0.0", "//wcs:AxisDescription[wcs:name = 'ELEVATION']/wcs:values/wcs:default", dom);
     }
+    
+    
+    @Test
+    public void testTimeRangeCoverageList() throws Exception {
+        setupRasterDimension(TIMERANGES, ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        
+        Document dom = getAsDOM(BASEPATH
+                + "?request=DescribeCoverage&service=WCS&version=1.0.0&coverage="
+                + getLayerId(TIMERANGES));
+        print(dom);
+        checkValidationErrors(dom, WCS10_DESCRIBECOVERAGE_SCHEMA);
+        
+        // check the envelopes
+        assertXpathEvaluatesTo("2008-10-31T00:00:00.000Z", "//wcs:lonLatEnvelope/gml:timePosition[1]", dom);
+        assertXpathEvaluatesTo("2008-11-07T00:00:00.000Z", "//wcs:lonLatEnvelope/gml:timePosition[2]", dom);
+        assertXpathEvaluatesTo("2008-10-31T00:00:00.000Z", "//gml:EnvelopeWithTimePeriod/gml:timePosition[1]", dom);
+        assertXpathEvaluatesTo("2008-11-07T00:00:00.000Z", "//gml:EnvelopeWithTimePeriod/gml:timePosition[2]", dom);
+        
+        // check the temporal domain
+        assertXpathEvaluatesTo("2", "count(//wcs:temporalDomain/wcs:timePeriod)", dom);
+        assertXpathEvaluatesTo("2008-10-31T00:00:00.000Z", "//wcs:temporalDomain/wcs:timePeriod[1]/wcs:beginPosition", dom);
+        assertXpathEvaluatesTo("2008-11-04T00:00:00.000Z", "//wcs:temporalDomain/wcs:timePeriod[1]/wcs:endPosition", dom);
+        assertXpathEvaluatesTo("2008-11-05T00:00:00.000Z", "//wcs:temporalDomain/wcs:timePeriod[2]/wcs:beginPosition", dom);
+        assertXpathEvaluatesTo("2008-11-07T00:00:00.000Z", "//wcs:temporalDomain/wcs:timePeriod[2]/wcs:endPosition", dom);
+    }
+    
+    
+    
     
 }

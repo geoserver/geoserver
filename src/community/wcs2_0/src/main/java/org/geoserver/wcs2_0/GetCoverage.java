@@ -358,20 +358,22 @@ public class GetCoverage {
         
         // right now we don't support trimming
         // TODO: revisit when we have some multidimensional output support
-        if(!range.getMinValue().equals(range.getMaxValue())) {
+        if(range != null && !range.getMinValue().equals(range.getMaxValue())) {
             throw new WCS20Exception("Trimming on time is not supported at the moment, only slicing is");
         }
         
         // apply nearest neighbor matching on time
         if(range != null) {
             ReaderDimensionsAccessor accessor = new ReaderDimensionsAccessor(reader);
-            TreeSet<Date> domain = accessor.getTimeDomain();
+            TreeSet<Object> domain = accessor.getTimeDomain();
             Date slicePoint = range.getMinValue();
-            if(!domain.contains(slicePoint)) {
+            if(!domainContains(slicePoint, domain)) {
                     // look for the closest time
                     Date previous = null;
                     Date newSlicePoint = null;
-                    for (Date curr : domain) {
+                    // for NN matching we don't need the ranges, NN against their extrema will be fine
+                    TreeSet<Date> domainDates = getDomainDates(domain);
+                    for (Date curr : domainDates) {
                         if(curr.compareTo(slicePoint) > 0) {
                             if(previous == null) {
                                 newSlicePoint = curr;
@@ -402,6 +404,51 @@ public class GetCoverage {
         return range;
     }
 
+    private TreeSet<Date> getDomainDates(TreeSet<Object> domain) {
+        TreeSet<Date> results = new TreeSet<Date>();
+        for (Object item : domain) {
+            if(item instanceof Date) {
+                Date date = (Date) item;
+                results.add(date);
+            } else if(item instanceof DateRange) {
+                DateRange range = (DateRange) item;
+                results.add(range.getMinValue());
+                results.add(range.getMaxValue());
+            }
+        }
+        
+        return results;
+    }
+
+    private boolean domainContains(Date slicePoint, TreeSet<Object> domain) {
+        // cannot use this...
+        //        if(domain.contains(slicePoint)) {
+        //            return true;
+        //        }
+        
+        // check date ranges for containment
+        for (Object curr : domain) {
+            if(curr instanceof Date) {
+                Date date = (Date) curr;
+                int result = date.compareTo(slicePoint);
+                if(result > 0) {
+                    return false;
+                } else if(result == 0) {
+                    return true;
+                }
+            } else if(curr instanceof DateRange) {
+                DateRange range = (DateRange) curr;
+                if(range.contains(slicePoint)) {
+                    return true;
+                } else if(range.getMaxValue().compareTo(slicePoint) < 0) {
+                    return false;
+                }
+            }
+        }
+        
+        return false;
+    }
+
     /**
      * Extracts the simplified dimension name, throws exception if the dimension name is empty
      * @param dim
@@ -416,8 +463,8 @@ public class GetCoverage {
             dimension = dimension.substring("http://www.opengis.net/def/axis/OGC/0/".length());
         } else if (dimension.startsWith("http://opengis.net/def/axis/OGC/0/")) {
             dimension = dimension.substring("http://opengis.net/def/axis/OGC/0/".length());
-        } else if (dimension.startsWith("http://opengis.net/def/crs/ISO/2004")) {
-            dimension = dimension.substring("http://opengis.net/def/crs/ISO/2004".length());
+        } else if (dimension.startsWith("http://opengis.net/def/crs/ISO/2004/")) {
+            dimension = dimension.substring("http://opengis.net/def/crs/ISO/2004/".length());
         }
 
         // checks 

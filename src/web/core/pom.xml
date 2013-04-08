@@ -148,7 +148,7 @@
             <phase>process-resources</phase>
             <configuration>
               <tasks>
-                <replace dir="${build.outputDirectory}">
+                <replace dir="${build.outputDirectory}" encoding="ISO-8859-1">
                   <include name="*.properties"/> 
                   <replacefilter token="@project.version@" value="${project.version}"/>
                   <replacefilter token="@build.revision@" value="${build.commit.id}"/>

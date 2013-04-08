@@ -81,6 +81,10 @@ class TimeDimensionHelper {
     public DimensionInfo getTimeDimension() {
         return timeDimension;
     }
+    
+    public TreeSet<Object> getTimeDomain() {
+        return accessor.getTimeDomain();
+    }
 
     /**
      * Returns the minimum time, formatted according to ISO8601
@@ -98,7 +102,12 @@ class TimeDimensionHelper {
         return format(maxTime);
     }
 
-    private String format(Date time) {
+    /**
+     * Formats a Date into ISO86011 
+     * @param time
+     * @return
+     */
+    public String format(Date time) {
         if (time != null) {
             return formatter.format(time);
         } else {
@@ -134,18 +143,7 @@ class TimeDimensionHelper {
         return resolutionValue;
     }
 
-    /**
-     * Returns the list of coverage times formatted in ISO8601
-     */
-    public List<String> getInstantsList() {
-        TreeSet<Date> domain = accessor.getTimeDomain();
-        List<String> result = new ArrayList<String>(domain.size());
-        for (Date date : domain) {
-            result.add(formatter.format(date));
-        }
-        
-        return result;
-    }
+   
 
     /**
      * The coverage identifier

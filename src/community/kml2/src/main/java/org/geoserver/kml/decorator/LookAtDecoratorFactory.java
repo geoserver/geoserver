@@ -1,3 +1,7 @@
+/* Copyright (c) 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.kml.decorator;
 
 import org.geoserver.kml.LookAtOptions;
@@ -9,8 +13,14 @@ import de.micromata.opengis.kml.v_2_2_0.Document;
 import de.micromata.opengis.kml.v_2_2_0.Feature;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
 import de.micromata.opengis.kml.v_2_2_0.LookAt;
+import de.micromata.opengis.kml.v_2_2_0.NetworkLink;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
 
+/**
+ * Adds LookAt elements on Document, Folder and Placemark
+ * 
+ * @author Andrea Aime - GeoSolutions
+ */
 public class LookAtDecoratorFactory implements KmlDecoratorFactory {
 
     @Override
@@ -18,8 +28,8 @@ public class LookAtDecoratorFactory implements KmlDecoratorFactory {
             KmlEncodingContext context) {
         if (Placemark.class.isAssignableFrom(featureClass)) {
             return new PlacemarkLookAtDecorator();
-        } else if (Folder.class.isAssignableFrom(featureClass)) {
-            return new FolderLookAtDecorator();
+        } else if (Folder.class.isAssignableFrom(featureClass) || NetworkLink.class.isAssignableFrom(featureClass)) {
+            return new LayerLookAtDecorator();
         } else if (Document.class.isAssignableFrom(featureClass)) {
             return new DocumentLookAtDecorator();
         } else {
@@ -35,23 +45,22 @@ public class LookAtDecoratorFactory implements KmlDecoratorFactory {
             Envelope bounds = context.getMapContent().getRenderingArea();
             LookAt lookAt = buildLookAt(bounds, context.getLookAtOptions(), true);
             document.setAbstractView(lookAt);
-            
+
             return document;
 
         }
 
     }
 
-    class FolderLookAtDecorator implements KmlDecorator {
+    class LayerLookAtDecorator implements KmlDecorator {
 
         @Override
         public Feature decorate(Feature feature, KmlEncodingContext context) {
-            Folder folder = (Folder) feature;
             Envelope bounds = context.getCurrentLayer().getBounds();
             LookAt lookAt = buildLookAt(bounds, context.getLookAtOptions(), true);
-            folder.setAbstractView(lookAt);
-            
-            return folder;
+            feature.setAbstractView(lookAt);
+
+            return feature;
         }
 
     }
@@ -63,29 +72,29 @@ public class LookAtDecoratorFactory implements KmlDecoratorFactory {
             Placemark pm = (Placemark) feature;
             Geometry geometry = (Geometry) context.getCurrentFeature().getDefaultGeometry();
             Envelope bounds = null;
-            if(geometry != null) {
+            if (geometry != null) {
                 bounds = geometry.getEnvelopeInternal();
             }
             LookAt lookAt = buildLookAt(bounds, context.getLookAtOptions(), true);
             pm.setAbstractView(lookAt);
-            
+
             return pm;
         }
 
     }
-    
+
     public LookAt buildLookAt(Envelope bounds, LookAtOptions options, boolean forceBounds) {
         // get/build the target envelope
         Envelope lookAtEnvelope = bounds;
         Geometry lookAtGeometry = options.getLookAt();
-        if(!forceBounds && lookAtGeometry != null) {
+        if (!forceBounds && lookAtGeometry != null) {
             lookAtEnvelope = lookAtGeometry.getEnvelopeInternal();
         }
-        
+
         if (lookAtEnvelope == null || lookAtEnvelope.isNull()) {
             return null;
         }
-        
+
         // compute the lookAt details
         double lon1 = lookAtEnvelope.getMinX();
         double lat1 = lookAtEnvelope.getMinY();
@@ -126,7 +135,7 @@ public class LookAtDecoratorFactory implements KmlDecoratorFactory {
 
         return lookAt;
     }
-    
+
     private double[] getRect(double lat, double lon, double radius) {
         double theta = (90 - lat) * Math.PI / 180;
         double phi = (90 - lon) * Math.PI / 180;

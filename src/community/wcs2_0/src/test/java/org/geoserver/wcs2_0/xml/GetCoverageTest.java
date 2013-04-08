@@ -48,17 +48,28 @@ public class GetCoverageTest extends WCSTestSupport {
     
     protected static QName WATTEMP = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
     
+    protected static QName TIMERANGES = new QName(MockData.SF_URI, "timeranges", MockData.SF_PREFIX);
+
+    
     @Before
     public void clearDimensions() {
         clearDimensions(getLayerId(WATTEMP));
+        clearDimensions(getLayerId(TIMERANGES));
     }
     
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         testData.addRasterLayer(WATTEMP, "watertemp.zip", null, null, SystemTestData.class, getCatalog());
-        CoverageInfo coverage = getCatalog().getCoverageByName(getLayerId(WATTEMP));
-        // force sorting on elevation to get predictable results
+        sortByElevation(WATTEMP);
+        
+        testData.addRasterLayer(TIMERANGES, "timeranges.zip", null, null, SystemTestData.class, getCatalog());
+        sortByElevation(TIMERANGES);
+    }
+
+    // force sorting on elevation to get predictable results
+    private void sortByElevation(QName layer) {
+        CoverageInfo coverage = getCatalog().getCoverageByName(getLayerId(layer));
         String sortByKey = ImageMosaicFormat.SORT_BY.getName().toString();
         coverage.getParameters().put(sortByKey, "elevation");
         getCatalog().save(coverage);
@@ -469,7 +480,10 @@ public class GetCoverageTest extends WCSTestSupport {
     @Test
     public void testCoverageTimeSlicingNoTimeConfigured() throws Exception {
         final File xml= new File("./src/test/resources/trimming/requestGetCoverageTimeSlicingXML.xml");
-        final String request= FileUtils.readFileToString(xml);
+        String request = FileUtils.readFileToString(xml);
+        request = request.replace("${coverageId}", "sf__watertemp");
+        request = request.replace("${slicePoint}", "2000-10-31T00:00:00.000Z");
+
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
         checkOws20Exception(response, 404, WCS20Exception.WCS20ExceptionCode.InvalidAxisLabel.getExceptionCode(), null);
     }
@@ -479,6 +493,7 @@ public class GetCoverageTest extends WCSTestSupport {
         setupRasterDimension(getLayerId(WATTEMP), ResourceInfo.TIME, DimensionPresentation.LIST, null);
         final File xml = new File("./src/test/resources/trimming/requestGetCoverageTimeSlicingXML.xml");
         String request= FileUtils.readFileToString(xml);
+        request = request.replace("${coverageId}", "sf__watertemp");
         request = request.replace("${slicePoint}", "2000-10-31T00:00:00.000Z");
         // nearest neighbor match, lowest time returned
         checkWaterTempValue(request, 14.89799975766800344);
@@ -489,6 +504,7 @@ public class GetCoverageTest extends WCSTestSupport {
         setupRasterDimension(getLayerId(WATTEMP), ResourceInfo.TIME, DimensionPresentation.LIST, null);
         final File xml = new File("./src/test/resources/trimming/requestGetCoverageTimeSlicingXML.xml");
         String request= FileUtils.readFileToString(xml);
+        request = request.replace("${coverageId}", "sf__watertemp");
         request = request.replace("${slicePoint}", "2008-10-31T00:00:00.000Z");
         checkWaterTempValue(request, 14.89799975766800344);
     }
@@ -498,6 +514,7 @@ public class GetCoverageTest extends WCSTestSupport {
         setupRasterDimension(getLayerId(WATTEMP), ResourceInfo.TIME, DimensionPresentation.LIST, null);
         final File xml = new File("./src/test/resources/trimming/requestGetCoverageTimeSlicingXML.xml");
         String request= FileUtils.readFileToString(xml);
+        request = request.replace("${coverageId}", "sf__watertemp");
         request = request.replace("${slicePoint}", "2000-10-31T11:30:00.000Z");
         // nearest neighbor match, lowest time returned
         checkWaterTempValue(request, 14.89799975766800344);
@@ -508,6 +525,7 @@ public class GetCoverageTest extends WCSTestSupport {
         setupRasterDimension(getLayerId(WATTEMP), ResourceInfo.TIME, DimensionPresentation.LIST, null);
         final File xml = new File("./src/test/resources/trimming/requestGetCoverageTimeSlicingXML.xml");
         String request= FileUtils.readFileToString(xml);
+        request = request.replace("${coverageId}", "sf__watertemp");
         request = request.replace("${slicePoint}", "2008-11-01T00:00:00.000Z");
         checkWaterTempValue(request, 14.52999974018894136);
     }
@@ -517,8 +535,45 @@ public class GetCoverageTest extends WCSTestSupport {
         setupRasterDimension(getLayerId(WATTEMP), ResourceInfo.TIME, DimensionPresentation.LIST, null);
         final File xml = new File("./src/test/resources/trimming/requestGetCoverageTimeSlicingXML.xml");
         String request= FileUtils.readFileToString(xml);
+        request = request.replace("${coverageId}", "sf__watertemp");
         request = request.replace("${slicePoint}", "2011-11-01T00:00:00.000Z");
         // nearest neighbor match, highest time returned
+        checkWaterTempValue(request, 14.52999974018894136);
+    }
+    
+    @Test
+    public void testCoverageTimeSlicingAgainstFirstRange() throws Exception {
+        setupRasterDimension(getLayerId(TIMERANGES), ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        setupRasterDimension(getLayerId(TIMERANGES), ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
+        final File xml = new File("./src/test/resources/trimming/requestGetCoverageTimeSlicingXML.xml");
+        String request= FileUtils.readFileToString(xml);
+        request = request.replace("${coverageId}", "sf__timeranges");
+        request = request.replace("${slicePoint}", "2008-10-31T00:00:00.000Z");
+        // timeranges is really just an expanded watertemp
+        checkWaterTempValue(request, 18.478999927756377);
+    }
+    
+    @Test
+    public void testCoverageTimeSlicingAgainstRangeHole() throws Exception {
+        setupRasterDimension(getLayerId(TIMERANGES), ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        setupRasterDimension(getLayerId(TIMERANGES), ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
+        final File xml = new File("./src/test/resources/trimming/requestGetCoverageTimeSlicingXML.xml");
+        String request= FileUtils.readFileToString(xml);
+        request = request.replace("${coverageId}", "sf__timeranges");
+        request = request.replace("${slicePoint}", "2008-11-04T11:00:00.000Z");
+        // timeranges is really just an expanded watertemp, and we expect NN 
+        checkWaterTempValue(request, 14.52999974018894136);
+    }
+    
+    @Test
+    public void testCoverageTimeSlicingAgainstSecondRange() throws Exception {
+        setupRasterDimension(getLayerId(TIMERANGES), ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        setupRasterDimension(getLayerId(TIMERANGES), ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
+        final File xml = new File("./src/test/resources/trimming/requestGetCoverageTimeSlicingXML.xml");
+        String request= FileUtils.readFileToString(xml);
+        request = request.replace("${coverageId}", "sf__timeranges");
+        request = request.replace("${slicePoint}", "2008-11-06T00:00:00.000Z");
+        // timeranges is really just an expanded watertemp 
         checkWaterTempValue(request, 14.52999974018894136);
     }
 

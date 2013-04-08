@@ -25,7 +25,7 @@ import org.opengis.referencing.operation.TransformException;
 
 public abstract class WFSRequestObjectHandler extends RequestObjectHandler {
 
-    private static final Logger LOGGER = Logging.getLogger(WFSRequestObjectHandler.class);
+    static final Logger LOGGER = Logging.getLogger(WFSRequestObjectHandler.class);
     
     // TODO: this should probably be handled as an update or extension to ExtractBoundsFilterVisitor
     ExtractBoundsFilterVisitor visitor = new ExtractBoundsFilterVisitor() {
@@ -96,14 +96,22 @@ public abstract class WFSRequestObjectHandler extends RequestObjectHandler {
         return element;
     }
     protected CoordinateReferenceSystem getCrsFromElement(Object element) {
-        return crsFromTypeName((QName) OwsUtils.get(element, "typeName"));
+        if (OwsUtils.has(element, "typeName")) {
+            return crsFromTypeName((QName) OwsUtils.get(element, "typeName"));
+        }
+        return null;
     }
-    
+
+    protected ReferencedEnvelope getBBoxFromElement(Object element) {
+        return null;
+    }
+
     @Override
     protected BoundingBox getBBox(Object request) {
         if(monitorConfig.getBboxMode()!=MonitorConfig.BboxMode.FULL){
             return null;
         }
+
         List<Object> elements = getElements(request);
         if (elements==null) return null;
 
@@ -111,17 +119,26 @@ public abstract class WFSRequestObjectHandler extends RequestObjectHandler {
             BoundingBox result = new ReferencedEnvelope(monitorConfig.getBboxCrs());
             for(Object e : elements){
                 e = unwrapElement(e);
-                
-                // This is the default CRS for the layer being queried
-                CoordinateReferenceSystem defaultCrs = getCrsFromElement(e);
-                
-                if (defaultCrs==null) return null;
-                Filter f = (Filter) OwsUtils.get(e, "filter");
-                if(f!=null) {
-                    ReferencedEnvelope startingBbox = new ReferencedEnvelope(defaultCrs);
-                    ReferencedEnvelope filterBbox = (ReferencedEnvelope) f.accept(visitor, startingBbox);
-                    
-                    result.include(filterBbox.toBounds(monitorConfig.getBboxCrs()));
+
+                //first ask for a bounding box directly
+                ReferencedEnvelope bbox = getBBoxFromElement(e);
+                if (bbox == null) {
+                    // try to infer it from a filter of the request
+                    // This is the default CRS for the layer being queried
+                    CoordinateReferenceSystem defaultCrs = getCrsFromElement(e);
+                    if (defaultCrs == null) {
+                        continue;
+                    }
+
+                    Filter f = OwsUtils.has(e, "filter") ? (Filter) OwsUtils.get(e, "filter") : null;
+                    if(f != null) {
+                        ReferencedEnvelope startingBbox = new ReferencedEnvelope(defaultCrs);
+                        bbox = (ReferencedEnvelope) f.accept(visitor, startingBbox);
+                    }
+                }
+
+                if (bbox != null) {
+                    result.include(bbox.toBounds(monitorConfig.getBboxCrs()));
                 }
             }
             return result;
@@ -130,5 +147,4 @@ public abstract class WFSRequestObjectHandler extends RequestObjectHandler {
             return null;
         }
     }
-
 }

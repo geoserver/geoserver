@@ -1,7 +1,12 @@
+/* Copyright (c) 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.kml.decorator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,13 +18,22 @@ import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.featureinfo.FeatureTemplate;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.map.Layer;
 import org.geotools.styling.Symbolizer;
 import org.opengis.feature.simple.SimpleFeature;
 
 import de.micromata.opengis.kml.v_2_2_0.Feature;
 
+/**
+ * A class used by {@link KmlDecorator} to get the current encoding context (request, map content,
+ * current layer, feature and so on).
+ * 
+ * @author Andrea Aime - GeoSolutions
+ */
 public class KmlEncodingContext {
+    
+    boolean kmz;
 
     WMSMapContent mapContent;
 
@@ -28,6 +42,8 @@ public class KmlEncodingContext {
     List<Symbolizer> currentSymbolizers;
 
     Layer currentLayer;
+
+    SimpleFeatureCollection currentFeatureCollection;
 
     SimpleFeature currentFeature;
 
@@ -40,14 +56,17 @@ public class KmlEncodingContext {
     LookAtOptions lookAtOptions;
 
     WMS wms;
+    
+    Map<String, Layer> kmzGroundOverlays = new LinkedHashMap<String, Layer>();
 
-    public KmlEncodingContext(WMSMapContent mapContent, GetMapRequest request, WMS wms) {
+    public KmlEncodingContext(WMSMapContent mapContent, WMS wms, boolean kmz) {
         super();
         this.mapContent = mapContent;
-        this.request = request;
+        this.request = mapContent.getRequest();
         this.wms = wms;
         this.descriptionEnabled = KMLUtils.getKMAttr(request, wms);
         this.lookAtOptions = new LookAtOptions(request.getFormatOptions());
+        this.kmz = kmz;
     }
 
     public WMSMapContent getMapContent() {
@@ -132,5 +151,40 @@ public class KmlEncodingContext {
 
         return result;
     }
+
+    public SimpleFeatureCollection getCurrentFeatureCollection() {
+        return currentFeatureCollection;
+    }
+
+    public void setCurrentFeatureCollection(SimpleFeatureCollection currentFeatureCollection) {
+        this.currentFeatureCollection = currentFeatureCollection;
+    }
+
+    public boolean isKmz() {
+        return kmz;
+    }
+    
+    /**
+     * Adds a layer to be generated as ground overlay in the kmz package
+     * @param imagePath The path of the ground overlay image inside the kmz archive
+     * @param layer
+     */
+    public void addKmzGroundOverlay(String imagePath, Layer layer) {
+        if(!kmz) {
+            throw new IllegalStateException("Cannot add ground " +
+            		"overlay layers, the output is not supposed to be a KMZ");
+        }
+        this.kmzGroundOverlays.put(imagePath, layer);
+    }
+
+    /**
+     * Returns the list of ground overlay layers to be included in the KMZ response
+     * @return
+     */
+    public Map<String, Layer> getKmzGroundOverlays() {
+        return kmzGroundOverlays;
+    }
+    
+    
 
 }

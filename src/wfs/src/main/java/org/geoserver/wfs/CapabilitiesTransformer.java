@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.KeywordInfo;
+import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
@@ -57,6 +59,7 @@ import org.opengis.filter.FilterFactory;
 import org.opengis.filter.capability.FunctionName;
 import org.opengis.parameter.Parameter;
 import org.vfny.geoserver.global.FeatureTypeInfoTitleComparator;
+import org.vfny.geoserver.util.ResponseUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
@@ -203,7 +206,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
         }
     }
     
-    AttributesImpl attributes(String[] nameValues) {
+    AttributesImpl attributes(String... nameValues) {
         AttributesImpl atts = new AttributesImpl();
 
         for (int i = 0; i < nameValues.length; i += 2) {
@@ -861,9 +864,14 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
      * Transformer for wfs 1.1 capabilities document.
      */
     public static class WFS1_1 extends CapabilitiesTransformer {
-        private final boolean skipMisconfigured;
-		private final Collection<WFSExtendedCapabilitiesProvider> extCapsProviders;
-		private final String baseUrl;
+        
+        static final Set<String> VALID_LINKS_METADATATYPES = new HashSet<String>(Arrays.asList("TC211", "FGDC", "19115", "13139"));
+        
+        static final Set<String> VALID_LINKS_FORMATS = new HashSet<String>(Arrays.asList("text/xml", "text/html", "text/sgml", "text/plain"));
+        
+        protected final boolean skipMisconfigured;
+        protected final Collection<WFSExtendedCapabilitiesProvider> extCapsProviders;
+        protected final String baseUrl;
         
         public WFS1_1(WFSInfo wfs, String baseUrl, Catalog catalog, Collection<WFSExtendedCapabilitiesProvider> extCapsProviders) {
             this(wfs, WFSInfo.Version.V_11, baseUrl, catalog, extCapsProviders);
@@ -1547,8 +1555,42 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 element("ows:UpperCorner", bbox.getMaxX() + " " + bbox.getMaxY());
 
                 end("ows:WGS84BoundingBox");
+                
+                List<MetadataLinkInfo> mlinks = featureType.getMetadataLinks();
+                if(mlinks != null && !mlinks.isEmpty()) {
+                    for (MetadataLinkInfo link : mlinks) {
+                        metadataLink(link);
+                    }
+                }
 
                 end("FeatureType");
+            }
+
+            protected void metadataLink(MetadataLinkInfo link) {
+                // extract format and metadata type, make sure they abide the WFS 1.1
+                // restrictions
+                String format = link.getType();
+                String metadataType = link.getMetadataType();
+                if ("ISO19115:2003".equals(metadataType)) {
+                    metadataType = "19115";
+                }
+                if (!VALID_LINKS_FORMATS.contains(format)) {
+                    LOGGER.log(Level.FINE, "Skipping metadata link " + link.getContent()
+                            + ", format " + format
+                            + " is not valid in WFS 1.1, supported types are: "
+                            + VALID_LINKS_FORMATS);
+                    return;
+                }
+                if (!VALID_LINKS_METADATATYPES.contains(metadataType)) {
+                    LOGGER.log(Level.FINE, "Skipping metadata link " + link.getContent()
+                            + ", metadata type " + metadataType
+                            + " is not valid in WFS 1.1, supported types are: "
+                            + VALID_LINKS_METADATATYPES);
+                    return;
+                }
+                
+                AttributesImpl mtAtts = attributes("type", metadataType, "format", format);
+                element("MetadataURL", link.getContent(), mtAtts);
             }
             
             /**
@@ -1864,8 +1906,34 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
 
                 //wfs 1.1 already does a lot of the capabilities work, use that transformer 
                 // as a delegate
+                WFS1_1 wfs1_1 = new WFS1_1(wfs, version, baseUrl, catalog, extCapsProviders) {
+                  
+                    @Override
+                    public Translator createTranslator(ContentHandler handler) {
+                        return new CapabilitiesTranslator1_1_v2MetadataLinks(handler, baseUrl, wfs, extCapsProviders);
+                    }
+                    
+                    class CapabilitiesTranslator1_1_v2MetadataLinks extends CapabilitiesTranslator1_1 {
+
+                        public CapabilitiesTranslator1_1_v2MetadataLinks(ContentHandler handler,
+                                String baseUrl, WFSInfo wfs,
+                                Collection<WFSExtendedCapabilitiesProvider> extCapsProviders) {
+                            super(handler, baseUrl, wfs, extCapsProviders);
+                        }
+                        
+                        @Override
+                        protected void metadataLink(MetadataLinkInfo link) {
+                            // WFS 2.0 metadata url is different than the v1.1 one, indeed it just
+                            // has an href
+                            AttributesImpl mtAtts = attributes("xlink:href", link.getContent());
+                            start("MetadataURL", mtAtts);
+                            end("MetadataURL");
+                        }
+                        
+                    }
+                };
                 delegate = 
-                    (CapabilitiesTranslator1_1) new WFS1_1(wfs, version, baseUrl, catalog, extCapsProviders).createTranslator(handler);
+                    (CapabilitiesTranslator1_1) wfs1_1.createTranslator(handler);
             }
 
             public void encode(Object o) throws IllegalArgumentException {

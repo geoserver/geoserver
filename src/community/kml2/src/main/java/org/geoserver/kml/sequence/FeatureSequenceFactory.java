@@ -7,16 +7,13 @@ package org.geoserver.kml.sequence;
 import java.util.EmptyStackException;
 import java.util.List;
 
-import org.geoserver.kml.KMLUtils;
 import org.geoserver.kml.ScaleStyleVisitor;
 import org.geoserver.kml.SymbolizerCollector;
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
 import org.geoserver.kml.decorator.KmlEncodingContext;
-import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
-import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.geotools.styling.Style;
@@ -43,18 +40,8 @@ public class FeatureSequenceFactory implements SequenceFactory<Feature> {
 
     public FeatureSequenceFactory(KmlEncodingContext context, FeatureLayer layer) {
         this.context = context;
+        this.features = context.getCurrentFeatureCollection();
         WMSMapContent mapContent = context.getMapContent();
-        try {
-            this.features = KMLUtils.loadFeatureCollection(
-                    (SimpleFeatureSource) layer.getFeatureSource(), layer, mapContent, context.getWms(),
-                    mapContent.getScaleDenominator());
-        } catch (Exception e) {
-            if (e instanceof ServiceException) {
-                throw (ServiceException) e;
-            } else {
-                throw new ServiceException("Failed to load vector data during KML generation", e);
-            }
-        }
 
         // prepare the encoding context
         context.setCurrentLayer(layer);
@@ -102,13 +89,13 @@ public class FeatureSequenceFactory implements SequenceFactory<Feature> {
                 try {
                     // grab the next feature, with a sentinel to tell us whether there was an
                     // exception
-                    featureRetrieved = false;
                     SimpleFeature sf = (SimpleFeature) fi.next();
                     featureRetrieved = true;
                     context.setCurrentFeature(sf);
 
                     List<Symbolizer> symbolizers = getSymbolizers(simplified, sf);
                     if (symbolizers.size() == 0) {
+                        // skip layers that have no active symbolizers
                         continue;
                     }
                     context.setCurrentSymbolizers(symbolizers);

@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.geoserver.kml.decorator.KmlEncodingContext;
+import org.geoserver.kml.decorator.LookAtDecoratorFactory;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
@@ -81,6 +83,13 @@ public class NetworkLinkMapOutputFormat extends AbstractMapOutputFormat {
             IOException {
         GetMapRequest request = mapContent.getRequest();
         
+        // restore normal kml types (no network link mode)
+        if (NetworkLinkMapOutputFormat.KML_MIME_TYPE.equals(request.getFormat())) {
+            request.setFormat(KMLMapOutputFormat.MIME_TYPE);
+        } else {
+            request.setFormat(KMZMapOutputFormat.MIME_TYPE);
+        }
+         
         // prepare kml, document and folder
         Kml kml = new Kml();
         Document document = kml.createAndSetDocument();
@@ -88,13 +97,16 @@ public class NetworkLinkMapOutputFormat extends AbstractMapOutputFormat {
         Folder folder = document.createAndAddFolder();
         folder.setName(kmltitle);
         
-        // TODO: parse the lookAt if any
-        LookAt lookAt = null;
-
+        LookAtDecoratorFactory lookAtFactory = new LookAtDecoratorFactory();
+        LookAtOptions lookAtOptions = new LookAtOptions(request.getFormatOptions());
+        
         // compute the layer bounds and the total bounds
         List<ReferencedEnvelope> layerBounds = new ArrayList<ReferencedEnvelope>(mapContent.layers().size());
         ReferencedEnvelope aggregatedBounds = computePerLayerQueryBounds(mapContent, layerBounds, null);
-        
+        if (aggregatedBounds != null) {
+            LookAt la = lookAtFactory.buildLookAt(aggregatedBounds, lookAtOptions, false);
+            folder.setAbstractView(la);
+        }
         
         final List<MapLayerInfo> layers = request.getLayers();
         final List<Style> styles = request.getStyles();
@@ -104,13 +116,13 @@ public class NetworkLinkMapOutputFormat extends AbstractMapOutputFormat {
             nl.setName(layerInfo.getName());
             nl.setVisibility(true);
             nl.setOpen(true);
-            
-            // TODO: handle lookat
-            // look at for the network link for this single layer
+
+            // look at for this layer
             ReferencedEnvelope latLongBoundingBox = layerBounds.get(i);
-//            if (latLongBoundingBox != null) {
-//                encodeLookAt(latLongBoundingBox, lookAt);
-//            }
+            if (latLongBoundingBox != null) {
+                LookAt la = lookAtFactory.buildLookAt(latLongBoundingBox, lookAtOptions, false);
+                nl.setAbstractView(la);
+            }
 
             // set bbox to null so its not included in the request, google
             // earth will append it for us
@@ -133,7 +145,11 @@ public class NetworkLinkMapOutputFormat extends AbstractMapOutputFormat {
             url.setViewRefreshTime(1);
         }
         
-        return new KMLMap(mapContent, kml);
+        boolean kmz = request.getFormat().equals(KMZ_MIME_TYPE) || request.getFormat().equals(KMZMapOutputFormat.MIME_TYPE);
+        String mime = kmz ? KMZMapOutputFormat.MIME_TYPE : KMLMapOutputFormat.MIME_TYPE;
+        KMLMap map = new KMLMap(mapContent, null, kml, mime);
+        map.setContentDispositionHeader(mapContent, ".kml");
+        return map;
     }
     
     /**
@@ -179,7 +195,7 @@ public class NetworkLinkMapOutputFormat extends AbstractMapOutputFormat {
             boolean computeQueryBounds) {
 
         final Query layerQuery = layer.getQuery();
-        // make sure if layer is gonna be filtered, the resulting bounds are obtained instead of
+        // make sure if layer is going to be filtered, the resulting bounds are obtained instead of
         // the whole bounds
         final Filter filter = layerQuery.getFilter();
         if (layerQuery.getFilter() == null || Filter.INCLUDE.equals(filter)) {

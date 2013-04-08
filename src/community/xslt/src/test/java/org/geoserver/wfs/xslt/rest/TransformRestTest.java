@@ -4,9 +4,13 @@
  */
 package org.geoserver.wfs.xslt.rest;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +24,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wfs.xslt.config.TransformInfo;
 import org.geoserver.wfs.xslt.config.TransformRepository;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -32,15 +37,10 @@ public class TransformRestTest extends GeoServerSystemTestSupport {
     private TransformRepository repository; 
     
     @Before
-    public void prepare() {
+    public void prepare() throws IOException {
         xpath = XMLUnit.newXpathEngine();
         repository = (TransformRepository) applicationContext.getBean("transformRepository");
-    }
-
-    @Override
-    protected void onSetUp(SystemTestData testData) throws Exception {
-        super.onSetUp(testData);
-
+        
         File dd = testData.getDataDirectoryRoot();
         File wfs = new File(dd, "wfs");
         File transform = new File(wfs, "transform");
@@ -49,7 +49,12 @@ public class TransformRestTest extends GeoServerSystemTestSupport {
         }
         assertTrue(transform.mkdirs());
         FileUtils.copyDirectory(new File("src/test/resources/org/geoserver/wfs/xslt"), transform);
-        
+    }
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("h", "http://www.w3.org/1999/xhtml");
         namespaces.put("atom", "http://www.w3.org/2005/Atom");

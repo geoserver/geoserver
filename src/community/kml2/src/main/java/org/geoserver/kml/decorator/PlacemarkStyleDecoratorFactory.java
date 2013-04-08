@@ -1,3 +1,7 @@
+/* Copyright (c) 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.kml.decorator;
 
 import java.awt.Color;
@@ -15,7 +19,6 @@ import org.geoserver.kml.KMLUtils;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.wms.GetMapRequest;
 import org.geotools.data.DataUtilities;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.renderer.style.ExpressionExtractor;
@@ -42,6 +45,7 @@ import com.vividsolutions.jts.geom.Polygon;
 
 import de.micromata.opengis.kml.v_2_2_0.ColorMode;
 import de.micromata.opengis.kml.v_2_2_0.Feature;
+import de.micromata.opengis.kml.v_2_2_0.Icon;
 import de.micromata.opengis.kml.v_2_2_0.IconStyle;
 import de.micromata.opengis.kml.v_2_2_0.LabelStyle;
 import de.micromata.opengis.kml.v_2_2_0.LineStyle;
@@ -49,9 +53,15 @@ import de.micromata.opengis.kml.v_2_2_0.Placemark;
 import de.micromata.opengis.kml.v_2_2_0.PolyStyle;
 import de.micromata.opengis.kml.v_2_2_0.Style;
 
+/**
+ * Encodes the SLD styles into KML corresponding styles and adds them to the Placemark
+ * 
+ * @author Andrea Aime - GeoSolutions
+ */
 public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
 
-    public KmlDecorator getDecorator(Class<? extends Feature> featureClass, KmlEncodingContext context) {
+    public KmlDecorator getDecorator(Class<? extends Feature> featureClass,
+            KmlEncodingContext context) {
         if (Placemark.class.isAssignableFrom(featureClass)) {
             return new PlacemarkStyleDecorator();
         } else {
@@ -77,7 +87,9 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
                 // if no point symbolizers, create a default one
                 List<Symbolizer> points = classified.get(PointSymbolizer.class);
                 if (points.size() == 0) {
-                    addDefaultIconStyle(pm, sf, context);
+                    if(context.isDescriptionEnabled()) {
+                        addDefaultIconStyle(pm, sf, context);
+                    }
                 } else {
                     for (Symbolizer symbolizer : points) {
                         addIconStyle(pm, (PointSymbolizer) symbolizer, sf, context);
@@ -87,7 +99,9 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
                 // handle label styles
                 List<Symbolizer> texts = classified.get(TextSymbolizer.class);
                 if (texts.size() == 0) {
-                    addDefaultLabelStyle(pm);
+                    if(context.isDescriptionEnabled()) {
+                        addDefaultLabelStyle(pm);
+                    }
                 } else {
                     for (Symbolizer symbolizer : texts) {
                         addLabelStyle(pm, sf, (TextSymbolizer) symbolizer);
@@ -106,7 +120,6 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
                 for (Symbolizer symbolizer : polygons) {
                     addPolygonStyle(pm, sf, (PolygonSymbolizer) symbolizer, forceOutiline);
                 }
-
             }
 
             return feature;
@@ -278,6 +291,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
             Style style = pm.createAndAddStyle();
             IconStyle is = style.createAndSetIconStyle();
             is.setColorMode(ColorMode.NORMAL);
+            Icon icon = is.createAndSetIcon();
 
             // default icon
             String iconHref = null;
@@ -358,6 +372,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
             if (iconHref == null) {
                 iconHref = "http://maps.google.com/mapfiles/kml/pal4/icon25.png";
             }
+            icon.setHref(iconHref);
         }
 
         private ExternalGraphic getExternalGraphic(PointSymbolizer symbolizer) {

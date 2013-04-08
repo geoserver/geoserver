@@ -30,24 +30,29 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
     protected QName V_TIME_ELEVATION = new QName(MockData.SF_URI, "TimeElevation", MockData.SF_PREFIX);
     protected QName V_TIME_ELEVATION_EMPTY = new QName(MockData.SF_URI, "TimeElevationEmpty", MockData.SF_PREFIX);
     protected static QName WATTEMP = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
+    protected static QName TIMERANGES = new QName(MockData.SF_URI, "timeranges", MockData.SF_PREFIX);
     
     protected static final String UNITS = "foot";
     protected static final String UNIT_SYMBOL = "ft";
 
     CoverageInfo wattemp;
     FeatureTypeInfo te,teEmpty;
+    private CoverageInfo timeranges;
     
     @Before
     public void saveOriginalInfoObjects () throws Exception {
-        wattemp=getCatalog().getCoverageByName(WATTEMP.getLocalPart());
-        te=getCatalog().getFeatureTypeByName(V_TIME_ELEVATION.getLocalPart());
-        teEmpty=getCatalog().getFeatureTypeByName(V_TIME_ELEVATION_EMPTY.getLocalPart());
+        wattemp = getCatalog().getCoverageByName(WATTEMP.getLocalPart());
+        timeranges = getCatalog().getCoverageByName(TIMERANGES.getLocalPart());
+        te = getCatalog().getFeatureTypeByName(V_TIME_ELEVATION.getLocalPart());
+        teEmpty = getCatalog().getFeatureTypeByName(V_TIME_ELEVATION_EMPTY.getLocalPart());
     }
     
     @After
     public void restoreOriginalInfoObjects() throws Exception {
         wattemp.getMetadata().clear();
         getCatalog().save(wattemp);
+        timeranges.getMetadata().clear();
+        getCatalog().save(timeranges);
         te.getMetadata().clear();
         getCatalog().save(te);
         teEmpty.getMetadata().clear();
@@ -97,35 +102,12 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
         testData.addStyle("temperature","./temperature.sld",WMSDimensionsTestSupport.class,catalog);
         Map propertyMap = new HashMap();
         propertyMap.put(LayerProperty.STYLE,"temperature");
+        // a raster layer with time and elevation
         testData.addRasterLayer(WATTEMP, "watertemp.zip", null, propertyMap, SystemTestData.class, catalog);
-
-        
+        // a raster layer with time, elevation and custom dimensions as ranges
+        testData.addRasterLayer(TIMERANGES, "timeranges.zip", null, null, SystemTestData.class, catalog);
     }
     
-
-//    @Override
-//    protected void setUpInternal() throws Exception {
-//        super.setUpInternal();
-//        
-//        GeoServerInfo global = getGeoServer().getGlobal();
-//        global.getSettings().setProxyBaseUrl("src/test/resources/geoserver");
-//        getGeoServer().save(global);
-//        
-//        WMSInfo wms = getGeoServer().getService(WMSInfo.class);
-//        wms.getSRS().add("EPSG:4326");
-//        getGeoServer().save(wms);
-//        
-//        Map<String, String> namespaces = new HashMap<String, String>();
-//        namespaces.put("xlink", "http://www.w3.org/1999/xlink");
-//        namespaces.put("wfs", "http://www.opengis.net/wfs");
-//        namespaces.put("wcs", "http://www.opengis.net/wcs/1.1.1");
-//        namespaces.put("gml", "http://www.opengis.net/gml");
-//        namespaces.put("", "http://www.opengis.net/wms");
-//        namespaces.put("wms", "http://www.opengis.net/wms");
-//        getTestData().registerNamespaces(namespaces);
-//        XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
-//    }
-//    
     protected void setupVectorDimension(String featureTypeName, String metadata, String attribute, 
             DimensionPresentation presentation, Double resolution, String units, String unitSymbol) {
         FeatureTypeInfo info = getCatalog().getFeatureTypeByName(featureTypeName);
@@ -147,9 +129,9 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
         setupVectorDimension("TimeElevation", metadata, attribute, presentation, resolution, units, unitSymbol);
     }
     
-    protected void setupRasterDimension(String metadata, DimensionPresentation presentation, 
-            Double resolution, String units, String unitSymbol) {
-        CoverageInfo info = getCatalog().getCoverageByName(WATTEMP.getLocalPart());
+    protected void setupRasterDimension(QName layer, String metadata, 
+            DimensionPresentation presentation, Double resolution, String units, String unitSymbol) {
+        CoverageInfo info = getCatalog().getCoverageByName(layer.getLocalPart());
         DimensionInfo di = new DimensionInfoImpl();
         di.setEnabled(true);
         di.setPresentation(presentation);

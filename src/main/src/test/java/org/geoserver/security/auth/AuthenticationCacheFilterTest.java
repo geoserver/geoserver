@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.BasicAuthenticationFilterConfig;
@@ -33,8 +34,6 @@ import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.test.RunTestSetup;
 import org.geoserver.test.SystemTest;
-import org.geoserver.test.TestSetup;
-import org.geoserver.test.TestSetupFrequency;
 import org.geotools.data.Base64;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -47,7 +46,6 @@ import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 @Category(SystemTest.class)
-@TestSetup(run=TestSetupFrequency.REPEAT)
 public class AuthenticationCacheFilterTest extends AbstractAuthenticationProviderTest {
     
     public final static String testFilterName = "basicAuthTestFilter";
@@ -56,6 +54,21 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
     public final static String testFilterName4 = "requestHeaderTestFilter";
     public final static String testFilterName5 = "basicAuthTestFilterWithRememberMe";
     public final static String testFilterName8 = "x509TestFilter";
+    
+    
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        
+        BasicAuthenticationFilterConfig config = new BasicAuthenticationFilterConfig();
+        config.setClassName(GeoServerBasicAuthenticationFilter.class.getName());
+        config.setUseRememberMe(false);
+        config.setName(testFilterName);
+        
+        getSecurityManager().saveFilter(config);
+
+    }    
+    
     
     Authentication getAuth(String filterName, String user, Integer idleTime, Integer liveTime) {
         
@@ -112,12 +125,6 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
     public void testBasicAuth() throws Exception{
         
                 
-        BasicAuthenticationFilterConfig config = new BasicAuthenticationFilterConfig();
-        config.setClassName(GeoServerBasicAuthenticationFilter.class.getName());
-        config.setUseRememberMe(false);
-        config.setName(testFilterName);
-        
-        getSecurityManager().saveFilter(config);
         prepareFilterChain(pattern,testFilterName);            
             
 
@@ -444,7 +451,10 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         assertEquals(HttpServletResponse.SC_FORBIDDEN,response.getErrorCode());
         Authentication auth = getAuth(testFilterName4, testUserName,null,null);
         assertNull(auth);
-        assertNull(SecurityContextHolder.getContext().getAuthentication());        
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+        
+        updateUser("ug1", testUserName, true);
+        
         // Test anonymous
         insertAnonymousFilter();
         request= createRequest("/foo/bar");
@@ -833,6 +843,8 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         assertNull(auth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         
+        updateUser("ug1", testUserName, true);
+        
         // Test anonymous
         insertAnonymousFilter();
         request= createRequest("/foo/bar");
@@ -849,12 +861,6 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
     @Test
     @RunTestSetup
     public void testCascadingFilters() throws Exception{
-
-        BasicAuthenticationFilterConfig bconfig = new BasicAuthenticationFilterConfig();
-        bconfig.setClassName(GeoServerBasicAuthenticationFilter.class.getName());
-        bconfig.setUseRememberMe(false);
-        bconfig.setName(testFilterName);
-        getSecurityManager().saveFilter(bconfig);
 
         
         DigestAuthenticationFilterConfig config = new DigestAuthenticationFilterConfig();

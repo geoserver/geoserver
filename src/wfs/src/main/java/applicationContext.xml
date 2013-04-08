@@ -185,7 +185,7 @@
 		<constructor-arg ref="wfsXsd-1.1"/>
 	</bean>
 	<alias name="xmlConfiguration-1.1" alias="wfsXmlConfiguration-1.1"/>
-	
+   
 	<!-- responses -->
 	<bean id="getCapabilitiesResponse"
 		class="org.geoserver.wfs.response.GetCapabilitiesResponse" singleton="false"/>

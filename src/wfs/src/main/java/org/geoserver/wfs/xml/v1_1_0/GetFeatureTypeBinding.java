@@ -178,7 +178,7 @@ public class GetFeatureTypeBinding extends AbstractComplexBinding {
     public Object parse(ElementInstance instance, Node node, Object value)
         throws Exception {
         GetFeatureType getFeature = wfsfactory.createGetFeatureType();
-
+        
         //lt;xsd:element maxOccurs="unbounded" ref="wfs:Query"/&gt;
         getFeature.getQuery().addAll(node.getChildValues(QueryType.class));
 

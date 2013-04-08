@@ -20,6 +20,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.geoserver.security.GeoServerUserGroupStore;
 import org.geoserver.security.KeyStoreProvider;
 import org.geoserver.security.config.FileBasedSecurityServiceConfig;
@@ -140,10 +141,14 @@ public class XMLUserGroupService extends AbstractUserGroupService {
         try {
             
             Document doc=null;
+            FileInputStream is = null;
             try {
-                doc = builder.parse(new FileInputStream(userFile));
+                is = new FileInputStream(userFile);
+				doc = builder.parse(is);
             } catch (SAXException e) {
                 throw new IOException(e);
+            } finally {
+            	IOUtils.closeQuietly(is);
             }
             
             if (isValidatingXMLSchema()) {

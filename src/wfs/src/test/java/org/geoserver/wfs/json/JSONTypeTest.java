@@ -21,7 +21,7 @@ public class JSONTypeTest extends TestCase {
         assertNotSame(JSONType.json, JSONType.jsonp);
         assertTrue(JSONType.isJsonMimeType(JSONType.json));
 
-        // disable JsonP
+        // enable JsonP programmatically
         JSONType.setJsonpEnabled(true);
         // check jsonp is enabled
         assertTrue(JSONType.useJsonp(JSONType.jsonp));
@@ -29,6 +29,7 @@ public class JSONTypeTest extends TestCase {
         // disable JsonP
         JSONType.setJsonpEnabled(false);
         assertFalse(JSONType.useJsonp(JSONType.jsonp));
+
     }
 
     public void testJSONType() {

@@ -6,6 +6,7 @@
 package org.geoserver.wms.map.quantize;
 
 import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
@@ -60,17 +61,22 @@ public class ColorIndexerOpImage extends PointOpImage {
         il.setColorModel(icm);
 
         SampleModel sm = icm.createCompatibleSampleModel(image.getWidth(), image.getHeight());
-        il.setTileWidth(image.getTileWidth());
-        il.setTileHeight(image.getTileHeight());
         il.setSampleModel(sm);
+        
+        if(!(image instanceof BufferedImage)){
 
-        // this is not the usual code, but one that works also for buffered image translated
-        // childs, which won't work properly with il.getTileGridXOffset(image)
-        if (!il.isValid(ImageLayout.TILE_GRID_X_OFFSET_MASK)) {
-            il.setTileGridXOffset(image.getMinTileX() * image.getTileWidth());
-        }
-        if (!il.isValid(ImageLayout.TILE_GRID_Y_OFFSET_MASK)) {
-            il.setTileGridYOffset(image.getMinTileX() * image.getTileHeight());
+            il.setTileWidth(image.getTileWidth());
+            il.setTileHeight(image.getTileHeight());
+            il.setTileGridXOffset(image.getTileGridXOffset());
+            il.setTileGridYOffset(image.getTileGridYOffset());        	
+        } else {
+        	// untiled in case the input image is untiled
+        	// this could be optimized further by _not_
+        	// simply forwarding getTile calls but converting coords.
+            il.setTileWidth(image.getWidth());
+            il.setTileHeight(image.getHeight());
+            il.setTileGridXOffset(0);
+            il.setTileGridYOffset(0);          	
         }
 
         return il;

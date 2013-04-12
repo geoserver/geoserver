@@ -5,7 +5,8 @@
  */
 package org.geoserver.wms.map.quantize;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -132,5 +133,46 @@ public class ColorIndexerTest {
         
         // make sure we have 4 colors + transparent one
         assertEquals(5, icm.getMapSize());
+    }
+    
+    
+    public void testTranslatedImageTileGrid() {
+    	BufferedImage image_ = new BufferedImage(256, 256, BufferedImage.TYPE_BYTE_GRAY);
+        Graphics g = image_.createGraphics();
+        g.setColor(Color.WHITE);
+        g.fillRect(236, 236, 20, 20);
+        g.setColor(new Color(80, 80, 80)); // A dark gray
+        g.fillRect(216, 216, 20, 20);
+        g.setColor(new Color(200, 200, 200)); // A light gray
+        g.fillRect(216, 236, 20, 20);
+        g.dispose();
+        
+        
+        TiledImage image=new TiledImage(
+                0, 
+                0, 
+                256, 
+                256, 
+                128, 
+                128, 
+                image_.getColorModel().createCompatibleSampleModel(256, 256), 
+                image_.getColorModel());
+        image.set(image_);
+        
+        
+        RenderedImage indexed = quantize(image);
+        assertTrue(indexed.getColorModel() instanceof IndexColorModel);
+        IndexColorModel icm = (IndexColorModel) indexed.getColorModel();
+        assertEquals(4, icm.getMapSize()); //Black background, white fill, light gray fill, dark gray fill = 4 colors
+        
+        // check image not black
+        ImageWorker iw = new ImageWorker(indexed).forceComponentColorModel().intensity();
+        double[] mins = iw.getMinimums();
+        double[] maxs = iw.getMaximums();
+        boolean result=true;
+        for(int i=0;i<mins.length;i++){
+        	result=mins[i]==maxs[i]?false:result;
+        }
+        assertTrue(result);
     }
 }

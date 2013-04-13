@@ -778,7 +778,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat implements A
         // handle shapefile encoding
         // and dump the charset into a .cst file, for debugging and control purposes
         // (.cst is not a standard extension)
-        sfds.setStringCharset(charset);
+        sfds.setCharset(charset);
         File charsetFile = new File(tempDir, schema.getTypeName()+ ".cst");
         PrintWriter pw = null;
         try {

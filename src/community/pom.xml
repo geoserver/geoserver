@@ -45,7 +45,6 @@
           <descriptor>release/ext-sfs.xml</descriptor>
        	  <descriptor>release/ext-dds.xml</descriptor>
           <descriptor>release/ext-aggregate.xml</descriptor>
-          <descriptor>release/ext-xslt.xml</descriptor>
           <descriptor>release/ext-wcs2_0.xml</descriptor>
           <descriptor>release/ext-wms-eo.xml</descriptor>
           <descriptor>release/ext-libjpeg-turbo.xml</descriptor>
@@ -159,7 +158,6 @@
         <module>sfs</module>
         <module>feature-aggregate</module>
         <module>script</module>
-        <module>xslt</module>
         <module>wcs2_0</module>
         <module>wms-eo</module>
         <module>libjpeg-turbo</module>
@@ -238,15 +236,6 @@
       </activation> 
       <modules>
         <module>script</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>xslt</id>
-      <activation>
-        <property><name>xslt</name></property>
-      </activation> 
-      <modules>
-        <module>xslt</module>
       </modules>
     </profile>
     <profile>

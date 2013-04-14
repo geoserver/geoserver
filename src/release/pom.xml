@@ -217,6 +217,11 @@
    <artifactId>sec-cas</artifactId>
    <version>${project.version}</version>
   </dependency>
+  <dependency>
+   <groupId>org.geoserver</groupId>
+   <artifactId>xslt</artifactId>
+   <version>${project.version}</version>
+  </dependency>
  </dependencies>
  <build>
   <plugins>

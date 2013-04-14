@@ -230,6 +230,13 @@
       </modules>
     </profile>
 
+    <profile>
+      <id>xslt</id>
+      <modules>
+        <module>xslt</module>
+      </modules>
+    </profile>
+
     <!-- allExtensions profile, includes all modules -->
     <profile>
       <id>allExtensions</id>
@@ -257,6 +264,7 @@
         <module>teradata</module>
         <module>monitor</module>
         <module>security</module>
+        <module>xslt</module>
       </modules>
     </profile>
 
@@ -287,6 +295,7 @@
         <module>teradata</module>
         <module>monitor</module>
         <module>security</module>
+        <module>xslt</module>
       </modules>
     </profile>
 

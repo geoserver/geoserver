@@ -39,7 +39,6 @@
           <descriptor>release/ext-sfs.xml</descriptor>
        	  <descriptor>release/ext-dds.xml</descriptor>
           <descriptor>release/ext-aggregate.xml</descriptor>
-          <descriptor>release/ext-xslt.xml</descriptor>
           <descriptor>release/ext-libjpeg-turbo.xml</descriptor>
         </descriptors>
       </configuration>
@@ -151,7 +150,6 @@
         <module>sfs</module>
         <module>feature-aggregate</module>
         <module>script</module>
-        <module>xslt</module>
         <module>libjpeg-turbo</module>
       </modules>
     </profile>
@@ -225,14 +223,11 @@
       </modules>
     </profile>
     <profile>
-      <id>xslt</id>
-      <activation>
-        <property><name>xslt</name></property>
-      </activation> 
+      <id>w3ds</id>
       <modules>
-        <module>xslt</module>
+        <module>w3ds</module>
       </modules>
-    </profile>	
+    </profile>
 		<profile>
 			<id>libjpeg-turbo</id>
       <activation>

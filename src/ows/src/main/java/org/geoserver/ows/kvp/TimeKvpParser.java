@@ -41,30 +41,30 @@ import org.geotools.util.DateRange;
  */
 public class TimeKvpParser extends KvpParser {    
     private static enum FormatAndPrecision {
-    	MILLISECOND("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Calendar.MILLISECOND),
-    	SECOND("yyyy-MM-dd'T'HH:mm:ss'Z'", Calendar.SECOND),
-    	MINUTE("yyyy-MM-dd'T'HH:mm'Z'", Calendar.MINUTE),
-    	HOUR("yyyy-MM-dd'T'HH'Z'", Calendar.HOUR_OF_DAY),
-    	DAY("yyyy-MM-dd", Calendar.DAY_OF_MONTH),
-    	MONTH("yyyy-MM", Calendar.MONTH),
-    	YEAR("yyyy", Calendar.YEAR);
+	MILLISECOND("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Calendar.MILLISECOND),
+	SECOND("yyyy-MM-dd'T'HH:mm:ss'Z'", Calendar.SECOND),
+	MINUTE("yyyy-MM-dd'T'HH:mm'Z'", Calendar.MINUTE),
+	HOUR("yyyy-MM-dd'T'HH'Z'", Calendar.HOUR_OF_DAY),
+	DAY("yyyy-MM-dd", Calendar.DAY_OF_MONTH),
+	MONTH("yyyy-MM", Calendar.MONTH),
+	YEAR("yyyy", Calendar.YEAR);
     	
-    	public final SimpleDateFormat format;
-		public final int precision;
+	public final SimpleDateFormat format;
+	public final int precision;
 
-		FormatAndPrecision(String format, int precision) {
+	FormatAndPrecision(String format, int precision) {
     		this.format = new SimpleDateFormat(format);
     		this.format.setTimeZone(UTC_TZ);
     		this.precision = precision;
     	}
 		
-		public DateRange expand(Date d) {
-			Calendar c = new GregorianCalendar(UTC_TZ);
-			c.setTime(d);
-			c.add(this.precision, 1);
-			c.add(Calendar.MILLISECOND, -1);
-			return new DateRange(d, c.getTime());
-		}
+	public DateRange expand(Date d) {
+		Calendar c = new GregorianCalendar(UTC_TZ);
+		c.setTime(d);
+		c.add(this.precision, 1);
+		c.add(Calendar.MILLISECOND, -1);
+		return new DateRange(d, c.getTime());
+	}
     }
     
     /**

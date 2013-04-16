@@ -49,12 +49,17 @@ public class TimeKvpParser extends KvpParser {
 	MONTH("yyyy-MM", Calendar.MONTH),
 	YEAR("yyyy", Calendar.YEAR);
     	
-	public final SimpleDateFormat format;
+	public final ThreadLocal<SimpleDateFormat> format;
 	public final int precision;
 
-	FormatAndPrecision(String format, int precision) {
-    		this.format = new SimpleDateFormat(format);
-    		this.format.setTimeZone(UTC_TZ);
+	FormatAndPrecision(final String format, int precision) {
+    		this.format = new ThreadLocal<SimpleDateFormat>() {
+			@Override protected SimpleDateFormat initialValue() {
+				SimpleDateFormat sdf = new SimpleDateFormat(format);
+				sdf.setTimeZone(UTC_TZ);
+				return sdf;
+			}
+		};
     		this.precision = precision;
     	}
 		
@@ -290,7 +295,7 @@ public class TimeKvpParser extends KvpParser {
     	
     	for (FormatAndPrecision f : FormatAndPrecision.values()) {
     		ParsePosition pos = new ParsePosition(0);
-    		Date time = f.format.parse(value, pos);
+    		Date time = f.format.get().parse(value, pos);
     		if (pos.getIndex() == value.length()) {
     			DateRange range  = f.expand(time);
     			if (range.getMinValue().equals(range.getMaxValue())) {

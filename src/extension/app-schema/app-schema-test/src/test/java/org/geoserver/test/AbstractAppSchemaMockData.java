@@ -64,6 +64,11 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
     public static final String GSML_SCHEMA_LOCATION_URL = "http://www.geosciml.org/geosciml/2.0/xsd/geosciml.xsd";
 
     /**
+     * PRefix for spec namespace.
+     */
+    public static final String SPEC_PREFIX = "spec";
+
+    /**
      * Map of namespace prefix to namespace URI for GML 32 schema.
      */
     @SuppressWarnings("serial")
@@ -75,6 +80,8 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
                     put("gmd", "http://www.isotc211.org/2005/gmd");
                     put("gml", "http://www.opengis.net/gml/3.2");
                     put("gsml", "urn:cgi:xmlns:CGI:GeoSciML-Core:3.0.0");
+                    put("sa", "http://www.opengis.net/sampling/2.0");
+                    put("spec", "http://www.opengis.net/samplingSpecimen/2.0");
                     put("swe", "http://www.opengis.net/swe/1.0/gml32");
                     put("wfs", "http://www.opengis.net/wfs/2.0");
                     put("xlink", "http://www.w3.org/1999/xlink");

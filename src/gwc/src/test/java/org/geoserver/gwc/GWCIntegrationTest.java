@@ -358,5 +358,13 @@ public class GWCIntegrationTest extends GeoServerTestSupport {
             assertTrue(true);
         }
     }
-    
+
+    /**
+     * Commented out for the moment, we need a new release of GWC    
+    public void testPreserveHeaders() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wms?service=wms&version=1.1.0&request=GetCapabilities");
+        assertEquals("application/vnd.ogc.wms_xml", response.getContentType());
+        assertEquals("inline;filename=wms-getcapabilities.xml", response.getHeader("content-disposition"));
+    }
+    */
 }

@@ -68,7 +68,7 @@ public class TransformRestTest extends GeoServerSystemTestSupport {
         
         assertEquals("1", xpath.evaluate("count(//h:h2)", d));
         assertEquals("XSLT transformations:", xpath.evaluate("/h:html/h:body/h:h2", d));
-        assertEquals("http://localhost/geoserver/rest/services/wfs/transforms/general.html", 
+        assertEquals("http://localhost:8080/geoserver/rest/services/wfs/transforms/general.html", 
                 xpath.evaluate(("//h:li[h:a = 'general']/h:a/@href"), d));
     }
     
@@ -78,7 +78,7 @@ public class TransformRestTest extends GeoServerSystemTestSupport {
         // print(d);
         
         assertEquals("3", xpath.evaluate("count(//transform)", d));
-        assertEquals("http://localhost/geoserver/rest/services/wfs/transforms/general.xml", 
+        assertEquals("http://localhost:8080/geoserver/rest/services/wfs/transforms/general.xml", 
                 xpath.evaluate("//transform[name='general']/atom:link/@href", d));
     }
     

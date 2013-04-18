@@ -815,14 +815,16 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
 
         request.setScheme("http");
         request.setServerName("localhost");
+        request.setServerPort(8080);
         request.setContextPath("/geoserver");
         request.setRequestURI(ResponseUtils.stripQueryString(ResponseUtils.appendPath(
                     "/geoserver/", path)));
-        request.setRequestURL(ResponseUtils.appendPath("http://localhost/geoserver", path ) );
+        request.setRequestURL(ResponseUtils.appendPath("http://localhost:8080/geoserver", path ) );
         request.setQueryString(ResponseUtils.getQueryString(path));
         request.setRemoteAddr("127.0.0.1");
         request.setServletPath(ResponseUtils.makePathAbsolute( ResponseUtils.stripRemainingPath(path)) );
         request.setPathInfo(ResponseUtils.makePathAbsolute( ResponseUtils.stripBeginningPath( path)));
+        request.setHeader("Host", "localhost:8080");
         
         // deal with authentication
         if(username != null) {

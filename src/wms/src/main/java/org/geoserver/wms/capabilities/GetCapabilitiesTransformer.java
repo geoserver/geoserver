@@ -59,7 +59,6 @@ import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.capabilities.DimensionHelper.Mode;
-import org.geoserver.wms.describelayer.DescribeLayerResponse;
 import org.geoserver.wms.describelayer.XMLDescribeLayerResponse;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;

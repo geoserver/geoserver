@@ -82,6 +82,16 @@
                         <value>'http://www.opengis.net/def/nil/OGC/0/unknown'</value>
                     </ClientProperty>
                 </AttributeMapping>
+                <AttributeMapping>
+                    <targetAttribute>spec:size</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>SIZE</OCQL>
+                    </sourceExpression>
+                    <ClientProperty>
+                        <name>uom</name>
+                        <value>'http://www.opengis.net/def/uom/UCUM/g'</value>
+                    </ClientProperty>
+                </AttributeMapping>
             </attributeMappings>
         </FeatureTypeMapping>
     </typeMappings>

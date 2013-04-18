@@ -53,4 +53,26 @@ public class SpecimenWfsTest extends AbstractAppSchemaTestSupport {
         validateGet(path);
     }
 
+    /**
+     * Test whether GetFeature response has expected content.
+     */
+    @Test
+    public void testGetFeatureContent() {
+        String path = "wfs?version=1.1.0&request=GetFeature&typename=spec:SF_Specimen&outputformat=gml32";
+        String newline = System.getProperty("line.separator");
+        Document doc = getAsDOM(path);
+        LOGGER.info("Response for " + path + " :" + newline + prettyString(doc));
+        assertXpathEvaluatesTo("2", "/wfs:FeatureCollection/@numberReturned", doc);
+        assertXpathEvaluatesTo("unknown", "/wfs:FeatureCollection/@numberMatched", doc);
+        assertXpathCount(2, "//spec:SF_Specimen", doc);
+        assertXpathEvaluatesTo("First", "//spec:SF_Specimen[@gml:id='specimen.1']/gml:name", doc);
+        assertXpathEvaluatesTo("2.7", "//spec:SF_Specimen[@gml:id='specimen.1']/spec:size", doc);
+        assertXpathEvaluatesTo("http://www.opengis.net/def/uom/UCUM/g",
+                "//spec:SF_Specimen[@gml:id='specimen.1']/spec:size/@uom", doc);
+        assertXpathEvaluatesTo("Second", "//spec:SF_Specimen[@gml:id='specimen.2']/gml:name", doc);
+        assertXpathEvaluatesTo("0.31", "//spec:SF_Specimen[@gml:id='specimen.2']/spec:size", doc);
+        assertXpathEvaluatesTo("http://www.opengis.net/def/uom/UCUM/g",
+                "//spec:SF_Specimen[@gml:id='specimen.2']/spec:size/@uom", doc);
+    }
+
 }

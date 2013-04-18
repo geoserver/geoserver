@@ -24,6 +24,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.layer.CatalogConfiguration;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geowebcache.GeoWebCacheDispatcher;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.GeoWebCacheExtensions;
 import org.geowebcache.config.ConfigurationException;
@@ -456,4 +457,15 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         return ((ConfigurableQuotaStore) provider.getQuotaStore()).getStore();
     }
     
+
+    @Test
+    public void testPreserveHeaders() throws Exception {
+        // the code defaults to localhost:8080/geoserver, but the tests work otherwise
+        GeoWebCacheDispatcher dispatcher = GeoServerExtensions.bean(GeoWebCacheDispatcher.class);
+        // dispatcher.setServletPrefix("http://localhost/geoserver/");
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wms?service=wms&version=1.1.0&request=GetCapabilities");
+        System.out.println(response.getOutputStreamContent());
+        assertEquals("application/vnd.ogc.wms_xml", response.getContentType());
+        assertEquals("inline;filename=wms-getcapabilities.xml", response.getHeader("content-disposition"));
+    }
 }

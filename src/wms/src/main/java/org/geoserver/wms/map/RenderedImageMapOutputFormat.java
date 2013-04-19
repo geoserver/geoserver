@@ -64,7 +64,6 @@ import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
-import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.ImageWorker;
 import org.geotools.map.Layer;
@@ -73,11 +72,9 @@ import org.geotools.parameter.Parameter;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
-import org.geotools.renderer.GTRenderer;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.renderer.lite.gridcoverage2d.GridCoverageRenderer;
-import org.geotools.renderer.shape.ShapefileRenderer;
 import org.geotools.resources.image.ColorUtilities;
 import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.Style;
@@ -85,7 +82,6 @@ import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.geometry.BoundingBox;
-import org.opengis.geometry.Envelope;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -398,14 +394,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         graphic.setRenderingHints(hintsMap);
 
         RenderingHints hints = new RenderingHints(hintsMap);
-        GTRenderer renderer;
-        if (DefaultWebMapService.useShapefileRenderer()) {
-            renderer = new ShapefileRenderer();
-        } else {
-            StreamingRenderer sr = new StreamingRenderer();
-            sr.setThreadPool(DefaultWebMapService.getRenderingPool());
-            renderer = sr;
-        }
+        StreamingRenderer renderer = new StreamingRenderer();
+        renderer .setThreadPool(DefaultWebMapService.getRenderingPool());
         renderer.setMapContent(mapContent);
         renderer.setJava2DHints(hints);
 
@@ -414,13 +404,13 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         rendererParams.put("optimizedDataLoadingEnabled", new Boolean(true));
         rendererParams.put("renderingBuffer", new Integer(mapContent.getBuffer()));
         rendererParams.put("maxFiltersToSendToDatastore", DefaultWebMapService.getMaxFilterRules());
-        rendererParams.put(ShapefileRenderer.SCALE_COMPUTATION_METHOD_KEY,
-                ShapefileRenderer.SCALE_OGC);
+        rendererParams.put(StreamingRenderer.SCALE_COMPUTATION_METHOD_KEY,
+                StreamingRenderer.SCALE_OGC);
         if (AA_NONE.equals(antialias)) {
-            rendererParams.put(ShapefileRenderer.TEXT_RENDERING_KEY,
+            rendererParams.put(StreamingRenderer.TEXT_RENDERING_KEY,
                     StreamingRenderer.TEXT_RENDERING_STRING);
         } else {
-            rendererParams.put(ShapefileRenderer.TEXT_RENDERING_KEY,
+            rendererParams.put(StreamingRenderer.TEXT_RENDERING_KEY,
                     StreamingRenderer.TEXT_RENDERING_ADAPTIVE);
         }
         if (DefaultWebMapService.isLineWidthOptimizationEnabled()) {

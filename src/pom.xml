@@ -246,11 +246,6 @@
    </dependency>
    <dependency>
     <groupId>org.geotools</groupId>
-    <artifactId>gt-shapefile-renderer</artifactId>
-    <version>${gt.version}</version>
-   </dependency>
-   <dependency>
-    <groupId>org.geotools</groupId>
     <artifactId>gt-property</artifactId>
     <version>${gt.version}</version>
    </dependency>

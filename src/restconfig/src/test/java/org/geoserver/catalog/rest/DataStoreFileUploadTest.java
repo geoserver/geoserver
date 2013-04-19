@@ -4,11 +4,7 @@
  */
 package org.geoserver.catalog.rest;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
@@ -18,6 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.net.URL;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
@@ -27,6 +24,7 @@ import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.data.test.MockData;
+import org.geotools.data.DataUtilities;
 import org.h2.tools.DeleteDbFiles;
 import org.junit.After;
 import org.junit.Before;
@@ -175,6 +173,20 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         
         dom = getAsDOM( "wfs?request=getfeature&typename=gs:pds" );
         assertFeatures(dom);
+    }
+    
+    @Test
+    public void testShapeFileUploadNotExisting() throws Exception {
+        File file = new File("./target/notThere.tiff");
+        if(file.exists()) {
+            assertTrue(file.delete());
+        }
+        
+        URL url = DataUtilities.fileToURL(file.getCanonicalFile());
+        String body = url.toExternalForm();
+        MockHttpServletResponse response = putAsServletResponse("/rest/workspaces/gs/datastores/pds/external.shp", 
+                body, "text/plain");
+        assertEquals(400, response.getStatusCode());
     }
 
     @Test

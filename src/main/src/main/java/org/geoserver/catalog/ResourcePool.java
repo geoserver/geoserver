@@ -1170,7 +1170,9 @@ public class ResourcePool {
             final String formatName = gridFormat.getName();
             if (formatName.equalsIgnoreCase(IMAGE_MOSAIC) || formatName.equalsIgnoreCase(IMAGE_PYRAMID)){
                 if (coverageExecutor != null){
-                    if (hints != null){
+                    if (hints != null) {
+                        // do not modify the caller hints
+                        hints = new Hints(hints);
                         hints.add(new RenderingHints(Hints.EXECUTOR_SERVICE, coverageExecutor));
                     } else {
                         hints = new Hints(new RenderingHints(Hints.EXECUTOR_SERVICE, coverageExecutor));
@@ -1179,7 +1181,7 @@ public class ResourcePool {
             }
             
             key = new CoverageHintReaderKey(info.getId(), hints);
-            reader = (GridCoverageReader) hintCoverageReaderCache.get( key );    
+            reader = (GridCoverageReader) hintCoverageReaderCache.get( key );
         } else {
             key = info.getId();
             if(key != null) {
@@ -1207,7 +1209,8 @@ public class ResourcePool {
                 // /////////////////////////////////////////////////////////
                 final File obj = GeoserverDataDirectory.findDataFile(info.getURL());
     
-                reader = gridFormat.getReader(obj,hints);
+                // readers might change the provided hints, pass down a defensive copy
+                reader = gridFormat.getReader(obj, new Hints(hints));
                 if(key != null) {
                     if(hints != null) {
                         hintCoverageReaderCache.put((CoverageHintReaderKey) key, reader);

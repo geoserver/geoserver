@@ -19,9 +19,11 @@ import java.util.zip.ZipFile;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FileUtils;
+import org.geoserver.rest.RestletException;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
+import org.restlet.data.Status;
 import org.vfny.geoserver.global.ConfigurationException;
 import org.vfny.geoserver.global.GeoserverDataDirectory;
 
@@ -208,16 +210,25 @@ public class RESTUtils {
      */
     public static File handleEXTERNALUpload(Request request) throws IOException {
         //get the URL for this file to upload
-        final InputStream inStream=request.getEntity().getStream();
-        final String stringURL=IOUtils.getStringFromStream(inStream);
-        final URL fileURL=new URL(stringURL);
-
-        final File inputFile= IOUtils.URLToFile(fileURL);
-        if(inputFile!=null && inputFile.exists() && inputFile.canRead()) {
-            return inputFile;
+        InputStream inStream = null;
+        URL fileURL ;
+        try {
+            inStream = request.getEntity().getStream();
+            final String stringURL = IOUtils.getStringFromStream(inStream);
+            fileURL = new URL(stringURL);
+        } finally {
+            IOUtils.closeQuietly(inStream);
         }
 
-        return null;
+        final File inputFile = IOUtils.URLToFile(fileURL);
+        if(inputFile == null || !inputFile.exists()) {
+            throw new RestletException("Failed to locate the input file " + fileURL, Status.CLIENT_ERROR_BAD_REQUEST);
+        } else if(!inputFile.canRead()) {
+            throw new RestletException("Input file is not readable, check filesystem permissions: " + fileURL, 
+                    Status.CLIENT_ERROR_BAD_REQUEST);
+        }
+
+        return inputFile;
     }
     
     static Set<String> ZIP_MIME_TYPES = new HashSet();

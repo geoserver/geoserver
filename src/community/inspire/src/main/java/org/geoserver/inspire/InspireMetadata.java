@@ -6,7 +6,7 @@ package org.geoserver.inspire;
 
 public enum InspireMetadata {
     LANGUAGE("inspire.language"), SERVICE_METADATA_URL("inspire.metadataURL"), SERVICE_METADATA_TYPE(
-            "inspire.metadataURLType");
+            "inspire.metadataURLType"), SPATIAL_DATASET_IDENTIFIER_TYPE("inspire.spatialDatasetIdentifier");
 
     public String key;
 

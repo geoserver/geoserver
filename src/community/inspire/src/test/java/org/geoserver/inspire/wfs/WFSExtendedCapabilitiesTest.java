@@ -7,6 +7,7 @@ package org.geoserver.inspire.wfs;
 import static org.geoserver.inspire.wfs.WFSExtendedCapabilitiesProvider.DLS_NAMESPACE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.inspire.InspireMetadata;
@@ -28,6 +29,7 @@ public class WFSExtendedCapabilitiesTest extends GeoServerSystemTestSupport {
         WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
         wfs.getMetadata().put(InspireMetadata.LANGUAGE.key, "fre");
         wfs.getMetadata().put(InspireMetadata.SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
+        wfs.getMetadata().put(InspireMetadata.SPATIAL_DATASET_IDENTIFIER_TYPE.key, "codeOnly");
         getGeoServer().save(wfs);
 
         Document dom = getAsDOM("wfs?request=getcapabilities&service=wfs&version=1.1.0");
@@ -59,6 +61,12 @@ public class WFSExtendedCapabilitiesTest extends GeoServerSystemTestSupport {
         assertNotNull(respLang);
         final Element respLangVal = getFirstElementByTagName(defLang, "inspire_common:Language");
         assertEquals("fre", respLangVal.getFirstChild().getNodeValue());
+        
+        final Element sdi = getFirstElementByTagName(extendedCaps, "inspire_dls:SpatialDataSetIdentifier");
+        final Element code = getFirstElementByTagName(sdi, "inspire_common:Code");
+        assertEquals("codeOnly", code.getFirstChild().getNodeValue());
+        final Element ns = getFirstElementByTagName(sdi, "inspire_common:Namespace");
+        assertNull(ns);
     }
     
     @Test
@@ -66,10 +74,11 @@ public class WFSExtendedCapabilitiesTest extends GeoServerSystemTestSupport {
         WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
         wfs.getMetadata().put(InspireMetadata.LANGUAGE.key, "fre");
         wfs.getMetadata().put(InspireMetadata.SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
+        wfs.getMetadata().put(InspireMetadata.SPATIAL_DATASET_IDENTIFIER_TYPE.key, "one,http://www.geoserver.org/inspire/one");
         getGeoServer().save(wfs);
 
         Document dom = getAsDOM("wfs?request=getcapabilities&service=wfs&version=2.0.0");
-        print(dom);
+        // print(dom);
         assertEquals(DLS_NAMESPACE, dom.getDocumentElement().getAttribute("xmlns:inspire_dls"));
 
         final Element extendedCaps = getFirstElementByTagName(dom,
@@ -97,6 +106,12 @@ public class WFSExtendedCapabilitiesTest extends GeoServerSystemTestSupport {
         assertNotNull(respLang);
         final Element respLangVal = getFirstElementByTagName(defLang, "inspire_common:Language");
         assertEquals("fre", respLangVal.getFirstChild().getNodeValue());
+        
+        final Element sdi = getFirstElementByTagName(extendedCaps, "inspire_dls:SpatialDataSetIdentifier");
+        final Element code = getFirstElementByTagName(sdi, "inspire_common:Code");
+        assertEquals("one", code.getFirstChild().getNodeValue());
+        final Element ns = getFirstElementByTagName(sdi, "inspire_common:Namespace");
+        assertEquals("http://www.geoserver.org/inspire/one", ns.getFirstChild().getNodeValue());
     }
 
     @Test

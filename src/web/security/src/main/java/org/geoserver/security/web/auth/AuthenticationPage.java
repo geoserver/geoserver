@@ -203,14 +203,19 @@ public class AuthenticationPage extends AbstractSecurityPage {
                             }
                         }        
                         chainTestResultField.getModel().setObject(result);
-                        target.addComponent(chainTestResultField);
+                        target.add(chainTestResultField);
                     }
                     catch(Exception e) {
                         error(e);
                         LOGGER.log(Level.WARNING, "Connection error", e);
-                        target.addComponent(feedbackPanel);
+                        target.add(feedbackPanel);
                     }
                 }
+                
+                @Override
+                protected void onError(AjaxRequestTarget target, Form<?> form) {
+                }
+                
                 protected GeoServerSecurityFilterChainProxy getProxy() {
                     return GeoServerExtensions.bean(GeoServerSecurityFilterChainProxy.class);
                 }

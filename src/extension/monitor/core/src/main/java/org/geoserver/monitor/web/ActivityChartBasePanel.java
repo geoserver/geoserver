@@ -12,8 +12,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.wicket.Resource;
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -95,6 +93,9 @@ public abstract class ActivityChartBasePanel extends Panel {
                 
                 chartImage.setImageResource(queryAndRenderChart(monitor, range));
                 target.addComponent(chartImage);
+            }
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
             }
         });
     }

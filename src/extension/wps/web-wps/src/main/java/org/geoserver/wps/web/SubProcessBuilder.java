@@ -27,9 +27,8 @@ public class SubProcessBuilder extends WebPage {
             }
 
             @Override
-            protected void onError(AjaxRequestTarget target, Form form) {
-                super.onError(target, form);
-                target.addComponent(builder.getFeedbackPanel());
+            protected void onError(AjaxRequestTarget target, Form form) {                
+                target.add(builder.getFeedbackPanel());
             }
         });
 

@@ -20,7 +20,6 @@ import org.apache.ftpserver.ftplet.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.sun.org.apache.bcel.internal.generic.ACONST_NULL;
 
 /**
  * Adapts an {@link FTPCallback}s as an {@link Ftplet}

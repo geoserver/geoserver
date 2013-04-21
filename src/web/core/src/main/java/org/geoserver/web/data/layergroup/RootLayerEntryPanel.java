@@ -38,7 +38,7 @@ public class RootLayerEntryPanel extends Panel {
         
         final TextField<LayerInfo> rootLayerField = new TextField<LayerInfo>("rootLayer") {
             @Override
-            public IConverter getConverter(Class<?> type) { 
+            public <C> IConverter<C> getConverter(Class<C> type) { 
                 return form.getConverter(type);
             } 
         };
@@ -64,7 +64,7 @@ public class RootLayerEntryPanel extends Panel {
         
         DropDownChoice<StyleInfo> styleField = new DropDownChoice<StyleInfo>("rootLayerStyle", styles) {
             @Override
-            public IConverter getConverter(Class<?> type) { 
+            public <C> IConverter<C> getConverter(Class<C> type) {             
                 return form.getConverter(type);
             }             
         };

@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
@@ -20,6 +19,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.HtmlLoginFilterChain;
 import org.geoserver.security.RequestFilterChain;
@@ -27,10 +27,8 @@ import org.geoserver.security.ServiceLoginFilterChain;
 import org.geoserver.security.VariableFilterChain;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.validation.SecurityConfigException;
-import org.geoserver.security.web.AbstractConfirmRemovalPanel;
 import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.GeoServerApplication;
-import org.geoserver.web.data.layergroup.LayerGroupEntry;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -204,7 +202,7 @@ public class SecurityFilterChainsPanel
         final RequestFilterChain chain = (RequestFilterChain) itemModel.getObject();
         
         if (chain.canBeRemoved()==false) {
-            ImageAjaxLink blankLink = new ImageAjaxLink( id, new ResourceReference( getClass(), "../img/icons/blank.png") ) {
+            ImageAjaxLink blankLink = new ImageAjaxLink( id, new PackageResourceReference( getClass(), "../img/icons/blank.png") ) {
                 @Override
                 protected void onClick(AjaxRequestTarget target) {
                 }
@@ -214,7 +212,7 @@ public class SecurityFilterChainsPanel
             return blankLink;
         }
         
-        ImageAjaxLink link = new ImageAjaxLink( id, new ResourceReference( getClass(), "../img/icons/silk/delete.png") ) {
+        ImageAjaxLink link = new ImageAjaxLink( id, new PackageResourceReference( getClass(), "../img/icons/silk/delete.png") ) {
             @Override
             protected void onClick(AjaxRequestTarget target) {                
                 secMgrConfig.getFilterChain().getRequestChains().remove( chain );
@@ -244,7 +242,7 @@ public class SecurityFilterChainsPanel
             
             
             if ( getChains().indexOf( entry ) > 0 ) {
-                ImageAjaxLink upLink = new ImageAjaxLink( "up", new ResourceReference( getClass(), "../img/icons/silk/arrow_up.png") ) {
+                ImageAjaxLink upLink = new ImageAjaxLink( "up", new PackageResourceReference( getClass(), "../img/icons/silk/arrow_up.png") ) {
                     @Override
                     protected void onClick(AjaxRequestTarget target) {
                         int index = getChains().indexOf( PositionPanel.this.theChain );
@@ -257,7 +255,7 @@ public class SecurityFilterChainsPanel
                 add( upLink);
             }
             else {
-                ImageAjaxLink blankLink = new ImageAjaxLink( "up", new ResourceReference( getClass(), "../img/icons/blank.png") ) {
+                ImageAjaxLink blankLink = new ImageAjaxLink( "up", new PackageResourceReference( getClass(), "../img/icons/blank.png") ) {
                     @Override
                     protected void onClick(AjaxRequestTarget target) {
                     }
@@ -267,7 +265,7 @@ public class SecurityFilterChainsPanel
             }
             
             if ( getChains().indexOf( entry ) < getChains().size() - 1 ) {
-                ImageAjaxLink downLink = new ImageAjaxLink( "down", new ResourceReference( getClass(), "../img/icons/silk/arrow_down.png") ) {
+                ImageAjaxLink downLink = new ImageAjaxLink( "down", new PackageResourceReference( getClass(), "../img/icons/silk/arrow_down.png") ) {
                     @Override
                     protected void onClick(AjaxRequestTarget target) {
                         int index = getChains().indexOf( PositionPanel.this.theChain );
@@ -280,7 +278,7 @@ public class SecurityFilterChainsPanel
                 add( downLink);
             }
             else {
-                ImageAjaxLink blankLink = new ImageAjaxLink( "down", new ResourceReference( getClass(), "../img/icons/blank.png") ) {
+                ImageAjaxLink blankLink = new ImageAjaxLink( "down", new PackageResourceReference( getClass(), "../img/icons/blank.png") ) {
                     @Override
                     protected void onClick(AjaxRequestTarget target) {
                         

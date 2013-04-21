@@ -14,9 +14,7 @@ import javax.sql.DataSource;
 
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.AbstractAppSchemaTestSupport;
-import org.geoserver.test.NamespaceTestData;
 import org.junit.Assume;
-import org.junit.Before;
 
 /**
  * Base class that provides the Wfs test support framework and perform checks on the fixture and the

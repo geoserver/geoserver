@@ -10,12 +10,12 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>web</artifactId>
-    <version>2.3-SNAPSHOT</version>
+    <version>2.4-SNAPSHOT</version>
   </parent>
   <groupId>org.geoserver.web</groupId>
   <artifactId>web-app</artifactId>
   <packaging>jar</packaging>
-  <version>2.3-SNAPSHOT</version>
+  <version>2.4-SNAPSHOT</version>
   <name>GeoServer Web Application</name>
   <dependencies>
     <dependency>
@@ -309,16 +309,6 @@
         <configId>release</configId>
       </properties>
     </profile>
-    <profile>
-      <id>bxml</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.gvsig</groupId>
-          <artifactId>bxml-geoserver</artifactId> 
-          <version>1.0-SNAPSHOT</version>
-        </dependency>
-      </dependencies>
-    </profile>
 
     <profile>
       <id>arcsde</id>
@@ -326,7 +316,7 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>arcsde</artifactId> 
-          <version>2.3-SNAPSHOT</version>
+          <version>2.4-SNAPSHOT</version>
         </dependency>
       </dependencies>
     </profile>
@@ -355,7 +345,7 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>sqlserver</artifactId> 
-          <version>2.3-SNAPSHOT</version>
+          <version>2.4-SNAPSHOT</version>
         </dependency>
       </dependencies>
     </profile>
@@ -365,7 +355,7 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>oracle</artifactId> 
-          <version>2.3-SNAPSHOT</version>
+          <version>2.4-SNAPSHOT</version>
         </dependency>
       </dependencies>
     </profile>
@@ -375,7 +365,7 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>mysql</artifactId> 
-          <version>2.3-SNAPSHOT</version>
+          <version>2.4-SNAPSHOT</version>
         </dependency>
       </dependencies>
     </profile>
@@ -877,12 +867,25 @@
       </activation> 
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver</groupId>
           <artifactId>xslt</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>
     </profile>
+    <profile>
+      <id>wms-eo</id>
+      <activation>
+        <property><name>wms-eo</name></property>
+      </activation> 
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>wms-eo</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>	
     <profile>
       <id>wcs20</id>
       <activation>
@@ -906,6 +909,39 @@
         </dependency>
       </dependencies>
     </profile>
+    <profile>
+       <id>kml</id>
+       <activation>
+         <activeByDefault>true</activeByDefault>
+       </activation>
+       <dependencies>  
+         <dependency>
+           <groupId>org.geoserver</groupId>
+           <artifactId>kml</artifactId>
+           <version>${project.version}</version>
+         </dependency>
+       </dependencies>
+    </profile>
+    <profile>
+       <id>kml2</id>
+       <dependencies>  
+         <dependency>
+           <groupId>org.geoserver.community</groupId>
+           <artifactId>kml2</artifactId>
+           <version>${project.version}</version>
+         </dependency>
+      </dependencies>
+    </profile>
+		<profile>
+			<id>libjpeg-turbo</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>libjpeg-turbo</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+		</profile>    
  </profiles>
 
 </project>

@@ -19,7 +19,7 @@ import org.geoserver.security.validation.RoleStoreValidationWrapper;
 public class NewRolePage extends AbstractRolePage {
 
     public NewRolePage(String roleServiceName) {
-        super(roleServiceName, new GeoServerRole(GeoServerRole.NULL_ROLE.getAuthority()));
+        super(roleServiceName, null);
         
         if (hasRoleStore(roleServiceName)==false) {
             throw new RuntimeException("Workflow error, new role not possible for read only service");
@@ -32,14 +32,12 @@ public class NewRolePage extends AbstractRolePage {
         GeoServerRoleStore store = null;
         try {
 
+            store = new RoleStoreValidationWrapper(getRoleStore(roleServiceName));
             //copy into a new one so we can set the name properly
-            GeoServerRole newRole = 
-                new GeoServerRole(get("form:name").getDefaultModelObjectAsString());
+            GeoServerRole newRole= store.createRoleObject(get("form:name").getDefaultModelObjectAsString());
             newRole.setUserName(role.getUserName());
             newRole.getProperties().putAll(role.getProperties());
-            role = newRole;
-
-            store = new RoleStoreValidationWrapper(getRoleStore(roleServiceName));
+            role = newRole;                        
             store.addRole(role);
 
             String parentRoleName = get("form:parent").getDefaultModelObjectAsString();

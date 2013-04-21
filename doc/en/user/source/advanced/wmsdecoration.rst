@@ -3,14 +3,19 @@
 WMS Decorations
 ===============
 
-WMS Decorations provide a framework for visually annotating images from WMS with absolute, rather than spatial, positioning.  Examples of decorations include compasses, legends, and watermarks.
+WMS Decorations provide a framework for visually annotating images from WMS with absolute, rather than spatial,
+positioning.  Examples of decorations include compasses, legends, and watermarks.
 
 Configuration
 -------------
 
-To use decorations in a :ref:`wms_getmap` request, the administrator must first configure a decoration layout.  These layouts are stored in a subdirectory called ``layouts`` in the :ref:`data_directory` as XML files, one file per layout.  Each layout file must have the extension ``.xml``.  Once a layout ``foo.xml`` is defined, users can request it by adding ``&format_options=layout:foo`` to the request parameters.
+To use decorations in a :ref:`wms_getmap` request, the administrator must first configure a decoration layout.  These
+layouts are stored in a subdirectory called ``layouts`` in the :ref:`data_directory` as XML files, one file per layout.
+Each layout file must have the extension ``.xml``.  Once a layout ``foo.xml`` is defined, users can request it by
+adding ``&format_options=layout:foo`` to the request parameters.
 
-Layout files follow a very simple XML structure; a root node named layout containing any number of decoration elements.  Each decoration element has several attributes:
+Layout files follow a very simple XML structure; a root node named layout containing any number of decoration elements. 
+Each decoration element has several attributes:
 
 .. list-table::
    :widths: 20 80
@@ -37,9 +42,11 @@ Option interpretation depends on the type of decoration in use.
 Decoration Types
 ----------------
 
-While GeoServer allows for decorations to be added via extension, there is a core set of decorations included in the default installation.  These decorations include:
+While GeoServer allows for decorations to be added via extension, there is a core set of decorations included in the
+default installation.  These decorations include:
 
-The **image** decoration (``type="image"``) overlays a static image file onto the document.  If height and width are specified, the image will be scaled to fit, otherwise the image is displayed at full size.  
+The **image** decoration (``type="image"``) overlays a static image file onto the document.  If height and width are
+specified, the image will be scaled to fit, otherwise the image is displayed at full size.  
 
 .. list-table::
    :widths: 20 80
@@ -51,7 +58,8 @@ The **image** decoration (``type="image"``) overlays a static image file onto th
    * - ``opacity``
      - a number from 0 to 100 indicating how opaque the image should be.
 
-The **scaleratio** decoration (``type="scaleratio"``) overlays a text description of the map's scale ratio onto the document.
+The **scaleratio** decoration (``type="scaleratio"``) overlays a text description of the map's scale ratio onto the
+document.
 
 .. list-table::
    :widths: 20 80
@@ -76,11 +84,14 @@ The **scaleline** decoration (``type="scaleline"``) overlays a graphic showing t
      - the foreground color, as used in scaleratio
    * - ``fontsize``
      - the size of the font to use
+   * - ``transparent``
+     - if set to true, the background and border won't be painted (false by default)
+
 
 The **legend** decoration (``type="legend"``) overlays a graphic containing legends for the layers in the map.
 
-The **text** decoration (``type="text"``) overlays a parametric, single line text message on top of the map. 
-The parameter values can be fed via the the ``env`` request parameter, just like SLD enviroment parameters.
+The **text** decoration (``type="text"``) overlays a parametric, single line text message on top of the map. The
+parameter values can be fed via the the ``env`` request parameter, just like SLD enviroment parameters.
 
 .. list-table::
    :widths: 20 80

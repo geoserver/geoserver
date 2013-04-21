@@ -71,7 +71,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
             String xpath = "//layers/layer/name[text() = '" + name + "']";
             assertXpathExists(xpath, dom);
 
-            xpath = "//layers/layer/atom:link[@href = 'http://localhost/geoserver/gwc/rest/layers/"
+            xpath = "//layers/layer/atom:link[@href = 'http://localhost:8080/geoserver/gwc/rest/layers/"
                     + ServletUtils.URLEncode(name) + ".xml']";
             assertXpathExists(xpath, dom);
         }

@@ -24,7 +24,6 @@ import org.geoserver.security.ConstantFilterChain;
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.RequestFilterChain;
-import org.geoserver.security.VariableFilterChain;
 import org.geoserver.security.config.BasicAuthenticationFilterConfig;
 import org.geoserver.security.config.DigestAuthenticationFilterConfig;
 import org.geoserver.security.config.J2eeAuthenticationFilterConfig;
@@ -489,6 +488,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
                 HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);        
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
+        
+        updateUser("ug1", testUserName, true);
         
         // Test anonymous
         insertAnonymousFilter();
@@ -1229,6 +1230,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
                 HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);        
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
+        
+        updateUser("ug1", testUserName, true);
         
         // Test anonymous
         insertAnonymousFilter();

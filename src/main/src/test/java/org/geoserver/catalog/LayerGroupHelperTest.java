@@ -1,6 +1,9 @@
 package org.geoserver.catalog;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.List;
@@ -9,6 +12,7 @@ import java.util.Stack;
 import javax.xml.namespace.QName;
 
 import org.geoserver.catalog.LayerGroupInfo.Mode;
+import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.MockTestData;
 import org.geoserver.test.GeoServerMockTestSupport;
@@ -31,6 +35,9 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
     
     private LayerGroupInfo loop2;
     private LayerGroupInfo loop2Child;
+    
+    private LayerGroupInfo container;
+    private LayerGroupInfo containerParent;
     
     private LayerInfo lakesLayer;
 
@@ -60,7 +67,8 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
     }
 
     private LayerGroupInfo buildGroup(String name, PublishedInfo... publisheds) {
-        LayerGroupInfo group = getCatalog().getFactory().createLayerGroup();
+        LayerGroupInfoImpl group = (LayerGroupInfoImpl) getCatalog().getFactory().createLayerGroup();
+        group.setId(name);
         group.setName(name);
         group.getLayers().addAll(Arrays.asList(publisheds));
 
@@ -120,6 +128,12 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
         loop2 = buildGroup("loop2", forestLayer);
         loop2Child = buildGroup("ponds", pondsLayer, loop2);
         loop2.getLayers().add(loop2Child);
+        
+        container = buildGroup("container", forestLayer);
+        container.getStyles().add(polygonStyle);
+        container.setMode(LayerGroupInfo.Mode.CONTAINER);
+        containerParent = buildGroup("containerParent", container);
+        containerParent.getStyles().add(null);
     }
 
     @Test
@@ -138,6 +152,27 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
     }
     
     @Test
+    public void testSimpleLoopWithNotEqualGroups() {
+        LayerGroupInfo myLoop = buildGroup("myLoop", forestLayer);
+         LayerGroupInfo loopClone = buildGroup("myLoop", forestLayer);
+         assertTrue(myLoop.equals(loopClone));
+            
+         // change the LayerGroup
+         myLoop.setTitle("new title");
+         // now the two groups aren't equal anymore
+         assertFalse(myLoop.equals(loopClone));
+            
+         // create loop
+         myLoop.getLayers().add(loopClone);
+
+         // validate
+         LayerGroupHelper helper = new LayerGroupHelper(myLoop);
+         Stack<LayerGroupInfo> path = helper.checkLoops();
+         Assert.assertNotNull(path);
+         Assert.assertEquals("/myLoop/myLoop", helper.getLoopAsString(path));
+    }
+    
+    @Test
     public void testAllLayers() {
         // a plain group
         assertExpectedLayers(Arrays.asList(pondsLayer), ponds);
@@ -147,6 +182,10 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
         // a nested one
         assertExpectedLayers(Arrays.asList(forestLayer, roadSegmentsLayer, lakesLayer,
                 neatlineLayer, buildingsLayer, pondsLayer), nested);
+        // a container group
+        assertExpectedLayers(Arrays.asList(forestLayer), container);
+        // a nested container
+        assertExpectedLayers(Arrays.asList(forestLayer), containerParent);        
     }
 
     private void assertExpectedLayers(List<LayerInfo> expected, LayerGroupInfo group) {
@@ -163,6 +202,16 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
         // a nested one
         assertExpectedRenderingLayers(
                 Arrays.asList(forestLayer, roadSegmentsLayer, buildingsLayer, pondsLayer), nested);
+        
+        try {
+            // a container group
+            assertExpectedRenderingLayers(Arrays.asList(forestLayer), container);
+            fail("Unsupported Operation...");
+        } catch (UnsupportedOperationException e) {
+        }
+        
+        // a nested container
+        assertExpectedRenderingLayers(Arrays.asList(forestLayer), containerParent);                
     }
 
     private void assertExpectedRenderingLayers(List<LayerInfo> expected, LayerGroupInfo group) {
@@ -178,6 +227,10 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
         assertExpectedStyles(Arrays.asList(lineStyle, polygonStyle, pointStyle), lakesNeatline);
         // nested group
         assertExpectedStyles(Arrays.asList(polygonStyle, lineStyle, polygonStyle, pointStyle, polygonStyle, null), nested);
+        // a container group
+        assertExpectedStyles(Arrays.asList(polygonStyle), container);
+        // a nested container
+        assertExpectedStyles(Arrays.asList(polygonStyle), containerParent);            
     }
 
     private void assertExpectedStyles(List<StyleInfo> expected, LayerGroupInfo group) {
@@ -193,6 +246,16 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
         assertExpectedRenderingStyles(Arrays.asList(lineStyle), lakesNeatline);
         // nested group
         assertExpectedRenderingStyles(Arrays.asList(polygonStyle, lineStyle, polygonStyle, null), nested);
+        
+        try {
+            // a container group
+            assertExpectedRenderingStyles(Arrays.asList(polygonStyle), container);
+            fail("Unsupported Operation...");
+        } catch (UnsupportedOperationException e) {
+        }        
+        
+        // a nested container
+        assertExpectedRenderingStyles(Arrays.asList(polygonStyle), containerParent);                    
     }
 
     private void assertExpectedRenderingStyles(List<StyleInfo> expected, LayerGroupInfo group) {

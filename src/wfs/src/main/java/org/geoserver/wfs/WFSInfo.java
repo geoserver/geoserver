@@ -233,4 +233,17 @@ public interface WFSInfo extends ServiceInfo {
      */
     void setEncodeFeatureMember(boolean encodeFeatureMember);
     
+    
+    /**
+     * Get the flag that determines if WFS hit requests (counts) will ignore
+     * the maximum features limit for this server
+     * @return hitsIgnoreMaxFeatures
+     */ 
+    boolean isHitsIgnoreMaxFeatures();
+    
+    /**
+     * Set the option to ignore the maximum feature limit for WFS hit counts
+     */
+    void setHitsIgnoreMaxFeatures(boolean hitsIgnoreMaxFeatures);
+    
 }

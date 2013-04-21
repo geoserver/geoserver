@@ -4,34 +4,23 @@
  */
 package org.geoserver.test.onlineTest;
 
-import org.geoserver.test.NamespaceTestData;
-import org.geoserver.test.onlineTest.setup.AppSchemaWmsReferenceMockData;
-import org.geoserver.test.onlineTest.setup.ReferenceDataOracleSetup;
-import org.geoserver.test.onlineTest.support.AbstractReferenceDataSetup;
+import org.geoserver.data.test.SystemTestData;
+import org.geotools.data.complex.AppSchemaDataAccessRegistry;
 
 /**
  * 
  * @author Niels Charlier
  * 
  */
-public class DataReferenceWmsOracleTest extends DataReferenceWmsOnlineTest {
+public class DataReferenceWmsOracleTest extends DataReferenceWmsOracleWithJoiningTest {
 
     public DataReferenceWmsOracleTest() throws Exception {
         super();
     }
-
+    
     @Override
-    protected AppSchemaWmsReferenceMockData createTestData() {
-    	AppSchemaWmsReferenceMockData mockData = new AppSchemaWmsReferenceMockData();
-        mockData.addStyle("Default", "styles/Default.sld");
-        mockData.addStyle("simplelithology", "styles/cgi-simplelithology-2008.sld");
-        mockData.addStyle("stratchart", "styles/ics-stratchart-2008.sld");
-        return mockData;
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+    	AppSchemaDataAccessRegistry.getAppSchemaProperties().setProperty ("app-schema.joining", "false");                
+        super.setUpTestData(testData);
     }
-
-    @Override
-    public AbstractReferenceDataSetup getReferenceDataSetup() throws Exception {
-        return new ReferenceDataOracleSetup();
-    }
-
 }

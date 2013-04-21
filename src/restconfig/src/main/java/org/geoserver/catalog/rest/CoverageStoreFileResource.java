@@ -7,6 +7,7 @@ package org.geoserver.catalog.rest;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ import org.geoserver.rest.RestletException;
 import org.geoserver.rest.format.DataFormat;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.data.DataUtilities;
 import org.opengis.coverage.grid.Format;
 import org.restlet.data.Form;
 import org.restlet.data.Request;
@@ -78,17 +80,14 @@ public class CoverageStoreFileResource extends StoreFileResource {
         }
         
         info.setType(coverageFormat.getName());
+        URL uploadedFileURL = DataUtilities.fileToURL(uploadedFile);
         if (isInlineUpload(method)) {
             //TODO: create a method to figure out the relative url instead of making assumption
             // about the structure
             info.setURL("file:data/" + workspace + "/" + coveragestore + "/" + uploadedFile.getName() );
         }
         else {
-            try {
-                info.setURL( uploadedFile.toURL().toExternalForm());
-            } catch (MalformedURLException e) {
-                throw new RestletException( "url error", Status.SERVER_ERROR_INTERNAL, e );
-            }
+            info.setURL( uploadedFileURL.toExternalForm());
         }
         
         //add or update the datastore info
@@ -115,7 +114,7 @@ public class CoverageStoreFileResource extends StoreFileResource {
         
         try {
             AbstractGridCoverage2DReader reader = 
-                (AbstractGridCoverage2DReader) ((AbstractGridFormat) coverageFormat).getReader(uploadedFile.toURL());
+                (AbstractGridCoverage2DReader) ((AbstractGridFormat) coverageFormat).getReader(uploadedFileURL);
             if ( reader == null ) {
                 throw new RestletException( "Could not aquire reader for coverage.", Status.SERVER_ERROR_INTERNAL );
             }

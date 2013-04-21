@@ -7,15 +7,13 @@ package org.geoserver.wms.capabilities;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -26,11 +24,14 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.util.ISO8601Formatter;
 import org.geoserver.wms.WMS;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.factory.GeoTools;
 import org.geotools.temporal.object.DefaultPeriodDuration;
 import org.geotools.util.Converters;
+import org.geotools.util.DateRange;
+import org.geotools.util.NumberRange;
 import org.geotools.util.logging.Logging;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.AttributesImpl;
@@ -212,7 +213,7 @@ abstract class DimensionHelper {
     }
 
     private void handleElevationDimensionRaster(DimensionInfo elevInfo, ReaderDimensionsAccessor dimensions) {
-        TreeSet<Double> elevations = dimensions.getElevationDomain();
+        TreeSet<Object> elevations = dimensions.getElevationDomain();
         String elevationMetadata = getZDomainRepresentation(elevInfo, elevations);
 
         writeElevationDimension(elevations, elevationMetadata, 
@@ -220,7 +221,7 @@ abstract class DimensionHelper {
     }
 
     private void handleTimeDimensionRaster(DimensionInfo timeInfo, ReaderDimensionsAccessor dimension) {
-        TreeSet<Date> temporalDomain = dimension.getTimeDomain();
+        TreeSet<Object> temporalDomain = dimension.getTimeDomain();
         String timeMetadata = getTemporalDomainRepresentation(timeInfo, temporalDomain);
 
         writeTimeDimension(timeMetadata);
@@ -251,7 +252,7 @@ abstract class DimensionHelper {
         }
         if (hasElevation) {
             // same as WMS 1.3 except no values
-            writeElevationDimensionElement(null, null, null, elevUnits, elevUnitSymbol);
+            writeElevationDimensionElement(null, null, elevUnits, elevUnitSymbol);
         }
         if (customDimensions != null) {
             for (String dim : customDimensions.keySet()) {
@@ -269,52 +270,54 @@ abstract class DimensionHelper {
         }
     }
 
-    protected String getZDomainRepresentation(DimensionInfo dimension, TreeSet<Double> values) {
+    protected String getZDomainRepresentation(DimensionInfo dimension, TreeSet<? extends Object> values) {
         String elevationMetadata = null;
 
         final StringBuilder buff = new StringBuilder();
 
         if (DimensionPresentation.LIST == dimension.getPresentation()) {
-            for (Double val : values) {
-                buff.append(val);
+            for (Object val : values) {
+                if(val instanceof Double) {
+                    buff.append(val);
+                } else {
+                    NumberRange<Double> range = (NumberRange<Double>) val;
+                    buff.append(range.getMinimum()).append("/").append(range.getMaximum()).append("/0");
+                }
                 buff.append(",");
             }
             elevationMetadata = buff.substring(0, buff.length() - 1).toString().replaceAll("\\[",
                     "").replaceAll("\\]", "").replaceAll(" ", "");
         } else if (DimensionPresentation.CONTINUOUS_INTERVAL == dimension.getPresentation()) {
-            buff.append(values.first());
+            NumberRange<Double> range = getMinMaxZInterval(values);
+            buff.append(range.getMinimum());
             buff.append("/");
-
-            buff.append(values.last());
-            buff.append("/");
-
-            Double resolution = values.last() - values.first();
-            buff.append(resolution);
+            buff.append(range.getMaximum());
+            buff.append("/0");
 
             elevationMetadata = buff.toString();
         } else if (DimensionPresentation.DISCRETE_INTERVAL == dimension.getPresentation()) {
-            buff.append(values.first());
+            NumberRange<Double> range = getMinMaxZInterval(values);
+            buff.append(range.getMinimum());
             buff.append("/");
-
-            buff.append(values.last());
+            buff.append(range.getMaximum());
             buff.append("/");
 
             BigDecimal resolution = dimension.getResolution();
             if (resolution != null) {
                 buff.append(resolution.doubleValue());
             } else {
-                if (values.size() >= 2) {
+                if (values.size() >= 2 && allDoubles(values)) {
                     int count = 2, i = 2;
                     Double[] zPositions = new Double[count];
-                    for (Double val : values) {
-                        zPositions[count - i--] = val;
+                    for (Object val : values) {
+                        zPositions[count - i--] = (Double) val;
                         if (i == 0)
                             break;
                     }
                     double span = zPositions[count - 1] - zPositions[count - 2];
                     buff.append(span);
                 } else {
-                    buff.append(0.0);
+                    buff.append(0);
                 }
             }
 
@@ -331,47 +334,43 @@ abstract class DimensionHelper {
      * @param values
      * @return
      */
-    String getTemporalDomainRepresentation(DimensionInfo dimension, TreeSet<Date> values) {
+    String getTemporalDomainRepresentation(DimensionInfo dimension, TreeSet<? extends Object> values) {
         String timeMetadata = null;
 
         final StringBuilder buff = new StringBuilder();
         final ISO8601Formatter df = new ISO8601Formatter();
 
         if (DimensionPresentation.LIST == dimension.getPresentation()) {
-            for (Date date : values) {
+            for (Object date : values) {
                 buff.append(df.format(date));
                 buff.append(",");
             }
             timeMetadata = buff.substring(0, buff.length() - 1).toString().replaceAll("\\[", "")
                     .replaceAll("\\]", "").replaceAll(" ", "");
         } else if (DimensionPresentation.CONTINUOUS_INTERVAL == dimension.getPresentation()) {
-            buff.append(df.format(((TreeSet<Date>) values).first()));
+            DateRange interval = getMinMaxTimeInterval(values);
+            buff.append(df.format(interval.getMinValue()));
             buff.append("/");
-
-            buff.append(df.format(((TreeSet<Date>) values).last()));
-            buff.append("/");
-
-            long durationInMilliSeconds = ((TreeSet<Date>) values).last().getTime()
-                    - ((TreeSet<Date>) values).first().getTime();
-            buff.append(new DefaultPeriodDuration(durationInMilliSeconds).toString());
-
+            buff.append(df.format(interval.getMaxValue()));
+            buff.append("/PT1S");
             timeMetadata = buff.toString();
         } else if (DimensionPresentation.DISCRETE_INTERVAL == dimension.getPresentation()) {
-            buff.append(df.format(((TreeSet<Date>) values).first()));
+            DateRange interval = getMinMaxTimeInterval(values);
+            buff.append(df.format(interval.getMinValue()));
             buff.append("/");
-
-            buff.append(df.format(((TreeSet<Date>) values).last()));
+            buff.append(df.format(interval.getMaxValue()));
             buff.append("/");
-
+            
             final BigDecimal resolution = dimension.getResolution();
             if (resolution != null) {
+                // resolution has been provided
                 buff.append(new DefaultPeriodDuration(resolution.longValue()).toString());
             } else {
-                if (values.size() >= 2) {
+                if (values.size() >= 2 && allDates(values)) {
                     int count = 2, i = 2;
                     Date[] timePositions = new Date[count];
-                    for (Date date : values) {
-                        timePositions[count - i--] = date;
+                    for (Object date : values) {
+                        timePositions[count - i--] = (Date) date;
                         if (i == 0)
                             break;
                     }
@@ -379,7 +378,8 @@ abstract class DimensionHelper {
                             - timePositions[count - 2].getTime();
                     buff.append(new DefaultPeriodDuration(durationInMilliSeconds).toString());
                 } else {
-                    buff.append(new DefaultPeriodDuration(0).toString());
+                    // assume 1 second and be done with it...
+                    buff.append("PT1S");
                 }
             }
 
@@ -388,7 +388,85 @@ abstract class DimensionHelper {
 
         return timeMetadata;
     }
+
+    /**
+     * Builds a single time range from the domain, be it made of Date or TimeRange objects
+     * @param values
+     * @return
+     */
+    private DateRange getMinMaxTimeInterval(TreeSet<? extends Object> values) {
+        Object minValue = values.first();
+        Object maxValue = values.last();
+        Date min, max;
+        if(minValue instanceof DateRange) {
+            min = ((DateRange) minValue).getMinValue();
+        } else {
+            min = (Date) minValue; 
+        }
+        if(maxValue instanceof DateRange) {
+            max = ((DateRange) maxValue).getMaxValue();
+        } else {
+            max = (Date) maxValue; 
+        }
+        return new DateRange(min, max);
+    }
     
+    /**
+     * Builds a single Z range from the domain, be it made of Double or NumberRange objects
+     * @param values
+     * @return
+     */
+    private NumberRange<Double> getMinMaxZInterval(TreeSet<? extends Object> values) {
+        Object minValue = values.first();
+        Object maxValue = values.last();
+        Double min, max;
+        if(minValue instanceof NumberRange) {
+            min = ((NumberRange<Double>) minValue).getMinValue();
+        } else {
+            min = (Double) minValue; 
+        }
+        if(maxValue instanceof NumberRange) {
+            max = ((NumberRange<Double>) maxValue).getMaxValue();
+        } else {
+            max = (Double) maxValue; 
+        }
+        return new NumberRange<Double>(Double.class, min, max);
+    }
+
+
+    /**
+     * Returns true if all the values in the set are Date instances
+     * 
+     * @param values
+     * @return
+     */
+    private boolean allDates(TreeSet<? extends Object> values) {
+        for(Object value : values) {
+            if(!(value instanceof Date)) {
+               return false; 
+            }
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Returns true if all the values in the set are Double instances
+     * 
+     * @param values
+     * @return
+     */
+    private boolean allDoubles(TreeSet<? extends Object> values) {
+        for(Object value : values) {
+            if(!(value instanceof Double)) {
+               return false; 
+            }
+        }
+        
+        return true;
+    }
+
+
     /**
      * Builds the proper presentation given the specified value domain
      * 
@@ -476,22 +554,32 @@ abstract class DimensionHelper {
         }
     }
 
-    private void writeElevationDimension(TreeSet<Double> elevations, final String elevationMetadata, 
+    private void writeElevationDimension(TreeSet<? extends Object> elevations, final String elevationMetadata, 
             final String units, final String unitSymbol) {
-        Double defaultValue = elevations == null || elevations.isEmpty() ? 0 : elevations.first();
+        double defaultValue;
+        if(elevations == null || elevations.isEmpty()) {
+            defaultValue = 0;
+        } else {
+            Object first = elevations.first();
+            if(first instanceof Double) {
+                defaultValue = (Double) first;
+            } else {
+                defaultValue = ((NumberRange<Double>) first).getMinimum();
+            }
+        }
         if (mode == Mode.WMS11) {
             AttributesImpl elevDim = new AttributesImpl();
             elevDim.addAttribute("", "name", "name", "", "elevation");
             elevDim.addAttribute("", "default", "default", "", Double.toString(defaultValue));
             element("Extent", elevationMetadata, elevDim);
         } else {
-            writeElevationDimensionElement(elevations, elevationMetadata, 
-                    defaultValue, units, unitSymbol);
+            writeElevationDimensionElement(elevationMetadata, defaultValue, 
+                    units, unitSymbol);
         }
     }
     
-    private void writeElevationDimensionElement(TreeSet<Double> elevations, final String elevationMetadata, 
-            final Double defaultValue, final String units, final String unitSymbol) {
+    private void writeElevationDimensionElement(final String elevationMetadata, final Double defaultValue, 
+            final String units, final String unitSymbol) {
         AttributesImpl elevDim = new AttributesImpl();
         String unitsNotNull = units;
         String unitSymNotNull = (unitSymbol == null) ? "" : unitSymbol;
@@ -529,63 +617,5 @@ abstract class DimensionHelper {
             
             element("Dimension", metadata, dim);
         }
-    }
-
-    static class ISO8601Formatter {
-
-        private final GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
-        
-        private void pad(StringBuilder buf, int value, int amt) {
-            if (amt == 2 && value < 10) {
-                buf.append('0');
-            } else if (amt == 4 && value < 1000) {
-                if (value >= 100) {
-                    buf.append("0");
-                } else if (value >= 10) {
-                    buf.append("00");
-                } else {
-                    buf.append("000");
-                }
-            } else if (amt == 3 && value < 100) {
-                if (value >= 10) {
-                    buf.append('0');
-                } else {
-                    buf.append("00");
-                }
-            }
-            buf.append(value);
-        }
-        
-        public String format(Date date) {
-            return format(date, new StringBuilder()).toString();
-        }
-
-        public StringBuilder format(Date date, StringBuilder buf) {
-            cal.setTime(date);
-            int year = cal.get(Calendar.YEAR);
-            if (cal.get(Calendar.ERA) == GregorianCalendar.BC) {
-                if (year > 1) {
-                    buf.append('-');
-                }
-                year = year - 1;
-            }
-            pad(buf, year, 4);
-            buf.append('-');
-            pad(buf, cal.get(Calendar.MONTH) + 1, 2);
-            buf.append('-');
-            pad(buf, cal.get(Calendar.DAY_OF_MONTH), 2);
-            buf.append('T');
-            pad(buf, cal.get(Calendar.HOUR_OF_DAY), 2);
-            buf.append(':');
-            pad(buf, cal.get(Calendar.MINUTE), 2);
-            buf.append(':');
-            pad(buf, cal.get(Calendar.SECOND), 2);
-            buf.append('.');
-            pad(buf, cal.get(Calendar.MILLISECOND), 3);
-            buf.append('Z');
-            
-            return buf;
-        }
-        
     }
 }

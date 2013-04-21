@@ -35,8 +35,8 @@ public class EncodeIfEmptyMockData extends AbstractAppSchemaMockData {
 
     public EncodeIfEmptyMockData() {
         super(GML32_NAMESPACES);
-        // add AppSchemaCatalog so validateGet() would work with unpublished schemas
-        setAppSchemaCatalog("schemas/wml2dr_catalog.xml");
+        // add SchemaCatalog so validateGet() would work with unpublished schemas
+        setSchemaCatalog("schemas/wml2dr_catalog.xml");
     }
 
     /**

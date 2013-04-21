@@ -4,39 +4,23 @@
  */
 package org.geoserver.test.onlineTest;
 
-import org.geoserver.test.NamespaceTestData;
-import org.geoserver.test.onlineTest.setup.AppSchemaWmsReferenceMockData;
-import org.geoserver.test.onlineTest.setup.ReferenceDataPostgisSetup;
-import org.geoserver.test.onlineTest.support.AbstractReferenceDataSetup;
+import org.geoserver.data.test.SystemTestData;
+import org.geotools.data.complex.AppSchemaDataAccessRegistry;
 
 /**
  * 
  * @author Niels Charlier
  * 
  */
-public class DataReferenceWmsPostgisTest extends DataReferenceWmsOnlineTest {
+public class DataReferenceWmsPostgisTest extends DataReferenceWmsPostgisWithJoiningTest {
 
     public DataReferenceWmsPostgisTest() throws Exception {
         super();
-    }
-    
-    @Override
-    protected String getLogConfiguration() {
-        return "/DEFAULT_LOGGING.properties";
-    }
+    }    
 
     @Override
-    protected AppSchemaWmsReferenceMockData createTestData() {
-    	AppSchemaWmsReferenceMockData mockData = new AppSchemaWmsReferenceMockData();
-        mockData.addStyle("Default", "styles/Default.sld");
-        mockData.addStyle("simplelithology", "styles/cgi-simplelithology-2008.sld");
-        mockData.addStyle("stratchart", "styles/ics-stratchart-2008.sld");
-        return mockData;
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+    	AppSchemaDataAccessRegistry.getAppSchemaProperties().setProperty ("app-schema.joining", "false");                
+        super.setUpTestData(testData);
     }
-
-    @Override
-    public AbstractReferenceDataSetup getReferenceDataSetup() throws Exception {
-        return new ReferenceDataPostgisSetup();
-    }
-
 }

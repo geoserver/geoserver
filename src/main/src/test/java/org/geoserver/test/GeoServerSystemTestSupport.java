@@ -38,7 +38,12 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
@@ -47,8 +52,6 @@ import net.sf.json.JSON;
 import net.sf.json.JSONSerializer;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.xml.serialize.OutputFormat;
-import org.apache.xml.serialize.XMLSerializer;
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -137,7 +140,7 @@ import com.mockrunner.mock.web.MockServletOutputStream;
  * a different test setup frequency should annotate themselves with the appropriate {@link TestSetup}
  * annotation. For example to implement a repeated setup:
  * <code><pre> 
- *  {@literal @}TestSetup(run=TestSetupFrequency.REPEATED}
+ *  {@literal @}TestSetup(run=TestSetupFrequency.REPEAT)
  *  public class MyTest extends GeoServerSystemTestSupport {
  *  
  *  }
@@ -812,14 +815,16 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
 
         request.setScheme("http");
         request.setServerName("localhost");
+        request.setServerPort(8080);
         request.setContextPath("/geoserver");
         request.setRequestURI(ResponseUtils.stripQueryString(ResponseUtils.appendPath(
                     "/geoserver/", path)));
-        request.setRequestURL(ResponseUtils.appendPath("http://localhost/geoserver", path ) );
+        request.setRequestURL(ResponseUtils.appendPath("http://localhost:8080/geoserver", path ) );
         request.setQueryString(ResponseUtils.getQueryString(path));
         request.setRemoteAddr("127.0.0.1");
         request.setServletPath(ResponseUtils.makePathAbsolute( ResponseUtils.stripRemainingPath(path)) );
         request.setPathInfo(ResponseUtils.makePathAbsolute( ResponseUtils.stripBeginningPath( path)));
+        request.setHeader("Host", "localhost:8080");
         
         // deal with authentication
         if(username != null) {
@@ -1383,9 +1388,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
                 request.setupAddParameter(key, (String) value);
             } else {
                 String[] values = (String[]) value;
-                for (String v : values) {
-                    request.setupAddParameter(key, v);
-                }
+                request.setupAddParameter(key, values);
             }
         }
          
@@ -1673,15 +1676,11 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      *            stream to which output is written
      */
     protected void print(Document document, OutputStream output) {
-        OutputFormat format = new OutputFormat(document);
-        // setIndenting must be first as it resets indent and line width
-        format.setIndenting(true);
-        format.setIndent(4);
-        format.setLineWidth(200);
-        XMLSerializer serializer = new XMLSerializer(output, format);
         try {
-            serializer.serialize(document);
-        } catch (IOException e) {
+            Transformer tx = TransformerFactory.newInstance().newTransformer();
+            tx.setOutputProperty(OutputKeys.INDENT, "yes");
+            tx.transform(new DOMSource(document), new StreamResult(output));
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

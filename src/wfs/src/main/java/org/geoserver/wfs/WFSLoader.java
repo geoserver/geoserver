@@ -42,6 +42,11 @@ public class WFSLoader extends LegacyServiceLoader<WFSInfo> {
             wfs.setFeatureBounding( featureBounding );
         }
         
+        Boolean hitsIgnoreMaxFeatures = (Boolean) properties.get( "hitsIgnoreMaxFeatures");
+        if (hitsIgnoreMaxFeatures != null) {
+            wfs.setHitsIgnoreMaxFeatures( hitsIgnoreMaxFeatures );
+        }
+        
         //gml2
         GMLInfo gml = new GMLInfoImpl();
         gml.setOverrideGMLAttributes(true);

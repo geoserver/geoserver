@@ -127,7 +127,11 @@ public abstract class StoreFileResource extends Resource {
             }
         } 
         catch (Throwable t) {
-            throw new RestletException( "Error while storing uploaded file:", Status.SERVER_ERROR_INTERNAL, t );
+            if(t instanceof RestletException) {
+                throw (RestletException) t;
+            } else {
+                throw new RestletException( "Error while storing uploaded file:", Status.SERVER_ERROR_INTERNAL, t );
+            }
         }
         
         //handle the case that the uploaded file was a zip file, if so unzip it

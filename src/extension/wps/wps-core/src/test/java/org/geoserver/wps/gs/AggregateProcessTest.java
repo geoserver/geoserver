@@ -67,8 +67,21 @@ public class AggregateProcessTest extends WPSTestSupport {
         assertTrue(xpath.evaluate("/AggregationResults/StandardDeviation", dom).matches("442\\.19380.*"));
     }
 
+    @Test
+    public void testNonRawOutput() throws Exception {
+        String xml = aggregateCall("StdDev", false);
+        Document dom = postAsDOM(root(), xml);
+        //print(dom);
+        assertXpathEvaluatesTo("1", "count(//AggregationResults/*)", dom);
+    }
+
     private String aggregateCall(String function) {
-        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        return aggregateCall(function, true);
+    }
+
+    private String aggregateCall(String function, boolean rawOutput) {
+        String xml =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                 + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
                 + "  <ows:Identifier>gs:Aggregate</ows:Identifier>\n"
                 + "  <wps:DataInputs>\n"
@@ -99,11 +112,21 @@ public class AggregateProcessTest extends WPSTestSupport {
                 + "      </wps:Data>\n"
                 + "    </wps:Input>\n"
                 + "  </wps:DataInputs>\n"
-                + "  <wps:ResponseForm>\n"
-                + "    <wps:RawDataOutput>\n"
-                + "      <ows:Identifier>result</ows:Identifier>\n"
-                + "    </wps:RawDataOutput>\n"
-                + "  </wps:ResponseForm>\n" + "</wps:Execute>";
+                + "  <wps:ResponseForm>\n";
+
+        if (rawOutput) {
+            xml +=    "    <wps:RawDataOutput>\n"
+                    + "      <ows:Identifier>result</ows:Identifier>\n"
+                    + "    </wps:RawDataOutput>\n";
+        }
+        else {
+            xml +=    "    <wps:Output>\n"
+                    + "      <ows:Identifier>result</ows:Identifier>\n"
+                    + "    </wps:Output>\n";
+        }
+
+        xml += "  </wps:ResponseForm>\n" + "</wps:Execute>";
+        return xml;
     }
     
     @Test

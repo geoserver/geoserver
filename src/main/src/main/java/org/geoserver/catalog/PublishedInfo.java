@@ -7,9 +7,9 @@ package org.geoserver.catalog;
 import java.util.List;
 
 /**
+ * Interface for publishable entities contained in a Layer Group.
  * 
- * 
- * @author Davide Savazzi - GeoSolutions
+ * @author Davide Savazzi - geo-solutions.it
  */
 public interface PublishedInfo extends CatalogInfo {
 

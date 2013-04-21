@@ -10,7 +10,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>2.3-SNAPSHOT</version>
+    <version>2.4-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
@@ -45,7 +45,9 @@
           <descriptor>release/ext-sfs.xml</descriptor>
        	  <descriptor>release/ext-dds.xml</descriptor>
           <descriptor>release/ext-aggregate.xml</descriptor>
-          <descriptor>release/ext-xslt.xml</descriptor>
+          <descriptor>release/ext-wcs2_0.xml</descriptor>
+          <descriptor>release/ext-wms-eo.xml</descriptor>
+          <descriptor>release/ext-libjpeg-turbo.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -156,7 +158,9 @@
         <module>sfs</module>
         <module>feature-aggregate</module>
         <module>script</module>
-        <module>xslt</module>
+        <module>wcs2_0</module>
+        <module>wms-eo</module>
+        <module>libjpeg-turbo</module>
       </modules>
     </profile>
     <profile>
@@ -235,15 +239,6 @@
       </modules>
     </profile>
     <profile>
-      <id>xslt</id>
-      <activation>
-        <property><name>xslt</name></property>
-      </activation> 
-      <modules>
-        <module>xslt</module>
-      </modules>
-    </profile>
-    <profile>
       <id>wcs20</id>
       <activation>
         <property><name>wcs20</name></property>
@@ -258,5 +253,35 @@
         <module>w3ds</module>
       </modules>
     </profile>
+    <profile>
+      <id>wms-eo</id>
+      <activation>
+        <property><name>wms-eo</name></property>
+      </activation> 	  
+      <modules>
+        <module>wms-eo</module>
+      </modules>
+    </profile>	
+    <profile>
+      <id>kml2</id>
+      <activation>
+        <property><name>kml2</name></property>
+      </activation> 	  
+      <modules>
+        <module>kml2</module>
+      </modules>
+    </profile>
+		<profile>
+			<id>libjpeg-turbo</id>
+			<activation>
+				<property>
+					<name>all</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<modules>
+				<module>libjpeg-turbo</module>
+			</modules>
+		</profile>    
   </profiles>
 </project>

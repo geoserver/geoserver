@@ -7,6 +7,7 @@ package org.geoserver.security.web.user;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.IModel;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.web.CatalogIconFactory;
@@ -28,6 +29,7 @@ public class UserTablePanel extends GeoServerTablePanel<GeoServerUser> {
     public UserTablePanel(String id, String ugServiceName, GeoServerDataProvider<GeoServerUser> dataProvider, boolean selectable) {
         super(id, dataProvider, selectable);
         this.ugServiceName = ugServiceName;
+        setItemReuseStrategy(new DefaultItemReuseStrategy());
     }
 
     @Override

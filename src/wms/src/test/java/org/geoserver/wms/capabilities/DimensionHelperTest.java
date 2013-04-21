@@ -13,6 +13,7 @@ import java.util.GregorianCalendar;
 import java.util.Random;
 import java.util.TimeZone;
 
+import org.geoserver.util.ISO8601Formatter;
 import org.junit.Test;
 
 /**
@@ -23,7 +24,7 @@ public class DimensionHelperTest {
     
     @Test
     public void testNegativeYears() {
-        DimensionHelper.ISO8601Formatter fmt = new DimensionHelper.ISO8601Formatter();
+        ISO8601Formatter fmt = new ISO8601Formatter();
         
         GregorianCalendar cal = new GregorianCalendar();
         cal.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -58,7 +59,7 @@ public class DimensionHelperTest {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         df.setTimeZone(TimeZone.getTimeZone("GMT"));
         
-        DimensionHelper.ISO8601Formatter fmt = new DimensionHelper.ISO8601Formatter();
+        ISO8601Formatter fmt = new ISO8601Formatter();
         
         GregorianCalendar cal = new GregorianCalendar();
         Random r = new Random();
@@ -77,7 +78,7 @@ public class DimensionHelperTest {
     public void testPadding() throws ParseException {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
         df.setTimeZone(TimeZone.getTimeZone("GMT"));
-        DimensionHelper.ISO8601Formatter fmt = new DimensionHelper.ISO8601Formatter();
+        ISO8601Formatter fmt = new ISO8601Formatter();
         
         assertEquals("0010-01-01T00:01:10.001Z", fmt.format(df.parse("0010-01-01T00:01:10.001")));
         assertEquals("0100-01-01T00:01:10.011Z", fmt.format(df.parse("0100-01-01T00:01:10.011")));

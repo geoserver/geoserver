@@ -34,9 +34,9 @@ public class UserGroupServicesTogglePanel
 
             SecurityUserGroupServiceConfig config = model.getObject();
             add(new UserPanel("users", config.getName())
-                .setHeaderVisible(false).setPagersVisible(false, true));
+                .setHeaderVisible(true).setPagersVisible(false, true));
             add(new GroupPanel("groups", config.getName())
-                .setHeaderVisible(false).setPagersVisible(false, true));
+                .setHeaderVisible(true).setPagersVisible(false, true));
         }
     }
 }

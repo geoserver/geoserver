@@ -4,26 +4,30 @@
  */
 package org.geoserver.test.onlineTest;
 
-import org.junit.Test;
+import org.geoserver.test.onlineTest.setup.AppSchemaReferenceMockData;
+import org.geoserver.test.onlineTest.setup.ReferenceDataPostgisSetup;
+import org.geoserver.test.onlineTest.support.AbstractReferenceDataSetup;
 
-import org.geoserver.data.test.SystemTestData;
-import org.geotools.data.complex.AppSchemaDataAccessRegistry;
-
-public class DataReferenceWfsPostgisWithJoiningTest extends DataReferenceWfsPostgisTest {
+/**
+ * 
+ * @author Victor Tey(CSIRO Earth Science and Resource Engineering)
+ *
+ */
+public class DataReferenceWfsPostgisWithJoiningTest extends DataReferenceWfsOnlineTest {
 
     public DataReferenceWfsPostgisWithJoiningTest() throws Exception {
         super();
     }
-
-    protected void onSetUp(SystemTestData testData) throws Exception {
-        AppSchemaDataAccessRegistry.getAppSchemaProperties().setProperty ("app-schema.joining", "true");
-        super.onSetUp(testData);
-    };
     
     @Override
-    @Test
-    public void testFilteringSplit() throws Exception {
-        //this is a non joining test
+    protected AppSchemaReferenceMockData createTestData() {
+        return new AppSchemaReferenceMockData();
+
+    }
+
+    @Override
+    public AbstractReferenceDataSetup getReferenceDataSetup() throws Exception {
+        return new ReferenceDataPostgisSetup();
     }
 
 }

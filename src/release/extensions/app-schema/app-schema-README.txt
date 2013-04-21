@@ -11,7 +11,7 @@ Installation
    There should be three of these:
    - gt-app-schema-{something}.jar
    - gt-app-schema-resolver-{something}.jar
-   - xml-commons-resolver-{something}.jar
+   - gt-complex-{something}.jar
 
 3. Restart GeoServer by reloading the servlet or restarting your servlet container.
 

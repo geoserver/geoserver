@@ -64,6 +64,8 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.styling.Style;
 import org.geotools.util.Converters;
+import org.geotools.util.DateRange;
+import org.geotools.util.NumberRange;
 import org.geotools.util.Range;
 import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
@@ -174,7 +176,7 @@ public class WMS implements ApplicationContextAware {
     public static final String KML_KMSCORE = "kmlKmscore";
 
     public static final int KML_KMSCORE_DEFAULT = 40;
-
+    
     /**
      * the WMS Animator animatorExecutor service
      */
@@ -879,7 +881,12 @@ public class WMS implements ApplicationContextAware {
                                 DimensionInfo.class);
                         if (dimensions.hasDomain(name) && customInfo != null && customInfo.isEnabled()) {
                             final ArrayList<String> val = new ArrayList<String>(1);
-                            val.add(kvp.getValue());
+                            if(kvp.getValue().indexOf(",")>0){
+                                String[] elements = kvp.getValue().split(",");
+                                val.addAll(Arrays.asList(elements));
+                            }else{
+                                val.add(kvp.getValue());
+                            }
                             readParameters = CoverageUtils.mergeParameter(
                                 parameterDescriptors, readParameters, val, name);
                         }

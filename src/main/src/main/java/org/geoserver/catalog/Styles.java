@@ -13,7 +13,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -34,6 +33,7 @@ import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.Parser;
 import org.vfny.geoserver.util.SLDValidator;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -71,9 +71,9 @@ public class Styles {
      * @throws IOException Any parsing errors that occur.
      * @throws IllegalArgumentException If the type of the style can not be determined.
      */
-    public static StyledLayerDescriptor parse(Object input) throws IOException {
+    public static StyledLayerDescriptor parse(Object input, EntityResolver entityResolver) throws IOException {
         Object[] obj = getVersionAndReader(input);
-        return parse(obj[1], (Version)obj[0]);
+        return parse(obj[1], entityResolver, (Version)obj[0]);
     }
 
     /**
@@ -88,8 +88,8 @@ public class Styles {
      * @throws IOException Any parsing errors that occur.
      * @throws IllegalArgumentException If the specified version is not supported.
      */
-    public static StyledLayerDescriptor parse(Object input, Version version) throws IOException {
-        return Handler.lookup(version).parse(input);
+    public static StyledLayerDescriptor parse(Object input, EntityResolver entityResolver, Version version) throws IOException {
+        return Handler.lookup(version).parse(input, entityResolver);
     }
     
     /**
@@ -122,9 +122,9 @@ public class Styles {
      * @throws IOException Any parsing errors that occur.
      * @throws IllegalArgumentException If the specified version is not supported.
      */
-    public static List<Exception> validate(Object input) throws IOException {
+    public static List<Exception> validate(Object input, EntityResolver entityResolver) throws IOException {
         Object[] obj = getVersionAndReader(input);
-        return validate(obj[1], (Version)obj[0]);
+        return validate(obj[1], entityResolver, (Version)obj[0]);
     }
 
     /**
@@ -139,8 +139,8 @@ public class Styles {
      * @throws IOException Any parsing errors that occur.
      * @throws IllegalArgumentException If the specified version is not supported.
      */
-    public static List<Exception> validate(Object input, Version version) throws IOException {
-        return Handler.lookup(version).validate(input);
+    public static List<Exception> validate(Object input, EntityResolver entityResolver, Version version) throws IOException {
+        return Handler.lookup(version).validate(input, entityResolver);
     }
 
     /**
@@ -277,8 +277,8 @@ public class Styles {
         SLD_10("1.0.0") {
             
             @Override
-            public StyledLayerDescriptor parse(Object input) throws IOException {
-                SLDParser p = parser(input);
+            public StyledLayerDescriptor parse(Object input, EntityResolver entityResolver) throws IOException {
+                SLDParser p = parser(input, entityResolver);
                 StyledLayerDescriptor sld = p.parseSLD();
                 if (sld.getStyledLayers().length == 0) {
                     //most likely a style that is not a valid sld, try to actually parse out a 
@@ -295,7 +295,7 @@ public class Styles {
             }
             
             @Override
-            protected List<Exception> validate(Object input) throws IOException {
+            protected List<Exception> validate(Object input, EntityResolver entityResolver) throws IOException {
                 return new SLDValidator().validateSLD(new InputSource(toReader(input)));
             }
             
@@ -314,23 +314,29 @@ public class Styles {
             }
             
             
-            SLDParser parser(Object input) throws IOException {
+            SLDParser parser(Object input, EntityResolver entityResolver) throws IOException {
+                SLDParser parser;
                 if (input instanceof File) {
-                    return new SLDParser(styleFactory, (File) input);
+                    parser = new SLDParser(styleFactory, (File) input);
                 }
                 else {
-                    return new SLDParser(styleFactory, toReader(input));
+                    parser = new SLDParser(styleFactory, toReader(input));
                 }
+                
+                parser.setEntityResolver(entityResolver);
+                return parser;
             }
         },
         
         SLD_11("1.1.0") {
             
             @Override
-            public StyledLayerDescriptor parse(Object input) throws IOException {
+            public StyledLayerDescriptor parse(Object input, EntityResolver entityResolver) throws IOException {
                 SLDConfiguration sld = new SLDConfiguration();
                 try {
-                    return (StyledLayerDescriptor) new Parser(sld).parse(toReader(input));
+                    Parser parser = new Parser(sld);
+                    parser.setEntityResolver(entityResolver);
+                    return (StyledLayerDescriptor) parser.parse(toReader(input));
                 } 
                 catch(Exception e) {
                     if (e instanceof IOException) throw (IOException) e;
@@ -339,10 +345,11 @@ public class Styles {
             }
             
             @Override
-            protected List<Exception> validate(Object input) throws IOException {
+            protected List<Exception> validate(Object input, EntityResolver entityResolver) throws IOException {
                 SLDConfiguration sld = new SLDConfiguration();
                 Parser p = new Parser(sld);
                 p.setValidating(true);
+                p.setEntityResolver(entityResolver);
                 
                 try {
                     p.parse(toReader(input));
@@ -372,12 +379,12 @@ public class Styles {
             return version;
         }
 
-        protected abstract StyledLayerDescriptor parse(Object input) throws IOException;
+        protected abstract StyledLayerDescriptor parse(Object input, EntityResolver entityResolver) throws IOException;
         
         protected abstract void encode(StyledLayerDescriptor sld, boolean format, OutputStream output) 
             throws IOException;
         
-        protected abstract List<Exception> validate(Object input) throws IOException;
+        protected abstract List<Exception> validate(Object input, EntityResolver entityResolver) throws IOException;
         
         public static Handler lookup(Version version) {
             for (Handler h : values()) {

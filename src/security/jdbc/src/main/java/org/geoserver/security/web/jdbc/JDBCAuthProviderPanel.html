@@ -6,6 +6,9 @@
 <wicket:extend>
     <ul>
       <li>
+         <div wicket:id="feedback"></div>
+     </li>
+      <li>
         <fieldset class="noTitle">
           <ul>
             <li>
@@ -31,6 +34,27 @@
             </li>
           </ul>
         </fieldset>
+        <fieldset>
+          <legend>
+            <span><wicket:message key="testConnectionForUser"></wicket:message></span>
+          </legend>
+        
+           <ul>
+            <li>
+                <label for="username"><wicket:message key="username"></wicket:message></label>
+                <input id="username" wicket:id="username" type="text" class="text"></input>
+            </li>
+            <li>
+                <label for="password"><wicket:message key="password"></wicket:message></label>
+                <input id="password" wicket:id="password" type="password" class="text"></input>
+            </li>           
+            <li>
+                <div class="button-group selfclear">
+                <a wicket:id="cxTest"><span><wicket:message key="testConnection"></wicket:message></span></a>
+                </div>
+            </li>
+           </ul>
+          </fieldset> 
       </li>
     </ul>
 </wicket:extend>

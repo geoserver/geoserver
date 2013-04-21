@@ -148,7 +148,10 @@ There are a number of tests that try out 3D features in App-schema. To run these
 For PostGIS:
 
     * You must use postgis 2 to support 3D.
-    * In your postgis, if it hasn't been done yet, this command must be executed: http://spatialreference.org/ref/epsg/4979/postgis/ to support srid 4979 (wgs84 with 3d)
+    * In your postgis, if it hasn't been done yet, this command must be executed to support srid 4979 (wgs84 with 3d)::
+
+        INSERT into spatial_ref_sys (srid, auth_name, auth_srid, proj4text, srtext) values ( 4979, 'epsg', 4979, '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs ', 'GEOGCS["WGS 84",DATUM["World Geodetic System 1984",SPHEROID["WGS 84",6378137.0,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0.0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.017453292519943295],AXIS["Geodetic latitude",NORTH],AXIS["Geodetic longitude",EAST],AXIS["Ellipsoidal height",UP],AUTHORITY["EPSG","4979"]]');
+
 
 For Oracle:
 

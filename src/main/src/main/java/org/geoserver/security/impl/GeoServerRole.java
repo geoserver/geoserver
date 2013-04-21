@@ -44,10 +44,6 @@ public class GeoServerRole  implements GrantedAuthority,  Comparable<GeoServerRo
      */
     public final static GeoServerRole ANY_ROLE = new GeoServerRole("*");
 
-    /**
-     * Pre-defined null role 
-     */
-    public final static GeoServerRole NULL_ROLE = new GeoServerRole("null");
         
     /**
      * Predefined anonymous role

@@ -28,7 +28,7 @@ where ``<format>`` is one of the following options:
      - ZIP archive will be generated containing the shapefile (see :ref:`wfs_outputformat_shapezip` below)
    * - JSON
      - ``outputFormat=application/json``
-     - Returns a GeoJSON or a JSON output
+     - Returns a GeoJSON or a JSON output. Note ``outputFormat=json`` is only supported for getFeature (for backward compatibility).
    * - JSONP
      - ``outputFormat=text/javascript``
      - Returns a `JSONP <http://en.wikipedia.org/wiki/JSONP>`_ in the form: ``parseResponse(...json...)``. See :ref:`wms_vendor_parameters` to change the callback name. Note that this format is disabled by default (See :ref:`wms_global_variables`).

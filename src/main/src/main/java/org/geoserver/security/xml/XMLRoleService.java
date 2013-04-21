@@ -21,6 +21,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.config.FileBasedSecurityServiceConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
@@ -117,10 +118,14 @@ public class XMLRoleService extends AbstractRoleService {
         
         try {
             Document doc=null;
+            FileInputStream is = null;
             try {
-                doc = builder.parse(new FileInputStream(roleFile));
+                is = new FileInputStream(roleFile);
+                doc = builder.parse(is);
             } catch (SAXException e) {
                 throw new IOException(e);
+            } finally {
+                IOUtils.closeQuietly(is);
             }
             if (isValidatingXMLSchema()) {
                 XMLValidator.Singleton.validateRoleRegistry(doc);

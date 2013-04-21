@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.security.PropertyFileWatcher;
+import org.geotools.util.logging.Logging;
 
 /**
  * Abstract class for security dao's whose configuration is stored in a property file.
@@ -35,12 +36,8 @@ import org.geoserver.security.PropertyFileWatcher;
  * @param <R> The access rule class.
  */
 public abstract class AbstractAccessRuleDAO<R extends Comparable<?>> {
+    private final static Logger LOGGER = Logging.getLogger(AbstractAccessRuleDAO.class);
 
-    /**
-     * logging instance, subclasses need to set this
-     */
-    protected static Logger LOGGER;
-    
     /**
      * Parsed rules
      */

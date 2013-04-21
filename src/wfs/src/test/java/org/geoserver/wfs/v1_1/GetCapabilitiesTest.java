@@ -16,7 +16,10 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.data.test.CiteTestData;
+import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.MockTestData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
@@ -33,6 +36,7 @@ public class GetCapabilitiesTest extends WFSTestSupport {
     public void revert() throws Exception {
         revertLayer(CiteTestData.UPDATES);
         revertLayer(CiteTestData.BUILDINGS);
+        revertLayer(MockData.MPOLYGONS);
     }
 
     @Override
@@ -224,5 +228,44 @@ public class GetCapabilitiesTest extends WFSTestSupport {
         assertEquals(7, xpath.getMatchingNodes("//ows:Post[contains(@xlink:href,'sf/PrimitiveGeoFeature/wfs')]", doc).getLength());
         
         //TODO: test with a non existing workspace
+    }
+    
+    @Test
+    public void testMetadataLinks() throws Exception {
+        FeatureTypeInfo mpolys = getCatalog().getFeatureTypeByName(getLayerId(MockTestData.MPOLYGONS));
+        // a valid link whose metadata type needs tweaking
+        MetadataLinkInfo ml1 = getCatalog().getFactory().createMetadataLink();
+        ml1.setMetadataType("ISO19115:2003");
+        ml1.setType("text/html");
+        ml1.setContent("http://www.geoserver.org");
+        mpolys.getMetadataLinks().add(ml1);
+        // a valid one
+        MetadataLinkInfo ml2 = getCatalog().getFactory().createMetadataLink();
+        ml2.setMetadataType("FGDC");
+        ml2.setType("text/html");
+        ml2.setContent("http://www.geoserver.org");
+        mpolys.getMetadataLinks().add(ml2);
+        // an invalid one, not a valid type
+        MetadataLinkInfo ml3 = getCatalog().getFactory().createMetadataLink();
+        ml3.setMetadataType("other");
+        ml3.setType("text/html");
+        ml3.setContent("http://www.geoserver.org");
+        mpolys.getMetadataLinks().add(ml3);
+        // an invalid one, not a valid format
+        MetadataLinkInfo ml4 = getCatalog().getFactory().createMetadataLink();
+        ml4.setMetadataType("FGDC");
+        ml4.setType("application/zip");
+        ml4.setContent("http://www.geoserver.org");
+        mpolys.getMetadataLinks().add(ml4);
+        getCatalog().save(mpolys);
+        
+        Document doc = getAsDOM("wfs?service=WFS&version=1.1.0&request=getCapabilities");
+        // print(doc);
+        XpathEngine xpath =  XMLUnit.newXpathEngine();
+        assertEquals(2, xpath.getMatchingNodes("//wfs:FeatureType[wfs:Name='cgf:MPolygons']/wfs:MetadataURL", doc).getLength());
+        assertEquals(2, xpath.getMatchingNodes("//wfs:FeatureType[wfs:Name='cgf:MPolygons']/wfs:MetadataURL[@format='text/html']", doc).getLength());
+        assertEquals(1, xpath.getMatchingNodes("//wfs:FeatureType[wfs:Name='cgf:MPolygons']/wfs:MetadataURL[@type='19115']", doc).getLength());
+        assertEquals(1, xpath.getMatchingNodes("//wfs:FeatureType[wfs:Name='cgf:MPolygons']/wfs:MetadataURL[@type='FGDC']", doc).getLength());
+        assertEquals(2, xpath.getMatchingNodes("//wfs:FeatureType[wfs:Name='cgf:MPolygons']/wfs:MetadataURL[text() = 'http://www.geoserver.org']", doc).getLength());
     }
 }

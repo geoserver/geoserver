@@ -11,7 +11,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>2.3-SNAPSHOT</version>
+    <version>2.4-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
@@ -230,6 +230,13 @@
       </modules>
     </profile>
 
+    <profile>
+      <id>xslt</id>
+      <modules>
+        <module>xslt</module>
+      </modules>
+    </profile>
+
     <!-- allExtensions profile, includes all modules -->
     <profile>
       <id>allExtensions</id>
@@ -257,6 +264,7 @@
         <module>teradata</module>
         <module>monitor</module>
         <module>security</module>
+        <module>xslt</module>
       </modules>
     </profile>
 
@@ -287,6 +295,7 @@
         <module>teradata</module>
         <module>monitor</module>
         <module>security</module>
+        <module>xslt</module>
       </modules>
     </profile>
 

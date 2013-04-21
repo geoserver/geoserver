@@ -19,6 +19,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -43,6 +44,14 @@ public class RenderingBufferTest extends WMSTestSupport {
         Map properties = new HashMap();
         properties.put(MockData.KEY_STYLE,LINE_WIDTH_STYLE);
         testData.addVectorLayer(LINE_WIDTH_LAYER,properties,"LineWidth.properties",getClass(), getCatalog());
+    }
+
+    @Before
+    public void resetBuffer() {
+        Catalog catalog = getCatalog();
+        LayerInfo layer = catalog.getLayerByName(getLayerId(LINE_WIDTH_LAYER));
+        layer.getMetadata().remove(LayerInfo.BUFFER);
+        catalog.save(layer);        
     }
     
 //    @Override

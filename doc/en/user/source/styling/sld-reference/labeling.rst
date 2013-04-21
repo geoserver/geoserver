@@ -155,7 +155,9 @@ To label linear features (such as a road or river), the ``<LinePlacement>`` elem
 This indicates that the styler should determine the best placement and rotation for the labels 
 along the lines. 
 
-The LinePlacement element provides one optional sub-element, ``<PerpendicularOffset>``.
+The standard SLD LinePlacement element provides one optional sub-element, ``<PerpendicularOffset>``.
+GeoServer provides much more control over line label placement via vendor-specific options;
+see below for details.
 
 PerpendicularOffset
 ^^^^^^^^^^^^^^^^^^^
@@ -189,7 +191,10 @@ Examples:
 Composing labels from multiple attributes
 -----------------------------------------
 
-The ``<Label>`` element in TextSymbolizer is said to be mixed, that is, its content can be a mixture of plain text and OGC Expressions. The mix gets interepreted as a concatenation, this means you can leverage it to create complex labels out of multiple attributes.
+The ``<Label>`` element in `<TextSymbolizer>` allows mixed content.
+This means its content can be a mixture of plain text and :ref:`Filter Expressions <sld_reference_parameter_expressions>`. 
+The mix gets interepreted as a concatenation.
+You can leverage this to create complex labels out of multiple attributes.
 
 For example, if you want both a state name and its abbreviation to appear in a label, you can do the following:
 
@@ -229,16 +234,20 @@ These options are specified as subelements of ``<TextSymbolizer>``.
 Priority Labeling 
 ^^^^^^^^^^^^^^^^^
 
-The optional ``<Priority>`` element allows specifying label priority.. 
+The optional ``<Priority>`` element allows specifying label priority.
 This controls how conflicts (overlaps) between labels are resolved during rendering.
 The element content may be an :ref:`expression <sld_reference_parameter_expressions>` 
 to retrieve or calculate a relative priority value for each feature in a layer.
 Alternatively, the content may be a constant value,
 to set the priority of a layer's labels relative to other layers on a rendered map.
 
+The default priority for labels is 1000.
+
+
 .. note:: **Standard SLD Conflict Resolution**
 
-  If the ``<Priority>`` element is not present, then standard SLD label conflict resolution is used.
+  If the ``<Priority>`` element is not present, or if a group of labels all have the same priority,
+  then standard SLD label conflict resolution is used.
   Under this strategy, the label to display out of a group of conflicting labels is chosen essentially at random.
 
 For example, take the following dataset of cities::
@@ -255,8 +264,8 @@ For example, take the following dataset of cities::
 
 *City locations (large scale map)*
 
-Most people know where New York City is, but don't know where Yonkers is. 
-Thus we want to give the label "New York" priority so it will be visible when in conflict with (overlapping) "Yonkers".
+More people know where New York City is than where Jersey City is. 
+Thus we want to give the label "New York" priority so it will be visible when in conflict with (overlapping) "Jersey City".
 To do this we include the following code in the ``<TextSymbolizer>``:
 
 .. code-block:: xml 
@@ -265,14 +274,14 @@ To do this we include the following code in the ``<TextSymbolizer>``:
       <PropertyName>population</PropertyName>
   </Priority>
   
-This ensures that at small scales New York is labeled in preference to the less populated cities: 
+This ensures that at small scales New York is labeled in preference to the less populous cities nearby: 
 
 .. figure:: img/priority_some.png
    :align: center
 
 *City locations (small scale map)*
    
-Without priority labeling, Yonkers could be labeled in preference to New York, 
+Without priority labeling, Jersey City could be labeled in preference to New York, 
 making it difficult to interpret the map.
 At scales showing many features, 
 priority labeling is essential to ensure that larger cities are more visible than smaller cities.
@@ -283,8 +292,8 @@ priority labeling is essential to ensure that larger cities are more visible tha
 
 .. _labeling_group:
 
-Grouping Features
-^^^^^^^^^^^^^^^^^
+Grouping Features (group)
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The ``group`` option allows displaying a single label for multiple features
 in a logical group.
@@ -332,6 +341,19 @@ This produces a much less cluttered map:
 
 .. figure:: img/group_yes.png
    :align: center
+
+.. _labeling_all_group:
+
+labelAllGroup
+^^^^^^^^^^^^^
+
+The ``labelAllGroup`` option can be used in conjunction with the ``group`` option (see :ref:`labeling_group`).
+It causes *all* of the disjoint paths in a line group to be labeled, not just the longest one.
+
+.. code-block:: xml
+
+  <VendorOption name="labelAllGroup">true</VendorOption>
+
 
 
 .. _labeling_space_around:
@@ -383,7 +405,7 @@ The ``followLine`` option forces a label to follow the curve of the line. To use
   
   <VendorOption name="followLine">true</VendorOption>  
 
-It is required to use ``<LinePlacement>`` along with this option to ensure that labels are placd along lines:
+It is required to use ``<LinePlacement>`` along with this option to ensure that labels are placed along lines:
 
 .. code-block:: xml
 
@@ -397,8 +419,9 @@ maxDisplacement
 ^^^^^^^^^^^^^^^
 
 The ``maxDisplacement`` option controls the displacement of the label along a line. 
-Normally GeoServer labels a line at its center point only, provided the location is not occupied by another label, and not label it at all otherwise. 
-When this option is enabled the labeller will attempt to avoid conflict by using an alternate location within **maxDisplacement** pixels from the pre-computed label point.
+Normally GeoServer labels a line at its center point only.
+If this label conflicts with another one it may not be displayed at all. 
+When this option is enabled the labeller will attempt to avoid conflict by using an alternate location within **maxDisplacement** pixels along the line from the pre-computed label point.
 
 If used in conjunction with :ref:`labeling_repeat`, the value for ``maxDisplacement`` should always be **lower** than the value for ``repeat``.
 
@@ -411,26 +434,15 @@ If used in conjunction with :ref:`labeling_repeat`, the value for ``maxDisplacem
 repeat
 ^^^^^^
 
-The ``repeat`` option determines how often GeoServer labels a line. 
+The ``repeat`` option determines how often GeoServer displays labels along a line. 
 Normally GeoServer labels each line only once, regardless of length. 
 Specifying a positive value for this option makes the labeller attempt to draw the label every **repeat** pixels.
+For long or complex lines (such as contour lines) this makes labeling more informative.
 
 .. code-block:: xml
 
   <VendorOption name="repeat">100</VendorOption>
 
-
-.. _labeling_all_group:
-
-labelAllGroup
-^^^^^^^^^^^^^
-
-The ``labelAllGroup`` option can be used in conjunction with the ``group`` option (see :ref:`labeling_group`).
-It causes *all* of the disjoint paths in a line group to be labeled, not just the longest one.
-
-.. code-block:: xml
-
-  <VendorOption name="labelAllGroup">true</VendorOption>
 
 .. _labeling_max_angle_delta:
 
@@ -464,8 +476,8 @@ The size should be wide enough to accommodate the longest word, otherwise single
 forceLeftToRight
 ^^^^^^^^^^^^^^^^
 
-The renderer tries to draw labels for optimal legibility.  
-This means the label may not follow the line orientation, but is flipped 180° instead to allow easy reading. 
+The renderer tries to draw labels along lines so that the text is upright, for maximum legibility.  
+This means a label may not follow the line orientation, but instead may be rotated 180° to display the text the right way up. 
 In some cases altering the orientation of the label is not desired; for example, if the label is a directional arrow showing the orientation of the line.
 
 The ``forceLeftToRight`` option can be set to ``false`` to disable label flipping, making the label always follow the inherent orientation of the line being labelled:

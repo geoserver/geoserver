@@ -13,6 +13,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
@@ -41,7 +42,7 @@ public class RolePanel extends Panel {
     public RolePanel(String id, String serviceName) {
         super(id);
         this.roleServiceName=serviceName;
-                
+                        
         RoleListProvider provider = new RoleListProvider(this.roleServiceName);
         add(roles = new GeoServerTablePanel<GeoServerRole>("table", provider, true) {
 
@@ -68,6 +69,7 @@ public class RolePanel extends Panel {
             }
 
         });
+        roles.setItemReuseStrategy(new DefaultItemReuseStrategy());
         roles.setOutputMarkupId(true);
         add(dialog = new GeoServerDialog("dialog"));
         headerComponents();
@@ -144,7 +146,7 @@ public class RolePanel extends Panel {
         return new SimpleAjaxLink(id, itemModel, property.getModel(itemModel)) {
 
             @Override
-            protected void onClick(AjaxRequestTarget target) {
+            protected void onClick(AjaxRequestTarget target) {                
                 setResponsePage(new EditRolePage(roleServiceName, 
                         (GeoServerRole) getDefaultModelObject()).setReturnPage(getPage()));
             }
@@ -165,12 +167,18 @@ public class RolePanel extends Panel {
                             .loadRoleService(roleServiceName).getParentRole(role);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
-                }
+                }                
                 setResponsePage(new EditRolePage(roleServiceName, parentRole).setReturnPage(getPage()));
             }
 
         };
     }
 
+    @Override
+    protected void onBeforeRender() {
+        roles.clearSelection();
+        removal.setEnabled(false);
+        super.onBeforeRender();
+    }
 
 }

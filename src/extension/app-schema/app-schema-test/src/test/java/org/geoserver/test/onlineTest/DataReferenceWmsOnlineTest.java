@@ -27,7 +27,7 @@ public abstract class DataReferenceWmsOnlineTest extends AbstractDataReferenceWf
 
     public DataReferenceWmsOnlineTest() throws Exception {
         super();
-    }
+    }    
       
     @Test
     public void testGetMapSimpleLithology() throws Exception

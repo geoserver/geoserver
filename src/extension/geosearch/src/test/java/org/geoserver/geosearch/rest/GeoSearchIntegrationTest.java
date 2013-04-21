@@ -74,8 +74,8 @@ public class GeoSearchIntegrationTest extends GeoServerSystemTestSupport {
         // print(sitemap);
 
         Set<String> expected = new HashSet<String>();
-        expected.add("http://localhost/geoserver/geosearch/cite%3ABasicPolygons.kml");
-        expected.add("http://localhost/geoserver/geosearch/cite%3ABridges.kml");
+        expected.add("http://localhost:8080/geoserver/geosearch/cite%3ABasicPolygons.kml");
+        expected.add("http://localhost:8080/geoserver/geosearch/cite%3ABridges.kml");
 
         XpathEngine xp = XMLUnit.newXpathEngine();
         String kmlUrl1 = xp.evaluate("/sm:urlset/sm:url[1]/sm:loc", sitemap);

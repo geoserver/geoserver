@@ -4,7 +4,9 @@
  */
 package org.geoserver.wms.wms_1_1_1;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.awt.Color;
 import java.awt.Transparency;
@@ -31,16 +33,16 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.LayerInfo;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.wms.GetMap;
+import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.junit.Test;
@@ -759,4 +761,50 @@ public class GetMapIntegrationTest extends WMSTestSupport {
             catalog.remove(group);
         }
     }   
+
+    
+    @Test
+    public void testSldExternalEntities() throws Exception {
+        URL sldUrl = GetMapIntegrationTest.class.getResource("../externalEntities.sld");
+        String url = "wms?bbox=" + bbox + "&styles="
+                + "&layers=" + layers + "&Format=image/png" + "&request=GetMap" + "&width=550"
+                + "&height=250" + "&srs=EPSG:4326" + "&sld=" + sldUrl.toString();
+
+        WMS wms = new WMS(getGeoServer());
+        GeoServerInfo geoserverInfo = wms.getGeoServer().getGlobal();
+        try {
+            // enable entities in external SLD files
+            geoserverInfo.setXmlExternalEntitiesEnabled(true);
+            getGeoServer().save(geoserverInfo);
+            
+            // if entities evaluation is enabled
+            // the parser will try to read a file on the local file system
+            // if the file is found, its content will be used to replace the entity
+            // if the file is not found the parser will throw a FileNotFoundException
+            String response = getAsString(url);            
+            assertTrue(response.indexOf("java.io.FileNotFoundException") > -1);
+            
+            // disable entities
+            geoserverInfo.setXmlExternalEntitiesEnabled(false);
+            getGeoServer().save(geoserverInfo);
+
+            // if entities evaluation is disabled
+            // the parser will throw a MalformedURLException when it finds an entity
+            response = getAsString(url);
+            assertTrue(response.indexOf("java.net.MalformedURLException") > -1);
+
+            // try default value: disabled entities
+            geoserverInfo.setXmlExternalEntitiesEnabled(null);
+            getGeoServer().save(geoserverInfo);
+
+            // if entities evaluation is disabled
+            // the parser will throw a MalformedURLException when it finds an entity
+            response = getAsString(url);
+            assertTrue(response.indexOf("java.net.MalformedURLException") > -1);            
+        } finally {
+            // default
+            geoserverInfo.setXmlExternalEntitiesEnabled(null);
+            getGeoServer().save(geoserverInfo);     
+        }
+    }     
 }

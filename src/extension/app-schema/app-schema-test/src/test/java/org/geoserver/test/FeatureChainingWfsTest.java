@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.xml.v1_1_0.WFS;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.complex.AppSchemaDataAccess;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -68,7 +69,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
      * Return first ex schema location.
      */
     private String getExSchemaOneLocation() {
-        return getExSchemaOne().toURI().toString();
+        return DataUtilities.fileToURL(getExSchemaOne()).toString();
     }
 
     /**
@@ -82,7 +83,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
      * Return second ex schema location.
      */
     private String getExSchemaTwoLocation() {
-        return getExSchemaTwo().toURI().toString();
+        return DataUtilities.fileToURL(getExSchemaTwo()).toString();
     }
 
     /**

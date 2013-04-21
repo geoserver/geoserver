@@ -28,6 +28,7 @@ import org.geoserver.security.validation.AbstractSecurityException;
 import org.geoserver.security.web.AbstractSecurityPage;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.property.PropertyEditorFormComponent;
+import org.springframework.util.StringUtils;
 
 /**
  * Allows creation of a new user in users.properties
@@ -41,22 +42,25 @@ public abstract class AbstractRolePage extends AbstractSecurityPage {
         this.roleServiceName = roleService;
         boolean hasRoleStore = hasRoleStore(roleServiceName);
 
+        if (role==null)
+            role=new GeoServerRole("");
+        
         Form form = new Form("form", new CompoundPropertyModel(role));
         add(form);
 
         StringResourceModel descriptionModel;
-        if (role.getUserName() == null) {
-            descriptionModel = new StringResourceModel("anonymousRole", getPage(), null);
+        if (role.getUserName() != null) {
+            descriptionModel = new StringResourceModel("personalizedRole", getPage(), null, 
+                    new Object[]{role.getUserName()});            
         }
         else {
-            descriptionModel = new StringResourceModel("personalizedRole", getPage(), null, 
-                new Object[]{role.getUserName()});
+            descriptionModel = new StringResourceModel("anonymousRole", getPage(), null);
         }
         form.add(new Label("description", descriptionModel));
         
         form.add(new TextField("name", new Model(role.getAuthority())).setRequired(true).setEnabled(hasRoleStore));
         form.add(new DropDownChoice("parent", new ParentRoleModel(role), new ParentRolesModel(role))
-            .setEnabled(hasRoleStore));
+            .setNullValid(true).setEnabled(hasRoleStore));
         form.add(new PropertyEditorFormComponent("properties").setEnabled(hasRoleStore));
 
         form.add(new SubmitLink("save") {
@@ -113,14 +117,13 @@ public abstract class AbstractRolePage extends AbstractSecurityPage {
             Map<String, String> parentMappings = 
                     getRoleService(roleServiceName).getParentMappings();
             
-            if (!role.getAuthority().equals(GeoServerRole.NULL_ROLE.getAuthority()) ) {
+            if (role != null && StringUtils.hasLength(role.getAuthority()))  {
                 //filter out roles already used as parents
                 RoleHierarchyHelper helper = new RoleHierarchyHelper(parentMappings);
                 
                 Set<String> parents = new HashSet<String>(parentMappings.keySet());
                 parents.removeAll(helper.getDescendants(role.getAuthority()));
-                parents.remove(role.getAuthority());
-
+                parents.remove(role.getAuthority());                
                 return new ArrayList(parents);
 
             } else {  

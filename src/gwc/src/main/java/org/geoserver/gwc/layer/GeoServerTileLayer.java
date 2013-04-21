@@ -140,6 +140,7 @@ public class GeoServerTileLayer extends TileLayer {
         this.layerInfo = layerInfo;
         this.layerGroupInfo = null;
         this.info = state;
+        TileLayerInfoUtil.checkAutomaticStyles(layerInfo, state);
     }
     
     @Override

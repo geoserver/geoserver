@@ -11,6 +11,7 @@
 					<xs:element name="secondValue" type="gsml:CGI_ValuePropertyType"/>
 					<xs:element name="thirdValue" type="gsml:CGI_ValuePropertyType"/>
 					<xs:element name="fourthValue" type="gsml:CGI_ValuePropertyType"/>
+					<xs:element name="fifthValue" type="gsml:CGI_ValuePropertyType"/>
 					<xs:element name="anyValue" type="xs:anyType" minOccurs="0" nillable="true"/>
 				</xs:sequence>
 			</xs:extension>

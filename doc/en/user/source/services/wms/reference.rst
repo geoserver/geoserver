@@ -63,7 +63,7 @@ Formats in which WMS can report exceptions. The supported values for exceptions 
      - ``EXCEPTIONS=application/vnd.ogc.se_xml``
      - Xml output. (The default format)
    * - PNG
-     - ``EXCEPTIONS=application/vnd.ogc.inimage``
+     - ``EXCEPTIONS=application/vnd.ogc.se_inimage``
      - Generates an image
    * - Blank
      - ``EXCEPTIONS=application/vnd.ogc.se_blank``
@@ -354,10 +354,10 @@ The supported formats are:
      - ``info_format=text/plain``
      - Simple text output. (The default format)
    * - GML 2
-     - ``info_format=application/vnd.ogc.wms`` 
+     - ``info_format=application/vnd.ogc.gml`` 
      - Works only for Simple Features (see :ref:`app-schema.complex-features`)
    * - GML 3
-     - ``info_format=application/vnd.ogc.wms/3.1.1``
+     - ``info_format=application/vnd.ogc.gml/3.1.1``
      - Works for both Simple and Complex Features (see :ref:`app-schema.complex-features`)
    * - HTML
      - ``info_format=text/html``

@@ -94,6 +94,18 @@
                     </sourceExpression>
                 </AttributeMapping>
                 <AttributeMapping>
+                    <!-- GEOT-4417: Test referential polymorphism with feature chaining -->
+                    <targetAttribute>ex:fifthValue</targetAttribute>
+                    <sourceExpression>
+                        <OCQL>getId()</OCQL>
+                        <linkElement>
+						    if_then_else(lessEqualThan(NUMERIC_VALUE, 1), toXlinkHref('urn:ogc:def:nil:OGC::missing'),
+						        'NumericType')
+						</linkElement>
+						<linkField>FEATURE_LINK</linkField>
+                    </sourceExpression>
+                </AttributeMapping>
+                <AttributeMapping>
                     <!-- Test polymorphism with anyType  -->
                     <targetAttribute>ex:anyValue</targetAttribute>
                     <sourceExpression>

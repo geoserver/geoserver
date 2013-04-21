@@ -6,19 +6,23 @@
 
 package org.geoserver.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 
-import org.apache.xml.serialize.OutputFormat;
-import org.apache.xml.serialize.XMLSerializer;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
@@ -35,8 +39,8 @@ import org.geoserver.test.onlineTest.support.AbstractReferenceDataSetup;
 import org.geoserver.wfs.WFSInfo;
 import org.geotools.data.complex.AppSchemaDataAccessRegistry;
 import org.geotools.data.complex.DataAccessRegistry;
-import org.geotools.xml.AppSchemaCache;
 import org.geotools.xml.AppSchemaXSDRegistry;
+import org.geotools.xml.resolver.SchemaCache;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -58,7 +62,7 @@ public class RestconfigWfsTest extends CatalogRESTTestSupport {
         wfs.setEncodeFeatureMember(true);
         getGeoServer().save(wfs);
         // disable schema caching in tests, as schemas are expected to provided on the classpath
-        AppSchemaCache.disableAutomaticConfiguration();
+        SchemaCache.disableAutomaticConfiguration();
     }
 
     
@@ -267,15 +271,11 @@ public class RestconfigWfsTest extends CatalogRESTTestSupport {
      *            stream to which output is written
      */
     private void prettyPrint(Document document, OutputStream output) {
-        OutputFormat format = new OutputFormat(document);
-        // setIndenting must be first as it resets indent and line width
-        format.setIndenting(true);
-        format.setIndent(4);
-        format.setLineWidth(200);
-        XMLSerializer serializer = new XMLSerializer(output, format);
         try {
-            serializer.serialize(document);
-        } catch (IOException e) {
+            Transformer tx = TransformerFactory.newInstance().newTransformer();
+            tx.setOutputProperty(OutputKeys.INDENT, "yes");
+            tx.transform(new DOMSource(document), new StreamResult(output));
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

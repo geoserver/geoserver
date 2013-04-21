@@ -31,9 +31,13 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
 
 public class HibernateMonitorDAO2Test extends MonitorDAOTestSupport {
 
-    @BeforeClass
+	
+	
+    private static XmlWebApplicationContext ctx;
+
+	@BeforeClass
     public static void initHibernate() throws Exception {
-        XmlWebApplicationContext ctx = new XmlWebApplicationContext() {
+        ctx = new XmlWebApplicationContext() {
             public String[] getConfigLocations() {
                 return new String[]{
                     "classpath*:applicationContext-hibtest.xml",
@@ -51,6 +55,8 @@ public class HibernateMonitorDAO2Test extends MonitorDAOTestSupport {
     
     @AfterClass
     public static void destroy() throws Exception {
+    	dao.dispose();
+    	ctx.close();
         DeleteDbFiles.execute("target/monitoring", "monitoring", false);
     }
 

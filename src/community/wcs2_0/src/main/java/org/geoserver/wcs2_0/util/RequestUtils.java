@@ -288,14 +288,7 @@ public class RequestUtils {
      * @return
      */
     static public GridCoverage2D readSampleGridCoverage(CoverageInfo ci)throws Exception {
-        
-        // get a reader for this coverage
-        final CoverageStoreInfo store = (CoverageStoreInfo) ci.getStore();
-        final GridCoverageReader reader_ = ci.getGridCoverageReader(new DefaultProgressListener(), GeoTools.getDefaultHints());
-        if (reader_ == null)
-            throw new Exception("Unable to acquire a reader for this coverage with format: "
-                    + store.getFormat().getName());
-        final AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) reader_;
+        final AbstractGridCoverage2DReader reader = getCoverageReader(ci);
         
         //
         // Now reading a fake small GridCoverage just to retrieve meta
@@ -339,5 +332,25 @@ public class RequestUtils {
 
         // try to read this coverage
         return (GridCoverage2D) reader.read(CoverageUtils.getParameters(readParams, parameters, true));          
+    }
+
+    /**
+     * Grabs the reader from the specified coverage
+     * @param ci
+     * @return
+     * @throws IOException
+     * @throws Exception
+     */
+    public static AbstractGridCoverage2DReader getCoverageReader(CoverageInfo ci)
+            throws IOException, Exception {
+        // get a reader for this coverage
+        final CoverageStoreInfo store = (CoverageStoreInfo) ci.getStore();
+        final GridCoverageReader reader_ = ci.getGridCoverageReader(new DefaultProgressListener(), GeoTools.getDefaultHints());
+        if (reader_ == null) {
+            throw new Exception("Unable to acquire a reader for this coverage with format: "
+                    + store.getFormat().getName());
+        }
+        final AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) reader_;
+        return reader;
     }
 }

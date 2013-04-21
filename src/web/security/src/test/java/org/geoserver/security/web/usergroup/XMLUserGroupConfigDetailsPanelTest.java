@@ -203,7 +203,7 @@ public class XMLUserGroupConfigDetailsPanelTest extends AbstractSecurityNamedSer
         xmlConfig=
                 (XMLUserGroupServiceConfig)
                 getSecurityNamedServiceConfig("default");        
-        assertEquals(getPBEPasswordEncoder().getName(),xmlConfig.getPasswordEncoderName());
+        assertEquals(getDigestPasswordEncoder().getName(),xmlConfig.getPasswordEncoderName());
         assertEquals(PasswordValidatorImpl.DEFAULT_NAME,xmlConfig.getPasswordPolicyName());
         assertEquals("users.xml",xmlConfig.getFileName());
         assertEquals(10000,xmlConfig.getCheckInterval());

@@ -3,12 +3,12 @@
    <parent>
       <groupId>org.geoserver</groupId>
       <artifactId>community</artifactId>
-      <version>2.3-SNAPSHOT</version>
+      <version>2.4-SNAPSHOT</version>
    </parent>
    <groupId>org.geoserver.community</groupId>
    <artifactId>ftp</artifactId>
    <packaging>jar</packaging>
-   <version>2.3-SNAPSHOT</version>
+   <version>2.4-SNAPSHOT</version>
    <name>GeoServer Embedded FTP server</name>
 
    <dependencies>
@@ -21,18 +21,6 @@
          <groupId>org.apache.ftpserver</groupId>
          <artifactId>ftpserver-core</artifactId>
          <version>1.0.5</version>
-      </dependency>
-      <dependency>
-        <!-- StAX API is the standard java XML processing API defined by JSR-173 -->
-        <groupId>stax</groupId>
-        <artifactId>stax-api</artifactId>
-        <version>1.0.1</version>
-      </dependency>
-      <dependency>
-        <!-- StAX is the reference implementation of the StAX API -->
-        <groupId>stax</groupId>
-        <artifactId>stax</artifactId>
-        <version>1.2.0</version>
       </dependency>
 
       <!-- Testing -->

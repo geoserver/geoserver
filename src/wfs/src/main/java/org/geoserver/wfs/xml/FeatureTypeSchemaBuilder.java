@@ -179,7 +179,12 @@ public abstract class FeatureTypeSchemaBuilder {
         if (baseUrl == null)
             baseUrl = wfs.getSchemaBaseURL(); 
                 
-        if (ns2featureTypeInfos.entrySet().size() == 1) {
+        if (ns2featureTypeInfos.entrySet().size() == 0) {
+            // for WFS 2.0 encoding to work we need to have at least a dependency on GML and
+            // a target namespace. We are going to use the GML one.
+            importGMLSchema(schema, factory, baseUrl);
+            schema.setTargetNamespace(gmlSchema().getTargetNamespace());
+        } else if (ns2featureTypeInfos.entrySet().size() == 1) {
             // only 1 namespace, write target namespace out
             String targetPrefix = (String) ns2featureTypeInfos.keySet().iterator().next();
             String targetNamespace = catalog.getNamespaceByPrefix(targetPrefix).getURI();

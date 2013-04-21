@@ -92,7 +92,7 @@ public class PageInfo {
         return extension;
     }
     
-    void setExtension(String extension) {
+    public void setExtension(String extension) {
         this.extension = extension;
     }
     

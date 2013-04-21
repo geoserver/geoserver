@@ -27,7 +27,7 @@ public class SLDValidatorTest {
         SLDValidator validator = new SLDValidator();
         List errors = validator.validateSLD(getClass().getResourceAsStream("invalid.sld"));
         
-        showErrors(errors);
+        //showErrors(errors);
         assertFalse(errors.isEmpty());
     }
     

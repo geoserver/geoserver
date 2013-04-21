@@ -86,25 +86,28 @@ public class LayerGroupHelper {
     
     public List<LayerInfo> allLayersForRendering() {
         List<LayerInfo> layers = new ArrayList<LayerInfo>();
-        allLayersForRendering(group, layers);
+        allLayersForRendering(group, layers, true);
         return layers;
     }
 
-    private static void allLayersForRendering(LayerGroupInfo group, List<LayerInfo> layers) {
+    private static void allLayersForRendering(LayerGroupInfo group, List<LayerInfo> layers, boolean root) {
         switch (group.getMode()) {
-        case CONTAINER:
-            throw new UnsupportedOperationException("LayerGroup mode " + Mode.CONTAINER.getName()
-                    + " can not be rendered");
         case EO:
             layers.add(group.getRootLayer());
-            break;
+            break;        
+        case CONTAINER:
+            if (root) {
+                throw new UnsupportedOperationException("LayerGroup mode " + Mode.CONTAINER.getName()
+                        + " can not be rendered");
+            }
+            // continue to default behaviour:
         default:
             for (PublishedInfo p : group.getLayers()) {
                 if (p instanceof LayerInfo) {
                     LayerInfo l = (LayerInfo) p;
                     layers.add(l);
                 } else {
-                    allLayersForRendering((LayerGroupInfo) p, layers);
+                    allLayersForRendering((LayerGroupInfo) p, layers, false);
                 }
             }
         }
@@ -112,18 +115,21 @@ public class LayerGroupHelper {
 
     public List<StyleInfo> allStylesForRendering() {
         List<StyleInfo> styles = new ArrayList<StyleInfo>();
-        allStylesForRendering(group, styles);
+        allStylesForRendering(group, styles, true);
         return styles;
     }
 
-    private static void allStylesForRendering(LayerGroupInfo group, List<StyleInfo> styles) {
+    private static void allStylesForRendering(LayerGroupInfo group, List<StyleInfo> styles, boolean root) {
         switch (group.getMode()) {
-        case CONTAINER:
-            throw new UnsupportedOperationException("LayerGroup mode " + Mode.CONTAINER.getName()
-                    + " can not be rendered");
         case EO:
             styles.add(group.getRootLayerStyle());
-            break;
+            break;        
+        case CONTAINER:
+            if (root) {
+                throw new UnsupportedOperationException("LayerGroup mode " + Mode.CONTAINER.getName()
+                        + " can not be rendered");
+            }
+            // continue to default behaviour:
         default:
             int size = group.getLayers().size();
             for (int i = 0; i < size; i++) {
@@ -131,7 +137,7 @@ public class LayerGroupHelper {
                 if (p instanceof LayerInfo) {
                     styles.add(group.getStyles().get(i));
                 } else {
-                    allStylesForRendering((LayerGroupInfo) p, styles);
+                    allStylesForRendering((LayerGroupInfo) p, styles, false);
                 }
             }
         }
@@ -239,7 +245,7 @@ public class LayerGroupHelper {
         
         for (PublishedInfo child : group.getLayers()) {
             if (child instanceof LayerGroupInfo) {
-                if (path.contains(child)) {
+                if (isGroupInStack((LayerGroupInfo) child, path)) {
                     path.push((LayerGroupInfo) child);
                     return true;
                 } else if (checkLoops((LayerGroupInfo) child, path)) {
@@ -249,6 +255,16 @@ public class LayerGroupHelper {
         }
         
         path.pop();
+        return false;
+    }
+    
+    private static boolean isGroupInStack(LayerGroupInfo group, Stack<LayerGroupInfo> path) {
+        for (LayerGroupInfo groupInPath : path) {
+            if (groupInPath.getId() != null && groupInPath.getId().equals(group.getId())) {
+                return true;
+            }
+        }
+        
         return false;
     }
 }

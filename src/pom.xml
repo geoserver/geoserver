@@ -1217,6 +1217,7 @@
       <descriptor>release/ext-cas.xml</descriptor>
       <descriptor>release/ext-monitor.xml</descriptor>
       <descriptor>release/ext-monitor-hibernate.xml</descriptor>
+      <descriptor>release/ext-xslt.xml</descriptor>
      </descriptors>
      <finalName>geoserver-2.3-SNAPSHOT</finalName>
      <outputDirectory>${project.build.directory}/release</outputDirectory>

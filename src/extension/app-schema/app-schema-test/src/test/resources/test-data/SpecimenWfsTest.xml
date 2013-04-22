@@ -85,7 +85,7 @@
                 <AttributeMapping>
                     <targetAttribute>spec:size</targetAttribute>
                     <sourceExpression>
-                        <OCQL>SIZE</OCQL>
+                        <OCQL>WEIGHT</OCQL>
                     </sourceExpression>
                     <ClientProperty>
                         <name>uom</name>

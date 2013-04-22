@@ -206,8 +206,10 @@ public class LayerListResource extends Resource {
             if (layerOrTable.gtype != null) {
                 json.key("geometryType").value(layerOrTable.gtype.getGeometryType());
                 ScaleRange range = extractScaleRange(layerOrTable.layer.getDefaultStyle().getStyle());
-                json.key("minScale").value(range.minScale);
-                json.key("maxScale").value(Double.isInfinite(range.maxScale) ? null : range.maxScale);
+                Double minScale = Double.isInfinite(range.minScale) ? null : range.minScale;
+                Double maxScale = Double.isInfinite(range.maxScale) ? null : range.maxScale;
+                json.key("minScale").value(minScale);
+                json.key("maxScale").value(maxScale);
                 try {
                     CoordinateReferenceSystem lonLat = CRS.decode("EPSG:4326");
                     ReferencedEnvelope boundingBox = layer.getResource().getLatLonBoundingBox();
@@ -215,15 +217,15 @@ public class LayerListResource extends Resource {
                         json.key("extent");
                         CoordinateReferenceSystem WEB_MERCATOR = CRS.decode("EPSG:3785");
                         try {
-                            double minx = Math.max(boundingBox.getMinX(), -180);
-                            double maxx = Math.min(boundingBox.getMaxX(), 180);
-                            double miny = Math.max(boundingBox.getMinY(), -85);
-                            double maxy = Math.min(boundingBox.getMaxY(), 85);
+                            double minx = Math.max(boundingBox.getMinX(),  -85);
+                            double maxx = Math.min(boundingBox.getMaxX(),   85);
+                            double miny = Math.max(boundingBox.getMinY(), -180);
+                            double maxy = Math.min(boundingBox.getMaxY(),  180);
                             ReferencedEnvelope sphericalMercatorBoundingBox = new ReferencedEnvelope(minx, maxx, miny, maxy, lonLat);
                             sphericalMercatorBoundingBox = sphericalMercatorBoundingBox.transform(WEB_MERCATOR, true);
                             GeometryEncoder.referencedEnvelopeToJson(sphericalMercatorBoundingBox, SpatialReferences.fromCRS(WEB_MERCATOR), json);
                         } catch (TransformException e) {
-                            throw new RuntimeException(e);
+                            throw new RuntimeException("Couldn't translate to EPSG:3785: " + boundingBox, e);
                         }
                     }
                 } catch (FactoryException e) {

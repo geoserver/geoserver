@@ -4,8 +4,7 @@
  */
 package org.geoserver.inspire.wfs;
 
-import static org.geoserver.inspire.InspireMetadata.LANGUAGE;
-import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_URL;
+import static org.geoserver.inspire.InspireMetadata.*;
 
 import java.io.IOException;
 
@@ -19,7 +18,7 @@ import org.xml.sax.helpers.NamespaceSupport;
 public class WFSExtendedCapabilitiesProvider implements
         org.geoserver.wfs.WFSExtendedCapabilitiesProvider {
 
-    private static final String COMMON_NAMESPACE = "http://inspire.ec.europa.eu/schemas/common/1.0";
+    public static final String COMMON_NAMESPACE = "http://inspire.ec.europa.eu/schemas/common/1.0";
 
     public static final String DLS_NAMESPACE = "http://inspire.ec.europa.eu/schemas/inspire_dls/1.0";
 
@@ -69,7 +68,11 @@ public class WFSExtendedCapabilitiesProvider implements
         }
         tx.end("inspire_common:URL");
         tx.start("inspire_common:MediaType");
-        tx.chars("application/vnd.ogc.csw.GetRecordByIdResponse_xml");
+        String type = (String) wfs.getMetadata().get(SERVICE_METADATA_TYPE.key);
+        if(type == null) {
+            type = "application/vnd.ogc.csw.GetRecordByIdResponse_xml";
+        }
+        tx.chars(type);
         tx.end("inspire_common:MediaType");
         tx.end("inspire_common:MetadataUrl");
 

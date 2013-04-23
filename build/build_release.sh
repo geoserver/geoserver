@@ -200,7 +200,8 @@ if [ -z $SKIP_GWC ]; then
       gwc_branch=${arr[0]}
       gwc_rev=${arr[1]}
       gwc_dir=build/geowebcache/$gwc_branch/$gwc_rev
-      if [ ! -e $gwc_dir ]; then
+      if [ ! -e $gwc_dir -o ! -e $gwc_dir/geowebcache ]; then
+         rm -rf $gwc_dir
          mkdir -p $gwc_dir 
          echo "checking out geowebache ${gwc_branch}@${gwc_rev}"
          git clone $GWC_GIT_URL $gwc_dir

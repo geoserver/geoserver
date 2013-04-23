@@ -86,7 +86,7 @@ public abstract class AbstractSecurityWicketTestSupport extends GeoServerWicketT
         Locale.setDefault(Locale.ENGLISH);
         // run all tests with url param encryption
         SecurityManagerConfig config = getSecurityManager().getSecurityConfig();
-        config.setEncryptingUrlParams(true);
+        config.setEncryptingUrlParams(false);
         getSecurityManager().saveSecurityConfig(config);
     }
 

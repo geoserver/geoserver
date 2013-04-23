@@ -202,7 +202,8 @@
 						        <exclude>**/DataReferenceWmsOracleTest.java</exclude>
 						        <exclude>**/DataReferenceWmsPostgisTest.java</exclude>
                                 <exclude>**/DataReferenceWmsOracleWithJoiningTest.java</exclude>
-                                <exclude>**/DataReferenceWmsPostgisWithJoiningTest.java</exclude>
+                                <exclude>**/DataReferenceWmsPostgisWithJoiningTest.java</exclude>				
+                                <exclude>**/SortByTest.java</exclude>
                                 <exclude>${test.exclude.pattern}</exclude>
 					        </excludes>
 				        </configuration>

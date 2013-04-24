@@ -30,8 +30,12 @@ import org.springframework.security.ldap.authentication.LdapAuthenticationProvid
 public class LDAPAuthenticationProvider extends
         DelegatingAuthenticationProvider {
 
-    public LDAPAuthenticationProvider(AuthenticationProvider authProvider) {
+	// optional role to be remapped to ROLE_ADMINISTRATOR
+	private String adminRole;
+	
+    public LDAPAuthenticationProvider(AuthenticationProvider authProvider, String adminRole) {
         super(authProvider);
+        this.adminRole = adminRole;
     }
 
     @Override
@@ -44,21 +48,37 @@ public class LDAPAuthenticationProvider extends
     protected Authentication doAuthenticate(Authentication authentication,
             HttpServletRequest request) throws AuthenticationException {
      
-        UsernamePasswordAuthenticationToken  auth = 
-                (UsernamePasswordAuthenticationToken) super.doAuthenticate(authentication, request);
-        
-        if (auth==null) return null; // next provider
-        
-        if (auth.getAuthorities().contains(GeoServerRole.AUTHENTICATED_ROLE)==false) {
-            List<GrantedAuthority> roles= new ArrayList<GrantedAuthority>();
-            roles.addAll(auth.getAuthorities());
-            roles.add(GeoServerRole.AUTHENTICATED_ROLE);
-            UsernamePasswordAuthenticationToken newAuth = new UsernamePasswordAuthenticationToken(
-                    auth.getPrincipal(), auth.getCredentials(),roles);
-            newAuth.setDetails(auth.getDetails());
-            return newAuth;
-        }
-        return auth;
+		UsernamePasswordAuthenticationToken auth = (UsernamePasswordAuthenticationToken) super
+				.doAuthenticate(authentication, request);
+
+		if (auth == null)
+			return null; // next provider
+
+		boolean hasNoAuthenticatedRole = auth.getAuthorities().contains(
+				GeoServerRole.AUTHENTICATED_ROLE) == false;
+		boolean hasAdminRole = adminRole != null && !adminRole.equals("")
+				&& !auth.getAuthorities().contains(GeoServerRole.ADMIN_ROLE);
+
+		if (hasNoAuthenticatedRole || hasAdminRole) {
+			List<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
+			roles.addAll(auth.getAuthorities());
+			if (hasNoAuthenticatedRole) {
+				roles.add(GeoServerRole.AUTHENTICATED_ROLE);
+			}
+			if (hasAdminRole) {
+				for (GrantedAuthority authority : auth.getAuthorities()) {
+					if (authority.getAuthority().equalsIgnoreCase(
+							"ROLE_" + adminRole)) {
+						roles.add(GeoServerRole.ADMIN_ROLE);
+					}
+				}
+			}
+			UsernamePasswordAuthenticationToken newAuth = new UsernamePasswordAuthenticationToken(
+					auth.getPrincipal(), auth.getCredentials(), roles);
+			newAuth.setDetails(auth.getDetails());
+			return newAuth;
+		}
+		return auth;
     }
 
 

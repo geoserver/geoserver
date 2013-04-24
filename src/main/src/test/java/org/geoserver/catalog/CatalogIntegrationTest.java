@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.catalog;
 
 import java.io.ByteArrayInputStream;
@@ -19,6 +23,16 @@ public class CatalogIntegrationTest extends GeoServerTestSupport {
     protected boolean useLegacyDataDirectory() {
         return false;
     }
+    
+    @Override
+    public MockData buildTestData() throws Exception {
+        MockData dataDirectory = super.buildTestData();
+        
+        // add wcs coverages
+        dataDirectory.addWcs11Coverages();
+        
+        return dataDirectory;
+    };
     
     public void testWorkspaceRemoveAndReadd() {
         // remove all workspaces
@@ -103,11 +117,10 @@ public class CatalogIntegrationTest extends GeoServerTestSupport {
         assertSame(ModificationProxy.unwrap(ds.getWorkspace()), ModificationProxy.unwrap(ds2.getWorkspace()));
         
         // coverage store and related objects
-        // commented out in 2.2.x due to missing data into the catalog
-//        CoverageStoreInfo cs = catalog.getCoverageStoreByName(MockData.TASMANIA_DEM.getLocalPart());
-//        CoverageStoreInfo cs2 = serialize(cs);
-//        assertSame(ModificationProxy.unwrap(cs), ModificationProxy.unwrap(cs2));
-//        assertSame(ModificationProxy.unwrap(cs.getWorkspace()), ModificationProxy.unwrap(cs2.getWorkspace()));
+        CoverageStoreInfo cs = catalog.getCoverageStoreByName(MockData.TASMANIA_DEM.getLocalPart());
+        CoverageStoreInfo cs2 = serialize(cs);
+        assertSame(ModificationProxy.unwrap(cs), ModificationProxy.unwrap(cs2));
+        assertSame(ModificationProxy.unwrap(cs.getWorkspace()), ModificationProxy.unwrap(cs2.getWorkspace()));
         
         // feature type and related objects
         FeatureTypeInfo ft = catalog.getFeatureTypeByName(getLayerId(MockData.BRIDGES));
@@ -116,11 +129,10 @@ public class CatalogIntegrationTest extends GeoServerTestSupport {
         assertSame(ModificationProxy.unwrap(ft.getStore()), ModificationProxy.unwrap(ft2.getStore()));
         
         // coverage and related objects
-        // commented out in 2.2.x due to missing data into the catalog
-//        CoverageInfo ci = catalog.getCoverageByName(getLayerId(MockData.TASMANIA_DEM));
-//        CoverageInfo ci2 = serialize(ci);
-//        assertSame(ModificationProxy.unwrap(ci), ModificationProxy.unwrap(ci2));
-//        assertSame(ModificationProxy.unwrap(ci.getStore()), ModificationProxy.unwrap(ci.getStore()));
+        CoverageInfo ci = catalog.getCoverageByName(getLayerId(MockData.TASMANIA_DEM));
+        CoverageInfo ci2 = serialize(ci);
+        assertSame(ModificationProxy.unwrap(ci), ModificationProxy.unwrap(ci2));
+        assertSame(ModificationProxy.unwrap(ci.getStore()), ModificationProxy.unwrap(ci.getStore()));
         
         // style
         StyleInfo si = catalog.getStyleByName("default");

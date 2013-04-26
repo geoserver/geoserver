@@ -158,6 +158,19 @@
         <!-- Include data ref set tests -->
             <id>app-schema-online-test</id>
             <build>
+                <plugins>
+			        <plugin>
+			            <groupId>org.apache.maven.plugins</groupId>
+			            <artifactId>maven-surefire-plugin</artifactId>
+			            <configuration>
+				            <excludes>
+                                <!-- To be run separately online in app-schema-oracle-test and app-schema-postgis-test -->				
+                                <exclude>**/SortByTest.java</exclude>
+                                <exclude>${test.exclude.pattern}</exclude>
+					        </excludes>
+				        </configuration>
+			        </plugin>
+		        </plugins>
 		        <testResources>
 			        <testResource>
 				        <directory>src/test/resources</directory>
@@ -170,11 +183,7 @@
 			   				<include>**/*.tiff</include>
 							<include>**/*.sql</include>
 							<include>**/*.tiff</include>
-					</includes>
-					<excludes>
-					         <!-- To be run separately online in app-schema-oracle-test and app-schema-postgis-test -->
-					        <exclude>**/SortByTest.java</exclude>
-					</excludes>
+					    </includes>
 			        </testResource>
 		        </testResources>
 	        </build>

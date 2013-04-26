@@ -171,6 +171,10 @@
 							<include>**/*.sql</include>
 							<include>**/*.tiff</include>
 					</includes>
+					<excludes>
+					         <!-- To be run separately online in app-schema-oracle-test and app-schema-postgis-test -->
+					        <exclude>**/SortByTest.java</exclude>
+					</excludes>
 			        </testResource>
 		        </testResources>
 	        </build>

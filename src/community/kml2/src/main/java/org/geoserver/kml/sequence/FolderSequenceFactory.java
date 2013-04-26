@@ -4,6 +4,7 @@
  */
 package org.geoserver.kml.sequence;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.geoserver.kml.KMLUtils;
@@ -98,6 +99,9 @@ public class FolderSequenceFactory implements SequenceFactory<Feature> {
                         addFeatures(folder, features);
                     } else {
                         addGroundOverlay(folder, layer);
+                        if(context.isPlacemarkForced()) {
+                            addFeatureCentroids(layer, folder);
+                        }
                     }
                 } else {
                     addGroundOverlay(folder, layer);
@@ -106,6 +110,28 @@ public class FolderSequenceFactory implements SequenceFactory<Feature> {
                 return folder;
             }
             return null;
+        }
+
+        /**
+         * Adds the feature centroids to the output features, without actually adding the full
+         * geometry (used when doing raster overlays of vector data with a desire to retain the 
+         * popups)
+         * @param layer
+         * @param folder
+         */
+        private void addFeatureCentroids(Layer layer, Folder folder) {
+            try {
+                SimpleFeatureSource source = (SimpleFeatureSource) ((FeatureLayer) layer).getFeatureSource();
+                SimpleFeatureCollection original = source.getFeatures();
+                SimpleFeatureCollection centroids = new KMLCentroidFeatureCollection(original);
+                FeatureLayer centroidsLayer = new FeatureLayer(centroids, layer.getStyle(), layer.getTitle());
+                List<Feature> features = new SequenceList<Feature>(
+                        new FeatureSequenceFactory(context, centroidsLayer));
+                addFeatures(folder, features);
+            } catch(IOException e) {
+                throw new ServiceException(
+                        "Failed to load vector data during KML generation", e);
+            }
         }
 
         /**

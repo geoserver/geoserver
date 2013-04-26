@@ -59,6 +59,8 @@ public class KmlEncodingContext {
     
     Map<String, Layer> kmzGroundOverlays = new LinkedHashMap<String, Layer>();
 
+    private boolean placemarkForced;
+
     public KmlEncodingContext(WMSMapContent mapContent, WMS wms, boolean kmz) {
         super();
         this.mapContent = mapContent;
@@ -66,6 +68,7 @@ public class KmlEncodingContext {
         this.wms = wms;
         this.descriptionEnabled = KMLUtils.getKMAttr(request, wms);
         this.lookAtOptions = new LookAtOptions(request.getFormatOptions());
+        this.setPlacemarkForced(KMLUtils.getKmplacemark(mapContent.getRequest(), wms));
         this.kmz = kmz;
     }
 
@@ -183,6 +186,14 @@ public class KmlEncodingContext {
      */
     public Map<String, Layer> getKmzGroundOverlays() {
         return kmzGroundOverlays;
+    }
+
+    public boolean isPlacemarkForced() {
+        return placemarkForced;
+    }
+
+    public void setPlacemarkForced(boolean placemarkForced) {
+        this.placemarkForced = placemarkForced;
     }
     
     

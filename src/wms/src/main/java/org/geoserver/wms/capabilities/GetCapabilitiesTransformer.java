@@ -191,10 +191,15 @@ public class GetCapabilitiesTransformer extends TransformerBase {
      */
     private static class CapabilitiesTranslator extends  TranslatorSupport {
 
-        private static final Logger LOGGER = org.geotools.util.logging.Logging
+
+		private static final Logger LOGGER = org.geotools.util.logging.Logging
                 .getLogger(CapabilitiesTranslator.class.getPackage().getName());
 
-        private static final String EPSG = "EPSG:";
+        private static final String MIN_DENOMINATOR_ATTR = "min";
+
+		private static final String MAX_DENOMINATOR_ATTR = "max";
+
+		private static final String EPSG = "EPSG:";
 
         private static AttributesImpl wmsVersion = new AttributesImpl();
 
@@ -925,11 +930,52 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                     end("Style");
                 }
             }
+            handleScaleHint(layer);
 
             end("Layer");
         }
+        
 
-       private String qualifySRS(String srs) {
+        
+    /**
+     * Inserts the ScaleHint element in the layer information. 
+     * <p>
+     * The process is consistent with the following criteria:
+     * </p>
+     * 
+     * <pre>
+     * a) min = 0.0, max= infinity => ScaleHint is not generated
+     * b) max=value => <ScaleHint min=0 max=value/>
+     * c) min=value => <ScaleHint min=value max=infinity/>
+     * </pre>
+     * 
+     * @param layer
+     */
+	private void handleScaleHint(LayerInfo layer) {
+		
+		try {
+			Map<String, Double>  denominators = CapabilityUtil.searchMinMaxScaleDenominator(MIN_DENOMINATOR_ATTR, MAX_DENOMINATOR_ATTR, layer);
+			
+			// makes the element taking into account that if the min and max denominators have got the default 
+			// values the ScaleHint element is not generated
+			if( (denominators.get(MIN_DENOMINATOR_ATTR) == 0.0) && 
+				(denominators.get(MAX_DENOMINATOR_ATTR) == Double.POSITIVE_INFINITY) ){
+				
+				return; 
+			}
+	        AttributesImpl attrs = new AttributesImpl();
+			attrs.addAttribute("", MIN_DENOMINATOR_ATTR, MIN_DENOMINATOR_ATTR, "", String.valueOf(denominators.get(MIN_DENOMINATOR_ATTR)));
+			attrs.addAttribute("", MAX_DENOMINATOR_ATTR, MAX_DENOMINATOR_ATTR, "", String.valueOf(denominators.get(MAX_DENOMINATOR_ATTR)));
+
+	        element("ScaleHint", null, attrs);
+	        
+		} catch (IOException e) {
+            LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
+		}
+	}
+	
+
+	private String qualifySRS(String srs) {
            if (srs.indexOf(':') == -1) {
                srs = EPSG + srs;
            }

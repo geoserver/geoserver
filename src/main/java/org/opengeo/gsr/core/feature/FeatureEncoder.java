@@ -34,7 +34,7 @@ public class FeatureEncoder {
         
         T schema = collection.getSchema();
         json.object()
-          .key("objectIdFieldName").value("")
+          .key("objectIdFieldName").value("objectid")
           .key("globalIdFieldName").value("");
         
         if (returnGeometry) {
@@ -90,6 +90,8 @@ public class FeatureEncoder {
         json.key("attributes");
         json.object();
         
+        json.key("objectid").value(feature.getIdentifier().getID());
+
         for (Property prop : feature.getProperties()) {
             if (geometry == null || !prop.getName().equals(geometry.getName())) {
                 final Object value;
@@ -124,7 +126,7 @@ public class FeatureEncoder {
     {
         json.object();
         json.key("objectIdFieldName");
-        json.value("pk"); // TODO: Advertise "real" identifier property
+        json.value("objectid"); // TODO: Advertise "real" identifier property
 
         FeatureIterator<F> iterator = features.features();
         try {

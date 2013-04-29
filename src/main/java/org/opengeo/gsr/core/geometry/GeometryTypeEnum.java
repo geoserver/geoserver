@@ -4,6 +4,13 @@
  */
 package org.opengeo.gsr.core.geometry;
 
+import java.io.IOException;
+
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.opengis.feature.type.GeometryDescriptor;
+
 /**
  * @author Juan Marin - OpenGeo
  */
@@ -42,6 +49,21 @@ public enum GeometryTypeEnum {
             return ENVELOPE;
         } else {
             throw new UnsupportedOperationException("No GeoServices Geometry equivalent known for " + jtsClass);
+        }
+    }
+    
+    public static GeometryTypeEnum forResourceDefaultGeometry(ResourceInfo resource) throws IOException {
+        if (resource instanceof CoverageInfo) {
+            return POLYGON;
+        } else if (resource instanceof FeatureTypeInfo) {
+            GeometryDescriptor gDesc = ((FeatureTypeInfo)resource).getFeatureType().getGeometryDescriptor();
+            if (gDesc == null) {
+                return null;
+            } else {
+                return forJTSClass(gDesc.getType().getBinding());
+            }
+        } else {
+            return null;
         }
     }
 };

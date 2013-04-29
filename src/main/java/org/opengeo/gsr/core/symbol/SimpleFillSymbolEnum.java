@@ -11,9 +11,15 @@ package org.opengeo.gsr.core.symbol;
  */
 public enum SimpleFillSymbolEnum {
 
-    SOLID("esriSFSSolid"), NULL("esriSFSNull"), HOLLOW("esriSFSHollow"), VERTICAL("esriSFSVertical"), FORWARD_DIAGONAL(
-            "esriSFSForwardDiagonal"), BACKWARD_DIAGONAL("esriSFSBackwardDiagonal"), CROSS("esriSFSCross"), DIAGONAL_CROSS(
-            "esriSFSDiagonalCross");
+    SOLID("esriSFSSolid"), //
+    NULL("esriSFSNull"), //
+    HOLLOW("esriSFSHollow"), //
+    VERTICAL("esriSFSVertical"), //
+    FORWARD_DIAGONAL("esriSFSForwardDiagonal"), //
+    BACKWARD_DIAGONAL("esriSFSBackwardDiagonal"), //
+    CROSS("esriSFSCross"), //
+    DIAGONAL_CROSS("esriSFSDiagonalCross");
+
     private final String style;
 
     public String getStyle() {

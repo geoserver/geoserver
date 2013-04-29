@@ -1,8 +1,12 @@
 package org.opengeo.gsr.core.renderer;
 
 import java.awt.Color;
+import java.io.IOException;
 import java.util.Set;
 
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geotools.styling.Displacement;
 import org.geotools.styling.ExternalGraphic;
 import org.geotools.styling.FeatureTypeStyle;
@@ -14,6 +18,7 @@ import org.geotools.styling.Rule;
 import org.geotools.styling.Stroke;
 import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
+import org.opengeo.gsr.core.geometry.GeometryTypeEnum;
 import org.opengeo.gsr.core.symbol.MarkerSymbol;
 import org.opengeo.gsr.core.symbol.Outline;
 import org.opengeo.gsr.core.symbol.SimpleFillSymbol;
@@ -30,80 +35,80 @@ import org.opengis.style.GraphicalSymbol;
 import net.sf.json.util.JSONBuilder;
 
 public class StyleEncoder {
-    public static void defaultFillStyle(JSONBuilder json) {
-        json.object()
-          .key("type").value("simple")
-          .key("symbol").object()
-            .key("type").value("esriSFS")
-            .key("style").value("esriSFSSolid")
-            .key("color");
-            color(json, 255, 0, 0, 255);
-            json.key("outline").object()
-              .key("type").value("esriSLS")
-              .key("style").value("esriSLSSolid")
-              .key("color");
-              color(json, 0,  0, 0, 255);
-              json.key("width").value(1)
-            .endObject()
-          .endObject()
-          .key("label").value("")
-          .key("description").value("")
-        .endObject();
-    }
-    
-    public static void defaultRasterStyle(JSONBuilder json) {
-        json.object()
-          .key("type").value("simple")
-          .key("symbol").object()
-            .key("type").value("esriSFS")
-            .key("style").value("esriSFSSolid")
-            .key("color").value(null)
-            .key("outline").object()
-              .key("type").value("esriSLS")
-              .key("style").value("esriSLSSolid")
-              .key("color").value(null)
-              .key("width").value(1)
-            .endObject()
-          .endObject()
-          .key("label").value("")
-          .key("description").value("")
-        .endObject();
-    }
-
-    public static void defaultLineStyle(JSONBuilder json) {
-        json.object()
-          .key("type").value("simple")
-          .key("symbol");
-          encodeLineStyle(json, new SimpleLineSymbol(SimpleLineSymbolEnum.SOLID, components(Color.RED, 1d), 1d));
-          json.key("label").value("")
-          .key("description").value("");
-        json.endObject();
-    }
-
-    public static void defaultMarkStyle(JSONBuilder json) {
-        json.object()
-          .key("type").value("simple")
-          .key("symbol").object()
-            .key("type").value("esriSMS")
-            .key("style").value("esriSMSCircle")
-            .key("color");
-            color(json, 255, 0, 0, 255);
-            json.key("outline").object()
-              .key("type").value("esriSLS")
-              .key("style").value("esriSLSSolid")
-              .key("color");
-              color(json, 0, 0, 0, 255);
-              json.key("width").value("1");
-            json.endObject()
-          .endObject()
-          .key("label").value("")
-          .key("description").value("")
-        .endObject();
-    }
-    
-    private static void color(JSONBuilder json, int r, int g, int b, int a) {
-        json.array().value(r).value(g).value(b).value(a).endArray();
-    }
+//    public static void defaultFillStyle(JSONBuilder json) {
+//        json.object()
+//          .key("type").value("simple")
+//          .key("symbol").object()
+//            .key("type").value("esriSFS")
+//            .key("style").value("esriSFSSolid")
+//            .key("color");
+//            color(json, 255, 0, 0, 255);
+//            json.key("outline").object()
+//              .key("type").value("esriSLS")
+//              .key("style").value("esriSLSSolid")
+//              .key("color");
+//              color(json, 0,  0, 0, 255);
+//              json.key("width").value(1)
+//            .endObject()
+//          .endObject()
+//          .key("label").value("")
+//          .key("description").value("")
+//        .endObject();
+//    }
+//    
+//    public static void defaultRasterStyle(JSONBuilder json) {
+//        json.object()
+//          .key("type").value("simple")
+//          .key("symbol").object()
+//            .key("type").value("esriSFS")
+//            .key("style").value("esriSFSSolid")
+//            .key("color").value(null)
+//            .key("outline").object()
+//              .key("type").value("esriSLS")
+//              .key("style").value("esriSLSSolid")
+//              .key("color").value(null)
+//              .key("width").value(1)
+//            .endObject()
+//          .endObject()
+//          .key("label").value("")
+//          .key("description").value("")
+//        .endObject();
+//    }
+//
+//    public static void defaultLineStyle(JSONBuilder json) {
+//        json.object()
+//          .key("type").value("simple")
+//          .key("symbol");
+//          encodeLineStyle(json, new SimpleLineSymbol(SimpleLineSymbolEnum.SOLID, components(Color.RED, 1d), 1d));
+//          json.key("label").value("")
+//          .key("description").value("");
+//        json.endObject();
+//    }
+//
+//    public static void defaultMarkStyle(JSONBuilder json) {
+//        json.object()
+//          .key("type").value("simple")
+//          .key("symbol").object()
+//            .key("type").value("esriSMS")
+//            .key("style").value("esriSMSCircle")
+//            .key("color");
+//            color(json, 255, 0, 0, 255);
+//            json.key("outline").object()
+//              .key("type").value("esriSLS")
+//              .key("style").value("esriSLSSolid")
+//              .key("color");
+//              color(json, 0, 0, 0, 255);
+//              json.key("width").value("1");
+//            json.endObject()
+//          .endObject()
+//          .key("label").value("")
+//          .key("description").value("")
+//        .endObject();
+//    }
+//    
+//    private static void color(JSONBuilder json, int r, int g, int b, int a) {
+//        json.array().value(r).value(g).value(b).value(a).endArray();
+//    }
     
     public static Renderer styleToRenderer(Style style) {
         final Symbolizer symbolizer = getSingleSymbolizer(style);
@@ -117,6 +122,66 @@ public class StyleEncoder {
         } else {
             return null;
         }
+    }
+    
+    private static Renderer defaultPolyRenderer() {
+        SimpleLineSymbol outline = new SimpleLineSymbol(SimpleLineSymbolEnum.SOLID, new int[] { 0, 0, 0, 255 }, 1);
+        Symbol symbol = new SimpleFillSymbol(SimpleFillSymbolEnum.SOLID, new int[] { 255, 0, 0, 255 }, outline);
+        return new SimpleRenderer(symbol, "Polygon", "Default polygon renderer");
+    }
+    
+    private static Renderer defaultRasterRenderer() {
+        SimpleLineSymbol outline = new SimpleLineSymbol(SimpleLineSymbolEnum.SOLID, null, 1);
+        Symbol symbol = new SimpleFillSymbol(SimpleFillSymbolEnum.SOLID, null, outline);
+        return new SimpleRenderer(symbol, "Raster", "Default raster renderer");
+    }
+    
+    private static Renderer defaultLineRenderer() {
+        SimpleLineSymbol outline = new SimpleLineSymbol(SimpleLineSymbolEnum.SOLID, new int[] { 0, 0, 0, 255 }, 1);
+        return new SimpleRenderer(outline, "Line", "Default line renderer");
+    }
+    
+    private static Renderer defaultMarkRenderer() {
+        Outline outline = new Outline(new int[] { 0, 0, 0, 255 }, 1);
+        SimpleMarkerSymbol marker = new SimpleMarkerSymbol(SimpleMarkerSymbolEnum.SQUARE, new int[] { 255, 0, 0, 255 }, 24, 0, 0, 0, outline);
+        return new SimpleRenderer(marker, "Marker", "Default marker renderer");
+    }
+    
+    public static Renderer effectiveRenderer(LayerInfo layer) throws IOException {
+        Renderer renderer = null;
+        
+        StyleInfo styleInfo = layer.getDefaultStyle();
+        if (styleInfo != null) {
+            Style style = styleInfo.getStyle();
+            if (style != null) {
+                renderer = styleToRenderer(style);
+            }
+        }
+        
+        if (renderer != null) {
+            GeometryTypeEnum gtype = GeometryTypeEnum.forResourceDefaultGeometry(layer.getResource());
+            switch (gtype) {
+            case ENVELOPE:
+            case POLYGON:
+                if (layer.getResource() instanceof CoverageInfo) {
+                    renderer = defaultRasterRenderer();
+                } else {
+                    renderer = defaultPolyRenderer(); // TODO: Generate default polygon style
+                }
+                break;
+            case MULTIPOINT:
+            case POINT:
+                renderer = defaultMarkRenderer(); // TODO: Generate default point style
+                break;
+            case POLYLINE:
+                renderer = defaultLineRenderer(); // TODO: Generate default line style;
+                break;
+            default:
+                renderer = null;
+            }
+        }
+        
+        return renderer;
     }
     
     private static Symbol symbolizerToSymbol(Symbolizer sym) {

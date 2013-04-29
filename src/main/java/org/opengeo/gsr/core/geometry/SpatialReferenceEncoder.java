@@ -12,9 +12,10 @@ import net.sf.json.util.JSONBuilder;
 public class SpatialReferenceEncoder {
     public static void toJson(SpatialReference sr, JSONBuilder json) {
         if (sr instanceof SpatialReferenceWKID) {
-            SpatialReferenceWKID wkid = (SpatialReferenceWKID) sr;
+            final SpatialReferenceWKID wkid = (SpatialReferenceWKID) sr;
+            final int effectiveWkid = wkid.getWkid() == 3785 ? 102100 : wkid.getWkid(); 
             json.object()
-              .key("wkid").value(102100) // wkid.getWkid())
+              .key("wkid").value(effectiveWkid)
             .endObject();
         } else if (sr instanceof SpatialReferenceWKT) {
             SpatialReferenceWKT wkt = (SpatialReferenceWKT) sr;

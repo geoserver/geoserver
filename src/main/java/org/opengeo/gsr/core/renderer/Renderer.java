@@ -9,7 +9,7 @@ package org.opengeo.gsr.core.renderer;
  * @author Juan Marin, OpenGeo
  *
  */
-public class Renderer {
+public abstract class Renderer {
 
     private String type;
 

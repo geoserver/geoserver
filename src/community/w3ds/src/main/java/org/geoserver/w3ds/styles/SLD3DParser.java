@@ -1530,6 +1530,13 @@ public class SLD3DParser {
 			LOGGER.finest("processing graphic " + root);
 		}
 
+		Node isModel = root.getAttributes().getNamedItem("model");
+		if (isModel != null) {
+			if (isModel.getTextContent().equalsIgnoreCase("true")) {
+				return parseModel(root);
+			}
+		}
+
 		Graphic graphic = factory.getDefaultGraphic();
 
 		NodeList children = root.getChildNodes();
@@ -1965,7 +1972,7 @@ public class SLD3DParser {
 			if ((child == null) || (child.getNodeType() != Node.ELEMENT_NODE)) {
 				continue;
 			}
-			((FillImpl3D)fill).setDiffuseColor(parseCssParameter(child));
+			((FillImpl3D) fill).setDiffuseColor(parseCssParameter(child));
 		}
 
 		list = findElements(((Element) root), "TextureUrl");
@@ -1975,7 +1982,7 @@ public class SLD3DParser {
 			if ((child == null) || (child.getNodeType() != Node.ELEMENT_NODE)) {
 				continue;
 			}
-			((FillImpl3D)fill).setTextureUrl(parseCssParameter(child));
+			((FillImpl3D) fill).setTextureUrl(parseCssParameter(child));
 		}
 
 		list = findElements(((Element) root), "EmissiveColor");
@@ -1985,7 +1992,7 @@ public class SLD3DParser {
 			if ((child == null) || (child.getNodeType() != Node.ELEMENT_NODE)) {
 				continue;
 			}
-			((FillImpl3D)fill).setEmissiveColor(parseCssParameter(child));
+			((FillImpl3D) fill).setEmissiveColor(parseCssParameter(child));
 		}
 
 		/*************************/
@@ -2441,6 +2448,39 @@ public class SLD3DParser {
 		}
 
 		return halo;
+	}
 
+	private Graphic parseModel(Node root) {
+		ModelImpl model = new ModelImpl();
+		model.setDefault();
+		NodeList children = root.getChildNodes();
+		final int length = children.getLength();
+		for (int i = 0; i < length; i++) {
+			Node child = children.item(i);
+			if ((child == null) || (child.getNodeType() != Node.ELEMENT_NODE)) {
+				continue;
+			}
+			String childName = child.getLocalName();
+			if (childName == null) {
+				childName = child.getNodeName();
+			}
+
+			if (childName.equalsIgnoreCase("ALTITUDEMODE")) {
+				model.setAltitudeModel(parseCssParameter(child));
+			} else if (childName.equalsIgnoreCase("ALTITUDE")) {
+				model.setAltitude(parseCssParameter(child));
+			} else if (childName.equalsIgnoreCase("HEADING")) {
+				model.setHeading(parseCssParameter(child));
+			} else if (childName.equalsIgnoreCase("TILT")) {
+				model.setTilt(parseCssParameter(child));
+			} else if (childName.equalsIgnoreCase("ROLL")) {
+				model.setRoll(parseCssParameter(child));
+			} else if (childName.equalsIgnoreCase("HREF")) {
+				model.setHref(parseCssParameter(child));
+			} else if (childName.equalsIgnoreCase("LABEL")) {
+				model.setLabel(parseCssParameter(child));
+			}
+		}
+		return (Graphic) model;
 	}
 }

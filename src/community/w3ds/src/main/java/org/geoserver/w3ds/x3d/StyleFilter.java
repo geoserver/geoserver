@@ -16,21 +16,10 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.expression.Expression;
 
 public class StyleFilter {
-	
-	private String name;
 	private Filter filter;
 
-	public StyleFilter(String name, Filter filter) {
-		this.name = name;
+	public StyleFilter(Filter filter) {
 		this.filter = filter;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public Filter getFilter() {
@@ -55,7 +44,7 @@ public class StyleFilter {
 		return false;
 	}
 
-	private String getExpressionValue(Expression exp, Feature feature) {
+	public String getExpressionValue(Expression exp, Feature feature) {
 		if (exp.getClass().isAssignableFrom(LiteralExpressionImpl.class)) {
 			LiteralExpressionImpl v = (LiteralExpressionImpl) exp;
 			byte[] utf8Bytes = null;

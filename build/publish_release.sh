@@ -77,7 +77,9 @@ popd > /dev/null
 pushd $DIST_PATH/$tag > /dev/null
 
 if [ -z $SKIP_DEPLOY ]; then
+  set +e
   rsync -ave "ssh -i $SF_PK" *.zip *.exe *.dmg $SF_USER@$SF_HOST:/home/pfs/project/g/ge/geoserver/GeoServer/$tag/
+  set -e
   pushd plugins > /dev/null
   rsync -ave "ssh -i $SF_PK" *.zip $SF_USER@$SF_HOST:"/home/pfs/project/g/ge/geoserver/GeoServer\ Extensions/$tag/"
   popd > /dev/null

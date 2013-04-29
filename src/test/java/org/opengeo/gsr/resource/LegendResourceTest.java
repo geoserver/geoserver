@@ -1,14 +1,11 @@
 package org.opengeo.gsr.resource;
 
-import static org.junit.Assert.*;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import static org.junit.Assert.fail;
 
-import org.junit.Test;
-import org.opengeo.gsr.JsonSchemaTest;
+import org.junit.Ignore;
 
 public class LegendResourceTest extends ResourceTest {
-    @Test
+    @Ignore
     public void testStreamsLegend() throws Exception {
         String result = getAsString(baseURL + "cite/MapServer/legend?f=json");
         fail(result);

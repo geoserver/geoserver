@@ -16,6 +16,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.wms.WMS;
 import org.opengeo.gsr.ms.resource.LayerListResource;
+import org.opengeo.gsr.ms.resource.LegendResource;
 import org.opengeo.gsr.ms.resource.MapResource;
 import org.opengeo.gsr.ms.resource.QueryResource;
 import org.opengeo.gsr.resource.CatalogResource;
@@ -75,6 +76,8 @@ public class ServiceFinder extends AbstractCatalogFinder {
                     resource = new LayerListResource(null, request, response, catalog, format);
                 } else if ("query".equals(operation)) {
                     resource = new QueryResource(null, request, response, catalog, format);
+                } else if ("legend".equals(operation)) {
+                    resource = new LegendResource(null, request, response, catalog, format);
                 }
                 break;
             case FeatureServer:

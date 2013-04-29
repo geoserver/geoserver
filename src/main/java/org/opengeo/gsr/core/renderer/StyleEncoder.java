@@ -158,7 +158,7 @@ public class StyleEncoder {
             }
         }
         
-        if (renderer != null) {
+        if (renderer == null) {
             GeometryTypeEnum gtype = GeometryTypeEnum.forResourceDefaultGeometry(layer.getResource());
             switch (gtype) {
             case ENVELOPE:

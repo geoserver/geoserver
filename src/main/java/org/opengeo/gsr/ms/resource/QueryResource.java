@@ -444,6 +444,9 @@ public class QueryResource extends Resource {
         } else {
             try {
                 int srid = Integer.parseInt(srText);
+                if (srid == 102100) { // HACK - rewrite this one id to the OGC equivalent
+                    srid = 3785;
+                }
                 return CRS.decode("EPSG:" + srid);
             } catch (NumberFormatException e) {
                 // fall through - it may be a JSON representation

@@ -16,7 +16,7 @@ public class LayerListResourceTest extends ResourceTest {
     @Test
     public void testStreamsQuery() throws Exception {
         String result = getAsString(query("cite", "?f=json"));
-        assertTrue("validates", JsonSchemaTest.validateJSON(result, "/gsr-ms/1.0/allLayersAndTables.json"));
+        assertTrue("Streams output must validate: " + result, JsonSchemaTest.validateJSON(result, "/gsr-ms/1.0/allLayersAndTables.json"));
         JSONObject json = JSONObject.fromObject(result);
         assertTrue(json.has("tables"));
         assertTrue(json.has("layers"));

@@ -217,10 +217,10 @@ public class LayerListResource extends Resource {
                         json.key("extent");
                         CoordinateReferenceSystem WEB_MERCATOR = CRS.decode("EPSG:3785");
                         try {
-                            double minx = Math.max(boundingBox.getMinX(),  -85);
-                            double maxx = Math.min(boundingBox.getMaxX(),   85);
-                            double miny = Math.max(boundingBox.getMinY(), -180);
-                            double maxy = Math.min(boundingBox.getMaxY(),  180);
+                            double minx = Math.max(boundingBox.getMinX(),  -180);
+                            double maxx = Math.min(boundingBox.getMaxX(),   180);
+                            double miny = Math.max(boundingBox.getMinY(), -85);
+                            double maxy = Math.min(boundingBox.getMaxY(),  85);
                             ReferencedEnvelope sphericalMercatorBoundingBox = new ReferencedEnvelope(minx, maxx, miny, maxy, lonLat);
                             sphericalMercatorBoundingBox = sphericalMercatorBoundingBox.transform(WEB_MERCATOR, true);
                             GeometryEncoder.referencedEnvelopeToJson(sphericalMercatorBoundingBox, SpatialReferences.fromCRS(WEB_MERCATOR), json);
@@ -233,77 +233,8 @@ public class LayerListResource extends Resource {
                 }
                 json.key("drawingInfo");
                 json.object().key("renderer");
-                switch (layerOrTable.gtype) {
-                case ENVELOPE:
-                case POLYGON:
-                    if (layer.getResource() instanceof CoverageInfo) {
-                        StyleEncoder.defaultRasterStyle(json);
-                    } else {
-                        final StyleInfo styleInfo = layer.getDefaultStyle();
-                        final Renderer renderer;
-                        if (styleInfo != null) {
-                            Style style = styleInfo.getStyle();
-                            if (style != null) {
-                                renderer = StyleEncoder.styleToRenderer(style);
-                            } else {
-                                renderer = null;
-                            }
-                        } else {
-                            renderer = null;
-                        }
-                        if (renderer != null) {
-                            StyleEncoder.encodeRenderer(json, renderer);
-                        } else {
-                            StyleEncoder.defaultFillStyle(json);
-                        }
-                    }
-                    break;
-                case POLYLINE:
-                    {
-                        final StyleInfo styleInfo = layer.getDefaultStyle();
-                        final Renderer renderer;
-                        if (styleInfo != null) {
-                            Style style = styleInfo.getStyle();
-                            if (style != null) {
-                                renderer = StyleEncoder.styleToRenderer(style);
-                            } else {
-                                renderer = null;
-                            }
-                        } else {
-                            renderer = null;
-                        }
-                        if (renderer != null) {
-                            StyleEncoder.encodeRenderer(json, renderer);
-                        } else {
-                            StyleEncoder.defaultLineStyle(json);
-                        }
-                    }
-                    break;
-                case MULTIPOINT:
-                case POINT:
-                    {
-                        final StyleInfo styleInfo = layer.getDefaultStyle();
-                        final Renderer renderer;
-                        if (styleInfo != null) {
-                            Style style = styleInfo.getStyle();
-                            if (style != null) {
-                                renderer = StyleEncoder.styleToRenderer(style);
-                            } else {
-                                renderer = null;
-                            }
-                        } else {
-                            renderer = null;
-                        }
-                        if (renderer != null) {
-                            StyleEncoder.encodeRenderer(json, renderer);
-                        } else {
-                            StyleEncoder.defaultMarkStyle(json);
-                        }
-                    }
-                    break;
-                default:
-                    throw new RuntimeException("Layer " + layer + " has unsupported geometrytype " + layerOrTable.gtype);
-                }
+                Renderer renderer = StyleEncoder.effectiveRenderer(layer);
+                StyleEncoder.encodeRenderer(json, renderer);
                 json.endObject();
             }
             DimensionInfo time = (DimensionInfo) layer.getResource().getMetadata().get(ResourceInfo.TIME);

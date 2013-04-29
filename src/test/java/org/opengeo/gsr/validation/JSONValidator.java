@@ -44,7 +44,7 @@ public class JSONValidator {
             Reader reader = new StringReader(json);
             jsonNode = JsonLoader.fromReader(reader);
         } catch (Exception e) {
-            throw new RuntimeException("Couldn't load (" + json + ") as JSON");
+            throw new RuntimeException("Couldn't load (" + json + ") as JSON", e);
         }
 
         report = schema.validate(jsonNode);

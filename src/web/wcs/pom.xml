@@ -81,6 +81,10 @@
 			<groupId>org.geotools</groupId>
 			<artifactId>gt-data</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+        </dependency>        
     <dependency>
       <groupId>xmlunit</groupId>
       <artifactId>xmlunit</artifactId>

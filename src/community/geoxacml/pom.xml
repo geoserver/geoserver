@@ -39,6 +39,10 @@
        <groupId>xalan</groupId>
        <artifactId>xalan</artifactId>
     </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+    </dependency>
     <!-- start geoserver dependencies -->
     <dependency>    
       <groupId>org.geoserver</groupId>

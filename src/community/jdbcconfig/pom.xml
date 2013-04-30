@@ -25,7 +25,11 @@
       <artifactId>h2</artifactId>
       <scope>provided</scope>
     </dependency>
-
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+    </dependency>
+    
     <!-- Google common libraries, featuring great utility classes for collections, io, concurrency, and more -->
     <dependency>
       <groupId>com.google.guava</groupId>

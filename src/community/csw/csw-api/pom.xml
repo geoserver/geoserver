@@ -28,6 +28,11 @@
     </dependency>
 
     <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+    </dependency>
+    
+    <dependency>
         <groupId>org.geotools.ogc</groupId>
         <artifactId>net.opengis.fes</artifactId>
         <version>${gt.version}</version>

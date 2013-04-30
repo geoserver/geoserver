@@ -135,7 +135,11 @@
    <dependency>
     <groupId>org.bouncycastle</groupId>
     <artifactId>bcprov-jdk14</artifactId>    
-  </dependency>
+   </dependency>
+   <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+   </dependency>      
   </dependencies>
 
   <build>

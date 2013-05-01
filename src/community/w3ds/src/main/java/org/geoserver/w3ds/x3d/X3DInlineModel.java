@@ -1,13 +1,13 @@
 /* This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  * 
- * @author Jorge Gustavo Rocha / Universidade do Minho
- * @author Nuno Carvalho Oliveira / Universidade do Minho 
+ * @author Nuno Oliveira - PTInovacao
  */
 
 package org.geoserver.w3ds.x3d;
 
 import org.geoserver.w3ds.styles.ModelImpl;
+import org.geoserver.w3ds.utilities.StyleFilter;
 import org.geotools.styling.Rule;
 import org.opengis.feature.Feature;
 import org.opengis.filter.expression.Expression;
@@ -41,23 +41,26 @@ public class X3DInlineModel {
 		Coordinate coordinate = point.getCoordinate();
 		modelPosition.addX3DAttribute("translation", coordinate.y + " "
 				+ coordinate.z + " " + coordinate.x);
-		X3DNode rollRotation = getGenericRotation(feature, model.getRoll(), "1 0 0");
-		if(rollRotation != null) {
+		X3DNode rollRotation = getGenericRotation(feature, model.getRoll(),
+				"1 0 0");
+		if (rollRotation != null) {
 			rollRotation.addX3DNode(rootNode.clone());
 			rootNode = rollRotation;
 		}
-		X3DNode titlRotation = getGenericRotation(feature, model.getTilt(), "0 0 1");
-		if(titlRotation != null) {
+		X3DNode titlRotation = getGenericRotation(feature, model.getTilt(),
+				"0 0 1");
+		if (titlRotation != null) {
 			titlRotation.addX3DNode(rootNode.clone());
 			rootNode = titlRotation;
 		}
-		X3DNode headingRotation = getGenericRotation(feature, model.getHeading(), "0 1 0");
-		if(headingRotation != null) {
+		X3DNode headingRotation = getGenericRotation(feature,
+				model.getHeading(), "0 1 0");
+		if (headingRotation != null) {
 			headingRotation.addX3DNode(rootNode.clone());
 			rootNode = headingRotation;
 		}
 		X3DNode altituteTranslation = getAltitudeTranslation(feature, point);
-		if(altituteTranslation != null) {
+		if (altituteTranslation != null) {
 			altituteTranslation.addX3DNode(rootNode.clone());
 			rootNode = altituteTranslation;
 		}
@@ -70,16 +73,16 @@ public class X3DInlineModel {
 		if (altituteText == null) {
 			return null;
 		}
-		int altitude = computeAltitudeForAltitudeMode(feature, point,
-				Integer.valueOf(altituteText));
+		float altitude = computeAltitudeForAltitudeMode(feature, point,
+				Float.valueOf(altituteText));
 		X3DNode translation = new X3DNode("Transform");
 		translation.addX3DAttribute("translation", "0 " + altitude + " 0");
 		return translation;
 
 	}
 
-	private int computeAltitudeForAltitudeMode(Feature feature, Point point,
-			int altitude) {
+	private float computeAltitudeForAltitudeMode(Feature feature, Point point,
+			float altitude) {
 		String altitudeModelText = styleFilter.getExpressionValue(
 				model.getAltitudeModel(), feature);
 		if (altitudeModelText == null) {
@@ -109,7 +112,7 @@ public class X3DInlineModel {
 		if (rotationText == null) {
 			return null;
 		}
-		int rotationValue = Integer.valueOf(rotationText);
+		float rotationValue = Float.valueOf(rotationText);
 		X3DNode rotation = new X3DNode("Transform");
 		rotation.addX3DAttribute("rotation", rotationAxe + rotationValue);
 		return rotation;

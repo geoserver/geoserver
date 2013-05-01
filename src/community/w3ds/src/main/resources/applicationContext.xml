@@ -49,7 +49,9 @@
 		singleton="false" />
 	<bean id="W3DSX3DResponse" class="org.geoserver.w3ds.responses.X3DResponse"
 		singleton="false" />
-	<bean id="W3DSHTMLX3DResponse" class="org.geoserver.w3ds.responses.HTMLX3DResponse"
+	<bean id="W3DSHtmlX3DResponse" class="org.geoserver.w3ds.responses.HtmlX3DResponse"
+		singleton="false" />
+	<bean id="W3DSKmlResponse" class="org.geoserver.w3ds.responses.KmlResponse"
 		singleton="false" />
 	<bean id="getSceneKvpReaderRequestReader" class="org.geoserver.w3ds.kvp.GetSceneKvpRequestReader">
 		<constructor-arg value="org.geoserver.w3ds.types.GetSceneRequest" />

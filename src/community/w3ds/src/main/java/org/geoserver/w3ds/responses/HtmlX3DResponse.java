@@ -20,8 +20,8 @@ import org.geoserver.w3ds.types.W3DSLayer;
 import org.geoserver.w3ds.x3d.X3DBuilder;
 import org.opengis.geometry.BoundingBox;
 
-public class HTMLX3DResponse extends Response {
-	public HTMLX3DResponse() {
+public class HtmlX3DResponse extends Response {
+	public HtmlX3DResponse() {
 		super(Scene.class);
 	}
 

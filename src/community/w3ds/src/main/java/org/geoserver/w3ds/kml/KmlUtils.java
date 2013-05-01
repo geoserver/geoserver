@@ -4,7 +4,7 @@
  * @author Nuno Oliveira - PTInovacao
  */
 
-package org.geoserver.w3ds.x3d;
+package org.geoserver.w3ds.kml;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,13 +17,13 @@ import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
 
-public final class X3DUtils {
+public final class KmlUtils {
 
-	private X3DUtils() {
+	private KmlUtils() {
 	}
 
-	public static List<X3DInlineModel> getInlineModels(Style style) {
-		List<X3DInlineModel> inlineModels = new ArrayList<X3DInlineModel>();
+	public static List<KmlModel> getKmlModels(Style style) {
+		List<KmlModel> kmlModels = new ArrayList<KmlModel>();
 		List<FeatureTypeStyle> featureTypeStyles = style.featureTypeStyles();
 		for (FeatureTypeStyle featureTypeStyle : featureTypeStyles) {
 			List<Rule> rules = featureTypeStyle.rules();
@@ -37,13 +37,21 @@ public final class X3DUtils {
 								.getGraphic();
 						if (graphicImpl.getClass().isAssignableFrom(
 								ModelImpl.class)) {
-							inlineModels.add(new X3DInlineModel(rule,
+							kmlModels.add(new KmlModel(rule,
 									(ModelImpl) graphicImpl));
 						}
 					}
 				}
 			}
 		}
-		return inlineModels;
+		return kmlModels;
+	}
+
+	public static List<KmlModel> getKmlModels(List<Style> styles) {
+		List<KmlModel> kmlModels = new ArrayList<KmlModel>();
+		for (Style style : styles) {
+			kmlModels.addAll(getKmlModels(style));
+		}
+		return kmlModels;
 	}
 }

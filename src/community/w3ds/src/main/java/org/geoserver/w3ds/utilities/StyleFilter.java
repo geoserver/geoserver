@@ -1,11 +1,10 @@
 /* This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  * 
- * @author Jorge Gustavo Rocha / Universidade do Minho
- * @author Nuno Carvalho Oliveira / Universidade do Minho 
+ * @author Nuno Oliveira - PTInovacao
  */
 
-package org.geoserver.w3ds.x3d;
+package org.geoserver.w3ds.utilities;
 
 import java.io.UnsupportedEncodingException;
 

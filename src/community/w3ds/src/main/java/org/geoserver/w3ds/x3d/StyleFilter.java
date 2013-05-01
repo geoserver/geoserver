@@ -8,6 +8,7 @@
 package org.geoserver.w3ds.x3d;
 
 import java.io.UnsupportedEncodingException;
+
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.IsEqualsToImpl;
 import org.geotools.filter.LiteralExpressionImpl;
@@ -31,22 +32,26 @@ public class StyleFilter {
 	}
 
 	public boolean match(Feature feature) {
-		if(this.filter == null) return true;
+		if (this.filter == null)
+			return true;
 		if (filter.getClass().isAssignableFrom(IsEqualsToImpl.class)) {
 			IsEqualsToImpl equal = (IsEqualsToImpl) filter;
-			String v1 = this.getExpressionValue(equal.getExpression1(),
-					feature);
+			String v1 = this
+					.getExpressionValue(equal.getExpression1(), feature);
 			v1 = v1.trim();
-			String v2 = this.getExpressionValue(equal.getExpression2(),
-					feature);
+			String v2 = this
+					.getExpressionValue(equal.getExpression2(), feature);
 			return v1.equalsIgnoreCase(v2);
 		}
 		return false;
 	}
 
-	public String getExpressionValue(Expression exp, Feature feature) {
-		if (exp.getClass().isAssignableFrom(LiteralExpressionImpl.class)) {
-			LiteralExpressionImpl v = (LiteralExpressionImpl) exp;
+	public String getExpressionValue(Expression expression, Feature feature) {
+		if ((expression == null) || (feature == null)) {
+			return null;
+		}
+		if (expression.getClass().isAssignableFrom(LiteralExpressionImpl.class)) {
+			LiteralExpressionImpl v = (LiteralExpressionImpl) expression;
 			byte[] utf8Bytes = null;
 			String result = "";
 			try {
@@ -58,8 +63,9 @@ public class StyleFilter {
 			return result;
 
 		}
-		if (exp.getClass().isAssignableFrom(AttributeExpressionImpl.class)) {
-			AttributeExpressionImpl v = (AttributeExpressionImpl) exp;
+		if (expression.getClass().isAssignableFrom(
+				AttributeExpressionImpl.class)) {
+			AttributeExpressionImpl v = (AttributeExpressionImpl) expression;
 			String property = v.getPropertyName();
 			Object o = feature.getProperty(property).getValue();
 			if (o != null) {

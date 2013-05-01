@@ -1,11 +1,23 @@
 package org.geoserver.w3ds.styles;
-import org.geotools.filter.ConstantExpression;
 import org.geotools.styling.GraphicImpl;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.expression.Expression;
 import org.opengis.style.AnchorPoint;
 
 public class ModelImpl extends GraphicImpl {
+	
+		public static int ALTITUDE_MODEL_AINVALID = -1;
+		public static int ALTITUDE_MODEL_ABSOLUTE = 0;
+		public static int ALTITUDE_MODEL_CLAMPTOGROUND = 1;
+		public static int ALTITUDE_MODEL_CLAMPTOSEAFLOOR = 2;
+		public static int ALTITUDE_MODEL_RELATIVETOGROUND = 3;
+		public static int ALTITUDE_MODEL_RELATIVETOSEAFLOOR = 4;
+	
+		public static String ALTITUDE_MODEL_ABSOLUTE_TEXT = "absolute";
+		public static String ALTITUDE_MODEL_CLAMPTOGROUND_TEXT = "clampToGround";
+		public static String ALTITUDE_MODEL_CLAMPTOSEAFLOOR_TEXT = "clampToSeaFloor";
+		public static String ALTITUDE_MODEL_RELATIVETOGROUND_TEXT = "relativeToGround";
+		public static String ALTITUDE_MODEL_RELATIVETOSEAFLOOR_TEXT = "relativeToSeaFloor";
 
 		private Expression altitudeModel;
 		private Expression altitude;
@@ -14,16 +26,6 @@ public class ModelImpl extends GraphicImpl {
 		private Expression roll;
 		private Expression href;
 		private Expression label;
-		
-		public void setDefault() {
-			this.altitudeModel = ConstantExpression.constant("clampToGround");
-			this.altitude = ConstantExpression.constant(0);
-			this.heading = ConstantExpression.constant(0);
-			this.tilt = ConstantExpression.constant(0);
-			this.roll = ConstantExpression.constant(0);
-			this.href = ConstantExpression.constant("...");
-			this.label = null;
-		}
 		
 		public ModelImpl() {
 			super();
@@ -93,5 +95,23 @@ public class ModelImpl extends GraphicImpl {
 		public void setLabel(Expression label) {
 			this.label = label;
 		}
-
+		
+		public static int decodeAltitudeModel(String altitudeModelText) {
+			if(altitudeModelText.equalsIgnoreCase(ALTITUDE_MODEL_ABSOLUTE_TEXT)) {
+				return ALTITUDE_MODEL_ABSOLUTE;
+			}
+			if(altitudeModelText.equalsIgnoreCase(ALTITUDE_MODEL_CLAMPTOGROUND_TEXT)) {
+				return ALTITUDE_MODEL_CLAMPTOGROUND;
+			}
+			if(altitudeModelText.equalsIgnoreCase(ALTITUDE_MODEL_CLAMPTOSEAFLOOR_TEXT)) {
+				return ALTITUDE_MODEL_CLAMPTOSEAFLOOR;
+			}
+			if(altitudeModelText.equalsIgnoreCase(ALTITUDE_MODEL_RELATIVETOGROUND_TEXT)) {
+				return ALTITUDE_MODEL_RELATIVETOGROUND;
+			}
+			if(altitudeModelText.equalsIgnoreCase(ALTITUDE_MODEL_RELATIVETOSEAFLOOR_TEXT)) {
+				return ALTITUDE_MODEL_RELATIVETOSEAFLOOR;
+			}
+			return ALTITUDE_MODEL_AINVALID;
+		}
 }

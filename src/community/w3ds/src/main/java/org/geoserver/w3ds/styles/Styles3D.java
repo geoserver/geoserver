@@ -14,7 +14,6 @@ import org.geoserver.catalog.Styles;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.NamedLayer;
-import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.geotools.styling.StyledLayerDescriptor;

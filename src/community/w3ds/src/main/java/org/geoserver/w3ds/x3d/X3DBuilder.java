@@ -13,6 +13,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.measure.unit.SI;
 import javax.measure.unit.Unit;
 
@@ -22,10 +23,14 @@ import org.geoserver.w3ds.types.W3DSLayerInfo;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
+import org.geotools.resources.CRSUtilities;
+import org.geotools.styling.Style;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.geometry.BoundingBox;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -37,12 +42,6 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
-import org.geotools.referencing.CRS;
-import org.geotools.resources.CRSUtilities;
-import org.geotools.styling.Style;
-
-import org.opengis.geometry.BoundingBox;
-import org.geoserver.w3ds.x3d.X3DBuilder;
 
 public class X3DBuilder {
 

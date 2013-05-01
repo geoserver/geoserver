@@ -9,7 +9,6 @@ package org.geoserver.w3ds.responses;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.List;
 
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
@@ -19,7 +18,6 @@ import org.geoserver.w3ds.types.GetTileRequest;
 import org.geoserver.w3ds.types.Scene;
 import org.geoserver.w3ds.types.W3DSLayer;
 import org.geoserver.w3ds.x3d.X3DBuilder;
-import org.geotools.styling.Style;
 import org.opengis.geometry.BoundingBox;
 
 public class X3DResponse extends Response {

@@ -59,6 +59,7 @@
   </bean>
 
   <!-- KML decorators -->
+  <bean id="kmlLegendDecorator" class="org.geoserver.kml.decorator.LegendDecoratorFactory"/>
   <bean id="kmlGeometryDecorator" class="org.geoserver.kml.decorator.PlacemarkGeometryDecoratorFactory"/>
   <bean id="kmlStyleDecorator" class="org.geoserver.kml.decorator.PlacemarkStyleDecoratorFactory"/>
   <bean id="kmlNameDecorator" class="org.geoserver.kml.decorator.PlacemarkNameDecoratorFactory"/>

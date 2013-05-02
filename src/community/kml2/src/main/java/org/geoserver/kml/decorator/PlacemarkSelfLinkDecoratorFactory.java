@@ -5,15 +5,9 @@
 package org.geoserver.kml.decorator;
 
 import java.io.IOException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.geoserver.kml.GeoSearchKMLTest;
-import org.geoserver.kml.KMLUtils;
-import org.geoserver.wms.GetMapRequest;
-import org.geoserver.wms.featureinfo.FeatureTemplate;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.simple.SimpleFeature;
 
 import de.micromata.opengis.kml.v_2_2_0.Feature;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
@@ -32,14 +26,14 @@ public class PlacemarkSelfLinkDecoratorFactory implements KmlDecoratorFactory {
             KmlEncodingContext context) {
         String selfLinks = (String) context.getRequest().getFormatOptions().get("selfLinks");
         if (selfLinks != null && selfLinks.equalsIgnoreCase("true") && Placemark.class.isAssignableFrom(featureClass)) {
-            return new PlacemarkSeltLinkDecorator();
+            return new PlacemarkSelfLinkDecorator();
         } else {
             return null;
         }
     }
 
-    static class PlacemarkSeltLinkDecorator extends AbstractGeoSearchDecorator {
-        static final Logger LOGGER = Logging.getLogger(PlacemarkSeltLinkDecorator.class);
+    static class PlacemarkSelfLinkDecorator extends AbstractGeoSearchDecorator {
+        static final Logger LOGGER = Logging.getLogger(PlacemarkSelfLinkDecorator.class);
 
         @Override
         public Feature decorate(Feature feature, KmlEncodingContext context) {

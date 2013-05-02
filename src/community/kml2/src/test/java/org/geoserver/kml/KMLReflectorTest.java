@@ -4,12 +4,12 @@
  */
 package org.geoserver.kml;
 
-import static org.junit.Assert.assertNull;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedInputStream;
@@ -41,11 +41,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.kvp.FormatOptionsKvpParser;
 import org.geoserver.ows.util.KvpUtils;
-import org.geoserver.wms.GetMapRequest;
-import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
-import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -460,7 +456,7 @@ public class KMLReflectorTest extends WMSTestSupport {
             }
         }
     }
-    
+
     @Test
     public void testStyleConverter() throws Exception {
         // the style selects a single feature
@@ -469,14 +465,20 @@ public class KMLReflectorTest extends WMSTestSupport {
         Document document = getAsDOM(requestUrl);
         // print(document);
 
-        XMLAssert.assertXpathEvaluatesTo("0", "count(//kml:Placemark[1]/kml:Style[1]/kml:IconStyle/kml:Icon/kml:color)", document);
+        XMLAssert
+                .assertXpathEvaluatesTo("0",
+                        "count(//kml:Placemark[1]/kml:Style[1]/kml:IconStyle/kml:Icon/kml:color)",
+                        document);
         XMLAssert.assertXpathEvaluatesTo("http://maps.google.com/mapfiles/kml/pal4/icon25.png",
                 "//kml:Placemark[1]/kml:Style[1]/kml:IconStyle/kml:Icon/kml:href", document);
-        XMLAssert.assertXpathEvaluatesTo("b24d4dff", "//kml:Placemark[1]/kml:Style[4]/kml:PolyStyle/kml:color", document);
-        XMLAssert.assertXpathEvaluatesTo("ffba3e00", "//kml:Placemark[1]/kml:Style[3]/kml:LineStyle/kml:color", document);
-        XMLAssert.assertXpathEvaluatesTo("2.0", "//kml:Placemark[1]/kml:Style[3]/kml:LineStyle/kml:width", document);
+        XMLAssert.assertXpathEvaluatesTo("b24d4dff",
+                "//kml:Placemark[1]/kml:Style[4]/kml:PolyStyle/kml:color", document);
+        XMLAssert.assertXpathEvaluatesTo("ffba3e00",
+                "//kml:Placemark[1]/kml:Style[3]/kml:LineStyle/kml:color", document);
+        XMLAssert.assertXpathEvaluatesTo("2.0",
+                "//kml:Placemark[1]/kml:Style[3]/kml:LineStyle/kml:width", document);
     }
-    
+
     /**
      * See http://jira.codehaus.org/browse/GEOS-2670
      */
@@ -490,16 +492,50 @@ public class KMLReflectorTest extends WMSTestSupport {
         XMLAssert.assertXpathEvaluatesTo("http://example.com/Cam Stream",
                 "//kml:Style[1]/kml:IconStyle/kml:Icon/kml:href", document);
     }
-    
+
     @Test
     public void testRelativeDynamicSymbolizer() throws Exception {
         final String requestUrl = "wms/kml?layers=" + getLayerId(MockData.STREAMS)
                 + "&styles=relativeds&mode=download";
         Document document = getAsDOM(requestUrl);
-        
+
         assertEquals("kml", document.getDocumentElement().getNodeName());
-        XMLAssert.assertXpathEvaluatesTo("http://localhost:8080/geoserver/styles/icons/Cam%20Stream",
+        XMLAssert.assertXpathEvaluatesTo(
+                "http://localhost:8080/geoserver/styles/icons/Cam%20Stream",
                 "//kml:Style[1]/kml:IconStyle/kml:Icon/kml:href", document);
+    }
+
+    @Test
+    public void testLegend() throws Exception {
+        String layerId = getLayerId(MockData.BASIC_POLYGONS);
+        final String requestUrl = "wms/kml?layers=" + layerId
+                + "&styles=polygon&mode=download&format_options=legend:true" //
+                + "&legend_options=fontStyle:bold;fontColor:ff0000;fontSize:18";
+        Document doc = getAsDOM(requestUrl);
+        // print(doc);
+
+        assertEquals("kml", doc.getDocumentElement().getNodeName());
+        
+        // the icon itself
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        String href = xpath.evaluate("//kml:ScreenOverlay/kml:Icon/kml:href", doc);
+        assertTrue(href.contains("request=GetLegendGraphic"));
+        assertTrue(href.contains("layer=cite%3ABasicPolygons"));
+        assertTrue(href.contains("style=polygon"));
+        assertTrue(href.contains("LEGEND_OPTIONS=fontStyle%3Abold%3BfontColor%3Aff0000%3BfontSize%3A18"));
+        
+        // overlay location
+        XMLAssert.assertXpathEvaluatesTo("0.0", "//kml:ScreenOverlay/kml:overlayXY/@x", doc);
+        XMLAssert.assertXpathEvaluatesTo("0.0", "//kml:ScreenOverlay/kml:overlayXY/@y", doc);
+        XMLAssert.assertXpathEvaluatesTo("pixels", "//kml:ScreenOverlay/kml:overlayXY/@xunits", doc);
+        XMLAssert.assertXpathEvaluatesTo("pixels", "//kml:ScreenOverlay/kml:overlayXY/@yunits", doc);
+        XMLAssert.assertXpathEvaluatesTo("10.0", "//kml:ScreenOverlay/kml:screenXY/@x", doc);
+        XMLAssert.assertXpathEvaluatesTo("20.0", "//kml:ScreenOverlay/kml:screenXY/@y", doc);
+        XMLAssert.assertXpathEvaluatesTo("pixels", "//kml:ScreenOverlay/kml:screenXY/@xunits", doc);
+        XMLAssert.assertXpathEvaluatesTo("pixels", "//kml:ScreenOverlay/kml:screenXY/@yunits", doc);
+        
+        
+
     }
 
     /**

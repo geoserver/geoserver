@@ -221,7 +221,7 @@ public class KMLReflectorTest extends WMSTestSupport {
 
                 // special treatment for the format options
             } else {
-                assertEquals(entry.getValue(), actual.get(entry.getKey()));
+                assertEquals("Failed comparisong on key " + entry.getKey(), entry.getValue(), actual.get(entry.getKey()));
             }
         }
 

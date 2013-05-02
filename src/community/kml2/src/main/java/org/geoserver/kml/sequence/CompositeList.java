@@ -18,7 +18,7 @@ import org.springframework.util.CompositeIterator;
  * 
  * @param <T>
  */
-class CompositeList<T> extends AbstractList<T> {
+public class CompositeList<T> extends AbstractList<T> {
 
     List<T>[] lists;
 

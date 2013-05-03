@@ -9,7 +9,7 @@ import java.util.List;
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
 import org.geoserver.kml.decorator.KmlEncodingContext;
 import org.geoserver.kml.sequence.CompositeList;
-import org.geoserver.kml.sequence.FolderSequenceFactory;
+import org.geoserver.kml.sequence.PlainFolderSequenceFactory;
 import org.geoserver.kml.sequence.SequenceList;
 import org.geoserver.platform.ServiceException;
 
@@ -47,9 +47,9 @@ public class KMLBuilder {
             }
         }
 
-        // create a generator that will generate a folder for each layer
+        // create a generator that will generate a folder and feature dumps/ground overlays for each layer
         SequenceList<Feature> folders = new SequenceList<Feature>(
-                new FolderSequenceFactory(context));
+                new PlainFolderSequenceFactory(context));
         addFeatures(document, folders);
 
         return kml;

@@ -287,6 +287,7 @@ public class KMLTest extends WMSTestSupport {
             "&format_options=kmltitle:myCustomLayerTitle";
         
         Document doc = getAsDOM(kmlRequest);
+        print(doc);
         assertEquals("name", doc.getElementsByTagName("Document").item(0).getFirstChild().getNextSibling().getLocalName());
         assertEquals("myCustomLayerTitle", doc.getElementsByTagName("Document").item(0).getFirstChild().getNextSibling().getTextContent());
     }    

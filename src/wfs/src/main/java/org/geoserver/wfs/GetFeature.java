@@ -112,7 +112,6 @@ import org.xml.sax.helpers.NamespaceSupport;
  * @version $Id$
  */
 public class GetFeature {
-    public static final String SQL_VIEW_PARAMS = "GS_SQL_VIEW_PARAMS";
     
     /** Standard logging instance for class */
     private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.requests");
@@ -293,8 +292,8 @@ public class GetFeature {
         
         // grab the view params is any
         List<Map<String, String>> viewParams = null;
-        if(request.getMetadata() != null) {
-            viewParams = (List<Map<String, String>>) request.getMetadata().get(SQL_VIEW_PARAMS);
+        if(request.getViewParams() != null && request.getViewParams().size() > 0) {
+            viewParams = (List<Map<String, String>>) request.getViewParams();
         }
 
         int count = 0; //should probably be long

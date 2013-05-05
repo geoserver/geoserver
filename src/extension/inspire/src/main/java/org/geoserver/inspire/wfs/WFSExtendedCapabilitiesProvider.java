@@ -105,17 +105,19 @@ public class WFSExtendedCapabilitiesProvider implements
         
         // unique spatial dataset identifiers
         UniqueResourceIdentifiers ids = (UniqueResourceIdentifiers) wfs.getMetadata().get(SPATIAL_DATASET_IDENTIFIER_TYPE.key, UniqueResourceIdentifiers.class);
-        for (UniqueResourceIdentifier id : ids) {
-            tx.start("inspire_dls:SpatialDataSetIdentifier");
-            tx.start("inspire_common:Code");
-            tx.chars(id.getCode());
-            tx.end("inspire_common:Code");
-            if(id.getNamespace() != null) {
-                tx.start("inspire_common:Namespace");
-                tx.chars(id.getNamespace());
-                tx.end("inspire_common:Namespace");
+        if(ids != null) {
+            for (UniqueResourceIdentifier id : ids) {
+                tx.start("inspire_dls:SpatialDataSetIdentifier");
+                tx.start("inspire_common:Code");
+                tx.chars(id.getCode());
+                tx.end("inspire_common:Code");
+                if(id.getNamespace() != null) {
+                    tx.start("inspire_common:Namespace");
+                    tx.chars(id.getNamespace());
+                    tx.end("inspire_common:Namespace");
+                }
+                tx.end("inspire_dls:SpatialDataSetIdentifier");
             }
-            tx.end("inspire_dls:SpatialDataSetIdentifier");
         }
 
         tx.end("inspire_dls:ExtendedCapabilities");

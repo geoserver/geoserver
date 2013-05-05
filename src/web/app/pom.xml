@@ -257,6 +257,7 @@
 		<configuration>
 			<warName>geoserver</warName>
 			<webappDirectory>${project.build.directory}/geoserver</webappDirectory>
+			<packagingExcludes>WEB-INF/lib/servlet-api*.jar</packagingExcludes>
 			<archive>
 				<manifest>
 					<addDefaultImplementationEntries>true</addDefaultImplementationEntries>

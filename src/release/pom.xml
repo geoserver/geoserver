@@ -222,6 +222,11 @@
    <artifactId>xslt</artifactId>
    <version>${project.version}</version>
   </dependency>
+   <dependency>
+     <groupId>org.geoserver.extension</groupId>
+     <artifactId>inspire</artifactId>
+     <version>${project.version}</version>
+   </dependency>
  </dependencies>
  <build>
   <plugins>

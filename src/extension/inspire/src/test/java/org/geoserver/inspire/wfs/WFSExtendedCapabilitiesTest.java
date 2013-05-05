@@ -7,12 +7,13 @@ package org.geoserver.inspire.wfs;
 import static org.geoserver.inspire.wfs.WFSExtendedCapabilitiesProvider.DLS_NAMESPACE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNull;
 
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.inspire.InspireMetadata;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wfs.WFSInfo;
+import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -22,6 +23,13 @@ public class WFSExtendedCapabilitiesTest extends GeoServerSystemTestSupport {
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
+    }
+    
+    @Before
+    public void clearMetadata() {
+        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
+        wfs.getMetadata().clear();
+        getGeoServer().save(wfs);
     }
 
     @Test

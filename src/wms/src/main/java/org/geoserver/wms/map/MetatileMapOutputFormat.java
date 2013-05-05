@@ -30,6 +30,7 @@ import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.QuickTileCache.MetaTileKey;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.filter.function.EnvFunction;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.renderer.lite.gridcoverage2d.GridCoverageRenderer;
 import org.geotools.resources.i18n.ErrorKeys;
@@ -148,11 +149,16 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
 
                 // alter the map definition so that we build a meta-tile instead
                 // of just the tile
-                ReferencedEnvelope origEnv = mapContent.getRenderingArea();
                 mapContent.getViewport().setBounds(key.getMetaTileEnvelope());
                 mapContent.setMapWidth(key.getTileSize() * key.getMetaFactor());
                 mapContent.setMapHeight(key.getTileSize() * key.getMetaFactor());
                 mapContent.setTileSize(key.getTileSize());
+                
+                // adjust the bbox/width/height env vars that GetMap setup, since we
+                // are changing them under its feet
+                EnvFunction.setLocalValue("wms_bbox", mapContent.getViewport().getBounds());
+                EnvFunction.setLocalValue("wms_width", mapContent.getMapWidth());
+                EnvFunction.setLocalValue("wms_height", mapContent.getMapHeight());
 
                 RenderedImageMap metaTileMap = delegate.produceMap(mapContent);
 

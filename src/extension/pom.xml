@@ -237,6 +237,13 @@
       </modules>
     </profile>
 
+    <profile>
+      <id>inspire</id>
+      <modules>
+        <module>inspire</module>
+      </modules>
+    </profile>
+
     <!-- allExtensions profile, includes all modules -->
     <profile>
       <id>allExtensions</id>
@@ -265,6 +272,7 @@
         <module>monitor</module>
         <module>security</module>
         <module>xslt</module>
+        <module>inspire</module>
       </modules>
     </profile>
 
@@ -295,7 +303,7 @@
         <module>teradata</module>
         <module>monitor</module>
         <module>security</module>
-        <module>xslt</module>
+        <module>inspire</module>
       </modules>
     </profile>
 

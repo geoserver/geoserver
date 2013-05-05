@@ -5,13 +5,13 @@ Using the INSPIRE extension
 
 When the INSPIRE extension has been properly installed, there will be two changes to GeoServer.
 
-#. The GeoServer WMS 1.3.0 capabilities document will contain extra content relevant to INSPIRE.
-#. The :ref:`webadmin_wms` section of the :ref:`web_admin` will show extra configuration options.
+#. The GeoServer WMS 1.3.0 capabilities document, as well as the WFS 1.1 and 2.0 will contain extra content relevant to INSPIRE.
+#. The :ref:`webadmin_wms` and :ref:`webadmin_wfs` sections of the :ref:`web_admin` will show extra configuration options.
 
 Extended WMS Capabilities
 -------------------------
 
-.. note:: The INSPIRE directive is relevant to WMS 1.3.0 only, so please make sure that you are viewing the correct capabilities document.
+.. note:: The INSPIRE directive is relevant to WMS 1.3.0, WFS 1.1 and WFS 2.0 only, so please make sure that you are viewing the correct capabilities document.
 
 The WMS 1.3.0 capabilities document will be extended once the INSPIRE extension is installed.  Those changes are:
 

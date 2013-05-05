@@ -17,10 +17,11 @@ see the :ref:`data_vector`, :ref:`data_raster`, and :ref:`data_database` section
    excel
    geosearch
    imagemap
+   inspire/index
+   monitoring/index
    ogr
    querylayer/index
    styler
    wps/index
-   monitoring/index
    xslt/index
 

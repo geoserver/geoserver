@@ -264,15 +264,6 @@ public abstract class GetFeatureRequest extends RequestObject {
         public BigInteger getResolveTimeOut() {
             return eGet(adaptee, "resolveTimeOut", BigInteger.class);
         }
-        
-        @Override
-		public ResolveValueType getResolve() {			
-			return eGet(adaptee, "resolve", ResolveValueType.class);
-		}
 
-		@Override
-		public BigInteger getResolveTimeOut() {
-			return eGet(adaptee, "resolveTimeOut", BigInteger.class);
-		}
     }
 }

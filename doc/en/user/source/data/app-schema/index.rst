@@ -35,6 +35,8 @@ The app-schema module looks to GeoServer just like any other data store and so c
    polymorphism
    data-access-integration
    wms-support
+   wfs-2.0-support
    joining
    tutorial
+   
 

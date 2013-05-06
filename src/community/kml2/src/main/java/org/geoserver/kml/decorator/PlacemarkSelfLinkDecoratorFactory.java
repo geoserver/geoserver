@@ -7,6 +7,7 @@ package org.geoserver.kml.decorator;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import org.geoserver.kml.KmlEncodingContext;
 import org.geotools.util.logging.Logging;
 
 import de.micromata.opengis.kml.v_2_2_0.Feature;

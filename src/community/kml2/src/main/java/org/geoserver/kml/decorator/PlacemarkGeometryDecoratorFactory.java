@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.kml.KmlCentroidBuilder;
+import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.featureinfo.FeatureTemplate;
 import org.geotools.util.logging.Logging;

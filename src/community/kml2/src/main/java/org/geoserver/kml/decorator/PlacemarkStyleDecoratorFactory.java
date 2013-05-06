@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.kml.KMLUtils;
+import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;

@@ -7,10 +7,12 @@ package org.geoserver.kml;
 import java.util.List;
 
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
-import org.geoserver.kml.decorator.KmlEncodingContext;
 import org.geoserver.kml.sequence.CompositeList;
+import org.geoserver.kml.sequence.NetworkLinkSequenceFactory;
 import org.geoserver.kml.sequence.PlainFolderSequenceFactory;
+import org.geoserver.kml.sequence.SequenceFactory;
 import org.geoserver.kml.sequence.SequenceList;
+import org.geoserver.kml.sequence.SuperOverlaySequenceFactory;
 import org.geoserver.platform.ServiceException;
 
 import de.micromata.opengis.kml.v_2_2_0.Document;
@@ -47,16 +49,25 @@ public class KMLBuilder {
             }
         }
 
-        // create a generator that will generate a folder and feature dumps/ground overlays for each layer
-        SequenceList<Feature> folders = new SequenceList<Feature>(
-                new PlainFolderSequenceFactory(context));
+        // create a generator that will generate a folder and feature dumps/ground overlays for each
+        // layer
+        SequenceFactory<Feature> generatorFactory;
+        if (context.isSuperOverlayEnabled()) {
+            generatorFactory = new SuperOverlaySequenceFactory(context);
+        } else if (context.isNetworkLinksFormat()) {
+            generatorFactory = new NetworkLinkSequenceFactory(context);
+        } else {
+            generatorFactory = new PlainFolderSequenceFactory(context);
+        }
+        SequenceList<Feature> folders = new SequenceList<Feature>(generatorFactory);
         addFeatures(document, folders);
 
         return kml;
     }
-    
+
     /**
      * Adds features to the document own list
+     * 
      * @param folder
      * @param features
      */

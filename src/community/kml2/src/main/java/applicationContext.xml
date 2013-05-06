@@ -20,10 +20,10 @@
   </bean>
 
   <!-- <bean id="KMZMapResponse" class="org.geoserver.kml.KMZMapResponse"> 
-    <constructor-arg ref="wms" /> </bean> -->
   <bean id="NetworkLinkMapProducer" class="org.geoserver.kml.NetworkLinkMapOutputFormat">
     <constructor-arg ref="wms" />
   </bean>
+  -->
 
   <bean id="KMLMapResponse" class="org.geoserver.kml.KMLMapResponse">
     <constructor-arg ref="wms" />
@@ -74,27 +74,27 @@
   <!-- Regionation support -->
   <bean id="nativeSortingRegionator" class="org.geoserver.kml.regionate.ReflectiveRegionatingStrategyFactory">
     <constructor-arg value="native-sorting" />
-    <constructor-arg value="org.geoserver.kml.NativeSortRegionatingStrategy" />
+    <constructor-arg value="org.geoserver.kml.regionate.NativeSortRegionatingStrategy" />
     <constructor-arg ref="geoServer" />
   </bean>
   <bean id="externalSortingRegionator" class="org.geoserver.kml.regionate.ReflectiveRegionatingStrategyFactory">
     <constructor-arg value="external-sorting" />
-    <constructor-arg value="org.geoserver.kml.ExternalSortRegionatingStrategy" />
+    <constructor-arg value="org.geoserver.kml.regionate.ExternalSortRegionatingStrategy" />
     <constructor-arg ref="geoServer" />
   </bean>
   <bean id="geometryRegionator" class="org.geoserver.kml.regionate.ReflectiveRegionatingStrategyFactory">
     <constructor-arg value="geometry" />
-    <constructor-arg value="org.geoserver.kml.GeometryRegionatingStrategy" />
+    <constructor-arg value="org.geoserver.kml.regionate.GeometryRegionatingStrategy" />
     <constructor-arg ref="geoServer" />
   </bean>
   <bean id="randomRegionator" class="org.geoserver.kml.regionate.ReflectiveRegionatingStrategyFactory">
     <constructor-arg value="random" />
-    <constructor-arg value="org.geoserver.kml.RandomRegionatingStrategy" />
+    <constructor-arg value="org.geoserver.kml.regionate.RandomRegionatingStrategy" />
     <constructor-arg ref="geoServer" />
   </bean>
   <bean id="bestGuessRegionator" class="org.geoserver.kml.regionate.ReflectiveRegionatingStrategyFactory">
     <constructor-arg value="best_guess" />
-    <constructor-arg value="org.geoserver.kml.BestGuessRegionatingStrategy" />
+    <constructor-arg value="org.geoserver.kml.regionate.BestGuessRegionatingStrategy" />
     <constructor-arg ref="geoServer" />
   </bean>
 

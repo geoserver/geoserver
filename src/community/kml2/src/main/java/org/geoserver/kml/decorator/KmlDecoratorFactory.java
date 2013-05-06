@@ -4,6 +4,8 @@
  */
 package org.geoserver.kml.decorator;
 
+import org.geoserver.kml.KmlEncodingContext;
+
 import de.micromata.opengis.kml.v_2_2_0.Feature;
 
 /**

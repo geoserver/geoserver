@@ -9,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.geoserver.kml.decorator.LookAtDecoratorFactory;
@@ -91,12 +92,54 @@ public class NetworkLinkMapOutputFormat extends AbstractMapOutputFormat {
         // prepare kml, document and folder
         Kml kml = new Kml();
         Document document = kml.createAndSetDocument();
-        String kmltitle = (String) request.getFormatOptions().get("kmltitle");
+        Map formatOptions = request.getFormatOptions();
+        String kmltitle = (String) formatOptions.get("kmltitle");
         Folder folder = document.createAndAddFolder();
         folder.setName(kmltitle);
         
+        // check the superoverlay modes
+        Boolean superoverlay = (Boolean) formatOptions.get("superoverlay");
+        if (superoverlay == null) {
+            superoverlay = Boolean.FALSE;
+        }
+
+        if(superoverlay) {
+            encodeAsSuperOverlay(folder, mapContent);
+        } else {
+            encodeAsOverlay(folder, mapContent);
+        }
+        
+        boolean kmz = request.getFormat().equals(KMZ_MIME_TYPE) || request.getFormat().equals(KMZMapOutputFormat.MIME_TYPE);
+        String mime = kmz ? KMZMapOutputFormat.MIME_TYPE : KMLMapOutputFormat.MIME_TYPE;
+        KMLMap map = new KMLMap(mapContent, null, kml, mime);
+        map.setContentDispositionHeader(mapContent, ".kml");
+        return map;
+    }
+    
+    private void encodeAsSuperOverlay(Folder folder, WMSMapContent mapContent) {
+//        GetMapRequest request = mapContent.getRequest();
+//        boolean cachedMode = "cached".equals(KMLUtils.getSuperoverlayMode(request, wms));
+//        
+//        List<MapLayerInfo> layers = request.getLayers();
+//        List<Style> styles = request.getStyles();
+//        for (int i = 0; i < layers.size(); i++) {
+//            MapLayerInfo layer = layers.get(i);
+//            if ("cached".equals(KMLUtils.getSuperoverlayMode(request, wms))
+//                    && KMLUtils.isRequestGWCCompatible(request, i, wms)) {
+//                encodeGWCLink(folder, request, layer);
+//            } else {
+//                String styleName = i < styles.size() ? styles.get(i).getName() : null;
+//                ReferencedEnvelope bounds = layerBounds.get(i);
+//                encodeLayerSuperOverlay(request, layer, styleName, i, bounds, lookAt);
+//            }
+//        }
+    }
+
+    private void encodeAsOverlay(Folder folder, WMSMapContent mapContent) {
+        GetMapRequest request = mapContent.getRequest();
+        Map formatOptions = request.getFormatOptions();
         LookAtDecoratorFactory lookAtFactory = new LookAtDecoratorFactory();
-        LookAtOptions lookAtOptions = new LookAtOptions(request.getFormatOptions());
+        LookAtOptions lookAtOptions = new LookAtOptions(formatOptions);
         
         // compute the layer bounds and the total bounds
         List<ReferencedEnvelope> layerBounds = new ArrayList<ReferencedEnvelope>(mapContent.layers().size());
@@ -142,14 +185,8 @@ public class NetworkLinkMapOutputFormat extends AbstractMapOutputFormat {
             url.setViewRefreshMode(ViewRefreshMode.ON_STOP);
             url.setViewRefreshTime(1);
         }
-        
-        boolean kmz = request.getFormat().equals(KMZ_MIME_TYPE) || request.getFormat().equals(KMZMapOutputFormat.MIME_TYPE);
-        String mime = kmz ? KMZMapOutputFormat.MIME_TYPE : KMLMapOutputFormat.MIME_TYPE;
-        KMLMap map = new KMLMap(mapContent, null, kml, mime);
-        map.setContentDispositionHeader(mapContent, ".kml");
-        return map;
     }
-    
+
     /**
      * @return the aggregated bounds for all the requested layers, taking into account whether
      *         the whole layer or filtered bounds is used for each layer

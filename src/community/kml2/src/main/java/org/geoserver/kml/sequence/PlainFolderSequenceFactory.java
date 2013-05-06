@@ -7,10 +7,7 @@ package org.geoserver.kml.sequence;
 import java.io.IOException;
 import java.util.List;
 
-import org.geoserver.kml.KMLUtils;
-import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
-import org.geoserver.kml.decorator.KmlEncodingContext;
-import org.geoserver.kml.sequence.AbstractFolderSequenceFactory.AbstractFolderGenerator;
+import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSRequests;

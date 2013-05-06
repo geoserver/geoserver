@@ -384,7 +384,7 @@ public class GetMap {
                     throw new ServiceException("Internal error", exp);
                 }
                 FeatureLayer featureLayer = new FeatureLayer(source, layerStyle);
-                featureLayer.setTitle(mapLayerInfo.getFeature().getPrefixedName());
+                featureLayer.setTitle(mapLayerInfo.getFeature().prefixedName());
                 featureLayer.getUserData().put("abstract", mapLayerInfo.getDescription());
                 
                 // mix the dimension related filter with the layer filter
@@ -444,7 +444,7 @@ public class GetMap {
                             throw new RuntimeException(e);
                         }
 
-                        layer.setTitle(mapLayerInfo.getCoverage().getPrefixedName());
+                        layer.setTitle(mapLayerInfo.getCoverage().prefixedName());
 
                         mapContent.addLayer(layer);
                     } catch (IllegalArgumentException e) {
@@ -484,7 +484,7 @@ public class GetMap {
                 }
                 if (!merged) {
                     WMSLayer Layer = new WMSLayer(wms, gt2Layer);
-                    Layer.setTitle(wmsLayer.getPrefixedName());
+                    Layer.setTitle(wmsLayer.prefixedName());
                     mapContent.addLayer(Layer);
                 }
             } else {

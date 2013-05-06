@@ -6,6 +6,7 @@ package org.geoserver.kml.decorator;
 
 import java.util.List;
 
+import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMSRequests;
 import org.geotools.map.Layer;

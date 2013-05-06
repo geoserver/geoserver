@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.kml.KmlEncodingContext;
 import org.geotools.styling.SLD;
 import org.geotools.styling.Symbolizer;
 import org.geotools.styling.TextSymbolizer;

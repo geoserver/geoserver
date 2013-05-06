@@ -4,7 +4,6 @@
  */
 package org.geoserver.kml;
 
-import org.geoserver.kml.decorator.KmlEncodingContext;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 

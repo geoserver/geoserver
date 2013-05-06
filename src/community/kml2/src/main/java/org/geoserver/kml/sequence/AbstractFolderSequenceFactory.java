@@ -7,8 +7,9 @@ package org.geoserver.kml.sequence;
 import java.util.List;
 
 import org.geoserver.kml.KMLUtils;
+import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
-import org.geoserver.kml.decorator.KmlEncodingContext;
+import org.geoserver.ows.HttpErrorCodeException;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -66,6 +67,8 @@ public abstract class AbstractFolderSequenceFactory implements SequenceFactory<F
                     } catch (Exception e) {
                         if (e instanceof ServiceException) {
                             throw (ServiceException) e;
+                        } else if(e instanceof HttpErrorCodeException) {
+                            throw (HttpErrorCodeException) e;
                         } else {
                             throw new ServiceException(
                                     "Failed to load vector data during KML generation", e);

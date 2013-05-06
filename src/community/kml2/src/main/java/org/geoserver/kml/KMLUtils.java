@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -51,6 +52,10 @@ import org.xml.sax.Attributes;
 import org.xml.sax.helpers.AttributesImpl;
 
 import com.vividsolutions.jts.geom.Envelope;
+
+import de.micromata.opengis.kml.v_2_2_0.Document;
+import de.micromata.opengis.kml.v_2_2_0.Folder;
+import de.micromata.opengis.kml.v_2_2_0.Kml;
 
 
 /**
@@ -648,6 +653,21 @@ public class KMLUtils {
     }
     
     /**
+     * Checks if the superoverlay is enabled or not
+     * @param request
+     * @return
+     */
+    public static boolean isSuperoverlayEnabled(GetMapRequest request) {
+        Map formatOptions = request.getFormatOptions();
+        Boolean superoverlay = (Boolean) formatOptions.get("superoverlay");
+        if (superoverlay == null) {
+            superoverlay = Boolean.FALSE;
+        }
+
+        return superoverlay;
+    }
+    
+    /**
      * Returns the the kmattr value (either specified in the request, or the default one) 
      * @param mapContent
      * @return
@@ -769,15 +789,19 @@ public class KMLUtils {
      * @return
      */
     public static boolean isRequestGWCCompatible(WMSMapContent mapContent, Layer layer, WMS wms) {
+        int index = getLayerIndex(mapContent, layer);
+        return isRequestGWCCompatible(mapContent.getRequest(), index, wms);
+    }
+    
+    public static int getLayerIndex(WMSMapContent mapContent, Layer layer) {
         List<Layer> layers = mapContent.layers();
         for(int i = 0; i < layers.size(); i++) {
             if(layers.get(i) == layer) {
-                return isRequestGWCCompatible(mapContent.getRequest(), i, wms);
+                return i;
             }
         }
-        LOGGER.warning("Could not find map layer " + layer.getTitle() + " in the map context");
         
-        return false;
+        throw new ServiceException("Unexpected, could not find layer " + layer +  " in the map context");
     }
 
     

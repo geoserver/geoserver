@@ -7,10 +7,10 @@ package org.geoserver.kml.sequence;
 import java.util.EmptyStackException;
 import java.util.List;
 
+import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.ScaleStyleVisitor;
 import org.geoserver.kml.SymbolizerCollector;
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
-import org.geoserver.kml.decorator.KmlEncodingContext;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;

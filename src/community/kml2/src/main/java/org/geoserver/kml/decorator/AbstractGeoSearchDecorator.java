@@ -11,6 +11,7 @@ import java.io.IOException;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.wms.GetMapRequest;

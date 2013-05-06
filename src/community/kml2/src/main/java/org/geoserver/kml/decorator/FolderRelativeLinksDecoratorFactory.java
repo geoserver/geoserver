@@ -6,6 +6,7 @@ package org.geoserver.kml.decorator;
 
 import java.io.IOException;
 
+import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.wms.GetMapRequest;
 
 import de.micromata.opengis.kml.v_2_2_0.Feature;

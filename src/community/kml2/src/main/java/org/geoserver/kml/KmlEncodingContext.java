@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.kml.decorator;
+package org.geoserver.kml;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,8 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.geoserver.kml.KMLUtils;
-import org.geoserver.kml.LookAtOptions;
+import org.geoserver.kml.decorator.KmlDecoratorFactory;
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wms.GetMapRequest;
@@ -59,16 +58,24 @@ public class KmlEncodingContext {
     
     Map<String, Layer> kmzGroundOverlays = new LinkedHashMap<String, Layer>();
 
-    private boolean placemarkForced;
+    boolean placemarkForced;
+
+    String superOverlayMode;
+
+    boolean superOverlayEnabled;
+
+    boolean networkLinksFormat;
 
     public KmlEncodingContext(WMSMapContent mapContent, WMS wms, boolean kmz) {
-        super();
         this.mapContent = mapContent;
         this.request = mapContent.getRequest();
         this.wms = wms;
         this.descriptionEnabled = KMLUtils.getKMAttr(request, wms);
         this.lookAtOptions = new LookAtOptions(request.getFormatOptions());
-        this.setPlacemarkForced(KMLUtils.getKmplacemark(mapContent.getRequest(), wms));
+        this.placemarkForced = KMLUtils.getKmplacemark(mapContent.getRequest(), wms);
+        this.superOverlayMode = KMLUtils.getSuperoverlayMode(request, wms);
+        this.superOverlayEnabled = KMLUtils.isSuperoverlayEnabled(request);
+        this.networkLinksFormat = KMLMapOutputFormat.NL_KML_MIME_TYPE.equals(request.getFormat()) || KMZMapOutputFormat.NL_KMZ_MIME_TYPE.equals(request.getFormat());
         this.kmz = kmz;
     }
 
@@ -194,6 +201,18 @@ public class KmlEncodingContext {
 
     public void setPlacemarkForced(boolean placemarkForced) {
         this.placemarkForced = placemarkForced;
+    }
+
+    public boolean isSuperOverlayEnabled() {
+        return superOverlayEnabled;
+    }
+
+    public String getSuperOverlayMode() {
+        return superOverlayMode;
+    }
+
+    public boolean isNetworkLinksFormat() {
+        return networkLinksFormat;
     }
     
     

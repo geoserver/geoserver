@@ -11,7 +11,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import org.geoserver.kml.decorator.KmlEncodingContext;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.MapProducerCapabilities;
@@ -37,9 +36,14 @@ public class KMLMapOutputFormat implements GetMapOutputFormat {
      * Official KML mime type
      */
     public static final String MIME_TYPE = "application/vnd.google-earth.kml+xml";
+    
+    /**
+     * Format tweaked to force the generation of per layer network links
+     */
+    public static final String NL_KML_MIME_TYPE = KMLMapOutputFormat.MIME_TYPE + ";mode=networklink";
 
     private Set<String> OUTPUT_FORMATS = Collections.unmodifiableSet(new HashSet<String>(Arrays
-            .asList(MIME_TYPE, "application/vnd.google-earth.kml", "kml",
+            .asList(MIME_TYPE, NL_KML_MIME_TYPE, "application/vnd.google-earth.kml", "kml",
                     "application/vnd.google-earth.kml xml")));
 
     private WMS wms;

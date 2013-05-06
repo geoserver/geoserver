@@ -88,33 +88,33 @@ public class KMLReflectorTest extends WMSTestSupport {
         final XpathEngine xpath = XMLUnit.newXpathEngine();
         String requestURL = "wms/kml?mode=refresh&layers=" + layerName;
         Document dom = getAsDOM(requestURL);
-        // print(dom);
-        assertXpathEvaluatesTo("1", "count(kml:kml/kml:Document/kml:Folder)", dom);
-        assertXpathEvaluatesTo("1", "count(kml:kml/kml:Document/kml:Folder/kml:NetworkLink)", dom);
-        assertXpathEvaluatesTo("1", "count(kml:kml/kml:Document/kml:Folder/kml:LookAt)", dom);
+        print(dom);
+        assertXpathEvaluatesTo("1", "count(kml:kml/kml:Document)", dom);
+        assertXpathEvaluatesTo("1", "count(kml:kml/kml:Document/kml:NetworkLink)", dom);
+        assertXpathEvaluatesTo("1", "count(kml:kml/kml:Document/kml:LookAt)", dom);
 
         assertXpathEvaluatesTo(layerName,
-                "kml:kml/kml:Document/kml:Folder/kml:NetworkLink[1]/kml:name", dom);
-        assertXpathEvaluatesTo("1", "kml:kml/kml:Document/kml:Folder/kml:NetworkLink[1]/kml:open",
+                "kml:kml/kml:Document/kml:NetworkLink[1]/kml:name", dom);
+        assertXpathEvaluatesTo("1", "kml:kml/kml:Document/kml:NetworkLink[1]/kml:open",
                 dom);
         assertXpathEvaluatesTo("1",
-                "kml:kml/kml:Document/kml:Folder/kml:NetworkLink[1]/kml:visibility", dom);
+                "kml:kml/kml:Document/kml:NetworkLink[1]/kml:visibility", dom);
 
         assertXpathEvaluatesTo("onStop",
-                "kml:kml/kml:Document/kml:Folder/kml:NetworkLink[1]/kml:Url/kml:viewRefreshMode",
+                "kml:kml/kml:Document/kml:NetworkLink[1]/kml:Url/kml:viewRefreshMode",
                 dom);
         assertXpathEvaluatesTo("1.0",
-                "kml:kml/kml:Document/kml:Folder/kml:NetworkLink[1]/kml:Url/kml:viewRefreshTime",
+                "kml:kml/kml:Document/kml:NetworkLink[1]/kml:Url/kml:viewRefreshTime",
                 dom);
         Map<String, Object> expectedKVP = KvpUtils
-                .parseQueryString("http://localhost:80/geoserver/wms?format_options=KMPLACEMARK%3Afalse%3BKMATTR%3Atrue%3BKMSCORE%3A40%3BSUPEROVERLAY%3Afalse%3B&service=wms&srs=EPSG%3A4326&width=1024&styles=BasicPolygons&height=1024&transparent=false&request=GetMap&layers=cite%3ABasicPolygons&format=application%2Fvnd.google-earth.kmz&version=1.1.1");
+                .parseQueryString("http://localhost:80/geoserver/wms?format_options=KMPLACEMARK%3Afalse%3BKMATTR%3Atrue%3BKMSCORE%3A40%3BSUPEROVERLAY%3Afalse%3B&service=wms&srs=EPSG%3A4326&width=1024&styles=BasicPolygons&height=1024&transparent=false&request=GetMap&layers=cite%3ABasicPolygons&format=application%2Fvnd.google-earth.kml+xml&version=1.1.1");
         Map<String, Object> resultedKVP = KvpUtils.parseQueryString(xpath.evaluate(
-                "kml:kml/kml:Document/kml:Folder/kml:NetworkLink[1]/kml:Url/kml:href", dom));
+                "kml:kml/kml:Document/kml:NetworkLink[1]/kml:Url/kml:href", dom));
 
         assertMapsEqual(expectedKVP, resultedKVP);
 
         String href = xpath.evaluate(
-                "kml:kml/kml:Document/kml:Folder/kml:NetworkLink/kml:Link/kml:href", dom);
+                "kml:kml/kml:Document/kml:NetworkLink/kml:Link/kml:href", dom);
         Pattern badPattern = Pattern.compile("&bbox=", Pattern.CASE_INSENSITIVE);
         assertFalse(badPattern.matcher(href).matches());
     }
@@ -124,15 +124,14 @@ public class KMLReflectorTest extends WMSTestSupport {
         String requestURL = "wms/kml?&layers=" + getLayerId(MockData.LAKES) + ","
                 + getLayerId(MockData.FORESTS);
         MockHttpServletResponse response = getAsServletResponse(requestURL);
-        assertEquals(KMZMapOutputFormat.MIME_TYPE, response.getContentType());
+        assertEquals(KMLMapOutputFormat.MIME_TYPE, response.getContentType());
         assertEquals("attachment; filename=cite-Lakes_cite-Forests.kml",
                 response.getHeader("Content-Disposition"));
         Document dom = dom(getBinaryInputStream(response));
         // print(dom);
-        assertXpathEvaluatesTo("1", "count(kml:kml/kml:Document/kml:Folder)", dom);
-        assertXpathEvaluatesTo("2", "count(kml:kml/kml:Document/kml:Folder/kml:NetworkLink)", dom);
-        assertXpathEvaluatesTo("2",
-                "count(kml:kml/kml:Document/kml:Folder/kml:NetworkLink/kml:LookAt)", dom);
+        assertXpathEvaluatesTo("1", "count(kml:kml/kml:Document)", dom);
+        assertXpathEvaluatesTo("2", "count(kml:kml/kml:Document/kml:NetworkLink)", dom);
+        assertXpathEvaluatesTo("2", "count(kml:kml/kml:Document/kml:NetworkLink/kml:LookAt)", dom);
     }
 
     /**
@@ -145,10 +144,10 @@ public class KMLReflectorTest extends WMSTestSupport {
 
         final String requestUrl = "wms/kml?layers=" + layerName + "&styles=&mode=superoverlay";
         Document dom = getAsDOM(requestUrl);
-        // print(dom);
+        print(dom);
         assertEquals("kml", dom.getDocumentElement().getLocalName());
-        assertXpathExists("kml:kml/kml:Document/kml:Folder/kml:NetworkLink/kml:Url/kml:href", dom);
-        assertXpathExists("kml:kml/kml:Document/kml:Folder/kml:LookAt/kml:longitude", dom);
+        assertXpathExists("kml:kml/kml:Document/kml:NetworkLink/kml:Url/kml:href", dom);
+        assertXpathExists("kml:kml/kml:Document/kml:LookAt/kml:longitude", dom);
     }
 
     @Test
@@ -162,24 +161,19 @@ public class KMLReflectorTest extends WMSTestSupport {
 
         assertEquals("kml", dom.getDocumentElement().getLocalName());
 
-        NodeList folders = dom.getDocumentElement().getElementsByTagName("Folder");
-        assertEquals(1, folders.getLength());
-        Element folder = (Element) folders.item(0);
-
-        NodeList netLinks = folder.getElementsByTagName("NetworkLink");
-        assertEquals(2, netLinks.getLength());
-
+        assertXpathEvaluatesTo("2",
+                "count(kml:kml/kml:Document/kml:NetworkLink)", dom);
         assertXpathEvaluatesTo(layerName,
-                "kml:kml/kml:Document/kml:Folder/kml:NetworkLink[1]/kml:name", dom);
+                "kml:kml/kml:Document/kml:NetworkLink[1]/kml:name", dom);
         assertXpathEvaluatesTo(layerName,
-                "kml:kml/kml:Document/kml:Folder/kml:NetworkLink[2]/kml:name", dom);
+                "kml:kml/kml:Document/kml:NetworkLink[2]/kml:name", dom);
 
         XpathEngine xpath = XMLUnit.newXpathEngine();
 
         String url1 = xpath.evaluate(
-                "/kml:kml/kml:Document/kml:Folder/kml:NetworkLink[1]/kml:Url/kml:href", dom);
+                "/kml:kml/kml:Document/kml:NetworkLink[1]/kml:Url/kml:href", dom);
         String url2 = xpath.evaluate(
-                "/kml:kml/kml:Document/kml:Folder/kml:NetworkLink[2]/kml:Url/kml:href", dom);
+                "/kml:kml/kml:Document/kml:NetworkLink[2]/kml:Url/kml:href", dom);
 
         assertNotNull(url1);
         assertNotNull(url2);
@@ -212,7 +206,7 @@ public class KMLReflectorTest extends WMSTestSupport {
         Document dom = getAsDOM(requestUrl);
         XpathEngine xpath = XMLUnit.newXpathEngine();
 
-        // print(dom);
+        print(dom);
         // all the kvp parameters (which should be set as format_options now are correctly parsed)
         String result = xpath.evaluate("//kml:NetworkLink/kml:Url/kml:href", dom);
         Map<String, Object> kvp = KvpUtils.parseQueryString(result);
@@ -223,16 +217,17 @@ public class KMLReflectorTest extends WMSTestSupport {
     }
 
     @Test
-    public void testKmltitleFormatOption() throws Exception {
+    public void testKmlTitleFormatOption() throws Exception {
         final String layerName = MockData.BASIC_POLYGONS.getPrefix() + ":"
                 + MockData.BASIC_POLYGONS.getLocalPart();
 
         final String requestUrl = "wms/kml?layers=" + layerName
                 + "&styles=&mode=superoverlay&format_options=kmltitle:myCustomLayerTitle";
+        System.out.println(getAsServletResponse(requestUrl).getContentType());
         Document dom = getAsDOM(requestUrl);
         // print(dom);
         assertEquals("kml", dom.getDocumentElement().getLocalName());
-        assertXpathEvaluatesTo("myCustomLayerTitle", "/kml:kml/kml:Document/kml:Folder/kml:name",
+        assertXpathEvaluatesTo("myCustomLayerTitle", "/kml:kml/kml:Document/kml:name",
                 dom);
     }
 

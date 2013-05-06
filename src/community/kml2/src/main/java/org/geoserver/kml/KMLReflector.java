@@ -33,6 +33,7 @@ public class KMLReflector {
 
     /** default 'format' value */
     public static final String FORMAT = KMLMapOutputFormat.MIME_TYPE;
+    
 
     private static Map<String, Map<String, String>> MODES;
 
@@ -180,7 +181,7 @@ public class KMLReflector {
             request.setFormat(KMZMapOutputFormat.MIME_TYPE);
             request.setBbox(KMLUtils.expandToTile(request.getBbox()));
         } else if (mode.equals("refresh") || containsRasterData) {
-            request.setFormat(KMZMapOutputFormat.MIME_TYPE);
+            request.setFormat(KMLMapOutputFormat.MIME_TYPE);
         } else if (!Arrays.asList(KMZMapOutputFormat.OUTPUT_FORMATS).contains(request.getFormat())) {
             // if the user did not explicitly request kml give them back KMZ
             request.setFormat(KMLMapOutputFormat.MIME_TYPE);
@@ -191,11 +192,8 @@ public class KMLReflector {
 
         org.geoserver.wms.WebMap wmsResponse;
         if (!"download".equals(mode)) {
-            if (KMLMapOutputFormat.MIME_TYPE.equals(request.getFormat())) {
-                request.setFormat(NetworkLinkMapOutputFormat.KML_MIME_TYPE);
-            } else {
-                request.setFormat(NetworkLinkMapOutputFormat.KMZ_MIME_TYPE);
-            }
+            // the old code used to setup kmz nl, but in fact it ended up generating non compressed ones
+            request.setFormat(KMLMapOutputFormat.NL_KML_MIME_TYPE);
         }
 
         wmsResponse = wms.getMap(request);

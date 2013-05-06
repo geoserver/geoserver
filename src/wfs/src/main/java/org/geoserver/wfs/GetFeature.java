@@ -964,6 +964,13 @@ public class GetFeature {
             hints.put(Hints.ASSOCIATION_TRAVERSAL_DEPTH, depth);
         }
         
+        //handle resolve parameters
+        hints.put(Hints.RESOLVE, request.getResolve());
+        BigInteger resolveTimeOut = request.getResolveTimeOut();
+        if (resolveTimeOut != null) {
+        	hints.put(Hints.RESOLVE_TIMEOUT, resolveTimeOut.intValue());
+        }
+                
         //handle xlink properties
         List<XlinkPropertyNameType> xlinkProperties = query.getXlinkPropertyNames();
         if (!xlinkProperties.isEmpty() ) {

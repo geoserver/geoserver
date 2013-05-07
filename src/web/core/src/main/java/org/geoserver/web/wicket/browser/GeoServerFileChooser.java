@@ -19,14 +19,19 @@ import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.util.SetModel;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 @SuppressWarnings("serial")
 public class GeoServerFileChooser extends Panel {
+
+    static Boolean HIDE_FS = null;
+    static {
+        HIDE_FS = Boolean.valueOf(GeoServerExtensions.getProperty("GEOSERVER_FILEBROWSER_HIDEFS"));
+    }
+
     static File USER_HOME = null;
-    
     static {
         // try to safely determine the user home location
         try {
@@ -45,15 +50,31 @@ public class GeoServerFileChooser extends Panel {
     
     FileBreadcrumbs breadcrumbs;
     FileDataView fileTable;
+    boolean hideFileSystem = false;
     IModel file;
     
     public GeoServerFileChooser(String id, IModel file) {
+       this(id, file, HIDE_FS);
+    }
+
+    /**
+     * Constructor with optional flag to control how file system resources are exposed.
+     * <p>
+     * When <tt>hideFileSyste</tt> is set to <tt>true</tt> only the data directory is exposed 
+     * in the file browser. 
+     * </p>
+     */
+    public GeoServerFileChooser(String id, IModel file, boolean hideFileSystem) {
         super(id, file);
 
         this.file = file;
+        this.hideFileSystem = hideFileSystem;
         
         // build the roots
-        ArrayList<File> roots = new ArrayList<File>(Arrays.asList(File.listRoots()));
+        ArrayList<File> roots = new ArrayList<File>();
+        if (!hideFileSystem) {
+            roots.addAll(Arrays.asList(File.listRoots()));
+        }
         Collections.sort(roots);
         
         // TODO: find a better way to deal with the data dir
@@ -61,7 +82,7 @@ public class GeoServerFileChooser extends Panel {
         roots.add(0, dataDirectory);
         
         // add the home directory as well if it was possible to determine it at all
-        if(USER_HOME != null) {
+        if(!hideFileSystem && USER_HOME != null) {
             roots.add(1, USER_HOME);
         }
         

@@ -9,6 +9,8 @@ import org.geotools.util.Converters;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 
+import com.google.common.base.Optional;
+
 public class DataSourceFactoryBean implements FactoryBean<DataSource>, DisposableBean {
 
     JDBCConfigProperties config;
@@ -31,32 +33,43 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Disposabl
 
         dataSource.setUrl(config.getJdbcUrl());
 
-        String driverClassName = get(config, "driverClassName", String.class, true, null);
+        Optional<String> driverClassName = get(config, "driverClassName", String.class, true);
         try {
-            Class.forName(driverClassName);
+            Class.forName(driverClassName.get());
         }
         catch(Exception e) {
             throw new RuntimeException("Error loading jdbc driver class: " + driverClassName, e);
         }
         
-        dataSource.setDriverClassName(driverClassName);
-        dataSource.setUsername(get(config, "username", String.class, false, null));
-        dataSource.setPassword(get(config, "password", String.class, false, null));
+        dataSource.setDriverClassName(driverClassName.get());
+        dataSource.setUsername(get(config, "username", String.class, false).orNull());
+        dataSource.setPassword(get(config, "password", String.class, false).orNull());
 
-        //TODO: rest of connection parameters
+        dataSource.setMinIdle(get(config, "pool.minIdle", Integer.class, false).or(1));
+        dataSource.setMaxActive(get(config, "pool.maxActive", Integer.class, false).or(10));
+        dataSource.setPoolPreparedStatements(
+            get(config, "pool.poolPreparedStatements", Boolean.class, false).or(true));
+        dataSource.setMaxOpenPreparedStatements(
+            get(config, "pool.maxOpenPreparedStatements", Integer.class, false).or(50));
+        
+        boolean testOnBorrow = get(config, "pool.testOnBorrow", Boolean.class, false).or(false);
+        if (testOnBorrow) {
+            String validateQuery = get(config, "pool.validationQuery", String.class, true).get();
+            dataSource.setTestOnBorrow(true);
+            dataSource.setValidationQuery(validateQuery);
+        }
+
+        //TODO: more connection parameters
         return dataSource;
     }
 
-    <T> T get(Properties props, String key, Class<T> clazz, boolean mandatory, T def) {
+    <T> Optional<T> get(Properties props, String key, Class<T> clazz, boolean mandatory) {
         String raw = props.getProperty(key);
         if (raw == null && mandatory) {
             throw new IllegalStateException(key + " property is mandatory but not found");
         }
-        if (raw == null) {
-            return def;
-        }
 
-        return Converters.convert(raw, clazz);
+        return Optional.fromNullable(Converters.convert(raw, clazz));
     }
 
     @Override
@@ -76,5 +89,4 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Disposabl
         }
         dataSource = null;
     } 
-
 }

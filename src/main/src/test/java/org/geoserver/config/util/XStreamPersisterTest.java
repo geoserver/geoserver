@@ -109,7 +109,6 @@ public class XStreamPersisterTest {
         g1.setUpdateSequence( 123 );
         g1.setVerbose( true );
         g1.setVerboseExceptions( true );
-        
         g1.getMetadata().put( "one", new Integer(1) );
         g1.getMetadata().put( "two", new Double(2.2) );
         

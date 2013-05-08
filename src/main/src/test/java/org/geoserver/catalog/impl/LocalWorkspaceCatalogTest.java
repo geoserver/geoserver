@@ -9,9 +9,10 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-
-import junit.framework.TestCase;
+import java.util.Iterator;
+import java.util.List;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -21,10 +22,16 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.util.CloseableIteratorAdapter;
+import org.geoserver.config.GeoServer;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.ows.LocalWorkspace;
 import org.geotools.feature.NameImpl;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengis.filter.Filter;
+import org.opengis.filter.sort.SortBy;
 
 public class LocalWorkspaceCatalogTest {
 
@@ -76,7 +83,7 @@ public class LocalWorkspaceCatalogTest {
         replay(ft1);
         
         LayerInfo l1 = createNiceMock(LayerInfo.class);
-        expect(l1.getName()).andReturn("l1").anyTimes();
+        expect(l1.getName()).andReturn("ws1:l1").anyTimes();
         expect(l1.getResource()).andReturn(ft1).anyTimes();
         replay(l1);
 
@@ -86,7 +93,7 @@ public class LocalWorkspaceCatalogTest {
         replay(ft2);
         
         LayerInfo l2 = createNiceMock(LayerInfo.class);
-        expect(l2.getName()).andReturn("l2").anyTimes();
+        expect(l2.getName()).andReturn("ws2:l2").anyTimes();
         expect(l2.getResource()).andReturn(ft2).anyTimes();
         replay(l2);
 
@@ -94,12 +101,12 @@ public class LocalWorkspaceCatalogTest {
         // use same name, but different featuretypeinfo objects
         // pointing to different workspaces
         LayerInfo lc1 = createNiceMock(LayerInfo.class);
-        expect(lc1.getName()).andReturn("lc").anyTimes();
+        expect(lc1.getName()).andReturn("ws1:lc").anyTimes();
         expect(lc1.getResource()).andReturn(ft1).anyTimes();
         replay(lc1);
 
         LayerInfo lc2 = createNiceMock(LayerInfo.class);
-        expect(lc2.getName()).andReturn("lc").anyTimes();
+        expect(lc2.getName()).andReturn("ws2:lc").anyTimes();
         expect(lc2.getResource()).andReturn(ft2).anyTimes();
         replay(lc2);
 
@@ -143,11 +150,24 @@ public class LocalWorkspaceCatalogTest {
         // return back the first one without a namespace prefix
         expect(cat.getLayerByName("lc")).andReturn(lc1).anyTimes();
 
+        List<LayerInfo> layers = new ArrayList<LayerInfo>(2);
+        layers.add(l1);
+        layers.add(l2);
+        layers.add(lc1);
+        layers.add(lc2);
+        expect(cat.getLayers()).andReturn(layers).anyTimes();
+        expect(cat.list(LayerInfo.class, Filter.INCLUDE, 
+                (Integer) null, (Integer) null, (SortBy) null))
+            .andReturn(new CloseableIteratorAdapter<LayerInfo>(layers.iterator())).anyTimes();
         replay(cat);
-
+        
         catalog = new LocalWorkspaceCatalog(cat);
     }
 
+    @After
+    public void tearDown() {
+        LocalWorkspace.remove();
+    }
     @Test 
     public void testGetStyleByName() throws Exception {
         assertNull(catalog.getStyleByName("s1"));
@@ -235,4 +255,105 @@ public class LocalWorkspaceCatalogTest {
         assertEquals("Invalid namespace prefix", "ws1", nsPrefix1);
         assertEquals("Invalid namespace prefix", "ws2", nsPrefix2);
     }
+
+    /**
+     * The setting says to not include the prefix.  This is default behaviour
+     */
+    @Test
+    public void testGetNonPrefixedLayerNames() {
+        boolean includePrefix = false;
+        boolean setLocalWorkspace = true;
+        boolean createGeoServer = true;
+        assertPrefixInclusion(includePrefix, setLocalWorkspace, createGeoServer);
+    }
+
+    /**
+     * No geoserver instance has been set.  This means there is no access to geoserver.
+     * this should not happen but we want to protect against this consideration.  In this case
+     * we have a local workspace set and we will use the default behaviour (no prefix)
+     */
+    @Test
+    public void testGetNoGeoserverPrefixedLayerNameBehaviour() {
+        boolean includePrefix = false;
+        boolean setLocalWorkspace = true;
+        boolean createGeoServer = false;
+        assertPrefixInclusion(includePrefix, setLocalWorkspace, createGeoServer);
+    }
+
+    /**
+     * No local workspace is set this means the prefix should be included since the global capabilities
+     * is probably being created.
+     * 
+     * The No Geoserver part is just to verify there are no nullpointer exceptions because of a coding error
+     */
+    @Test
+    public void testGetNoGeoserverLocalWorkspacePrefixedLayerNameBehaviour() {
+        boolean includePrefix = true;
+        boolean setLocalWorkspace = false;
+        boolean createGeoServer = false;
+        assertPrefixInclusion(includePrefix, setLocalWorkspace, createGeoServer);
+    }
+    
+    /**
+     * No localworkspace so prefix should be included since the global capabilities
+     * is probably being created.
+     */
+    @Test
+    public void testGetNoLocalWorkspacePrefixedLayerNameBehaviour() {
+        boolean includePrefix = true;
+        boolean setLocalWorkspace = false;
+        boolean createGeoServer = true;
+        assertPrefixInclusion(includePrefix, setLocalWorkspace, createGeoServer);
+    }
+
+    /**
+     * The setting is set to include the prefixes.
+     */
+    @Test
+    public void testGetPrefixedLayerNames() {
+        boolean includePrefix = true;
+        boolean setLocalWorkspace = true;
+        boolean createGeoServer = true;
+        assertPrefixInclusion(includePrefix, setLocalWorkspace, createGeoServer);
+    }
+
+    private void assertPrefixInclusion(boolean includePrefix,
+            boolean setLocalWorkspace, boolean createGeoServer) {
+        if (createGeoServer ) {
+            SettingsInfo settings = createNiceMock(SettingsInfo.class);
+            expect(settings.isLocalWorkspaceIncludesPrefix()).andReturn(includePrefix)
+                    .anyTimes();
+            replay(settings);
+    
+            GeoServer geoServer = createNiceMock(GeoServer.class);
+            expect(geoServer.getSettings()).andReturn(settings).anyTimes();
+            replay(geoServer);
+    
+            catalog.setGeoServer(geoServer);
+        }
+
+        if (setLocalWorkspace) {
+            WorkspaceInfo workspaceByName = catalog.getWorkspaceByName("ws1");
+            LocalWorkspace.set(workspaceByName);
+        }
+
+        checkLayerNamePrefixInclusion(includePrefix, catalog.getLayers().iterator());
+        
+        checkLayerNamePrefixInclusion(includePrefix, catalog.list(LayerInfo.class, Filter.INCLUDE));
+    }
+
+    private void checkLayerNamePrefixInclusion(boolean includePrefix,
+            Iterator<LayerInfo> layers) {
+        while(layers.hasNext()) {
+            LayerInfo layerInfo = layers.next();
+            String message;
+            if(includePrefix) {
+                message = layerInfo.getName() + " should contain a : because the prefix should have been kept";
+            } else {
+                message = layerInfo.getName() + " should contain not a : because the prefix should have been removed";
+            }
+            assertEquals(message, includePrefix, layerInfo.getName().contains(":"));
+        }
+    }
+
 }

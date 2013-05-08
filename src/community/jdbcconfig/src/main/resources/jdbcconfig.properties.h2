@@ -19,11 +19,24 @@ driverClassName=org.h2.Driver
 username=sa
 password=
 
-idleConnectionTestPeriodInMinutes=1
-idleMaxAgeInMinutes=4
-maxConnectionsPerPartition=18
-minConnectionsPerPartition=6
-partitionCount=3
-acquireIncrement=3
-statementsCacheSize=50
-releaseHelperThreads=1
+#
+# connection pooling/management parameters
+#
+
+# minimum connections in pool  
+pool.minIdle=4
+
+# maximum connections in pool
+pool.maxActive=10
+
+# whether to pool prepared statements
+pool.poolPreparedStatements=true
+
+# size of prepared statement cache, only used if pool.poolPreparedStatements = true 
+pool.maxOpenPreparedStatements=50
+
+# whether to validate connections when obtaining from the pool
+pool.testOnBorrow=true
+
+# validation query for connections from pool, must be set when pool.testOnBorrow = true
+pool.validationQuery=SELECT now()

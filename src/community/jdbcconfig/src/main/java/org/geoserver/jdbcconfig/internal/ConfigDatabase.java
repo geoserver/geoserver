@@ -153,32 +153,8 @@ public class ConfigDatabase {
         LOGGER.info("------------- Running catalog database init script " + initScript
                 + " ------------");
 
-        InputStream stream = initScript.openStream();
-        List<String> lines;
-        try {
-            lines = org.apache.commons.io.IOUtils.readLines(stream);
-        } finally {
-            stream.close();
-        }
-
-        StringBuilder buf = new StringBuilder();
-        for (String sql : lines) {
-            sql = sql.trim();
-            if (sql.isEmpty()) {
-                continue;
-            }
-            if (sql.startsWith("--")) {
-                continue;
-            }
-            buf.append(sql).append(" ");
-            if (sql.endsWith(";")) {
-                String stmt = buf.toString();
-                LOGGER.info("Running: " + stmt);
-                template.getJdbcOperations().update(stmt);
-
-                buf.setLength(0);
-            }
-        }
+        Util.runScript(initScript, template.getJdbcOperations(), LOGGER);
+        
         LOGGER.info("Initialization SQL script run sucessfully");
     }
 

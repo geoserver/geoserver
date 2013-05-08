@@ -26,6 +26,7 @@ import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.jdbcconfig.JDBCGeoServerLoader;
 import org.geoserver.jdbcconfig.internal.ConfigDatabase;
 import org.geoserver.jdbcconfig.internal.DbMappings;
+import org.geoserver.jdbcconfig.internal.Util;
 import org.geoserver.jdbcconfig.internal.XStreamInfoSerialBinding;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -176,32 +177,13 @@ public class JDBCConfigTestSupport {
     private void runScript(String dbScriptName) throws IOException {
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(dataSource);
 
-        String[] initScript = readDbScript(dbScriptName);
-        JdbcOperations jdbcOperations = template.getJdbcOperations();
-        for (String sentence : initScript) {
-            try {
-                jdbcOperations.update(sentence);
-            } catch (DataAccessException e) {
-                // e.printStackTrace();
-                throw e;
-            }
-        }
-    }
-
-    private String[] readDbScript(final String scriptName) throws IOException {
-
-        URL url = JDBCGeoServerLoader.class.getResource(scriptName);
+        URL url = JDBCGeoServerLoader.class.getResource(dbScriptName);
         if (url == null) {
             throw new IllegalArgumentException("Script not found: " + getClass().getName() + "/"
-                    + scriptName);
+                    + dbScriptName);
         }
-        List<String> lines = Lists.newArrayList(Resources.readLines(url, Charset.forName("UTF-8")));
-        for (Iterator<String> it = lines.iterator(); it.hasNext();) {
-            if (it.next().trim().length() == 0) {
-                it.remove();
-            }
-        }
-        return lines.toArray(new String[lines.size()]);
+
+        Util.runScript(url, template.getJdbcOperations(), null);
     }
 
     public DataSource getDataSource() {

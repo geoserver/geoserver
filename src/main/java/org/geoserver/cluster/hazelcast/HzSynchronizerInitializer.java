@@ -32,13 +32,23 @@ public class HzSynchronizerInitializer implements GeoServerInitializer {
         ClusterConfig config = configWatcher.get();
 
         if (!config.isEnabled()) {
-            LOGGER.info("Hazelcast sychronizer disabled");
+            LOGGER.info("Hazelcast synchronization disabled");
             return;
         }
 
-        LOGGER.info("Simple Hazelcast sychronizer active");
-        SimpleHzSynchronizer syncher = new SimpleHzSynchronizer(hz, geoServer);
+        HzSynchronizer syncher = null;
+
+        String method = config.getSyncMethod();
+        if ("event".equalsIgnoreCase(method)) {
+            syncher = new EventHzSynchronizer(hz, geoServer);
+        }
+        else {
+            method = "reload"; 
+            syncher = new ReloadHzSynchronizer(hz, geoServer);
+        }
+
         syncher.initialize(configWatcher);
+        LOGGER.info("Hazelcast synchronizer method is " + method);
     }
 
     ClusterConfigWatcher loadConfig(GeoServer geoServer) throws IOException {

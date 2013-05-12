@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.kml.KmlCentroidBuilder;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.featureinfo.FeatureTemplate;
 import org.geotools.util.logging.Logging;
@@ -39,6 +40,8 @@ import de.micromata.opengis.kml.v_2_2_0.Placemark;
  * 
  */
 public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
+    
+    static final KmlCentroidBuilder CENTROIDS = new KmlCentroidBuilder();
 
     @Override
     public KmlDecorator getDecorator(Class<? extends Feature> featureClass,
@@ -120,7 +123,7 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
                 MultiGeometry mg = new MultiGeometry();
 
                 // centroid + full geometry
-                Coordinate c = geometryCentroid(geometry);
+                Coordinate c = CENTROIDS.geometryCentroid(geometry);
                 if (!Double.isNaN(c.z)) {
                     c.setOrdinate(2, c.z);
                 }
@@ -219,69 +222,6 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
             }
 
             return result;
-        }
-
-        /**
-         * Returns the centroid of the geometry, handling a geometry collection.
-         * <p>
-         * In the case of a collection a multi point containing the centroid of each geometry in the
-         * collection is calculated. The first point in the multi point is returned as the controid.
-         * </p>
-         */
-        Coordinate geometryCentroid(Geometry g) {
-            if (g instanceof GeometryCollection) {
-                g = selectRepresentativeGeometry((GeometryCollection) g);
-            }
-
-            if (g == null) {
-                return null;
-            } else if (g instanceof Point) {
-                // simple case
-                return g.getCoordinate();
-            } else if (g instanceof LineString) {
-                // make sure the point we return is actually on the line
-                LineString line = (LineString) g;
-                LengthIndexedLine lil = new LengthIndexedLine(line);
-                return lil.extractPoint(line.getLength() / 2.0);
-            } else {
-                // return the actual centroid
-                return g.getCentroid().getCoordinate();
-            }
-        }
-
-        /**
-         * Selects a representative geometry from the collection (the one covering the biggest area)
-         * 
-         * @param g
-         * @return
-         */
-        private Geometry selectRepresentativeGeometry(GeometryCollection g) {
-            GeometryCollection gc = (GeometryCollection) g;
-
-            if (gc.isEmpty()) {
-                return null;
-            }
-
-            // check for case of single geometry or multipoint
-            Geometry first = gc.getGeometryN(0);
-            if (gc.getNumGeometries() == 1 || g instanceof MultiPoint) {
-                return first;
-            } else {
-                // get the geometry with the largest bbox
-                double maxAreaSoFar = first.getEnvelope().getArea();
-                Geometry geometryToReturn = first;
-
-                for (int t = 0; t < gc.getNumGeometries(); t++) {
-                    Geometry curr = gc.getGeometryN(t);
-                    double area = curr.getEnvelope().getArea();
-                    if (area > maxAreaSoFar) {
-                        maxAreaSoFar = area;
-                        geometryToReturn = curr;
-                    }
-                }
-
-                return geometryToReturn;
-            }
         }
 
     }

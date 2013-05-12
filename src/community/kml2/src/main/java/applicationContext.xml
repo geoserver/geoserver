@@ -59,6 +59,7 @@
   </bean>
 
   <!-- KML decorators -->
+  <bean id="kmlLegendDecorator" class="org.geoserver.kml.decorator.LegendDecoratorFactory"/>
   <bean id="kmlGeometryDecorator" class="org.geoserver.kml.decorator.PlacemarkGeometryDecoratorFactory"/>
   <bean id="kmlStyleDecorator" class="org.geoserver.kml.decorator.PlacemarkStyleDecoratorFactory"/>
   <bean id="kmlNameDecorator" class="org.geoserver.kml.decorator.PlacemarkNameDecoratorFactory"/>
@@ -70,19 +71,31 @@
   <bean id="kmlRelativeLinksDecorator" class="org.geoserver.kml.decorator.FolderRelativeLinksDecoratorFactory"/>
   <bean id="kmlSelfLinksDecorator" class="org.geoserver.kml.decorator.PlacemarkSelfLinkDecoratorFactory"/>
 
-  <!-- <bean id="nativeSortingRegionator" class="org.geoserver.kml.ReflectiveRegionatingStrategyFactory"> 
-    <constructor-arg value="native-sorting"/> <constructor-arg value="org.geoserver.kml.NativeSortRegionatingStrategy"/> 
-    <constructor-arg ref="geoServer"/> </bean> <bean id="externalSortingRegionator" 
-    class="org.geoserver.kml.ReflectiveRegionatingStrategyFactory"> <constructor-arg 
-    value="external-sorting"/> <constructor-arg value="org.geoserver.kml.ExternalSortRegionatingStrategy"/> 
-    <constructor-arg ref="geoServer"/> </bean> <bean id="geometryRegionator" 
-    class="org.geoserver.kml.ReflectiveRegionatingStrategyFactory"> <constructor-arg 
-    value="geometry"/> <constructor-arg value="org.geoserver.kml.GeometryRegionatingStrategy"/> 
-    <constructor-arg ref="geoServer"/> </bean> <bean id="randomRegionator" class="org.geoserver.kml.ReflectiveRegionatingStrategyFactory"> 
-    <constructor-arg value="random"/> <constructor-arg value="org.geoserver.kml.RandomRegionatingStrategy"/> 
-    <constructor-arg ref="geoServer"/> </bean> <bean id="bestGuessRegionator" 
-    class="org.geoserver.kml.ReflectiveRegionatingStrategyFactory"> <constructor-arg 
-    value="best_guess"/> <constructor-arg value="org.geoserver.kml.BestGuessRegionatingStrategy"/> 
-    <constructor-arg ref="geoServer"/> </bean> -->
+  <!-- Regionation support -->
+  <bean id="nativeSortingRegionator" class="org.geoserver.kml.regionate.ReflectiveRegionatingStrategyFactory">
+    <constructor-arg value="native-sorting" />
+    <constructor-arg value="org.geoserver.kml.NativeSortRegionatingStrategy" />
+    <constructor-arg ref="geoServer" />
+  </bean>
+  <bean id="externalSortingRegionator" class="org.geoserver.kml.regionate.ReflectiveRegionatingStrategyFactory">
+    <constructor-arg value="external-sorting" />
+    <constructor-arg value="org.geoserver.kml.ExternalSortRegionatingStrategy" />
+    <constructor-arg ref="geoServer" />
+  </bean>
+  <bean id="geometryRegionator" class="org.geoserver.kml.regionate.ReflectiveRegionatingStrategyFactory">
+    <constructor-arg value="geometry" />
+    <constructor-arg value="org.geoserver.kml.GeometryRegionatingStrategy" />
+    <constructor-arg ref="geoServer" />
+  </bean>
+  <bean id="randomRegionator" class="org.geoserver.kml.regionate.ReflectiveRegionatingStrategyFactory">
+    <constructor-arg value="random" />
+    <constructor-arg value="org.geoserver.kml.RandomRegionatingStrategy" />
+    <constructor-arg ref="geoServer" />
+  </bean>
+  <bean id="bestGuessRegionator" class="org.geoserver.kml.regionate.ReflectiveRegionatingStrategyFactory">
+    <constructor-arg value="best_guess" />
+    <constructor-arg value="org.geoserver.kml.BestGuessRegionatingStrategy" />
+    <constructor-arg ref="geoServer" />
+  </bean>
 
 </beans>

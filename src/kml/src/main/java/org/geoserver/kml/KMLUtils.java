@@ -164,7 +164,7 @@ public class KMLUtils {
      */
     public static String getLegendGraphicUrl(WMSMapContent mapContent, Layer layer,
         String[] kvp) {
-        return WMSRequests.getGetLegendGraphicUrl(mapContent.getRequest(), layer, kvp);
+        return WMSRequests.getGetLegendGraphicUrl(mapContent.getRequest(), new Layer[] {layer}, kvp);
     }
 
     /**

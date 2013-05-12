@@ -62,10 +62,10 @@ public class KMLTest extends WMSTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         Catalog catalog = getCatalog();
-        testData.addStyle("notthere","notthere.sld",getClass(),catalog);
-        testData.addStyle("scaleRange","scaleRange.sld",getClass(),catalog);
-        testData.addVectorLayer(STORM_OBS,Collections.EMPTY_MAP, 
-                "storm_obs.properties",getClass(),catalog);
+        testData.addStyle("notthere", "notthere.sld", getClass(), catalog);
+        testData.addStyle("scaleRange", "scaleRange.sld", getClass(), catalog);
+        testData.addVectorLayer(STORM_OBS, Collections.EMPTY_MAP, "storm_obs.properties",
+                getClass(), catalog);
     }
     
     
@@ -287,6 +287,7 @@ public class KMLTest extends WMSTestSupport {
             "&format_options=kmltitle:myCustomLayerTitle";
         
         Document doc = getAsDOM(kmlRequest);
+        print(doc);
         assertEquals("name", doc.getElementsByTagName("Document").item(0).getFirstChild().getNextSibling().getLocalName());
         assertEquals("myCustomLayerTitle", doc.getElementsByTagName("Document").item(0).getFirstChild().getNextSibling().getTextContent());
     }    
@@ -392,7 +393,7 @@ public class KMLTest extends WMSTestSupport {
         // we need to clone the input stream, as dom(is) closes the stream
         byte[] data = IOUtils.toByteArray(zis);
         Document dom = dom(new ByteArrayInputStream(data));
-        print(dom);
+        // print(dom);
         // we have the placemarks in the first folder (vector), and no ground overlays
         assertXpathEvaluatesTo("3", "count(//kml:Folder[1]/kml:Placemark)", dom);
         assertXpathEvaluatesTo("0", "count(//kml:Folder[1]/kml:GroundOverlay)", dom);

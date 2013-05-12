@@ -133,6 +133,12 @@
             <version>2.0.0-2</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.geotools.schemas</groupId>
+            <artifactId>samplingSpecimen-2.0</artifactId>
+            <version>2.0.0-1</version>
+            <scope>test</scope>
+        </dependency>
         <!-- Must ensure this has been installed in M2 repository -->
         <dependency>
             <groupId>com.oracle</groupId>

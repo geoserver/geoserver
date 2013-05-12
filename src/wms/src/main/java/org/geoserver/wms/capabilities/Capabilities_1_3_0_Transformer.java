@@ -937,12 +937,44 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             // TODO: DataURL
             // TODO: FeatureListURL
             handleStyles(layer);
+            
+            handleScaleDenominator(layer);
 
             end("Layer");
         }
 
-        
-        private void handleStyles(final LayerInfo layer) {
+        /**
+         * Inserts the scale denominator elements in the layer information.
+         * 
+         * <pre>
+         * <code>MinScaleDenominator</code>
+         * <code>MaxScaleDenominator</code>
+         * </pre>
+         * 
+         * @param layer
+         */
+		private void handleScaleDenominator(final LayerInfo layer) {
+
+			try {
+				final String minScaleDenominator = "MinScaleDenominator";
+				final String maxScaleDenominator = "MaxScaleDenominator";
+				Map<String, Double> denominators = CapabilityUtil.searchMinMaxScaleDenominator(
+														minScaleDenominator, maxScaleDenominator, layer);
+				
+				if(denominators.get(minScaleDenominator) != 0.0){
+					element(minScaleDenominator, String.valueOf(denominators.get(minScaleDenominator)) );
+				}
+				
+				if(denominators.get(maxScaleDenominator) != Double.POSITIVE_INFINITY){
+					element(maxScaleDenominator, String.valueOf(denominators.get(maxScaleDenominator)) );
+				}
+
+			} catch (IOException e) {
+				LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
+			}
+		}
+
+		private void handleStyles(final LayerInfo layer) {
             if (layer.getResource() instanceof WMSLayerInfo) {
                 // do nothing for the moment, we may want to list the set of cascaded named styles
                 // in the future (when we add support for that)

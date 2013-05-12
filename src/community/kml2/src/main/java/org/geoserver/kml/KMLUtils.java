@@ -154,21 +154,6 @@ public class KMLUtils {
     }
 
     /**
-     * Encodes the url for a GetLegendGraphic request from a map context + map layer.
-     *
-     * @param mapContent The map context.
-     * @param layer The map layer.
-     * @param kvp Additional or overidding kvp parameters, may be <code>null</code>
-     *
-     * @return A map containing all the key value pairs for a GetLegendGraphic request.
-     * @deprecated use {@link WMSRequests#getGetLegendGraphicUrl(WMSMapContent, Layer, String[])
-     */
-    public static String getLegendGraphicUrl(WMSMapContent mapContent, Layer layer,
-        String[] kvp) {
-        return WMSRequests.getGetLegendGraphicUrl(mapContent.getRequest(), layer, kvp);
-    }
-
-    /**
      * Creates sax attributes from an array of key value pairs.
      *
      * @param nameValuePairs Alternating key value pair array.

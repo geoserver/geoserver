@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.geoserver.kml.decorator.KmlEncodingContext;
 import org.geoserver.kml.decorator.LookAtDecoratorFactory;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapRequest;
@@ -43,7 +42,6 @@ import de.micromata.opengis.kml.v_2_2_0.ViewRefreshMode;
 /**
  * TODO:
  * - handle encoding
- * - handle lookat
  * - handle superoverlay and caching
  * 
  * @author Andrea Aime - GeoSolutions

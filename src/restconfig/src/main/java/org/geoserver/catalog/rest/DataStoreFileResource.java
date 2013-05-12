@@ -457,23 +457,23 @@ public class DataStoreFileResource extends StoreFileResource {
         catch (Exception e) {
             //TODO: report a proper error code
             throw new RuntimeException ( e );
-        }
-        
-        //dispose the datastore
-        source.dispose();
-        
-        //clean up the files if we can
-        if (isInlineUpload(method) && canRemoveFiles) {
-            if (uploadedFile.isFile()) uploadedFile = uploadedFile.getParentFile();
-            try {
-                FileUtils.deleteDirectory(uploadedFile);
-            } 
-            catch (IOException e) {
-                LOGGER.info("Unable to delete " + uploadedFile.getAbsolutePath());
-                if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.log(Level.FINE, "", e);
-                }
-            }
+        } finally {
+            //dispose the datastore
+            source.dispose();
+            
+            //clean up the files if we can
+            if (isInlineUpload(method) && canRemoveFiles) {
+        		if (uploadedFile.isFile()) uploadedFile = uploadedFile.getParentFile();
+        		try {
+        			FileUtils.deleteDirectory(uploadedFile);
+        		} 
+        		catch (IOException ie) {
+        			LOGGER.info("Unable to delete " + uploadedFile.getAbsolutePath());
+        			if (LOGGER.isLoggable(Level.FINE)) {
+        				LOGGER.log(Level.FINE, "", ie);
+        			}
+        		}
+            }        	
         }
     }
 

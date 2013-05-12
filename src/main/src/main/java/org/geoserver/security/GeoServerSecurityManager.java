@@ -1300,7 +1300,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
                     filterHelper.loadConfig(config.getName()));
             // remove all cached authentications for this filter
             getAuthenticationCache().removeAll(config.getName());
-            if (!securityConfig.getFilterChain().patternsForFilter(config.getName()).isEmpty()) {
+            if (!securityConfig.getFilterChain().patternsForFilter(config.getName(),true).isEmpty()) {
                 fireChanged=true;
             }
         }

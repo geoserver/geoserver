@@ -8,13 +8,11 @@
 package org.geoserver.w3ds.service;
 
 import java.io.IOException;
-import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
-
-import net.opengis.wfs.GetFeatureType;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
@@ -24,16 +22,8 @@ import org.geoserver.w3ds.types.GetFeatureInfoRequest;
 import org.geoserver.w3ds.types.GetSceneRequest;
 import org.geoserver.w3ds.types.GetTileRequest;
 import org.geoserver.w3ds.types.Scene;
-import org.geoserver.w3ds.types.W3DSLayer;
-import org.geoserver.w3ds.utilities.CapabilitiesTransformer;
-import org.geoserver.w3ds.service.GetCapabilities;
-import org.geoserver.wfs.WFSInfo;
-import org.geotools.data.ows.LayerDescription;
-import org.geotools.feature.FeatureCollection;
 import org.geotools.filter.IllegalFilterException;
 import org.geotools.xml.transform.TransformerBase;
-import org.opengis.feature.Feature;
-import org.opengis.feature.type.FeatureType;
 import org.opengis.referencing.FactoryException;
 import org.xml.sax.SAXException;
 

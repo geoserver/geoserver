@@ -7,9 +7,6 @@
 
 package org.geoserver.w3ds.service;
 
-import java.net.URI;
-
-import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.impl.ServiceInfoImpl;
 
 public class W3DSInfoImpl extends ServiceInfoImpl implements W3DSInfo {

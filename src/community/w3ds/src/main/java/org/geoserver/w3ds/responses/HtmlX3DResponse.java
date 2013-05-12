@@ -9,9 +9,6 @@ package org.geoserver.w3ds.responses;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.text.Format;
-import java.util.HashMap;
-import java.util.List;
 
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
@@ -21,20 +18,10 @@ import org.geoserver.w3ds.types.GetTileRequest;
 import org.geoserver.w3ds.types.Scene;
 import org.geoserver.w3ds.types.W3DSLayer;
 import org.geoserver.w3ds.x3d.X3DBuilder;
-import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.FeatureIterator;
-import org.geotools.styling.Style;
-import org.opengis.feature.Feature;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.FeatureType;
 import org.opengis.geometry.BoundingBox;
 
-import com.vividsolutions.jts.geom.Geometry;
-
-public class HTMLX3DResponse extends Response {
-	public HTMLX3DResponse() {
+public class HtmlX3DResponse extends Response {
+	public HtmlX3DResponse() {
 		super(Scene.class);
 	}
 

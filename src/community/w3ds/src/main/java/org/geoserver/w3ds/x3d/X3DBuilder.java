@@ -13,21 +13,24 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.measure.unit.SI;
 import javax.measure.unit.Unit;
 
-import org.geoserver.catalog.Styles;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.w3ds.types.W3DSLayer;
 import org.geoserver.w3ds.types.W3DSLayerInfo;
-import org.geoserver.w3ds.utilities.Operation;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
+import org.geotools.resources.CRSUtilities;
+import org.geotools.styling.Style;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.geometry.BoundingBox;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -39,19 +42,6 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
-import org.geotools.referencing.CRS;
-import org.geotools.resources.CRSUtilities;
-import org.geotools.styling.Style;
-
-import org.geotools.styling.FeatureTypeStyle;
-import org.geotools.styling.PolygonSymbolizerImpl;
-import org.geotools.styling.Rule;
-import org.geotools.styling.Symbolizer;
-import org.opengis.filter.Filter;
-import org.opengis.geometry.BoundingBox;
-import org.opengis.geometry.Envelope;
-
-import org.geoserver.w3ds.x3d.X3DBuilder;
 
 public class X3DBuilder {
 
@@ -69,8 +59,11 @@ public class X3DBuilder {
 
 	private BoundingBox activeLayerBounds;
 	private int coordinatesType;
-	
-	private StringBuilder title; 
+
+	private StringBuilder title;
+
+	private List<X3DInlineModel> inlineModels;
+	private X3DNode activeInlineModels;
 
 	public X3DBuilder(OutputStream output) {
 		writer = new BufferedWriter(new OutputStreamWriter(output));
@@ -93,6 +86,7 @@ public class X3DBuilder {
 		coordinatesType = X3DDefinitions.GEOGRAPHIC_METRIC.getCode();
 		this.styles = new X3DStyles();
 		this.title = new StringBuilder();
+		inlineModels = new ArrayList<X3DInlineModel>();
 	}
 
 	public void createGeoOrigin(CoordinateReferenceSystem crs, double[] origin) {
@@ -147,6 +141,7 @@ public class X3DBuilder {
 				coordinatesType);
 		activePolygons = new X3DPolygons(X3DGeometryType.POLYGONS, geoSystem,
 				coordinatesType);
+		activeInlineModels = new X3DNode("Group");
 	}
 
 	public void newObject() {
@@ -195,6 +190,9 @@ public class X3DBuilder {
 		this.styles = new X3DStyles();
 		this.styles.addStyles(styles);
 		setLayerAttribute("id", layerInfo.getRequestName());
+		for (Style style : styles) {
+			inlineModels.addAll(X3DUtils.getInlineModels(style));
+		}
 	}
 
 	private static String getObjectID(Boolean hashID, String cn, Feature feature) {
@@ -279,7 +277,7 @@ public class X3DBuilder {
 		newObject(id, clazz);
 		setPolygonStyle(feature);
 		setLineStyle(feature);
-		addGeometry(geometry);
+		addGeometry(geometry, feature);
 		if (activePolygons.haveGeometries()) {
 			X3DNode polygons = activePolygons.getX3D();
 			// polygons.addX3DNode(getStyle(feature));
@@ -288,6 +286,9 @@ public class X3DBuilder {
 		if (activeLines.haveGeometries()) {
 			X3DNode lines = activeLines.getX3D();
 			activeObject.addX3DNode(lines);
+		}
+		if (activeInlineModels.haveChilds()) {
+			activeObject.addX3DNode(activeInlineModels);
 		}
 	}
 
@@ -315,7 +316,8 @@ public class X3DBuilder {
 	// DEBUG // TO LIMIT THE WRITED GEOMETRIES
 	int geometries = 0;
 
-	public void addGeometry(Geometry geometry) throws IOException {
+	public void addGeometry(Geometry geometry, Feature feature)
+			throws IOException {
 		final int geometryType = getGeometryType(geometry);
 		if (geometries > 6620)
 			return;
@@ -325,17 +327,25 @@ public class X3DBuilder {
 				// geometries++;
 			} else if (geometryType == GeometryType.MULTIPOLYGON.getCode()) {
 				for (int i = 0, n = geometry.getNumGeometries(); i < n; i++) {
-					addGeometry((geometry.getGeometryN(i)));
+					addGeometry(geometry.getGeometryN(i), feature);
 				}
 			} else if (geometryType == GeometryType.LINESTRING.getCode()) {
 				for (int i = 0, n = geometry.getNumGeometries(); i < n; i++) {
 					this.activeLines.addLineString((LineString) geometry);
 				}
+			} else if (geometryType == GeometryType.POINT.getCode()) {
+				for (X3DInlineModel inlineModel : inlineModels) {
+					if (inlineModel.acceptFeature(feature)) {
+						activeInlineModels.addX3DNode(inlineModel
+								.getInlineModel(feature, (Point) geometry));
+						break;
+					}
+				}
 			}
 		} else {
 			int n_geometries = geometry.getNumGeometries();
 			for (int i = 0; i < n_geometries; i++) {
-				addGeometry(geometry.getGeometryN(i));
+				addGeometry(geometry.getGeometryN(i), feature);
 			}
 		}
 	}
@@ -362,16 +372,16 @@ public class X3DBuilder {
 		link.addX3DAttribute(new X3DAttribute("rel", "stylesheet"));
 		link.addX3DAttribute(new X3DAttribute("href",
 				"http://3dwebgis.di.uminho.pt/geoserver3D/x3dom/x3dom.css"));
-		//http://3dwebgis.di.uminho.pt/geoserver3D/canvasSize.css
-		//link.addX3DAttribute(new X3DAttribute("href",
-		//		"http://localhost/x3dom.css"));
+		// http://3dwebgis.di.uminho.pt/geoserver3D/canvasSize.css
+		// link.addX3DAttribute(new X3DAttribute("href",
+		// "http://localhost/x3dom.css"));
 		X3DNode script = new X3DNode("script");
 		script.setExpand(true);
 		script.addX3DAttribute(new X3DAttribute("type", "text/javascript"));
 		script.addX3DAttribute(new X3DAttribute("src",
 				"http://3dwebgis.di.uminho.pt/geoserver3D/x3dom/x3dom.js"));
-		//script.addX3DAttribute(new X3DAttribute("src",
-		//		"http://localhost/x3dom.js"));
+		// script.addX3DAttribute(new X3DAttribute("src",
+		// "http://localhost/x3dom.js"));
 		head.addX3DNode(meta);
 		head.addX3DNode(title);
 		head.addX3DNode(link);
@@ -401,9 +411,9 @@ public class X3DBuilder {
 		body.addX3DNode(p);
 		X3DNode x3d = new X3DNode("x3d");
 		x3d.addX3DAttribute(new X3DAttribute("id", "element"));
-		//x3d.addX3DAttribute(new X3DAttribute("width", "1200px"));
-		//x3d.addX3DAttribute(new X3DAttribute("height", "900px"));
-		//x3d.addX3DAttribute("showLog", "true");
+		// x3d.addX3DAttribute(new X3DAttribute("width", "1200px"));
+		// x3d.addX3DAttribute(new X3DAttribute("height", "900px"));
+		// x3d.addX3DAttribute("showLog", "true");
 		x3d.addX3DNode(scene);
 		body.addX3DNode(x3d);
 		X3DNode init = new X3DNode();

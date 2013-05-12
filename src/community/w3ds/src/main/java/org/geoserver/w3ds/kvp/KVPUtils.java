@@ -8,7 +8,6 @@
 package org.geoserver.w3ds.kvp;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -18,10 +17,8 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.ows.util.KvpUtils;
-import org.geoserver.w3ds.types.W3DSLayer;
 import org.geoserver.w3ds.types.W3DSLayerInfo;
 import org.geoserver.w3ds.types.W3DSRequest;
 import org.geoserver.w3ds.utilities.Format;
@@ -30,7 +27,6 @@ import org.geoserver.w3ds.utilities.X3DInfoExtract;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.opengis.geometry.Envelope;
-import org.opengis.metadata.MetaData;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.xml.sax.SAXException;

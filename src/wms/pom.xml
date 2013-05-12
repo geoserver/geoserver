@@ -123,6 +123,10 @@
       <groupId>org.geotools</groupId>
       <artifactId>gt-process-feature</artifactId>
     </dependency>
+   <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+   </dependency>    
   </dependencies>
 
   <build>

@@ -8,6 +8,7 @@
 package org.geoserver.w3ds.kvp;
 
 import java.util.Map;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.KvpRequestReader;
@@ -16,8 +17,6 @@ import org.geoserver.w3ds.types.W3DSLayerInfo;
 import org.geoserver.w3ds.utilities.Format;
 import org.geoserver.w3ds.utilities.Operation;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-
-import com.vividsolutions.jts.geom.Coordinate;
 
 public class GetTileKvpRequestReader extends KvpRequestReader {
 

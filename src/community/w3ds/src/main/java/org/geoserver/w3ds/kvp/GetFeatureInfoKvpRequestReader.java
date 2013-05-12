@@ -9,18 +9,14 @@ package org.geoserver.w3ds.kvp;
 
 import java.util.List;
 import java.util.Map;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.KvpRequestReader;
 import org.geoserver.w3ds.types.GetFeatureInfoRequest;
-import org.geoserver.w3ds.types.GetSceneRequest;
 import org.geoserver.w3ds.types.W3DSLayerInfo;
 import org.geoserver.w3ds.utilities.Format;
 import org.geoserver.w3ds.utilities.Operation;
-import org.geoserver.w3ds.utilities.X3DInfoExtract;
-import org.geotools.referencing.CRS;
-import org.opengis.geometry.Envelope;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Coordinate;

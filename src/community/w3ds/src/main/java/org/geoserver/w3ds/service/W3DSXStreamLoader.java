@@ -9,7 +9,6 @@ package org.geoserver.w3ds.service;
 
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
-import org.geoserver.config.impl.ServiceInfoImpl;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.platform.GeoServerResourceLoader;

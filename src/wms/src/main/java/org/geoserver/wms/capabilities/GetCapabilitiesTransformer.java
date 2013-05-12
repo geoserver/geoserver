@@ -72,7 +72,6 @@ import org.springframework.util.Assert;
 import org.vfny.geoserver.util.ResponseUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
 import com.google.common.collect.Iterables;
@@ -1274,23 +1273,6 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             bboxAtts.addAttribute("", "maxy", "maxy", "", maxy);
 
             element("LatLonBoundingBox", null, bboxAtts);
-        }
-
-        /**
-         * adds a comment to the output xml file. THIS IS A BIG HACK. TODO: do this in the correct
-         * manner!
-         * 
-         * @param comment
-         */
-        public void comment(String comment) {
-            if (contentHandler instanceof LexicalHandler) {
-                try {
-                    LexicalHandler ch = (LexicalHandler) contentHandler;
-                    ch.comment(comment.toCharArray(), 0, comment.length());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
         }
 
         /**

@@ -73,6 +73,7 @@ public class LDAPAuthenticationProvider extends
 				roles.add(GeoServerRole.AUTHENTICATED_ROLE);
 			}
 			if (hasAdminRole || hasGroupAdminRole) {
+				// check for admin and group_admin roles
 				for (GrantedAuthority authority : auth.getAuthorities()) {
 					if (authority.getAuthority().equalsIgnoreCase(
 							"ROLE_" + adminRole)) {

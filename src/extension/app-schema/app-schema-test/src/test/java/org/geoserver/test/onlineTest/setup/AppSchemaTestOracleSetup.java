@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 import org.geotools.data.property.PropertyFeatureReader;
@@ -173,8 +172,8 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
             buf.append("CALL DROP_TABLE_OR_VIEW('").append(tableName).append("')\n");
             // create the table
             buf.append("CREATE TABLE ").append(tableName).append("(");
-            // + id + pkey
-            int size = schema.getAttributeCount() + 2;
+            // + pkey
+            int size = schema.getAttributeCount() + 1;
             String[] fieldNames = new String[size];
             List<String> createParams = new ArrayList<String>();
             int j = 0;
@@ -232,25 +231,15 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
                 createParams.add(field + " " + type);
                 j++;
             }
-            if (schema.isIdentified()) {  
-                // row id .. can't use ID because there are columns with that name in
-                // some tables and for oracle everythign has to be upper case so we
-                // can't differentiate between id and ID, we we use ROW_ID instead
-                fieldNames[j] = "ROW_ID";
-                createParams.add("ROW_ID VARCHAR2(30)");
-                j++;
-            }
             // Add numeric PK for sorting
             fieldNames[j] = "PKEY";
-            createParams.add("PKEY NUMBER(5)");
+            createParams.add("PKEY VARCHAR2(30)");
             buf.append(StringUtils.join(createParams.iterator(), ", "));
             buf.append(")\n");
             buf.append("ALTER TABLE " + tableName + " ADD CONSTRAINT " + tableName + " PRIMARY KEY (PKEY)\n");
             // then insert rows
             SimpleFeature feature;
             FeatureId id;
-            // primary key sequence
-            int pKey = 0;
             while (reader.hasNext()) {
                 buf.append("INSERT INTO ").append(tableName).append("(");
                 feature = reader.next();
@@ -286,14 +275,9 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
                     }
                     valueIndex++;
                 }
-                id = feature.getIdentifier();
-                if (id != null) {
-                    values[valueIndex] = "'" + id.toString() + "'";
-                    valueIndex++;
-                }
+                id = feature.getIdentifier();                
                 // insert primary key
-                values[valueIndex] = "'" + pKey + "'";
-                pKey++;
+                values[valueIndex] = "'" + id.toString() + "'";
                 buf.append(StringUtils.join(values, ","));
                 buf.append(")\n");
             }

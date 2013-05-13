@@ -46,7 +46,7 @@
                         gsml:MappedFeature
 					</targetAttribute>
                     <idExpression>
-                        <OCQL>getId()</OCQL>
+                        <OCQL>ID</OCQL>
                     </idExpression>
                 </AttributeMapping>
                 <AttributeMapping>
@@ -77,7 +77,7 @@
                     </sourceExpression>
                     <ClientProperty>
                         <name>xlink:href</name>
-                        <value>strConcat('urn:x-test:GeologicUnit:', getId())</value>
+                        <value>strConcat('urn:x-test:GeologicUnit:', GML_ID)</value>
                     </ClientProperty>
                 </AttributeMapping>
                  <AttributeMapping>

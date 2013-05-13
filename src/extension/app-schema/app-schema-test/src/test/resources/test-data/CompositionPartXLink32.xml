@@ -70,7 +70,7 @@
 			<attributeMappings>
 				<AttributeMapping>
 					<targetAttribute>gsml:CompositionPart</targetAttribute>
-					<idExpression><OCQL>getID()</OCQL></idExpression>
+					<idExpression><OCQL>ROW_ID</OCQL></idExpression>
 				</AttributeMapping>
 				<AttributeMapping>
 					<targetAttribute>gsml:role</targetAttribute>

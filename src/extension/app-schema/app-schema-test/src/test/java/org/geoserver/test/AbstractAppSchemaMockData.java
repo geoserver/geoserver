@@ -715,7 +715,6 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
         StringBuffer content = new StringBuffer();
         boolean parametersStartFound = false;
         boolean parametersEndFound = false;
-        String idColumn = "ROW_ID";
         boolean isOracle = onlineTestId.equals("oracle");
         for (String line = br.readLine(); line != null; line = br.readLine()) {
             if (!parametersStartFound || (parametersStartFound && parametersEndFound)) {
@@ -749,16 +748,6 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
                     content.append("</sourceType>");
                     content.append("\n");
                 } else {
-                    // replace getID() and "@id" with id column since joining doesn't support
-                    // functions
-                    String regex = "getI[dD]\\(\\)";
-                    Pattern pattern = Pattern.compile(regex);
-                    Matcher matcher = pattern.matcher(line);
-                    line = matcher.replaceAll(idColumn);
-
-                    regex = "\"@id\"";
-                    line = line.replaceAll(regex, idColumn);
-
                     content.append(line);
                 }
                 content.append("\n");

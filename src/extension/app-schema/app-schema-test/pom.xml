@@ -217,6 +217,7 @@
                                 <exclude>**/DataReferenceWmsOracleWithJoiningTest.java</exclude>
                                 <exclude>**/DataReferenceWmsPostgisWithJoiningTest.java</exclude>				
                                 <exclude>**/SortByTest.java</exclude>
+                                <exclude>**/IdFunctionWfsTestWithJoining.java</exclude>
                                 <exclude>${test.exclude.pattern}</exclude>
 					        </excludes>
 				        </configuration>

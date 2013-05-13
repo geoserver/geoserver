@@ -71,7 +71,7 @@
                 <AttributeMapping>
                     <targetAttribute>gsml:GeologicUnit</targetAttribute>
                     <idExpression>
-                        <OCQL>getID()</OCQL>
+                        <OCQL>GML_ID</OCQL>
                     </idExpression>
                 </AttributeMapping>
                 <AttributeMapping>
@@ -107,7 +107,7 @@
                         FEATURE_LINK
 		            </targetAttribute>
                     <sourceExpression>
-                        <OCQL>getId()</OCQL>
+                        <OCQL>GML_ID</OCQL>
                     </sourceExpression>
                 </AttributeMapping>
                 <AttributeMapping>

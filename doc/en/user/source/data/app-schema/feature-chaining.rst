@@ -78,7 +78,7 @@ In GeologicEvent (the container feature) mapping::
   <AttributeMapping>
 	<targetAttribute>gsml:eventEnvironment</targetAttribute>
 	<sourceExpression>
-		<OCQL>getID()</OCQL>
+		<OCQL>id</OCQL>
 		<linkElement>gsml:CGI_TermValue</linkElement>
 		<linkField>FEATURE_LINK[1]</linkField>
 	</sourceExpression>
@@ -87,7 +87,7 @@ In GeologicEvent (the container feature) mapping::
   <AttributeMapping>
 	<targetAttribute>gsml:eventProcess</targetAttribute>
 	<sourceExpression>
-		<OCQL>getID()</OCQL>
+		<OCQL>id</OCQL>
 		<linkElement>gsml:CGI_TermValue</linkElement>
 		<linkField>FEATURE_LINK[2]</linkField>
 	</sourceExpression>
@@ -260,7 +260,7 @@ GeologicUnit has 3 gml:name properties in the mapping file, so each has a code s
       <AttributeMapping>
         <targetAttribute>gml:name[3]</targetAttribute> 
         <sourceExpression>
-          <OCQL>strTrim(getId())</OCQL> 
+          <OCQL>id</OCQL> 
         </sourceExpression>
         <ClientProperty>
           <name>codeSpace</name> 
@@ -305,14 +305,14 @@ In Geologic Unit mapping file::
   <AttributeMapping>
       <targetAttribute>gsml:composition</targetAttribute>
       <sourceExpression>
-	      <OCQL>getID()</OCQL>
+	      <OCQL>id</OCQL>
 	      <linkElement>gsml:CompositionPart</linkElement>
 	      <linkField>FEATURE_LINK</linkField>
       </sourceExpression>
       <isMultiple>true</isMultiple>
   </AttributeMapping>
 
-* *OCQL*: getID() returns the geologic unit id
+* *OCQL*: id is the geologic unit id
 * *linkElement*: links to gsml:CompositionPart type
 * *linkField*: FEATURE_LINK, the linking field mapped in gsml:CompositionPart type that also stores the geologic unit id. If there are more than one of these attributes in the nested feature type, make sure the index is included, e.g. FEATURE_LINK[2]. 
 
@@ -437,7 +437,7 @@ For this example, we are nesting gsml:GeologicUnit in gsml:MappedFeature as gsml
       <AttributeMapping>
         <targetAttribute>gsml:occurrence</targetAttribute>		
         <sourceExpression>
-	      <OCQL>strTrim(getId())</OCQL>
+	      <OCQL>id</OCQL>
 	      <linkElement>gsml:MappedFeature</linkElement>
 	      <linkField>gsml:specification</linkField>
         </sourceExpression>					              

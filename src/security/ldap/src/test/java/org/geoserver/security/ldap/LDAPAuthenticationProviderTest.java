@@ -279,6 +279,30 @@ public class LDAPAuthenticationProviderTest {
 		assertTrue(foundAdmin);
 	}
 
+	/**
+	 * Test that if and groupAdminGroup is defined, the roles contain
+	 * ROLE_GROUP_ADMIN
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testGroupAdminGroup() throws Exception {
+		initLdapServer(true);
+
+		config.setUserDnPattern("uid={0},ou=People");
+		config.setGroupAdminGroup("other");
+
+		createAuthenticationProvider();
+
+		Authentication result = authProvider.authenticate(authenticationOther);
+		boolean foundAdmin = false;
+		for (GrantedAuthority authority : result.getAuthorities()) {
+			if (authority.getAuthority().equalsIgnoreCase("ROLE_GROUP_ADMIN")) {
+				foundAdmin = true;
+			}
+		}
+		assertTrue(foundAdmin);
+	}
 	
 
 	private void createAuthenticationProvider() {

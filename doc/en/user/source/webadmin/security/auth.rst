@@ -126,6 +126,8 @@ The following illustration shows the configuration options for the LDAP authenti
        Only applicable when the *Use LDAP groups for authorization( parameter is **checked**.
    * - Admin Group
      - Name of the group to be mapped to Administrator role (defaults to ADMINISTRATOR). Example: ``ADMIN``. Adds the role ROLE_ADMINISTRATOR if the user belongs to a group named ADMIN (case insensitive)
+   * - Group Admin Group
+     - Name of the group to be mapped to Group Administrator role (defaults to GROUP_ADMIN). Example: ``GROUPADMIN``. Adds the role ROLE_GROUP_ADMIN if the user belongs to a group named GROUPADMIN (case insensitive)     
    * - User Group Service
      - The user/group service to use for role assignment. Only applicable when the *Use LDAP groups for authorization* parameter is **cleared**.
 

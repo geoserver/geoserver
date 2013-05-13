@@ -33,10 +33,15 @@ public class LDAPAuthenticationProvider extends
 	// optional role to be remapped to ROLE_ADMINISTRATOR
 	private String adminRole;
 	
-    public LDAPAuthenticationProvider(AuthenticationProvider authProvider, String adminRole) {
-        super(authProvider);
-        this.adminRole = adminRole;
-    }
+	// optional role to be remapped to ROLE_ADMINISTRATOR
+	private String groupAdminRole;
+	
+	public LDAPAuthenticationProvider(AuthenticationProvider authProvider,
+			String adminRole, String groupAdminRole) {
+		super(authProvider);
+		this.adminRole = adminRole;
+		this.groupAdminRole = groupAdminRole;
+	}
 
     @Override
     public void initializeFromConfig(SecurityNamedServiceConfig config)
@@ -58,18 +63,24 @@ public class LDAPAuthenticationProvider extends
 				GeoServerRole.AUTHENTICATED_ROLE) == false;
 		boolean hasAdminRole = adminRole != null && !adminRole.equals("")
 				&& !auth.getAuthorities().contains(GeoServerRole.ADMIN_ROLE);
+		boolean hasGroupAdminRole = groupAdminRole != null && !groupAdminRole.equals("")
+				&& !auth.getAuthorities().contains(GeoServerRole.GROUP_ADMIN_ROLE);
 
-		if (hasNoAuthenticatedRole || hasAdminRole) {
+		if (hasNoAuthenticatedRole || hasAdminRole || hasGroupAdminRole) {
 			List<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
 			roles.addAll(auth.getAuthorities());
 			if (hasNoAuthenticatedRole) {
 				roles.add(GeoServerRole.AUTHENTICATED_ROLE);
 			}
-			if (hasAdminRole) {
+			if (hasAdminRole || hasGroupAdminRole) {
 				for (GrantedAuthority authority : auth.getAuthorities()) {
 					if (authority.getAuthority().equalsIgnoreCase(
 							"ROLE_" + adminRole)) {
 						roles.add(GeoServerRole.ADMIN_ROLE);
+					}
+					if (authority.getAuthority().equalsIgnoreCase(
+							"ROLE_" + groupAdminRole)) {
+						roles.add(GeoServerRole.GROUP_ADMIN_ROLE);
 					}
 				}
 			}

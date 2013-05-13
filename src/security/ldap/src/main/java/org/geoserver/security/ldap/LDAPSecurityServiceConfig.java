@@ -27,6 +27,7 @@ public class LDAPSecurityServiceConfig extends BaseSecurityNamedServiceConfig
     // is specified)
     String userFormat;
     String adminGroup;
+    String groupAdminGroup;
 
     public LDAPSecurityServiceConfig() {
     }
@@ -39,6 +40,7 @@ public class LDAPSecurityServiceConfig extends BaseSecurityNamedServiceConfig
         groupSearchFilter= other.getGroupSearchFilter();
         userGroupServiceName = other.getUserGroupServiceName();
         adminGroup = other.getAdminGroup();
+        groupAdminGroup = other.getGroupAdminGroup();
         bindBeforeGroupSearch = other.isBindBeforeGroupSearch();
         userFilter = other.getUserFilter();
         userFormat = other.getUserFormat();
@@ -103,6 +105,14 @@ public class LDAPSecurityServiceConfig extends BaseSecurityNamedServiceConfig
 
 	public void setAdminGroup(String adminGroup) {
 		this.adminGroup = adminGroup;
+	}
+		
+	public String getGroupAdminGroup() {
+		return groupAdminGroup;
+	}
+
+	public void setGroupAdminGroup(String groupAdminGroup) {
+		this.groupAdminGroup = groupAdminGroup;
 	}
 
 	public String getUserFilter() {

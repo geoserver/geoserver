@@ -121,8 +121,7 @@ public class LDAPSecurityProvider extends GeoServerSecurityProvider {
 			// between default and binding populator
 			if (ldapConfig.isBindBeforeGroupSearch()) {
 				authPopulator = new BindingLdapAuthoritiesPopulator(
-						ldapContext, ldapConfig.getGroupSearchBase(),
-						ldapConfig.getAdminGroup());
+						ldapContext, ldapConfig.getGroupSearchBase());
 				if (ldapConfig.getGroupSearchFilter() != null) {
 					((BindingLdapAuthoritiesPopulator) authPopulator)
 							.setGroupSearchFilter(ldapConfig
@@ -160,6 +159,7 @@ public class LDAPSecurityProvider extends GeoServerSecurityProvider {
 
         
         
-        return new LDAPAuthenticationProvider(provider, ldapConfig.getAdminGroup());
+		return new LDAPAuthenticationProvider(provider,
+				ldapConfig.getAdminGroup(), ldapConfig.getGroupAdminGroup());
     }
 }

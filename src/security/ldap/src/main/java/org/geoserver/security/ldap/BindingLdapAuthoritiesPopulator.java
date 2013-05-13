@@ -157,7 +157,7 @@ public class BindingLdapAuthoritiesPopulator implements
 	 *            performed.
 	 */
 	public BindingLdapAuthoritiesPopulator(ContextSource contextSource,
-			String groupSearchBase, String adminRole) {
+			String groupSearchBase) {
 		Assert.notNull(contextSource, "contextSource must not be null");
 
 		// use a binding LdapTemplate, that doesn't make searches without

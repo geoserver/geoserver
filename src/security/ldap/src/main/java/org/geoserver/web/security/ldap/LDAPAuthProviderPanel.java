@@ -110,6 +110,7 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
             super(id);
             add(new CheckBox("bindBeforeGroupSearch"));
             add(new TextField("adminGroup"));
+            add(new TextField("groupAdminGroup"));
             add(new TextField("groupSearchBase"));
             add(new TextField("groupSearchFilter"));
         }
@@ -118,6 +119,7 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
         public void resetModel() {
         	get("bindBeforeGroupSearch").setDefaultModelObject(null);
         	get("adminGroup").setDefaultModelObject(null);
+        	get("groupAdminGroup").setDefaultModelObject(null);
             get("groupSearchBase").setDefaultModelObject(null);
             get("groupSearchFilter").setDefaultModelObject(null);
         }

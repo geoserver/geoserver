@@ -46,7 +46,6 @@ public class WfsXmlReader extends XmlRequestReader {
         
         Parser parser = new Parser(config);
         parser.setEntityResolver(entityResolverProvider.getEntityResolver());
-        parser.getURIHandlers().add(0, new WFSURIHandler(gs));
         
         WFSInfo wfs = wfs();
         

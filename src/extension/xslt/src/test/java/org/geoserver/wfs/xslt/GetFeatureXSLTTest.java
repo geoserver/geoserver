@@ -8,6 +8,7 @@ import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLAssert;
@@ -15,6 +16,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSTestSupport;
+import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -31,8 +33,11 @@ public class GetFeatureXSLTTest extends WFSTestSupport {
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
-
-        File dd = testData.getDataDirectoryRoot();
+    }
+    
+    @Before
+    public void setupXSLT() throws IOException {
+        File dd = getTestData().getDataDirectoryRoot();
         File wfs = new File(dd, "wfs");
         File transform = new File(wfs, "transform");
         if (transform.exists()) {
@@ -40,6 +45,10 @@ public class GetFeatureXSLTTest extends WFSTestSupport {
         }
         assertTrue(transform.mkdirs());
         FileUtils.copyDirectory(new File("src/test/resources/org/geoserver/wfs/xslt"), transform);
+
+        // makes sure the output format list is updated
+        XSLTOutputFormatUpdater updater = applicationContext.getBean(XSLTOutputFormatUpdater.class);
+        updater.run();
     }
     
     @Test
@@ -56,6 +65,15 @@ public class GetFeatureXSLTTest extends WFSTestSupport {
                 "count(//ows:Operation[@name='GetFeature']/ows:Parameter[@name = 'outputFormat']/ows:Value[text() = 'HTML'])", dom);
         XMLAssert.assertXpathEvaluatesTo("1", 
                 "count(//ows:Operation[@name='GetFeature']/ows:Parameter[@name = 'outputFormat' and ows:Value = 'text/html; subtype=xslt'])", dom);
+    }
+    
+    @Test
+    public void testOutputFormatWrongCase() throws Exception {
+        Document d = getAsDOM("wfs?request=GetFeature&typename=" + getLayerId(MockData.BUILDINGS)
+                + "&version=1.1.0&service=wfs&outputFormat=" + "text/html; subtype=xslt".toUpperCase());
+        // print(d);
+        
+        checkOws10Exception(d, ServiceException.INVALID_PARAMETER_VALUE, "outputFormat");
     }
 
     @Test
@@ -134,6 +152,7 @@ public class GetFeatureXSLTTest extends WFSTestSupport {
         Document d = getAsDOM("wfs?request=GetFeature&typename=" + getLayerId(MockData.BASIC_POLYGONS)
                 + "&version=1.1.0&service=wfs&outputFormat=HTML");
         
+        print(d);
         checkOws10Exception(d, ServiceException.INVALID_PARAMETER_VALUE, "typeName");
     }
 
@@ -145,5 +164,26 @@ public class GetFeatureXSLTTest extends WFSTestSupport {
         // print(d);
 
         checkOws10Exception(d, ServiceException.INVALID_PARAMETER_VALUE, "typeName");
+    }
+    
+    @Test
+    public void testNoOutputFormats() throws Exception {
+        // clean up the config
+        File dd = getTestData().getDataDirectoryRoot();
+        File wfs = new File(dd, "wfs");
+        File transform = new File(wfs, "transform");
+        if (transform.exists()) {
+            FileUtils.deleteDirectory(transform);
+        }
+
+        // makes sure the output format list is updated
+        XSLTOutputFormatUpdater updater = applicationContext.getBean(XSLTOutputFormatUpdater.class);
+        updater.run();
+        
+        // now run a GML2 request, it should work fine (GEOS-5804)
+        Document d = getAsDOM("wfs?request=GetFeature&typename=" + getLayerId(MockData.BRIDGES)
+                + "," + getLayerId(MockData.BUILDINGS)
+                + "&version=1.0.0&service=wfs");
+        XMLAssert.assertXpathEvaluatesTo("1", "count(/wfs:FeatureCollection)", d);
     }
 }

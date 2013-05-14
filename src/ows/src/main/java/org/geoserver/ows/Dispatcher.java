@@ -875,7 +875,7 @@ public class Dispatcher extends AbstractController {
                 Response r2 = (Response) responses.get(1);
 
                 if (r1.getBinding().equals(r2.getBinding())) {
-                    String msg = "Multiple responses: (" + result.getClass() + ")";
+                    String msg = "Multiple responses: (" + result.getClass() + "): " + r1 + ", " + r2;
                     throw new RuntimeException(msg);
                 }
             }

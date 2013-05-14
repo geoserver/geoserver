@@ -32,6 +32,8 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
@@ -71,6 +73,29 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat implements Appli
         // we register new formats
         super(gs, formats.keySet());
         this.repository = repository;
+    }
+    
+    @Override
+    public boolean canHandle(Operation operation) {
+        // if we don't have formats configured, we cannot respond
+        if(formats.isEmpty()) {
+            System.out.println("Empty formats");
+            return false;
+        }
+        
+        if(!super.canHandle(operation)) {
+            return false;
+        }
+        
+        // check the format matches, the Dispatcher just does a case insensitive match,
+        // but WFS is supposed to be case sensitive and so is the XSLT code
+        Request request = Dispatcher.REQUEST.get();
+        if(request != null && (request.getOutputFormat() == null || !formats.containsKey(request.getOutputFormat()))) {
+            System.out.println("Formats are: " + formats);
+            return false;
+        } else {
+            return true;
+        }
     }
 
     @Override

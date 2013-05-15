@@ -208,7 +208,7 @@ public class GeoServerInfoImpl implements GeoServerInfo {
     public void setAdminUsername(String adminUsername) {
         this.adminUsername = adminUsername;
     }
-    
+
     public int getFeatureTypeCacheSize() {
         return featureTypeCacheSize;
     }

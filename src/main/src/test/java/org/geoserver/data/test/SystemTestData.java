@@ -870,6 +870,7 @@ public class SystemTestData extends CiteTestData {
         settings.setOnlineResource("http://geoserver.org");
         settings.setVerbose(false);
         settings.setVerboseExceptions(false);
+        settings.setLocalWorkspaceIncludesPrefix(false);
 
         if (ws != null) {
             if (settings.getId() != null) {

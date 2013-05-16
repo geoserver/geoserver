@@ -128,7 +128,7 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
             // remove .properties as it will be added in PropertyFeatureReader constructor
                     fileName.substring(0, fileName.lastIndexOf(".properties")));
             SimpleFeatureType schema = reader.getFeatureType();
-            String tableName = schema.getName().getLocalPart();
+            String tableName = schema.getName().getLocalPart().toUpperCase();
             // create the table
             buf.append("CREATE TABLE ").append(ONLINE_DB_SCHEMA).append(".\"").append(tableName)
                     .append("\"(");

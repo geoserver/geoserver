@@ -77,8 +77,8 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
         super.onSetUp(testData);
 
         //addUser("admin", "geoxserver", null, Arrays.asList("ROLE_ADMINISTRATOR"));
-        addLayerAccessRule("*", "*", AccessMode.READ, "*");
-        addLayerAccessRule("*", "*", AccessMode.WRITE, "*");
+        // addLayerAccessRule("*", "*", AccessMode.READ, "*");
+        // addLayerAccessRule("*", "*", AccessMode.WRITE, "*");
 
         catalog = getCatalog();
         
@@ -113,10 +113,10 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
     protected final void setUpLayerRoles(Properties properties) {
     }
 
-    @Before
-    public void login() throws Exception {
-        login("admin", "geoserver", "ROLE_ADMINISTRATOR");
-    }
+//    @Before
+//    public void login() throws Exception {
+//        login("admin", "geoserver", "ROLE_ADMINISTRATOR");
+//    }
     
     protected String root() {
         return "wps?";

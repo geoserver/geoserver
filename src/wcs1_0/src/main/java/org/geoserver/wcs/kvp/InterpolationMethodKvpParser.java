@@ -23,12 +23,16 @@ public class InterpolationMethodKvpParser extends KvpParser {
     }
 
     @Override
-    public Object parse(String value) throws Exception {
-        if (InterpolationMethodType.get(value) == null)
-            throw new WcsException("Could not find interpolationMethod '" + value + "'",
+    public Object parse(String interpolation) throws Exception {
+
+        if (interpolation.startsWith("nearest")) {
+            interpolation = "nearest neighbor";
+        }        
+        if (InterpolationMethodType.get(interpolation) == null)
+            throw new WcsException("Could not find interpolationMethod '" + interpolation + "'",
                     InvalidParameterValue, "interpolationMethod");
 
-        return InterpolationMethodType.get(value);
+        return InterpolationMethodType.get(interpolation);
     }
 
 }

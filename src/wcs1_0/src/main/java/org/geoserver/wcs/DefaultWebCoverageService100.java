@@ -53,6 +53,7 @@ import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.parameter.DefaultParameterDescriptor;
 import org.geotools.referencing.CRS;
@@ -437,6 +438,35 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             // Check we're not going to read too much data
             WCSUtils.checkInputLimits(wcs, meta, reader, requestedGridGeometry);
 
+
+            //
+            // Checking for supported Interpolation Methods
+            //
+            Interpolation interpolation = Interpolation.getInstance(Interpolation.INTERP_NEAREST);
+
+            String interpolationType = null;
+            if(request.getInterpolationMethod()!=null){
+                interpolationType = request.getInterpolationMethod().getLiteral();            
+                if (interpolationType != null) {
+                   
+                    if (interpolationType.equalsIgnoreCase("bilinear")) {
+                        interpolation = Interpolation.getInstance(Interpolation.INTERP_BILINEAR);
+                    } else if (interpolationType.equalsIgnoreCase("bicubic")) {
+                        interpolation = Interpolation.getInstance(Interpolation.INTERP_BICUBIC);
+                    } else if (interpolationType.equalsIgnoreCase("nearest neighbor")) {
+                        interpolation = Interpolation.getInstance(Interpolation.INTERP_NEAREST);
+                    }
+                    readParameters = CoverageUtils.mergeParameter(parameterDescriptors,readParameters, interpolation, "interpolation");
+                    if(meta.getStore().getFormat() instanceof ImageMosaicFormat){
+                        GeneralParameterValue[] temp = new GeneralParameterValue[readParameters.length+1];
+                        System.arraycopy(readParameters, 0, temp, 0, readParameters.length);
+                        temp[temp.length-1]=ImageMosaicFormat.INTERPOLATION.createValue();
+                        ((ParameterValue)temp[temp.length-1]).setValue(interpolation);
+                        readParameters=temp;
+                    }
+                }
+            }
+
             //
             // perform read
             //
@@ -455,13 +485,10 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             //
             GridCoverage2D bandSelectedCoverage = coverage;
             // ImageIOUtilities.visualize(coverage.getRenderedImage());
-            String interpolationType = null;
             if (request.getRangeSubset() != null) {
                 // if (request.getRangeSubset().getAxisSubset().size() > 1) {
                 // throw new WcsException("Multi field coverages are not supported yet");
                 // }
-
-                interpolationType = request.getInterpolationMethod().getLiteral();
 
                 // extract the band indexes
                 EList axisSubset = request.getRangeSubset().getAxisSubset();
@@ -502,20 +529,6 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                                     + e.getLocalizedMessage());
                         }
                     }
-                }
-            }
-
-            //
-            // Checking for supported Interpolation Methods
-            //
-            Interpolation interpolation = Interpolation.getInstance(Interpolation.INTERP_NEAREST);
-            if (interpolationType != null) {
-                if (interpolationType.equalsIgnoreCase("bilinear")) {
-                    interpolation = Interpolation.getInstance(Interpolation.INTERP_BILINEAR);
-                } else if (interpolationType.equalsIgnoreCase("bicubic")) {
-                    interpolation = Interpolation.getInstance(Interpolation.INTERP_BICUBIC);
-                } else if (interpolationType.equalsIgnoreCase("nearest neighbor")) {
-                    interpolation = Interpolation.getInstance(Interpolation.INTERP_NEAREST);
                 }
             }
 

@@ -46,8 +46,10 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
         super(id, model);
 
         add(new TextField("serverURL").setRequired(true));
-        add(new CheckBox("useTLS"));
+        add(new CheckBox("useTLS"));        
         add(new TextField("userDnPattern"));
+        add(new TextField("userFilter"));
+        add(new TextField("userFormat"));
 
         boolean useLdapAuth = model.getObject().getUserGroupServiceName() == null;
         add(new AjaxCheckBox("useLdapAuthorization", new Model(useLdapAuth)) {
@@ -106,13 +108,18 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
 
         public LDAPAuthorizationPanel(String id) {
             super(id);
-
+            add(new CheckBox("bindBeforeGroupSearch"));
+            add(new TextField("adminGroup"));
+            add(new TextField("groupAdminGroup"));
             add(new TextField("groupSearchBase"));
             add(new TextField("groupSearchFilter"));
         }
 
         @Override
         public void resetModel() {
+        	get("bindBeforeGroupSearch").setDefaultModelObject(null);
+        	get("adminGroup").setDefaultModelObject(null);
+        	get("groupAdminGroup").setDefaultModelObject(null);
             get("groupSearchBase").setDefaultModelObject(null);
             get("groupSearchFilter").setDefaultModelObject(null);
         }

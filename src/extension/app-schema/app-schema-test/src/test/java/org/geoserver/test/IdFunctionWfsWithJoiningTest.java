@@ -17,7 +17,7 @@ import org.w3c.dom.Document;
  * 
  * @author Rini Angreani (CSIRO Earth Science and Resource Engineering)
  */
-public class IdFunctionWfsTestWithJoining extends AbstractAppSchemaTestSupport {
+public class IdFunctionWfsWithJoiningTest extends AbstractAppSchemaTestSupport {
     
     @Override
     protected IdFunctionMockData createTestData() {

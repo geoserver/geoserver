@@ -16,6 +16,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.IModel;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import static org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -66,7 +67,12 @@ public class StyleChooser extends Panel {
                                     "layer",
                                     demo.getLayer().getPrefixedName()
                                 );
-                                params.put("style", style.getName());
+                                WorkspaceInfo workspace = style.getWorkspace();
+                                if (workspace == null) {
+                                    params.put("style", style.getName());
+                                } else {
+                                    params.put("style", workspace.getName() + ":" + style.getName());
+                                }
                                 setResponsePage(CssDemoPage.class, params);
                             }
                         };

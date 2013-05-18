@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.WicketRuntimeException;
@@ -97,7 +98,14 @@ public class CssDemoPage extends GeoServerSecuredPage {
     private static StyleInfo extractStyle(PageParameters params, Catalog catalog, FeatureTypeInfo layer) {
         if (params.containsKey("style")) {
             String style = params.getString("style");
-            return catalog.getStyleByName(style);
+            String[] parts = style.split(":", 2);
+            if (parts.length == 1) {
+                return catalog.getStyleByName(parts[0]);
+            } else if (parts.length == 2) {
+                return catalog.getStyleByName(parts[0], parts[1]);
+            } else {
+                throw new IllegalStateException("After splitting, there should be only 1 or 2 parts.  Got: " + Arrays.toString(parts));
+            }
         } else {
             List<LayerInfo> styles = catalog.getLayers(layer);
             if (styles.size() > 0) {

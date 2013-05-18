@@ -4,7 +4,9 @@
   <body>
     <wicket:panel>
       <form wicket:id="layer.name.form">
-          <label for="layer.name.field">New layer name</label>
+          <label for="layer.workspace.field">Workspace for new layer</label>
+          <select wicket:id="layer.workspace.field"></select>
+          <label for="layer.name.field">New style name</label>
           <input type="text" wicket:id="layer.name.field"></input>
           <button wicket:id="submit.button">Create</button>
       </form>

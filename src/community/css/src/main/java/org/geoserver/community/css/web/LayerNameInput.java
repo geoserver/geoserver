@@ -7,7 +7,10 @@ package org.geoserver.community.css.web;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.PropertyModel;
@@ -15,7 +18,13 @@ import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.ValidationError;
 
+import org.geoserver.catalog.WorkspaceInfo;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class LayerNameInput extends Panel {
+    String workspace = null;
     String name = "";
 
     public LayerNameInput(String id, final CssDemoPage demo) {
@@ -27,18 +36,34 @@ public class LayerNameInput extends Panel {
             new IValidator<String>() {
                 @Override
                 public void validate(IValidatable<String> text) {
-                    String value = text.getValue();
+                    final String value = text.getValue();
                     if (value.matches("\\s")) {
                         text.error(new ValidationError().setMessage(
                             "Spaces not allowed in style names"
                         ));
-                    } else {
-                        text.error(new ValidationError().setMessage(
-                            "That name is already taken!"
-                        ));
+                        return;
                     }
                 }
             };
+
+         List<String> workspaces = new ArrayList<String>();
+         workspaces.add(null);
+         for (WorkspaceInfo info : demo.catalog().getWorkspaces()) {
+             workspaces.add(info.getName());
+         }
+         IChoiceRenderer<String> workspaceRenderer = 
+           new ChoiceRenderer<String>() {
+               @Override
+               public Object getDisplayValue(String value) {
+                   return value == null ? "No workspace" : value;
+               }
+           };
+         DropDownChoice workspaceChooser = new DropDownChoice(
+                 "layer.workspace.field",
+                 new PropertyModel<String>(this, "workspace"),
+                 workspaces,
+                 workspaceRenderer);
+         form.add(workspaceChooser);
 
          TextField nameField =
              new TextField(
@@ -51,16 +76,21 @@ public class LayerNameInput extends Panel {
              new AjaxButton("submit.button", form) {
                  @Override
                  public void onSubmit(AjaxRequestTarget target, Form f) {
-                     if (demo.catalog().getStyleByName(name) != null)
+                     if (demo.catalog().getStyleByName(workspace, name) != null) {
                          throw new RuntimeException(
                              "Trying to create style with same name as existing one!"
                          );
+                     }
                      
                      demo.createCssTemplate(name);
 
                      PageParameters params = new PageParameters();
                      params.put("layer", demo.getLayer().getPrefixedName());
-                     params.put("style", name);
+                     if (workspace == null) {
+                         params.put("style", name);
+                     } else {
+                         params.put("style", workspace + ":" + name);
+                     }
                      setResponsePage(CssDemoPage.class, params);
                  }
              };

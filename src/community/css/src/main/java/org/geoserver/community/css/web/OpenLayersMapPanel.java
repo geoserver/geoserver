@@ -78,6 +78,9 @@ class OpenLayersMapPanel extends Panel implements IHeaderContributor {
         context.put("id", getMarkupId());
         context.put("layer", resource.getPrefixedName());
         context.put("style", style.getName());
+        if (style.getWorkspace() != null) {
+          context.put("styleWorkspace", style.getWorkspace().getName());
+        }
         context.put("cachebuster", rand.nextInt());
         context.put("resolution", Math.max(bbox.getSpan(0), bbox.getSpan(1)) / 256.0);
         Template template = templates.getTemplate("ol-load.ftl");

@@ -18,6 +18,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import static org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -86,7 +87,12 @@ public class LayerChooser extends Panel {
                                     public void onClick(AjaxRequestTarget target) {
                                         PageParameters params = new PageParameters();
                                         params.put("layer", layer.getPrefixedName());
-                                        params.put("style", demo.getStyleInfo().getName());
+                                        WorkspaceInfo workspace= demo.getStyleInfo().getWorkspace();
+                                        if (workspace == null) {
+                                            params.put("style", demo.getStyleInfo().getName());
+                                        } else {
+                                            params.put("style", workspace.getName() + ":" + demo.getStyleInfo().getName());
+                                        }
                                         setResponsePage(CssDemoPage.class, params);
                                     }
                                 });

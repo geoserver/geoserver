@@ -12,7 +12,11 @@ var cfg = {
 };
 
 var map = new OpenLayers.Map("${id}", cfg);
+<#if styleWorkspace??>
+map.addLayer(new OpenLayers.Layer.WMS("GeoServer WMS", "../${styleWorkspace}/wms",
+<#else>
 map.addLayer(new OpenLayers.Layer.WMS("GeoServer WMS", "../wms",
+</#if>
     {
       layers: "${layer}",
       styles: "${style}",
@@ -27,3 +31,12 @@ map.addLayer(new OpenLayers.Layer.WMS("GeoServer WMS", "../wms",
 map.zoomToMaxExtent();
 window.olMaps = window.olMaps || {};
 window.olMaps["${id}"] = map;
+if (!window.olUpdate) {
+    window.olUpdate = function(id, params) {
+        var map = window.olMaps[id];
+        for (var i = 0; i < map.layers.length; i++) {
+            var layer = map.layers[i];
+            if (layer.mergeNewParams) layer.mergeNewParams(params);
+        }
+    };
+}

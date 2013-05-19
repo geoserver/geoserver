@@ -57,6 +57,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.TestHttpClientProvider;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
@@ -91,11 +92,13 @@ import org.geoserver.security.password.GeoServerPBEPasswordEncoder;
 import org.geoserver.security.password.GeoServerPlainTextPasswordEncoder;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
+import org.geotools.data.ows.HTTPClient;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.util.logging.Log4JLoggerFactory;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.XSD;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.GrantedAuthorityImpl;
@@ -179,6 +182,9 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         LoggingUtils.configureGeoServerLogging(loader, getClass().getResourceAsStream(getLogConfiguration()), false, true, null);
 
         setUpTestData(testData);
+        
+        // put the mock http server in test mode
+        TestHttpClientProvider.startTest();
 
         // if we have data, create a mock servlet context and start up the spring configuration
         if (testData.isTestDataAvailable()) {
@@ -219,6 +225,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             onTearDown(testData);
 
             destroyGeoServer();
+            
+            TestHttpClientProvider.endTest();
 
             // some tests do need a kick on the GC to fully clean up
             if(isMemoryCleanRequired()) {

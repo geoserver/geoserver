@@ -6,7 +6,9 @@ package org.geoserver.test;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
+import static org.junit.Assert.assertEquals;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -26,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import javax.imageio.ImageIO;
 import javax.servlet.Filter;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -1164,6 +1167,20 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     protected JSON json(MockHttpServletResponse response) {
         String content = response.getOutputStreamContent();
         return JSONSerializer.toJSON(content);
+    }
+    
+    /**
+     * Retries the request result as a BufferedImage, checking the mime type is the expected one
+     * @param path
+     * @param mime
+     * @return
+     * @throws Exception
+     */
+    protected BufferedImage getAsImage(String path, String mime) throws Exception {
+        MockHttpServletResponse resp = getAsServletResponse(path);
+        assertEquals(mime, resp.getContentType());
+        InputStream is = getBinaryInputStream(resp);
+        return ImageIO.read(is);
     }
 
     /**

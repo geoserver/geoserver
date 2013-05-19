@@ -455,20 +455,6 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
     }
     
     /**
-     * Retries the request result as a BufferedImage, checking the mime type is the expected one
-     * @param path
-     * @param mime
-     * @return
-     * @throws Exception
-     */
-    protected BufferedImage getAsImage(String path, String mime) throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse(path);
-        assertEquals(mime, resp.getContentType());
-        InputStream is = getBinaryInputStream(resp);
-        return ImageIO.read(is);
-    }
-    
-    /**
      * Checks the pixel i/j has the specified color
      * @param image
      * @param i

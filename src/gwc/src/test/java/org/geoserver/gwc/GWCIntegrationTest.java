@@ -4,10 +4,17 @@
  */
 package org.geoserver.gwc;
 
-import static junit.framework.Assert.*;
-import static org.geoserver.data.test.MockData.*;
-import static org.geoserver.gwc.GWC.*;
+import static org.geoserver.data.test.MockData.BASIC_POLYGONS;
+import static org.geoserver.data.test.MockData.MPOINTS;
+import static org.geoserver.gwc.GWC.tileLayerName;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
@@ -22,6 +29,8 @@ import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.layer.CatalogConfiguration;
+import org.geoserver.gwc.layer.GeoServerTileLayer;
+import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geowebcache.GeoWebCacheDispatcher;
@@ -31,8 +40,8 @@ import org.geowebcache.config.ConfigurationException;
 import org.geowebcache.diskquota.DiskQuotaConfig;
 import org.geowebcache.diskquota.QuotaStore;
 import org.geowebcache.diskquota.jdbc.JDBCConfiguration;
-import org.geowebcache.diskquota.jdbc.JDBCQuotaStore;
 import org.geowebcache.diskquota.jdbc.JDBCConfiguration.ConnectionPoolConfiguration;
+import org.geowebcache.diskquota.jdbc.JDBCQuotaStore;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.grid.GridSubset;
@@ -43,7 +52,6 @@ import org.junit.Test;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
-import org.geoserver.gwc.layer.GeoServerTileLayer;
 
 public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
@@ -467,5 +475,19 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         System.out.println(response.getOutputStreamContent());
         assertEquals("application/vnd.ogc.wms_xml", response.getContentType());
         assertEquals("inline;filename=wms-getcapabilities.xml", response.getHeader("content-disposition"));
+    }
+    
+    @Test
+    public void testGutter() throws Exception {
+        GeoServerTileLayer tileLayer = (GeoServerTileLayer) GWC.get().getTileLayerByName(getLayerId(BASIC_POLYGONS));
+        GeoServerTileLayerInfo info = tileLayer.getInfo();
+        info.setGutter(100);
+        GWC.get().save(tileLayer);
+                
+        String request = "gwc/service/wms?LAYERS=cite%3ABasicPolygons&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&STYLES=&SRS=EPSG%3A4326&BBOX=0,0,11.25,11.25&WIDTH=256&HEIGHT=256";
+        BufferedImage image = getAsImage(request, "image/png");
+        // with GEOS-5786 active we would have gotten back a 356px image
+        assertEquals(256, image.getWidth());
+        assertEquals(256, image.getHeight());
     }
 }

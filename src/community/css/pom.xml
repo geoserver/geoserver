@@ -45,7 +45,7 @@
     <dependency>
       <groupId>org.geoscript</groupId>
       <artifactId>geocss_2.10</artifactId>
-      <version>0.8.0</version>
+      <version>0.8.1</version>
     </dependency>
 
     <!-- Test dependencies -->

@@ -166,7 +166,7 @@
 				            <excludes>
                                 <!-- To be run separately online in app-schema-oracle-test and app-schema-postgis-test -->				
                                 <exclude>**/SortByTest.java</exclude>
-                                <exclude>**/IdFunctionWfsTestWithJoining.java</exclude>
+                                <exclude>**/IdFunctionWfsWithJoiningTest.java</exclude>
                                 <exclude>${test.exclude.pattern}</exclude>
 					        </excludes>
 				        </configuration>

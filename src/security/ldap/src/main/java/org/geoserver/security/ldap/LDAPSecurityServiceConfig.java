@@ -82,14 +82,14 @@ public class LDAPSecurityServiceConfig extends BaseSecurityNamedServiceConfig
     }   
     
     public Boolean isBindBeforeGroupSearch() {
-		return bindBeforeGroupSearch == null ? false : bindBeforeGroupSearch;
-	}
+        return bindBeforeGroupSearch == null ? false : bindBeforeGroupSearch;
+    }
 
-	public void setBindBeforeGroupSearch(Boolean bindBeforeGroupSearch) {
-		this.bindBeforeGroupSearch = bindBeforeGroupSearch;
-	}
+    public void setBindBeforeGroupSearch(Boolean bindBeforeGroupSearch) {
+        this.bindBeforeGroupSearch = bindBeforeGroupSearch;
+    }
 
-	@Override
+    @Override
     public String getUserGroupServiceName() {
         return userGroupServiceName;
     }
@@ -99,38 +99,38 @@ public class LDAPSecurityServiceConfig extends BaseSecurityNamedServiceConfig
         this.userGroupServiceName = userGroupServiceName;
     }
 
-	public String getAdminGroup() {
-		return adminGroup;
-	}
+    public String getAdminGroup() {
+        return adminGroup;
+    }
 
-	public void setAdminGroup(String adminGroup) {
-		this.adminGroup = adminGroup;
-	}
-		
-	public String getGroupAdminGroup() {
-		return groupAdminGroup;
-	}
+    public void setAdminGroup(String adminGroup) {
+        this.adminGroup = adminGroup;
+    }
+        
+    public String getGroupAdminGroup() {
+        return groupAdminGroup;
+    }
 
-	public void setGroupAdminGroup(String groupAdminGroup) {
-		this.groupAdminGroup = groupAdminGroup;
-	}
+    public void setGroupAdminGroup(String groupAdminGroup) {
+        this.groupAdminGroup = groupAdminGroup;
+    }
 
-	public String getUserFilter() {
-		return userFilter;
-	}
+    public String getUserFilter() {
+        return userFilter;
+    }
 
-	public void setUserFilter(String userFilter) {
-		this.userFilter = userFilter;
-	}
+    public void setUserFilter(String userFilter) {
+        this.userFilter = userFilter;
+    }
 
-	public String getUserFormat() {
-		return userFormat;
-	}
+    public String getUserFormat() {
+        return userFormat;
+    }
 
-	public void setUserFormat(String userFormat) {
-		this.userFormat = userFormat;
-	}
-	
-	
+    public void setUserFormat(String userFormat) {
+        this.userFormat = userFormat;
+    }
+    
+    
     
 }

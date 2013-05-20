@@ -122,7 +122,9 @@ public class ScriptFunctionFactory extends ScriptFactory implements FunctionFact
                         }
                         
                         if (!f.exists()) {
-                            throw new FileNotFoundException(f.getPath());
+                            //throw new FileNotFoundException(f.getPath());
+                            LOGGER.log(Level.WARNING, "File not found : " + f.getPath());
+                            return null;
                         }
 
                         function = new ScriptFunction(f, scriptMgr);

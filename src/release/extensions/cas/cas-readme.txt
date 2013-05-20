@@ -11,7 +11,7 @@ Any other issues can be discussed on the mailing list (http://lists.sourceforge.
 Installation
 ------------
 
-1. Copy cas and spring-security-cas jars into the WEB-INF/lib directory of your
+1. Copy the included jar files into the WEB-INF/lib directory of your
    GeoServer installation.
 
 2. Restart GeoServer.

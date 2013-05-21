@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.geoserver.security.impl.GeoServerRole;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.web.access.intercept.DefaultFilterInvocationSecurityMetadataSource;
@@ -35,7 +36,7 @@ public class GeoServerSecurityMetadataSource extends DefaultFilterInvocationSecu
         
         RequestMatcher matcher = new AntPathRequestMatcher("/config/**");                
         List<ConfigAttribute> list = new ArrayList<ConfigAttribute>();
-        list.add(new SecurityConfig("ROLE_ADMINISTRATOR"));
+        list.add(new SecurityConfig(GeoServerRole.ADMIN_ROLE.getAuthority()));
         requestMap.put(matcher,list);
 
         matcher = new AntPathRequestMatcher("/**");

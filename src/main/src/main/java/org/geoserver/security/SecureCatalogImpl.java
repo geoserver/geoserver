@@ -1467,14 +1467,9 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
      * Checks if the current user is authenticated and is the administrator
      */
     private boolean isAdmin(Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated())
-            return false;
-
-        for (GrantedAuthority authority : authentication.getAuthorities()) {
-            if ("ROLE_ADMINISTRATOR".equals(authority.getAuthority()))
-                return true;
-        }
-        return false;
+        
+        return GeoServerExtensions.bean(GeoServerSecurityManager.class).
+                checkAuthenticationForAdminRole(authentication);
     }
 
     public void removeListeners(Class listenerClass) {

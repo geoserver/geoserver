@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.geoserver.security.AccessMode;
+import org.geoserver.security.GeoServerSecurityFilterChainProxy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -30,7 +31,7 @@ class SecureTreeNode {
     /**
      * The role given to the administrators
      */
-    static final String ROOT_ROLE = "ROLE_ADMINISTRATOR";
+    static final String ROOT_ROLE = GeoServerRole.ADMIN_ROLE.getAuthority();
 
     Map<String, SecureTreeNode> children = new HashMap<String, SecureTreeNode>();
 
@@ -121,6 +122,9 @@ class SecureTreeNode {
     boolean canAccess(Authentication user, AccessMode mode) {
         Set<String> roles = getAuthorizedRoles(mode);
 
+        if (GeoServerSecurityFilterChainProxy.isSecurityEnabledForCurrentRequest()==false)
+            return true;
+        
         // if we don't know, we ask the parent, otherwise we assume
         // the object is unsecured
         if (roles == null) {

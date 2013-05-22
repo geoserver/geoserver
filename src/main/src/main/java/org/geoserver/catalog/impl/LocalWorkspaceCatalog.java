@@ -104,7 +104,7 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
     public List<LayerInfo> getLayers() {
         if (useNameDequalifyingProxy()) {
             return NameDequalifyingProxy.createList(super.getLayers(),
-                    LayerInfo.class);
+                    LayerInfo.class, LocalWorkspace.get());
         }
         return super.getLayers();
     }
@@ -238,7 +238,7 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
             return null;
         }
         if (useNameDequalifyingProxy()) {
-            return NameDequalifyingProxy.create(obj, clazz);
+            return NameDequalifyingProxy.create(obj, clazz, LocalWorkspace.get());
         }
         return obj;
     }
@@ -248,8 +248,8 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
     }
 
     List<LayerGroupInfo> wrap(List<LayerGroupInfo> layerGroups) {
-        if (LocalWorkspace.get() != null) {
-            return NameDequalifyingProxy.createList(layerGroups, LayerGroupInfo.class);
+        if (useNameDequalifyingProxy()) {
+            return NameDequalifyingProxy.createList(layerGroups, LayerGroupInfo.class, LocalWorkspace.get());
         }
         return layerGroups;
     }
@@ -257,9 +257,11 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
     static class NameDequalifyingProxy implements WrappingProxy, Serializable {
 
         Object object;
+        private String workspacePrefix;
 
-        NameDequalifyingProxy(Object object) {
+        NameDequalifyingProxy(Object object, String workspacePrefix) {
             this.object = object;
+            this.workspacePrefix = workspacePrefix+':';
         }
 
         public Object getProxyObject() {
@@ -273,25 +275,25 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
                 "getPrefixedName".equals(method.getName()) || 
                 "getName".equals(method.getName())) {
                 String val = (String) method.invoke(object, args);
-                if (val == null || val.indexOf(':') == -1) {
+                if (val == null || !val.startsWith(workspacePrefix)) {
                     return val;
                 }
 
-                return val.split(":")[1];
+                return val.split(":", 2)[1];
             }
 
             return method.invoke(object, args);
         }
     
-        public static <T> T create( T object, Class<T> clazz) {
-            return ProxyUtils.createProxy(object, clazz, new NameDequalifyingProxy(object));
+        public static <T> T create( T object, Class<T> clazz, WorkspaceInfo workspaceInfo) {
+            return ProxyUtils.createProxy(object, clazz, new NameDequalifyingProxy(object, workspaceInfo.getName()));
         }
 
-        public static <T> List<T> createList(List<T> object, Class<T> clazz) {
+        public static <T> List<T> createList(List<T> object, Class<T> clazz, final WorkspaceInfo workspaceInfo) {
             return new ProxyList(object, clazz) {
                 @Override
                 protected <T> T createProxy(T proxyObject, Class<T> proxyInterface) {
-                    return create(proxyObject, proxyInterface);
+                    return create(proxyObject, proxyInterface, workspaceInfo);
                 }
 
                 @Override

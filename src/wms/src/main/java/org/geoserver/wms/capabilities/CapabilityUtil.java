@@ -71,6 +71,7 @@ final class CapabilityUtil {
 		    for (FeatureTypeStyle fts : style.featureTypeStyles()) {
 		    	
 		        for ( Rule rule : fts.rules() ) {
+		       
 		            if ( rule.getMinScaleDenominator() < scaleDenominator.get(minScaleDenominator) ) {
 		            	scaleDenominator.put(minScaleDenominator,  rule.getMinScaleDenominator());
 		            }
@@ -91,5 +92,14 @@ final class CapabilityUtil {
 		assert scaleDenominator.get(minScaleDenominator) <= scaleDenominator.get(maxScaleDenominator) : "Min <= Max scale is expected";
 
 	    return scaleDenominator;
+	}
+
+	public static Double computeScaleHint(final Double scaleDenominator) {
+		
+		final Double sizeStarndardRenderPixel = 0.0028;//(meters) 
+		
+		Double scaleHint = Math.sqrt(Math.pow((scaleDenominator * sizeStarndardRenderPixel), 2) * 2);
+		
+		return scaleHint;
 	}
 }

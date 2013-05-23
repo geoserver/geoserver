@@ -167,6 +167,7 @@
                                 <!-- To be run separately online in app-schema-oracle-test and app-schema-postgis-test -->				
                                 <exclude>**/SortByTest.java</exclude>
                                 <exclude>**/IdFunctionWfsWithJoiningTest.java</exclude>
+				 <exclude>**/XPathPredicateTest.java</exclude>
                                 <exclude>${test.exclude.pattern}</exclude>
 					        </excludes>
 				        </configuration>
@@ -219,6 +220,7 @@
                                 <exclude>**/DataReferenceWmsPostgisWithJoiningTest.java</exclude>				
                                 <exclude>**/SortByTest.java</exclude>
                                 <exclude>**/IdFunctionWfsWithJoiningTest.java</exclude>
+				 <exclude>**/XPathPredicateTest.java</exclude>
                                 <exclude>${test.exclude.pattern}</exclude>
 					        </excludes>
 				        </configuration>

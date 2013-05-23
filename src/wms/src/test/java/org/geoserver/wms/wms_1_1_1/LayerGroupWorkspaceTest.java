@@ -8,10 +8,14 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.junit.Assert.fail;
+import static org.junit.Assert.assertArrayEquals;
 
 import java.util.Arrays;
 
 import javax.xml.namespace.QName;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -27,6 +31,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 public class LayerGroupWorkspaceTest extends WMSTestSupport {
 
@@ -39,7 +44,6 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         WMSInfo wms = gs.getService(WMSInfo.class);
         wms.getSRS().add("4326");
         gs.save(wms);
-        
         Catalog cat = getCatalog();
 
         global = createLayerGroup(cat, "base", "base default",
@@ -206,7 +210,28 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/Layer[Name[text() = 'base']]/Layer/Name[text() = 'cite:Forests']", dom);                
     }    
     
-    @Test 
+    @Test
+    public void testWorkspace1_1_1vs1_3_0Capabilities() throws Exception {
+        Document dom1_1_1 = getAsDOM("sf/wms?request=getcapabilities&version=1.1.1");
+        Document dom1_3_0 = getAsDOM("sf/wms?request=getcapabilities&version=1.3.0");
+
+        XPath xPath = XPathFactory.newInstance().newXPath();
+        NodeList nodes1_1_1 = (NodeList) xPath.evaluate("//*[name() = 'Layer']/*[name() = 'Name']", dom1_1_1, XPathConstants.NODESET);
+        NodeList nodes1_3_0 = (NodeList) xPath.evaluate("//*[name() = 'Layer']/*[name() = 'Name']", dom1_3_0, XPathConstants.NODESET);
+
+        String[] names1_1_1 = new String[nodes1_1_1.getLength()];
+        for (int i = 0; i < names1_1_1.length; i++) {
+            names1_1_1[i] = nodes1_1_1.item(i).getTextContent();
+        }
+
+        String[] names1_3_0 = new String[nodes1_3_0.getLength()];
+        for (int i = 0; i < names1_3_0.length; i++) {
+            names1_3_0[i] = nodes1_3_0.item(i).getTextContent();
+        }
+        assertArrayEquals(names1_1_1, names1_3_0);
+    }
+
+    @Test
     public void testWorkspaceCapabilities() throws Exception {
         Document dom = getAsDOM("sf/wms?request=getcapabilities&version=1.1.1");
 

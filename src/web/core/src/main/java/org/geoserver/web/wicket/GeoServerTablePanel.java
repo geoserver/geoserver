@@ -10,11 +10,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -111,7 +113,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         filterForm = new Form("filterForm") {
             @Override
             public void renderHead(IHeaderResponse response) {
-                if (isRootForm()) return;
+                if (!isInsideModalWindow()) return;
 
                 //in subforms (on dialogs) the forms onsubmit doesn;t forward to the submit links
                 // onclick, so we manually do it outselves
@@ -227,6 +229,18 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         navigatorBottom.setOutputMarkupId(true);
     }
     
+    protected boolean isInsideModalWindow() {
+        MarkupContainer parent = this.getParent();
+        while(parent != null) {
+            if(parent instanceof ModalWindow) {
+                return true;
+            }
+            parent = parent.getParent();
+        }
+        
+        return false;
+    }
+
     /**
      * Sets the item reuse strategy for the table. Should be {@link ReuseIfModelsEqualStrategy} if
      * you're building an editable table, {@link DefaultItemReuseStrategy} otherwise

@@ -10,12 +10,15 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -108,27 +111,19 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         listContainer = new WebMarkupContainer("listContainer");
 
         // build the filter form
-        filterForm = new Form("filterForm") {
-            @Override
-            public void renderHead(IHeaderResponse response) {
-                if (isRootForm()) return;
-
-                //in subforms (on dialogs) the forms onsubmit doesn;t forward to the submit links
-                // onclick, so we manually do it outselves
-                String markupId = filterForm.getMarkupId();
-                String js = 
-                "if (Wicket.Browser.isSafari() || Wicket.Browser.isIE()) {" + 
-                    "n = document.getElementById('" + markupId + "'); " + 
-                    "while (n.nodeName.toLowerCase() != 'form') { n = n.parentElement; }; " + 
-                    "n.setAttribute('onsubmit', \"return document.getElementById('" + hiddenSubmit.getMarkupId()+ "').onclick();\");" + 
-                 "}";
-                response.renderOnLoadJavascript(js);
-            }
-            
-        };
+        filterForm = new Form("filterForm");
         filterForm.setOutputMarkupId(true);
         add(filterForm);
-        filterForm.add(filter = new TextField("filter", new Model()));
+        filter = new TextField<String>("filter", new Model<String>()) {
+            @Override
+            protected void onComponentTag(ComponentTag tag) {
+                super.onComponentTag(tag);
+                tag.put("onkeypress", "if(event.keyCode == 13) {document.getElementById('"
+                        + hiddenSubmit.getMarkupId() + "').click();return false;}");
+
+            }
+        };
+        filterForm.add(filter);
         filter.add(new SimpleAttributeModifier("title", String.valueOf(new ResourceModel(
                 "GeoServerTablePanel.search", "Search").getObject())));
         filterForm.add(hiddenSubmit = hiddenSubmit());

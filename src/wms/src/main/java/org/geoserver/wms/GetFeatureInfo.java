@@ -28,6 +28,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.ows.Dispatcher;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.featureinfo.FeatureCollectionDecorator;
 import org.geotools.coverage.GridSampleDimension;
@@ -197,7 +198,7 @@ public class GetFeatureInfo {
                 getMapReq.getCrs());
         final double scaleDenominator = RendererUtilities.calculateOGCScale(bbox, width, null);
         final List<Object> elevations = request.getGetMapRequest().getElevation();
-		final List<Object> times = request.getGetMapRequest().getTime();
+        final List<Object> times = request.getGetMapRequest().getTime();
         final FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(GeoTools.getDefaultHints());
 
         List<FeatureCollection> results = new ArrayList<FeatureCollection>(requestedLayers.size());
@@ -237,7 +238,7 @@ public class GetFeatureInfo {
             FeatureCollection collection = null;
             if (layer.getType() == MapLayerInfo.TYPE_VECTOR) {
                 final Map<String, String> viewParam = viewParams != null ? viewParams.get(i) : null;
-				collection = identifyVectorLayer(filters, x, y, buffer, viewParam,
+                collection = identifyVectorLayer(filters, x, y, buffer, viewParam,
                         requestedCRS, width, height, bbox, ff, results, i, layer, rules, maxFeatures,
                         times, elevations, names);
             } else if (layer.getType() == MapLayerInfo.TYPE_RASTER) {
@@ -292,11 +293,15 @@ public class GetFeatureInfo {
             
 
             if (collection != null) {
+                Name name;
                 if (!(collection.getSchema() instanceof SimpleFeatureType)) {
                     //put wrapper around it with layer name
-                    Name name = new NameImpl (layer.getFeature().getNamespace().getName(), layer.getFeature().getName());                
-                    collection = new FeatureCollectionDecorator(name, collection);
+                     name = new NameImpl (layer.getFeature().getNamespace().getName(), layer.getFeature().getName());                                    
+                } else {
+                    name = collection.getSchema().getName();                
                 }
+                collection = new FeatureCollectionDecorator(name, collection,
+                        Dispatcher.REQUEST.get());
                 
                 int size = collection.size();
                 if(size != 0) {
@@ -309,12 +314,12 @@ public class GetFeatureInfo {
                     // feature accordingly.
                     // This is a Hack, this information should not be passed through feature type
                     // appschema will need to remove this information from the feature type again
-                	if (! (collection instanceof SimpleFeatureCollection)) {
+                    if (! (collection instanceof SimpleFeatureCollection)) {
                        collection.getSchema().getUserData().put("targetCrs", request.getGetMapRequest().getCrs());
                        collection.getSchema().getUserData().put("targetVersion", "wms:getfeatureinfo");
                        
                     }
-                	
+                
                     results.add(collection);
                     
                     // don't return more than FEATURE_COUNT
@@ -395,11 +400,11 @@ public class GetFeatureInfo {
             // it's fine, users might legitimately query point outside, we just don't
             // return anything
         } finally {
-        	RenderedImage ri = coverage.getRenderedImage();
-        	coverage.dispose(true);
-        	if(ri instanceof PlanarImage) {
-        		ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
-        	}
+            RenderedImage ri = coverage.getRenderedImage();
+            coverage.dispose(true);
+            if(ri instanceof PlanarImage) {
+                ImageUtilities.disposePlanarImageChain((PlanarImage) ri);
+            }
         }
         return pixel;
     }
@@ -515,7 +520,7 @@ public class GetFeatureInfo {
         // if we could not include the rules filter into the query, post process in
         // memory
         if (!Filter.INCLUDE.equals(postFilter)) {
-        	match = new FilteringFeatureCollection(match, postFilter);
+            match = new FilteringFeatureCollection(match, postFilter);
         }
 
         // this was crashing Gml2FeatureResponseDelegate due to not setting

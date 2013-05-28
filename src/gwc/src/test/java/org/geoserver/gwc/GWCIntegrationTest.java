@@ -28,6 +28,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.layer.CatalogConfiguration;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
@@ -489,5 +490,18 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         // with GEOS-5786 active we would have gotten back a 356px image
         assertEquals(256, image.getWidth());
         assertEquals(256, image.getHeight());
+    }
+    
+    @Test
+    public void testSaveConfig() throws Exception {
+        GWCConfig config = GWC.get().getConfig();
+        // set a large gutter
+        config.setGutter(100);
+        // save the config
+        GWC.get().saveConfig(config);
+        // force a reload
+        getGeoServer().reload();
+        // grab the config, make sure it was saved as expected
+        assertEquals(100, GWC.get().getConfig().getGutter());
     }
 }

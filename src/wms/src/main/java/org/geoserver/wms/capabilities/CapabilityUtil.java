@@ -103,9 +103,9 @@ final class CapabilityUtil {
 	public static Double computeScaleHint(final Double scaleDenominator) {
 		
 		// According to OGC SLD 1.0 specification: The "standardized rendering pixel size" is defined to be 0.28mm × 0.28mm (millimeters).
-		final Double sizeStarndardRenderPixel = 0.00028;//(meters) 
+		final Double sizeStandardRenderPixel = 0.00028;//(meters) 
 		
-		Double scaleHint = Math.sqrt(Math.pow((scaleDenominator * sizeStarndardRenderPixel), 2) * 2);
+		Double scaleHint = Math.sqrt(Math.pow((scaleDenominator * sizeStandardRenderPixel), 2) * 2);
 		
 		return scaleHint;
 	}

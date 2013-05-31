@@ -19,6 +19,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -68,7 +69,7 @@ public class LocalWorkspaceCatalogTest {
         replay(s2);
 
         LayerGroupInfo lg1 = createNiceMock(LayerGroupInfo.class);
-        expect(lg1.getName()).andReturn("lg1").anyTimes();
+        expect(lg1.getName()).andReturn("lg:1").anyTimes();
         expect(lg1.getWorkspace()).andReturn(ws1).anyTimes();
         replay(lg1);
 
@@ -78,7 +79,7 @@ public class LocalWorkspaceCatalogTest {
         replay(lg2);
 
         FeatureTypeInfo ft1 = createNiceMock(FeatureTypeInfo.class);
-        expect(ft1.getName()).andReturn("l1").anyTimes();
+        expect(ft1.getName()).andReturn("l:1").anyTimes();
         expect(ft1.getNamespace()).andReturn(ns1).anyTimes();
         replay(ft1);
         
@@ -126,18 +127,18 @@ public class LocalWorkspaceCatalogTest {
         expect(cat.getStyleByName(ws2, "s2")).andReturn(s1).anyTimes();
         expect(cat.getStyleByName("s2")).andReturn(null).anyTimes();
         
-        expect(cat.getLayerGroupByName("ws1", "lg1")).andReturn(lg1).anyTimes();
-        expect(cat.getLayerGroupByName(ws1, "lg1")).andReturn(lg1).anyTimes();
-        expect(cat.getLayerGroupByName("lg1")).andReturn(null).anyTimes();
+        expect(cat.getLayerGroupByName("ws1", "lg:1")).andReturn(lg1).anyTimes();
+        expect(cat.getLayerGroupByName(ws1, "lg:1")).andReturn(lg1).anyTimes();
+        expect(cat.getLayerGroupByName("lg:1")).andReturn(null).anyTimes();
         
         expect(cat.getLayerGroupByName("ws2", "lg2")).andReturn(lg2).anyTimes();
         expect(cat.getLayerGroupByName(ws2, "lg2")).andReturn(lg2).anyTimes();
         expect(cat.getLayerGroupByName("lg2")).andReturn(null).anyTimes();
 
-        //expect(cat.getLayerByName("ws1", "l1")).andReturn(l1).anyTimes();
-        //expect(cat.getLayerByName(ws1, "l1")).andReturn(l1).anyTimes();
-        expect(cat.getLayerByName(new NameImpl("ws1", "l1"))).andReturn(l1).anyTimes();
-        expect(cat.getLayerByName("l1")).andReturn(null).anyTimes();
+        //expect(cat.getLayerByName("ws1", "l:1")).andReturn(l1).anyTimes();
+        //expect(cat.getLayerByName(ws1, "l:1")).andReturn(l1).anyTimes();
+        expect(cat.getLayerByName(new NameImpl("ws1", "l:1"))).andReturn(l1).anyTimes();
+        expect(cat.getLayerByName("l:1")).andReturn(null).anyTimes();
 
         //expect(cat.getLayerByName("ws2", "l2")).andReturn(l2).anyTimes();
         //expect(cat.getLayerByName(ws2, "l2")).andReturn(l2).anyTimes();
@@ -152,16 +153,26 @@ public class LocalWorkspaceCatalogTest {
 
         List<LayerInfo> layers = new ArrayList<LayerInfo>(2);
         layers.add(l1);
-        layers.add(l2);
         layers.add(lc1);
-        layers.add(lc2);
         expect(cat.getLayers()).andReturn(layers).anyTimes();
         expect(cat.list(LayerInfo.class, Filter.INCLUDE, 
                 (Integer) null, (Integer) null, (SortBy) null))
             .andReturn(new CloseableIteratorAdapter<LayerInfo>(layers.iterator())).anyTimes();
+        
+        List<LayerGroupInfo> layerGroups = new ArrayList<LayerGroupInfo>(1);
+        layerGroups.add(lg1);
+        
+        expect(cat.getLayerGroups()).andReturn(layerGroups).anyTimes();
+        expect(cat.list(LayerGroupInfo.class, Filter.INCLUDE, 
+                (Integer) null, (Integer) null, (SortBy) null))
+            .andReturn(new CloseableIteratorAdapter<LayerGroupInfo>(layerGroups.iterator())).anyTimes();
+        
+
         replay(cat);
         
         catalog = new LocalWorkspaceCatalog(cat);
+
+        LocalWorkspace.remove();
     }
 
     @After
@@ -195,48 +206,48 @@ public class LocalWorkspaceCatalogTest {
 
     @Test
     public void testGetLayerGroupByName() throws Exception {
-        assertNull(catalog.getLayerGroupByName("lg1"));
+        assertNull(catalog.getLayerGroupByName("lg:1"));
         assertNull(catalog.getLayerGroupByName("lg2"));
 
         WorkspaceInfo ws1 = catalog.getWorkspaceByName("ws1");
         WorkspaceInfo ws2 = catalog.getWorkspaceByName("ws2");
         
         LocalWorkspace.set(ws1);
-        assertNotNull(catalog.getLayerGroupByName("lg1"));
+        assertNotNull(catalog.getLayerGroupByName("lg:1"));
         assertNull(catalog.getLayerGroupByName("lg2"));
 
         LocalWorkspace.remove();
-        assertNull(catalog.getLayerGroupByName("lg1"));
+        assertNull(catalog.getLayerGroupByName("lg:1"));
         assertNull(catalog.getLayerGroupByName("lg2"));
 
         LocalWorkspace.set(ws2);
-        assertNull(catalog.getLayerGroupByName("lg1"));
+        assertNull(catalog.getLayerGroupByName("lg:1"));
         assertNotNull(catalog.getLayerGroupByName("lg2"));
 
         LocalWorkspace.remove();
-        assertNull(catalog.getLayerGroupByName("lg1"));
+        assertNull(catalog.getLayerGroupByName("lg:1"));
         assertNull(catalog.getLayerGroupByName("lg2"));
     }
 
     @Test
     public void testGetLayerByName() throws Exception {
-        assertNull(catalog.getLayerByName("l1"));
+        assertNull(catalog.getLayerByName("l:1"));
         assertNull(catalog.getLayerByName("l2"));
 
         WorkspaceInfo ws1 = catalog.getWorkspaceByName("ws1");
         WorkspaceInfo ws2 = catalog.getWorkspaceByName("ws2");
 
         LocalWorkspace.set(ws1);
-        assertNotNull(catalog.getLayerByName("l1"));
+        assertNotNull(catalog.getLayerByName("l:1"));
         assertNull(catalog.getLayerByName("l2"));
         LocalWorkspace.remove();
 
         LocalWorkspace.set(ws2);
-        assertNull(catalog.getLayerByName("l1"));
+        assertNull(catalog.getLayerByName("l:1"));
         assertNotNull(catalog.getLayerByName("l2"));
         LocalWorkspace.remove();
 
-        assertNull(catalog.getLayerByName("l1"));
+        assertNull(catalog.getLayerByName("l:1"));
         assertNull(catalog.getLayerByName("l2"));
     }
 
@@ -340,20 +351,23 @@ public class LocalWorkspaceCatalogTest {
         checkLayerNamePrefixInclusion(includePrefix, catalog.getLayers().iterator());
         
         checkLayerNamePrefixInclusion(includePrefix, catalog.list(LayerInfo.class, Filter.INCLUDE));
+        
+        checkLayerNamePrefixInclusion(false, catalog.getLayerGroups().iterator());
+
+        checkLayerNamePrefixInclusion(false, catalog.list(LayerGroupInfo.class, Filter.INCLUDE));
     }
 
     private void checkLayerNamePrefixInclusion(boolean includePrefix,
-            Iterator<LayerInfo> layers) {
+            Iterator<? extends PublishedInfo> layers) {
         while(layers.hasNext()) {
-            LayerInfo layerInfo = layers.next();
+            PublishedInfo layerInfo = layers.next();
             String message;
             if(includePrefix) {
                 message = layerInfo.getName() + " should contain a : because the prefix should have been kept";
             } else {
                 message = layerInfo.getName() + " should contain not a : because the prefix should have been removed";
             }
-            assertEquals(message, includePrefix, layerInfo.getName().contains(":"));
+            assertEquals(message, includePrefix, layerInfo.getName().startsWith("ws1:"));
         }
     }
-
 }

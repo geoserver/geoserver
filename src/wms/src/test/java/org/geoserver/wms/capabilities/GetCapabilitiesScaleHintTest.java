@@ -158,7 +158,8 @@ public class GetCapabilitiesScaleHintTest extends GeoServerSystemTestSupport {
 		Element scaleElement = (Element)scaleNode.item(0);
 
         assertEquals(0.0, Double.valueOf(scaleElement.getAttribute("min")));
-	    assertEquals(Double.valueOf(640000000), Double.valueOf(scaleElement.getAttribute("max")));
+        
+	    assertEquals(Double.valueOf(253427.07037725858), Double.valueOf(scaleElement.getAttribute("max")));
 
     }
 
@@ -188,7 +189,7 @@ public class GetCapabilitiesScaleHintTest extends GeoServerSystemTestSupport {
 		
 		Element scaleElement = (Element)scaleNode.item(0);
 
-        assertEquals(Double.valueOf(320000000), Double.valueOf(scaleElement.getAttribute("min")));
+        assertEquals(Double.valueOf(126713.53518862929), Double.valueOf(scaleElement.getAttribute("min")));
 	    assertEquals(Double.POSITIVE_INFINITY, Double.valueOf(scaleElement.getAttribute("max")));
 
     }
@@ -212,8 +213,8 @@ public class GetCapabilitiesScaleHintTest extends GeoServerSystemTestSupport {
 		NodeList scaleNode = layerElement.getElementsByTagName("ScaleHint");
 		Element scaleElement = (Element)scaleNode.item(0);
             
-        assertEquals(Double.valueOf(80000000), Double.valueOf(scaleElement.getAttribute("min")));
-	    assertEquals(Double.valueOf(640000000), Double.valueOf(scaleElement.getAttribute("max")));
+        assertEquals(Double.valueOf(31678.383797157323), Double.valueOf(scaleElement.getAttribute("min")));
+	    assertEquals(Double.valueOf(253427.07037725858), Double.valueOf(scaleElement.getAttribute("max")));
     }
     
     /**

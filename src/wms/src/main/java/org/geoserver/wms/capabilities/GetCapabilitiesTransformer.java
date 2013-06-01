@@ -4,7 +4,10 @@
  */
 package org.geoserver.wms.capabilities;
 
-import static org.geoserver.ows.util.ResponseUtils.*;
+import static org.geoserver.ows.util.ResponseUtils.appendQueryString;
+import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
+import static org.geoserver.ows.util.ResponseUtils.buildURL;
+import static org.geoserver.ows.util.ResponseUtils.params;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -957,14 +960,21 @@ public class GetCapabilitiesTransformer extends TransformerBase {
 			
 			// makes the element taking into account that if the min and max denominators have got the default 
 			// values the ScaleHint element is not generated
+			
 			if( (denominators.get(MIN_DENOMINATOR_ATTR) == 0.0) && 
 				(denominators.get(MAX_DENOMINATOR_ATTR) == Double.POSITIVE_INFINITY) ){
 				
 				return; 
 			}
-	        AttributesImpl attrs = new AttributesImpl();
-			attrs.addAttribute("", MIN_DENOMINATOR_ATTR, MIN_DENOMINATOR_ATTR, "", String.valueOf(denominators.get(MIN_DENOMINATOR_ATTR)));
-			attrs.addAttribute("", MAX_DENOMINATOR_ATTR, MAX_DENOMINATOR_ATTR, "", String.valueOf(denominators.get(MAX_DENOMINATOR_ATTR)));
+			
+			// makes the scalehint computation taking into account the OGC standardized rendering pixel size" that is 0.28mm × 0.28mm (millimeters).
+			
+			Double minScaleHint =  CapabilityUtil.computeScaleHint(denominators.get(MIN_DENOMINATOR_ATTR));
+			Double maxScaleHint =  CapabilityUtil.computeScaleHint(denominators.get(MAX_DENOMINATOR_ATTR));
+			
+			AttributesImpl attrs = new AttributesImpl();
+			attrs.addAttribute("", MIN_DENOMINATOR_ATTR, MIN_DENOMINATOR_ATTR, "", String.valueOf(minScaleHint));
+			attrs.addAttribute("", MAX_DENOMINATOR_ATTR, MAX_DENOMINATOR_ATTR, "", String.valueOf(maxScaleHint));
 
 	        element("ScaleHint", null, attrs);
 	        

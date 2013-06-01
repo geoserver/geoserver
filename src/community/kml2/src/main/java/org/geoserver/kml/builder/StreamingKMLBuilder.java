@@ -2,10 +2,11 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.kml;
+package org.geoserver.kml.builder;
 
 import java.util.List;
 
+import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
 import org.geoserver.kml.sequence.CompositeList;
 import org.geoserver.kml.sequence.NetworkLinkSequenceFactory;
@@ -24,7 +25,7 @@ import de.micromata.opengis.kml.v_2_2_0.Kml;
  * 
  * @author Andrea Aime - GeoSolutions
  */
-public class KMLBuilder {
+public class StreamingKMLBuilder {
 
     /**
      * Builds a lazily evaluated KML document given a encoding context

@@ -12,6 +12,8 @@ import java.util.Map;
 
 import org.geoserver.kml.decorator.KmlDecoratorFactory;
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
+import org.geoserver.kml.utils.KMLUtils;
+import org.geoserver.kml.utils.LookAtOptions;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;

@@ -64,12 +64,6 @@ public abstract class CachedHierarchyRegionatingStrategy implements
         RegionatingStrategy {
     static Logger LOGGER = Logging.getLogger("org.geoserver.geosearch");
 
-    static final CoordinateReferenceSystem WGS84;
-
-    static final ReferencedEnvelope WORLD_BOUNDS;
-
-    static final double MAX_TILE_WIDTH;
-
     static final double MAX_ERROR = 0.02;
 
     static final Set<String> NO_FIDS = Collections.emptySet();
@@ -84,12 +78,6 @@ public abstract class CachedHierarchyRegionatingStrategy implements
 
     static {
         try {
-            // common geographic info
-            WGS84 = CRS.decode("EPSG:4326");
-            WORLD_BOUNDS = new ReferencedEnvelope(new Envelope(180.0, -180.0,
-                    90.0, -90.0), WGS84);
-            MAX_TILE_WIDTH = WORLD_BOUNDS.getWidth() / 2.0;
-
             // make sure, once and for all, that H2 is around
             Class.forName("org.h2.Driver");
         } catch (Exception e) {
@@ -155,14 +143,14 @@ public abstract class CachedHierarchyRegionatingStrategy implements
 
             // make sure the request is within the data bounds, allowing for a
             // small error
-            ReferencedEnvelope requestedEnvelope = context.getRenderingArea().transform(WGS84, true);
+            ReferencedEnvelope requestedEnvelope = context.getRenderingArea().transform(Tile.WGS84, true);
             LOGGER.log(Level.FINE, "Requested tile: {0}", requestedEnvelope);
             dataEnvelope = featureType.getLatLonBoundingBox(); 
 
             // decide which tile we need to load/compute, and make sure
             // it's a valid tile request, that is, that is does fit with
             // the general tiling scheme (minus an eventual small error)
-            Tile tile = new Tile(requestedEnvelope);
+            Tile tile = new CachedTile(requestedEnvelope);
             ReferencedEnvelope tileEnvelope = tile.getEnvelope();
             if (!envelopeMatch(tileEnvelope, requestedEnvelope))
                 throw new ServiceException(
@@ -367,7 +355,8 @@ public abstract class CachedHierarchyRegionatingStrategy implements
      */
     private Set<String> computeFids(Tile tile, Connection conn)
             throws Exception {
-        Set<String> parentFids = getUpwardFids(tile.getParent(), conn);
+        Tile parent = tile.getParent();
+        Set<String> parentFids = getUpwardFids(parent, conn);
         Set<String> currFids = new HashSet<String>();
         FeatureIterator fi = null;
         try {
@@ -379,7 +368,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements
 
             ReferencedEnvelope nativeTileEnvelope = null;
 
-            if (!CRS.equalsIgnoreMetadata(WGS84, nativeCrs)) {
+            if (!CRS.equalsIgnoreMetadata(Tile.WGS84, nativeCrs)) {
                 try {
                     nativeTileEnvelope = tile.getEnvelope().transform(nativeCrs, true);
                 } catch (ProjectionException pe) {
@@ -429,8 +418,8 @@ public abstract class CachedHierarchyRegionatingStrategy implements
                             .getCoordinateReferenceSystem();
                     featureType.getFeatureType().getCoordinateReferenceSystem();
                     if (nativeCRS != null
-                            && !CRS.equalsIgnoreMetadata(nativeCRS, WGS84)) {
-                        tx = CRS.findMathTransform(nativeCRS, WGS84);
+                            && !CRS.equalsIgnoreMetadata(nativeCRS, Tile.WGS84)) {
+                        tx = CRS.findMathTransform(nativeCRS, Tile.WGS84);
                     }
                 }
 
@@ -479,13 +468,17 @@ public abstract class CachedHierarchyRegionatingStrategy implements
     private Set<String> getUpwardFids(Tile tile, Connection conn)
             throws Exception {
         // recursion stop condition
-        if (tile == null)
-            return Collections.EMPTY_SET;
+        if (tile == null) {
+            return Collections.emptySet();
+        }
 
         // return the curren tile fids, and recurse up to the parent
         Set<String> fids = new HashSet();
         fids.addAll(readFeaturesForTile(tile, conn));
-        fids.addAll(getUpwardFids(tile.getParent(), conn));
+        Tile parent = tile.getParent();
+        if(parent != null) {
+            fids.addAll(getUpwardFids(parent, conn));
+        }
         return fids;
     }
 
@@ -559,14 +552,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements
      * 
      * @author Andrea Aime
      */
-    protected class Tile {
-        long x;
-
-        long y;
-
-        long z;
-
-        ReferencedEnvelope envelope;
+    protected class CachedTile extends Tile {
 
         /**
          * Creates a new tile with the given coordinates
@@ -575,11 +561,8 @@ public abstract class CachedHierarchyRegionatingStrategy implements
          * @param y
          * @param z
          */
-        public Tile(long x, long y, long z) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            envelope = envelope(x, y, z);
+        public CachedTile(long x, long y, long z) {
+            super(x, y, z);
         }
 
         /**
@@ -596,44 +579,32 @@ public abstract class CachedHierarchyRegionatingStrategy implements
          * @return
          */
         public boolean contains(double x, double y) {
-            double minx = envelope.getMinX();
-            double maxx = envelope.getMaxX();
-            double miny = envelope.getMinY();
-            double maxy = envelope.getMaxY();
-            // standard borders, N and W in, E and S out
-            if(x >= minx && x < maxx && y >= miny && y < maxy)
+            if(super.contains(x, y)) {
                 return true;
+            }
             
             // else check if we are on a border tile and the point
             // happens to sit right on the border we usually don't include
-            if(x == maxx && x >= dataEnvelope.getMaxX())
+            double maxx = envelope.getMaxX();
+            double maxy = envelope.getMaxY();
+            if(x == maxx && x >= dataEnvelope.getMaxX()) {
                 return true;
-            if(y == maxy && y >= dataEnvelope.getMaxY())
+            }
+            if(y == maxy && y >= dataEnvelope.getMaxY()) {
                 return true;
+            }
             return false;
-        }
-
-        private ReferencedEnvelope envelope(long x, long y, long z) {
-            double tileSize = MAX_TILE_WIDTH / Math.pow(2, z);
-            double xMin = x * tileSize + WORLD_BOUNDS.getMinX();
-            double yMin = y * tileSize + WORLD_BOUNDS.getMinY();
-            return new ReferencedEnvelope(xMin, xMin + tileSize, yMin, yMin
-                    + tileSize, WGS84);
         }
 
         /**
          * Builds the best matching tile for the specified envelope
          */
-        public Tile(ReferencedEnvelope wgs84Envelope) {
-            z = Math.round(Math.log(MAX_TILE_WIDTH / wgs84Envelope.getWidth())
-                    / Math.log(2));
-            x = Math.round(((wgs84Envelope.getMinimum(0) - WORLD_BOUNDS
-                    .getMinimum(0)) / MAX_TILE_WIDTH)
-                    * Math.pow(2, z));
-            y = Math.round(((wgs84Envelope.getMinimum(1) - WORLD_BOUNDS
-                    .getMinimum(1)) / MAX_TILE_WIDTH)
-                    * Math.pow(2, z));
-            envelope = envelope(x, y, z);
+        public CachedTile(ReferencedEnvelope wgs84Envelope) {
+            super(wgs84Envelope);
+        }
+
+        public CachedTile(Tile parent) {
+            super(parent.x, parent.y, parent.z);
         }
 
         /**
@@ -643,42 +614,19 @@ public abstract class CachedHierarchyRegionatingStrategy implements
          * @return
          */
         public Tile getParent() {
-            // if we got to one of the root tiles for this data set, just stop
-            if (z == 0 || envelope.contains((BoundingBox) dataEnvelope))
+            if (envelope.contains((BoundingBox) dataEnvelope)) {
                 return null;
-            else
-                return new Tile((long) Math.floor(x / 2.0), (long) Math
-                        .floor(y / 2.0), z - 1);
+            } else {
+                Tile parent = super.getParent();
+                if(parent != null) {
+                    // wrap it, as we have some custom logic working against the data envelope here
+                    parent = new CachedTile(super.getParent());
+                }
+                
+                return parent;
+            }
         }
-
-        /**
-         * Returns the four direct children of this tile
-         * 
-         * @return
-         */
-        public Tile[] getChildren() {
-            Tile[] result = new Tile[4];
-            result[0] = new Tile(x * 2, y * 2, z + 1);
-            result[1] = new Tile(x * 2 + 1, y * 2, z + 1);
-            result[2] = new Tile(x * 2, y * 2 + 1, z + 1);
-            result[3] = new Tile(x * 2 + 1, y * 2 + 1, z + 1);
-            return result;
-        }
-
-        /**
-         * Returns the WGS84 envelope of this tile
-         * 
-         * @return
-         */
-        public ReferencedEnvelope getEnvelope() {
-            return envelope;
-        }
-
-        @Override
-        public String toString() {
-            return "Tile X: " + x + ", Y: " + y + ", Z: " + z + " (" + envelope
-                    + ")";
-        }
+        
     }
 
 }

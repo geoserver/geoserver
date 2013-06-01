@@ -72,7 +72,7 @@ public class ExternalSortRegionatingStrategy extends
         CLASS_MAPPINGS.put(java.sql.Timestamp.class, "TIMESTAMP");
         
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
-        tb.crs(WGS84);
+        tb.crs(Tile.WGS84);
         tb.add("point", Point.class);
         tb.setName("FeatureCentroids");
         IDX_FEATURE_TYPE = tb.buildFeatureType();
@@ -201,8 +201,8 @@ public class ExternalSortRegionatingStrategy extends
             // setup the eventual transform
             MathTransform tx = null;
             double[] coords = new double[2];
-            if (!CRS.equalsIgnoreMetadata(nativeCrs, WGS84))
-                tx = CRS.findMathTransform(nativeCrs, WGS84, true);
+            if (!CRS.equalsIgnoreMetadata(nativeCrs, Tile.WGS84))
+                tx = CRS.findMathTransform(nativeCrs, Tile.WGS84, true);
 
             // read all the features and fill the index table
             // make it so the insertion is a single big transaction, should

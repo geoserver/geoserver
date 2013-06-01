@@ -6,9 +6,9 @@ package org.geoserver.kml.sequence;
 
 import java.util.List;
 
-import org.geoserver.kml.KMLUtils;
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
+import org.geoserver.kml.utils.KMLUtils;
 import org.geoserver.ows.HttpErrorCodeException;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMSMapContent;

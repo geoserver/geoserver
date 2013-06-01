@@ -5,7 +5,7 @@
 package org.geoserver.kml.decorator;
 
 import org.geoserver.kml.KmlEncodingContext;
-import org.geoserver.kml.LookAtOptions;
+import org.geoserver.kml.utils.LookAtOptions;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;

@@ -6,7 +6,7 @@ package org.geoserver.kml.sequence;
 
 import java.util.NoSuchElementException;
 
-import org.geoserver.kml.KmlCentroidBuilder;
+import org.geoserver.kml.utils.KmlCentroidBuilder;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.collection.DecoratingSimpleFeatureCollection;

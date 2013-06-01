@@ -8,9 +8,9 @@ import java.util.EmptyStackException;
 import java.util.List;
 
 import org.geoserver.kml.KmlEncodingContext;
-import org.geoserver.kml.ScaleStyleVisitor;
-import org.geoserver.kml.SymbolizerCollector;
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
+import org.geoserver.kml.utils.ScaleStyleVisitor;
+import org.geoserver.kml.utils.SymbolizerCollector;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;

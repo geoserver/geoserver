@@ -144,7 +144,7 @@ public class KMLReflectorTest extends WMSTestSupport {
         Document dom = getAsDOM(requestUrl);
         print(dom);
         assertEquals("kml", dom.getDocumentElement().getLocalName());
-        assertXpathExists("kml:kml/kml:Document/kml:NetworkLink/kml:Url/kml:href", dom);
+        assertXpathExists("kml:kml/kml:Document/kml:Folder/kml:NetworkLink/kml:Link/kml:href", dom);
         assertXpathExists("kml:kml/kml:Document/kml:LookAt/kml:longitude", dom);
     }
 
@@ -206,7 +206,7 @@ public class KMLReflectorTest extends WMSTestSupport {
 
         print(dom);
         // all the kvp parameters (which should be set as format_options now are correctly parsed)
-        String result = xpath.evaluate("//kml:NetworkLink/kml:Url/kml:href", dom);
+        String result = xpath.evaluate("//kml:NetworkLink/kml:Link/kml:href", dom);
         Map<String, Object> kvp = KvpUtils.parseQueryString(result);
         String formatOptions = (String) kvp.get("format_options");
         assertEquals(

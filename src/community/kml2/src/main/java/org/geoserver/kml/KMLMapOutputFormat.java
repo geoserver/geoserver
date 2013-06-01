@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.geoserver.kml.builder.StreamingKMLBuilder;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.MapProducerCapabilities;
@@ -48,7 +49,7 @@ public class KMLMapOutputFormat implements GetMapOutputFormat {
 
     private WMS wms;
     
-    KMLBuilder builder = new KMLBuilder();
+    StreamingKMLBuilder builder = new StreamingKMLBuilder();
 
     public KMLMapOutputFormat(WMS wms) {
         this.wms = wms;

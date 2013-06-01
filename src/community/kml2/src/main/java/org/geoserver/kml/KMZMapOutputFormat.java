@@ -6,6 +6,7 @@ package org.geoserver.kml;
 
 import java.io.IOException;
 
+import org.geoserver.kml.builder.StreamingKMLBuilder;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
@@ -40,7 +41,7 @@ public class KMZMapOutputFormat extends AbstractMapOutputFormat {
 
     private WMS wms;
 
-    private KMLBuilder builder = new KMLBuilder();
+    private StreamingKMLBuilder builder = new StreamingKMLBuilder();
 
     public KMZMapOutputFormat(WMS wms) {
         super(MIME_TYPE, OUTPUT_FORMATS);

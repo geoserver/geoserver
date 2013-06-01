@@ -9,11 +9,11 @@ import java.net.URLDecoder;
 import java.util.List;
 
 import org.geoserver.kml.KMLMapOutputFormat;
-import org.geoserver.kml.KMLUtils;
 import org.geoserver.kml.KMZMapOutputFormat;
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.NetworkLinkMapOutputFormat;
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
+import org.geoserver.kml.utils.KMLUtils;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;

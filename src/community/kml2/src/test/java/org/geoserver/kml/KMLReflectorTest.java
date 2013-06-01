@@ -44,8 +44,6 @@ import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.wms.WMSTestSupport;
 import org.junit.Test;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
@@ -223,9 +221,9 @@ public class KMLReflectorTest extends WMSTestSupport {
 
         final String requestUrl = "wms/kml?layers=" + layerName
                 + "&styles=&mode=superoverlay&format_options=kmltitle:myCustomLayerTitle";
-        System.out.println(getAsServletResponse(requestUrl).getContentType());
+        // System.out.println(getAsServletResponse(requestUrl).getContentType());
         Document dom = getAsDOM(requestUrl);
-        // print(dom);
+        print(dom);
         assertEquals("kml", dom.getDocumentElement().getLocalName());
         assertXpathEvaluatesTo("myCustomLayerTitle", "/kml:kml/kml:Document/kml:name",
                 dom);

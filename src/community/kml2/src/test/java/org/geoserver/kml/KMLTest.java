@@ -11,6 +11,7 @@ import static org.junit.Assert.*;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.Collections;
+import java.util.TimeZone;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -35,6 +36,7 @@ public class KMLTest extends WMSTestSupport {
     
         
     private static final QName STORM_OBS = new QName(MockData.CITE_URI, "storm_obs", MockData.CITE_PREFIX);
+    private static TimeZone oldTimeZone;
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -49,12 +51,15 @@ public class KMLTest extends WMSTestSupport {
     
     @BeforeClass
     public static void setTimeZone() {
-        System.setProperty("user.timezone", "UTC");
+        // System.setProperty("user.timezone", "UTC");
+        oldTimeZone = TimeZone.getDefault();
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
     
     @AfterClass
     public static void clearTimeZone() {
-        System.clearProperty("user.timezone");
+        // System.clearProperty("user.timezone");
+        TimeZone.setDefault(oldTimeZone);
     }
 
     

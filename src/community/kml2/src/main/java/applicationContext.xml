@@ -19,11 +19,11 @@
     <constructor-arg ref="wms" />
   </bean>
 
-  <!-- <bean id="KMZMapResponse" class="org.geoserver.kml.KMZMapResponse"> 
+  <!-- <bean id="KMZMapResponse" class="org.geoserver.kml.KMZMapResponse"> -->
+   
   <bean id="NetworkLinkMapProducer" class="org.geoserver.kml.NetworkLinkMapOutputFormat">
     <constructor-arg ref="wms" />
   </bean>
-  -->
 
   <bean id="KMLMapResponse" class="org.geoserver.kml.KMLMapResponse">
     <constructor-arg ref="wms" />

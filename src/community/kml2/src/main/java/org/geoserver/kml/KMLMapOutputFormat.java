@@ -43,7 +43,7 @@ public class KMLMapOutputFormat implements GetMapOutputFormat {
     public static final String NL_KML_MIME_TYPE = KMLMapOutputFormat.MIME_TYPE + ";mode=networklink";
 
     private Set<String> OUTPUT_FORMATS = Collections.unmodifiableSet(new HashSet<String>(Arrays
-            .asList(MIME_TYPE, NL_KML_MIME_TYPE, "application/vnd.google-earth.kml", "kml",
+            .asList(MIME_TYPE, /* NL_KML_MIME_TYPE, */ "application/vnd.google-earth.kml", "kml",
                     "application/vnd.google-earth.kml xml")));
 
     private WMS wms;

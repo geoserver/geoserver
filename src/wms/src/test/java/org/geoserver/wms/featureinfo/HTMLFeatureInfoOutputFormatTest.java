@@ -28,6 +28,7 @@ import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.NamespaceInfoImpl;
 import org.geoserver.data.test.MockData;
+import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.template.GeoServerTemplateLoader;
 import org.geoserver.wms.GetFeatureInfoRequest;
@@ -87,15 +88,12 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
         parameters.put("ENV", env);
         request.setKvp(parameters);
         
+        Dispatcher.REQUEST.set(request);
+        
         final FeatureTypeInfo featureType = getFeatureTypeInfo(MockData.PRIMITIVEGEOFEATURE);
         
-        // fake FeatureCollectionDecorator, wrapping the test request
-        FeatureCollectionDecorator fc = new FeatureCollectionDecorator(null,
-                featureType.getFeatureSource(null, null).getFeatures(), request);
-        
-        
         fcType = WfsFactory.eINSTANCE.createFeatureCollectionType();
-        fcType.getFeature().add(fc);
+        fcType.getFeature().add(featureType.getFeatureSource(null, null).getFeatures());
         
         // fake layer list
         List<MapLayerInfo> queryLayers = new ArrayList<MapLayerInfo>();               

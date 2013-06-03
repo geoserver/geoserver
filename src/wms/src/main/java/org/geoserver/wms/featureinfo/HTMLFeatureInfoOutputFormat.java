@@ -13,6 +13,7 @@ import java.util.List;
 
 import net.opengis.wfs.FeatureCollectionType;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.template.DirectTemplateFeatureCollectionFactory;
@@ -62,12 +63,9 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
     
             @Override
             public TemplateModel wrap(Object object) throws TemplateModelException {
-                if (object instanceof FeatureCollectionDecorator) {
-                    SimpleHash map = (SimpleHash) super.wrap(object);
-                    Request request = ((FeatureCollectionDecorator) object)
-                            .getRequest();
-                    map.put("request", request.getKvp());
-    
+                if (object instanceof FeatureCollection) {
+                    SimpleHash map = (SimpleHash) super.wrap(object);                    
+                    map.put("request", Dispatcher.REQUEST.get().getKvp());    
                     return map;
                 }
                 return super.wrap(object);

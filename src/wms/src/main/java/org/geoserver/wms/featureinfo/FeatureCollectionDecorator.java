@@ -9,7 +9,6 @@ package org.geoserver.wms.featureinfo;
 import java.io.IOException;
 import java.util.Collection;
 
-import org.geoserver.ows.Request;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -38,8 +37,6 @@ import org.opengis.util.ProgressListener;
 @SuppressWarnings("unchecked")
 public class FeatureCollectionDecorator implements FeatureCollection<FeatureType, Feature> {
 
-    private Request request;
-    
     /**
      * Get Resource Name of a Feature Collection
      * 
@@ -58,21 +55,11 @@ public class FeatureCollectionDecorator implements FeatureCollection<FeatureType
     protected FeatureCollection fc;
     protected Name name;
     
-    public FeatureCollectionDecorator(Name name, FeatureCollection fc,
-            Request request) {
+    public FeatureCollectionDecorator(Name name, FeatureCollection fc){
         this.name = name;
         this.fc = fc;
-        this.request = request;
     }
     
-    
-    
-    public Request getRequest() {
-        return request;
-    }
-
-
-
     public Name getName() {
         return name;
     }

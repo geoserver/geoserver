@@ -33,6 +33,15 @@ public class CoverageDimensionImpl implements CoverageDimensionInfo {
     public CoverageDimensionImpl(String id) {
         this.id = id;
     }
+    
+    public CoverageDimensionImpl(CoverageDimensionImpl other) {
+        this.id = other.id;
+        this.name = other.name;
+        this.description = other.description;
+        this.range = other.range;
+        this.nullValues = other.nullValues;
+    }
+
 
     public void setId(String id) {
         this.id = id;

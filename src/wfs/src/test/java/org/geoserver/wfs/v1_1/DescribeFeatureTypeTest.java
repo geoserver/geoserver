@@ -255,7 +255,13 @@ public class DescribeFeatureTypeTest extends WFSTestSupport {
         XMLAssert.assertXpathNotExists("//xsd:element[@name = 'name']", dom);
         XMLAssert.assertXpathNotExists("//xsd:element[@name = 'description']", dom);
         
+        wfs = getWFS();
+        gml = wfs.getGML().get(WFSInfo.Version.V_11);
         gml.setOverrideGMLAttributes(true);
+        getGeoServer().save(wfs);
+        wfs = getWFS();
+        gml = wfs.getGML().get(WFSInfo.Version.V_11);
+        assertTrue(gml.getOverrideGMLAttributes());
         dom = getAsDOM("ows?service=WFS&version=1.1.0&request=DescribeFeatureType" +
                 "&typename=" + getLayerId(CiteTestData.PRIMITIVEGEOFEATURE));
         XMLAssert.assertXpathExists("//xsd:element[@name = 'name']", dom);

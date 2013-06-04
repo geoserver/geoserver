@@ -1,6 +1,8 @@
 package org.opengeo.gsr.core.feature;
 
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.sf.json.util.JSONBuilder;
 
@@ -90,7 +92,7 @@ public class FeatureEncoder {
         json.key("attributes");
         json.object();
         
-        json.key("objectid").value(feature.getIdentifier().getID());
+        json.key("objectid").value(adaptId(feature.getIdentifier().getID()));
 
         for (Property prop : feature.getProperties()) {
             if (geometry == null || !prop.getName().equals(geometry.getName())) {
@@ -134,7 +136,7 @@ public class FeatureEncoder {
             json.array();
             while (iterator.hasNext()) {
                 F feature = iterator.next();
-                json.value(feature.getIdentifier().getID());
+                json.value(adaptId(feature.getIdentifier().getID()));
             }
             json.endArray();
         } finally {
@@ -142,5 +144,15 @@ public class FeatureEncoder {
         }
 
         json.endObject();
+    }
+    
+    private final static Pattern featureIDPattern = Pattern.compile(".*\\.(\\p{Digit}+)");
+    private static Object adaptId(String featureId) {
+        Matcher matcher = featureIDPattern.matcher(featureId);
+        if (matcher.matches()) {
+            return Long.valueOf(matcher.group(1));
+        } else {
+            return featureId;
+        }
     }
 }

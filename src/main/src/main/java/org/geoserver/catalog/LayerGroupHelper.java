@@ -192,10 +192,14 @@ public class LayerGroupHelper {
             l = layers.get(i);
 
             ReferencedEnvelope re;
+            ResourceInfo resource = l.getResource(); 
             if (latlon) {
-                re = l.getResource().getLatLonBoundingBox();
+                re = resource.getLatLonBoundingBox();
             } else {
-                re = l.getResource().boundingBox();
+                re = resource.boundingBox();
+                if(re == null) {
+                    re = resource.getLatLonBoundingBox();
+                }
             }
 
             re = transform(re, bounds.getCoordinateReferenceSystem());

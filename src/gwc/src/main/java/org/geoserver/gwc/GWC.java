@@ -189,7 +189,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         this.rawCatalog = rawCatalog;
         this.storageFinder = storageFinder;
 
-        catalogLayerEventListener = new CatalogLayerEventListener(this);
+        catalogLayerEventListener = new CatalogLayerEventListener(this, rawCatalog);
         catalogStyleChangeListener = new CatalogStyleChangeListener(this);
         this.rawCatalog.addListener(catalogLayerEventListener);
         this.rawCatalog.addListener(catalogStyleChangeListener);

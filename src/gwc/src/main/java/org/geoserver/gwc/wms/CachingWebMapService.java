@@ -25,6 +25,7 @@ import org.apache.commons.httpclient.util.DateParseException;
 import org.apache.commons.httpclient.util.DateUtil;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
@@ -124,7 +125,7 @@ public class CachingWebMapService implements MethodInterceptor {
 
         map.setContentDispositionHeader(null, "." + cachedTile.getMimeType().getFileExtension(), false);
 
-        Object cacheAgeMax = getCacheAge(layer);
+        Integer cacheAgeMax = getCacheAge(layer);
         LOGGER.log(Level.FINE, "Using cacheAgeMax {0}", cacheAgeMax);
         if (cacheAgeMax != null) {
             map.setResponseHeader("Cache-Control", "max-age=" + cacheAgeMax);
@@ -187,19 +188,16 @@ public class CachingWebMapService implements MethodInterceptor {
         map.setResponseHeader("geowebcache-crs", gridSubset.getSRS().toString());
     }
 
-    private Object getCacheAge(TileLayer layer) {
-        Object cacheAge = null;
+    private Integer getCacheAge(TileLayer layer) {
+        Integer cacheAge = null;
         if (layer instanceof GeoServerTileLayer) {
             LayerInfo layerInfo = ((GeoServerTileLayer) layer).getLayerInfo();
             // configuring caching does not appear possible for layergroup
             if (layerInfo != null) {
                 MetadataMap metadata = layerInfo.getResource().getMetadata();
-                Object enabled = metadata.get("cachingEnabled");
-                // do a string comparison since if set via REST, it will be a
-                // string, if set via the web UI and fresh in the cache, it
-                // will be a boolean ...
-                if (enabled != null && enabled.toString().equalsIgnoreCase("true")) {
-                    cacheAge = layerInfo.getResource().getMetadata().get("cacheAgeMax");
+                Boolean enabled = metadata.get(ResourceInfo.CACHING_ENABLED, Boolean.class);
+                if (enabled != null && enabled) {
+                    cacheAge = layerInfo.getResource().getMetadata().get(ResourceInfo.CACHE_AGE_MAX, Integer.class);
                 }
             }
         }

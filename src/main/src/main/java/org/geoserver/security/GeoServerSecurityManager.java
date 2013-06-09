@@ -322,6 +322,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
             try {
                 boolean migratedFrom21 = migrateFrom21();
                 migrateFrom22(migratedFrom21);
+                migrateFrom23();
             } catch (Exception e1) {
                 throw new RuntimeException(e1);
             }
@@ -2364,6 +2365,27 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         }
         
         return true;
+    }
+    
+    /**
+     * converts an 2.3.x security configuration to 2.4.x
+     * 
+     * @return <code>true</code> if migration has taken place  
+     * @throws Exception
+     */
+    boolean migrateFrom23() throws Exception{
+        SecurityManagerConfig config = loadSecurityConfig();
+        RequestFilterChain webChain =
+                config.getFilterChain().getRequestChainByName(GeoServerSecurityFilterChain.WEB_CHAIN_NAME);
+        
+        boolean migrated=false;
+        List<String>patterns =  webChain.getPatterns();
+        if (patterns.contains("/")==false) {
+            patterns.add("/");
+            saveSecurityConfig(config);
+            migrated |= true;
+        }
+        return migrated;
     }
 
 

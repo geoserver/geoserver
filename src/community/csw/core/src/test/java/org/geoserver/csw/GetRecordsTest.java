@@ -489,7 +489,7 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
         // print(d);
         
         XpathEngine xpath = XMLUnit.newXpathEngine();
-        assertXpathEvaluatesTo("http://localhost/geoserver/" + request, "/csw:Acknowledgement/csw:EchoedRequest/ows:Get/@xlink:href", d);
+        assertXpathEvaluatesTo("http://localhost:8080/geoserver/" + request, "/csw:Acknowledgement/csw:EchoedRequest/ows:Get/@xlink:href", d);
         
         String timeStamp = xpath.evaluate("/csw:Acknowledgement/@timeStamp", d);
         assertGMLTimestamp(timeStamp);

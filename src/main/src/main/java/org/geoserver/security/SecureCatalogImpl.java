@@ -66,6 +66,7 @@ import org.springframework.util.Assert;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterators;
 
 /**
  * Wraps the catalog and applies the security directives provided by a {@link ResourceAccessManager}
@@ -1388,7 +1389,13 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         final CloseableIterator<T> filteredWrapped;
         filteredWrapped = CloseableIteratorAdapter.transform(filtered, securityWrapper);
 
-        return filteredWrapped;
+        // wrap the iterator in a notNull filter to ensure any filtered
+        // layers (result is null) don't get passed on from the securityWrapper
+        // Function. When the AccessLevel is HIDDEN and a layer gets filtered 
+        // out via a CatalogFilter - for example, this can happen with a
+        // LocalWorkspaceCatalogFilter and a virtual service request
+        return new CloseableIteratorAdapter(Iterators.filter(filteredWrapped,
+                com.google.common.base.Predicates.notNull()));
     }
 
     /**

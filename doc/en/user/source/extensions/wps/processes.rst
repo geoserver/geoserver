@@ -137,7 +137,7 @@ Here is the complete WPS request in XML format:
         </wps:Body>
       </wps:Reference>
       </wps:Input>
-    <wps:DataInputs>
+    </wps:DataInputs>
     <wps:ResponseForm>
       <wps:RawDataOutput>
         <ows:Identifier>result</ows:Identifier>

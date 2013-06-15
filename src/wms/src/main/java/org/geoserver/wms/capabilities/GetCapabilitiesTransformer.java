@@ -18,6 +18,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,10 +41,12 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LayerInfo.Type;
 import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
+import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ResourceErrorHandling;
@@ -652,8 +655,17 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             
             // encode layer groups
             try {
-                List<LayerGroupInfo> layerGroups = wmsConfig.getLayerGroups();
-                layersAlreadyProcessed = handleLayerGroups(new ArrayList<LayerGroupInfo>(layerGroups));
+                LinkedList<LayerGroupInfo> layerGroups = new LinkedList<LayerGroupInfo>();
+                CloseableIterator<LayerGroupInfo> layerGroupsIter = wmsConfig.getCatalog().list(LayerGroupInfo.class, Predicates.acceptAll());
+
+                try {
+                    while(layerGroupsIter.hasNext()) {
+                        layerGroups.add(layerGroupsIter.next());
+                    }
+                } finally {
+                    layerGroupsIter.close();
+                }
+                layersAlreadyProcessed = handleLayerGroups(layerGroups);
             } catch (FactoryException e) {
                 throw new RuntimeException("Can't obtain Envelope of Layer-Groups: "
                         + e.getMessage(), e);

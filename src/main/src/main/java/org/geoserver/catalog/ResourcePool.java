@@ -270,7 +270,9 @@ public class ResourcePool {
     }
 
     protected Map<String,FeatureType> createFeatureTypeCache(int size) {
-        return new FeatureTypeCache(size);
+        // for each feature type we cache two versions, one with the projection policy applied, one
+        // without it
+        return new FeatureTypeCache(size * 2);
     }
 
     /**
@@ -287,7 +289,9 @@ public class ResourcePool {
     }
 
     protected Map<String, List<AttributeTypeInfo>> createFeatureTypeAttributeCache(int size) {
-        return new FeatureTypeAttributeCache(size);
+        // for each feature type we cache two versions, one with the projection policy applied, one
+        // without it
+        return new FeatureTypeAttributeCache(size * 2);
     }
 
     /**
@@ -800,11 +804,12 @@ public class ResourcePool {
     }
     
     FeatureType getFeatureType( FeatureTypeInfo info, boolean handleProjectionPolicy ) throws IOException {
-        boolean cacheable = isCacheable(info) && handleProjectionPolicy;
-        FeatureType ft = (FeatureType) featureTypeCache.get( info.getId() );
+        boolean cacheable = isCacheable(info);
+        String key = getFeatureTypeInfoKey(info, handleProjectionPolicy);
+        FeatureType ft = (FeatureType) featureTypeCache.get(key);
         if ( ft == null || !cacheable ) {
             synchronized ( featureTypeCache ) {
-                ft = (FeatureType) featureTypeCache.get( info.getId() );
+                ft = (FeatureType) featureTypeCache.get(key);
                 if ( ft == null || !cacheable) {
                     
                     //grab the underlying feature type
@@ -886,7 +891,7 @@ public class ResourcePool {
                     } // end special case for SimpleFeatureType
                     
                     if(cacheable) {
-                        featureTypeCache.put( info.getId(), ft );
+                        featureTypeCache.put(key, ft );
                     } else if(vtName != null) {
                         JDBCDataStore jstore = (JDBCDataStore) dataAccess;
                         jstore.removeVirtualTable(vtName);
@@ -896,6 +901,10 @@ public class ResourcePool {
         }
         
         return ft;
+    }
+
+    private String getFeatureTypeInfoKey(FeatureTypeInfo info, boolean handleProjectionPolicy) {
+        return info.getId() + "_pp_" + handleProjectionPolicy;
     }
     
     /**
@@ -1006,7 +1015,8 @@ public class ResourcePool {
      * @param info The feature type metadata.
      */
     public void clear( FeatureTypeInfo info ) {
-        featureTypeCache.remove( info.getId() );
+        featureTypeCache.remove(getFeatureTypeInfoKey(info, true));
+        featureTypeCache.remove(getFeatureTypeInfoKey(info, false));
         featureTypeAttributeCache.remove( info.getId() );
     }
     

@@ -8,10 +8,10 @@ import org.apache.wicket.markup.html.form.Form;
 
 
 @SuppressWarnings("serial")
-public class ImageMosaicRasterEditPanel extends AbstractRasterFileEditPanel {
+public class DirectoryRasterEditPanel extends AbstractRasterFileEditPanel {
 
     @SuppressWarnings("rawtypes")
-    public ImageMosaicRasterEditPanel(String componentId, Form storeEditForm) {
-        super(componentId, storeEditForm, true, (String[]) null);
+    public DirectoryRasterEditPanel(String componentId, Form storeEditForm) {
+        super(componentId, storeEditForm, true);
     }
 }

@@ -9,6 +9,7 @@ import org.geoserver.kml.KMLMapOutputFormat;
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.decorator.LookAtDecoratorFactory;
 import org.geoserver.kml.regionate.Tile;
+import org.geoserver.kml.utils.KMLFeatureAccessor;
 import org.geoserver.kml.utils.KMLUtils;
 import org.geoserver.kml.utils.LookAtOptions;
 import org.geoserver.ows.HttpErrorCodeException;
@@ -21,8 +22,6 @@ import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSRequests;
-import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -69,7 +68,7 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
 
     @Override
     void encodeDocumentContents(Document container) {
-        boolean cachedMode = "cached".equals(KMLUtils.getSuperoverlayMode(request, wms));
+        boolean cachedMode = "cached".equals(context.getSuperOverlayMode());
 
         // normalize the requested bounds to match a WGS84 hierarchy tile
         Tile tile = new Tile(new ReferencedEnvelope(request.getBbox(), Tile.WGS84));
@@ -270,7 +269,7 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
             if (!isVectorLayer(layer))
                 return false;
 
-            String overlayMode = KMLUtils.getSuperoverlayMode(mapContent.getRequest(), wms);
+            String overlayMode = context.getSuperOverlayMode();
 
             if ("raster".equals(overlayMode))
                 return false;
@@ -304,7 +303,7 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
         if (!isVectorLayer(layer))
             return true;
 
-        String overlayMode = KMLUtils.getSuperoverlayMode(mapContent.getRequest(), wms);
+        String overlayMode = context.getSuperOverlayMode();
         if ("hybrid".equals(overlayMode) || "raster".equals(overlayMode))
             return true;
         if ("overview".equals(overlayMode))
@@ -380,9 +379,7 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
         int numFeatures = 0;
 
         try {
-            final SimpleFeatureCollection fc = KMLUtils.loadFeatureCollection(
-                    (SimpleFeatureSource) layer.getFeatureSource(), layer, mapContent, wms, -1);
-            numFeatures = fc == null ? 0 : fc.size();
+            numFeatures = new KMLFeatureAccessor().getFeatureCount(layer, mapContent, wms, -1);
         } catch (ServiceException e) {
             LOGGER.severe("Caught the WmsException!");
             numFeatures = -1;

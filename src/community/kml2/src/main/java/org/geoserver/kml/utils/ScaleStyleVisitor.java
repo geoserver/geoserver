@@ -7,10 +7,13 @@ package org.geoserver.kml.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.geotools.feature.FeatureTypes;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.FeatureTypeStyleImpl;
 import org.geotools.styling.Rule;
+import org.geotools.styling.Style;
 import org.geotools.styling.visitor.DuplicatingStyleVisitor;
+import org.opengis.feature.simple.SimpleFeatureType;
 
 /**
  * Returns a shallow copy of a style with only the active rules at the specified scale denominator
@@ -27,8 +30,31 @@ public class ScaleStyleVisitor extends DuplicatingStyleVisitor {
 
     double scaleDenominator;
 
-    public ScaleStyleVisitor(double scaleDenominator) {
+    SimpleFeatureType schema;
+
+    public ScaleStyleVisitor(double scaleDenominator, SimpleFeatureType schema) {
         this.scaleDenominator = scaleDenominator;
+        this.schema = schema;
+    }
+
+    @Override
+    public void visit(Style style) {
+        super.visit(style);
+        Style copy = (Style) pages.peek();
+
+        List<FeatureTypeStyle> filtered = new ArrayList<FeatureTypeStyle>();
+        for (FeatureTypeStyle fts : copy.featureTypeStyles()) {
+            // do the same filtering as streaming renderer
+            String ftName = fts.getFeatureTypeName();
+            if (fts.featureTypeNames().isEmpty()
+                    || ((schema.getName().getLocalPart() != null) && (schema.getName()
+                            .getLocalPart().equalsIgnoreCase(ftName) || FeatureTypes
+                            .isDecendedFrom(schema, null, ftName)))) {
+                filtered.add(fts);
+            }
+        }
+        copy.featureTypeStyles().clear();
+        copy.featureTypeStyles().addAll(filtered);
     }
 
     @Override
@@ -47,5 +73,14 @@ public class ScaleStyleVisitor extends DuplicatingStyleVisitor {
         copy.rules().clear();
         copy.rules().addAll(rulesCopy);
         pages.push(copy);
+    }
+
+    public Style getSimplifiedStyle() {
+        return (Style) getCopy();
+    }
+
+    @Override
+    public Style getCopy() {
+        return (Style) super.getCopy();
     }
 }

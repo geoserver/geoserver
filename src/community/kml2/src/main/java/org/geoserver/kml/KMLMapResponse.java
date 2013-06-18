@@ -27,6 +27,12 @@ import org.geotools.map.Layer;
 
 import de.micromata.opengis.kml.v_2_2_0.Kml;
 
+/**
+ * A map response that handles KML documents and writes them out either as KML or as KMZ
+ * 
+ * @author Andrea Aime - GeoSolutions
+ * 
+ */
 public class KMLMapResponse extends AbstractMapResponse {
 
     private WMS wms;
@@ -35,7 +41,7 @@ public class KMLMapResponse extends AbstractMapResponse {
         super(KMLMap.class, (Set<String>) null);
         this.wms = wms;
     }
-    
+
     @Override
     public String getPreferredDisposition(Object value, Operation operation) {
         return DISPOSITION_ATTACH;
@@ -48,7 +54,7 @@ public class KMLMapResponse extends AbstractMapResponse {
         try {
             KmlEncodingContext context = kmlMap.getKmlEncodingContext();
             Kml kml = kmlMap.getKml();
-            if(context != null && context.isKmz()) {
+            if (context != null && context.isKmz()) {
                 encodeAsKmz(kml, context, operation, output);
             } else {
                 encodeAsKml(kml, output);
@@ -58,7 +64,8 @@ public class KMLMapResponse extends AbstractMapResponse {
         }
     }
 
-    private void encodeAsKmz(Kml kml, KmlEncodingContext context, Operation operation, OutputStream output) throws IOException {
+    private void encodeAsKmz(Kml kml, KmlEncodingContext context, Operation operation,
+            OutputStream output) throws IOException {
         // wrap the output stream in a zipped one
         ZipOutputStream zip = new ZipOutputStream(output);
 
@@ -111,7 +118,7 @@ public class KMLMapResponse extends AbstractMapResponse {
 
         zip.finish();
         zip.flush();
-        
+
     }
 
     private void encodeAsKml(Kml kml, OutputStream output) {
@@ -119,7 +126,7 @@ public class KMLMapResponse extends AbstractMapResponse {
             createMarshaller().marshal(kml, output);
         } catch (JAXBException e) {
             throw new ServiceException(e);
-        } 
+        }
     }
 
     private Marshaller createMarshaller() throws JAXBException {

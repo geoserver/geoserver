@@ -19,6 +19,7 @@ import org.geotools.map.Layer;
 import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
 
 import de.micromata.opengis.kml.v_2_2_0.Feature;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
@@ -55,7 +56,8 @@ public class FeatureSequenceFactory implements SequenceFactory<Feature> {
     }
 
     private Style getSimplifiedStyle(WMSMapContent mc, Layer layer) {
-        ScaleStyleVisitor visitor = new ScaleStyleVisitor(mc.getScaleDenominator());
+        ScaleStyleVisitor visitor = new ScaleStyleVisitor(mc.getScaleDenominator(), 
+                (SimpleFeatureType) layer.getFeatureSource().getSchema());
         try {
             layer.getStyle().accept(visitor);
             return (Style) visitor.getCopy();

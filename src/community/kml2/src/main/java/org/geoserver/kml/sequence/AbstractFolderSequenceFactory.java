@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
+import org.geoserver.kml.utils.KMLFeatureAccessor;
 import org.geoserver.kml.utils.KMLUtils;
 import org.geoserver.ows.HttpErrorCodeException;
 import org.geoserver.platform.ServiceException;
@@ -60,8 +61,8 @@ public abstract class AbstractFolderSequenceFactory implements SequenceFactory<F
                 if (layer instanceof FeatureLayer) {
                     try {
                         WMSMapContent mapContent = context.getMapContent();
-                        SimpleFeatureCollection fc = KMLUtils.loadFeatureCollection(
-                                (SimpleFeatureSource) layer.getFeatureSource(), layer, mapContent,
+                        SimpleFeatureCollection fc = new KMLFeatureAccessor().loadFeatureCollection(
+                                layer, mapContent,
                                 context.getWms(), mapContent.getScaleDenominator());
                         context.setCurrentFeatureCollection(fc);
                     } catch (Exception e) {

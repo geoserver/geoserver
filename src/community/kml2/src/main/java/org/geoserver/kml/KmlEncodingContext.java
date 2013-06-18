@@ -75,10 +75,44 @@ public class KmlEncodingContext {
         this.descriptionEnabled = KMLUtils.getKMAttr(request, wms);
         this.lookAtOptions = new LookAtOptions(request.getFormatOptions());
         this.placemarkForced = KMLUtils.getKmplacemark(mapContent.getRequest(), wms);
-        this.superOverlayMode = KMLUtils.getSuperoverlayMode(request, wms);
-        this.superOverlayEnabled = KMLUtils.isSuperoverlayEnabled(request);
+        this.superOverlayMode = getSuperoverlayMode(request, wms);
+        this.superOverlayEnabled = isSuperoverlayEnabled(request);
         this.networkLinksFormat = KMLMapOutputFormat.NL_KML_MIME_TYPE.equals(request.getFormat()) || KMZMapOutputFormat.NL_KMZ_MIME_TYPE.equals(request.getFormat());
         this.kmz = kmz;
+    }
+    
+    /**
+     * Checks if the superoverlay is enabled or not
+     * @param request
+     * @return
+     */
+    boolean isSuperoverlayEnabled(GetMapRequest request) {
+        Map formatOptions = request.getFormatOptions();
+        Boolean superoverlay = (Boolean) formatOptions.get("superoverlay");
+        if (superoverlay == null) {
+            superoverlay = Boolean.FALSE;
+        }
+
+        return superoverlay;
+    }
+    
+    
+    /**
+     * Returns the superoverlay mode (either specified in the request, or the default one)
+     * @return
+     */
+    String getSuperoverlayMode(GetMapRequest request, WMS wms) {
+        String overlayMode = (String) request.getFormatOptions().get("superoverlay_mode");
+        if(overlayMode != null) {
+            return overlayMode;
+        } 
+        
+        overlayMode = (String) request.getFormatOptions().get("overlayMode");
+        if(overlayMode != null) {
+            return overlayMode;
+        } else {
+            return wms.getKmlSuperoverlayMode();
+        }
     }
 
     public WMSMapContent getMapContent() {

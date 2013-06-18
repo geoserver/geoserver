@@ -202,7 +202,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
                     opacity = 1.0;
                 }
                 Color color = fill.getColor().evaluate(feature, Color.class);
-                ls.setColor(KMLUtils.colorToHex(color, opacity));
+                ls.setColor(colorToHex(color, opacity));
             } else {
                 ls.setColor("ffffffff");
             }
@@ -231,7 +231,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
                 }
 
                 Color color = (Color) fill.getColor().evaluate(feature, Color.class);
-                ps.setColor(KMLUtils.colorToHex(color, opacity));
+                ps.setColor(colorToHex(color, opacity));
             } else {
                 // make it transparent
                 ps.setColor("00aaaaaa");
@@ -265,7 +265,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
                 if (color == null) {
                     color = Color.DARK_GRAY;
                 }
-                ls.setColor(KMLUtils.colorToHex(color, opacity));
+                ls.setColor(colorToHex(color, opacity));
 
                 // width
                 Double width = null;
@@ -309,7 +309,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
 
                 if (fill != null) {
                     final Color color = (Color) fill.getColor().evaluate(sf, Color.class);
-                    is.setColor(KMLUtils.colorToHex(color, opacity));
+                    is.setColor(colorToHex(color, opacity));
                 }
             }
 
@@ -412,6 +412,39 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
             }
 
             return location.evaluate(feature, String.class);
+        }
+        
+        /**
+         * Utility method to convert a Color and opacity (0,1.0) into a KML
+         * color ref.
+         *
+         * @param c The color to convert.
+         * @param opacity Opacity / alpha, double from 0 to 1.0.
+         *
+         * @return A String of the form "AABBGGRR".
+         */
+        String colorToHex(Color c, double opacity) {
+            return new StringBuffer().append(
+                    intToHex(new Float(255 * opacity).intValue())).append(
+                    intToHex(c.getBlue())).append(intToHex(c.getGreen())).append(
+                    intToHex(c.getRed())).toString();
+        }
+        
+        /**
+         * Utility method to convert an int into hex, padded to two characters.
+         * handy for generating colour strings.
+         *
+         * @param i Int to convert
+         * @return String a two character hex representation of i
+         */
+        String intToHex(int i) {
+            String prelim = Integer.toHexString(i);
+
+            if (prelim.length() < 2) {
+                prelim = "0" + prelim;
+            }
+
+            return prelim;
         }
 
     }

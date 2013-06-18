@@ -44,11 +44,6 @@ public class KMLTest extends WMSTestSupport {
         testData.setUpDefaultRasterLayers();
     }
     
-    @Override
-    protected String getLogConfiguration() {
-        return "/DEFAULT_LOGGING.properties";
-    }
-    
     @BeforeClass
     public static void setTimeZone() {
         // System.setProperty("user.timezone", "UTC");

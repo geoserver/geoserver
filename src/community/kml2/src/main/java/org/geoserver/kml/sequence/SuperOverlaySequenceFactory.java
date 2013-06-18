@@ -8,10 +8,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.List;
 
-import org.geoserver.kml.KMLMapOutputFormat;
-import org.geoserver.kml.KMZMapOutputFormat;
 import org.geoserver.kml.KmlEncodingContext;
-import org.geoserver.kml.NetworkLinkMapOutputFormat;
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
 import org.geoserver.kml.utils.KMLUtils;
 import org.geoserver.ows.URLMangler.URLType;
@@ -26,7 +23,6 @@ import org.geotools.map.RasterLayer;
 import com.vividsolutions.jts.geom.Envelope;
 
 import de.micromata.opengis.kml.v_2_2_0.Feature;
-import de.micromata.opengis.kml.v_2_2_0.Folder;
 import de.micromata.opengis.kml.v_2_2_0.LatLonAltBox;
 import de.micromata.opengis.kml.v_2_2_0.Link;
 import de.micromata.opengis.kml.v_2_2_0.Lod;
@@ -94,10 +90,6 @@ public class SuperOverlaySequenceFactory implements SequenceFactory<Feature> {
             return null;
         }
         
-        protected void encodeFolderContents(Layer layer) {
-            
-        }
-
         private NetworkLink encodeAsSuperOverlay(Layer layer) {
             GetMapRequest request = context.getRequest();
 

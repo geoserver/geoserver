@@ -9,14 +9,19 @@ import org.geoserver.wms.WebMap;
 
 import de.micromata.opengis.kml.v_2_2_0.Kml;
 
+/**
+ * A WebMap containing a KML document
+ * 
+ * @author Andrea Aime - GeoSolutions
+ * 
+ */
 public class KMLMap extends WebMap {
 
     Kml kml;
 
     KmlEncodingContext kmlEncodingContext;
 
-    public KMLMap(WMSMapContent map, KmlEncodingContext kmlEncodingContext, Kml kml,
-            String mimeType) {
+    public KMLMap(WMSMapContent map, KmlEncodingContext kmlEncodingContext, Kml kml, String mimeType) {
         super(map);
         this.kml = kml;
         this.kmlEncodingContext = kmlEncodingContext;

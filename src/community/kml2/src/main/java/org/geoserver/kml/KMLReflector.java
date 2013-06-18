@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.geoserver.kml.utils.KMLUtils;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.DefaultWebMapService;
@@ -36,23 +35,23 @@ public class KMLReflector {
     public static final String FORMAT = KMLMapOutputFormat.MIME_TYPE;
     
 
-    private static Map<String, Map<String, String>> MODES;
+    private static Map<String, Map<String, Object>> MODES;
 
     static {
-        Map temp = new HashMap();
-        Map options;
+        Map<String, Map<String, Object>> temp = new HashMap<String, Map<String, Object>>();
+        Map<String, Object> options; 
 
-        options = new HashMap();
+        options = new HashMap<String, Object>();
         options.put("superoverlay", true);
         temp.put("superoverlay", options);
 
-        options = new HashMap();
+        options = new HashMap<String, Object>();
         options.put("superoverlay", false);
         options.put("regionatemode", null);
         options.put("kmscore", null);
         temp.put("download", options);
 
-        options = new HashMap();
+        options = new HashMap<String, Object>();
         options.put("superoverlay", false);
         temp.put("refresh", options);
 
@@ -180,7 +179,6 @@ public class KMLReflector {
         String formatExtension = ".kmz";
         if (superoverlay) {
             request.setFormat(KMZMapOutputFormat.MIME_TYPE);
-            request.setBbox(KMLUtils.expandToTile(request.getBbox()));
         } else if (mode.equals("refresh") || containsRasterData) {
             request.setFormat(KMLMapOutputFormat.MIME_TYPE);
         } else if (!Arrays.asList(KMZMapOutputFormat.OUTPUT_FORMATS).contains(request.getFormat())) {
@@ -218,8 +216,6 @@ public class KMLReflector {
         WMSRequests.mergeEntry(kvp, formatOptions, "kmscore");
         WMSRequests.mergeEntry(kvp, formatOptions, "kmattr");
         WMSRequests.mergeEntry(kvp, formatOptions, "kmltitle");
-//        WMSRequests.mergeEntry(kvp, formatOptions, "superoverlay");
-
     }
 
 }

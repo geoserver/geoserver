@@ -13,6 +13,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
@@ -96,6 +97,11 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                 version = wms.getVersion();
             }
             request.setVersion(version);
+        }
+        
+        final String language = (String) rawKvp.get("LANGUAGE");
+        if(language != null) {
+            request.setLocale(new Locale(language));
         }
 
         // Fix for http://jira.codehaus.org/browse/GEOS-710

@@ -37,6 +37,8 @@ public enum GeometryTypeEnum {
             return POINT;
         } else if (jtsClass.equals(com.vividsolutions.jts.geom.MultiPoint.class)) {
             return MULTIPOINT;
+        } else if (jtsClass.equals(com.vividsolutions.jts.geom.LineString.class)) {
+            return POLYLINE;
         } else if (jtsClass.equals(com.vividsolutions.jts.geom.MultiLineString.class)) {
             return POLYLINE;
         } else if (jtsClass.equals(com.vividsolutions.jts.geom.Polygon.class)) {

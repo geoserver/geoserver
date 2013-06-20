@@ -28,6 +28,10 @@
   <bean id="KMLMapResponse" class="org.geoserver.kml.KMLMapResponse">
     <constructor-arg ref="wms" />
   </bean>
+  
+  <bean id="WFSKMLOutputFormat" class="org.geoserver.kml.WFSKMLOutputFormat">
+    <constructor-arg ref="geoServer"/>
+  </bean>
 
   <!-- http url mapping -->
   <bean id="kmlURLMapping" class="org.geoserver.ows.OWSHandlerMapping">

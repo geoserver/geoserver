@@ -6,6 +6,7 @@ package org.geoserver.kml.decorator;
 
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.utils.LookAtOptions;
+import org.geoserver.wms.WMSInfo;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -27,6 +28,11 @@ public class LookAtDecoratorFactory implements KmlDecoratorFactory {
     @Override
     public KmlDecorator getDecorator(Class<? extends Feature> featureClass,
             KmlEncodingContext context) {
+        // this decorator makes sense only for WMS
+        if(!(context.getService() instanceof WMSInfo)) {
+            return null;
+        }
+        
         if (Placemark.class.isAssignableFrom(featureClass)) {
             return new PlacemarkLookAtDecorator();
         } else if (Folder.class.isAssignableFrom(featureClass) || NetworkLink.class.isAssignableFrom(featureClass)) {

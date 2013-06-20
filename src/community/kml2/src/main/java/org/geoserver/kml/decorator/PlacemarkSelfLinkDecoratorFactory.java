@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import org.geoserver.kml.KmlEncodingContext;
+import org.geoserver.wms.WMSInfo;
 import org.geotools.util.logging.Logging;
 
 import de.micromata.opengis.kml.v_2_2_0.Feature;
@@ -25,6 +26,11 @@ public class PlacemarkSelfLinkDecoratorFactory implements KmlDecoratorFactory {
     @Override
     public KmlDecorator getDecorator(Class<? extends Feature> featureClass,
             KmlEncodingContext context) {
+        // this decorator makes sense only for WMS
+        if(!(context.getService() instanceof WMSInfo)) {
+            return null;
+        }
+        
         String selfLinks = (String) context.getRequest().getFormatOptions().get("selfLinks");
         if (selfLinks != null && selfLinks.equalsIgnoreCase("true") && Placemark.class.isAssignableFrom(featureClass)) {
             return new PlacemarkSelfLinkDecorator();

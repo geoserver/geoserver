@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.utils.KmlCentroidBuilder;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.featureinfo.FeatureTemplate;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeature;
@@ -54,6 +55,11 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
     }
 
     private boolean hasHeightTemplate(KmlEncodingContext context) {
+        // we apply the height template only on wms outputs
+        if(!(context.getService() instanceof WMSInfo)) {
+            return false;
+        }
+        
         try {
             SimpleFeatureType schema = context.getCurrentFeatureCollection().getSchema();
             return !context.getTemplate().isTemplateEmpty(schema, "height.ftl", FeatureTemplate.class, "0\n");

@@ -57,7 +57,7 @@ public class KMLMapResponse extends AbstractMapResponse {
             if (context != null && context.isKmz()) {
                 encodeAsKmz(kml, context, operation, output);
             } else {
-                encodeAsKml(kml, output);
+                new KMLEncoder().encode(kml, output);
             }
         } finally {
             kmlMap.dispose();
@@ -72,7 +72,7 @@ public class KMLMapResponse extends AbstractMapResponse {
         // first create an entry for the kml
         ZipEntry entry = new ZipEntry("wms.kml");
         zip.putNextEntry(entry);
-        encodeAsKml(kml, zip);
+        new KMLEncoder().encode(kml, zip);
 
         // prepare for the ground overlays
         final RenderedImageMapOutputFormat pngProducer = new RenderedImageMapOutputFormat(
@@ -121,28 +121,6 @@ public class KMLMapResponse extends AbstractMapResponse {
 
     }
 
-    private void encodeAsKml(Kml kml, OutputStream output) {
-        try {
-            createMarshaller().marshal(kml, output);
-        } catch (JAXBException e) {
-            throw new ServiceException(e);
-        }
-    }
-
-    private Marshaller createMarshaller() throws JAXBException {
-        Marshaller m = JAXBContext.newInstance((Kml.class)).createMarshaller();
-        m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        // hmm... this one is nasty, without the reference implementation the prefixes
-        // are going to be a bit ugly. Not a big deal, to solve look at
-        // http://cglib.sourceforge.net/xref/samples/Beans.html
-        // try {
-        // Class.forName("com.sun.xml.internal.bind.marshaller.NamespacePrefixMapper");
-        // m.setProperty("com.sun.xml.bind.namespacePrefixMapper", new JKD6PrefixMapper());
-        // } catch(Exception e) {
-        //
-        // }
-
-        return m;
-    }
+    
 
 }

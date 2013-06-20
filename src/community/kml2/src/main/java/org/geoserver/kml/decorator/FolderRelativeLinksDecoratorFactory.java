@@ -8,6 +8,7 @@ import java.io.IOException;
 
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.wms.GetMapRequest;
+import org.geoserver.wms.WMSInfo;
 
 import de.micromata.opengis.kml.v_2_2_0.Feature;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
@@ -25,6 +26,11 @@ public class FolderRelativeLinksDecoratorFactory implements KmlDecoratorFactory 
     @Override
     public KmlDecorator getDecorator(Class<? extends Feature> featureClass,
             KmlEncodingContext context) {
+        // this decorator makes sense only for WMS
+        if(!(context.getService() instanceof WMSInfo)) {
+            return null;
+        }
+        
         // we decorate only the feature collection folders
         if(!(featureClass.equals(Folder.class))) {
             return null;

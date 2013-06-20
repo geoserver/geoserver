@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.wms.GetMapRequest;
+import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSRequests;
 import org.geotools.map.Layer;
 
@@ -28,6 +29,11 @@ public class LegendDecoratorFactory implements KmlDecoratorFactory {
     @Override
     public KmlDecorator getDecorator(Class<? extends Feature> featureClass,
             KmlEncodingContext context) {
+        // this decorator makes sense only for WMS
+        if(!(context.getService() instanceof WMSInfo)) {
+            return null;
+        }
+        
         // see if we have to encode a legend
         GetMapRequest request = context.getRequest();
         Boolean legend = (Boolean) request.getFormatOptions().get("legend");

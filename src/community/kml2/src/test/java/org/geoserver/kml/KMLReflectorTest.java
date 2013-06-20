@@ -87,7 +87,7 @@ public class KMLReflectorTest extends WMSTestSupport {
         final XpathEngine xpath = XMLUnit.newXpathEngine();
         String requestURL = "wms/kml?mode=refresh&layers=" + layerName;
         Document dom = getAsDOM(requestURL);
-        print(dom);
+        // print(dom);
         assertXpathEvaluatesTo("1", "count(kml:kml/kml:Document)", dom);
         assertXpathEvaluatesTo("1", "count(kml:kml/kml:Document/kml:NetworkLink)", dom);
         assertXpathEvaluatesTo("1", "count(kml:kml/kml:Document/kml:LookAt)", dom);
@@ -143,7 +143,7 @@ public class KMLReflectorTest extends WMSTestSupport {
 
         final String requestUrl = "wms/kml?layers=" + layerName + "&styles=&mode=superoverlay";
         Document dom = getAsDOM(requestUrl);
-        print(dom);
+        // print(dom);
         assertEquals("kml", dom.getDocumentElement().getLocalName());
         assertXpathExists("kml:kml/kml:Document/kml:Folder/kml:NetworkLink/kml:Link/kml:href", dom);
         assertXpathExists("kml:kml/kml:Document/kml:LookAt/kml:longitude", dom);
@@ -205,7 +205,7 @@ public class KMLReflectorTest extends WMSTestSupport {
         Document dom = getAsDOM(requestUrl);
         XpathEngine xpath = XMLUnit.newXpathEngine();
 
-        print(dom);
+        // print(dom);
         // all the kvp parameters (which should be set as format_options now are correctly parsed)
         String result = xpath.evaluate("//kml:NetworkLink/kml:Link/kml:href", dom);
         Map<String, Object> kvp = KvpUtils.parseQueryString(result);
@@ -224,7 +224,7 @@ public class KMLReflectorTest extends WMSTestSupport {
                 + "&styles=&mode=superoverlay&format_options=kmltitle:myCustomLayerTitle";
         // System.out.println(getAsServletResponse(requestUrl).getContentType());
         Document dom = getAsDOM(requestUrl);
-        print(dom);
+        // print(dom);
         assertEquals("kml", dom.getDocumentElement().getLocalName());
         assertXpathEvaluatesTo("myCustomLayerTitle", "/kml:kml/kml:Document/kml:name",
                 dom);

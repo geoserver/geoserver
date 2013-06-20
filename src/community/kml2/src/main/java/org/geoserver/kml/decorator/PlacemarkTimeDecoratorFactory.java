@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.featureinfo.FeatureTemplate;
 import org.geotools.feature.type.DateUtil;
 import org.geotools.util.logging.Logging;
@@ -93,6 +94,12 @@ public class PlacemarkTimeDecoratorFactory implements KmlDecoratorFactory {
     @Override
     public KmlDecorator getDecorator(Class<? extends Feature> featureClass,
             KmlEncodingContext context) {
+        // this decorator is used only for WMS
+        if(!(context.getService() instanceof WMSInfo)) {
+            return null;
+        }
+
+        
         if (Placemark.class.isAssignableFrom(featureClass) && hasTimeTemplate(context)) {
             return new PlacemarkTimeDecorator();
         } else {

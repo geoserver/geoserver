@@ -7,9 +7,6 @@ package org.geoserver.kml;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import org.geoserver.kml.decorator.LookAtDecoratorFactory;
-import org.geoserver.ows.URLMangler.URLType;
-import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.kml.builder.SimpleNetworkLinkBuilder;
 import org.geoserver.kml.builder.SuperOverlayNetworkLinkBuilder;
 import org.geoserver.platform.ServiceException;
@@ -20,15 +17,6 @@ import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.AbstractMapOutputFormat;
 import org.geotools.util.logging.Logging;
 
-import de.micromata.opengis.kml.v_2_2_0.Document;
-import de.micromata.opengis.kml.v_2_2_0.Kml;
-import de.micromata.opengis.kml.v_2_2_0.LatLonAltBox;
-import de.micromata.opengis.kml.v_2_2_0.Link;
-import de.micromata.opengis.kml.v_2_2_0.Lod;
-import de.micromata.opengis.kml.v_2_2_0.LookAt;
-import de.micromata.opengis.kml.v_2_2_0.NetworkLink;
-import de.micromata.opengis.kml.v_2_2_0.Region;
-import de.micromata.opengis.kml.v_2_2_0.ViewRefreshMode;
 import de.micromata.opengis.kml.v_2_2_0.Kml;
 
 /**

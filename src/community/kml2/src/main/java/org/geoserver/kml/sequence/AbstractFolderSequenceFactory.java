@@ -99,22 +99,6 @@ public abstract class AbstractFolderSequenceFactory implements SequenceFactory<F
          */
         protected abstract void encodeFolderContents(Layer layer, Folder folder);
         
-        /**
-         * Adds features to the folder own list
-         * @param folder
-         * @param features
-         */
-        protected void addFeatures(Folder folder, List<Feature> features) {
-            List<Feature> originalFeatures = folder.getFeature();
-            if (originalFeatures == null || originalFeatures.size() == 0) {
-                folder.setFeature(features);
-            } else {
-                // in this case, compose the already existing features with the
-                // dynamically generated ones
-                folder.setFeature(new CompositeList<Feature>(originalFeatures, features));
-            }
-        }
-
     }
 
 }

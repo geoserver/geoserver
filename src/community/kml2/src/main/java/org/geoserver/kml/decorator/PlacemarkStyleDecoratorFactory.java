@@ -16,10 +16,10 @@ import java.util.logging.Logger;
 
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.kml.KmlEncodingContext;
-import org.geoserver.kml.utils.KMLUtils;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.wms.WMSInfo;
 import org.geotools.data.DataUtilities;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.renderer.style.ExpressionExtractor;
@@ -63,6 +63,11 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
 
     public KmlDecorator getDecorator(Class<? extends Feature> featureClass,
             KmlEncodingContext context) {
+        // this decorator makes sense only for WMS
+        if(!(context.getService() instanceof WMSInfo)) {
+            return null;
+        }
+        
         if (Placemark.class.isAssignableFrom(featureClass)) {
             return new PlacemarkStyleDecorator();
         } else {

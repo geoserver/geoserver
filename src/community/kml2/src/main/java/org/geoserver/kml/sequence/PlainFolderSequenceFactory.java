@@ -52,7 +52,7 @@ public class PlainFolderSequenceFactory extends AbstractFolderSequenceFactory {
                 if (useVectorOutput(context)) {
                     List<Feature> features = new SequenceList<Feature>(
                             new FeatureSequenceFactory(context, (FeatureLayer) layer));
-                    addFeatures(folder, features);
+                    context.addFeatures(folder, features);
                 } else {
                     addGroundOverlay(folder, layer);
                     // in case of ground overlays we might still want to output placemarks
@@ -81,7 +81,7 @@ public class PlainFolderSequenceFactory extends AbstractFolderSequenceFactory {
                 FeatureLayer centroidsLayer = new FeatureLayer(centroids, layer.getStyle(), layer.getTitle());
                 List<Feature> features = new SequenceList<Feature>(
                         new FeatureSequenceFactory(context, centroidsLayer));
-                addFeatures(folder, features);
+                context.addFeatures(folder, features);
             } catch(IOException e) {
                 throw new ServiceException(
                         "Failed to load vector data during KML generation", e);

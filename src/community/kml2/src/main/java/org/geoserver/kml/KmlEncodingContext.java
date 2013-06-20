@@ -10,8 +10,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.geoserver.config.ServiceInfo;
 import org.geoserver.kml.decorator.KmlDecoratorFactory;
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
+import org.geoserver.kml.sequence.CompositeList;
 import org.geoserver.kml.utils.KMLUtils;
 import org.geoserver.kml.utils.LookAtOptions;
 import org.geoserver.platform.GeoServerExtensions;
@@ -20,12 +22,15 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.featureinfo.FeatureTemplate;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.geotools.styling.Symbolizer;
 import org.geotools.util.Converters;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
 
 import de.micromata.opengis.kml.v_2_2_0.Feature;
+import de.micromata.opengis.kml.v_2_2_0.Folder;
 
 /**
  * A class used by {@link KmlDecorator} to get the current encoding context (request, map content,
@@ -35,43 +40,47 @@ import de.micromata.opengis.kml.v_2_2_0.Feature;
  */
 public class KmlEncodingContext {
     
-    boolean kmz;
+    protected boolean kmz;
 
-    WMSMapContent mapContent;
+    protected WMSMapContent mapContent;
 
-    GetMapRequest request;
+    protected GetMapRequest request;
 
-    List<Symbolizer> currentSymbolizers;
+    protected List<Symbolizer> currentSymbolizers;
 
-    Layer currentLayer;
+    protected Layer currentLayer;
 
-    SimpleFeatureCollection currentFeatureCollection;
+    protected SimpleFeatureCollection currentFeatureCollection;
 
-    SimpleFeature currentFeature;
+    protected SimpleFeature currentFeature;
 
-    Map<String, Object> metadata = new HashMap<String, Object>();
+    protected Map<String, Object> metadata = new HashMap<String, Object>();
 
-    boolean descriptionEnabled;
+    protected boolean descriptionEnabled;
 
-    FeatureTemplate template = new FeatureTemplate();
+    protected FeatureTemplate template = new FeatureTemplate();
 
-    LookAtOptions lookAtOptions;
+    protected LookAtOptions lookAtOptions;
 
-    WMS wms;
+    protected WMS wms;
     
-    Map<String, Layer> kmzGroundOverlays = new LinkedHashMap<String, Layer>();
+    protected Map<String, Layer> kmzGroundOverlays = new LinkedHashMap<String, Layer>();
 
-    boolean placemarkForced;
+    protected boolean placemarkForced;
 
-    String superOverlayMode;
+    protected String superOverlayMode;
 
-    boolean superOverlayEnabled;
+    protected boolean superOverlayEnabled;
 
-    boolean networkLinksFormat;
+    protected boolean networkLinksFormat;
 
-    private boolean extendedDataEnabled;
+    protected boolean extendedDataEnabled;
 
-    private int kmScore;
+    protected int kmScore;
+
+    protected ServiceInfo service;
+
+    protected int layerIndex;
 
     public KmlEncodingContext(WMSMapContent mapContent, WMS wms, boolean kmz) {
         this.mapContent = mapContent;
@@ -86,6 +95,14 @@ public class KmlEncodingContext {
         this.kmScore = computeKmScore();
         this.networkLinksFormat = KMLMapOutputFormat.NL_KML_MIME_TYPE.equals(request.getFormat()) || KMZMapOutputFormat.NL_KMZ_MIME_TYPE.equals(request.getFormat());
         this.kmz = kmz;
+        this.service = wms.getServiceInfo();
+    }
+    
+    /**
+     * Protected constructor used by WFS output format to create a fake kml encoding context
+     */
+    protected KmlEncodingContext() {
+        
     }
     
     private int computeKmScore() {
@@ -147,6 +164,42 @@ public class KmlEncodingContext {
             return wms.getKmlSuperoverlayMode();
         }
     }
+   
+    /**
+     * Returns the {@link KmlDecorator} objects for the specified Feature class
+     * 
+     * @return
+     */
+    public List<KmlDecorator> getDecoratorsForClass(Class<? extends Feature> clazz) {
+        List<KmlDecoratorFactory> factories = GeoServerExtensions
+                .extensions(KmlDecoratorFactory.class);
+        List<KmlDecorator> result = new ArrayList<KmlDecorator>();
+        for (KmlDecoratorFactory factory : factories) {
+            KmlDecorator decorator = factory.getDecorator(clazz, this);
+            if (decorator != null) {
+                result.add(decorator);
+            }
+        }
+
+        return result;
+    }
+    
+    /**
+     * Adds features to the folder own list
+     * 
+     * @param folder
+     * @param features
+     */
+    public void addFeatures(Folder folder, List<Feature> features) {
+        List<Feature> originalFeatures = folder.getFeature();
+        if (originalFeatures == null || originalFeatures.size() == 0) {
+            folder.setFeature(features);
+        } else {
+            // in this case, compose the already existing features with the
+            // dynamically generated ones
+            folder.setFeature(new CompositeList<Feature>(originalFeatures, features));
+        }
+    }
 
     public WMSMapContent getMapContent() {
         return mapContent;
@@ -178,6 +231,7 @@ public class KmlEncodingContext {
 
     public void setCurrentLayer(Layer currentLayer) {
         this.currentLayer = currentLayer;
+        this.layerIndex++;
     }
 
     public SimpleFeature getCurrentFeature() {
@@ -210,25 +264,6 @@ public class KmlEncodingContext {
 
     public WMS getWms() {
         return wms;
-    }
-
-    /**
-     * Returns the {@link KmlDecorator} objects for the specified Feature class
-     * 
-     * @return
-     */
-    public List<KmlDecorator> getDecoratorsForClass(Class<? extends Feature> clazz) {
-        List<KmlDecoratorFactory> factories = GeoServerExtensions
-                .extensions(KmlDecoratorFactory.class);
-        List<KmlDecorator> result = new ArrayList<KmlDecorator>();
-        for (KmlDecoratorFactory factory : factories) {
-            KmlDecorator decorator = factory.getDecorator(clazz, this);
-            if (decorator != null) {
-                result.add(decorator);
-            }
-        }
-
-        return result;
     }
 
     public SimpleFeatureCollection getCurrentFeatureCollection() {
@@ -290,6 +325,48 @@ public class KmlEncodingContext {
 
     public int getKmScore() {
         return kmScore;
+    }
+
+    public ServiceInfo getService() {
+        return service;
+    }
+
+    /**
+     * Returns a list of the feature types to be encoded. Will provide a feature type only for the
+     * vector layers, a null will be placed where a layer of different nature is found
+     * @return
+     */
+    public List<SimpleFeatureType> getFeatureTypes() {
+        List<SimpleFeatureType> results = new ArrayList<SimpleFeatureType>();
+        for(Layer layer : mapContent.layers()) {
+            if(layer instanceof FeatureLayer) {
+                results.add((SimpleFeatureType) layer.getFeatureSource().getSchema());
+            } else {
+                results.add(null);
+            }
+        }
+        
+        return results;
+    }
+
+    /**
+     * Returns the current feature type is the current layer is made of vector features, null otherwise
+     * @return
+     */
+    public SimpleFeatureType getCurrentFeatureType() {
+        if(currentLayer instanceof FeatureLayer) {
+            FeatureLayer fl = (FeatureLayer) currentLayer;
+            return (SimpleFeatureType) fl.getFeatureSource().getSchema();
+        }
+        return null;
+    }
+
+    /**
+     * Returns the current layer index in the request
+     * @return
+     */
+    public int getCurrentLayerIndex() {
+        return layerIndex;
     }
     
     

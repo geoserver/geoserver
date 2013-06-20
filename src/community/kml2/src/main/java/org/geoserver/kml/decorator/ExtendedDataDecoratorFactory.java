@@ -8,9 +8,7 @@ import java.util.Date;
 import java.util.logging.Logger;
 
 import org.geoserver.kml.KmlEncodingContext;
-import org.geoserver.kml.decorator.PlacemarkDescriptionDecoratorFactory.PlacemarkDescriptionDecorator;
 import org.geoserver.platform.ServiceException;
-import org.geotools.map.Layer;
 import org.geotools.util.Converter;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
@@ -20,8 +18,6 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.GeometryDescriptor;
-
-import com.vividsolutions.jts.geom.Geometry;
 
 import de.micromata.opengis.kml.v_2_2_0.Document;
 import de.micromata.opengis.kml.v_2_2_0.ExtendedData;
@@ -63,13 +59,14 @@ public class ExtendedDataDecoratorFactory implements KmlDecoratorFactory {
             Document doc = (Document) feature;
 
             // add a schema for each layer in the request (schemas have to be placed in the
-            // Document, can't
-            // be placed in a Folder unfortunately
-            for (Layer layer : context.getMapContent().layers()) {
-                SimpleFeatureType featureType = (SimpleFeatureType) layer.getFeatureSource()
-                        .getSchema();
-                String id = layer.getTitle();
-                addSchema(doc, id, featureType);
+            // Document, can't be placed in a Folder unfortunately
+            int i = 1;
+            for (SimpleFeatureType schema : context.getFeatureTypes()) {
+                if(schema != null) {
+                    String id = schema.getTypeName() + "_" + i;
+                    addSchema(doc, id, schema);
+                }
+                i++;
             }
 
             return doc;
@@ -124,7 +121,7 @@ public class ExtendedDataDecoratorFactory implements KmlDecoratorFactory {
             // create the extended data, and encode any non null, non geometric attribute
             ExtendedData exd = pm.createAndSetExtendedData();
             SchemaData schemaData = exd.createAndAddSchemaData();
-            schemaData.setSchemaUrl(context.getCurrentLayer().getTitle());
+            schemaData.setSchemaUrl("#" + context.getCurrentFeatureType().getTypeName() + "_" + context.getCurrentLayerIndex());
             for (AttributeDescriptor ad : sf.getFeatureType().getAttributeDescriptors()) {
                 // skip geometry attributes
                 if (ad instanceof GeometryDescriptor) {

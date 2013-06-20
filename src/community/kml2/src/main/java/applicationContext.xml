@@ -66,6 +66,7 @@
   <bean id="kmlDescriptionDecorator" class="org.geoserver.kml.decorator.PlacemarkDescriptionDecoratorFactory"/>
   <bean id="kmlLookAtDecorator" class="org.geoserver.kml.decorator.LookAtDecoratorFactory"/>
   <bean id="kmlTimeDecorator" class="org.geoserver.kml.decorator.PlacemarkTimeDecoratorFactory"/>
+  <bean id="kmlExtendedDataDecorator" class="org.geoserver.kml.decorator.ExtendedDataDecoratorFactory"/>
   
   <!-- GeoSearch KML decorators -->
   <bean id="kmlRelativeLinksDecorator" class="org.geoserver.kml.decorator.FolderRelativeLinksDecoratorFactory"/>

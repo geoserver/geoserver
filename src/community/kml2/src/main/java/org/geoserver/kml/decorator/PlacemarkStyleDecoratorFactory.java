@@ -81,7 +81,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
             Placemark pm = (Placemark) feature;
             List<Symbolizer> symbolizers = context.getCurrentSymbolizers();
             SimpleFeature sf = context.getCurrentFeature();
-            if (symbolizers.size() > 0) {
+            if (symbolizers.size() > 0 && sf.getDefaultGeometry() != null) {
                 // sort by point, text, line and polygon
                 Map<Class, List<Symbolizer>> classified = classifySymbolizers(symbolizers);
 

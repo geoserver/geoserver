@@ -49,7 +49,7 @@ public class PlainFolderSequenceFactory extends AbstractFolderSequenceFactory {
             // now encode the contents (dynamic bit, it may use the Sequence construct)
             if (layer instanceof FeatureLayer) {
                 // do we use a KML placemark dump, or a ground overlay?
-                if (useVectorOutput(context.getCurrentFeatureCollection())) {
+                if (useVectorOutput(context)) {
                     List<Feature> features = new SequenceList<Feature>(
                             new FeatureSequenceFactory(context, (FeatureLayer) layer));
                     addFeatures(folder, features);
@@ -159,14 +159,10 @@ public class PlainFolderSequenceFactory extends AbstractFolderSequenceFactory {
          * @param numFeatures how many features are being rendered
          * @return true: use just kml vectors, false: use raster result
          */
-        boolean useVectorOutput(SimpleFeatureCollection fc) {
+        boolean useVectorOutput(KmlEncodingContext context) {
             // calculate kmscore to determine if we shoud write as vectors
             // or pre-render
-            int kmscore = context.getWms().getKmScore();
-            Object kmScoreObj = context.getRequest().getFormatOptions().get("kmscore");
-            if (kmScoreObj != null) {
-                kmscore = (Integer) kmScoreObj;
-            }
+            int kmscore = context.getKmScore();
 
             if (kmscore == 100) {
                 return true; // vector KML
@@ -185,7 +181,7 @@ public class PlainFolderSequenceFactory extends AbstractFolderSequenceFactory {
             // A good default kmscore value is around 40 (464 features)
             double magic = Math.pow(10, kmscore / 15);
 
-            if (fc.size() > magic) {
+            if (context.getCurrentFeatureCollection().size() > magic) {
                 return false; // return raster
             } else {
                 return true; // return vector

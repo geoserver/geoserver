@@ -216,6 +216,7 @@ public class KMLReflector {
         WMSRequests.mergeEntry(kvp, formatOptions, "kmscore");
         WMSRequests.mergeEntry(kvp, formatOptions, "kmattr");
         WMSRequests.mergeEntry(kvp, formatOptions, "kmltitle");
+        WMSRequests.mergeEntry(kvp, formatOptions, "extendeddata");
     }
 
 }

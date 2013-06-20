@@ -22,6 +22,7 @@ import org.geoserver.wms.featureinfo.FeatureTemplate;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.map.Layer;
 import org.geotools.styling.Symbolizer;
+import org.geotools.util.Converters;
 import org.opengis.feature.simple.SimpleFeature;
 
 import de.micromata.opengis.kml.v_2_2_0.Feature;
@@ -68,6 +69,10 @@ public class KmlEncodingContext {
 
     boolean networkLinksFormat;
 
+    private boolean extendedDataEnabled;
+
+    private int kmScore;
+
     public KmlEncodingContext(WMSMapContent mapContent, WMS wms, boolean kmz) {
         this.mapContent = mapContent;
         this.request = mapContent.getRequest();
@@ -75,10 +80,38 @@ public class KmlEncodingContext {
         this.descriptionEnabled = KMLUtils.getKMAttr(request, wms);
         this.lookAtOptions = new LookAtOptions(request.getFormatOptions());
         this.placemarkForced = KMLUtils.getKmplacemark(mapContent.getRequest(), wms);
-        this.superOverlayMode = getSuperoverlayMode(request, wms);
-        this.superOverlayEnabled = isSuperoverlayEnabled(request);
+        this.superOverlayMode = computeSuperOverlayMode();
+        this.superOverlayEnabled = computeSuperOverlayEnabled();
+        this.extendedDataEnabled =  computeExtendedDataEnabled();
+        this.kmScore = computeKmScore();
         this.networkLinksFormat = KMLMapOutputFormat.NL_KML_MIME_TYPE.equals(request.getFormat()) || KMZMapOutputFormat.NL_KMZ_MIME_TYPE.equals(request.getFormat());
         this.kmz = kmz;
+    }
+    
+    private int computeKmScore() {
+        int kmScore = wms.getKmScore();
+        Map fo = request.getFormatOptions();
+        Object kmScoreObj = fo.get("kmscore");
+        if (kmScoreObj != null) {
+            kmScore = (Integer) kmScoreObj;
+        }
+
+        return kmScore;
+    }
+
+    /**
+     * Checks if the extended data is enabled or not
+     * @param request
+     * @return
+     */
+    boolean computeExtendedDataEnabled() {
+        Map formatOptions = request.getFormatOptions();
+        Boolean extendedData = Converters.convert(formatOptions.get("extendedData"), Boolean.class); 
+        if (extendedData == null) {
+            extendedData = Boolean.FALSE;
+        }
+
+        return extendedData;
     }
     
     /**
@@ -86,7 +119,7 @@ public class KmlEncodingContext {
      * @param request
      * @return
      */
-    boolean isSuperoverlayEnabled(GetMapRequest request) {
+    boolean computeSuperOverlayEnabled() {
         Map formatOptions = request.getFormatOptions();
         Boolean superoverlay = (Boolean) formatOptions.get("superoverlay");
         if (superoverlay == null) {
@@ -101,7 +134,7 @@ public class KmlEncodingContext {
      * Returns the superoverlay mode (either specified in the request, or the default one)
      * @return
      */
-    String getSuperoverlayMode(GetMapRequest request, WMS wms) {
+    String computeSuperOverlayMode() {
         String overlayMode = (String) request.getFormatOptions().get("superoverlay_mode");
         if(overlayMode != null) {
             return overlayMode;
@@ -249,6 +282,14 @@ public class KmlEncodingContext {
 
     public boolean isNetworkLinksFormat() {
         return networkLinksFormat;
+    }
+
+    public boolean isExtendedDataEnabled() {
+        return extendedDataEnabled;
+    }
+
+    public int getKmScore() {
+        return kmScore;
     }
     
     

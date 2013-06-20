@@ -41,6 +41,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.kvp.FormatOptionsKvpParser;
 import org.geoserver.ows.util.KvpUtils;
+import org.geoserver.wms.WMSRequests;
 import org.geoserver.wms.WMSTestSupport;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -526,9 +527,41 @@ public class KMLReflectorTest extends WMSTestSupport {
         XMLAssert.assertXpathEvaluatesTo("20.0", "//kml:ScreenOverlay/kml:screenXY/@y", doc);
         XMLAssert.assertXpathEvaluatesTo("pixels", "//kml:ScreenOverlay/kml:screenXY/@xunits", doc);
         XMLAssert.assertXpathEvaluatesTo("pixels", "//kml:ScreenOverlay/kml:screenXY/@yunits", doc);
+    }
+    
+    @Test
+    public void testExtendedData() throws Exception {
+        String layerId = getLayerId(MockData.AGGREGATEGEOFEATURE);
+        final String requestUrl = "wms/kml?layers=" + layerId
+                + "&mode=download&extendedData=true&kmattr=false&kmscore=100";
+        Document doc = getAsDOM(requestUrl);
         
+        // print(doc);
         
-
+        // there is one schema
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//kml:Document/kml:Schema)", doc);
+        // check we only have the non geom properties
+        XMLAssert.assertXpathEvaluatesTo("6", "count(//kml:Document/kml:Schema/kml:SimpleField)", doc);
+        XMLAssert.assertXpathEvaluatesTo("0", "count(//kml:Document/kml:Schema/kml:SimpleField[@name='multiPointProperty'])", doc);
+        XMLAssert.assertXpathEvaluatesTo("0", "count(//kml:Document/kml:Schema/kml:SimpleField[@name='multiCurveProperty'])", doc);
+        XMLAssert.assertXpathEvaluatesTo("0", "count(//kml:Document/kml:Schema/kml:SimpleField[@name='multiSurfaceProperty'])", doc);
+        // check the type mapping
+        XMLAssert.assertXpathEvaluatesTo("string", "//kml:Document/kml:Schema/kml:SimpleField[@name='description']/@type", doc);
+        XMLAssert.assertXpathEvaluatesTo("double", "//kml:Document/kml:Schema/kml:SimpleField[@name='doubleProperty']/@type", doc);
+        XMLAssert.assertXpathEvaluatesTo("int", "//kml:Document/kml:Schema/kml:SimpleField[@name='intRangeProperty']/@type", doc);
+        XMLAssert.assertXpathEvaluatesTo("string", "//kml:Document/kml:Schema/kml:SimpleField[@name='strProperty']/@type", doc);
+        XMLAssert.assertXpathEvaluatesTo("string", "//kml:Document/kml:Schema/kml:SimpleField[@name='featureCode']/@type", doc);
+        
+        // check the extended data of one feature
+        String sd = "//kml:Placemark[@id='AggregateGeoFeature.f005']/kml:ExtendedData/kml:SchemaData/kml:SimpleData";
+        XMLAssert.assertXpathEvaluatesTo("description-f005", sd + "[@name='description']", doc);
+        XMLAssert.assertXpathEvaluatesTo("name-f005", sd + "[@name='name']", doc);
+        XMLAssert.assertXpathEvaluatesTo("2012.78", sd + "[@name='doubleProperty']", doc);
+        XMLAssert.assertXpathEvaluatesTo("Ma quande lingues coalesce, li grammatica del resultant " +
+        		"lingue es plu simplic e regulari quam ti del coalescent lingues. Li nov lingua " +
+        		"franca va esser plu simplic e regulari quam li existent Europan lingues.", 
+        		sd + "[@name='strProperty']", doc);
+        XMLAssert.assertXpathEvaluatesTo("BK030", sd + "[@name='featureCode']", doc);
     }
 
     /**

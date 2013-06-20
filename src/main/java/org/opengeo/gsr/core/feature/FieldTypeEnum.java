@@ -7,6 +7,7 @@ package org.opengeo.gsr.core.feature;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
+import java.sql.Timestamp;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -48,7 +49,7 @@ public enum FieldTypeEnum {
             return SHORT_INTEGER;
         } else if (Integer.class.equals(binding) || Long.class.equals(binding) || BigInteger.class.equals(binding)) {
             return INTEGER;
-        } else if (Date.class.equals(binding)) {
+        } else if (Date.class.equals(binding) || Timestamp.class.equals(binding)) {
             return DATE;
         } else if (Geometry.class.isAssignableFrom(binding)) {
             return GEOMETRY;

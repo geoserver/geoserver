@@ -11,7 +11,6 @@ import static org.geoserver.jdbcconfig.internal.DbUtils.logStatement;
 import static org.geoserver.jdbcconfig.internal.DbUtils.params;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Proxy;
 import java.net.URL;
@@ -53,7 +52,6 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.impl.CoverageAccessInfoImpl;
-import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.impl.GeoServerInfoImpl;
 import org.geoserver.config.impl.JAIInfoImpl;
 import org.geoserver.ows.util.OwsUtils;

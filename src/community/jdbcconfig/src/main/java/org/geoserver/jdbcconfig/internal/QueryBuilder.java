@@ -4,22 +4,11 @@
  */
 package org.geoserver.jdbcconfig.internal;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.Info;
-import org.geoserver.catalog.LayerGroupInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.MapInfo;
-import org.geoserver.catalog.NamespaceInfo;
-import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.StoreInfo;
-import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.Capabilities;
 import org.geotools.filter.visitor.CapabilitiesFilterSplitter;
@@ -32,6 +21,7 @@ import org.opengis.filter.sort.SortOrder;
 
 class QueryBuilder<T extends Info> {
 
+    @SuppressWarnings("unused")
     private static final SortBy DEFAULT_ORDER = CommonFactoryFinder.getFilterFactory().sort("id",
             SortOrder.ASCENDING);
 

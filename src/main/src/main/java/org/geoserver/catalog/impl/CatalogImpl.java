@@ -843,12 +843,13 @@ public class CatalogImpl implements Catalog {
         
         checkLayerGroupResourceIsInWorkspace(layerGroup.getRootLayer(), ws);
         checkLayerGroupResourceIsInWorkspace(layerGroup.getRootLayerStyle(), ws);
-        
-        for (PublishedInfo p : layerGroup.getLayers()) {
-            if (p instanceof LayerGroupInfo) {
-                checkLayerGroupResourceIsInWorkspace((LayerGroupInfo) p, ws);
-            } else {
-                checkLayerGroupResourceIsInWorkspace((LayerInfo) p, ws);                
+        if(layerGroup.getLayers() != null) {
+            for (PublishedInfo p : layerGroup.getLayers()) {
+                if (p instanceof LayerGroupInfo) {
+                    checkLayerGroupResourceIsInWorkspace((LayerGroupInfo) p, ws);
+                } else {
+                    checkLayerGroupResourceIsInWorkspace((LayerInfo) p, ws);                
+                }
             }
         }
         

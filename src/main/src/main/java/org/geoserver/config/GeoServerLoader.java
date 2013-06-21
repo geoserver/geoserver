@@ -243,7 +243,7 @@ public abstract class GeoServerLoader {
      * Reads the catalog from disk.
      */
     Catalog readCatalog( XStreamPersister xp ) throws Exception {
-        Catalog catalog = new CatalogImpl();
+        CatalogImpl catalog = new CatalogImpl();
         catalog.setResourceLoader(resourceLoader);
         xp.setCatalog( catalog );
         
@@ -523,7 +523,8 @@ public abstract class GeoServerLoader {
         if ( layergroups != null ) {
            loadLayerGroups(layergroups, catalog, xp);
         }
-
+        
+        catalog.resolve();
         return catalog;
     }
     

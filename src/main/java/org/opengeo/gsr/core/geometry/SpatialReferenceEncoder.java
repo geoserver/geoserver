@@ -60,11 +60,26 @@ public class SpatialReferenceEncoder {
 
     public static CoordinateReferenceSystem fromJson(JSONObject sr) throws FactoryException {
         if (sr.containsKey("wkid")) {
-            return CRS.decode("EPSG:" + sr.getString("wkid"));
+            return interpret(sr.getString("wkid"));
         } else if (sr.containsKey("wkt")) {
-            return CRS.parseWKT(sr.getString("wkid"));
+            return CRS.parseWKT(sr.getString("wkt"));
         } else {
             return null;
         }
+    }
+
+    private static CoordinateReferenceSystem interpret(String wkid) throws FactoryException {
+        String withEPSGPrefix;
+        try {
+            Integer asInteger = Integer.valueOf(wkid);
+            if (asInteger == 102100) {
+                asInteger = 3785;
+            }
+            withEPSGPrefix = "EPSG:" + asInteger;
+        } catch (NumberFormatException e) {
+            withEPSGPrefix = "EPSG:" + wkid;
+        }
+
+        return CRS.decode(withEPSGPrefix);
     }
 }

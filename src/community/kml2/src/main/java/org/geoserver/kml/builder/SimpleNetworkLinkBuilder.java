@@ -94,6 +94,7 @@ public class SimpleNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
             url.setHref(href);
             url.setViewRefreshMode(ViewRefreshMode.ON_STOP);
             url.setViewRefreshTime(1);
+            url.setViewBoundScale(1);
         }
     }
 

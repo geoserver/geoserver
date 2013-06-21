@@ -95,6 +95,7 @@ public class NetworkLinkSequenceFactory implements SequenceFactory<Feature> {
                 url.setHref(href);
                 url.setViewRefreshMode(ViewRefreshMode.ON_STOP);
                 url.setViewRefreshTime(1);
+                url.setViewBoundScale(1);
 
                 // have the link be decorated
                 for (KmlDecorator decorator : decorators) {

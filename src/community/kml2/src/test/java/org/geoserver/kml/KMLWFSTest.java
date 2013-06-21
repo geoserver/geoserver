@@ -44,7 +44,7 @@ public class KMLWFSTest extends WFSTestSupport {
     }
 
 
-    private void checkAggregateGeoFeatureKmlContents(Document doc) throws XpathException {
+    private void checkAggregateGeoFeatureKmlContents(Document doc) throws Exception {
         // print(doc);
         
         // there is one schema

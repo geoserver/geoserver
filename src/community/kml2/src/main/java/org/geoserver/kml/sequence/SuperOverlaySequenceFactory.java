@@ -120,6 +120,7 @@ public class SuperOverlaySequenceFactory implements SequenceFactory<Feature> {
                 String href = WMSRequests.getGetMapUrl(request, layer, index, null, null);
                 href = URLDecoder.decode(href, "UTF-8");
                 link.setHref(href);
+                link.setViewBoundScale(1);
             } catch (UnsupportedEncodingException e) {
                 throw new ServiceException(e);
             }

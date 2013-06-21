@@ -993,8 +993,7 @@ public class XStreamPersister {
             if ( catalog != null ) {
                 resolved = ResolvingProxy.resolve( catalog, proxy );
             }
-            
-            return CatalogImpl.unwrap( resolved );
+            return resolved != null ? CatalogImpl.unwrap( resolved ) : proxy;            
         }
     }
     class ReferenceCollectionConverter extends LaxCollectionConverter {

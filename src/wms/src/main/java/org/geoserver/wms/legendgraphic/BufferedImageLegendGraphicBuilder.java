@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.geoserver.platform.ServiceException;
@@ -649,9 +650,15 @@ public class BufferedImageLegendGraphicBuilder {
                     // What's the label on this rule? We prefer to use
                     // the 'title' if it's available, but fall-back to 'name'
                     final Description description = rule.getDescription();
+                    Locale locale = req.getLocale();
+                    
                     if (description != null && description.getTitle() != null) {
                         final InternationalString title = description.getTitle();
+                        if(locale != null) {
+                        	labels[i] = title.toString(locale);
+                        } else {
                         labels[i] = title.toString();
+                        }
                     } else if (rule.getName() != null) {
                         labels[i] = rule.getName();
                     } else {

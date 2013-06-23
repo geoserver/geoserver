@@ -11,6 +11,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 
 import org.geoserver.security.GeoServerSecurityFilterChainProxy;
 import org.geoserver.security.config.SecurityContextPersistenceFilterConfig;
@@ -44,6 +45,8 @@ public class GeoServerSecurityContextPersistenceFilter extends GeoServerComposit
                 throws IOException, ServletException {
                  // set the hint for authentcation servlets
                  req.setAttribute(ALLOWSESSIONCREATION_ATTR, isAllowSessionCreation);
+                 if (isAllowSessionCreation)
+                     ((HttpServletRequest)req).getSession(); // create session if allowed
                  // set the hint for other components
                  req.setAttribute(GeoServerSecurityFilterChainProxy.SECURITY_ENABLED_ATTRIBUTE,Boolean.TRUE);
                  super.doFilter(req, res, chain);

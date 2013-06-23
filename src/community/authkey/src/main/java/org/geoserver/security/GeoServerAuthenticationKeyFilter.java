@@ -210,11 +210,7 @@ public class GeoServerAuthenticationKeyFilter extends  GeoServerSecurityFilter
         // only cache if no HTTP session is available 
         if ( request.getSession(false) != null)
             return false;
-        
-       // if a session will be creaed, return false     
-       if (Boolean.TRUE.equals(request.getAttribute(GeoServerSecurityContextPersistenceFilter.ALLOWSESSIONCREATION_ATTR)))
-            return false;
-       
+               
        return true;
     
     }

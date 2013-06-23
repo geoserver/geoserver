@@ -207,7 +207,9 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         gs.save(global);
 
         Catalog catalog = getCatalog();
-        assertEquals(200, ((SoftValueHashMap)catalog.getResourcePool().getFeatureTypeCache()).getHardReferencesCount());
+        // we actually keep two versions of the feature type in the cache, so we need it 
+        // twice as big
+        assertEquals(400, ((SoftValueHashMap)catalog.getResourcePool().getFeatureTypeCache()).getHardReferencesCount());
     }
     
     @Test public void testDropCoverageStore() throws Exception {

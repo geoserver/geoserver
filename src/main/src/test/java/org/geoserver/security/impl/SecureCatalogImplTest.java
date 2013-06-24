@@ -40,6 +40,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 public class SecureCatalogImplTest extends AbstractAuthorizationTest {
@@ -343,7 +344,16 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         };
 
         // and the secure catalog with the filter
-        SecureCatalogImpl sc = new SecureCatalogImpl(withLayers, filter);
+        SecureCatalogImpl sc = new SecureCatalogImpl(withLayers, filter) {
+        
+                    @Override
+                    // override so we don't need GeoServerSecurityManager
+                    protected boolean isAdmin(Authentication authentication) {
+                        return false;
+                    }
+        
+            };
+        
 
         // base behavior sanity
         assertTrue(layers.size() > 1);

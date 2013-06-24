@@ -246,6 +246,7 @@ public abstract class GeoServerLoader {
         CatalogImpl catalog = new CatalogImpl();
         catalog.setResourceLoader(resourceLoader);
         xp.setCatalog( catalog );
+        xp.setUnwrapNulls(false);
         
         CatalogFactory factory = catalog.getFactory();
        
@@ -523,7 +524,7 @@ public abstract class GeoServerLoader {
         if ( layergroups != null ) {
            loadLayerGroups(layergroups, catalog, xp);
         }
-        
+        xp.setUnwrapNulls(true);
         catalog.resolve();
         return catalog;
     }

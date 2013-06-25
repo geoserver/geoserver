@@ -91,7 +91,7 @@ public class KMLSuperOverlayTest extends WMSTestSupport {
         // no ground overlays
         assertEquals(0, document.getElementsByTagName("GroundOverlay").getLength());
     }
-
+    
     @Test
     public void testKmlTitleFormatOption() throws Exception {
         Document document = getAsDOM("wms/kml?layers=" + getLayerId(MockData.BASIC_POLYGONS) + ","

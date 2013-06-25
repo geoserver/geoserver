@@ -48,7 +48,7 @@ public class KMLReflector {
         options = new HashMap<String, Object>();
         options.put("superoverlay", false);
         options.put("regionatemode", null);
-        options.put("kmscore", null);
+        options.put("kmscore", 100); // download -> really download vectors
         temp.put("download", options);
 
         options = new HashMap<String, Object>();

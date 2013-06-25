@@ -29,9 +29,9 @@ import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.Style;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
@@ -135,12 +135,6 @@ public class KMLFeatureAccessor {
 
         // create a bbox filter in the source crs (from the GetMap request bbox)
         ReferencedEnvelope aoi = mapContent.getRenderingArea();
-        CoordinateReferenceSystem sourceCrs = schema.getCoordinateReferenceSystem();
-        if ((sourceCrs != null)
-                && !CRS.equalsIgnoreMetadata(aoi.getCoordinateReferenceSystem(), sourceCrs)) {
-            aoi = aoi.transform(sourceCrs, true);
-        }
-
         Filter filter = createBBoxFilter(schema, aoi);
 
         // now build the query using only the attributes and the bounding box needed
@@ -222,30 +216,65 @@ public class KMLFeatureAccessor {
      * 
      * @param schema the layer's feature source schema
      * @param bbox the expression holding the target rendering bounding box
-     * @return an or'ed list of bbox filters, one for each geometric attribute in
-     *         <code>attributes</code>. If there are just one geometric attribute, just returns its
-     *         corresponding <code>GeometryFilter</code>.
      * @throws IllegalFilterException if something goes wrong creating the filter
      */
-    private Filter createBBoxFilter(SimpleFeatureType schema, Envelope bbox)
+    private Filter createBBoxFilter(SimpleFeatureType schema, ReferencedEnvelope aoi)
             throws IllegalFilterException {
-        List<Filter> filters = new ArrayList<Filter>();
-        for (int j = 0; j < schema.getAttributeCount(); j++) {
-            AttributeDescriptor attType = schema.getDescriptor(j);
-
-            if (attType instanceof GeometryDescriptor) {
-                Filter gfilter = filterFactory.bbox(attType.getLocalName(), bbox.getMinX(),
-                        bbox.getMinY(), bbox.getMaxX(), bbox.getMaxY(), null);
-                filters.add(gfilter);
+        
+        // Google earth likes to make requests that go beyond 180 when zoomed out
+        // fix them
+        List<ReferencedEnvelope> envelopes = new ArrayList<ReferencedEnvelope>();
+        if(KMLUtils.WORLD_BOUNDS_WGS84.contains((Envelope) aoi)) {
+            envelopes.add(aoi);
+        } else {
+            Envelope intersection = KMLUtils.WORLD_BOUNDS_WGS84.intersection((Envelope) aoi);
+            if(intersection.getWidth() > 0) {
+                envelopes.add(new ReferencedEnvelope(intersection, DefaultGeographicCRS.WGS84));
+            }
+            // look for the portion beyond +180
+            if(aoi.getMaxX() > 180) {
+                // GE never sends values larger than 360 
+                double maxx = aoi.getMaxX() - 360;
+                double minx = aoi.getMinX() > 180 ? aoi.getMinX() - 360 : -180;
+                envelopes.add(new ReferencedEnvelope(minx, maxx, aoi.getMinY(), 
+                        aoi.getMaxY(), DefaultGeographicCRS.WGS84));
             }
         }
-
-        if (filters.size() == 0)
+        
+        List<ReferencedEnvelope> sourceEnvelopes = new ArrayList<ReferencedEnvelope>();
+        CoordinateReferenceSystem sourceCrs = schema.getCoordinateReferenceSystem();
+        if ((sourceCrs != null)
+                && !CRS.equalsIgnoreMetadata(aoi.getCoordinateReferenceSystem(), sourceCrs)) {
+            for (ReferencedEnvelope re : envelopes) {
+                try {
+                    ReferencedEnvelope se = re.transform(sourceCrs, true);
+                    sourceEnvelopes.add(se);
+                } catch(Exception e) {
+                    // in case of failure it means we are going beyond the projectable area
+                    // of the source system, meaning that we are asking for an area that's too 
+                    // large -> don't do spatial filtering then
+                    
+                    return Filter.INCLUDE;
+                }
+            }
+        }
+        
+        GeometryDescriptor gd = schema.getGeometryDescriptor();
+        if(sourceEnvelopes.size() == 0) {
             return Filter.INCLUDE;
-        else if (filters.size() == 1)
-            return (Filter) filters.get(0);
-        else
+        } else if(sourceEnvelopes.size() == 1) {
+            ReferencedEnvelope se = sourceEnvelopes.get(0);
+            return filterFactory.bbox(gd.getLocalName(), se.getMinX(),
+                    se.getMinY(), se.getMaxX(), se.getMaxY(), null);
+        } else {
+            // we have to OR the multiple source envelopes
+            List<Filter> filters = new ArrayList<Filter>();
+            for (ReferencedEnvelope se : sourceEnvelopes) {
+                filters.add(filterFactory.bbox(gd.getLocalName(), se.getMinX(),
+                        se.getMinY(), se.getMaxX(), se.getMaxY(), null));
+            }
             return filterFactory.or(filters);
+        }
     }
 
     /**

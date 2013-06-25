@@ -12,12 +12,12 @@ import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.Style;
 import org.geotools.util.Converters;
 import org.opengis.filter.Filter;
-
-import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * Some convenience methods used by the kml encoders.
@@ -35,7 +35,7 @@ public class KMLUtils {
      */
     static final double TOLERANCE = 1e-6;
 
-    public final static Envelope WORLD_BOUNDS_WGS84 = new Envelope(-180, 180, -90, 90);
+    public final static ReferencedEnvelope WORLD_BOUNDS_WGS84 = new ReferencedEnvelope(-180, 180, -90, 90, DefaultGeographicCRS.WGS84);
 
     /**
      * Returns the the kmattr value (either specified in the request, or the default one)

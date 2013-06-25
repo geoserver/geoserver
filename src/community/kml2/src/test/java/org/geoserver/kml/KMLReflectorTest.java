@@ -566,6 +566,17 @@ public class KMLReflectorTest extends WMSTestSupport {
         		sd + "[@name='strProperty']", doc);
         XMLAssert.assertXpathEvaluatesTo("BK030", sd + "[@name='featureCode']", doc);
     }
+    
+    /**
+     * Verify that when GE asks for coordinates larger than 180 we still manage gracefully
+     */
+    @Test
+    public void testCoordinateShift() throws Exception {
+        Document document = getAsDOM("wms/kml?layers=" + getLayerId(MockData.BASIC_POLYGONS) + "&mode=download&bbox=150,-90,380,90");
+        // print(document);
+
+        assertEquals(3, document.getElementsByTagName("Placemark").getLength());
+    }
 
     /**
      * Creates a key/value pair map from the cgi parameters in the provided url

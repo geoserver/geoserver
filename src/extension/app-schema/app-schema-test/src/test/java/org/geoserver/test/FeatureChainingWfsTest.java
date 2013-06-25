@@ -525,7 +525,9 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
                 + "']/gsml:positionalAccuracy/gsml:CGI_NumericValue/gsml:principalValue/@uom",
                 doc);
         // shape
-        assertXpathEvaluatesTo("-1.2 52.5 -1.2 52.6 -1.1 52.6 -1.1 52.5 -1.2 52.5",
+        assertXpathEvaluatesTo("urn:x-ogc:def:crs:EPSG:4326", "//gsml:MappedFeature[@gml:id='" + id
+                + "']/gsml:shape/gml:Polygon/@srsName", doc);
+        assertXpathEvaluatesTo("52.5 -1.2 52.6 -1.2 52.6 -1.1 52.5 -1.1 52.5 -1.2",
                 "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:shape//gml:posList", doc);
         // specification gu.25699
         assertXpathEvaluatesTo("gu.25699", "//gsml:MappedFeature[@gml:id='" + id
@@ -631,7 +633,9 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
                 + "']/gsml:positionalAccuracy/gsml:CGI_NumericValue/gsml:principalValue/@uom",
                 doc);
         // shape
-        assertXpathEvaluatesTo("-1.3 52.5 -1.3 52.6 -1.2 52.6 -1.2 52.5 -1.3 52.5",
+        assertXpathEvaluatesTo("urn:x-ogc:def:crs:EPSG:4326", "//gsml:MappedFeature[@gml:id='" + id
+                + "']/gsml:shape/gml:Polygon/@srsName", doc);
+        assertXpathEvaluatesTo("52.5 -1.3 52.6 -1.3 52.6 -1.2 52.5 -1.2 52.5 -1.3",
                 "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:shape//gml:posList", doc);
         // gu.25678
         assertXpathEvaluatesTo("gu.25678", "//gsml:MappedFeature[@gml:id='" + id
@@ -769,7 +773,9 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
                 + "']/gsml:positionalAccuracy/gsml:CGI_NumericValue/gsml:principalValue/@uom",
                 doc);
         // shape
-        assertXpathEvaluatesTo("-1.2 52.5 -1.2 52.6 -1.1 52.6 -1.1 52.5 -1.2 52.5",
+        assertXpathEvaluatesTo("urn:x-ogc:def:crs:EPSG:4326", "//gsml:MappedFeature[@gml:id='" + id
+                + "']/gsml:shape/gml:Polygon/@srsName", doc);
+        assertXpathEvaluatesTo("52.5 -1.2 52.6 -1.2 52.6 -1.1 52.5 -1.1 52.5 -1.2",
                 "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:shape//gml:posList", doc);
         // gu.25678
         assertXpathEvaluatesTo("#gu.25678", "//gsml:MappedFeature[@gml:id='" + id
@@ -794,7 +800,9 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
                 + "']/gsml:positionalAccuracy/gsml:CGI_NumericValue/gsml:principalValue/@uom",
                 doc);
         // shape
-        assertXpathEvaluatesTo("-1.3 52.5 -1.3 52.6 -1.2 52.6 -1.2 52.5 -1.3 52.5",
+        assertXpathEvaluatesTo("urn:x-ogc:def:crs:EPSG:4326", "//gsml:MappedFeature[@gml:id='" + id
+                + "']/gsml:shape/gml:Polygon/@srsName", doc);
+        assertXpathEvaluatesTo("52.5 -1.3 52.6 -1.3 52.6 -1.2 52.5 -1.2 52.5 -1.3",
                 "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:shape//gml:posList", doc);
         // gu.25682
         assertXpathEvaluatesTo("gu.25682", "//gsml:MappedFeature[@gml:id='" + id

@@ -70,7 +70,9 @@ public class XlinkWfsTest extends AbstractAppSchemaTestSupport {
         // mf1
         assertXpathEvaluatesTo("GUNTHORPE FORMATION",
                 "//gsml:MappedFeature[@gml:id='mf1']/gml:name", doc);
-        assertXpathEvaluatesTo("-1.2 52.5 -1.2 52.6 -1.1 52.6 -1.1 52.5 -1.2 52.5",
+        assertXpathEvaluatesTo("urn:x-ogc:def:crs:EPSG:4326",
+                "//gsml:MappedFeature[@gml:id='mf1']/gsml:shape/gml:Polygon/@srsName", doc);
+        assertXpathEvaluatesTo("52.5 -1.2 52.6 -1.2 52.6 -1.1 52.5 -1.1 52.5 -1.2",
                 "//gsml:MappedFeature[@gml:id='mf1']/gsml:shape//gml:posList", doc);
         assertXpathEvaluatesTo("urn:x-test:GeologicUnit:gu.25699",
                 "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification/@xlink:href", doc);
@@ -78,7 +80,9 @@ public class XlinkWfsTest extends AbstractAppSchemaTestSupport {
         // mf2
         assertXpathEvaluatesTo("MERCIA MUDSTONE GROUP",
                 "//gsml:MappedFeature[@gml:id='mf2']/gml:name", doc);
-        assertXpathEvaluatesTo("-1.3 52.5 -1.3 52.6 -1.2 52.6 -1.2 52.5 -1.3 52.5",
+        assertXpathEvaluatesTo("urn:x-ogc:def:crs:EPSG:4326",
+                "//gsml:MappedFeature[@gml:id='mf2']/gsml:shape/gml:Polygon/@srsName", doc);
+        assertXpathEvaluatesTo("52.5 -1.3 52.6 -1.3 52.6 -1.2 52.5 -1.2 52.5 -1.3",
                 "//gsml:MappedFeature[@gml:id='mf2']/gsml:shape//gml:posList", doc);
         assertXpathEvaluatesTo("urn:x-test:GeologicUnit:gu.25678",
                 "//gsml:MappedFeature[@gml:id='mf2']/gsml:specification/@xlink:href", doc);
@@ -86,7 +90,9 @@ public class XlinkWfsTest extends AbstractAppSchemaTestSupport {
         // mf3
         assertXpathEvaluatesTo("CLIFTON FORMATION", "//gsml:MappedFeature[@gml:id='mf3']/gml:name",
                 doc);
-        assertXpathEvaluatesTo("-1.2 52.5 -1.2 52.6 -1.1 52.6 -1.1 52.5 -1.2 52.5",
+        assertXpathEvaluatesTo("urn:x-ogc:def:crs:EPSG:4326",
+                "//gsml:MappedFeature[@gml:id='mf3']/gsml:shape/gml:Polygon/@srsName", doc);
+        assertXpathEvaluatesTo("52.5 -1.2 52.6 -1.2 52.6 -1.1 52.5 -1.1 52.5 -1.2",
                 "//gsml:MappedFeature[@gml:id='mf3']/gsml:shape//gml:posList", doc);
         assertXpathEvaluatesTo("urn:x-test:GeologicUnit:gu.25678",
                 "//gsml:MappedFeature[@gml:id='mf3']/gsml:specification/@xlink:href", doc);
@@ -94,7 +100,9 @@ public class XlinkWfsTest extends AbstractAppSchemaTestSupport {
         // mf4
         assertXpathEvaluatesTo("MURRADUC BASALT", "//gsml:MappedFeature[@gml:id='mf4']/gml:name",
                 doc);
-        assertXpathEvaluatesTo("-1.3 52.5 -1.3 52.6 -1.2 52.6 -1.2 52.5 -1.3 52.5",
+        assertXpathEvaluatesTo("urn:x-ogc:def:crs:EPSG:4326",
+                "//gsml:MappedFeature[@gml:id='mf4']/gsml:shape/gml:Polygon/@srsName", doc);
+        assertXpathEvaluatesTo("52.5 -1.3 52.6 -1.3 52.6 -1.2 52.5 -1.2 52.5 -1.3",
                 "//gsml:MappedFeature[@gml:id='mf4']/gsml:shape//gml:posList", doc);
         assertXpathEvaluatesTo("urn:x-test:GeologicUnit:gu.25682",
                 "//gsml:MappedFeature[@gml:id='mf4']/gsml:specification/@xlink:href", doc);

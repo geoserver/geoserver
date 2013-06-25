@@ -113,6 +113,8 @@ import org.vfny.geoserver.util.DataStoreUtils;
  */
 public class ResourcePool {
 
+    private static final String PROJECTION_POLICY_SEPARATOR = "_pp_";
+
     /**
      * Hint to specify if reprojection should occur while loading a 
      * resource.
@@ -904,7 +906,7 @@ public class ResourcePool {
     }
 
     private String getFeatureTypeInfoKey(FeatureTypeInfo info, boolean handleProjectionPolicy) {
-        return info.getId() + "_pp_" + handleProjectionPolicy;
+        return info.getId() + PROJECTION_POLICY_SEPARATOR + handleProjectionPolicy;
     }
     
     /**
@@ -1702,7 +1704,8 @@ public class ResourcePool {
             super(maxSize);
         }
         
-        protected void dispose(String id, FeatureType featureType) {
+        protected void dispose(String key, FeatureType featureType) {
+            String id = key.substring(0, key.indexOf(PROJECTION_POLICY_SEPARATOR));
         	FeatureTypeInfo info = catalog.getFeatureType(id);
             LOGGER.info( "Disposing feature type '" + info.getName() + "'");
             fireDisposed(info, featureType);

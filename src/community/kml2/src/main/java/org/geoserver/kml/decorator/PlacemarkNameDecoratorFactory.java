@@ -50,16 +50,18 @@ public class PlacemarkNameDecoratorFactory implements KmlDecoratorFactory {
             }
 
             // if we got nothing, set the title to the ID, but also try the text symbolizers
-            if (title == null || "".equals(title)) {
-                title = sf.getID();
-                StringBuffer label = new StringBuffer();
+            String featureId = sf.getID();
+            if (title == null || "".equals(title) || featureId.equals(title)) {
+                title = featureId;
 
+                // see if we can do better with a text symbolizer
                 // symbolizers are available only in wms mode
                 if(context.getCurrentSymbolizers() != null) {
+                    StringBuffer label = new StringBuffer();
                     for (Symbolizer sym : context.getCurrentSymbolizers()) {
                         if (sym instanceof TextSymbolizer) {
                             Expression e = SLD.textLabel((TextSymbolizer) sym);
-                            String value = e.evaluate(feature, String.class);
+                            String value = e.evaluate(sf, String.class);
     
                             if ((value != null) && !"".equals(value.trim())) {
                                 label.append(value);

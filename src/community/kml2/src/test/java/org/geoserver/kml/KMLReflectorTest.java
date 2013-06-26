@@ -63,6 +63,7 @@ public class KMLReflectorTest extends WMSTestSupport {
         Catalog catalog = getCatalog();
         testData.addStyle("Bridge", "bridge.sld", getClass(), catalog);
         testData.addStyle("allsymbolizers", "allsymbolizers.sld", getClass(), catalog);
+        testData.addStyle("labels", "labels.sld", getClass(), catalog);
         testData.addStyle("SingleFeature", "singlefeature.sld", getClass(), catalog);
         testData.addStyle("BridgeSubdir", "bridgesubdir.sld", getClass(), catalog);
         testData.addStyle("dynamicsymbolizer", "dynamicsymbolizer.sld", getClass(), catalog);
@@ -493,6 +494,19 @@ public class KMLReflectorTest extends WMSTestSupport {
                 "//kml:Placemark[1]/kml:Style/kml:LineStyle/kml:width", doc);
         XMLAssert.assertXpathEvaluatesTo("1.4",
                 "//kml:Placemark[1]/kml:Style/kml:LabelStyle/kml:scale", doc);
+    }
+    
+    @Test
+    public void testLabelFromTextSymbolizer() throws Exception {
+        // the style selects a single feature
+        final String requestUrl = "wms/kml?layers=" + getLayerId(MockData.NAMED_PLACES)
+                + "&styles=labels&mode=download";
+        Document doc = getAsDOM(requestUrl);
+        print(doc);
+
+        XMLAssert.assertXpathEvaluatesTo("2", "count(//kml:Placemark)", doc);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//kml:Placemark[kml:name='Ashton'])", doc);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//kml:Placemark[kml:name='Goose Island'])", doc);
     }
 
     /**

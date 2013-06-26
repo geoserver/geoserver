@@ -491,6 +491,8 @@ public class KMLReflectorTest extends WMSTestSupport {
                 "//kml:Placemark[1]/kml:Style/kml:LineStyle/kml:color", doc);
         XMLAssert.assertXpathEvaluatesTo("2.0",
                 "//kml:Placemark[1]/kml:Style/kml:LineStyle/kml:width", doc);
+        XMLAssert.assertXpathEvaluatesTo("1.4",
+                "//kml:Placemark[1]/kml:Style/kml:LabelStyle/kml:scale", doc);
     }
 
     /**

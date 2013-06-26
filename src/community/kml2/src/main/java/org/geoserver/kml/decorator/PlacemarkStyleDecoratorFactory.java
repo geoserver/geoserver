@@ -25,6 +25,7 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.renderer.style.ExpressionExtractor;
 import org.geotools.styling.ExternalGraphic;
 import org.geotools.styling.Fill;
+import org.geotools.styling.Font;
 import org.geotools.styling.LineSymbolizer;
 import org.geotools.styling.Mark;
 import org.geotools.styling.PointSymbolizer;
@@ -194,7 +195,9 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
             }
             String imageURL = "http://icons.opengeo.org/markers/icon-"
                     + (poly ? "poly.1" : "line.1") + ".png";
-            is.createAndSetIcon().setHref(imageURL);
+            Icon icon = is.createAndSetIcon();
+            icon.setHref(imageURL);
+            icon.setViewBoundScale(1);
         }
 
         /**
@@ -207,6 +210,14 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
 
         protected void setLabelStyle(Style style, SimpleFeature feature, TextSymbolizer symbolizer) {
             LabelStyle ls = style.createAndSetLabelStyle();
+            double scale = 1;
+            Font font = symbolizer.getFont();
+            if(font != null && font.getSize() != null) {
+                // we make the scale proportional to the normal font size
+                double size = font.getSize().evaluate(feature, Double.class);
+                scale = Math.round(size / Font.DEFAULT_FONTSIZE * 100) / 100.0;
+            }
+            ls.setScale(scale);
 
             Fill fill = symbolizer.getFill();
             if (fill != null) {

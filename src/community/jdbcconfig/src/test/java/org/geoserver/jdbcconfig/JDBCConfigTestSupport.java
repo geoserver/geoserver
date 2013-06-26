@@ -9,19 +9,16 @@ import static org.easymock.classextension.EasyMock.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 import java.util.logging.Level;
 
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
-import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.impl.CatalogImpl;
+import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.jdbcconfig.JDBCGeoServerLoader;
 import org.geoserver.jdbcconfig.internal.ConfigDatabase;
@@ -30,16 +27,11 @@ import org.geoserver.jdbcconfig.internal.Util;
 import org.geoserver.jdbcconfig.internal.XStreamInfoSerialBinding;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
-import org.springframework.context.ApplicationContext;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.web.context.WebApplicationContext;
 import org.vfny.geoserver.global.GeoserverDataDirectory;
 
-import com.google.common.collect.Lists;
-import com.google.common.io.Resources;
-
+@SuppressWarnings("unused")
 public class JDBCConfigTestSupport {
 
     public static File createTempDir() throws IOException {

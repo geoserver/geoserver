@@ -14,6 +14,8 @@
   <bean id="KMLMapProducer" class="org.geoserver.kml.KMLMapOutputFormat">
     <constructor-arg index="0" ref="wms" />
   </bean>
+  
+  <bean id="KMLEncoder" class="org.geoserver.kml.KMLEncoder"/>
 
   <bean id="KMZMapProducer" class="org.geoserver.kml.KMZMapOutputFormat">
     <constructor-arg ref="wms" />
@@ -26,10 +28,12 @@
   </bean>
 
   <bean id="KMLMapResponse" class="org.geoserver.kml.KMLMapResponse">
+    <constructor-arg ref="KMLEncoder" />
     <constructor-arg ref="wms" />
   </bean>
   
   <bean id="WFSKMLOutputFormat" class="org.geoserver.kml.WFSKMLOutputFormat">
+    <constructor-arg ref="KMLEncoder" />
     <constructor-arg ref="geoServer"/>
   </bean>
 

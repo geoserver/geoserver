@@ -459,21 +459,20 @@ public class KMLReflectorTest extends WMSTestSupport {
         // the style selects a single feature
         final String requestUrl = "wms/kml?layers=" + getLayerId(MockData.BASIC_POLYGONS)
                 + "&styles=allsymbolizers&mode=download";
-        Document document = getAsDOM(requestUrl);
-        // print(document);
+        Document doc = getAsDOM(requestUrl);
+        // print(doc);
 
-        XMLAssert
-                .assertXpathEvaluatesTo("0",
-                        "count(//kml:Placemark[1]/kml:Style[1]/kml:IconStyle/kml:Icon/kml:color)",
-                        document);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//kml:Placemark[1]/kml:Style)", doc);
+        XMLAssert.assertXpathEvaluatesTo("0",
+                "count(//kml:Placemark[1]/kml:Style/kml:IconStyle/kml:Icon/kml:color)", doc);
         XMLAssert.assertXpathEvaluatesTo("http://maps.google.com/mapfiles/kml/pal4/icon25.png",
-                "//kml:Placemark[1]/kml:Style[1]/kml:IconStyle/kml:Icon/kml:href", document);
+                "//kml:Placemark[1]/kml:Style/kml:IconStyle/kml:Icon/kml:href", doc);
         XMLAssert.assertXpathEvaluatesTo("b24d4dff",
-                "//kml:Placemark[1]/kml:Style[4]/kml:PolyStyle/kml:color", document);
+                "//kml:Placemark[1]/kml:Style/kml:PolyStyle/kml:color", doc);
         XMLAssert.assertXpathEvaluatesTo("ffba3e00",
-                "//kml:Placemark[1]/kml:Style[3]/kml:LineStyle/kml:color", document);
+                "//kml:Placemark[1]/kml:Style/kml:LineStyle/kml:color", doc);
         XMLAssert.assertXpathEvaluatesTo("2.0",
-                "//kml:Placemark[1]/kml:Style[3]/kml:LineStyle/kml:width", document);
+                "//kml:Placemark[1]/kml:Style/kml:LineStyle/kml:width", doc);
     }
 
     /**

@@ -33,13 +33,12 @@ public class KMLReflector {
 
     /** default 'format' value */
     public static final String FORMAT = KMLMapOutputFormat.MIME_TYPE;
-    
 
     private static Map<String, Map<String, Object>> MODES;
 
     static {
         Map<String, Map<String, Object>> temp = new HashMap<String, Map<String, Object>>();
-        Map<String, Object> options; 
+        Map<String, Object> options;
 
         options = new HashMap<String, Object>();
         options.put("superoverlay", true);
@@ -47,7 +46,6 @@ public class KMLReflector {
 
         options = new HashMap<String, Object>();
         options.put("superoverlay", false);
-        options.put("regionatemode", null);
         options.put("kmscore", 100); // download -> really download vectors
         temp.put("download", options);
 
@@ -111,7 +109,8 @@ public class KMLReflector {
 
         // setup the default mode
         Map<String, String> rawKvp = request.getRawKvp();
-        String mode = KvpUtils.caseInsensitiveParam(rawKvp, "mode", wmsConfiguration.getKmlReflectorMode());
+        String mode = KvpUtils.caseInsensitiveParam(rawKvp, "mode",
+                wmsConfiguration.getKmlReflectorMode());
 
         if (!MODES.containsKey(mode)) {
             throw new ServiceException("Unknown KML mode: " + mode);
@@ -120,8 +119,8 @@ public class KMLReflector {
         Map modeOptions = new HashMap(MODES.get(mode));
 
         if ("superoverlay".equals(mode)) {
-            String submode = KvpUtils.caseInsensitiveParam(request.getRawKvp(), "superoverlay_mode",
-                    wmsConfiguration.getKmlSuperoverlayMode());
+            String submode = KvpUtils.caseInsensitiveParam(request.getRawKvp(),
+                    "superoverlay_mode", wmsConfiguration.getKmlSuperoverlayMode());
 
             if ("raster".equalsIgnoreCase(submode)) {
                 modeOptions.put("overlaymode", "raster");
@@ -153,13 +152,13 @@ public class KMLReflector {
         // set rest of the wms defaults
         request = DefaultWebMapService.autoSetMissingProperties(request);
 
-        // set some kml specific defaults
+        // grab the format options
         Map fo = request.getFormatOptions();
-
-        KvpUtils.merge(fo, modeOptions);
-        
+        // merge the direct params that people can add in the kml reflector call
         organizeFormatOptionsParams(request.getRawKvp(), fo);
-        
+        // fill in the blanks with some defaults based on the current mode
+        mergeDefaults(fo, modeOptions);
+
         if (fo.get("kmattr") == null) {
             fo.put("kmattr", wmsConfiguration.getKmlKmAttr());
         }
@@ -191,7 +190,8 @@ public class KMLReflector {
 
         org.geoserver.wms.WebMap wmsResponse;
         if (!"download".equals(mode)) {
-            // the old code used to setup kmz nl, but in fact it ended up generating non compressed ones
+            // the old code used to setup kmz nl, but in fact it ended up generating non compressed
+            // ones
             request.setFormat(KMLMapOutputFormat.NL_KML_MIME_TYPE);
         }
 
@@ -199,15 +199,23 @@ public class KMLReflector {
 
         return wmsResponse;
     }
-    
-    
+
+    private static void mergeDefaults(Map fo, Map defaults) {
+        for (Object o : defaults.entrySet()) {
+            Map.Entry entry = (Map.Entry) o;
+            if (fo.get(entry.getKey()) == null) {
+                fo.put(entry.getKey(), entry.getValue());
+            }
+        }
+    }
+
     /**
-     * Copy all the format_options parameters from the kvp map and put them into the formatOptions map. If a parameter is already present in
-     * formatOption map it will be preserved.
+     * Copy all the format_options parameters from the kvp map and put them into the formatOptions
+     * map. If a parameter is already present in formatOption map it will be preserved.
      * 
      * @param kvp
      * @param formatOptions
-     * @throws Exception 
+     * @throws Exception
      */
     public static void organizeFormatOptionsParams(Map<String, String> kvp,
             Map<String, Object> formatOptions) throws Exception {

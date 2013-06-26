@@ -3,7 +3,6 @@ package org.geoserver.kml;
 import java.util.Map;
 
 import org.custommonkey.xmlunit.XMLAssert;
-import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wfs.WFSTestSupport;
 import org.junit.Test;

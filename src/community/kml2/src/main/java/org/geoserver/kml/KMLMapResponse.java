@@ -36,10 +36,12 @@ import de.micromata.opengis.kml.v_2_2_0.Kml;
 public class KMLMapResponse extends AbstractMapResponse {
 
     private WMS wms;
+    private KMLEncoder encoder;
 
-    public KMLMapResponse(WMS wms) {
+    public KMLMapResponse(KMLEncoder encoder, WMS wms) {
         super(KMLMap.class, (Set<String>) null);
         this.wms = wms;
+        this.encoder = encoder;
     }
 
     @Override
@@ -57,7 +59,7 @@ public class KMLMapResponse extends AbstractMapResponse {
             if (context != null && context.isKmz()) {
                 encodeAsKmz(kml, context, operation, output);
             } else {
-                new KMLEncoder().encode(kml, output);
+                encoder.encode(kml, output);
             }
         } finally {
             kmlMap.dispose();
@@ -72,7 +74,7 @@ public class KMLMapResponse extends AbstractMapResponse {
         // first create an entry for the kml
         ZipEntry entry = new ZipEntry("wms.kml");
         zip.putNextEntry(entry);
-        new KMLEncoder().encode(kml, zip);
+        encoder.encode(kml, zip);
 
         // prepare for the ground overlays
         final RenderedImageMapOutputFormat pngProducer = new RenderedImageMapOutputFormat(

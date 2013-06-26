@@ -21,6 +21,13 @@ import de.micromata.opengis.kml.v_2_2_0.Kml;
  * 
  */
 public class KMLEncoder {
+    
+    private JAXBContext context;
+
+    public KMLEncoder() throws JAXBException {
+        // this creation is expensive, do it once and cache it
+        context = JAXBContext.newInstance((Kml.class));
+    }
 
     public void encode(Kml kml, OutputStream output) {
         try {
@@ -31,7 +38,7 @@ public class KMLEncoder {
     }
 
     private Marshaller createMarshaller() throws JAXBException {
-        Marshaller m = JAXBContext.newInstance((Kml.class)).createMarshaller();
+        Marshaller m = context.createMarshaller();
         m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         // hmm... this one is nasty, without the reference implementation the prefixes
         // are going to be a bit ugly. Not a big deal, to solve look at

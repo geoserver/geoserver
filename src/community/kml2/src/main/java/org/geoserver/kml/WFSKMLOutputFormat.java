@@ -32,8 +32,11 @@ import de.micromata.opengis.kml.v_2_2_0.Kml;
 
 public class WFSKMLOutputFormat extends WFSGetFeatureOutputFormat {
 
-    public WFSKMLOutputFormat(GeoServer gs) {
+    private KMLEncoder encoder;
+
+    public WFSKMLOutputFormat(KMLEncoder encoder, GeoServer gs) {
         super(gs, new HashSet(Arrays.asList(new String[] { "KML", KMLMapOutputFormat.MIME_TYPE})));
+        this.encoder = encoder;
     }
     
     @Override
@@ -90,7 +93,7 @@ public class WFSKMLOutputFormat extends WFSGetFeatureOutputFormat {
         }
         
         // write out the output
-        new KMLEncoder().encode(kml, output);
+        encoder.encode(kml, output);
     }
 
     private List<SimpleFeatureCollection> getFeatureCollections(FeatureCollectionResponse featureCollection) {

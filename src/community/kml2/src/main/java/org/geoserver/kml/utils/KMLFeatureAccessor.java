@@ -257,6 +257,8 @@ public class KMLFeatureAccessor {
                     return Filter.INCLUDE;
                 }
             }
+        } else {
+            sourceEnvelopes.addAll(envelopes);
         }
         
         GeometryDescriptor gd = schema.getGeometryDescriptor();

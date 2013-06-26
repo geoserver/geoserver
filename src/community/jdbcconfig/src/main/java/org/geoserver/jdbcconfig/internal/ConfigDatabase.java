@@ -200,7 +200,7 @@ public class ConfigDatabase {
         } else {
             LOGGER.fine("Filter is not fully supported, doing scan of supported part to return the number of matches");
             // going the expensive route, filtering as much as possible
-            CloseableIterator<T> iterator = query(of, filter, null, null, null);
+            CloseableIterator<T> iterator = query(of, filter, null, null, (SortBy)null);
             try {
                 return Iterators.size(iterator);
             } finally {
@@ -209,9 +209,18 @@ public class ConfigDatabase {
         }
         return count;
     }
-
+    
     public <T extends Info> CloseableIterator<T> query(final Class<T> of, final Filter filter,
             @Nullable Integer offset, @Nullable Integer limit, @Nullable SortBy sortOrder) {
+        if(sortOrder == null) {
+            return query(of, filter, offset, limit, new SortBy[]{});
+        } else {
+            return query(of, filter, offset, limit, new SortBy[]{sortOrder});
+        }
+    }
+    
+    public <T extends Info> CloseableIterator<T> query(final Class<T> of, final Filter filter,
+            @Nullable Integer offset, @Nullable Integer limit, @Nullable SortBy... sortOrder) {
 
         checkNotNull(of);
         checkNotNull(filter);

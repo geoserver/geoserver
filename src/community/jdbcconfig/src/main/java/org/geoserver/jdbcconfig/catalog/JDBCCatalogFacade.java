@@ -953,15 +953,14 @@ public class JDBCCatalogFacade implements CatalogFacade {
             final Filter filter, @Nullable final Integer offset, @Nullable final Integer count,
             @Nullable final SortBy... sortBy) {
 
-        Preconditions.checkArgument(null == sortBy || sortBy.length < 2, 
-            "Sort order may only specify a single value");
-
-        SortBy sortOrder = sortBy != null ? sortBy[0] : null;
-        Preconditions.checkArgument(
-                null == sortOrder || canSort(of, sortOrder.getPropertyName().getPropertyName()),
-                "Can't sort objects of type %s by %s", of, sortOrder);
-
-        return db.query(of, filter, offset, count, sortOrder);
+        if(sortBy!=null) {
+            for(SortBy sortOrder: sortBy){
+                Preconditions.checkArgument(
+                        null == sortOrder || canSort(of, sortOrder.getPropertyName().getPropertyName()),
+                        "Can't sort objects of type %s by %s", of, sortOrder);
+            }
+        }
+        return db.query(of, filter, offset, count, sortBy);
 
     }
 

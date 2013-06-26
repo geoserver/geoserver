@@ -181,7 +181,8 @@ public class PlainFolderSequenceFactory extends AbstractFolderSequenceFactory {
             // A good default kmscore value is around 40 (464 features)
             double magic = Math.pow(10, kmscore / 15);
 
-            if (context.getCurrentFeatureCollection().size() > magic) {
+            int currentSize = context.getCurrentFeatureCollection().size();
+            if (currentSize > magic) {
                 return false; // return raster
             } else {
                 return true; // return vector

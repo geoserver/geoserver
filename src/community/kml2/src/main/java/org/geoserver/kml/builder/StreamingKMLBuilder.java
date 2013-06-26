@@ -52,14 +52,14 @@ public class StreamingKMLBuilder {
 
         // create a generator that will generate a folder and feature dumps/ground overlays for each
         // layer
-        SequenceFactory<Feature> generatorFactory;
-        if (context.isSuperOverlayEnabled()) {
-            generatorFactory = new SuperOverlaySequenceFactory(context);
-        } else if (context.isNetworkLinksFormat()) {
-            generatorFactory = new NetworkLinkSequenceFactory(context);
-        } else {
-            generatorFactory = new PlainFolderSequenceFactory(context);
-        }
+        SequenceFactory<Feature> generatorFactory = new PlainFolderSequenceFactory(context);
+//        if (context.isSuperOverlayEnabled()) {
+//            generatorFactory = new SuperOverlaySequenceFactory(context);
+//        } else if (context.isNetworkLinksFormat()) {
+//            generatorFactory = new NetworkLinkSequenceFactory(context);
+//        } else {
+//            generatorFactory = 
+//        }
         SequenceList<Feature> folders = new SequenceList<Feature>(generatorFactory);
         addFeatures(document, folders);
 

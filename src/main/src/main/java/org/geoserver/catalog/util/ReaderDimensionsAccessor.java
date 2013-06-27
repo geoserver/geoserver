@@ -6,6 +6,7 @@ package org.geoserver.catalog.util;
 
 import static org.geotools.coverage.grid.io.AbstractGridCoverage2DReader.*;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.logging.Logger;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
 
@@ -81,11 +83,11 @@ public class ReaderDimensionsAccessor {
         
     };
 
-    private final AbstractGridCoverage2DReader reader;
+    private final GridCoverage2DReader reader;
 
     private final List<String> metadataNames= new ArrayList<String>();
 
-    public ReaderDimensionsAccessor(AbstractGridCoverage2DReader reader) {
+    public ReaderDimensionsAccessor(GridCoverage2DReader reader) throws IOException {
         Utilities.ensureNonNull("reader", reader);
         this.reader = reader;
         final String[] dimensions = reader.getMetadataNames();
@@ -98,8 +100,9 @@ public class ReaderDimensionsAccessor {
      * True if the reader has a time dimension
      * 
      * @return
+     * @throws IOException 
      */
-    public boolean hasTime() {
+    public boolean hasTime() throws IOException {
         return "true".equalsIgnoreCase(reader.getMetadataValue(HAS_TIME_DOMAIN));
     }
 
@@ -109,8 +112,9 @@ public class ReaderDimensionsAccessor {
      * the underlying reader provides.
      * 
      * @return
+     * @throws IOException 
      */
-    public TreeSet<Object> getTimeDomain() {
+    public TreeSet<Object> getTimeDomain() throws IOException {
         if (!hasTime()) {
             Collections.emptySet();
         }
@@ -168,8 +172,9 @@ public class ReaderDimensionsAccessor {
      * according to what the underlying reader provides
      * 
      * @return
+     * @throws IOException 
      */
-    public Date getMaxTime() {
+    public Date getMaxTime() throws IOException {
         if (!hasTime()) {
             return null;
         }
@@ -189,8 +194,9 @@ public class ReaderDimensionsAccessor {
      * Returns the min value for the time
      * 
      * @return
+     * @throws IOException 
      */
-    public Date getMinTime() {
+    public Date getMinTime() throws IOException {
         if (!hasTime()) {
             return null;
         }
@@ -221,8 +227,9 @@ public class ReaderDimensionsAccessor {
      * True if the reader has a elevation dimension
      * 
      * @return
+     * @throws IOException 
      */
-    public boolean hasElevation() {
+    public boolean hasElevation() throws IOException {
         return "true".equalsIgnoreCase(reader.getMetadataValue(HAS_ELEVATION_DOMAIN));
     }
 
@@ -230,8 +237,9 @@ public class ReaderDimensionsAccessor {
      * Returns the full set of elevation values (either as Double or NumberRange), sorted from smaller to higher
      * 
      * @return
+     * @throws IOException 
      */
-    public TreeSet<Object> getElevationDomain() {
+    public TreeSet<Object> getElevationDomain() throws IOException {
         if (!hasElevation()) {
             return null;
         }
@@ -255,8 +263,9 @@ public class ReaderDimensionsAccessor {
      * Returns the max value for the elevation (as a Double, or as a NumberRange)
      * 
      * @return
+     * @throws IOException 
      */
-    public Double getMaxElevation() {
+    public Double getMaxElevation() throws IOException {
         if (!hasElevation()) {
             return null;
         }
@@ -276,8 +285,9 @@ public class ReaderDimensionsAccessor {
      * Returns the min value for the elevation (as a Double, or as a NumbeRange)
      * 
      * @return
+     * @throws IOException 
      */
-    public Double getMinElevation() {
+    public Double getMinElevation() throws IOException {
         if (!hasElevation()) {
             return null;
         }
@@ -318,16 +328,18 @@ public class ReaderDimensionsAccessor {
 
     /**
      * True if the reader has a dimension with the given name
+     * @throws IOException 
      */
-    public boolean hasDomain(String name) {
+    public boolean hasDomain(String name) throws IOException {
         Utilities.ensureNonNull("name", name);
         return "true".equalsIgnoreCase(reader.getMetadataValue("HAS_" + name.toUpperCase() + "_DOMAIN"));
     }
 
     /**
      * Returns the full set of values for the given dimension
+     * @throws IOException 
      */
-    public TreeSet<String> getDomain(String name) {
+    public TreeSet<String> getDomain(String name) throws IOException {
         String[] values = reader.getMetadataValue(name.toUpperCase() + "_DOMAIN").split(",");
         TreeSet<String> valueSet = new TreeSet<String>();
         for (String val : values) {
@@ -339,8 +351,9 @@ public class ReaderDimensionsAccessor {
     /**
      * Extracts the custom domain lowest value (using String sorting)
      * @return
+     * @throws IOException 
      */
-    public String getCustomDomainDefaultValue(String name) {
+    public String getCustomDomainDefaultValue(String name) throws IOException {
         Utilities.ensureNonNull("name", name);
 
         // see if we have an optimize way to get the minimum

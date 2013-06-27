@@ -25,7 +25,7 @@ import org.geoserver.wcs.WCSInfo;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.DecimationPolicy;
 import org.geotools.coverage.grid.io.OverviewPolicy;
 import org.geotools.coverage.processing.CoverageProcessor;
@@ -326,7 +326,7 @@ public class WCSUtils {
     /**
      * Checks the coverage read is below the input limits. Mind, at this point the reader might have
      * have subsampled the original image in some way so it is expected the coverage is actually
-     * smaller than what computed but {@link #checkInputLimits(CoverageInfo, AbstractGridCoverage2DReader, GeneralEnvelope)},
+     * smaller than what computed but {@link #checkInputLimits(CoverageInfo, GridCoverage2DReader, GeneralEnvelope)},
      * however that method might have failed the computation due to lack of metadata (or wrong metadata)
      * so it's safe to double check the actual coverage wit this one.
      * Mind, this method might cause the coverage to be fully read in memory (if that is the case,
@@ -381,7 +381,7 @@ public class WCSUtils {
      * @throws WcsException if the coverage size exceeds the configured limits
      */
     public static void checkInputLimits(WCSInfo info, CoverageInfo meta, 
-            AbstractGridCoverage2DReader reader, GridGeometry2D gridGeometry) throws WcsException {
+            GridCoverage2DReader reader, GridGeometry2D gridGeometry) throws WcsException {
         // do we have to check a limit at all?
         long limit = info.getMaxInputMemory() * 1024;
         if(limit <= 0) {
@@ -394,7 +394,7 @@ public class WCSUtils {
             // if necessary reproject back to the original CRS
             GeneralEnvelope requestedEnvelope = new GeneralEnvelope(gridGeometry.getEnvelope());
             final CoordinateReferenceSystem requestCRS = requestedEnvelope.getCoordinateReferenceSystem();
-            final CoordinateReferenceSystem nativeCRS = reader.getCrs();
+            final CoordinateReferenceSystem nativeCRS = reader.getCoordinateReferenceSystem();
             if(!CRS.equalsIgnoreMetadata(requestCRS, nativeCRS)) {
                 requestedEnvelope = CRS.transform(CRS.findMathTransform(requestCRS, nativeCRS, true), requestedEnvelope);
             }

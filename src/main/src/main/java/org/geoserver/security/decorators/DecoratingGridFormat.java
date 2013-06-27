@@ -4,10 +4,11 @@
  */
 package org.geoserver.security.decorators;
 
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
 import org.geotools.factory.Hints;
+import org.opengis.coverage.grid.Format;
 import org.opengis.coverage.grid.GridCoverageWriter;
 import org.opengis.parameter.ParameterValueGroup;
 
@@ -17,7 +18,7 @@ import org.opengis.parameter.ParameterValueGroup;
  * 
  * @author Andrea Aime
  */
-public abstract class DecoratingGridFormat extends AbstractGridFormat {
+public abstract class DecoratingGridFormat implements Format {
 
     AbstractGridFormat delegate;
     
@@ -49,11 +50,11 @@ public abstract class DecoratingGridFormat extends AbstractGridFormat {
         return delegate.getName();
     }
 
-    public AbstractGridCoverage2DReader getReader(Object source, Hints hints) {
+    public GridCoverage2DReader getReader(Object source, Hints hints) {
         return delegate.getReader(source, hints);
     }
 
-    public AbstractGridCoverage2DReader getReader(Object source) {
+    public GridCoverage2DReader getReader(Object source) {
         return delegate.getReader(source);
     }
 

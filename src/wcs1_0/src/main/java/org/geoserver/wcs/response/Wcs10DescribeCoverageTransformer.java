@@ -37,7 +37,7 @@ import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.wcs.WCSInfo;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.factory.GeoTools;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
@@ -258,17 +258,18 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
          * DOCUMENT ME!
          * 
          * @param lonLatEnvelope
+         * @throws IOException 
          */
-        private void handleLonLatEnvelope(CoverageInfo ci, ReferencedEnvelope referencedEnvelope) {
+        private void handleLonLatEnvelope(CoverageInfo ci, ReferencedEnvelope referencedEnvelope) throws IOException {
 
             CoverageStoreInfo csinfo = ci.getStore();
             
             if(csinfo == null)
                 throw new WcsException("Unable to acquire coverage store resource for coverage: " + ci.getName());
             
-            AbstractGridCoverage2DReader reader = null;
+            GridCoverage2DReader reader = null;
             try {
-                reader = (AbstractGridCoverage2DReader) ci.getGridCoverageReader(null, GeoTools.getDefaultHints());
+                reader = (GridCoverage2DReader) ci.getGridCoverageReader(null, GeoTools.getDefaultHints());
             } catch (IOException e) {
                 LOGGER.severe("Unable to acquire a reader for this coverage with format: " + csinfo.getFormat().getName());
             }
@@ -327,9 +328,9 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
             if(csinfo == null)
                 throw new WcsException("Unable to acquire coverage store resource for coverage: " + ci.getName());
             
-            AbstractGridCoverage2DReader reader = null;
+            GridCoverage2DReader reader = null;
             try {
-                reader = (AbstractGridCoverage2DReader) ci.getGridCoverageReader(null, GeoTools.getDefaultHints());
+                reader = (GridCoverage2DReader) ci.getGridCoverageReader(null, GeoTools.getDefaultHints());
             } catch (IOException e) {
                 LOGGER.severe("Unable to acquire a reader for this coverage with format: " + csinfo.getFormat().getName());
             }
@@ -511,8 +512,9 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
          * 
          * @param ci
          * @param field
+         * @throws IOException 
          */
-        private void handleRange(CoverageInfo ci) {
+        private void handleRange(CoverageInfo ci) throws IOException {
             // rangeSet
             start("wcs:rangeSet");
             start("wcs:RangeSet");
@@ -551,9 +553,9 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
             // now get possible elevation
             DimensionInfo elevationInfo = ci.getMetadata().get(ResourceInfo.ELEVATION, DimensionInfo.class);
             if(elevationInfo != null && elevationInfo.isEnabled()) {
-                AbstractGridCoverage2DReader reader = null;
+                GridCoverage2DReader reader = null;
                 try {
-                    reader = (AbstractGridCoverage2DReader) ci.getGridCoverageReader(null, GeoTools.getDefaultHints());
+                    reader = (GridCoverage2DReader) ci.getGridCoverageReader(null, GeoTools.getDefaultHints());
                 } catch (IOException e) {
                     LOGGER.severe("Unable to acquire a reader for this coverage with format: " + ci.getStore().getFormat().getName());
                 }            

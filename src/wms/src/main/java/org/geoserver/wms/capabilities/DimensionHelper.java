@@ -26,8 +26,7 @@ import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.util.ISO8601Formatter;
 import org.geoserver.wms.WMS;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
-import org.geotools.factory.GeoTools;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.temporal.object.DefaultPeriodDuration;
 import org.geotools.util.Converters;
 import org.geotools.util.DateRange;
@@ -111,8 +110,9 @@ abstract class DimensionHelper {
      * 
      * @param layer
      * @throws RuntimeException
+     * @throws IOException 
      */
-    void handleRasterLayerDimensions(final LayerInfo layer) throws RuntimeException {
+    void handleRasterLayerDimensions(final LayerInfo layer) throws RuntimeException, IOException {
         
         // do we have time and elevation?
         CoverageInfo cvInfo = (CoverageInfo) layer.getResource();
@@ -123,7 +123,7 @@ abstract class DimensionHelper {
         DimensionInfo timeInfo = null;
         DimensionInfo elevInfo = null;
         Map<String, DimensionInfo> customDimensions = new HashMap<String, DimensionInfo>();
-        AbstractGridCoverage2DReader reader = null;
+        GridCoverage2DReader reader = null;
         
         for (Map.Entry<String, Serializable> e : cvInfo.getMetadata().entrySet()) {
             String key = e.getKey();
@@ -167,8 +167,7 @@ abstract class DimensionHelper {
                     + layer.getName());
 
         try {
-            reader = (AbstractGridCoverage2DReader) catalog.getResourcePool()
-                    .getGridCoverageReader(csinfo, GeoTools.getDefaultHints());
+            reader = (GridCoverage2DReader) cvInfo.getGridCoverageReader(null, null);
         } catch (Throwable t) {
                  LOGGER.log(Level.SEVERE, "Unable to acquire a reader for this coverage with format: "
                                  + csinfo.getFormat().getName(), t);
@@ -212,7 +211,7 @@ abstract class DimensionHelper {
         }
     }
 
-    private void handleElevationDimensionRaster(DimensionInfo elevInfo, ReaderDimensionsAccessor dimensions) {
+    private void handleElevationDimensionRaster(DimensionInfo elevInfo, ReaderDimensionsAccessor dimensions) throws IOException {
         TreeSet<Object> elevations = dimensions.getElevationDomain();
         String elevationMetadata = getZDomainRepresentation(elevInfo, elevations);
 
@@ -220,7 +219,7 @@ abstract class DimensionHelper {
                 elevInfo.getUnits(), elevInfo.getUnitSymbol());
     }
 
-    private void handleTimeDimensionRaster(DimensionInfo timeInfo, ReaderDimensionsAccessor dimension) {
+    private void handleTimeDimensionRaster(DimensionInfo timeInfo, ReaderDimensionsAccessor dimension) throws IOException {
         TreeSet<Object> temporalDomain = dimension.getTimeDomain();
         String timeMetadata = getTemporalDomainRepresentation(timeInfo, temporalDomain);
 
@@ -228,7 +227,7 @@ abstract class DimensionHelper {
     }
     
     private void handleCustomDimensionRaster(String dimName, DimensionInfo dimension,
-            ReaderDimensionsAccessor dimAccessor) {
+            ReaderDimensionsAccessor dimAccessor) throws IOException {
         final TreeSet<String> values = dimAccessor.getDomain(dimName);
         String metadata = getCustomDomainRepresentation(dimension, values);
 

@@ -26,7 +26,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.map.ImageUtils;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.renderer.i18n.ErrorKeys;
 import org.geotools.renderer.i18n.Errors;
 import org.geotools.renderer.lite.RendererUtilities;
@@ -564,7 +564,7 @@ public class LegendUtils {
 			
 			//get the type
 			final PropertyType type=descriptor.getType();
-			if(type.getBinding().isAssignableFrom(GridCoverage2D.class)||type.getBinding().isAssignableFrom(AbstractGridCoverage2DReader.class))
+			if(type.getBinding().isAssignableFrom(GridCoverage2D.class)||type.getBinding().isAssignableFrom(GridCoverage2DReader.class))
 			{
 				found=true;
 				break;

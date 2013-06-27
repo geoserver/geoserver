@@ -37,7 +37,7 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.MapLayerInfo;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.factory.GeoTools;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.gce.imagemosaic.MergeBehavior;
@@ -126,7 +126,7 @@ public class EOGetFeatureInfoChecker extends AbstractDispatcherCallback implemen
                     // check the #of requested values
                     // get the read parameters for this reader
                     final GridCoverageReader gridCoverageReader = cInfo.getGridCoverageReader(new NullProgressListener(), GeoTools.getDefaultHints());
-                    final Set<ParameterDescriptor<List>> dynamicParameters = ((AbstractGridCoverage2DReader)gridCoverageReader).getDynamicParameters();
+                    final Set<ParameterDescriptor<List>> dynamicParameters = ((GridCoverage2DReader)gridCoverageReader).getDynamicParameters();
                     if(dynamicParameters.isEmpty()){
                         throw new IllegalStateException("Layer "+cInfo.getTitle()+ " has no additional dimensions which are required for an EO BANDS layer");
                     }

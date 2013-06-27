@@ -19,7 +19,7 @@ import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.rest.RestletException;
 import org.geoserver.rest.format.DataFormat;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.data.DataUtilities;
 import org.opengis.coverage.grid.Format;
@@ -113,8 +113,8 @@ public class CoverageStoreFileResource extends StoreFileResource {
         }
         
         try {
-            AbstractGridCoverage2DReader reader = 
-                (AbstractGridCoverage2DReader) ((AbstractGridFormat) coverageFormat).getReader(uploadedFileURL);
+            GridCoverage2DReader reader = 
+                (GridCoverage2DReader) ((AbstractGridFormat) coverageFormat).getReader(uploadedFileURL);
             if ( reader == null ) {
                 throw new RestletException( "Could not aquire reader for coverage.", Status.SERVER_ERROR_INTERNAL );
             }

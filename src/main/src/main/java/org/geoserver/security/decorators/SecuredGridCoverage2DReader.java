@@ -14,7 +14,7 @@ import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.security.CoverageAccessLimits;
 import org.geoserver.security.WrapperPolicy;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.processing.CoverageProcessor;
 import org.geotools.coverage.processing.operation.Crop;
 import org.geotools.factory.Hints;
@@ -53,7 +53,7 @@ public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader 
 
     WrapperPolicy policy;
 
-    public SecuredGridCoverage2DReader(AbstractGridCoverage2DReader delegate, WrapperPolicy policy) {
+    public SecuredGridCoverage2DReader(GridCoverage2DReader delegate, WrapperPolicy policy) {
         super(delegate);
         this.policy = policy;
     }
@@ -124,7 +124,7 @@ public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader 
                 final ParameterValueGroup param = (ParameterValueGroup) cropParams.clone();
                 param.parameter("source").setValue(grid);
                 param.parameter("ROI").setValue(rasterFilter);
-                grid = (GridCoverage2D) coverageCropFactory.doOperation(param, hints);
+                grid = (GridCoverage2D) coverageCropFactory.doOperation(param, null);
             } else {
                 return null;
             }

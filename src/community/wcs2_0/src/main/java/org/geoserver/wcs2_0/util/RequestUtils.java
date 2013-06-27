@@ -25,7 +25,7 @@ import org.geoserver.platform.ServiceException;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.factory.GeoTools;
 import org.geotools.factory.Hints;
@@ -141,7 +141,7 @@ public class RequestUtils {
      * @throws IOException
      */
     public static GridCoverage2D readBestCoverage(
-            final AbstractGridCoverage2DReader reader, 
+            final GridCoverage2DReader reader, 
             final Object params,
             final GridGeometry2D readGG,
             final Interpolation interpolation, 
@@ -167,7 +167,7 @@ public class RequestUtils {
         }
     
         // //
-        // It is an AbstractGridCoverage2DReader, let's use parameters
+        // It is an GridCoverage2DReader, let's use parameters
         // if we have any supplied by a user.
         // //
         // first I created the correct ReadGeometry
@@ -288,7 +288,7 @@ public class RequestUtils {
      * @return
      */
     static public GridCoverage2D readSampleGridCoverage(CoverageInfo ci)throws Exception {
-        final AbstractGridCoverage2DReader reader = getCoverageReader(ci);
+        final GridCoverage2DReader reader = getCoverageReader(ci);
         
         //
         // Now reading a fake small GridCoverage just to retrieve meta
@@ -341,7 +341,7 @@ public class RequestUtils {
      * @throws IOException
      * @throws Exception
      */
-    public static AbstractGridCoverage2DReader getCoverageReader(CoverageInfo ci)
+    public static GridCoverage2DReader getCoverageReader(CoverageInfo ci)
             throws IOException, Exception {
         // get a reader for this coverage
         final CoverageStoreInfo store = (CoverageStoreInfo) ci.getStore();
@@ -350,7 +350,7 @@ public class RequestUtils {
             throw new Exception("Unable to acquire a reader for this coverage with format: "
                     + store.getFormat().getName());
         }
-        final AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) reader_;
+        final GridCoverage2DReader reader = (GridCoverage2DReader) reader_;
         return reader;
     }
 }

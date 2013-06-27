@@ -32,7 +32,7 @@ import org.geotools.coverage.Category;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.data.property.PropertyDataStoreFactory;
@@ -788,9 +788,9 @@ public class MockData implements TestData {
         
         // let's grab the necessary metadata
         AbstractGridFormat format = (AbstractGridFormat) GridFormatFinder.findFormat(coverageFile);
-        AbstractGridCoverage2DReader reader;
+        GridCoverage2DReader reader;
         try {
-            reader = (AbstractGridCoverage2DReader) format.getReader(coverageFile);
+            reader = (GridCoverage2DReader) format.getReader(coverageFile);
         } catch (Exception e) {
             String message = "Exception while trying to read " + coverageFile.getCanonicalPath() + " with format" + format.getName();
             throw new RuntimeException(message, e);
@@ -812,7 +812,7 @@ public class MockData implements TestData {
         writer.write("<styles default=\"" + styleName + "\"/>\n");
         
         // envelope
-        CoordinateReferenceSystem crs = reader.getCrs();
+        CoordinateReferenceSystem crs = reader.getCoordinateReferenceSystem();
         GeneralEnvelope envelope = reader.getOriginalEnvelope();
         GeneralEnvelope wgs84envelope = CoverageStoreUtils.getWGS84LonLatEnvelope(envelope);
         final String nativeCrsName = CRS.lookupIdentifier(crs, false);
@@ -835,7 +835,7 @@ public class MockData implements TestData {
                 minCP[1] + (envelope.getSpan(1) / 20.0)
             };
         final GeneralEnvelope subEnvelope = new GeneralEnvelope(minCP, maxCP);
-        subEnvelope.setCoordinateReferenceSystem(reader.getCrs());
+        subEnvelope.setCoordinateReferenceSystem(reader.getCoordinateReferenceSystem());
 
         parameters.put(AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString(),
             new GridGeometry2D(reader.getOriginalGridRange(), subEnvelope));

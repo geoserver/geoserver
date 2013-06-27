@@ -48,7 +48,7 @@ import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.data.DataUtilities;
@@ -712,9 +712,9 @@ public class SystemTestData extends CiteTestData {
         if (format == null) {
             throw new RuntimeException("No format for " + file.getCanonicalPath());
         }
-        AbstractGridCoverage2DReader reader = null;
+        GridCoverage2DReader reader = null;
         try {
-            reader = (AbstractGridCoverage2DReader) format.getReader(file);
+            reader = (GridCoverage2DReader) format.getReader(file);
             if (reader == null) {
                 throw new RuntimeException("No reader for " + file.getCanonicalPath() + " with format " + format.getName());
             }

@@ -30,7 +30,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.type.PropertyDescriptor;
 
@@ -127,12 +127,12 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
             try {
                 GridCoverageReader reader = ((CoverageInfo) resource).getGridCoverageReader(null, null);
                 if(Number.class.isAssignableFrom(type)) {
-                    String elev = reader.getMetadataValue(AbstractGridCoverage2DReader.HAS_ELEVATION_DOMAIN);
+                    String elev = reader.getMetadataValue(GridCoverage2DReader.HAS_ELEVATION_DOMAIN);
                     if(!Boolean.parseBoolean(elev)) {
                         disableDimension(type, configs, noAttributeMessage);
                     }
                 } else if(Date.class.isAssignableFrom(type)) {
-                    String time = reader.getMetadataValue(AbstractGridCoverage2DReader.HAS_TIME_DOMAIN);
+                    String time = reader.getMetadataValue(GridCoverage2DReader.HAS_TIME_DOMAIN);
                     if(!Boolean.parseBoolean(time)) {
                         disableDimension(type, configs, noAttributeMessage);
                     }

@@ -942,7 +942,29 @@
           <version>${project.version}</version>
         </dependency>
       </dependencies>
-		</profile>    
+		</profile>
+    <profile>
+			<id>netcdf</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geotools</groupId>
+          <artifactId>gt-netcdf</artifactId>
+          <version>${gt.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+          </exclusion>
+
+
+        </exclusions>
+        </dependency>
+      </dependencies>
+		</profile>        
  </profiles>
 
 </project>

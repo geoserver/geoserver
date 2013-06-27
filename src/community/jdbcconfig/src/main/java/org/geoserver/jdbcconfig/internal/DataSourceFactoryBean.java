@@ -24,7 +24,6 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Disposabl
     JDBCConfigProperties config;
     Context jndiCtx;
     DataSource dataSource;
-    BasicDataSource basicDataSource;
     
     private static Context getJNDI() {
         try {
@@ -53,14 +52,6 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Disposabl
         return dataSource;
     }
     
-    /*
-     * Override the unconfigured BasicDataSource to inject mock objects for testing.
-     */
-    void setBasicDataSource(BasicDataSource bds) {
-        assert dataSource==null;
-        basicDataSource = bds;
-    }
-    
     /**
      * Look up or create a DataSource
      * @return
@@ -79,12 +70,7 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Disposabl
      * @return
      */
     protected BasicDataSource getBasicDataSource() {
-        assert dataSource==null;
-        if(basicDataSource==null) {
-            return new BasicDataSource();
-        } else {
-            return basicDataSource;
-        }
+        return new BasicDataSource();
     }
     
     /**

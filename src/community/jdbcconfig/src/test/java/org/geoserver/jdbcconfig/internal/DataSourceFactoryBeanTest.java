@@ -21,7 +21,7 @@ public class DataSourceFactoryBeanTest {
 
     @Test
     public void testBasic() throws Exception {
-         BasicDataSource ds = EasyMock.createMock(BasicDataSource.class);
+         final BasicDataSource ds = EasyMock.createMock(BasicDataSource.class);
          JDBCConfigProperties config = EasyMock.createMock(JDBCConfigProperties.class);
          Context jndi = EasyMock.createMock(Context.class);
          
@@ -49,8 +49,14 @@ public class DataSourceFactoryBeanTest {
 
          replay(ds, config, jndi);
 
-         DataSourceFactoryBean fact = new DataSourceFactoryBean(config, jndi);
-         fact.setBasicDataSource(ds);
+         DataSourceFactoryBean fact = new DataSourceFactoryBean(config, jndi) {
+            
+             @Override
+             protected BasicDataSource getBasicDataSource() {
+                 return ds;
+             }
+             
+         };
 
          // Check that we get the DataSource
          assertThat(fact.getObject(), is((DataSource)ds));
@@ -107,7 +113,7 @@ public class DataSourceFactoryBeanTest {
      */
     @Test
     public void testJNDIFail() throws Exception {
-         BasicDataSource ds = EasyMock.createMock(BasicDataSource.class);
+         final BasicDataSource ds = EasyMock.createMock(BasicDataSource.class);
          JDBCConfigProperties config = EasyMock.createMock(JDBCConfigProperties.class);
          Context jndi = EasyMock.createMock(Context.class);
          
@@ -136,8 +142,14 @@ public class DataSourceFactoryBeanTest {
 
          replay(ds, config, jndi);
 
-         DataSourceFactoryBean fact = new DataSourceFactoryBean(config, jndi);
-         fact.setBasicDataSource(ds);
+         DataSourceFactoryBean fact = new DataSourceFactoryBean(config, jndi) {
+             
+             @Override
+             protected BasicDataSource getBasicDataSource() {
+                 return ds;
+             }
+             
+          };
 
          // Check that we get the DataSource
          assertThat(fact.getObject(), is((DataSource)ds));

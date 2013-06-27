@@ -30,6 +30,7 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
+import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
 import de.micromata.opengis.kml.v_2_2_0.Feature;
 import de.micromata.opengis.kml.v_2_2_0.MultiGeometry;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
@@ -48,7 +49,8 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
     public KmlDecorator getDecorator(Class<? extends Feature> featureClass,
             KmlEncodingContext context) {
         if (Placemark.class.isAssignableFrom(featureClass)) {
-            return new PlacemarkGeometryDecorator(hasHeightTemplate(context));
+            boolean hasHeightTemplate = hasHeightTemplate(context);
+            return new PlacemarkGeometryDecorator(hasHeightTemplate);
         } else {
             return null;
         }
@@ -82,65 +84,78 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
             // encode the geometry
             Placemark pm = (Placemark) feature;
             SimpleFeature sf = context.getCurrentFeature();
-            Geometry geometry = getFeatureGeometry(sf, context);
-
+            
+            double height = Double.NaN; 
+            if(hasHeightTemplate) {
+                try {
+                    String output =  context.getTemplate().template(sf, "height.ftl", FeatureTemplate.class);
+                    height = Double.valueOf(output);
+                } catch (IOException ioe) {
+                    LOGGER.log(Level.WARNING, "Couldn't render height template for " + sf.getID(), ioe);
+                }
+            }
+            
+            Geometry geometry = getFeatureGeometry(sf, height);
             if (geometry != null) {
-                pm.setGeometry(encodeGeometry(geometry, context));
+                pm.setGeometry(encodeGeometry(geometry, context, height));
             }
 
             return feature;
         }
 
         /**
-         * Extracts the 
+         * Extracts the
+         * 
          * @param sf
          * @param context
          * @return
          */
-        private Geometry getFeatureGeometry(SimpleFeature sf, KmlEncodingContext context) {
+        private Geometry getFeatureGeometry(SimpleFeature sf, final double height) {
             Geometry geom = (Geometry) sf.getDefaultGeometry();
-            if(hasHeightTemplate) {
-                try {
-                    String output =  context.getTemplate().template(sf, "height.ftl", FeatureTemplate.class);
-                    final double height = Double.valueOf(output);
-    
-                    if (!Double.isNaN(height) && height != 0) {
-                        geom.apply(new CoordinateFilter() {
-                            public void filter(Coordinate c) {
-                                c.setCoordinate(new Coordinate(c.x, c.y, height));
-                            }
-                        });
-                        geom.geometryChanged();
+
+            if (!Double.isNaN(height) && height != 0) {
+                geom.apply(new CoordinateFilter() {
+                    public void filter(Coordinate c) {
+                        c.setCoordinate(new Coordinate(c.x, c.y, height));
                     }
-                } catch (IOException ioe) {
-                    LOGGER.log(Level.WARNING, "Couldn't render height template for " + sf.getID(), ioe);
-                }
+                });
+                geom.geometryChanged();
             }
-            
+
             return geom;
         }
 
-        private de.micromata.opengis.kml.v_2_2_0.Geometry encodeGeometry(Geometry geometry, KmlEncodingContext context) {
+        private de.micromata.opengis.kml.v_2_2_0.Geometry encodeGeometry(Geometry geometry, KmlEncodingContext context, double height) {
             if (geometry instanceof Point || (geometry instanceof MultiPoint)
                     && ((MultiPoint) geometry).getNumPoints() == 1) {
                 Coordinate c = geometry.getCoordinate();
                 return toKmlPoint(c);
-            } else if(context.isDescriptionEnabled()) {
-                MultiGeometry mg = new MultiGeometry();
-
-                // centroid + full geometry
-                Coordinate c = CENTROIDS.geometryCentroid(geometry);
-                if (!Double.isNaN(c.z)) {
-                    c.setOrdinate(2, c.z);
-                }
-                mg.addToGeometry(toKmlPoint(c));
-
-                // encode the full geometry
-                mg.addToGeometry(toKmlGeometry(geometry));
-
-                return mg;
             } else {
-                return toKmlGeometry(geometry);
+                de.micromata.opengis.kml.v_2_2_0.Geometry kmlGeometry = toKmlGeometry(geometry);
+                if(context.isDescriptionEnabled()) {
+                    MultiGeometry mg = new MultiGeometry();
+
+                    // centroid + full geometry
+                    Coordinate c = CENTROIDS.geometryCentroid(geometry);
+                    if(!Double.isNaN(height)) {
+                        c.setOrdinate(2, height);
+                    }
+                    de.micromata.opengis.kml.v_2_2_0.Point kmlPoint = toKmlPoint(c);
+                    if(hasHeightTemplate) {
+                        applyExtrusion(kmlGeometry);
+                    }
+                    mg.addToGeometry(kmlPoint);
+
+                    // encode the full geometry
+                    mg.addToGeometry(kmlGeometry);
+
+                    kmlGeometry = mg;
+                } 
+                
+                if(hasHeightTemplate) {
+                    applyExtrusion(kmlGeometry);
+                }
+                return kmlGeometry;
             }
         }
 
@@ -215,7 +230,7 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
                 double x = cs.getOrdinate(i, 0);
                 double y = cs.getOrdinate(i, 1);
                 double z = Double.NaN;
-                if (cs.getDimension() >= 3) {
+                if (cs.getDimension() >= 3 || hasHeightTemplate) {
                     z = cs.getOrdinate(i, 2);
                 }
                 de.micromata.opengis.kml.v_2_2_0.Coordinate c;
@@ -229,7 +244,38 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
 
             return result;
         }
+        
+        public void applyExtrusion(de.micromata.opengis.kml.v_2_2_0.Geometry kmlGeometry) {
+            if(kmlGeometry instanceof de.micromata.opengis.kml.v_2_2_0.Polygon) {
+                de.micromata.opengis.kml.v_2_2_0.Polygon polygon = (de.micromata.opengis.kml.v_2_2_0.Polygon) kmlGeometry;
+                polygon.setExtrude(true);
+                polygon.setAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
+            } else if(kmlGeometry instanceof de.micromata.opengis.kml.v_2_2_0.LinearRing) {
+                de.micromata.opengis.kml.v_2_2_0.LinearRing ring = (de.micromata.opengis.kml.v_2_2_0.LinearRing) kmlGeometry;
+                ring.setExtrude(true);
+                ring.setTessellate(true);
+                ring.setAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
+            } else if(kmlGeometry instanceof de.micromata.opengis.kml.v_2_2_0.LineString) {
+                de.micromata.opengis.kml.v_2_2_0.LineString ls = (de.micromata.opengis.kml.v_2_2_0.LineString) kmlGeometry;
+                ls.setExtrude(true);
+                ls.setTessellate(true);
+                ls.setAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
+            } else if(kmlGeometry instanceof de.micromata.opengis.kml.v_2_2_0.Point) {
+                de.micromata.opengis.kml.v_2_2_0.Point point = (de.micromata.opengis.kml.v_2_2_0.Point) kmlGeometry;
+                point.setExtrude(true);
+                point.setAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
+            } else if(kmlGeometry instanceof MultiGeometry) {
+                de.micromata.opengis.kml.v_2_2_0.MultiGeometry mg = (de.micromata.opengis.kml.v_2_2_0.MultiGeometry) kmlGeometry;
+                for(de.micromata.opengis.kml.v_2_2_0.Geometry g : mg.getGeometry()) {
+                    applyExtrusion(g);
+                }
+            }
+            
+            
+        }
 
     }
+
+    
 
 }

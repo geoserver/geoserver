@@ -11,4 +11,3 @@ Tutorials
    heights/heights.rst
    time/time.rst
    superoverlaysgwc.rst
-   superoverlaysextrudesbuildings.rst

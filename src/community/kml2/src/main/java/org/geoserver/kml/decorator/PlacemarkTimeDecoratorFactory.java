@@ -264,7 +264,8 @@ public class PlacemarkTimeDecoratorFactory implements KmlDecoratorFactory {
                 try {
                     d = format.parse(date);
                 } catch (ParseException e) {
-                    e.printStackTrace();
+                    // fine, we have many templates to try against
+                    // e.printStackTrace();
                 }
 
                 if (d != null) {

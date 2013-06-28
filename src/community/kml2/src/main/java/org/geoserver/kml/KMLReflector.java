@@ -35,6 +35,11 @@ public class KMLReflector {
     public static final String FORMAT = KMLMapOutputFormat.MIME_TYPE;
 
     private static Map<String, Map<String, Object>> MODES;
+    
+    /**
+     * Default ground overlay size
+     */
+    private static int DEFAULT_OVERLAY_SIZE;
 
     static {
         Map<String, Map<String, Object>> temp = new HashMap<String, Map<String, Object>>();
@@ -54,6 +59,8 @@ public class KMLReflector {
         temp.put("refresh", options);
 
         MODES = temp;
+        
+        DEFAULT_OVERLAY_SIZE = Integer.getInteger("org.geoserver.kml.defaultOverlaySize", 2048);
     }
 
     /**
@@ -139,11 +146,11 @@ public class KMLReflector {
 
         // first set up some of the normal wms defaults
         if (request.getWidth() < 1) {
-            request.setWidth(mode.equals("refresh") || containsRasterData ? 1024 : 256);
+            request.setWidth(mode.equals("refresh") || containsRasterData ? DEFAULT_OVERLAY_SIZE : 256);
         }
 
         if (request.getHeight() < 1) {
-            request.setHeight(mode.equals("refresh") || containsRasterData ? 1024 : 256);
+            request.setHeight(mode.equals("refresh") || containsRasterData ? DEFAULT_OVERLAY_SIZE : 256);
         }
 
         // Force srs to lat/lon for KML output.

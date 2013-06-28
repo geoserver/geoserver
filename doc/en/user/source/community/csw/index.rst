@@ -3,6 +3,8 @@
 Catalogue Services for the Web
 ==============================
 
+:ref:`community_csw_tutorial`
+
 Supported Services
 ------------------
 

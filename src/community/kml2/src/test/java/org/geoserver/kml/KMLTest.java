@@ -200,6 +200,29 @@ public class KMLTest extends WMSTestSupport {
     }
     
     @Test
+    public void testTimeInvervalTemplate() throws Exception {
+        FeatureTypeInfo ftInfo = getCatalog().getResourceByName(getLayerId(MockData.OTHER),
+                FeatureTypeInfo.class);
+        File resourceDir = getDataDirectory().findResourceDir(ftInfo);
+        File templateFile = new File(resourceDir, "time.ftl");
+        try {
+            // create the time template 
+            FileUtils.writeStringToFile(templateFile, "${dates.value}||${dates.value}");
+
+            Document doc = getAsDOM("wms?request=getmap&service=wms&version=1.1.1" + "&format="
+                    + KMLMapOutputFormat.MIME_TYPE + "&layers=" + getLayerId(MockData.OTHER)
+                    + "&styles=&height=1024&width=1024&bbox= -96.0000,0.0000,-90.0000,84.0000&srs=EPSG:4326");
+
+            // print(doc);
+            assertXpathEvaluatesTo("1", "count(//kml:Placemark)", doc);
+            assertXpathEvaluatesTo("2002-02-12T00:00:00Z", "//kml:Placemark/kml:TimeSpan/kml:begin", doc);
+            assertXpathEvaluatesTo("2002-02-12T00:00:00Z", "//kml:Placemark/kml:TimeSpan/kml:end", doc);
+        } finally {
+            assertTrue(templateFile.delete());
+        }
+    }
+    
+    @Test
     public void testHeightTemplate() throws Exception {
         FeatureTypeInfo ftInfo = getCatalog().getResourceByName(getLayerId(MockData.OTHER),
                 FeatureTypeInfo.class);

@@ -503,7 +503,7 @@ public class KMLReflectorTest extends WMSTestSupport {
         final String requestUrl = "wms/kml?layers=" + getLayerId(MockData.NAMED_PLACES)
                 + "&styles=labels&mode=download";
         Document doc = getAsDOM(requestUrl);
-        print(doc);
+        // print(doc);
 
         XMLAssert.assertXpathEvaluatesTo("2", "count(//kml:Placemark)", doc);
         XMLAssert.assertXpathEvaluatesTo("1", "count(//kml:Placemark[kml:name='Ashton'])", doc);
@@ -612,7 +612,7 @@ public class KMLReflectorTest extends WMSTestSupport {
             FileUtils.write(template, "${FID.value}");
             
             final String requestUrl = "wms/kml?layers=" + layerId
-                    + "&mode=download&";
+                    + "&mode=download";
             Document doc = getAsDOM(requestUrl);
             // print(doc);
             
@@ -626,9 +626,42 @@ public class KMLReflectorTest extends WMSTestSupport {
             XMLAssert.assertXpathEvaluatesTo("6.0E-4,-0.0018,101.0 0.0010,-6.0E-4,101.0 0.0024,-1.0E-4,101.0 0.0031,-0.0015,101.0 6.0E-4,-0.0018,101.0", 
                     base + "/kml:Polygon/kml:outerBoundaryIs/kml:LinearRing/kml:coordinates", doc);
         } finally {
-            
+            if(template != null) {
+                template.delete();
+            }
         }
-    }        
+    }
+    
+    @Test
+    public void testHeightTemplateNoExtrude() throws Exception {
+        File template = null;
+        try {
+            String layerId = getLayerId(MockData.LAKES);
+            FeatureTypeInfo resource = getCatalog().getResourceByName(layerId, FeatureTypeInfo.class);
+            File parent = getDataDirectory().findOrCreateResourceDir(resource);
+            template = new File(parent, "height.ftl");
+            FileUtils.write(template, "${FID.value}");
+            
+            final String requestUrl = "wms/kml?layers=" + layerId
+                    + "&mode=download&extrude=false";
+            Document doc = getAsDOM(requestUrl);
+            // print(doc);
+            
+            String base = "//kml:Placemark[@id='Lakes.1107531835962']/kml:MultiGeometry";
+            XMLAssert.assertXpathEvaluatesTo("1", "count(" + base+ ")", doc);
+            XMLAssert.assertXpathEvaluatesTo("0", base + "/kml:Point/kml:extrude", doc);
+            XMLAssert.assertXpathEvaluatesTo("relativeToGround", base + "/kml:Point/kml:altitudeMode", doc);
+            XMLAssert.assertXpathEvaluatesTo("0.0017851936218678816,-0.0010838268792710709,101.0", base + "/kml:Point/kml:coordinates", doc);
+            XMLAssert.assertXpathEvaluatesTo("0", base + "/kml:Polygon/kml:extrude", doc);
+            XMLAssert.assertXpathEvaluatesTo("relativeToGround", base + "/kml:Polygon/kml:altitudeMode", doc);
+            XMLAssert.assertXpathEvaluatesTo("6.0E-4,-0.0018,101.0 0.0010,-6.0E-4,101.0 0.0024,-1.0E-4,101.0 0.0031,-0.0015,101.0 6.0E-4,-0.0018,101.0", 
+                    base + "/kml:Polygon/kml:outerBoundaryIs/kml:LinearRing/kml:coordinates", doc);
+        } finally {
+            if(template != null) {
+                template.delete();
+            }
+        }
+    }
     
     /**
      * Verify that when GE asks for coordinates larger than 180 we still manage gracefully

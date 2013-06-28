@@ -15,6 +15,7 @@ import org.geoserver.kml.utils.KmlCentroidBuilder;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.featureinfo.FeatureTemplate;
+import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -50,7 +51,8 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
             KmlEncodingContext context) {
         if (Placemark.class.isAssignableFrom(featureClass)) {
             boolean hasHeightTemplate = hasHeightTemplate(context);
-            return new PlacemarkGeometryDecorator(hasHeightTemplate);
+            boolean isExtrudeEnabled = isExtrudeEnabled(context);
+            return new PlacemarkGeometryDecorator(hasHeightTemplate, isExtrudeEnabled);
         } else {
             return null;
         }
@@ -69,14 +71,33 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
             throw new ServiceException("Failed to apply height template during kml generation", e);
         }
     }
+    
+    private boolean isExtrudeEnabled(KmlEncodingContext context) {
+        // extrusion applies only to WMS mode
+        if(!(context.getService() instanceof WMSInfo)) {
+            return false;
+        }
+
+        // were we asked not to perform extrusion?
+        Object foExtrude = context.getRequest().getFormatOptions().get("extrude");
+        if(foExtrude == null) {
+            // true by default
+            return true;
+        }
+        // be careful, in case someone set extrude to some funny value
+        Boolean extrude = Converters.convert(foExtrude, Boolean.class);
+        return extrude == Boolean.TRUE;
+    }
 
     static class PlacemarkGeometryDecorator implements KmlDecorator {
         
         static final Logger LOGGER = Logging.getLogger(PlacemarkGeometryDecorator.class);
         private boolean hasHeightTemplate;
+        private boolean extrudeEnabled;
 
-        public PlacemarkGeometryDecorator(boolean hasHeightTemplate) {
+        public PlacemarkGeometryDecorator(boolean hasHeightTemplate, boolean extrudeEnabled) {
             this.hasHeightTemplate = hasHeightTemplate;
+            this.extrudeEnabled = extrudeEnabled;
         }
 
         @Override
@@ -248,21 +269,21 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
         public void applyExtrusion(de.micromata.opengis.kml.v_2_2_0.Geometry kmlGeometry) {
             if(kmlGeometry instanceof de.micromata.opengis.kml.v_2_2_0.Polygon) {
                 de.micromata.opengis.kml.v_2_2_0.Polygon polygon = (de.micromata.opengis.kml.v_2_2_0.Polygon) kmlGeometry;
-                polygon.setExtrude(true);
+                polygon.setExtrude(extrudeEnabled);
                 polygon.setAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
             } else if(kmlGeometry instanceof de.micromata.opengis.kml.v_2_2_0.LinearRing) {
                 de.micromata.opengis.kml.v_2_2_0.LinearRing ring = (de.micromata.opengis.kml.v_2_2_0.LinearRing) kmlGeometry;
-                ring.setExtrude(true);
+                ring.setExtrude(extrudeEnabled);
                 ring.setTessellate(true);
                 ring.setAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
             } else if(kmlGeometry instanceof de.micromata.opengis.kml.v_2_2_0.LineString) {
                 de.micromata.opengis.kml.v_2_2_0.LineString ls = (de.micromata.opengis.kml.v_2_2_0.LineString) kmlGeometry;
-                ls.setExtrude(true);
+                ls.setExtrude(extrudeEnabled);
                 ls.setTessellate(true);
                 ls.setAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
             } else if(kmlGeometry instanceof de.micromata.opengis.kml.v_2_2_0.Point) {
                 de.micromata.opengis.kml.v_2_2_0.Point point = (de.micromata.opengis.kml.v_2_2_0.Point) kmlGeometry;
-                point.setExtrude(true);
+                point.setExtrude(extrudeEnabled);
                 point.setAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
             } else if(kmlGeometry instanceof MultiGeometry) {
                 de.micromata.opengis.kml.v_2_2_0.MultiGeometry mg = (de.micromata.opengis.kml.v_2_2_0.MultiGeometry) kmlGeometry;

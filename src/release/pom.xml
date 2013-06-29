@@ -104,6 +104,11 @@
   </dependency>
   <dependency>
    <groupId>org.geoserver.extension</groupId>
+   <artifactId>css</artifactId>
+   <version>${project.version}</version>
+  </dependency>
+  <dependency>
+   <groupId>org.geoserver.extension</groupId>
    <artifactId>h2</artifactId>
    <version>${project.version}</version>
   </dependency>

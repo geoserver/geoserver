@@ -244,6 +244,13 @@
       </modules>
     </profile>
 
+    <profile>
+      <id>css</id>
+      <modules>
+        <module>css</module>
+      </modules>
+    </profile>
+
     <!-- allExtensions profile, includes all modules -->
     <profile>
       <id>allExtensions</id>
@@ -273,6 +280,7 @@
         <module>security</module>
         <module>xslt</module>
         <module>inspire</module>
+        <module>css</module>
       </modules>
     </profile>
 
@@ -305,6 +313,7 @@
         <module>security</module>
         <module>xslt</module>
         <module>inspire</module>
+        <module>css</module>
       </modules>
     </profile>
 

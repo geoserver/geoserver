@@ -33,7 +33,6 @@
       <configuration>
         <descriptors>
           <descriptor>release/ext-authkey.xml</descriptor>
-          <descriptor>release/ext-css.xml</descriptor>
           <descriptor>release/ext-ftp.xml</descriptor>
           <descriptor>release/ext-printing.xml</descriptor>
           <descriptor>release/ext-python.xml</descriptor>
@@ -145,7 +144,6 @@
       <id>communityRelease</id>
       <modules>
         <module>authkey</module>
-        <module>css</module>
 	<module>dds</module>
         <module>printing</module>
         <module>release</module>
@@ -157,12 +155,6 @@
         <module>script</module>
         <module>wcs2_0</module>
         <module>libjpeg-turbo</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>css</id>
-      <modules>
-        <module>css</module>
       </modules>
     </profile>
     <profile>

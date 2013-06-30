@@ -78,6 +78,7 @@ public class PlainFolderSequenceFactory extends AbstractFolderSequenceFactory {
                 SimpleFeatureSource source = (SimpleFeatureSource) ((FeatureLayer) layer).getFeatureSource();
                 SimpleFeatureCollection original = source.getFeatures();
                 SimpleFeatureCollection centroids = new KMLCentroidFeatureCollection(original);
+                context.setCurrentFeatureCollection(centroids);
                 FeatureLayer centroidsLayer = new FeatureLayer(centroids, layer.getStyle(), layer.getTitle());
                 List<Feature> features = new SequenceList<Feature>(
                         new FeatureSequenceFactory(context, centroidsLayer));

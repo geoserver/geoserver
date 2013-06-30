@@ -458,11 +458,13 @@ public class KMLReflectorTest extends WMSTestSupport {
 
             // read in the wms.kml and check its contents
             Document document = dom(new BufferedInputStream(new FileInputStream(temp)));
+            // print(document);
 
             assertEquals("kml", document.getDocumentElement().getNodeName());
             if (doPlacemarks) {
                 assertEquals(getFeatureSource(MockData.BASIC_POLYGONS).getFeatures().size(),
                         document.getElementsByTagName("Placemark").getLength());
+                XMLAssert.assertXpathEvaluatesTo("3", "count(//kml:Placemark//kml:Point)", document);
             } else {
                 assertEquals(0, document.getElementsByTagName("Placemark").getLength());
             }

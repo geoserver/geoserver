@@ -11,6 +11,6 @@
     <property name="id" value="cssDemo"/>
     <property name="titleKey" value="CssDemoPage.title"/>
     <property name="descriptionKey" value="CssDemoPage.description"/>
-    <property name="componentClass" value="org.geoserver.community.css.web.CssDemoPage"/>
+    <property name="componentClass" value="org.geoserver.extension.css.web.CssDemoPage"/>
   </bean>
 </beans>

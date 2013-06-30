@@ -145,12 +145,13 @@ public class KMLReflector {
         }
 
         // first set up some of the normal wms defaults
+        boolean refreshMode = mode.equals("refresh");
         if (request.getWidth() < 1) {
-            request.setWidth(mode.equals("refresh") || containsRasterData ? DEFAULT_OVERLAY_SIZE : 256);
+            request.setWidth(refreshMode || containsRasterData ? DEFAULT_OVERLAY_SIZE : 256);
         }
 
         if (request.getHeight() < 1) {
-            request.setHeight(mode.equals("refresh") || containsRasterData ? DEFAULT_OVERLAY_SIZE : 256);
+            request.setHeight(refreshMode || containsRasterData ? DEFAULT_OVERLAY_SIZE : 256);
         }
 
         // Force srs to lat/lon for KML output.
@@ -180,12 +181,11 @@ public class KMLReflector {
         // TODO: create a subclass of GetMapRequest to store these values
 
         Boolean superoverlay = (Boolean) fo.get("superoverlay");
-        if (superoverlay == null)
+        if (superoverlay == null) {
             superoverlay = Boolean.FALSE;
-        if (superoverlay) {
-            request.setFormat(KMZMapOutputFormat.MIME_TYPE);
-        } else if (mode.equals("refresh") || containsRasterData) {
-            request.setFormat(KMLMapOutputFormat.MIME_TYPE);
+        }
+        if (superoverlay || refreshMode || containsRasterData) {
+            request.setFormat(NetworkLinkMapOutputFormat.KML_MIME_TYPE);
         } else if (!Arrays.asList(KMZMapOutputFormat.OUTPUT_FORMATS).contains(request.getFormat())) {
             request.setFormat(KMLMapOutputFormat.MIME_TYPE);
         }

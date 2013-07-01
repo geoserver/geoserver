@@ -11,7 +11,6 @@ import org.geoserver.kml.NetworkLinkMapOutputFormat;
 import org.geoserver.kml.decorator.LookAtDecoratorFactory;
 import org.geoserver.kml.regionate.Tile;
 import org.geoserver.kml.utils.KMLFeatureAccessor;
-import org.geoserver.kml.utils.KMLUtils;
 import org.geoserver.kml.utils.LookAtOptions;
 import org.geoserver.ows.HttpErrorCodeException;
 import org.geoserver.ows.URLMangler.URLType;
@@ -24,10 +23,13 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSRequests;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.resources.coverage.FeatureUtilities;
+import org.geotools.styling.Style;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.filter.Filter;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -73,11 +75,14 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
 
         // normalize the requested bounds to match a WGS84 hierarchy tile
         Tile tile = new Tile(new ReferencedEnvelope(request.getBbox(), Tile.WGS84));
+        if(!tile.getEnvelope().contains(request.getBbox()) && tile.getZ() > 0) {
+            tile = tile.getParent();
+        }
         Envelope normalizedEnvelope = null;
-        if (tile.getZ() >= 0) {
+        if (tile.getZ() >= 0 && tile.getEnvelope().contains(request.getBbox())) {
             normalizedEnvelope = tile.getEnvelope();
         } else {
-            normalizedEnvelope = KMLUtils.WORLD_BOUNDS_WGS84;
+            normalizedEnvelope = KmlEncodingContext.WORLD_BOUNDS_WGS84;
         }
         int zoomLevel = (int) tile.getZ();
         // encode top level region
@@ -86,7 +91,7 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
         List<MapLayerInfo> layers = request.getLayers();
         for (int i = 0; i < layers.size(); i++) {
             MapLayerInfo layer = layers.get(i);
-            if (cachedMode && KMLUtils.isRequestGWCCompatible(request, i, wms)) {
+            if (cachedMode && isRequestGWCCompatible(request, i, wms)) {
                 encodeGWCLink(container, request, layer);
             } else {
                 encodeLayerSuperOverlay(container, i, normalizedEnvelope, zoomLevel);
@@ -122,48 +127,6 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
         encodeNetworkLinks(folder, layer, bounds, zoomLevel);
     }
 
-    // private void encodeLayerSuperOverlay(Document container, GetMapRequest request,
-    // MapLayerInfo layer, String styleName, int layerIndex, ReferencedEnvelope bounds) {
-    // NetworkLink nl = container.createAndAddNetworkLink();
-    // nl.setName(layer.getName());
-    // nl.setOpen(true);
-    // nl.setVisibility(true);
-    //
-    // // look at for the network link for this single layer
-    // if (bounds != null) {
-    // LookAtDecoratorFactory lookAtFactory = new LookAtDecoratorFactory();
-    // LookAtOptions lookAtOptions = new LookAtOptions(request.getFormatOptions());
-    // LookAt la = lookAtFactory.buildLookAt(bounds, lookAtOptions, false);
-    // nl.setAbstractView(la);
-    // }
-    //
-    // // region and lod
-    // Region region = nl.createAndSetRegion();
-    // LatLonAltBox box = region.createAndSetLatLonAltBox();
-    // box.setNorth(bounds.getMaxY());
-    // box.setSouth(bounds.getMinY());
-    // box.setEast(bounds.getMaxX());
-    // box.setWest(bounds.getMinX());
-    //
-    // Lod lod = region.createAndSetLod();
-    // lod.setMinLodPixels(128);
-    // lod.setMaxLodPixels(-1);
-    //
-    // // link
-    // Link link = nl.createAndSetLink();
-    //
-    // String href = WMSRequests.getGetMapUrl(request, layer.getName(), layerIndex, styleName,
-    // null, null);
-    // try {
-    // // WMSRequests.getGetMapUrl returns a URL encoded query string, but GoogleEarth
-    // // 6 doesn't like URL encoded parameters. See GEOS-4483
-    // href = URLDecoder.decode(href, "UTF-8");
-    // } catch (UnsupportedEncodingException e) {
-    // throw new RuntimeException(e);
-    // }
-    // link.setHref(href);
-    // }
-
     /**
      * Encode the network links for the specified envelope and zoom level
      * 
@@ -173,7 +136,7 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
      */
     void encodeNetworkLinks(Folder folder, Layer layer, Envelope top, int zoomLevel) {
         // encode the network links
-        if (top != KMLUtils.WORLD_BOUNDS_WGS84) {
+        if (top != KmlEncodingContext.WORLD_BOUNDS_WGS84) {
             // top left
             Envelope e00 = new Envelope(top.getMinX(), top.getMinX() + (top.getWidth() / 2d),
                     top.getMaxY() - (top.getHeight() / 2d), top.getMaxY());
@@ -202,13 +165,13 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
         }
 
         // encode the ground overlay(s)
-        if (top == KMLUtils.WORLD_BOUNDS_WGS84) {
-            // special case for top since it does not line up as a proper
-            // tile -> split it in two
-            encodeTileContents(folder, layer, "contents-0", zoomLevel, new Envelope(-180, 0, -90,
-                    90));
-            encodeTileContents(folder, layer, "contents-1", zoomLevel,
-                    new Envelope(0, 180, -90, 90));
+        if (top == KmlEncodingContext.WORLD_BOUNDS_WGS84) {
+//            // special case for top since it does not line up as a proper
+//            // tile -> split it in two
+//            encodeTileContents(folder, layer, "contents-0", zoomLevel, new Envelope(-180, 0, -90,
+//                    90));
+//            encodeTileContents(folder, layer, "contents-1", zoomLevel,
+//                    new Envelope(0, 180, -90, 90));
         } else {
             // encode straight up
             encodeTileContents(folder, layer, "contents", zoomLevel, top);
@@ -233,7 +196,8 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
 
     void addNetworkLink(Folder container, Envelope box, String name, Layer layer) {
         // check if we are going to get any feature from this layer
-        if (!shouldDrawVectorLayer(layer, box)) {
+        String overlayMode = context.getSuperOverlayMode();
+        if (!"raster".equals(overlayMode) && layer instanceof FeatureLayer && !shouldDrawVectorLayer(layer, box)) {
             return;
         }
 
@@ -270,7 +234,6 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
                 return false;
 
             String overlayMode = context.getSuperOverlayMode();
-
             if ("raster".equals(overlayMode))
                 return false;
 
@@ -413,71 +376,82 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
         icon.setHref(href);
         LOGGER.fine(href);
 
-        // make it so that for coverages the lower zoom levels remain active as one zooms in for
-        // a longer amount of time
-        SimpleFeatureType layerFeatureType = (SimpleFeatureType) layer.getFeatureSource()
-                .getSchema();
-        if (FeatureUtilities.isWrappedCoverage(layerFeatureType)
-                || FeatureUtilities.isWrappedCoverageReader(layerFeatureType)) {
-            addRegion(go, box, 128, 2048);
-        } else {
-            addRegion(go, box, 128, 512);
-        }
+        // make sure the ground overlay disappears as the lower tiles activate
+        addRegion(go, box, 128, 512);
 
         LatLonBox llBox = go.createAndSetLatLonBox();
         setEnvelope(box, llBox);
     }
-    //
-    //
-    // void encodeNetworkLink(Envelope box, String name, Layer layer) {
-    // // check if we are going to get any feature from this layer
-    // try {
-    // if(!shouldDrawVectorLayer(layer, box)) {
-    // return;
-    // }
-    // } catch(HttpErrorCodeException e ) {
-    // // fine, it means there was no data.... sigh...
-    // return;
-    // }
-    // start("NetworkLink");
-    // element("name", name);
-    //
-    // encodeRegion(box, 128, -1);
-    //
-    // start("Link");
-    //
-    // String getMap = KMLUtils.getMapUrl(mapContent, layer, 0, box, new String[] {
-    // "format", KMLMapOutputFormat.MIME_TYPE, "width", "256", "height", "256",
-    // "superoverlay", "true" }, false, wms.getGeoServer());
-    //
-    // element("href", getMap);
-    // LOGGER.fine("Network link " + name + ":" + getMap);
-    //
-    // element("viewRefreshMode", "onRegion");
-    //
-    // end("Link");
-    //
-    // end("NetworkLink");
-    // }
-    //
-    // void encodeLatLonAltBox(Envelope box) {
-    // start("LatLonAltBox");
-    // encodeBox(box);
-    // end("LatLonAltBox");
-    // }
-    //
-    // void encodeLatLonBox(Envelope box) {
-    // start("LatLonBox");
-    // encodeBox(box);
-    // end("LatLonBox");
-    // }
-    //
-    // void encodeBox(Envelope box) {
-    // element("north", String.valueOf(box.getMaxY()));
-    // element("south", String.valueOf(box.getMinY()));
-    // element("east", String.valueOf(box.getMaxX()));
-    // element("west", String.valueOf(box.getMinX()));
-    // }
-    //
+
+    /**
+     * Returns true if the request is GWC compatible
+     * 
+     * @param mapContent
+     * @return
+     */
+    private boolean isRequestGWCCompatible(GetMapRequest request, int layerIndex, WMS wms) {
+        // check the kml params are the same as the defaults (GWC uses always the defaults)
+        boolean requestKmAttr = context.isDescriptionEnabled();
+        if (requestKmAttr != wms.getKmlKmAttr()) {
+            return false;
+        }
+
+        boolean requestKmplacemark = context.isPlacemarkForced();
+        if (requestKmplacemark != wms.getKmlPlacemark()) {
+            return false;
+        }
+
+        int requestKmscore = context.getKmScore();
+        if (requestKmscore != wms.getKmScore()) {
+            return false;
+        }
+
+        // check the layer is local
+        if (request.getLayers().get(layerIndex).getType() == MapLayerInfo.TYPE_REMOTE_VECTOR) {
+            return false;
+        }
+
+        // check the layer is using the default style
+        Style requestedStyle = request.getStyles().get(layerIndex);
+        Style defaultStyle = request.getLayers().get(layerIndex).getDefaultStyle();
+        if (!defaultStyle.equals(requestedStyle)) {
+            return false;
+        }
+
+        // check there is no extra filtering applied to the layer
+        List<Filter> filters = request.getFilter();
+        if (filters != null && filters.size() > 0 && filters.get(layerIndex) != Filter.INCLUDE) {
+            return false;
+        }
+
+        // no fiddling with antialiasing settings
+        String antialias = (String) request.getFormatOptions().get("antialias");
+        if (antialias != null && !"FULL".equalsIgnoreCase(antialias)) {
+            return false;
+        }
+
+        // no custom palette
+        if (request.getPalette() != null) {
+            return false;
+        }
+
+        // no custom start index
+        if (request.getStartIndex() != null && request.getStartIndex() != 0) {
+            return false;
+        }
+
+        // no custom max features
+        if (request.getMaxFeatures() != null) {
+            return false;
+        }
+
+        // no sql view params
+        if (request.getViewParams() != null && request.getViewParams().size() > 0) {
+            return false;
+        }
+
+        // ok, it seems everything is the same as GWC cached it
+        return true;
+    }
 
 }

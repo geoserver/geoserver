@@ -9,12 +9,10 @@ import java.util.List;
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
 import org.geoserver.kml.utils.KMLFeatureAccessor;
-import org.geoserver.kml.utils.KMLUtils;
 import org.geoserver.ows.HttpErrorCodeException;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 

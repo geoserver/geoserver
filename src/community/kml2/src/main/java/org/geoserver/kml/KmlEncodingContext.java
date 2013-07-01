@@ -14,7 +14,6 @@ import org.geoserver.config.ServiceInfo;
 import org.geoserver.kml.decorator.KmlDecoratorFactory;
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
 import org.geoserver.kml.sequence.CompositeList;
-import org.geoserver.kml.utils.KMLUtils;
 import org.geoserver.kml.utils.LookAtOptions;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wms.GetMapRequest;
@@ -22,8 +21,10 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.featureinfo.FeatureTemplate;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.Symbolizer;
 import org.geotools.util.Converters;
 import org.opengis.feature.simple.SimpleFeature;
@@ -82,13 +83,15 @@ public class KmlEncodingContext {
 
     protected int layerIndex;
 
+    public final static ReferencedEnvelope WORLD_BOUNDS_WGS84 = new ReferencedEnvelope(-180, 180, -90, 90, DefaultGeographicCRS.WGS84);
+
     public KmlEncodingContext(WMSMapContent mapContent, WMS wms, boolean kmz) {
         this.mapContent = mapContent;
         this.request = mapContent.getRequest();
         this.wms = wms;
-        this.descriptionEnabled = KMLUtils.getKMAttr(request, wms);
+        this.descriptionEnabled = computeKMAttr();
         this.lookAtOptions = new LookAtOptions(request.getFormatOptions());
-        this.placemarkForced = KMLUtils.getKmplacemark(mapContent.getRequest(), wms);
+        this.placemarkForced = computeKmplacemark();
         this.superOverlayMode = computeSuperOverlayMode();
         this.superOverlayEnabled = computeSuperOverlayEnabled();
         this.extendedDataEnabled =  computeExtendedDataEnabled();
@@ -103,6 +106,40 @@ public class KmlEncodingContext {
      */
     protected KmlEncodingContext() {
         
+    }
+    
+    /**
+     * Returns the the kmplacemark value (either specified in the request, or the default one)
+     * 
+     * @param mapContent
+     * @return
+     */
+    boolean computeKmplacemark() {
+        Object kmplacemark = request.getFormatOptions().get("kmplacemark");
+        if (kmplacemark != null) {
+            return Converters.convert(kmplacemark, Boolean.class);
+        } else {
+            return wms.getKmlPlacemark();
+        }
+    }
+
+    
+    /**
+     * Returns the the kmattr value (either specified in the request, or the default one)
+     * 
+     * @param mapContent
+     * @return
+     */
+    boolean computeKMAttr() {
+        Object kmattr = request.getFormatOptions().get("kmattr");
+        if (kmattr == null) {
+            kmattr = request.getRawKvp().get("kmattr");
+        }
+        if (kmattr != null) {
+            return Converters.convert(kmattr, Boolean.class);
+        } else {
+            return wms.getKmlKmAttr();
+        }
     }
     
     private int computeKmScore() {

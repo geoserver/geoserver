@@ -42,7 +42,6 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.kvp.FormatOptionsKvpParser;
 import org.geoserver.ows.util.KvpUtils;
-import org.geoserver.wms.WMSRequests;
 import org.geoserver.wms.WMSTestSupport;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -566,6 +565,25 @@ public class KMLReflectorTest extends WMSTestSupport {
         XMLAssert.assertXpathEvaluatesTo("20.0", "//kml:ScreenOverlay/kml:screenXY/@y", doc);
         XMLAssert.assertXpathEvaluatesTo("pixels", "//kml:ScreenOverlay/kml:screenXY/@xunits", doc);
         XMLAssert.assertXpathEvaluatesTo("pixels", "//kml:ScreenOverlay/kml:screenXY/@yunits", doc);
+    }
+    
+    @Test
+    public void testLookatOptions() throws Exception {
+        String layerId = getLayerId(MockData.BASIC_POLYGONS);
+        final String requestUrl = "wms/kml?layers=" + layerId
+                + "&styles=polygon&mode=download" +
+                "&format_options=lookatbbox:-20,-20,20,20;altitude:10;heading:0;tilt:30;range:100;altitudemode:absolute";
+        Document doc = getAsDOM(requestUrl);
+        // print(doc);
+
+        // overlay location
+        XMLAssert.assertXpathEvaluatesTo("0.0", "//kml:Document/kml:LookAt/kml:longitude", doc);
+        XMLAssert.assertXpathEvaluatesTo("0.0", "//kml:Document/kml:LookAt/kml:latitude", doc);
+        XMLAssert.assertXpathEvaluatesTo("10.0", "//kml:Document/kml:LookAt/kml:altitude", doc);
+        XMLAssert.assertXpathEvaluatesTo("0.0", "//kml:Document/kml:LookAt/kml:heading", doc);
+        XMLAssert.assertXpathEvaluatesTo("30.0", "//kml:Document/kml:LookAt/kml:tilt", doc);
+        XMLAssert.assertXpathEvaluatesTo("100.0", "//kml:Document/kml:LookAt/kml:range", doc);
+        XMLAssert.assertXpathEvaluatesTo("absolute", "//kml:Document/kml:LookAt/kml:altitudeMode", doc);
     }
     
     @Test

@@ -153,7 +153,7 @@ public class LookAtOptions {
         AltitudeMode mode = AltitudeMode.CLAMP_TO_GROUND;
         if (object != null) {
             try {
-                mode = AltitudeMode.valueOf(String.valueOf(object));
+                mode = AltitudeMode.fromValue(String.valueOf(object));
             } catch (IllegalArgumentException ignore) {
                 if (LOGGER.isLoggable(Level.INFO)) {
                     LOGGER.info("Illegal value for KML format option 'altitudeMode': '" + object

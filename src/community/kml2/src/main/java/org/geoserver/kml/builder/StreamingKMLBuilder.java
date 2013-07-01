@@ -9,11 +9,9 @@ import java.util.List;
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
 import org.geoserver.kml.sequence.CompositeList;
-import org.geoserver.kml.sequence.NetworkLinkSequenceFactory;
 import org.geoserver.kml.sequence.PlainFolderSequenceFactory;
 import org.geoserver.kml.sequence.SequenceFactory;
 import org.geoserver.kml.sequence.SequenceList;
-import org.geoserver.kml.sequence.SuperOverlaySequenceFactory;
 import org.geoserver.platform.ServiceException;
 
 import de.micromata.opengis.kml.v_2_2_0.Document;

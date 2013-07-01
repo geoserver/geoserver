@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.regionate.RegionatingStrategy;
 import org.geoserver.kml.regionate.RegionatingStrategyFactory;
 import org.geoserver.platform.GeoServerExtensions;
@@ -224,10 +225,10 @@ public class KMLFeatureAccessor {
         // Google earth likes to make requests that go beyond 180 when zoomed out
         // fix them
         List<ReferencedEnvelope> envelopes = new ArrayList<ReferencedEnvelope>();
-        if(KMLUtils.WORLD_BOUNDS_WGS84.contains((Envelope) aoi)) {
+        if(KmlEncodingContext.WORLD_BOUNDS_WGS84.contains((Envelope) aoi)) {
             envelopes.add(aoi);
         } else {
-            Envelope intersection = KMLUtils.WORLD_BOUNDS_WGS84.intersection((Envelope) aoi);
+            Envelope intersection = KmlEncodingContext.WORLD_BOUNDS_WGS84.intersection((Envelope) aoi);
             if(intersection.getWidth() > 0) {
                 envelopes.add(new ReferencedEnvelope(intersection, DefaultGeographicCRS.WGS84));
             }

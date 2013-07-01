@@ -4,9 +4,9 @@
  */
 package org.geoserver.kml;
 
-import static org.junit.Assert.assertEquals;
-
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 import java.util.Map;
@@ -33,8 +33,13 @@ public class KMLSuperOverlayTest extends WMSTestSupport {
 
     @Before
     public void setupXPath() {
-        XMLUnit xpathXMLUnit;
         xpath = XMLUnit.newXpathEngine();
+    }
+    
+    @Override
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        super.setUpTestData(testData);
+        testData.setUpWcs10RasterLayers();
     }
     
     @Override
@@ -66,10 +71,10 @@ public class KMLSuperOverlayTest extends WMSTestSupport {
         assertEquals("kml", document.getDocumentElement().getNodeName());
         // two folders, one per layer
         assertEquals("2", xpath.evaluate("count(//kml:Folder)", document));
-        // regions: one whole world, two regions in links to the sub-tiles, two for the contents, per two layers
-        assertEquals(9, document.getElementsByTagName("Region").getLength());
-        // links: two layers, two sublinks and two contents per layer 
-        assertEquals("8", xpath.evaluate("count(//kml:NetworkLink)", document));
+        // regions 
+        assertEquals(5, document.getElementsByTagName("Region").getLength());
+        // links 
+        assertEquals("4", xpath.evaluate("count(//kml:NetworkLink)", document));
         // no ground overlays, direct links to contents instead
         assertEquals("0", xpath.evaluate("count(//kml:GroundOverlay)", document));
         
@@ -92,10 +97,10 @@ public class KMLSuperOverlayTest extends WMSTestSupport {
         assertEquals("kml", document.getDocumentElement().getNodeName());
         // two folders, one per layer
         assertEquals("1", xpath.evaluate("count(//kml:Folder)", document));
-        // regions: one whole world, two regions in links to the sub-tiles, two for the contents
-        assertEquals(5, document.getElementsByTagName("Region").getLength());
-        // links: two sublinks and two contents per layer 
-        assertEquals("4", xpath.evaluate("count(//kml:NetworkLink)", document));
+        // regions
+        assertEquals(3, document.getElementsByTagName("Region").getLength());
+        // links 
+        assertEquals("2", xpath.evaluate("count(//kml:NetworkLink)", document));
         // no ground overlays, direct links to contents instead
         assertEquals("0", xpath.evaluate("count(//kml:GroundOverlay)", document));
         
@@ -110,20 +115,6 @@ public class KMLSuperOverlayTest extends WMSTestSupport {
         Map<String, Object> kvp1 = KvpUtils.parseQueryString(link1);
         assertEquals(NetworkLinkMapOutputFormat.KML_MIME_TYPE, kvp1.get("format"));
         assertEquals("0.0,-90.0,180.0,90.0", kvp1.get("bbox"));
-        
-        // check the contents link 0
-        String clink0 = xpath.evaluate("//kml:NetworkLink[kml:name='contents-0']/kml:Link/kml:href", document);
-        Map<String, Object> kvpc0 = KvpUtils.parseQueryString(clink0);
-        assertEquals(KMLMapOutputFormat.MIME_TYPE, kvpc0.get("format"));
-        assertEquals("-180.0,-90.0,0.0,90.0", kvpc0.get("bbox"));
-
-        // check the contents link 1
-        String clink1 = xpath.evaluate("//kml:NetworkLink[kml:name='contents-1']/kml:Link/kml:href", document);
-        Map<String, Object> kvpc1 = KvpUtils.parseQueryString(clink1);
-        assertEquals(KMLMapOutputFormat.MIME_TYPE, kvpc1.get("format"));
-        assertEquals("0.0,-90.0,180.0,90.0", kvpc1.get("bbox"));
-
-        
     }
 
     /**
@@ -145,6 +136,46 @@ public class KMLSuperOverlayTest extends WMSTestSupport {
         // no ground overlays
         assertEquals(0, document.getElementsByTagName("GroundOverlay").getLength());
     }
+    
+    @Test
+    public void testGWCIntegration() throws Exception {
+        Document document = getAsDOM("wms/kml?layers=" + getLayerId(MockData.USA_WORLDIMG) 
+                + "&mode=superoverlay&superoverlay_mode=cached");
+        // print(document);
+
+        assertEquals("kml", document.getDocumentElement().getNodeName());
+        // only three regions, the root one and one per network link
+        assertEquals(1, document.getElementsByTagName("Region").getLength());
+        // only network links to the data, we don't have enough feature to have sublinks generate
+        assertEquals(1, document.getElementsByTagName("NetworkLink").getLength());
+        // no ground overlays
+        assertEquals(0, document.getElementsByTagName("GroundOverlay").getLength());
+        
+        // check we have a direct link to GWC
+        assertEquals("http://localhost:8080/geoserver/gwc/service/kml/cdf:usa.png.kml", 
+                xpath.evaluate("//kml:NetworkLink/kml:Link/kml:href", document));
+        assertEquals("never", 
+                xpath.evaluate("//kml:NetworkLink/kml:Link/kml:viewRefreshMode", document));
+    }
+    
+    @Test
+    public void testGWCIntegrationFailing() throws Exception {
+        // force placemarks, this prevents usage of gwc
+        Document document = getAsDOM("wms/kml?layers=" + getLayerId(MockData.USA_WORLDIMG) 
+                + "&mode=superoverlay&superoverlay_mode=cached&kmplacemark=true");
+        // print(document);
+
+        assertEquals("kml", document.getDocumentElement().getNodeName());
+        assertEquals(6, document.getElementsByTagName("Region").getLength());
+        assertEquals(4, document.getElementsByTagName("NetworkLink").getLength());
+        // no ground overlays
+        assertEquals(1, document.getElementsByTagName("GroundOverlay").getLength());
+        
+        // check we do not have a direct link to GWC, but back to the wms
+        assertTrue("http://localhost:8080/geoserver/gwc/service/kml/cdf:usa.png.kml", 
+                xpath.evaluate("//kml:NetworkLink/kml:Link/kml:href", document).contains("geoserver/wms"));
+    }
+
     
     @Test
     public void testKmlTitleFormatOption() throws Exception {

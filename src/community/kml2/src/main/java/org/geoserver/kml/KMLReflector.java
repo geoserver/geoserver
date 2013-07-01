@@ -221,6 +221,8 @@ public class KMLReflector {
         WMSRequests.mergeEntry(kvp, formatOptions, "extendeddata");
         WMSRequests.mergeEntry(kvp, formatOptions, "extrude");
         WMSRequests.mergeEntry(kvp, formatOptions, "kmplacemark");
+        WMSRequests.mergeEntry(kvp, formatOptions, "superoverlay_mode");
+        WMSRequests.mergeEntry(kvp, formatOptions, "overlay_mode");
     }
 
 }

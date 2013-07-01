@@ -50,7 +50,7 @@ public class LookAtDecoratorFactory implements KmlDecoratorFactory {
         public Feature decorate(Feature feature, KmlEncodingContext context) {
             Document document = (Document) feature;
             Envelope bounds = context.getMapContent().getRenderingArea();
-            LookAt lookAt = buildLookAt(bounds, context.getLookAtOptions(), true);
+            LookAt lookAt = buildLookAt(bounds, context.getLookAtOptions(), false);
             document.setAbstractView(lookAt);
 
             return document;
@@ -64,7 +64,7 @@ public class LookAtDecoratorFactory implements KmlDecoratorFactory {
         @Override
         public Feature decorate(Feature feature, KmlEncodingContext context) {
             Envelope bounds = context.getCurrentLayer().getBounds();
-            LookAt lookAt = buildLookAt(bounds, context.getLookAtOptions(), true);
+            LookAt lookAt = buildLookAt(bounds, context.getLookAtOptions(), false);
             feature.setAbstractView(lookAt);
 
             return feature;

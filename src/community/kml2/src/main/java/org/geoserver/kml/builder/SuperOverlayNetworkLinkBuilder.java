@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.kml.KMLMapOutputFormat;
 import org.geoserver.kml.KmlEncodingContext;
+import org.geoserver.kml.NetworkLinkMapOutputFormat;
 import org.geoserver.kml.decorator.LookAtDecoratorFactory;
 import org.geoserver.kml.regionate.Tile;
 import org.geoserver.kml.utils.KMLFeatureAccessor;
@@ -241,8 +242,7 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
         addRegion(nl, box, 128, -1);
         Link link = nl.createAndSetLink();
         String getMap = WMSRequests.getGetMapUrl(request, layer, 0, box, new String[] { "format",
-                KMLMapOutputFormat.MIME_TYPE, "width", "256", "height", "256", "superoverlay",
-                "true" });
+                KMLMapOutputFormat.MIME_TYPE, "width", "256", "height", "256", "format", NetworkLinkMapOutputFormat.KML_MIME_TYPE  });
         link.setHref(getMap);
         LOGGER.fine("Network link " + name + ":" + getMap);
         link.setViewRefreshMode(ViewRefreshMode.ON_REGION);
@@ -275,8 +275,6 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
                 return false;
 
             if ("overview".equals(overlayMode)) {
-                // the sixteen here is mostly arbitrary, designed to indicate a couple of regionated
-                // levels above the bottom of the hierarchy
                 int featureCount = featuresInTile(layer, box, false);
                 return featureCount <= getRegionateFeatureLimit(getFeatureTypeInfo(layer));
             }
@@ -343,7 +341,7 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
         nl.setVisibility(true);
         Link link = nl.createAndSetLink();
         String url = WMSRequests.getGetMapUrl(request, layer, 0, box, new String[] { "width",
-                "256", "height", "256", "format_options", foEncoded, "superoverlay", "false" });
+                "256", "height", "256", "format_options", foEncoded, "superoverlay", "true"});
         link.setHref(url);
     }
 

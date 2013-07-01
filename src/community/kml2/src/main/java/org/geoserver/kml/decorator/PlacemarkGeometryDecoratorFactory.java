@@ -240,6 +240,11 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
             List<de.micromata.opengis.kml.v_2_2_0.Coordinate> kmlCoordinates = dumpCoordinateSequence(((LineString) geometry)
                     .getCoordinateSequence());
             kmlLine.setCoordinates(kmlCoordinates);
+            if(!hasHeightTemplate) {
+                // allow the polygon to follow the ground, otherwise some polygons with long
+                // edges will disappear in mountain areas
+                kmlLine.setTessellate(true);
+            }
             return kmlLine;
         }
 

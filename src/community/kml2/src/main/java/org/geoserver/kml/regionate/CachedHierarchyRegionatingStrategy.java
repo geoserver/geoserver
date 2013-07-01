@@ -166,7 +166,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements
             LOGGER.log(Level.SEVERE,
                     "Error occurred while pre-processing regionated features",
                     t);
-            throw new ServiceException("Failure while pre-processing regionated features");
+            throw new ServiceException("Failure while pre-processing regionated features", t);
         }
 
         // This okay, just means the tile is empty

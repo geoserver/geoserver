@@ -214,6 +214,9 @@ public class ExternalSortRegionatingStrategy extends
                 // grab the centroid and transform it in 4326 if necessary
                 SimpleFeature f = (SimpleFeature) fi.next();
                 Geometry g = (Geometry) f.getDefaultGeometry();
+                if(g.isEmpty()) {
+                    continue;
+                }
                 Point centroid = g.getCentroid();
                 
                 //robustness check for bad geometries

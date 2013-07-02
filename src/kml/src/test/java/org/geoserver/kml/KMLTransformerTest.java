@@ -460,7 +460,7 @@ public class KMLTransformerTest extends WMSTestSupport {
         assertEquals("kml", document.getDocumentElement().getNodeName());
         assertEquals(3, document.getElementsByTagName("Style").getLength());
         XMLAssert.assertXpathEvaluatesTo("0", "count(//Style[1]/IconStyle/Icon/color)", document);
-        XMLAssert.assertXpathEvaluatesTo("http://localhost:8080/geoserver/rest/render/kml/icon/allsymbolizers?0.0.0=",
+        XMLAssert.assertXpathEvaluatesTo("http://localhost:8080/geoserver/kml/icon/allsymbolizers?0.0.0=",
                 "//Style[1]/IconStyle/Icon/href", document);
         XMLAssert.assertXpathEvaluatesTo("b24d4dff", "//Style[1]/PolyStyle/color", document);
         XMLAssert.assertXpathEvaluatesTo("1", "//Style[1]/PolyStyle/outline", document);
@@ -517,7 +517,7 @@ public class KMLTransformerTest extends WMSTestSupport {
         mapContent.setMapWidth(256);
         
         Document document = WMSTestSupport.transform(mapContent, transformer, false);
-        
+        print(document);
         assertEquals("kml", document.getDocumentElement().getNodeName());
         assertEquals(1, document.getElementsByTagName("Style").getLength());
         XPath xPath = XPathFactory.newInstance().newXPath();

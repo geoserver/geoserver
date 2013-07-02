@@ -32,7 +32,7 @@
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>kml</artifactId>
+   <artifactId>wms</artifactId>
    <version>2.4-SNAPSHOT</version>
   </dependency>
   <dependency>

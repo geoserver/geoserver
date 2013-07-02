@@ -28,6 +28,11 @@
       <constructor-arg ref="wms" />
     </bean>
 
+    <!--  icon service -->
+    <bean id="kmlIconService" class="org.geoserver.kml.icons.IconService">
+      <constructor-arg ref="catalog"/>
+    </bean>
+
 	<!-- http url mapping -->
 	<bean id="kmlURLMapping" 
 		class="org.geoserver.ows.OWSHandlerMapping">
@@ -35,6 +40,7 @@
 		<property name="alwaysUseFullPath" value="true"/>
 		<property name="mappings">
 			<props>
+                <prop key="/kml/icon/**/*">kmlIconService</prop>
 				<prop key="/kml">dispatcher</prop>
 				<prop key="/kml/*">dispatcher</prop>
 			</props>

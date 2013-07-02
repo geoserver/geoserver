@@ -68,7 +68,7 @@ public abstract class IconProperties {
                 if(workspace!=null) {
                     styleName=workspace+"/"+styleName;
                 }
-                return ResponseUtils.buildURL(baseURL, "rest/render/kml/icon/" + styleName, styleProperties, URLType.RESOURCE);
+                return ResponseUtils.buildURL(baseURL, "kml/icon/" + styleName, styleProperties, URLType.RESOURCE);
             }
             
             @Override

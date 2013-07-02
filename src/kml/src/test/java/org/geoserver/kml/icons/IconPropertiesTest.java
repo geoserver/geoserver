@@ -161,7 +161,7 @@ public class IconPropertiesTest extends IconTestSupport {
         graphic2.setRotation(toExpression("22.5 * field"));
         final Style style = styleFromRules(catchAllRule(symbolizer1, symbolizer2));
         IconProperties prop = IconPropertyExtractor.extractProperties(style, fieldIs1);
-        assertEquals("http://example.com/rest/render/kml/icon/test?0.0.0=&0.0.0.rotation=45.0&0.0.1=&0.0.1.rotation=22.5", prop.href("http://example.com/", null, "test"));
+        assertEquals("http://example.com/kml/icon/test?0.0.0=&0.0.0.rotation=45.0&0.0.1=&0.0.1.rotation=22.5", prop.href("http://example.com/", null, "test"));
         assertEquals(0.0d, prop.getHeading(), 0.0001);
     }
     @Test
@@ -174,7 +174,7 @@ public class IconPropertiesTest extends IconTestSupport {
         graphic2.setRotation(Expression.NIL);
         final Style style = styleFromRules(catchAllRule(symbolizer1, symbolizer2));
         IconProperties prop = IconPropertyExtractor.extractProperties(style, fieldIs1);
-        assertEquals("http://example.com/rest/render/kml/icon/test?0.0.0=&0.0.0.rotation=45.0&0.0.1=", prop.href("http://example.com/", null, "test"));
+        assertEquals("http://example.com/kml/icon/test?0.0.0=&0.0.0.rotation=45.0&0.0.1=", prop.href("http://example.com/", null, "test"));
         assertNull(prop.getHeading());
     }
     @Test
@@ -184,19 +184,19 @@ public class IconPropertiesTest extends IconTestSupport {
         graphic.setRotation(toExpression("45 * field"));
         final Style s = styleFromRules(catchAllRule(symbolizer));
         IconProperties prop = IconPropertyExtractor.extractProperties(s, fieldIs1);
-        assertEquals("http://example.com/rest/render/kml/icon/test?0.0.0=&0.0.0.rotation=45.0", prop.href("http://example.com/", null, "test"));
+        assertEquals("http://example.com/kml/icon/test?0.0.0=&0.0.0.rotation=45.0", prop.href("http://example.com/", null, "test"));
         assertEquals(0.0d, prop.getHeading(), 0.0001);
     }
 
     protected String encode(Style style, SimpleFeature feature) {
         return IconPropertyExtractor.extractProperties(style, feature)
                 .href("http://example.com/", null, "test")
-                .replace("http://example.com/rest/render/kml/icon/test?", "");
+                .replace("http://example.com/kml/icon/test?", "");
     }
 
     protected String encode(String workspace, Style style, SimpleFeature feature) {
         return IconPropertyExtractor.extractProperties(style, feature)
                 .href("http://example.com/", workspace, "test")
-                .replace("http://example.com/rest/render/kml/icon/"+workspace+"/test?", "");
+                .replace("http://example.com/kml/icon/"+workspace+"/test?", "");
     }
 }

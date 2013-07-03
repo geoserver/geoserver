@@ -582,24 +582,36 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
         OutputStream os = null;
         byte[] buffer = new byte[4096];
         int read;
-        
-        try {
+
+        try{
+            // Get the resource
             if (scope == null) {
                 is = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);    
-            }
-            else {
+                if(is==null) {
+                    throw new IOException("Could not load " + resource + " from scope "+
+                            Thread.currentThread().getContextClassLoader().toString()+".");
+                }
+            } else {
                 is = scope.getResourceAsStream(resource);
+                if(is==null) {
+                    throw new IOException("Could not load " + resource + " from scope "+
+                                 scope.toString()+".");
+                }
             }
-            
-            os = new FileOutputStream(target);
-            while((read = is.read(buffer)) > 0)
-                os.write(buffer, 0, read);
-        } catch (FileNotFoundException targetException) {
-            throw new IOException("Can't write to file " + target.getAbsolutePath() + 
-                    ". Check write permissions on target folder for user " + System.getProperty("user.name"));
-        } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "Error trying to copy logging configuration file", e);
+    
+            // Write it to the target
+            try {
+                os = new FileOutputStream(target);
+                while((read = is.read(buffer)) > 0)
+                    os.write(buffer, 0, read);
+            } catch (FileNotFoundException targetException) {
+                throw new IOException("Can't write to file " + target.getAbsolutePath() + 
+                        ". Check write permissions on target folder for user " + System.getProperty("user.name"));
+            } catch (IOException e) {
+                LOGGER.log(Level.WARNING, "Error trying to copy logging configuration file", e);
+            }
         } finally {
+            // Clean up
             try {
                 if(is != null){
                     is.close();

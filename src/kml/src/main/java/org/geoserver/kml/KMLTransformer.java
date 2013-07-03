@@ -6,7 +6,10 @@ package org.geoserver.kml;
 
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,6 +23,7 @@ import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.geotools.map.RasterLayer;
 import org.geotools.renderer.lite.RendererUtilities;
+import org.geotools.styling.Style;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
 import org.xml.sax.ContentHandler;
@@ -47,8 +51,11 @@ public class KMLTransformer extends TransformerBase {
 
     private WMS wms;
 
+    private final Map<String, Style> embeddedIcons;
+
     public KMLTransformer(WMS wms) {
         this.wms = wms;
+        this.embeddedIcons = new HashMap<String, Style>();
         setNamespaceDeclarationEnabled(false);
     }
 
@@ -198,7 +205,7 @@ public class KMLTransformer extends TransformerBase {
 
                 if (useVector) {
                     // encode
-                    KMLVectorTransformer tx = createVectorTransformer(mapContent, layer, lookAtOpts);
+                    KMLVectorTransformer tx = createVectorTransformer(mapContent, layer, lookAtOpts, embeddedIcons);
                     initTransformer(tx);
                     tx.setScaleDenominator(scaleDenominator);
                     tx.createTranslator(contentHandler).encode(features);
@@ -227,8 +234,7 @@ public class KMLTransformer extends TransformerBase {
          * @param lookAtOpts
          * @return
          */
-        protected KMLRasterTransformer createRasterTransfomer(WMSMapContent mapContent,
-                KMLLookAt lookAtOpts) {
+        protected KMLRasterTransformer createRasterTransfomer(WMSMapContent mapContent, KMLLookAt lookAtOpts) {
             return new KMLRasterTransformer(wms, mapContent, lookAtOpts);
         }
 
@@ -239,9 +245,12 @@ public class KMLTransformer extends TransformerBase {
          * @param lookAtOpts
          * @return
          */
-        protected KMLVectorTransformer createVectorTransformer(WMSMapContent mapContent,
-                Layer layer, KMLLookAt lookAtOpts) {
+        protected KMLVectorTransformer createVectorTransformer(WMSMapContent mapContent, Layer layer, KMLLookAt lookAtOpts) {
             return new KMLVectorTransformer(wms, mapContent, layer, lookAtOpts);
+        }
+
+        protected KMLVectorTransformer createVectorTransformer(WMSMapContent mapContent, Layer layer, KMLLookAt lookAtOpts, Map<String, Style> iconStyles) {
+            return new KMLVectorTransformer(wms, mapContent, layer, lookAtOpts, iconStyles);
         }
 
         /**
@@ -339,5 +348,9 @@ public class KMLTransformer extends TransformerBase {
                 return true; // return vector
             }
         }
+    }
+
+    public Map<String, Style> getEmbeddedIcons() {
+        return Collections.unmodifiableMap(embeddedIcons);
     }
 }

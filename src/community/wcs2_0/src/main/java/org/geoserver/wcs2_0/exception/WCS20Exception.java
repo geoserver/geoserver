@@ -70,6 +70,11 @@ public class WCS20Exception extends OWS20Exception {
     public WCS20Exception(String message, OWS20Exception.OWSExceptionCode code, String locator) {
         super(message, code, locator);
     }
+    
+    public WCS20Exception(String message, OWS20Exception.OWSExceptionCode code, String locator, Throwable cause) {
+        super(message, code, locator);
+        initCause(cause);
+    }
 
     public WCS20Exception(String message, Throwable cause) {
         super(message, cause);

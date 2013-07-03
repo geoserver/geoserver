@@ -29,8 +29,12 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertXpathEvaluatesTo("wcs__BlueMarble", "//wcs:CoverageDescription//wcs:CoverageId", dom);
         assertXpathEvaluatesTo("3", "count(//wcs:CoverageDescription//gmlcov:rangeType//swe:DataRecord//swe:field)", dom);
         assertXpathEvaluatesTo("image/tiff", "//wcs:CoverageDescriptions//wcs:CoverageDescription[1]//wcs:ServiceParameters//wcs:nativeFormat", dom);
-        
+        // enforce pixel center
+        assertXpathEvaluatesTo("-43.0020833333312 146.5020833333281", "//wcs:CoverageDescriptions//wcs:CoverageDescription[1]//gml:domainSet//gml:RectifiedGrid//gml:origin//gml:Point//gml:pos", dom);
+
     }
+    
+    
     
     @Test
     public void testDescribeCoverageMultiband() throws Exception {

@@ -17,8 +17,6 @@
 package org.geoserver.wcs2_0.kvp;
 
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import net.opengis.wcs20.ExtensionItemType;

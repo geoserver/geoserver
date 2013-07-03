@@ -16,17 +16,19 @@ import java.util.logging.Logger;
 
 import javax.media.jai.Interpolation;
 
-import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.platform.OWS20Exception;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wcs2_0.WCS20Const;
+import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.factory.GeoTools;
 import org.geotools.factory.Hints;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
@@ -40,7 +42,6 @@ import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.Format;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.coverage.grid.GridEnvelope;
-import org.opengis.coverage.grid.GridGeometry;
 import org.opengis.geometry.BoundingBox;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterDescriptor;
@@ -279,17 +280,15 @@ public class RequestUtils {
         readParametersClone[readParameters.length] = pv;
         return readParametersClone;
     }
-    
+
     /**
      * This utility method can be used to read a small sample {@link GridCoverage2D} for inspection 
      * from the specified {@link CoverageInfo}.
      * 
-     * @param ci the {@link CoverageInfo} that contains the description of the GeoServer coverage to read from.
+     * @param reader the {@link GridCoverage2DReader} that we'll read the coverage from
      * @return
      */
-    static public GridCoverage2D readSampleGridCoverage(CoverageInfo ci)throws Exception {
-        final GridCoverage2DReader reader = getCoverageReader(ci);
-        
+    static public GridCoverage2D readSampleGridCoverage(GridCoverage2DReader reader)throws Exception {
         //
         // Now reading a fake small GridCoverage just to retrieve meta
         // information about bands:
@@ -331,7 +330,19 @@ public class RequestUtils {
         parameters.put(AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString(), new GridGeometry2D(testRange, testEnvelope));
 
         // try to read this coverage
-        return (GridCoverage2D) reader.read(CoverageUtils.getParameters(readParams, parameters, true));          
+        return (GridCoverage2D) reader.read(CoverageUtils.getParameters(readParams, parameters, true));     
+    }
+    
+    /**
+     * This utility method can be used to read a small sample {@link GridCoverage2D} for inspection 
+     * from the specified {@link CoverageInfo}.
+     * 
+     * @param ci the {@link CoverageInfo} that contains the description of the GeoServer coverage to read from.
+     * @return
+     */
+    static public GridCoverage2D readSampleGridCoverage(CoverageInfo ci)throws Exception {
+        final GridCoverage2DReader reader = getCoverageReader(ci);
+        return readSampleGridCoverage(reader);
     }
 
     /**
@@ -352,5 +363,32 @@ public class RequestUtils {
         }
         final GridCoverage2DReader reader = (GridCoverage2DReader) reader_;
         return reader;
+    }
+    
+    /**
+     * Makes sure the version is present and supported
+     * @param version
+     */
+    public static void checkVersion(String version) {
+        if(version == null) {
+            throw new WCS20Exception("Missing version", OWS20Exception.OWSExceptionCode.MissingParameterValue, version);
+        }
+
+        if ( ! WCS20Const.V201.equals(version) && ! WCS20Const.V20.equals(version)) {
+            throw new WCS20Exception("Could not understand version:" + version);
+        }
+    }
+
+    /**
+     * Makes sure the service is present and supported
+     * @param serviceName
+     */
+    public static void checkService(String serviceName) {
+        if( serviceName == null ) {
+            throw new WCS20Exception("Missing service name", OWS20Exception.OWSExceptionCode.MissingParameterValue, "service");
+        }
+        if( ! "WCS".equals(serviceName)) {
+            throw new WCS20Exception("Error in service name, epected value: WCS", OWS20Exception.OWSExceptionCode.InvalidParameterValue, serviceName);
+        }
     }
 }

@@ -7,6 +7,7 @@ package org.geoserver.wcs2_0.response;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.measure.unit.Unit;
@@ -18,7 +19,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.MetadataMap;
 import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
@@ -31,16 +32,22 @@ import org.geoserver.wcs2_0.util.NCNameResourceCodec;
 import org.geoserver.wcs2_0.util.RequestUtils;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.GridEnvelope2D;
+import org.geotools.coverage.grid.GridGeometry2D;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.util.logging.Logging;
-import org.geotools.xml.transform.Translator;
+import org.geotools.wcs.v2_0.WCS;
 import org.opengis.coverage.SampleDimension;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.datum.PixelInCell;
 import org.vfny.geoserver.wcs.WcsException;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
+import org.xml.sax.helpers.NamespaceSupport;
 
 /**
  * Based on the <code>org.geotools.xml.transform</code> framework, does the
@@ -65,16 +72,16 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
      * @param mimemapper 
      */
     public WCS20DescribeCoverageTransformer(WCSInfo wcs, Catalog catalog, CoverageResponseDelegateFinder responseFactory,EnvelopeAxesLabelsMapper envelopeDimensionsMapper, MIMETypeMapper mimemapper) {
-
         super(envelopeDimensionsMapper);
         this.wcs = wcs;
         this.catalog = catalog;
         this.responseFactory = responseFactory;
-        this.mimemapper=mimemapper;
+        this.mimemapper = mimemapper;
         setNamespaceDeclarationEnabled(false);
+        setIndentation(2);
     }
 
-    public Translator createTranslator(ContentHandler handler) {
+    public WCS20DescribeCoverageTranslator createTranslator(ContentHandler handler) {
         return new WCS20DescribeCoverageTranslator(handler);
     }
 
@@ -101,17 +108,13 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
 
             this.request = (DescribeCoverageType) o;
 
-            final AttributesImpl attributes = WCS20Const.getDefaultNamespaces();
-            attributes.addAttribute("", "xmlns:swe", "xmlns:swe", "", "http://www.opengis.net/swe/2.0");
-            attributes.addAttribute("", "xmlns:wcsgs", "xmlns:wcsgs", "", "http://www.geoserver.org/wcsgs/2.0");
-
             // collect coverages
-            List<LayerInfo> coverages = new ArrayList<LayerInfo>();
+            List<CoverageInfo> coverages = new ArrayList<CoverageInfo>();
 
             for (String encodedCoverageId : (List<String>)request.getCoverageId()) {
                 LayerInfo layer = NCNameResourceCodec.getCoverage(catalog, encodedCoverageId);
                 if(layer != null) {
-                    coverages.add(layer);
+                    coverages.add((CoverageInfo) layer.getResource());
                 } else {
                     // if we get there there is an internal error, the coverage existence is
                     // checked before creating the transformer
@@ -120,46 +123,67 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
                             		"checked earlier in the request lifecycle");
                 }
             }
+            
+            // register namespaces provided by extended capabilities
+            NamespaceSupport namespaces = getNamespaceSupport();
+            namespaces.declarePrefix("swe", "http://www.opengis.net/swe/2.0");
+            namespaces.declarePrefix("wcsgs", "http://www.geoserver.org/wcsgs/2.0");
+            for (WCS20CoverageMetadataProvider cp : extensions) {
+                cp.registerNamespaces(namespaces);
+            }
+
 
             // ok: build the response
+            final AttributesImpl attributes = WCS20Const.getDefaultNamespaces();
+            helper.registerNamespaces(getNamespaceSupport(), attributes);
+            String location = buildSchemaLocation(request.getBaseUrl(), WCS.NAMESPACE, "http://schemas.opengis.net/wcs/2.0/wcsDescribeCoverage.xsd");
+            attributes.addAttribute("", "xsi:schemaLocation", "xsi:schemaLocation", "", location);
             start("wcs:CoverageDescriptions", attributes);
-            for (LayerInfo layer : coverages) {
-                CoverageInfo ci = catalog.getCoverageByName(layer.prefixedName());
+            for (CoverageInfo ci : coverages) {
                 try {
-                    handleCoverageDescription(ci);
+                    String encodedId = NCNameResourceCodec.encode(ci);
+                    handleCoverageDescription(encodedId, ci);
                 } catch (Exception e) {
                     throw new RuntimeException("Unexpected error occurred during describe coverage xml encoding", e);
                 }
             }
             end("wcs:CoverageDescriptions");
         }
+        
+        String buildSchemaLocation(String schemaBaseURL, String... locations) {
+            for (WCS20CoverageMetadataProvider cp : extensions) {
+                locations = helper.append(locations, cp.getSchemaLocations(schemaBaseURL));
+            }
+
+            return helper.buildSchemaLocation(locations);
+        }
+
 
         /**
          * 
          * @param ci
          */
-        private void handleCoverageDescription(CoverageInfo ci) {
+        public void handleCoverageDescription(String encodedId, CoverageInfo ci) {
 
-            // read a small portion of the underlying coverage
-            GridCoverage2D gc2d = null;
-            try {
-                String encodedId = NCNameResourceCodec.encode(ci);
-                
-                // see if we have to handle time
-                TimeDimensionHelper timeHelper = null;
-                DimensionInfo time = ci.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
-                if(time != null && time.isEnabled()) {
-                    timeHelper = new TimeDimensionHelper(time, RequestUtils.getCoverageReader(ci), encodedId);
+             try {
+                // see if we have to handle time, elevation and additional dimensions
+                WCSDimensionsHelper dimensionsHelper = null;
+                MetadataMap metadata = ci.getMetadata();
+                Map<String, DimensionInfo> dimensionsMap = WCSDimensionsHelper.getDimensionsFromMetadata(metadata);
+
+                // Setup a dimension helper in case we found some dimensions for that coverage
+                if (!dimensionsMap.isEmpty()) {
+                    dimensionsHelper = new WCSDimensionsHelper(dimensionsMap, RequestUtils.getCoverageReader(ci), encodedId);
                 }
-                
-                gc2d = RequestUtils.readSampleGridCoverage(ci);
-                if (gc2d == null) {
+
+                GridCoverage2DReader reader = (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
+                if (reader== null) {
                     throw new WCS20Exception("Unable to read sample coverage for " + ci.getName());
                 }
                 // get the crs and look for an EPSG code
-                final CoordinateReferenceSystem crs = gc2d.getCoordinateReferenceSystem2D();
+                final CoordinateReferenceSystem crs = reader.getCoordinateReferenceSystem();
                 List<String> axesNames = envelopeDimensionsMapper.getAxesNames(
-                        gc2d.getEnvelope2D(), true);
+                        reader.getOriginalEnvelope(), true);
 
                 // lookup EPSG code
                 Integer EPSGCode = null;
@@ -189,32 +213,40 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
                 for (String axisName : axesNames) {
                     builder.append(axisName).append(" ");
                 }
-                if(timeHelper != null) {
+                if (dimensionsHelper != null && dimensionsHelper.getElevationDimension() != null) {
+                    builder.append("elevation ");
+                }
+                
+                if (dimensionsHelper != null && dimensionsHelper.getTimeDimension() != null) {
                     builder.append("time ");
                 }
                 String axesLabel = builder.substring(0, builder.length() - 1);
-                handleBoundedBy(gc2d, axisSwap, srsName, axesLabel, timeHelper);
+                GeneralEnvelope envelope = reader.getOriginalEnvelope();
+                handleBoundedBy(envelope, axisSwap, srsName, axesLabel, dimensionsHelper);
 
                 // coverage id
                 element("wcs:CoverageId", encodedId);
 
                 // handle coverage function
-                handleCoverageFunction(gc2d, axisSwap);
+                handleCoverageFunction((GridEnvelope2D) reader.getOriginalGridRange(), axisSwap);
 
                 // metadata
-                handleMetadata(gc2d, timeHelper);
+                handleMetadata(ci, dimensionsHelper);
 
                 // handle domain
                 builder.setLength(0);
-                axesNames = envelopeDimensionsMapper.getAxesNames(gc2d.getEnvelope2D(), false);
+                axesNames = envelopeDimensionsMapper.getAxesNames(reader.getOriginalEnvelope(), false);
                 for (String axisName : axesNames) {
                     builder.append(axisName).append(" ");
                 }
                 axesLabel = builder.substring(0, builder.length() - 1);
-                handleDomainSet(gc2d, encodedId, srsName, axisSwap);
+                GridGeometry2D gg = new GridGeometry2D(reader.getOriginalGridRange(), 
+                        reader.getOriginalGridToWorld(PixelInCell.CELL_CENTER), reader.getCoordinateReferenceSystem());
+                handleDomainSet(gg, 2, encodedId, srsName, axisSwap);
 
                 // handle rangetype
-                handleRangeType(gc2d);
+                GridSampleDimension[] sampleDimensions = getSampleDimensions(reader);
+                handleRangeType(sampleDimensions);
 
                 // service parameters
                 handleServiceParameters(ci);
@@ -222,11 +254,20 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
                 end("wcs:CoverageDescription");
             } catch (Exception e) {
                 throw new WcsException(e);
+            } 
+        }
+
+        private GridSampleDimension[] getSampleDimensions(GridCoverage2DReader reader) throws Exception {
+            GridCoverage2D coverage = null;
+            try {
+                coverage = RequestUtils.readSampleGridCoverage(reader);
+                return coverage.getSampleDimensions();
             } finally {
-                if (gc2d != null) {
-                    CoverageCleanerCallback.addCoverages(gc2d);
+                if(coverage != null) {
+                    CoverageCleanerCallback.addCoverages(coverage);
                 }
             }
+            
         }
 
         private void handleServiceParameters(CoverageInfo ci) throws IOException {
@@ -271,12 +312,9 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
          * 
          * @param gc2d the {@link GridCoverage2D} for which to encode the RangeType.
          */
-        public void handleRangeType(GridCoverage2D gc2d) {
+        public void handleRangeType(final SampleDimension[] bands) {
             start("gmlcov:rangeType");
             start("swe:DataRecord");
-            
-            // get bands
-            final SampleDimension[] bands= gc2d.getSampleDimensions();
             
             // handle bands
             for(SampleDimension sd:bands){

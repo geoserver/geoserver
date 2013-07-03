@@ -4,12 +4,15 @@
  */
 package org.geoserver.wcs2_0;
 
+import static org.geoserver.wcs2_0.util.RequestUtils.*;
+
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
 import net.opengis.wcs20.DescribeCoverageType;
+import net.opengis.wcs20.DescribeEOCoverageSetType;
 import net.opengis.wcs20.GetCapabilitiesType;
 import net.opengis.wcs20.GetCoverageType;
 
@@ -17,6 +20,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.OWS20Exception;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
@@ -114,23 +118,9 @@ public class DefaultWebCoverageService20 implements WebCoverageService20 {
         return new GetCoverage(getServiceInfo(), catalog,envelopeAxesMapper).run(request);
     }
 
-    private void checkVersion(String version) {
-        if(version == null) {
-            throw new WCS20Exception("Missing version", OWS20Exception.OWSExceptionCode.MissingParameterValue, version);
-        }
-
-        if ( ! WCS20Const.V201.equals(version) && ! WCS20Const.V20.equals(version)) {
-            throw new WCS20Exception("Could not understand version:" + version);
-        }
-    }
-
-    private void checkService(String serviceName) {
-        if( serviceName == null ) {
-            throw new WCS20Exception("Missing service name", OWS20Exception.OWSExceptionCode.MissingParameterValue, "service");
-        }
-        if( ! "WCS".equals(serviceName)) {
-            throw new WCS20Exception("Error in service name, epected value: WCS", OWS20Exception.OWSExceptionCode.InvalidParameterValue, serviceName);
-        }
+    @Override
+    public TransformerBase describeEOCoverageSet(DescribeEOCoverageSetType request) {
+        throw new ServiceException("WCS-EO extension is not installed, thus the operation is not available");
     }
 
 }

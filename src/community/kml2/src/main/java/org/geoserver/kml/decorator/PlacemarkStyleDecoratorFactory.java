@@ -14,8 +14,12 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.kml.KmlEncodingContext;
+import org.geoserver.kml.icons.IconProperties;
+import org.geoserver.kml.icons.IconPropertyExtractor;
+import org.geoserver.kml.icons.IconPropertyInjector;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
@@ -101,10 +105,10 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
                         setDefaultIconStyle(style, sf, context);
                     }
                 } else {
-                    // the XML schema allows only one icon style, follow painter's model
-                    // and set the last one
-                    PointSymbolizer lastPointSymbolizer = (PointSymbolizer) points.get(points.size() - 1);
-                    setIconStyle(style, lastPointSymbolizer, sf, context);
+                    org.geotools.styling.Style wholeStyle = context.getCurrentLayer().getStyle();
+                    IconProperties properties = 
+                        IconPropertyExtractor.extractProperties(wholeStyle, sf);
+                    setIconStyle(style, wholeStyle, properties, context);
                 }
 
                 // handle label styles
@@ -198,6 +202,77 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
             Icon icon = is.createAndSetIcon();
             icon.setHref(imageURL);
             icon.setViewBoundScale(1);
+        }
+
+        /**
+         * Encodes a KML IconStyle from a point style and symbolizer.
+         */
+        protected void setIconStyle(Style style, org.geotools.styling.Style sld, 
+            IconProperties properties, KmlEncodingContext context) {
+            if (context.isLiveIcons() || properties.isExternal()) {
+                setLiveIconStyle(style, sld, properties, context);
+            } else {
+                setInlineIconStyle(style, sld, properties, context);
+            }
+        }
+
+        protected void setInlineIconStyle(Style style, org.geotools.styling.Style sld, 
+            IconProperties properties, KmlEncodingContext context) {
+            final String name = properties.getIconName(sld);
+
+            Map<String,org.geotools.styling.Style> iconStyles = context.getIconStyles();
+            if (!iconStyles.containsKey(name)) {
+                final org.geotools.styling.Style injectedStyle = 
+                    IconPropertyInjector.injectProperties(sld, properties.getProperties());
+
+                iconStyles.put(name, injectedStyle);
+            }
+            final Double scale = properties.getScale();
+            final String path = "icons/" + name + ".png";
+
+            IconStyle is = style.createAndSetIconStyle();
+            if (properties.getHeading() != null) {
+                is.setHeading(0.0);
+            }
+            if (scale != null) {
+                is.setScale(scale);
+            }
+
+            Icon icon = is.createAndSetIcon();
+            icon.setHref(path);
+        }
+
+        protected void setLiveIconStyle(Style style, org.geotools.styling.Style sld, 
+            IconProperties properties, KmlEncodingContext context) {
+            final Double opacity = properties.getOpacity();
+            final Double scale = properties.getScale();
+            final Double heading = properties.getHeading();
+
+            IconStyle is = style.createAndSetIconStyle();
+            
+            if (opacity != null) {
+                is.setColor(colorToHex(Color.WHITE, opacity));
+            }
+            
+            if (scale != null) {
+                is.setScale(scale);
+            }
+            
+            if (heading != null) {
+                is.setHeading(heading);
+            }
+            
+            // Get the name of the workspace
+            
+            WorkspaceInfo ws = 
+                context.getWms().getCatalog().getStyleByName(sld.getName()).getWorkspace();
+            String wsName = null;
+            if(ws!=null) wsName = ws.getName();
+
+            
+            Icon icon = is.createAndSetIcon();
+            icon.setHref(properties.href(context.getMapContent().getRequest().getBaseUrl(), 
+                wsName, sld.getName()));
         }
 
         /**
@@ -304,99 +379,6 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
                 ls.setColor("ffaaaaaa");
                 ls.setWidth(1);
             }
-        }
-
-        /**
-         * Encodes a KML IconStyle from a point style and symbolizer.
-         */
-        private void setIconStyle(Style style, PointSymbolizer symbolizer, SimpleFeature sf,
-                KmlEncodingContext context) {
-            IconStyle is = style.createAndSetIconStyle();
-            is.setColorMode(ColorMode.NORMAL);
-            is.setScale(1);
-            Icon icon = is.createAndSetIcon();
-
-            // default icon
-            String iconHref = null;
-
-            // try to get a color if any
-            Mark mark = SLD.mark(symbolizer);
-            if (mark != null && mark.getFill() != null) {
-                Fill fill = mark.getFill();
-                Double opacity = fill.getOpacity().evaluate(sf, Double.class);
-                if (opacity == null || Double.isNaN(opacity)) {
-                    // default to full opacity
-                    opacity = 1.0;
-                }
-
-                if (fill != null) {
-                    final Color color = (Color) fill.getColor().evaluate(sf, Color.class);
-                    is.setColor(colorToHex(color, opacity));
-                }
-            }
-
-            // if the point symbolizer uses an external graphic use it
-            ExternalGraphic graphic = getExternalGraphic(symbolizer);
-            if (graphic != null) {
-                try {
-                    // Before doing anything else (that might mess with "$", "{",
-                    // or "}" characters), we evaluate the string as an expression.
-                    URL graphicLocation = graphic.getLocation();
-                    iconHref = graphicLocation.toString();
-                    iconHref = evaluateDynamicSymbolizer(iconHref, sf);
-                    graphicLocation = new URL(iconHref);
-                    String graphicProtocol = new URL(iconHref).getProtocol();
-
-                    // special handling of local disk references
-                    if ("file".equals(graphicProtocol)) {
-                        // it is a local file, reference locally from "styles" directory
-                        File file = DataUtilities.urlToFile(graphicLocation);
-                        File styles = null;
-                        File graphicFile = null;
-                        if (file.isAbsolute()) {
-                            GeoServerDataDirectory dataDir = (GeoServerDataDirectory) GeoServerExtensions
-                                    .bean("dataDirectory");
-                            // we grab the canonical path to make sure we can compare them, no
-                            // relative parts in them and so on
-                            styles = dataDir.findOrCreateStyleDir().getCanonicalFile();
-                            graphicFile = file.getCanonicalFile();
-                            file = graphicFile;
-                            if (file.getAbsolutePath().startsWith(styles.getAbsolutePath())) {
-                                // ok, part of the styles directory, extract only the relative path
-                                file = new File(file.getAbsolutePath().substring(
-                                        styles.getAbsolutePath().length() + 1));
-                            } else {
-                                // we wont' transform this, other dirs are not published
-                                file = null;
-                            }
-                        }
-
-                        // rebuild the icon href accordingly
-                        if (file != null && styles != null) {
-                            iconHref = ResponseUtils.buildURL(context.getRequest().getBaseUrl(),
-                                    "styles/" + styles.toURI().relativize(graphicFile.toURI()),
-                                    null, URLType.RESOURCE);
-                        } else {
-                            // we don't know how to handle this then...
-                            iconHref = null;
-                        }
-                    } else if (!("http".equals(graphicProtocol) || "https".equals(graphicProtocol))) {
-                        // TODO: should we check for http:// and use it
-                        // directly?
-                        // other protocols?
-                        iconHref = null;
-                    }
-
-                } catch (Exception e) {
-                    LOGGER.log(Level.WARNING, "Error processing external graphic:" + graphic, e);
-                }
-            }
-
-            if (iconHref == null) {
-                iconHref = "http://maps.google.com/mapfiles/kml/pal4/icon25.png";
-            }
-            icon.setHref(iconHref);
-            icon.setViewBoundScale(1);
         }
 
         private ExternalGraphic getExternalGraphic(PointSymbolizer symbolizer) {

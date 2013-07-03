@@ -24,6 +24,7 @@ import org.geoserver.wms.featureinfo.FeatureTemplate;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
+import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
 import org.geotools.util.Converters;
 import org.opengis.feature.simple.SimpleFeature;
@@ -82,6 +83,9 @@ public class KmlEncodingContext {
 
     protected int layerIndex;
 
+    protected boolean liveIcons;
+    protected Map<String, Style> iconStyles;
+
     public KmlEncodingContext(WMSMapContent mapContent, WMS wms, boolean kmz) {
         this.mapContent = mapContent;
         this.request = mapContent.getRequest();
@@ -96,6 +100,8 @@ public class KmlEncodingContext {
         this.networkLinksFormat = KMLMapOutputFormat.NL_KML_MIME_TYPE.equals(request.getFormat()) || KMZMapOutputFormat.NL_KMZ_MIME_TYPE.equals(request.getFormat());
         this.kmz = kmz;
         this.service = wms.getServiceInfo();
+        this.liveIcons = true;
+        this.iconStyles = new HashMap<String,Style>();
     }
     
     /**
@@ -368,7 +374,17 @@ public class KmlEncodingContext {
     public int getCurrentLayerIndex() {
         return layerIndex;
     }
-    
-    
+
+    public boolean isLiveIcons() {
+        return liveIcons;
+    }
+
+    public void setLiveIcons(boolean liveIcons) {
+        this.liveIcons = liveIcons;
+    }
+
+    public Map<String, Style> getIconStyles() {
+        return iconStyles;
+    }
 
 }

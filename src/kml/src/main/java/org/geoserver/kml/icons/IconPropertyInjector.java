@@ -91,26 +91,18 @@ final public class IconPropertyInjector {
         final ExternalGraphic[] externalGraphics;
         final Mark[] marks;
         final Symbol[] symbols = new Symbol[0];
-        final Expression opacity;
-        final Expression size;
-        final Expression rotation;
-        
-        if (shouldUpdate(key + ".opacity", original.getOpacity())) {
+        Expression opacity = original.getOpacity(); 
+        Expression size = original.getSize();
+        Expression rotation = original.getRotation();
+
+        if (shouldUpdate(key + ".opacity", opacity)) {
             opacity = getLiteral(key + ".opacity");
-        } else {
-            opacity = null;
         }
-        
-        if (shouldUpdate(key + ".rotation", original.getRotation())) {
-            rotation = getLiteral(key + ".rotation");
-        } else {
-            rotation = null;
+        if (shouldUpdate(key + ".rotation", rotation)) {
+            rotation =  getLiteral(key + ".rotation");
         }
-        
-        if (shouldUpdate(key + ".size", original.getSize())) {
+        if (shouldUpdate(key + ".size", size)) {
             size = getLiteral(key + ".size");
-        } else {
-            size = null;
         }
         
         if (!original.graphicalSymbols().isEmpty()) {

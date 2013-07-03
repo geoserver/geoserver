@@ -13,16 +13,19 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.ExternalGraphic;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Graphic;
 import org.geotools.styling.Mark;
 import org.geotools.styling.PointSymbolizer;
 import org.geotools.styling.Rule;
+import org.geotools.styling.SLD;
 import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
 import org.junit.Test;
 import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory;
 
 public class IconPropertyInjectorTest extends IconTestSupport{
 
@@ -274,4 +277,23 @@ public class IconPropertyInjectorTest extends IconTestSupport{
         }
     }
 
+    @Test
+    public void testGraphicFallbacks() {
+        FilterFactory ff = CommonFactoryFinder.getFilterFactory();
+        Style style = 
+            SLD.createPointStyle("circle", Color.RED, Color.yellow, 0.5f, 10f);
+        Graphic g = SLD.graphic(SLD.pointSymbolizer(style));
+        g.setRotation(ff.literal(45));
+        g.setOpacity(ff.literal(0.5));
+
+        Map<String,String> props = new HashMap<String, String>();
+        props.put("0.0.0", "");
+
+        style = IconPropertyInjector.injectProperties(style, props);
+        g = SLD.graphic(SLD.pointSymbolizer(style));
+
+        assertEquals(10.0, g.getSize().evaluate(null, Double.class), 0.1);
+        assertEquals(45.0, g.getRotation().evaluate(null, Double.class), 0.1);
+        assertEquals(0.5, g.getOpacity().evaluate(null, Double.class), 0.1);
+    }
 }

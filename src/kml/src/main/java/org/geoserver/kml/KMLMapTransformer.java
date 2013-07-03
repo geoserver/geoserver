@@ -8,9 +8,7 @@ import static org.geoserver.ows.util.ResponseUtils.appendPath;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 
 import java.awt.Color;
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,40 +19,38 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
-import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.kml.icons.IconProperties;
+import org.geoserver.kml.icons.IconPropertyExtractor;
+import org.geoserver.kml.icons.IconPropertyInjector;
 import org.geoserver.ows.URLMangler.URLType;
-import org.geoserver.ows.util.ResponseUtils;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.featureinfo.FeatureHeightTemplate;
 import org.geoserver.wms.featureinfo.FeatureTemplate;
-import org.geotools.data.DataUtilities;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.type.DateUtil;
 import org.geotools.map.Layer;
 import org.geotools.renderer.style.ExpressionExtractor;
 import org.geotools.renderer.style.LineStyle2D;
-import org.geotools.renderer.style.MarkStyle2D;
 import org.geotools.renderer.style.PolygonStyle2D;
 import org.geotools.renderer.style.SLDStyleFactory;
-import org.geotools.renderer.style.Style2D;
 import org.geotools.renderer.style.TextStyle2D;
-import org.geotools.styling.ExternalGraphic;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.LineSymbolizer;
-import org.geotools.styling.Mark;
 import org.geotools.styling.PointSymbolizer;
 import org.geotools.styling.PolygonSymbolizer;
 import org.geotools.styling.Rule;
 import org.geotools.styling.SLD;
+import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
 import org.geotools.styling.TextSymbolizer;
 import org.geotools.util.NumberRange;
@@ -95,6 +91,8 @@ public abstract class KMLMapTransformer extends KMLTransformerBase {
     static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.kml");
 
     private static final FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
+    
+    private final Map<String, Style> iconStyles;
 
     /**
      * The scale denominator.
@@ -186,10 +184,11 @@ public abstract class KMLMapTransformer extends KMLTransformerBase {
 
     }
 
-    public KMLMapTransformer(WMS wms, WMSMapContent mapContent, Layer mapLayer) {
+    public KMLMapTransformer(WMS wms, WMSMapContent mapContent, Layer mapLayer, Map<String, Style> iconStyles) {
         this.wms = wms;
         this.mapContent = mapContent;
         this.mapLayer = mapLayer;
+        this.iconStyles = iconStyles;
 
         this.vectorNameDescription = KMLUtils.getKMAttr(mapContent.getRequest(), wms);
     }
@@ -330,14 +329,13 @@ public abstract class KMLMapTransformer extends KMLTransformerBase {
          * @param symbolizers
          *            a list of Symbolizers which apply to the feature.
          */
-        protected void encodeStyle(SimpleFeature feature, List<Symbolizer> symbolizers) {
+        protected void encodeStyle(SimpleFeature feature, Style style, List<Symbolizer> symbolizers) {
             if (!symbolizers.isEmpty()) {
                 // start the style
                 start("Style");
 
-                Symbolizer[] symbolizerArray = (Symbolizer[]) symbolizers
-                        .toArray(new Symbolizer[symbolizers.size()]);
-                encodeStyle(feature, symbolizerArray);
+                Symbolizer[] symbolizerArray = (Symbolizer[]) symbolizers.toArray(new Symbolizer[symbolizers.size()]);
+                encodeStyle(feature, style, symbolizerArray);
 
                 // end the style
                 end("Style");
@@ -403,7 +401,7 @@ public abstract class KMLMapTransformer extends KMLTransformerBase {
         /**
          * Encodes the provided set of symbolizers as KML styles.
          */
-        protected void encodeStyle(SimpleFeature feature, Symbolizer[] symbolizers) {
+        protected void encodeStyle(SimpleFeature feature, Style wholeStyle,  Symbolizer[] symbolizers) {
             try {
                 /**
                  * This causes some performance overhead, but we should separate out repeated styles
@@ -438,16 +436,8 @@ public abstract class KMLMapTransformer extends KMLTransformerBase {
                     // to click on
                     encodeDefaultIconStyle(feature);
                 } else {
-                    Iterator<PointSymbolizer> iter = iconStyles.iterator();
-                    while (iter.hasNext()) {
-                        PointSymbolizer sym = (PointSymbolizer) iter.next();
-                        try {
-                            Style2D style = styleFactory.createStyle(feature, sym, scaleRange);
-                            encodePointStyle(feature, style, sym);
-                        } catch (IllegalArgumentException iae) {
-                            LOGGER.fine(iae.getMessage() + " for " + sym.toString());
-                        }
-                    }
+                    IconProperties properties = IconPropertyExtractor.extractProperties(wholeStyle, feature);
+                    encodeIconStyle(wholeStyle, properties);
                 }
 
                 // Labels / Text
@@ -501,6 +491,67 @@ public abstract class KMLMapTransformer extends KMLTransformerBase {
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "Error occurred during style encoding", e);
             }
+        }
+
+        private void encodeIconStyle(Style style, IconProperties properties) {
+            if (iconStyles == null || properties.isExternal()) {
+                encodeLiveIconStyle(style, properties);
+            } else {
+                encodeInlineIconStyle(style, properties);
+            }
+        }
+
+        private void encodeInlineIconStyle(Style style, IconProperties properties) {
+            final String name = properties.getIconName(style);
+            if (!iconStyles.containsKey(name)) {
+                final Style injectedStyle = IconPropertyInjector.injectProperties(style, properties.getProperties());
+                iconStyles.put(name, injectedStyle);
+            }
+            final Double scale = properties.getScale();
+            final String path = "icons/" + name + ".png";
+            start("IconStyle");
+            if (properties.getHeading() != null) {
+                element("heading", "0.0");
+            }
+            if (scale != null) {
+                element("scale", String.valueOf(scale));
+            }
+
+            start("Icon");
+            element("href", path);
+            end("Icon");
+            end("IconStyle");
+        }
+
+        private void encodeLiveIconStyle(Style style, IconProperties properties) {
+            final Double opacity = properties.getOpacity();
+            final Double scale = properties.getScale();
+            final Double heading = properties.getHeading();
+            
+            start("IconStyle");
+            if (opacity != null) {
+                String mask = String.format("#%02xffffff", Math.round(opacity * 255));
+                element("colorMask", mask);
+            }
+            
+            if (scale != null) {
+                element("scale", String.valueOf(scale));
+            }
+            
+            if (heading != null) {
+                element("heading", String.valueOf(heading));
+            }
+            
+            // Get the name of the workspace
+            WorkspaceInfo ws = wms.getCatalog().getStyleByName(style.getName()).getWorkspace();
+            String wsName = null;
+            if(ws!=null) wsName = ws.getName();
+            
+            start("Icon");
+            element("href", properties.href(mapContent.getRequest().getBaseUrl(), wsName, style.getName()));
+            end("Icon");
+            
+            end("IconStyle");
         }
 
         /**
@@ -603,109 +654,6 @@ public abstract class KMLMapTransformer extends KMLTransformerBase {
             }
 
             end("LineStyle");
-        }
-
-        /**
-         * Encodes a KML IconStyle from a point style and symbolizer.
-         */
-        protected void encodePointStyle(SimpleFeature feature, Style2D style,
-                PointSymbolizer symbolizer) {
-            start("IconStyle");
-
-            if (style instanceof MarkStyle2D) {
-                Mark mark = SLD.mark(symbolizer);
-
-                if (mark != null) {
-                    Double opacity = mark.getFill().getOpacity().evaluate(feature, Double.class);
-
-                    if (opacity == null || Double.isNaN(opacity)) {
-                        // default to full opacity
-                        opacity = 1.0;
-                    }
-
-                    if (mark.getFill() != null) {
-                        final Color color = (Color) mark.getFill().getColor()
-                                .evaluate(feature, Color.class);
-                        encodeColor(color, opacity);
-                    }
-                }
-            }
-
-            element("colorMode", "normal");
-
-            // placemark icon
-            String iconHref = null;
-
-            // if the point symbolizer uses an external graphic use it
-            if ((symbolizer.getGraphic() != null)
-                    && (symbolizer.getGraphic().getExternalGraphics() != null)
-                    && (symbolizer.getGraphic().getExternalGraphics().length > 0)) {
-                ExternalGraphic graphic = symbolizer.getGraphic().getExternalGraphics()[0];
-
-                try {
-                    // Before doing anything else (that might mess with "$", "{",
-                    // or "}" characters), we evaluate the string as an expression.
-                     URL graphicLocation = graphic.getLocation();
-                     iconHref = graphicLocation.toString();
-                     iconHref = evaluateDynamicSymbolizer(iconHref, feature);
-                     graphicLocation = new URL(iconHref);
-                     String graphicProtocol = new URL(iconHref).getProtocol();
-                    
-                    if ("file".equals(graphicProtocol)) {
-                        // it is a local file, reference locally from "styles"
-                        // directory
-                        File file = DataUtilities.urlToFile(graphicLocation);
-                        File styles = null;
-                        File graphicFile = null;
-                        if (file.isAbsolute()) {
-                            GeoServerDataDirectory dataDir = (GeoServerDataDirectory) GeoServerExtensions
-                                    .bean("dataDirectory");
-                            // we grab the canonical path to make sure we can compare them, no
-                            // relative parts in them and so on
-                            styles = dataDir.findOrCreateStyleDir().getCanonicalFile();
-                            graphicFile = file.getCanonicalFile();
-                            file = graphicFile;
-                            if (file.getAbsolutePath().startsWith(styles.getAbsolutePath())) {
-                                // ok, part of the styles directory, extract only the relative path
-                                file = new File(file.getAbsolutePath().substring(
-                                        styles.getAbsolutePath().length() + 1));
-                            } else {
-                                // we wont' transform this, other dirs are not published
-                                file = null;
-                            }
-                        }
-
-                        // rebuild the icon href accordingly
-                        if (file != null && styles != null) {
-                            iconHref = ResponseUtils.buildURL(mapContent.getRequest().getBaseUrl(),
-                                    "styles/" + styles.toURI().relativize(graphicFile.toURI()),
-                                    null, URLType.RESOURCE);
-                        } else {
-                            // we don't know how to handle this then...
-                            iconHref = null;
-                        }
-                    } else if (!("http".equals(graphicProtocol) || "https".equals(graphicProtocol))) {
-                        // TODO: should we check for http:// and use it
-                        // directly?
-                        // other protocols?
-                        iconHref = null;
-                    }
-
-                } catch (Exception e) {
-                    LOGGER.log(Level.WARNING, "Error processing external graphic:" + graphic, e);
-                }
-            }
-
-            if (iconHref == null) {
-                iconHref = "http://maps.google.com/mapfiles/kml/pal4/icon25.png";
-            }
-
-            start("Icon");
-
-            element("href", iconHref);
-            end("Icon");
-
-            end("IconStyle");
         }
 
         /**
@@ -854,15 +802,14 @@ public abstract class KMLMapTransformer extends KMLTransformerBase {
             }
         }
 
-        protected void encodePlacemark(SimpleFeature feature, List<Symbolizer> symbolizers, KMLLookAt lookAtOps) {
-            encodePlacemark(feature, symbolizers, null, lookAtOps);
+        protected void encodePlacemark(SimpleFeature feature, Style style, List<Symbolizer> symbolizers, KMLLookAt lookAtOps) {
+            encodePlacemark(feature, style, symbolizers, null, lookAtOps);
         }
 
         /**
          * Encodes a KML Placemark from a feature and optional name.
          */
-        protected void encodePlacemark(SimpleFeature feature, List<Symbolizer> symbolizers,
-                Geometry markGeometry, KMLLookAt lookAtOps) {
+        protected void encodePlacemark(SimpleFeature feature, Style style, List<Symbolizer> symbolizers, Geometry markGeometry, KMLLookAt lookAtOps) {
             final Geometry geometry = featureGeometry(feature);
             final Coordinate centroid = geometryCentroid(geometry);
             final Envelope bounds = geometry.getEnvelopeInternal();
@@ -927,7 +874,7 @@ public abstract class KMLMapTransformer extends KMLTransformerBase {
                 LOGGER.log(Level.FINE, "", e);
             }
 
-            encodeStyle(feature, symbolizers);
+            encodeStyle(feature, style, symbolizers);
 
             // encode extended data (kml 2.2)
             encodeExtendedData(feature);

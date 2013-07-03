@@ -382,14 +382,30 @@ public class SystemTestData extends CiteTestData {
      * @param scope Class from which to load sld resource from.
      */
     public void addStyle(String name, String filename, Class scope, Catalog catalog) throws IOException {
+        addStyle((WorkspaceInfo)null, name, filename, scope, catalog);
+    }
+
+    /**
+     * Adds a style to the test setup.
+     * <p>
+     * To set up the style a file named <tt>filename</tt> is copied from the classpath relative
+     * to the <tt>scope</tt> parameter.
+     * </p>
+     * @param ws The workspace to include the style in.
+     * @param name The name of the style.
+     * @param filename The filename to copy from classpath.
+     * @param scope Class from which to load sld resource from.
+     */
+    public void addStyle(WorkspaceInfo ws, String name, String filename, Class scope, Catalog catalog) throws IOException {
         File styles = catalog.getResourceLoader().findOrCreateDirectory(data, "styles");
 
         catalog.getResourceLoader().copyFromClassPath(filename, new File(styles, filename), scope);
 
-        StyleInfo style = catalog. getStyleByName(name);
+        StyleInfo style = catalog.getStyleByName(ws, name);
         if (style == null) {
             style = catalog.getFactory().createStyle();
             style.setName(name);
+            style.setWorkspace(ws);
         }
         style.setFilename(filename);
         if (style.getId() == null) {
@@ -399,6 +415,7 @@ public class SystemTestData extends CiteTestData {
             catalog.save(style);
         }
     }
+    
     /**
      * Adds a vector layer to the catalog setup.
      * <p>

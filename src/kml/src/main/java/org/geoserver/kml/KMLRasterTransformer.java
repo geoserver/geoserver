@@ -20,6 +20,7 @@ import org.geotools.map.Layer;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.FeatureTypeStyle;
+import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
 import org.geotools.xml.transform.Translator;
 import org.opengis.feature.simple.SimpleFeature;
@@ -75,7 +76,7 @@ public class KMLRasterTransformer extends KMLMapTransformer {
     }
 
     public KMLRasterTransformer(WMS wms, WMSMapContent mapContent, KMLLookAt lookAtOpts) {
-        super(wms, mapContent, null);
+        super(wms, mapContent, null, null);
         this.lookAtOpts = lookAtOpts;
         setNamespaceDeclarationEnabled(false);
     }
@@ -194,7 +195,7 @@ public class KMLRasterTransformer extends KMLMapTransformer {
     
                             List<Symbolizer> symbolizers = filterSymbolizers(ftr, fts);
                             if (symbolizers.size() != 0)
-                                encodeStyle(ftr, symbolizers);
+                                encodeStyle(ftr, layer.getStyle(), symbolizers);
     
                             // if this is a multipolygon, get the largest polygon
                             // that intersects the AOI
@@ -216,7 +217,7 @@ public class KMLRasterTransformer extends KMLMapTransformer {
                             if (g1.isEmpty())
                                 continue;
                             centroidGeom = g1.getCentroid();
-                            encodePlacemark(ftr, symbolizers, centroidGeom, lookAtOpts);
+                            encodePlacemark(ftr, layer.getStyle(), symbolizers, centroidGeom, lookAtOpts);
                         }
                     }
                     finally {

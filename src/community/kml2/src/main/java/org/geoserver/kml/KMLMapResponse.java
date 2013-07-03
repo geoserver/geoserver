@@ -4,17 +4,21 @@
  */
 package org.geoserver.kml;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map.Entry;
+import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import javax.imageio.ImageIO;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import org.geoserver.kml.icons.IconRenderer;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMS;
@@ -24,6 +28,7 @@ import org.geoserver.wms.map.PNGMapResponse;
 import org.geoserver.wms.map.RenderedImageMap;
 import org.geoserver.wms.map.RenderedImageMapOutputFormat;
 import org.geotools.map.Layer;
+import org.geotools.styling.Style;
 
 import de.micromata.opengis.kml.v_2_2_0.Kml;
 
@@ -117,6 +122,22 @@ public class KMLMapResponse extends AbstractMapResponse {
             zip.closeEntry();
         }
         zip.closeEntry();// close the images/ folder
+
+        //write out the icons
+        Map<String, Style> embeddedIcons = context.getIconStyles();
+        if (!embeddedIcons.isEmpty()) {
+            ZipEntry icons = new ZipEntry("icons/");
+            zip.putNextEntry(icons);
+            for (Map.Entry<String, Style> namedStyle : embeddedIcons.entrySet()) {
+                final String name = namedStyle.getKey();
+                final Style style = namedStyle.getValue();
+                BufferedImage icon = IconRenderer.renderIcon(style);
+                entry = new ZipEntry("icons/" + name + ".png");
+                zip.putNextEntry(entry);
+                ImageIO.write(icon, "PNG", zip);
+            }
+            zip.closeEntry();
+        }
 
         zip.finish();
         zip.flush();

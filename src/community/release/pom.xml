@@ -91,12 +91,12 @@
    <dependency>
      <groupId>org.geoserver.csw</groupId>
      <artifactId>csw-api</artifactId>
-     <version>1.0</version>
+     <version>${project.version}</version>
    </dependency> 
    <dependency>
      <groupId>org.geoserver.csw</groupId>
      <artifactId>csw-core</artifactId>
-     <version>1.0</version>
+     <version>${project.version}</version>
    </dependency> 
  </dependencies>
  <build>

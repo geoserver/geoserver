@@ -88,6 +88,16 @@
      <artifactId>libjpeg-turbo</artifactId>
      <version>${project.version}</version>
    </dependency> 
+   <dependency>
+     <groupId>org.geoserver.csw</groupId>
+     <artifactId>csw-api</artifactId>
+     <version>1.0</version>
+   </dependency> 
+   <dependency>
+     <groupId>org.geoserver.csw</groupId>
+     <artifactId>csw-core</artifactId>
+     <version>1.0</version>
+   </dependency> 
  </dependencies>
  <build>
   <plugins>

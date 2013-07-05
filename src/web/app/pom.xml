@@ -924,11 +924,11 @@
        </dependencies>
     </profile>
     <profile>
-       <id>kml2</id>
+       <id>kml-old</id>
        <dependencies>  
          <dependency>
            <groupId>org.geoserver.community</groupId>
-           <artifactId>kml2</artifactId>
+           <artifactId>kml-old</artifactId>
            <version>${project.version}</version>
          </dependency>
       </dependencies>

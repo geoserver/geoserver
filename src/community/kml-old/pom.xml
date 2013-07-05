@@ -13,9 +13,9 @@
   </parent>
 
   <groupId>org.geoserver.community</groupId>
-  <artifactId>kml2</artifactId>
+  <artifactId>kml-old</artifactId>
   <packaging>jar</packaging>
-  <name>Next generation of KML support for GeoServer</name>
+  <name>Old KML support for GeoServer</name>
 
   <dependencies>
 
@@ -78,6 +78,11 @@
       <groupId>org.easymock</groupId>
       <artifactId>easymockclassextension</artifactId>
       <version>2.3</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-library</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

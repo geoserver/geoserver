@@ -104,7 +104,7 @@ final public class IconPropertyInjector {
         if (shouldUpdate(key + ".size", size)) {
             size = getLiteral(key + ".size");
         }
-        
+
         if (!original.graphicalSymbols().isEmpty()) {
             List<Mark> markList = new ArrayList<Mark>();
             List<ExternalGraphic> externalGraphicList = new ArrayList<ExternalGraphic>();

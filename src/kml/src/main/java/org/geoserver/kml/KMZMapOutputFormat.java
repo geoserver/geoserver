@@ -5,14 +5,15 @@
 package org.geoserver.kml;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 
-import org.geoserver.kml.KMZMapResponse.KMZMap;
+import org.geoserver.kml.builder.StreamingKMLBuilder;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.AbstractMapOutputFormat;
+
+import de.micromata.opengis.kml.v_2_2_0.Kml;
 
 /**
  * Handles a GetMap request that spects a map in KMZ format.
@@ -31,12 +32,16 @@ public class KMZMapOutputFormat extends AbstractMapOutputFormat {
     /**
      * Official KMZ mime type
      */
-    static final String MIME_TYPE = "application/vnd.google-earth.kmz";
+    public static final String MIME_TYPE = "application/vnd.google-earth.kmz";
+    
+    public static final String NL_KMZ_MIME_TYPE = KMZMapOutputFormat.MIME_TYPE + ";mode=networklink";
 
-    public static final String[] OUTPUT_FORMATS = { MIME_TYPE,
+    public static final String[] OUTPUT_FORMATS = { MIME_TYPE, /* NL_KMZ_MIME_TYPE , */
             "application/vnd.google-earth.kmz+xml", "kmz", "application/vnd.google-earth.kmz xml" };
 
     private WMS wms;
+
+    private StreamingKMLBuilder builder = new StreamingKMLBuilder();
 
     public KMZMapOutputFormat(WMS wms) {
         super(MIME_TYPE, OUTPUT_FORMATS);
@@ -53,17 +58,16 @@ public class KMZMapOutputFormat extends AbstractMapOutputFormat {
      *            when producing the map.
      * @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent)
      */
-    public KMZMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
-        KMLTransformer transformer = new KMLTransformer(wms);
-        transformer.setKmz(true);
-        Charset encoding = wms.getCharSet();
-        transformer.setEncoding(encoding);
-        // TODO: use GeoServer.isVerbose() to determine if we should indent?
-        transformer.setIndentation(3);
+    public KMLMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
+        // initialize the kml encoding context
+        KmlEncodingContext context = new KmlEncodingContext(mapContent, wms, true);
 
-        KMZMap map = new KMZMap(mapContent, transformer, MIME_TYPE);
+        // build the kml document
+        Kml kml = builder.buildKMLDocument(context);
+
+        // return the map
+        KMLMap map = new KMLMap(mapContent, context, kml, MIME_TYPE);
         map.setContentDispositionHeader(mapContent, ".kmz");
-
         return map;
     }
 

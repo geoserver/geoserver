@@ -4,10 +4,12 @@
  */
 package org.geoserver.gwc;
 
-import static com.google.common.base.Preconditions.*;
-import static com.google.common.base.Throwables.*;
-import static org.geowebcache.grid.GridUtil.*;
-import static org.geowebcache.seed.GWCTask.TYPE.*;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Throwables.getRootCause;
+import static com.google.common.base.Throwables.propagate;
+import static org.geowebcache.grid.GridUtil.findBestMatchingGrid;
+import static org.geowebcache.seed.GWCTask.TYPE.TRUNCATE;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,6 +53,7 @@ import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
+import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.map.RenderedImageMap;
@@ -173,11 +176,16 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
     private ApplicationContext applicationContext;
     
+    private JDBCPasswordEncryptionHelper passwordHelper;
+
+    private JDBCConfigurationStorage jdbcConfigurationStorage;
+    
     public GWC(final GWCConfigPersister gwcConfigPersister, final StorageBroker sb,
             final TileLayerDispatcher tld, final GridSetBroker gridSetBroker,
             final TileBreeder tileBreeder, final DiskQuotaMonitor monitor, 
             final Dispatcher owsDispatcher, final Catalog rawCatalog,
-            final DefaultStorageFinder storageFinder) {
+            final DefaultStorageFinder storageFinder,
+            final JDBCConfigurationStorage jdbcConfigurationStorage) {
         
         this.gwcConfigPersister = gwcConfigPersister;
         this.tld = tld;
@@ -196,6 +204,8 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         
         this.lockProvider = new ConfigurableLockProvider();
         updateLockProvider(getConfig().getLockProviderName());
+        
+        this.jdbcConfigurationStorage = jdbcConfigurationStorage;
     }
 
     /**
@@ -987,20 +997,13 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     }
 
     public void saveDiskQuotaConfig(DiskQuotaConfig config, JDBCConfiguration jdbcConfig) throws ConfigurationException, IOException, InterruptedException {
+        // save the configuration
         checkArgument(isDiskQuotaAvailable(), "DiskQuota is not enabled");
         DiskQuotaMonitor monitor = getDiskQuotaMonitor();
         monitor.saveConfig(config);
+        jdbcConfigurationStorage.saveDiskQuotaConfig(config, jdbcConfig);
         
-        File configFile = new File(storageFinder.getDefaultPath(), "geowebcache-diskquota-jdbc.xml");
-        if("JDBC".equals(config.getQuotaStore())) {
-            JDBCConfiguration.store(jdbcConfig, configFile);
-        } else {
-            if(configFile.exists() && !configFile.delete()) {
-                log.log(Level.SEVERE, "Failed to delete " + configFile 
-                        + ", this might cause misbehavior on GeoServer restart");
-            }
-        }
-        // GeoServer own GWC is wired up to use the ConfigurableQuotaStoreProvider
+        // GeoServer own GWC is wired up to use the ConfigurableQuotaStoreProvider, force it to reload
         ConfigurableQuotaStoreProvider provider = (ConfigurableQuotaStoreProvider) monitor.getQuotaStoreProvider();
         provider.reloadQuotaStore();
         
@@ -1850,16 +1853,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     }
 
     public JDBCConfiguration getJDBCDiskQuotaConfig() throws IOException, org.geowebcache.config.ConfigurationException {
-        File configFile = new File(storageFinder.getDefaultPath(), "geowebcache-diskquota-jdbc.xml");
-        if (!configFile.exists()) {
-            return null;
-        }
-        try {
-            return JDBCConfiguration.load(configFile);
-        } catch(Exception e) {
-            log.log(Level.SEVERE, "Failed to load geowebcache-diskquota-jdbc.xml", e);
-            return null;
-        }
+        return jdbcConfigurationStorage.getJDBCDiskQuotaConfig();
     }
     
     /**
@@ -1870,19 +1864,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * @throws ConfigurationException
      */
     public void testQuotaConfiguration(JDBCConfiguration jdbcConfiguration) throws ConfigurationException, IOException {
-        JDBCQuotaStoreFactory factory = GeoServerExtensions.bean(JDBCQuotaStoreFactory.class);
-        QuotaStore qs = null;
-        try {
-            qs = factory.getJDBCStore(applicationContext, jdbcConfiguration);
-        } finally {
-            if(qs != null) {
-                try {
-                    qs.close();
-                } catch (Exception e) {
-                    log.log(Level.FINE, "Failed to dispose test quota store", e);
-                }
-            }
-        }
+        jdbcConfigurationStorage.testQuotaConfiguration(jdbcConfiguration);
     }
 
     @Override

@@ -47,6 +47,7 @@ public class JDBCConnectionPoolPanel extends Panel {
         add(user);
 
         PasswordTextField password = new PasswordTextField("jdbcPassword", new PropertyModel<String>(model, "password"));
+        password.setResetPassword(false);
         add(password);
         
         TextField<Integer> minConnections = new TextField<Integer>("jdbcMinConnections", new PropertyModel<Integer>(model, "minConnections"));

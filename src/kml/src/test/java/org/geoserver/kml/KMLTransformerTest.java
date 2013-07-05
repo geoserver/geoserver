@@ -7,6 +7,8 @@ package org.geoserver.kml;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -25,6 +27,7 @@ import java.util.zip.ZipFile;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
 import org.custommonkey.xmlunit.XMLAssert;
@@ -51,6 +54,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 public class KMLTransformerTest extends WMSTestSupport {
     WMSMapContent mapContent;
@@ -83,7 +87,9 @@ public class KMLTransformerTest extends WMSTestSupport {
         testData.addStyle("BridgeSubdir","bridgesubdir.sld",getClass(), catalog);
         testData.addStyle("dynamicsymbolizer","dynamicsymbolizer.sld",getClass(), catalog);
         testData.addStyle("relativeds","relativeds.sld",getClass(), catalog);
+        testData.addStyle("big-local-image","/big-local-image.sld",getClass(), catalog);
         testData.copyTo(getClass().getResourceAsStream("bridge.png"), "styles/bridge.png");
+        testData.copyTo(getClass().getResourceAsStream("/planet-42.png"), "styles/planet-42.png");
         File stylesDir = new File(testData.getDataDirectoryRoot(),"styles");
         new File(stylesDir,"graphics").mkdir();
         testData.copyTo(getClass().getResourceAsStream("bridge.png"), "styles/graphics/bridgesubdir.png");
@@ -454,7 +460,7 @@ public class KMLTransformerTest extends WMSTestSupport {
         assertEquals("kml", document.getDocumentElement().getNodeName());
         assertEquals(3, document.getElementsByTagName("Style").getLength());
         XMLAssert.assertXpathEvaluatesTo("0", "count(//Style[1]/IconStyle/Icon/color)", document);
-        XMLAssert.assertXpathEvaluatesTo("http://maps.google.com/mapfiles/kml/pal4/icon25.png",
+        XMLAssert.assertXpathEvaluatesTo("http://localhost:8080/geoserver/kml/icon/allsymbolizers?0.0.0=",
                 "//Style[1]/IconStyle/Icon/href", document);
         XMLAssert.assertXpathEvaluatesTo("b24d4dff", "//Style[1]/PolyStyle/color", document);
         XMLAssert.assertXpathEvaluatesTo("1", "//Style[1]/PolyStyle/outline", document);
@@ -498,6 +504,26 @@ public class KMLTransformerTest extends WMSTestSupport {
         assertEquals(1, document.getElementsByTagName("Style").getLength());
         XMLAssert.assertXpathEvaluatesTo("http://localhost:8080/geoserver/styles/icons/Cam%20Stream",
                 "//Style[1]/IconStyle/Icon/href", document);
+    }
+    
+    @Test
+    public void testExternalImageSize() throws Exception {
+        KMLTransformer transformer = new KMLTransformer(getWMS());
+        mapContent.removeLayer(mapContent.layers().get(0));
+        mapContent.addLayer(createMapLayer(MockData.STREAMS, "big-local-image"));
+        mapContent.getViewport().setBounds(new ReferencedEnvelope(-180, 0, -90, 90,
+                DefaultGeographicCRS.WGS84));
+        mapContent.setMapHeight(256);
+        mapContent.setMapWidth(256);
+        
+        Document document = WMSTestSupport.transform(mapContent, transformer, false);
+        print(document);
+        assertEquals("kml", document.getDocumentElement().getNodeName());
+        assertEquals(1, document.getElementsByTagName("Style").getLength());
+        XPath xPath = XPathFactory.newInstance().newXPath();
+        Double scale = (Double)xPath.evaluate("//Style[1]/IconStyle/scale",
+                document.getDocumentElement(), XPathConstants.NUMBER);
+        assertThat(scale, closeTo(42d/16d, 0.01));
     }
 
     @Test

@@ -10,11 +10,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -29,6 +31,11 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
+import javax.xml.namespace.QName;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XMLAssert;
@@ -42,9 +49,15 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.kvp.FormatOptionsKvpParser;
 import org.geoserver.ows.util.KvpUtils;
+import org.geoserver.wms.GetMapRequest;
+import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Test;
+import org.springframework.util.xml.SimpleNamespaceContext;
 import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
@@ -68,7 +81,10 @@ public class KMLReflectorTest extends WMSTestSupport {
         testData.addStyle("BridgeSubdir", "bridgesubdir.sld", getClass(), catalog);
         testData.addStyle("dynamicsymbolizer", "dynamicsymbolizer.sld", getClass(), catalog);
         testData.addStyle("relativeds", "relativeds.sld", getClass(), catalog);
+        testData.addStyle("big-local-image","big-local-image.sld",getClass(), catalog);
+        testData.addStyle("big-mark","big-mark.sld",getClass(), catalog);
         testData.copyTo(getClass().getResourceAsStream("bridge.png"), "styles/bridge.png");
+        testData.copyTo(getClass().getResourceAsStream("planet-42.png"), "styles/planet-42.png");
         File stylesDir = new File(testData.getDataDirectoryRoot(), "styles");
         new File(stylesDir, "graphics").mkdir();
         testData.copyTo(getClass().getResourceAsStream("bridge.png"),
@@ -486,7 +502,7 @@ public class KMLReflectorTest extends WMSTestSupport {
         XMLAssert.assertXpathEvaluatesTo("1", "count(//kml:Placemark[1]/kml:Style)", doc);
         XMLAssert.assertXpathEvaluatesTo("0",
                 "count(//kml:Placemark[1]/kml:Style/kml:IconStyle/kml:Icon/kml:color)", doc);
-        XMLAssert.assertXpathEvaluatesTo("http://maps.google.com/mapfiles/kml/pal4/icon25.png",
+        XMLAssert.assertXpathEvaluatesTo("http://localhost:8080/geoserver/kml/icon/allsymbolizers?0.0.0=",
                 "//kml:Placemark[1]/kml:Style/kml:IconStyle/kml:Icon/kml:href", doc);
         XMLAssert.assertXpathEvaluatesTo("b24d4dff",
                 "//kml:Placemark[1]/kml:Style/kml:PolyStyle/kml:color", doc);
@@ -692,6 +708,104 @@ public class KMLReflectorTest extends WMSTestSupport {
         // print(document);
 
         assertEquals(3, document.getElementsByTagName("Placemark").getLength());
+    }
+
+    @Test
+    public void testExternalImageSize() throws Exception {
+        GetMapRequest req = createGetMapRequest(MockData.STREAMS);
+        req.setWidth(256);
+        req.setHeight(256);
+
+        WMSMapContent mapContent = new WMSMapContent(req);
+        mapContent.addLayer(createMapLayer(MockData.STREAMS, "big-local-image"));
+        
+        mapContent.getViewport().setBounds(new ReferencedEnvelope(-180, 0, -90, 90,
+                DefaultGeographicCRS.WGS84));
+        mapContent.setMapHeight(256);
+        mapContent.setMapWidth(256);
+
+        KMLMapOutputFormat of = new KMLMapOutputFormat(getWMS());
+        KMLMap map = of.produceMap(mapContent);
+
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        new KMLEncoder().encode(map.getKml(), bout);
+
+        Document document = dom(new ByteArrayInputStream(bout.toByteArray()));
+       
+        assertEquals("kml", document.getDocumentElement().getNodeName());
+        assertEquals(1, document.getElementsByTagName("Style").getLength());
+
+        XMLAssert.assertXpathExists("//kml:IconStyle/kml:scale", document);
+        
+        XPath xPath = XPathFactory.newInstance().newXPath();
+        initXPath(xPath);
+
+        Double scale = (Double)xPath.evaluate("//kml:IconStyle/kml:scale",
+                document.getDocumentElement(), XPathConstants.NUMBER);
+        assertEquals(42d/16d, scale, 0.01);
+    }
+
+    @Test
+    public void testKmzEmbededPointImageSize() throws Exception {
+        
+        WMSMapContent mapContent = createMapContext(MockData.POINTS, "big-mark");
+        
+        File temp = File.createTempFile("test", "kmz", new File("target"));
+        temp.delete();
+        temp.mkdir();
+        temp.deleteOnExit();
+        
+        File zip = new File(temp, "kmz.zip");
+        zip.deleteOnExit();
+
+        // create hte map producer
+        KMZMapOutputFormat mapProducer = new KMZMapOutputFormat(getWMS());
+        KMLMap map = mapProducer.produceMap(mapContent);
+
+        FileOutputStream output = new FileOutputStream(zip);
+        new KMLMapResponse(new KMLEncoder(), getWMS()).write(map, output, null);
+
+        output.flush();
+        output.close();
+
+        assertTrue(zip.exists());
+
+        // unzip and test it
+        ZipFile zipFile = new ZipFile(zip);
+        
+        ZipEntry kmlEntry = zipFile.getEntry("wms.kml");
+        InputStream kmlStream = zipFile.getInputStream(kmlEntry);
+        
+        Document kmlResult = XMLUnit.buildTestDocument(new InputSource(kmlStream));
+        
+        Double scale = Double.parseDouble(XMLUnit.newXpathEngine().getMatchingNodes("(//kml:Style)[1]/kml:IconStyle/kml:scale", kmlResult).item(0).getTextContent());
+        assertEquals(49d/16d, scale, 0.01);
+        
+        zipFile.close();
+    }
+    
+    WMSMapContent createMapContext(QName layer, String style) throws Exception {
+
+        // create a map context
+        WMSMapContent mapContent = new WMSMapContent();
+        mapContent.addLayer(createMapLayer(layer, style));
+        mapContent.setMapHeight(256);
+        mapContent.setMapWidth(256);
+
+        GetMapRequest getMapRequest = createGetMapRequest(new QName[]{layer});
+        getMapRequest.setWidth(256);
+        getMapRequest.setHeight(256);
+        
+        mapContent.setRequest(getMapRequest);
+        mapContent.getViewport().setBounds(
+            new ReferencedEnvelope(-180,180,-90,90, DefaultGeographicCRS.WGS84));
+        return mapContent;
+    }
+
+    void initXPath(XPath xpath) {
+        SimpleNamespaceContext ctx = new SimpleNamespaceContext();
+        ctx.bindNamespaceUri("kml", "http://www.opengis.net/kml/2.2");
+        xpath.setNamespaceContext(ctx);
     }
 
     /**

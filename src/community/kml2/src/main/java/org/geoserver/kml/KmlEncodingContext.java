@@ -25,6 +25,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
 import org.geotools.util.Converters;
 import org.opengis.feature.simple.SimpleFeature;
@@ -84,6 +85,8 @@ public class KmlEncodingContext {
     protected int layerIndex;
 
     public final static ReferencedEnvelope WORLD_BOUNDS_WGS84 = new ReferencedEnvelope(-180, 180, -90, 90, DefaultGeographicCRS.WGS84);
+    protected boolean liveIcons;
+    protected Map<String, Style> iconStyles;
 
     public KmlEncodingContext(WMSMapContent mapContent, WMS wms, boolean kmz) {
         this.mapContent = mapContent;
@@ -99,6 +102,8 @@ public class KmlEncodingContext {
         this.networkLinksFormat = KMLMapOutputFormat.NL_KML_MIME_TYPE.equals(request.getFormat()) || KMZMapOutputFormat.NL_KMZ_MIME_TYPE.equals(request.getFormat());
         this.kmz = kmz;
         this.service = wms.getServiceInfo();
+        this.liveIcons = true;
+        this.iconStyles = new HashMap<String,Style>();
     }
     
     /**
@@ -405,7 +410,17 @@ public class KmlEncodingContext {
     public int getCurrentLayerIndex() {
         return layerIndex;
     }
-    
-    
+
+    public boolean isLiveIcons() {
+        return liveIcons;
+    }
+
+    public void setLiveIcons(boolean liveIcons) {
+        this.liveIcons = liveIcons;
+    }
+
+    public Map<String, Style> getIconStyles() {
+        return iconStyles;
+    }
 
 }

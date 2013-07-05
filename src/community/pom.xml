@@ -33,6 +33,7 @@
       <configuration>
         <descriptors>
           <descriptor>release/ext-authkey.xml</descriptor>
+          <descriptor>release/ext-csw.xml</descriptor>
           <descriptor>release/ext-ftp.xml</descriptor>
           <descriptor>release/ext-printing.xml</descriptor>
           <descriptor>release/ext-python.xml</descriptor>
@@ -145,6 +146,7 @@
       <id>communityRelease</id>
       <modules>
         <module>authkey</module>
+        <module>csw</module>
 	<module>dds</module>
         <module>printing</module>
         <module>release</module>

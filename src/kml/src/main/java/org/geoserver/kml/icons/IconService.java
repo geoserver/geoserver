@@ -32,7 +32,7 @@ public class IconService extends AbstractController {
 
     static Logger LOG = Logging.getLogger(IconService.class);
 
-    static Pattern URI = Pattern.compile("/icon/(?:(\\w+)/)?(\\w+)/?");
+    static Pattern URI = Pattern.compile("/icon/(?:([^/]+)/)?([^/]+)/?");
     
     private final Catalog catalog;
 

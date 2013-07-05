@@ -12,7 +12,6 @@ import java.util.Collections;
 
 import javax.imageio.ImageIO;
 
-import org.geoserver.kml.KMLTest;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.StyleFactory;
 import org.opengis.feature.type.Name;
@@ -58,7 +57,7 @@ public class IconRendererTest {
         assertEquals(size, img.getHeight());
         assertEquals(size, img.getWidth());
         
-        BufferedImage expected = ImageIO.read(KMLTest.class.getResource("circle-red-16-x4.png")); 
+        BufferedImage expected = ImageIO.read(getClass().getClassLoader().getResource("circle-red-16-x4.png")); 
         
         ImageAssert.assertEquals(expected, img, THRESHOLD);
     }
@@ -86,7 +85,7 @@ public class IconRendererTest {
         assertEquals(size, img.getHeight());
         assertEquals(size, img.getWidth());
         
-        BufferedImage expected = ImageIO.read(KMLTest.class.getResource("square-blue-16-x4.png")); 
+        BufferedImage expected = ImageIO.read(getClass().getClassLoader().getResource("square-blue-16-x4.png")); 
         
         ImageAssert.assertEquals(expected, img, THRESHOLD);
     }
@@ -116,7 +115,7 @@ public class IconRendererTest {
         assertEquals(size, img.getHeight());
         assertEquals(size, img.getWidth());
         
-        BufferedImage expected = ImageIO.read(KMLTest.class.getResource("square-blue-16-x4-45deg.png")); 
+        BufferedImage expected = ImageIO.read(getClass().getClassLoader().getResource("square-blue-16-x4-45deg.png")); 
         
         ImageAssert.assertEquals(expected, img, THRESHOLD);
     }
@@ -126,7 +125,7 @@ public class IconRendererTest {
         StyleFactory sfact =  CommonFactoryFinder.getStyleFactory();
         FilterFactory ffact =  CommonFactoryFinder.getFilterFactory();
         
-        GraphicalSymbol gs = sfact.createExternalGraphic(KMLTest.class.getResource("arrow-16.png"), "image/png");
+        GraphicalSymbol gs = sfact.createExternalGraphic(getClass().getClassLoader().getResource("arrow-16.png"), "image/png");
         
         Graphic g = sfact.graphic(Arrays.asList(gs), Expression.NIL, Expression.NIL, Expression.NIL, null, null);
         Symbolizer symb = sfact.pointSymbolizer(null, ffact.property(null), null, null, g);
@@ -141,7 +140,7 @@ public class IconRendererTest {
         assertEquals(size, img.getHeight());
         assertEquals(size, img.getWidth());
         
-        BufferedImage expected = ImageIO.read(KMLTest.class.getResource("arrow-16-x4.png")); 
+        BufferedImage expected = ImageIO.read(getClass().getClassLoader().getResource("arrow-16-x4.png")); 
         
         ImageAssert.assertEquals(expected, img, THRESHOLD);
     }
@@ -151,7 +150,7 @@ public class IconRendererTest {
         StyleFactory sfact =  CommonFactoryFinder.getStyleFactory();
         FilterFactory ffact =  CommonFactoryFinder.getFilterFactory();
         
-        GraphicalSymbol gs = sfact.createExternalGraphic(KMLTest.class.getResource("arrow-16.png"), "image/png");
+        GraphicalSymbol gs = sfact.createExternalGraphic(getClass().getClassLoader().getResource("arrow-16.png"), "image/png");
         
         Graphic g = sfact.graphic(Arrays.asList(gs), Expression.NIL, Expression.NIL, ffact.literal(45.0), null, null);
         Symbolizer symb = sfact.pointSymbolizer(null, ffact.property(null), null, null, g);
@@ -168,7 +167,7 @@ public class IconRendererTest {
         assertEquals(size, img.getHeight());
         assertEquals(size, img.getWidth());
         
-        BufferedImage expected = ImageIO.read(KMLTest.class.getResource("arrow-16-x4-45deg.png")); 
+        BufferedImage expected = ImageIO.read(getClass().getClassLoader().getResource("arrow-16-x4-45deg.png")); 
         
         ImageAssert.assertEquals(expected, img, THRESHOLD);
     }
@@ -178,7 +177,7 @@ public class IconRendererTest {
         StyleFactory sfact =  CommonFactoryFinder.getStyleFactory();
         FilterFactory ffact =  CommonFactoryFinder.getFilterFactory();
         
-        GraphicalSymbol gs = sfact.createExternalGraphic(KMLTest.class.getResource("planet-42.png"), "image/png");
+        GraphicalSymbol gs = sfact.createExternalGraphic(getClass().getClassLoader().getResource("planet-42.png"), "image/png");
         
         Graphic g = sfact.graphic(Arrays.asList(gs), Expression.NIL, Expression.NIL, Expression.NIL, null, null);
         Symbolizer symb = sfact.pointSymbolizer(null, ffact.property(null), null, null, g);
@@ -193,7 +192,7 @@ public class IconRendererTest {
         assertEquals(size, img.getHeight());
         assertEquals(size, img.getWidth());
         
-        BufferedImage expected = ImageIO.read(KMLTest.class.getResource("planet-42-x4.png"));
+        BufferedImage expected = ImageIO.read(getClass().getClassLoader().getResource("planet-42-x4.png"));
         
         ImageAssert.assertEquals(expected, img, THRESHOLD);
     }
@@ -203,7 +202,7 @@ public class IconRendererTest {
         StyleFactory sfact =  CommonFactoryFinder.getStyleFactory();
         FilterFactory ffact =  CommonFactoryFinder.getFilterFactory();
         
-        GraphicalSymbol gs = sfact.createExternalGraphic(KMLTest.class.getResource("planet-42.png"), "image/png");
+        GraphicalSymbol gs = sfact.createExternalGraphic(getClass().getClassLoader().getResource("planet-42.png"), "image/png");
         
         Graphic g = sfact.graphic(Arrays.asList(gs), Expression.NIL, ffact.literal(42), Expression.NIL, null, null);
         Symbolizer symb = sfact.pointSymbolizer(null, ffact.property(null), null, null, g);
@@ -218,7 +217,7 @@ public class IconRendererTest {
         assertEquals(size, img.getHeight());
         assertEquals(size, img.getWidth());
         
-        BufferedImage expected = ImageIO.read(KMLTest.class.getResource("planet-42-x4.png"));
+        BufferedImage expected = ImageIO.read(getClass().getClassLoader().getResource("planet-42-x4.png"));
         
         ImageAssert.assertEquals(expected, img, THRESHOLD);
     }
@@ -228,7 +227,7 @@ public class IconRendererTest {
         StyleFactory sfact =  CommonFactoryFinder.getStyleFactory();
         FilterFactory ffact =  CommonFactoryFinder.getFilterFactory();
         
-        GraphicalSymbol gs = sfact.createExternalGraphic(KMLTest.class.getResource("planet-42.png"), "image/png");
+        GraphicalSymbol gs = sfact.createExternalGraphic(getClass().getClassLoader().getResource("planet-42.png"), "image/png");
         
         Graphic g = sfact.graphic(Arrays.asList(gs), Expression.NIL, Expression.NIL, Expression.NIL, null, null);
         Symbolizer symb = sfact.pointSymbolizer(null, ffact.property(null), null, null, g);
@@ -243,7 +242,7 @@ public class IconRendererTest {
         assertEquals(size, img.getHeight());
         assertEquals(size, img.getWidth());
         
-        BufferedImage expected = ImageIO.read(KMLTest.class.getResource("planet-42-x4.png"));
+        BufferedImage expected = ImageIO.read(getClass().getClassLoader().getResource("planet-42-x4.png"));
         
         ImageAssert.assertEquals(expected, img, THRESHOLD);
     }

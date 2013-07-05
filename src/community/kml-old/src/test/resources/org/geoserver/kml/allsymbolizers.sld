@@ -46,7 +46,7 @@
         </PolygonSymbolizer>
         <TextSymbolizer>
 		    <Label>
-				<ogc:PropertyName>ID</ogc:PropertyName>
+				<ogc:PropertyName>id</ogc:PropertyName>
 		    </Label>
 
 		    <Font>

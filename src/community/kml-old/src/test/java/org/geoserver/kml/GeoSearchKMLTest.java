@@ -4,9 +4,7 @@
  */
 package org.geoserver.kml;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,22 +37,19 @@ public class GeoSearchKMLTest extends RegionatingTestSupport {
     }
     
     @Test
-    public void testSelfLinks() throws Exception {
+    public void testOutput() throws Exception {
         final String path = 
             "wms?request=getmap&service=wms&version=1.1.1" + 
             "&format=" + KMLMapOutputFormat.MIME_TYPE + 
             "&layers=" + MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart() + 
             "&styles=" + MockData.BASIC_POLYGONS.getLocalPart() + 
             "&height=1024&width=1024&bbox=-180,-90,0,90&srs=EPSG:4326" +  
-            "&featureid=BasicPolygons.1107531493643&format_options=selfLinks:true";
+            "&featureid=BasicPolygons.1107531493643";
 
         Document document = getAsDOM(path);
-        // print(document);
-        assertXpathEvaluatesTo("1", "count(//kml:Folder/kml:Placemark)", document);
-        assertXpathEvaluatesTo("http://localhost:8080/geoserver/rest/cite/BasicPolygons/1107531493643.kml", "//kml:Placemark/atom:link/@href", document);
-        assertXpathEvaluatesTo("self", "//kml:Placemark/atom:link/@rel", document);
+        assertEquals("kml", document.getDocumentElement().getTagName());;
     }
-    
+
     /**
      * Test that requests regionated by data actually return stuff.
      */

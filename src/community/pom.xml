@@ -249,12 +249,12 @@
       </modules>
     </profile>	
     <profile>
-      <id>kml2</id>
+      <id>kml-old</id>
       <activation>
-        <property><name>kml2</name></property>
+        <property><name>kml-old</name></property>
       </activation> 	  
       <modules>
-        <module>kml2</module>
+        <module>kml-old</module>
       </modules>
     </profile>
 		<profile>

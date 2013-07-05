@@ -15,6 +15,7 @@ import org.geoserver.wms.DefaultWebMapService;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
+import org.geoserver.wms.WMSRequest;
 import org.geoserver.wms.WMSRequests;
 import org.geoserver.wms.WebMapService;
 
@@ -34,33 +35,27 @@ public class KMLReflector {
     /** default 'format' value */
     public static final String FORMAT = KMLMapOutputFormat.MIME_TYPE;
 
-    private static Map<String, Map<String, Object>> MODES;
-    
-    /**
-     * Default ground overlay size
-     */
-    private static int DEFAULT_OVERLAY_SIZE;
+    private static Map<String, Map<String, String>> MODES;
 
     static {
-        Map<String, Map<String, Object>> temp = new HashMap<String, Map<String, Object>>();
-        Map<String, Object> options;
+        Map temp = new HashMap();
+        Map options;
 
-        options = new HashMap<String, Object>();
+        options = new HashMap();
         options.put("superoverlay", true);
         temp.put("superoverlay", options);
 
-        options = new HashMap<String, Object>();
+        options = new HashMap();
         options.put("superoverlay", false);
-        options.put("kmscore", 100); // download -> really download vectors
+        options.put("regionatemode", null);
+        options.put("kmscore", null);
         temp.put("download", options);
 
-        options = new HashMap<String, Object>();
+        options = new HashMap();
         options.put("superoverlay", false);
         temp.put("refresh", options);
 
         MODES = temp;
-        
-        DEFAULT_OVERLAY_SIZE = Integer.getInteger("org.geoserver.kml.defaultOverlaySize", 2048);
     }
 
     /**
@@ -116,8 +111,7 @@ public class KMLReflector {
 
         // setup the default mode
         Map<String, String> rawKvp = request.getRawKvp();
-        String mode = KvpUtils.caseInsensitiveParam(rawKvp, "mode",
-                wmsConfiguration.getKmlReflectorMode());
+        String mode = KvpUtils.caseInsensitiveParam(rawKvp, "mode", wmsConfiguration.getKmlReflectorMode());
 
         if (!MODES.containsKey(mode)) {
             throw new ServiceException("Unknown KML mode: " + mode);
@@ -126,8 +120,8 @@ public class KMLReflector {
         Map modeOptions = new HashMap(MODES.get(mode));
 
         if ("superoverlay".equals(mode)) {
-            String submode = KvpUtils.caseInsensitiveParam(request.getRawKvp(),
-                    "superoverlay_mode", wmsConfiguration.getKmlSuperoverlayMode());
+            String submode = KvpUtils.caseInsensitiveParam(request.getRawKvp(), "superoverlay_mode",
+                    wmsConfiguration.getKmlSuperoverlayMode());
 
             if ("raster".equalsIgnoreCase(submode)) {
                 modeOptions.put("overlaymode", "raster");
@@ -145,13 +139,12 @@ public class KMLReflector {
         }
 
         // first set up some of the normal wms defaults
-        boolean refreshMode = mode.equals("refresh");
         if (request.getWidth() < 1) {
-            request.setWidth(refreshMode || containsRasterData ? DEFAULT_OVERLAY_SIZE : 256);
+            request.setWidth(mode.equals("refresh") || containsRasterData ? 1024 : 256);
         }
 
         if (request.getHeight() < 1) {
-            request.setHeight(refreshMode || containsRasterData ? DEFAULT_OVERLAY_SIZE : 256);
+            request.setHeight(mode.equals("refresh") || containsRasterData ? 1024 : 256);
         }
 
         // Force srs to lat/lon for KML output.
@@ -160,13 +153,13 @@ public class KMLReflector {
         // set rest of the wms defaults
         request = DefaultWebMapService.autoSetMissingProperties(request);
 
-        // grab the format options
+        // set some kml specific defaults
         Map fo = request.getFormatOptions();
-        // merge the direct params that people can add in the kml reflector call
-        organizeFormatOptionsParams(request.getRawKvp(), fo);
-        // fill in the blanks with some defaults based on the current mode
-        mergeDefaults(fo, modeOptions);
 
+        KvpUtils.merge(fo, modeOptions);
+        
+        organizeFormatOptionsParams(request.getRawKvp(), fo);
+        
         if (fo.get("kmattr") == null) {
             fo.put("kmattr", wmsConfiguration.getKmlKmAttr());
         }
@@ -181,48 +174,58 @@ public class KMLReflector {
         // TODO: create a subclass of GetMapRequest to store these values
 
         Boolean superoverlay = (Boolean) fo.get("superoverlay");
-        if (superoverlay == null) {
+        if (superoverlay == null)
             superoverlay = Boolean.FALSE;
-        }
-        if (superoverlay || refreshMode || containsRasterData) {
-            request.setFormat(NetworkLinkMapOutputFormat.KML_MIME_TYPE);
+        String formatExtension = ".kmz";
+        if (superoverlay) {
+            request.setFormat(KMZMapOutputFormat.MIME_TYPE);
+            request.setBbox(KMLUtils.expandToTile(request.getBbox()));
+        } else if (mode.equals("refresh") || containsRasterData) {
+            request.setFormat(KMZMapOutputFormat.MIME_TYPE);
         } else if (!Arrays.asList(KMZMapOutputFormat.OUTPUT_FORMATS).contains(request.getFormat())) {
+            // if the user did not explicitly request kml give them back KMZ
             request.setFormat(KMLMapOutputFormat.MIME_TYPE);
+            formatExtension = ".kml";
         }
 
-        org.geoserver.wms.WebMap wmsResponse = wms.getMap(request);
+        // response.setContentType(request.getFormat());
+
+        org.geoserver.wms.WebMap wmsResponse;
+        if (!"download".equals(mode)) {
+            if (KMLMapOutputFormat.MIME_TYPE.equals(request.getFormat())) {
+                request.setFormat(NetworkLinkMapOutputFormat.KML_MIME_TYPE);
+            } else {
+                request.setFormat(NetworkLinkMapOutputFormat.KMZ_MIME_TYPE);
+            }
+        }
+
+        wmsResponse = wms.getMap(request);
+
+        filename.setLength(filename.length() - 1);
+        String contentDisposition = "attachment; filename=" + filename.toString() + formatExtension;
+        wmsResponse.setResponseHeader("Content-Disposition", contentDisposition);
 
         return wmsResponse;
     }
-
-    private static void mergeDefaults(Map fo, Map defaults) {
-        for (Object o : defaults.entrySet()) {
-            Map.Entry entry = (Map.Entry) o;
-            if (fo.get(entry.getKey()) == null) {
-                fo.put(entry.getKey(), entry.getValue());
-            }
-        }
-    }
-
+    
+    
     /**
-     * Copy all the format_options parameters from the kvp map and put them into the formatOptions
-     * map. If a parameter is already present in formatOption map it will be preserved.
+     * Copy all the format_options parameters from the kvp map and put them into the formatOptions map. If a parameter is already present in
+     * formatOption map it will be preserved.
      * 
      * @param kvp
      * @param formatOptions
-     * @throws Exception
+     * @throws Exception 
      */
     public static void organizeFormatOptionsParams(Map<String, String> kvp,
             Map<String, Object> formatOptions) throws Exception {
+
         WMSRequests.mergeEntry(kvp, formatOptions, "legend");
         WMSRequests.mergeEntry(kvp, formatOptions, "kmscore");
         WMSRequests.mergeEntry(kvp, formatOptions, "kmattr");
         WMSRequests.mergeEntry(kvp, formatOptions, "kmltitle");
-        WMSRequests.mergeEntry(kvp, formatOptions, "extendeddata");
-        WMSRequests.mergeEntry(kvp, formatOptions, "extrude");
-        WMSRequests.mergeEntry(kvp, formatOptions, "kmplacemark");
-        WMSRequests.mergeEntry(kvp, formatOptions, "superoverlay_mode");
-        WMSRequests.mergeEntry(kvp, formatOptions, "overlay_mode");
+//        WMSRequests.mergeEntry(kvp, formatOptions, "superoverlay");
+
     }
 
 }

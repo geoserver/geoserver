@@ -4,6 +4,8 @@
  */
 package org.geoserver.wcs2_0;
 
+import static junit.framework.TestCase.assertTrue;
+import static junit.framework.TestCase.fail;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import java.awt.geom.AffineTransform;
@@ -29,8 +31,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-
-import junit.framework.Assert;
 
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -236,7 +236,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
                 System.out.println(ex.getLineNumber() + "," + ex.getColumnNumber() + " -"
                         + ex.toString());
             }
-            Assert.fail("Document did not validate.");
+            fail("Document did not validate.");
         }
     }
     
@@ -337,7 +337,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         } else {
             tolerance = EPS;
         }
-        Assert.assertTrue(expected.equals(actual, tolerance, false));
+        assertTrue(expected.equals(actual, tolerance, false));
     }
 
     /**
@@ -407,6 +407,30 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         di.setPresentation(presentation);
         if(resolution != null) {
             di.setResolution(new BigDecimal(resolution));
+        }
+        info.getMetadata().put(metadataKey, di);
+        getCatalog().save(info);
+    }
+    
+    /**
+     * Configures the specified dimension for a coverage
+     * 
+     * @param coverageName
+     * @param metadataKey
+     * @param presentation
+     * @param resolution
+     * @param unitSymbol
+     */
+    protected void setupRasterDimension(String coverageName, String metadataKey, DimensionPresentation presentation, Double resolution, String unitSymbol) {
+        CoverageInfo info = getCatalog().getCoverageByName(coverageName);
+        DimensionInfo di = new DimensionInfoImpl();
+        di.setEnabled(true);
+        di.setPresentation(presentation);
+        if(resolution != null) {
+            di.setResolution(new BigDecimal(resolution));
+        }
+        if(unitSymbol != null) {
+            di.setUnitSymbol(unitSymbol);
         }
         info.getMetadata().put(metadataKey, di);
         getCatalog().save(info);

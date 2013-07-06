@@ -1,8 +1,8 @@
 package org.geoserver.wcs2_0.xml;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertTrue;
 import it.geosolutions.imageio.plugins.tiff.BaselineTIFFTagSet;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageMetadata;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
@@ -262,8 +262,8 @@ public class GeoTiffGetCoverageTest extends WCSTestSupport {
         
         // tiling
         assertTrue(reader.isImageTiled(0));
-        assertEquals(512, reader.getTileHeight(0));
-        assertEquals(512, reader.getTileWidth(0));
+        assertEquals(368, reader.getTileHeight(0));
+        assertEquals(368, reader.getTileWidth(0));
         
         IIOMetadataNode node =((TIFFImageMetadata) reader.getImageMetadata(0)).getStandardDataNode();
         assertNotNull(node);

@@ -1,6 +1,7 @@
 package org.geoserver.wcs2_0.kvp;
 
-import static junit.framework.Assert.assertEquals;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import java.io.File;
@@ -15,7 +16,6 @@ import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.image.ImageWorker;
 import org.geotools.util.logging.Logging;
-import org.junit.Assert;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -471,7 +471,7 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
             targetCoverage = (GridCoverage2D) executeGetCoverage("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
                     "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT=http://www.opengis.net/def/axis/OGC/1/i(100,1099)," +
                         "http://www.opengis.net/def/axis/OGC/1/j(100,1099)");
-            Assert.assertNotNull(targetCoverage);            
+            assertNotNull(targetCoverage);            
             sourceCoverage=(GridCoverage2D) this.getCatalog().getCoverageByName("BlueMarble").getGridCoverageReader(null, null).read(null);
             
             // checks
@@ -656,7 +656,7 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
             targetCoverage = (GridCoverage2D) executeGetCoverage("wcs?request=GetCoverage&service=WCS&version=2.0.1" +
                     "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT=http://www.opengis.net/def/axis/OGC/1/i(100,1099)," +
                         "http://www.opengis.net/def/axis/OGC/1/j(100,1099)");
-            Assert.assertNotNull(targetCoverage);            
+            assertNotNull(targetCoverage);            
             sourceCoverage=(GridCoverage2D) this.getCatalog().getCoverageByName("BlueMarble").getGridCoverageReader(null, null).read(null);
             
             // checks

@@ -327,6 +327,16 @@ public class ReaderDimensionsAccessor {
     }
 
     /**
+     * Return the domain datatype (if available)
+     * @param domainName
+     * @return
+     * @throws IOException 
+     */
+    public String getDomainDatatype(final String domainName) throws IOException {
+        return reader.getMetadataValue(domainName.toUpperCase() + "_DOMAIN_DATATYPE");
+    }
+    
+    /**
      * True if the reader has a dimension with the given name
      * @throws IOException 
      */

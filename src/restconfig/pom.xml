@@ -36,6 +36,11 @@
    <version>2.4-SNAPSHOT</version>
   </dependency>
   <dependency>
+   <groupId>org.geotools</groupId>
+   <artifactId>gt-geojson</artifactId>
+   <version>${gt.version}</version>
+  </dependency>
+  <dependency>
    <groupId>jdom</groupId>
    <artifactId>jdom</artifactId>
    <version>1.0</version>

@@ -1,10 +1,10 @@
 package org.geoserver.wcs2_0.xml;
 
-import static junit.framework.Assert.assertEquals;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertTrue;
 
 import java.io.File;
-
-import junit.framework.Assert;
 
 import org.apache.commons.io.FileUtils;
 import org.geoserver.wcs2_0.WCSTestSupport;
@@ -58,11 +58,11 @@ public class ScalingExtentionTest extends WCSTestSupport {
 
         // check the tiff structure is the one requested
         final GeoTiffReader reader = new GeoTiffReader(file);
-        Assert.assertTrue(CRS.equalsIgnoreMetadata(reader.getCrs(), CRS.decode("EPSG:4326",true)));
+        assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), CRS.decode("EPSG:4326",true)));
         assertEquals(1260, reader.getOriginalGridRange().getSpan(0));
         assertEquals(1260, reader.getOriginalGridRange().getSpan(1));
         final GridCoverage2D coverage = reader.read(null);
-        Assert.assertNotNull(coverage);
+        assertNotNull(coverage);
         assertEnvelopeEquals(sourceCoverage, coverage);
         reader.dispose();  
         scheduleForCleaning(coverage);
@@ -82,11 +82,11 @@ public class ScalingExtentionTest extends WCSTestSupport {
 
         // check the tiff structure is the one requested
         final GeoTiffReader reader = new GeoTiffReader(file);
-        Assert.assertTrue(CRS.equalsIgnoreMetadata(reader.getCrs(), CRS.decode("EPSG:4326",true)));
+        assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), CRS.decode("EPSG:4326",true)));
         assertEquals(1000, reader.getOriginalGridRange().getSpan(0));
         assertEquals(1000, reader.getOriginalGridRange().getSpan(1));
         final GridCoverage2D coverage = reader.read(null);
-        Assert.assertNotNull(coverage);
+        assertNotNull(coverage);
         assertEnvelopeEquals(sourceCoverage, coverage);
         reader.dispose();  
         scheduleForCleaning(coverage);     
@@ -105,11 +105,11 @@ public class ScalingExtentionTest extends WCSTestSupport {
 
         // check the tiff structure is the one requested
         final GeoTiffReader reader = new GeoTiffReader(file);
-        Assert.assertTrue(CRS.equalsIgnoreMetadata(reader.getCrs(), CRS.decode("EPSG:4326",true)));
+        assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), CRS.decode("EPSG:4326",true)));
         assertEquals(200, reader.getOriginalGridRange().getSpan(0));
         assertEquals(300, reader.getOriginalGridRange().getSpan(1));
         final GridCoverage2D coverage = reader.read(null);
-        Assert.assertNotNull(coverage);
+        assertNotNull(coverage);
         assertEnvelopeEquals(sourceCoverage, coverage);
         reader.dispose();  
         scheduleForCleaning(coverage);  
@@ -129,11 +129,11 @@ public class ScalingExtentionTest extends WCSTestSupport {
 
         // check the tiff structure is the one requested
         final GeoTiffReader reader = new GeoTiffReader(file);
-        Assert.assertTrue(CRS.equalsIgnoreMetadata(reader.getCrs(), CRS.decode("EPSG:4326",true)));
+        assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), CRS.decode("EPSG:4326",true)));
         assertEquals(900, reader.getOriginalGridRange().getSpan(0));
         assertEquals(900, reader.getOriginalGridRange().getSpan(1));
         final GridCoverage2D coverage = reader.read(null);
-        Assert.assertNotNull(coverage);
+        assertNotNull(coverage);
         assertEnvelopeEquals(sourceCoverage, coverage);
         reader.dispose();  
         scheduleForCleaning(coverage); 

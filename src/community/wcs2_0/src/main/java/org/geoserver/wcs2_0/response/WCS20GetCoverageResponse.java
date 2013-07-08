@@ -90,19 +90,6 @@ public class WCS20GetCoverageResponse extends Response {
         // grab the delegate
         CoverageResponseDelegate delegate = responseFactory.encoderFor(format);
         
-        // check the media type, do we have to perform a multipart response?
-        boolean multipart = false;
-        String mediaType = getCoverage.getMediaType();
-        if(mediaType != null) {
-            if(!mediaType.equals("multipart/related")) {
-                throw new WCS20Exception("Invalid media type, only valid value is " +
-                		"'multipart/related', but got: " + mediaType, 
-                		OWSExceptionCode.InvalidParameterValue, "MediaType");
-            }
-            multipart = true;
-        }
-
-        
         delegate.encode(coverage, format,encodingParameters, output);
     }
     

@@ -13,6 +13,7 @@ import javax.media.jai.ImageLayout;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.OverviewPolicy;
+import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.geometry.GeneralEnvelope;
 import org.opengis.coverage.grid.Format;
 import org.opengis.coverage.grid.GridEnvelope;
@@ -27,9 +28,17 @@ import org.opengis.referencing.operation.MathTransform;
  */
 public class SingleGridCoverage2DReader implements GridCoverage2DReader {
 
-    GridCoverage2DReader delegate;
+    protected GridCoverage2DReader delegate;
 
-    String coverageName;
+    protected String coverageName;
+    
+    public static SingleGridCoverage2DReader wrap(GridCoverage2DReader delegate, String coverageName) {
+        if(delegate instanceof StructuredGridCoverage2DReader) {
+            return new StructuredSingleGridCoverage2DReader((StructuredGridCoverage2DReader) delegate, coverageName);
+        } else {
+            return new SingleGridCoverage2DReader((GridCoverage2DReader) delegate, coverageName);
+        }
+    }
 
     public SingleGridCoverage2DReader(GridCoverage2DReader delegate, String coverageName) {
         if(delegate == null) {
@@ -42,7 +51,11 @@ public class SingleGridCoverage2DReader implements GridCoverage2DReader {
         this.coverageName = coverageName;
     }
 
-    private void checkCoverageName(String coverageName) {
+    /**
+     * Checks the specified name is the one we are expecting
+     * @param coverageName
+     */
+    protected void checkCoverageName(String coverageName) {
         if (!this.coverageName.equals(coverageName)) {
             throw new IllegalArgumentException("Unkonwn coverage named " + coverageName
                     + ", the only valid value is: " + this.coverageName);

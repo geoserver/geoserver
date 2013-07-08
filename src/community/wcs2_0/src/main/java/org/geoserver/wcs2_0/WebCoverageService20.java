@@ -5,6 +5,7 @@
 package org.geoserver.wcs2_0;
 
 import net.opengis.wcs20.DescribeCoverageType;
+import net.opengis.wcs20.DescribeEOCoverageSetType;
 import net.opengis.wcs20.GetCapabilitiesType;
 import net.opengis.wcs20.GetCoverageType;
 import org.geoserver.wcs.WCSInfo;
@@ -24,6 +25,12 @@ import org.opengis.coverage.grid.GridCoverage;
  *
  */
 public interface WebCoverageService20 {
+    
+    /**
+     * A key that can be be used to identify the originating CoverageInfo attached to the output GridCoverage,
+     * which can be used to retrieve extra metadata about the coverage
+     */
+    public static final String ORIGINATING_COVERAGE_INFO = "org.geoserver.wcs.originatingCoverageInfo";
 
     /**
      * WCS service info.
@@ -39,6 +46,12 @@ public interface WebCoverageService20 {
      * DescribeCoverage operation.
      */
     WCS20DescribeCoverageTransformer describeCoverage(DescribeCoverageType request);
+    
+    /**
+     * The WCS EO desscribe coverage set operation (available only if the wcs-eo plugin is installed)
+     */
+    TransformerBase describeEOCoverageSet(DescribeEOCoverageSetType request);
+
 
     /**
      * GetCoverage operation.

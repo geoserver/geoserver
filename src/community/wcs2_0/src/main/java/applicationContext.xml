@@ -22,6 +22,7 @@
     <property name="interceptorNames">
       <list>
         <value>wcsLogger</value>
+        <value>wcs20ServiceInterceptor*</value>
         <value>wcs20ServiceTarget</value>
       </list>
     </property>
@@ -37,6 +38,7 @@
       <list>
         <value>GetCapabilities</value>
         <value>DescribeCoverage</value>
+        <value>DescribeEOCoverageSet</value>
         <value>GetCoverage</value>
       </list>
     </constructor-arg>

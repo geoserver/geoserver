@@ -655,3 +655,166 @@ It is also possible to filter against both property and value. To retrieve only 
    curl -u admin:geoserver -XGET -H "Accept: text/xml"
      http://localhost:8080/geoserver/rest/about/manifest.xml?key=GeoServerModule&value=extension
 
+Uploading and modifying a image mosaic
+--------------------------------------
+
+The following command uploads a zip file containing the definition of a mosaic (along with at least one granule of the mosaic to initialize the resolutions, overviews and the like) and will configure all the coverages in it as new layers.
+
+
+.. note:: The code blocks below contain a single command that is extended over multiple lines.
+
+.. code-block:: console
+
+   curl ­-u admin:geoserver -XPUT ­H "Content­type:application/zip"­--data-binary @polyphemus.zip
+      http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/polyphemus/file.imagemosaic
+
+The following instead instructs the mosaic to harvest (or re-harvest) a single file into the mosaic, collecting its properties and updating the mosaic index:
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XPOST -H "Content-type: text/plain" -d "file:///path/to/the/file/polyphemus_20130302.nc" 
+      "http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/poly-incremental/external.imagemosaic"
+
+Harvesting can also be directed towards a whole directory, as follows:
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XPOST -H "Content-type: text/plain" -d "file:///path/to/the/mosaic/folder" 
+       "http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/poly-incremental/external.imagemosaic"
+
+The image mosaic index structure can be retrieved using something like:
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XGET "http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/polyphemus-v1/coverages/NO2/index.xml"
+
+which will result in the following:
+
+.. code-block:: json
+
+       <Schema>
+      <attributes>
+        <Attribute>
+          <name>the_geom</name>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+          <nillable>true</nillable>
+          <binding>com.vividsolutions.jts.geom.Polygon</binding>
+        </Attribute>
+        <Attribute>
+          <name>location</name>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+          <nillable>true</nillable>
+          <binding>java.lang.String</binding>
+        </Attribute>
+        <Attribute>
+          <name>imageindex</name>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+          <nillable>true</nillable>
+          <binding>java.lang.Integer</binding>
+        </Attribute>
+        <Attribute>
+          <name>time</name>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+          <nillable>true</nillable>
+          <binding>java.sql.Timestamp</binding>
+        </Attribute>
+        <Attribute>
+          <name>elevation</name>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+          <nillable>true</nillable>
+          <binding>java.lang.Double</binding>
+        </Attribute>
+        <Attribute>
+          <name>fileDate</name>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+          <nillable>true</nillable>
+          <binding>java.sql.Timestamp</binding>
+        </Attribute>
+        <Attribute>
+          <name>updated</name>
+          <minOccurs>0</minOccurs>
+          <maxOccurs>1</maxOccurs>
+          <nillable>true</nillable>
+          <binding>java.sql.Timestamp</binding>
+        </Attribute>
+      </attributes>
+      <atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="alternate" href="http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/polyphemus-v1/coverages/NO2/index/granules.xml" type="application/xml"/>
+    </Schema>
+
+
+Listing the existing granules can be performed as follows:
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XGET "http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/polyphemus-v1/coverages/NO2/index/granules.xml?limit=2"
+
+This will result in a GML description of the granules, as follows:
+
+.. code-block:: xml
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <wfs:FeatureCollection xmlns:gf="http://www.geoserver.org/rest/granules" xmlns:ogc="http://www.opengis.net/ogc" xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml">
+      <gml:boundedBy>
+        <gml:Box srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+          <gml:coord>
+            <gml:X>5.0</gml:X>
+            <gml:Y>45.0</gml:Y>
+          </gml:coord>
+          <gml:coord>
+            <gml:X>14.875</gml:X>
+            <gml:Y>50.9375</gml:Y>
+          </gml:coord>
+        </gml:Box>
+      </gml:boundedBy>
+      <gml:featureMember>
+        <gf:NO2 fid="NO2.1">
+          <gf:the_geom>
+            <gml:Polygon>
+              <gml:outerBoundaryIs>
+                <gml:LinearRing>
+                  <gml:coordinates>5.0,45.0 5.0,50.9375 14.875,50.9375 14.875,45.0 5.0,45.0</gml:coordinates>
+                </gml:LinearRing>
+              </gml:outerBoundaryIs>
+            </gml:Polygon>
+          </gf:the_geom>
+          <gf:location>polyphemus_20130301.nc</gf:location>
+          <gf:imageindex>336</gf:imageindex>
+          <gf:time>2013-03-01T00:00:00Z</gf:time>
+          <gf:elevation>10.0</gf:elevation>
+          <gf:fileDate>2013-03-01T00:00:00Z</gf:fileDate>
+          <gf:updated>2013-04-11T10:54:31Z</gf:updated>
+        </gf:NO2>
+      </gml:featureMember>
+      <gml:featureMember>
+        <gf:NO2 fid="NO2.2">
+          <gf:the_geom>
+            <gml:Polygon>
+              <gml:outerBoundaryIs>
+                <gml:LinearRing>
+                  <gml:coordinates>5.0,45.0 5.0,50.9375 14.875,50.9375 14.875,45.0 5.0,45.0</gml:coordinates>
+                </gml:LinearRing>
+              </gml:outerBoundaryIs>
+            </gml:Polygon>
+          </gf:the_geom>
+          <gf:location>polyphemus_20130301.nc</gf:location>
+          <gf:imageindex>337</gf:imageindex>
+          <gf:time>2013-03-01T00:00:00Z</gf:time>
+          <gf:elevation>35.0</gf:elevation>
+          <gf:fileDate>2013-03-01T00:00:00Z</gf:fileDate>
+          <gf:updated>2013-04-11T10:54:31Z</gf:updated>
+        </gf:NO2>
+      </gml:featureMember>
+    </wfs:FeatureCollection>
+
+   
+Removing all the granules originating from a particular file (a NetCDF file can contain many) can be done as follows:
+
+.. code-block:: console
+   
+   curl -v -u admin:geoserver -XDELETE "http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/polyphemus-v1/coverages/NO2/index/granules.xml?filter=location='polyphemus_20130301.nc'"

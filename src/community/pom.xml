@@ -157,6 +157,8 @@
         <module>feature-aggregate</module>
         <module>script</module>
         <module>wcs2_0</module>
+        <module>wcs2_0-eo</module>
+        <module>web-wcs2_0-eo</module>
         <module>wms-eo</module>
         <module>libjpeg-turbo</module>
       </modules>
@@ -231,6 +233,8 @@
       </activation> 
       <modules>
         <module>wcs2_0</module>
+        <module>wcs2_0-eo</module>
+        <module>web-wcs2_0-eo</module>
       </modules>
     </profile>
     <profile>

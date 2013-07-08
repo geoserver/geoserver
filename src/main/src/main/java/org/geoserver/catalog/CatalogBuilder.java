@@ -35,8 +35,8 @@ import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.ows.CRSEnvelope;
 import org.geotools.data.ows.Layer;
-import org.geotools.data.wms.WebMapServer;
 import org.geotools.factory.GeoTools;
+import org.geotools.feature.FeatureTypes;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -49,9 +49,11 @@ import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.Format;
 import org.opengis.coverage.grid.GridEnvelope;
+import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.Name;
+import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.metadata.Identifier;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
@@ -858,7 +860,7 @@ public class CatalogBuilder {
         
         // if we are dealing with a multicoverage reader, wrap to simplify code
         if(coverageName != null) {
-            reader = new SingleGridCoverage2DReader(reader, coverageName);
+            reader = SingleGridCoverage2DReader.wrap(reader, coverageName);
         }
 
         CoverageStoreInfo csinfo = (CoverageStoreInfo) store;
@@ -1457,5 +1459,31 @@ public class CatalogBuilder {
      */
     public void attach(WorkspaceInfo wsInfo) {
         // nothing to do
+    }
+    
+    /**
+     * Extracts the AttributeTypeInfo by copying them from the specified feature type.
+     * @param ft The schema to be harvested
+     * @param info The optional feature type info from which all the attributes belong to
+     * @return
+     */
+    public List<AttributeTypeInfo> getAttributes(FeatureType ft, FeatureTypeInfo info) {
+        List<AttributeTypeInfo> attributes = new ArrayList<AttributeTypeInfo>();
+        for (PropertyDescriptor pd : ft.getDescriptors()) {
+            AttributeTypeInfo att = catalog.getFactory().createAttribute();
+            att.setFeatureType(info);
+            att.setName(pd.getName().getLocalPart());
+            att.setMinOccurs(pd.getMinOccurs());
+            att.setMaxOccurs(pd.getMaxOccurs());
+            att.setNillable(pd.isNillable());
+            att.setBinding(pd.getType().getBinding());
+            int length = FeatureTypes.getFieldLength((AttributeDescriptor) pd);
+            if(length > 0) {
+                att.setLength(length);
+            }
+            attributes.add(att);
+        }
+        
+        return attributes;
     }
 }

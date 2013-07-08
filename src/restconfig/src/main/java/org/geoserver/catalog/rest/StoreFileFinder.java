@@ -45,7 +45,8 @@ public class StoreFileFinder extends AbstractCatalogFinder {
             String coverageFormatName = formatToCoverageStoreFormat.get( format );
             
             if ( coverageFormatName == null ) {
-                throw new RestletException( "Unsupported format: " + format, Status.CLIENT_ERROR_BAD_REQUEST );
+                throw new RestletException( "Unsupported format: " + format + ", available formats are: " 
+                        + formatToCoverageStoreFormat.keySet().toString(), Status.CLIENT_ERROR_BAD_REQUEST);
             }
             
             Format coverageFormat = null;

@@ -1057,4 +1057,9 @@ public class GeoServerTileLayer extends TileLayer {
         return new StringBuilder(getClass().getSimpleName()).append("[").append(info).append("]")
                 .toString();
     }
+
+	// @Override not an override until you update to 1.4-SNAPSHOT
+	public List<MimeType> getInfoMimeTypes() {
+		return Collections.emptyList();
+	}
 }

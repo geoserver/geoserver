@@ -367,7 +367,7 @@ Symbol Properties
 -----------------
 
 These properties are applied only when styling built-in symbols.  See
-:doc:`/community/css/styled-marks` for details.
+:doc:`/extensions/css/styled-marks` for details.
 
 .. list-table::
     :widths: 15 15 60 10

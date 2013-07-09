@@ -163,7 +163,7 @@ styling options to them.  You can specify style attributes for built-in symbols 
       - specifies that a rule applies to the symbol used for the nth stacked
         symbol on a feature, regardless of which context it is used in.
 
-For more discussion on using these selectors, see :doc:`/community/css/styled-marks`.
+For more discussion on using these selectors, see :doc:`/extensions/css/styled-marks`.
 
 Not Filtering at All
 --------------------

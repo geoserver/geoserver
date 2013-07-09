@@ -10,7 +10,7 @@ What you need before starting this tutorial:
 * The states layer from the `default GeoServer configuration
   <https://github.com/geoserver/geoserver/tree/master/data/release/data/shapefiles>`_
 * The CSS plugin installed.
-  See :doc:`/community/css/install` if you have not already installed the plugin.
+  See :doc:`/extensions/css/install` if you have not already installed the plugin.
 
 What's in the Box?
 ------------------

@@ -6,7 +6,8 @@ package org.geoserver.kml;
 
 import static junit.framework.Assert.assertNull;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -27,6 +28,7 @@ import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.wms.WMSTestSupport;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -176,7 +178,7 @@ public class KMLTest extends WMSTestSupport {
         assertXpathEvaluatesTo("-0.0042,-6.0E-4 -0.0032,-3.0E-4 -0.0026,-1.0E-4 -0.0014,2.0E-4 2.0E-4,7.0E-4", "//kml:Placemark/kml:LineString/kml:coordinates", doc);
     }
     
-    @Test
+    @Ignore @Test
     public void testTimeTemplate() throws Exception {
         FeatureTypeInfo ftInfo = getCatalog().getResourceByName(getLayerId(MockData.OTHER),
                 FeatureTypeInfo.class);
@@ -199,7 +201,7 @@ public class KMLTest extends WMSTestSupport {
         }
     }
     
-    @Test
+    @Ignore @Test
     public void testTimeInvervalTemplate() throws Exception {
         FeatureTypeInfo ftInfo = getCatalog().getResourceByName(getLayerId(MockData.OTHER),
                 FeatureTypeInfo.class);

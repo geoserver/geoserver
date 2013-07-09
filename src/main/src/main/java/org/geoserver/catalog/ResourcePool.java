@@ -593,7 +593,7 @@ public class ResourcePool {
      *
      * <p>
      * This is used to smooth any relative path kind of issues for any file
-     * URLS. This code should be expanded to deal with any other context
+     * URLS or directory. This code should be expanded to deal with any other context
      * sensitve isses dataStores tend to have.
      * </p>
      *
@@ -622,6 +622,14 @@ public class ResourcePool {
             } else if (value instanceof URL && ((URL) value).getProtocol().equals("file")) {
                 File fixedPath = GeoserverDataDirectory.findDataFile(((URL) value).toString());
                 entry.setValue(DataUtilities.fileToURL(fixedPath));
+            } else if ((key != null) && key.equals("directory") && value instanceof String) {
+                String path = (String) value;
+                //if a url is used for a directory (for example property store), convert it to path
+                
+                if (path.startsWith("file:")) {
+                    File fixedPath = GeoserverDataDirectory.findDataFile((String) value);
+                    entry.setValue(fixedPath.toString());            
+                }
             }
         }
 

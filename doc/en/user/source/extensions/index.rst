@@ -25,4 +25,3 @@ see the :ref:`data_vector`, :ref:`data_raster`, and :ref:`data_database` section
    wps/index
    xslt/index
    css/index
-

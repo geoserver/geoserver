@@ -15,8 +15,14 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.xml.namespace.QName;
+
+import net.opengis.wfs.GetFeatureType;
+import net.opengis.wfs.QueryType;
 import net.sf.json.JSONException;
 
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
@@ -25,14 +31,19 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geotools.data.FeatureSource;
+import org.geotools.data.Query;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.NamedIdentifier;
+import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.filter.Filter;
 import org.opengis.referencing.ReferenceIdentifier;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -96,6 +107,9 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
         Writer outWriter = null;
         boolean hasGeom = false;
 
+        //get feature count for request 
+       int featureCount= getFeatureCountFromRequest(describeFeatureType,wfs);
+        
         try {
             osw = new OutputStreamWriter(output, gs.getSettings().getCharset());
             outWriter = new BufferedWriter(osw);
@@ -106,6 +120,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
 
             final GeoJSONBuilder jsonWriter = new GeoJSONBuilder(outWriter);
             jsonWriter.object().key("type").value("FeatureCollection");
+        	jsonWriter.key("totalFeatures").value(featureCount);            
             jsonWriter.key("features");
             jsonWriter.array();
 
@@ -272,4 +287,41 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
         }
         return JSONType.getCallbackFunction(request.getKvp());
     }
+
+    /**
+     * getFeatureCountFromRequest
+     * 
+     * Function gets the total number of features from a request and returns it.
+     * 
+     * @param Operation describeFeatureType
+     * @param WFSInfo wfs
+     * @return int featurecount 
+     * @throws IOException
+     * @author Paul Biskup - Fichtner IT Consulting AG
+     */
+    private int getFeatureCountFromRequest(Operation describeFeatureType, WFSInfo wfs) throws IOException{
+    	GetFeatureType request=(GetFeatureType) describeFeatureType.getParameters()[0];
+    	QueryType query = (QueryType) request.getQuery().get(0);
+        Catalog catalog=wfs.getGeoServer().getCatalog();
+        QName typeName = (QName) query.getTypeName().get(0);
+        FeatureTypeInfo meta = catalog.getFeatureTypeByName(typeName.getNamespaceURI(), typeName.getLocalPart());
+        
+        FeatureSource<? extends FeatureType, ? extends Feature> source = meta.getFeatureSource(null,null);        
+        Filter filter=query.getFilter();
+        if (filter==null){
+        	filter=Filter.INCLUDE;
+        }
+        Query countQuery = new Query(typeName.getLocalPart(),filter);
+                
+        int count = source.getCount(countQuery);
+        if( count == -1 ){
+       	  // information was not available in the header!
+            org.geotools.data.Query gtQuery=new org.geotools.data.Query(countQuery);
+            FeatureCollection<? extends FeatureType, ? extends Feature> features  = source.getFeatures(gtQuery);
+            count = features.size();
+        	}
+        return count;
+        	
+    }
+    
 }

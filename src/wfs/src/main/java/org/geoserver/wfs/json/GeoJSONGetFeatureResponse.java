@@ -96,6 +96,10 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
         Writer outWriter = null;
         boolean hasGeom = false;
 
+     // get feature count for request
+        int featureCount = getFeatureCountFromFeatureCollection(featureCollection);
+
+        
         try {
             osw = new OutputStreamWriter(output, gs.getSettings().getCharset());
             outWriter = new BufferedWriter(osw);
@@ -106,6 +110,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
 
             final GeoJSONBuilder jsonWriter = new GeoJSONBuilder(outWriter);
             jsonWriter.object().key("type").value("FeatureCollection");
+            jsonWriter.key("totalFeatures").value(featureCount);
             jsonWriter.key("features");
             jsonWriter.array();
 
@@ -271,5 +276,27 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
             return JSONType.CALLBACK_FUNCTION;
         }
         return JSONType.getCallbackFunction(request.getKvp());
+    }
+
+    /**
+     * getFeatureCountFromFeatureCollection
+     * 
+     * Function gets the total number of features from a FeatureCollectionResponse and returns it.
+     * 
+     * @param FeatureCollectionResponse featureCollection
+     * @return int featureCount
+     * @throws IOException
+     */
+    private int getFeatureCountFromFeatureCollection(FeatureCollectionResponse featureCollection)
+            throws IOException {
+
+        int count=0;
+
+        List resultsList = featureCollection.getFeature();
+        for (int i = 0; i < resultsList.size(); i++) {
+            FeatureCollection collection = (FeatureCollection) resultsList.get(i);
+            count+=collection.size();
+        }
+        return count;
     }
 }

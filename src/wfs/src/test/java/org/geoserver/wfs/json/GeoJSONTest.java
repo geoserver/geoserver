@@ -182,4 +182,33 @@ public class GeoJSONTest extends WFSTestSupport {
         JSONObject aFeature = featureCol.getJSONObject(0);
         assertEquals(aFeature.getString("geometry_name"), "surfaceProperty");
     }
+    
+    @Test
+    public void testGetFeatureCount() throws Exception {        
+        //request without filter
+        String out = getAsString("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=10&outputformat="+JSONType.json);
+        JSONObject rootObject = JSONObject.fromObject( out );
+        assertEquals(rootObject.get("totalFeatures"),5);
+
+        //request with filter (featureid=PrimitiveGeoFeature.f001)
+        String out2 = getAsString("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=10&outputformat="+JSONType.json+"&featureid=PrimitiveGeoFeature.f001");
+        
+        JSONObject rootObject2 = JSONObject.fromObject( out2 );
+        assertEquals(rootObject2.get("totalFeatures"),1);
+    }
+
+    @Test
+    public void testGetFeatureCountWfs20() throws Exception {        
+        //request without filter
+        String out = getAsString("wfs?request=GetFeature&version=2.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=10&outputformat="+JSONType.json);
+        JSONObject rootObject = JSONObject.fromObject( out );
+        assertEquals(rootObject.get("totalFeatures"),5);
+
+        //request with filter (featureid=PrimitiveGeoFeature.f001)
+        String out2 = getAsString("wfs?request=GetFeature&version=2.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=10&outputformat="+JSONType.json+"&featureid=PrimitiveGeoFeature.f001");
+        
+        JSONObject rootObject2 = JSONObject.fromObject( out2 );
+        assertEquals(rootObject2.get("totalFeatures"),1);
+    }
+    
 }

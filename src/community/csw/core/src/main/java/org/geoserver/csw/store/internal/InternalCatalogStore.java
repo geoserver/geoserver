@@ -5,19 +5,26 @@
 package org.geoserver.csw.store.internal;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
 import net.opengis.cat.csw20.ElementSetType;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.csw.feature.MemoryFeatureCollection;
+import org.geoserver.csw.feature.sort.ComplexComparatorFactory;
 import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geoserver.csw.records.RecordDescriptor;
 import org.geoserver.csw.records.iso.MetaDataDescriptor;
 import org.geoserver.csw.store.AbstractCatalogStore;
 import org.geotools.data.Query;
 import org.geotools.data.Transaction;
+import org.geotools.data.store.MaxFeaturesFeatureCollection;
 import org.geotools.feature.FeatureCollection;
+import org.opengis.feature.Feature;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.expression.PropertyName;
@@ -75,8 +82,27 @@ public class InternalCatalogStore extends AbstractCatalogStore {
             mapping = mapping.subMapping(q.getProperties(), rd);
         }
 
-        FeatureCollection records = new CatalogStoreFeatureCollection(startIndex,
-                q.getMaxFeatures(), q.getSortBy(), unmapped, catalog, mapping, rd);
+        FeatureCollection records;
+        
+        if (q.getSortBy() != null && q.getSortBy().length > 0) {
+            records = new CatalogStoreFeatureCollection(startIndex,
+                    Integer.MAX_VALUE, null, unmapped, catalog, mapping, rd);
+            
+            Feature[] features = (Feature[]) records.toArray(new Feature[records.size()]);
+            Comparator<Feature> comparator = ComplexComparatorFactory.buildComparator(q.getSortBy());
+            Arrays.sort(features, comparator);
+            
+            records = new MemoryFeatureCollection(records.getSchema(), Arrays.asList(features));
+            
+            if (q.getMaxFeatures() < Query.DEFAULT_MAX) {
+                records = new MaxFeaturesFeatureCollection<FeatureType, Feature>(records,
+                        q.getMaxFeatures());
+            }
+            
+        } else {
+            records = new CatalogStoreFeatureCollection(startIndex,
+                q.getMaxFeatures(), null, unmapped, catalog, mapping, rd);
+        }
 
         return records;
     }

@@ -32,7 +32,7 @@ public class DescribeRecordKvpRequestReader extends CSWKvpRequestReader {
     public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
         // at this point the namespace and type names are separated, we need to merge them and build
         // QNames
-        String typename = (String) kvp.get("typename");
+        String typename = (String) rawKvp.get("typename");
         if(typename != null) {
             NamespaceSupport namespaces = (NamespaceSupport) kvp.get("namespace");
             if(namespaces == null) {

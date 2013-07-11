@@ -12,8 +12,10 @@ import org.geoserver.csw.feature.AbstractFeatureCollection;
 import org.geoserver.csw.feature.MemoryFeatureCollection;
 import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geoserver.csw.records.RecordDescriptor;
+import org.geotools.data.complex.filter.XPathUtil;
 import org.geotools.data.store.FilteringFeatureCollection;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.filter.SortByImpl;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
@@ -51,7 +53,6 @@ class CatalogStoreFeatureCollection extends AbstractFeatureCollection<FeatureTyp
         this.offset = offset;
         this.count = count;
         this.filter = filter;
-        this.sortOrder = sortOrder;
         this.catalog = catalog;
         this.mapping = mapping;
         this.rd = rd;

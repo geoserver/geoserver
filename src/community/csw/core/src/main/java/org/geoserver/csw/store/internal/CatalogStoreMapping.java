@@ -87,6 +87,8 @@ public class CatalogStoreMapping {
     protected Map<String, CatalogStoreMappingElement> mappingElements = new HashMap<String, CatalogStoreMappingElement>();
     
     protected CatalogStoreMappingElement identifier = null;
+    
+    protected boolean includeEnvelope = true;
 
     /**
      * Create new Catalog Store Mapping
@@ -146,7 +148,17 @@ public class CatalogStoreMapping {
         
         mapping.identifier = identifier;
         
+        mapping.includeEnvelope = includeEnvelope && paths.contains( rd.getBoundingBoxPropertyName() );
+        
         return mapping;
+    }
+    
+    public void setIncludeEnvelope(boolean value) {
+        this.includeEnvelope = value;
+    }
+    
+    public boolean isIncludeEnvelope(){
+        return includeEnvelope;
     }
 
     /**

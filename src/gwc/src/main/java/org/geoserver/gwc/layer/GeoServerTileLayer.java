@@ -34,6 +34,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WebMap;
@@ -129,6 +130,7 @@ public class GeoServerTileLayer extends TileLayer {
         this.layerInfo = null;
         this.layerGroupInfo = layerGroup;
         this.info = state;
+        TileLayerInfoUtil.checkAutomaticStyles(layerGroup, state);
     }
 
     public GeoServerTileLayer(final LayerInfo layerInfo, final GridSetBroker gridsets,
@@ -1056,5 +1058,22 @@ public class GeoServerTileLayer extends TileLayer {
     public String toString() {
         return new StringBuilder(getClass().getSimpleName()).append("[").append(info).append("]")
                 .toString();
+    }
+
+    @Override
+    public List<MimeType> getInfoMimeTypes() {
+        // Get the formats WMS supports for GetFeatureInfo
+        List<String> typeStrings = ((WMS) GeoServerExtensions.bean("wms")).getAvailableFeatureInfoFormats();
+        List<MimeType> types = new ArrayList<MimeType>(typeStrings.size());
+        for(String typeString: typeStrings) {
+            try {
+                types.add(MimeType.createFromFormat(typeString));
+            } catch (MimeException e) {
+                if (LOGGER.isLoggable(Level.WARNING)){
+                    LOGGER.log(Level.WARNING, e.getMessage(), e);
+                }
+            }
+        }
+        return types;
     }
 }

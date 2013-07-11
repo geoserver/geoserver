@@ -17,6 +17,8 @@ import org.geoserver.csw.records.RecordBuilder;
 import org.geoserver.csw.records.RecordDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
+import org.geotools.data.complex.filter.XPathUtil;
+import org.geotools.filter.SortByImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
@@ -35,9 +37,9 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
     protected Iterator<ResourceInfo> layerIt;
     
     protected CatalogStoreMapping mapping;
-        
+    
     public CatalogStoreFeatureIterator(int offset, int count, SortBy[] sortOrder, Filter filter, Catalog catalog, CatalogStoreMapping mapping, RecordDescriptor recordDescriptor) {
-    	CatalogFacade catalogFacade = catalog.getFacade();
+        CatalogFacade catalogFacade = catalog.getFacade();
         layerIt = catalogFacade.list(ResourceInfo.class, filter, offset, count, sortOrder);
         this.mapping = mapping;
         builder = new GenericRecordBuilder(recordDescriptor);
@@ -65,12 +67,14 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
 
             if (value != null) {
                 if (value instanceof Collection) {
-                    String[] elements = new String[((Collection) value).size()];
-                    int i = 0;
-                    for (Object element : (Collection) value) {
-                        elements[i++] = element.toString();
+                    if (((Collection)value).size() > 0) {
+                        String[] elements = new String[((Collection) value).size()];
+                        int i = 0;
+                        for (Object element : (Collection) value) {
+                            elements[i++] = element.toString();
+                        }
+                        builder.addElement(mappingElement.getKey(), elements);
                     }
-                    builder.addElement(mappingElement.getKey(), elements);
                 } else {
                     builder.addElement(mappingElement.getKey(), value.toString());
                 }
@@ -82,15 +86,17 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
         }
         // move on to the bounding boxes
       
-        ReferencedEnvelope bbox = null;
-        try {
-        	bbox = resource.boundingBox();
-        } catch (Exception e) {
-        	LOGGER.log(Level.INFO, "Failed to parse original record bbox");
+        if (mapping.isIncludeEnvelope()) {
+            ReferencedEnvelope bbox = null;
+            try {
+            	bbox = resource.boundingBox();
+            } catch (Exception e) {
+            	LOGGER.log(Level.INFO, "Failed to parse original record bbox");
+            }
+            if (bbox != null) {
+                builder.addBoundingBox(bbox);
+            }          
         }
-        if (bbox != null) {
-            builder.addBoundingBox(bbox);
-        }           
 
         return builder.build(id);
     }

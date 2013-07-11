@@ -8,6 +8,10 @@ import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.config.ConfigurationListenerAdapter;
 
+/**
+ * Base class for synchronising catalog changes across a cluster.
+ *
+ */
 public class GeoServerSynchronizer extends ConfigurationListenerAdapter 
     implements CatalogListener {
 

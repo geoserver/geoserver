@@ -13,7 +13,7 @@ officially part of the GeoServer releases. They are however built along with the
 
 
 .. toctree::
-   :maxdepth: 1 
+   :maxdepth: 1
 
    authkey/index
    dxf/index
@@ -23,3 +23,5 @@ officially part of the GeoServer releases. They are however built along with the
    scripting/index
    spatialite/index
    libjpeg-turbo/index
+   csw/index
+   csw/tutorial

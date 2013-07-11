@@ -25,6 +25,7 @@ import org.geowebcache.filter.parameters.StringParameterFilter;
 import org.geowebcache.grid.BoundingBox;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -47,7 +48,7 @@ public class GeoServerTileLayerInfoPersistenceTest {
 
     private void testMarshaling(GeoServerTileLayerInfo info) {
 
-        XStream xstream = XMLConfiguration.getConfiguredXStream(new XStream(), null);
+        XStream xstream = XMLConfiguration.getConfiguredXStream(new XStream(), (WebApplicationContext) null);
         xstream = new GWCGeoServerConfigurationProvider().getConfiguredXStream(xstream);
 
         String marshalled = xstream.toXML(info);
@@ -130,7 +131,9 @@ public class GeoServerTileLayerInfoPersistenceTest {
         StringParameterFilter strParam = new StringParameterFilter();
         strParam.setKey("TIME");
         strParam.setDefaultValue("now");
-        strParam.getValues().addAll(Arrays.asList("today", "yesterday", "tomorrow"));
+        List<String> strValues = new ArrayList(strParam.getValues());
+        strValues.addAll(Arrays.asList("today", "yesterday", "tomorrow"));
+        strParam.setValues(strValues);
 
         RegexParameterFilter regExParam = new RegexParameterFilter();
         regExParam.setKey("CQL_FILTER");
@@ -140,7 +143,9 @@ public class GeoServerTileLayerInfoPersistenceTest {
         FloatParameterFilter floatParam = new FloatParameterFilter();
         floatParam.setKey("ENV");
         floatParam.setThreshold(Float.valueOf(1E-4F));
-        floatParam.getValues().addAll(Arrays.asList(1f, 1.5f, 2f, 2.5f));
+        List<Float> floatValues = new ArrayList(floatParam.getValues());
+        floatValues.addAll(Arrays.asList(1f, 1.5f, 2f, 2.5f));
+        floatParam.setValues(floatValues);
 
         info.getParameterFilters().clear();
         testMarshaling(info);
@@ -166,7 +171,9 @@ public class GeoServerTileLayerInfoPersistenceTest {
         StringParameterFilter strParam2 = new StringParameterFilter();
         strParam2.setKey("ELEVATION");
         strParam2.setDefaultValue("1");
-        strParam2.getValues().addAll(Arrays.asList("1", "2", "3"));
+        List<String> strValues2 = new ArrayList(strParam2.getValues());
+        strValues2.addAll(Arrays.asList("1", "2", "3"));
+        strParam2.setValues(strValues2);
         info.getParameterFilters().add(strParam2);
         testMarshaling(info);
     }

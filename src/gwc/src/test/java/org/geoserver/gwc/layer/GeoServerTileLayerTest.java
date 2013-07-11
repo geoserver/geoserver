@@ -253,8 +253,8 @@ public class GeoServerTileLayerTest {
         List<ParameterFilter> parameterFilters = layerInfoTileLayer.getParameterFilters();
         assertNotNull(parameterFilters);
         assertEquals(1, parameterFilters.size());
-        assertTrue(parameterFilters.get(0) instanceof StringParameterFilter);
-        StringParameterFilter styleFilter = (StringParameterFilter) parameterFilters.get(0);
+        assertTrue(parameterFilters.get(0) instanceof StyleParameterFilter);
+        StyleParameterFilter styleFilter = (StyleParameterFilter) parameterFilters.get(0);
         assertEquals("STYLES", styleFilter.getKey());
         assertEquals("default_style", styleFilter.getDefaultValue());
         assertEquals(new HashSet<String>(Arrays.asList("alternateStyle-1", "alternateStyle-2")),

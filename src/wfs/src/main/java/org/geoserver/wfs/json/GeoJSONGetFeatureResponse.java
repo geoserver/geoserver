@@ -15,8 +15,12 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.opengis.wfs.QueryType;
+import net.opengis.wfs.GetFeatureType;
 import net.sf.json.JSONException;
 
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
@@ -25,16 +29,22 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geotools.data.FeatureSource;
+import org.geotools.data.Query;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.NamedIdentifier;
+import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.filter.Filter;
 import org.opengis.referencing.ReferenceIdentifier;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import javax.xml.namespace.QName;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -86,19 +96,24 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
 
         if (LOGGER.isLoggable(Level.INFO))
             LOGGER.info("about to encode JSON");
-
         // Generate bounds for every feature?
         WFSInfo wfs = getInfo();
         boolean featureBounding = wfs.isFeatureBounding();
-
         // prepare to write out
         OutputStreamWriter osw = null;
         Writer outWriter = null;
         boolean hasGeom = false;
 
-     // get feature count for request
-        int featureCount = getFeatureCountFromFeatureCollection(featureCollection);
-
+        // get feature count for request
+        int featureCount=0; 
+        //for WFS 1.0.0 and WFS 1.1.0 a request with the query must be executed 
+        if (describeFeatureType.getParameters()[0] instanceof GetFeatureType) {
+            featureCount = getFeatureCountFromWFS11Request(describeFeatureType, wfs);
+        }
+        // for WFS 2.0.0 the total number of features is stored in the featureCollection
+        else if (describeFeatureType.getParameters()[0] instanceof net.opengis.wfs20.GetFeatureType){
+            featureCount = featureCollection.getTotalNumberOfFeatures().intValue(); 
+        }
         
         try {
             osw = new OutputStreamWriter(output, gs.getSettings().getCharset());
@@ -124,6 +139,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
                 FeatureCollection collection = (FeatureCollection) resultsList.get(i);
                 FeatureIterator iterator = collection.features();
 
+                
                 try {
                     SimpleFeatureType fType;
                     List<AttributeDescriptor> types;
@@ -278,25 +294,45 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
         return JSONType.getCallbackFunction(request.getKvp());
     }
 
+    
     /**
-     * getFeatureCountFromFeatureCollection
+     * getFeatureCountFromWFS11Request
      * 
-     * Function gets the total number of features from a FeatureCollectionResponse and returns it.
+     * Function gets the total number of features from a WFS 1.0.0 or WFS 1.1.0 request and returns it.
      * 
-     * @param FeatureCollectionResponse featureCollection
-     * @return int featureCount
+     * @param Operation describeFeatureType
+     * @param WFSInfo wfs
+     * @return int featurecount 
      * @throws IOException
      */
-    private int getFeatureCountFromFeatureCollection(FeatureCollectionResponse featureCollection)
+    private int getFeatureCountFromWFS11Request(Operation describeFeatureType, WFSInfo wfs)
             throws IOException {
+        int count = 0;
+        Catalog catalog = wfs.getGeoServer().getCatalog();
 
-        int count=0;
+        GetFeatureType request = (GetFeatureType) describeFeatureType.getParameters()[0];
+        QueryType query = (QueryType) request.getQuery().get(0);
+        QName typeName = (QName) query.getTypeName().get(0);
+        FeatureTypeInfo meta = catalog.getFeatureTypeByName(typeName.getNamespaceURI(),
+                typeName.getLocalPart());
 
-        List resultsList = featureCollection.getFeature();
-        for (int i = 0; i < resultsList.size(); i++) {
-            FeatureCollection collection = (FeatureCollection) resultsList.get(i);
-            count+=collection.size();
+        FeatureSource<? extends FeatureType, ? extends Feature> source = meta.getFeatureSource(
+                null, null);
+        Filter filter = query.getFilter();
+        if (filter == null) {
+            filter = Filter.INCLUDE;
         }
+        Query countQuery = new Query(typeName.getLocalPart(), filter);
+
+        count = source.getCount(countQuery);
+        if (count == -1) {
+            // information was not available in the header!
+            org.geotools.data.Query gtQuery = new org.geotools.data.Query(countQuery);
+            FeatureCollection<? extends FeatureType, ? extends Feature> features = source
+                    .getFeatures(gtQuery);
+            count = features.size();
+        }
+
         return count;
     }
 }

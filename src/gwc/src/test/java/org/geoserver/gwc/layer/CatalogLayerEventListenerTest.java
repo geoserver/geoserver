@@ -77,6 +77,9 @@ public class CatalogLayerEventListenerTest {
     private LayerGroupInfo mockLayerGroupInfo;
 
     private CatalogLayerEventListener listener;
+    
+    private StyleInfo mockDefaultStyle;
+    private Set<StyleInfo> mockStyles;
 
     /**
      * @see junit.framework.TestCase#setUp()
@@ -101,6 +104,9 @@ public class CatalogLayerEventListenerTest {
 
         mockResourceInfo = mock(FeatureTypeInfo.class);
         mockNamespaceInfo = mock(NamespaceInfo.class);
+        
+        mockDefaultStyle = mock(StyleInfo.class);
+        when(mockDefaultStyle.getName()).thenReturn("defaultStyle");
 
         when(mockLayerGroupInfo.getName()).thenReturn(LAYER_GROUP_NAME);
         when(mockLayerGroupInfo.prefixedName()).thenReturn(LAYER_GROUP_NAME);
@@ -111,9 +117,10 @@ public class CatalogLayerEventListenerTest {
         when(mockResourceInfo.getNamespace()).thenReturn(mockNamespaceInfo);
         when(mockNamespaceInfo.getPrefix()).thenReturn(NAMESPACE_PREFIX);
         when(mockLayerInfo.getResource()).thenReturn(mockResourceInfo);
-        
+
         Catalog mockCatalog = mock(Catalog.class);
         when(mockCatalog.getLayerGroups()).thenReturn(Arrays.asList(mockLayerGroupInfo));
+        when(mockLayerInfo.getDefaultStyle()).thenReturn(mockDefaultStyle);
 
         listener = new CatalogLayerEventListener(mockMediator, mockCatalog);
     }

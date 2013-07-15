@@ -85,7 +85,43 @@ public class StyleParameterFilterSubform extends AbstractParameterFilterSubform<
             }
         }
     }
+    static class LabelledEmptyStringModel implements IModel<String> {
     
+        final private IModel<String> realModel;
+        
+        final String label;
+
+        public LabelledEmptyStringModel(IModel<String> realModel, String label) {
+            super();
+            this.realModel = realModel;
+            this.label = label;
+        }
+
+        @Override
+        public void detach() {
+            realModel.detach();
+        }
+
+        @Override
+        public String getObject() {
+            String s = realModel.getObject();
+            if (s==null || s.isEmpty()){
+                return label;
+            } else {
+                return s;
+            }
+        }
+
+        @Override
+        public void setObject(String object) {
+            if (object.equals(label)) {
+                realModel.setObject("");
+            } else {
+                realModel.setObject(object);
+            }
+        }
+    
+    }
     /**
      * Model Set<String> as a List<String> and add an option to represent the set being 
      * {@literal null}
@@ -161,15 +197,18 @@ public class StyleParameterFilterSubform extends AbstractParameterFilterSubform<
         final Component defaultValue;
         
         final String allStyles = getLocalizer().getString("allStyles", this);
+        final String layerDefault = getLocalizer().getString("layerDefault", this);
         
         final IModel<List<String>> availableStylesModelDefault = 
-                new SetAsListModel(new PropertyModel<Set<String>>(model, "layerStyles"), null);
+                new SetAsListModel(new PropertyModel<Set<String>>(model, "layerStyles"), layerDefault);
         final IModel<List<String>> availableStylesModelAllowed = 
                 new SetAsListModel(new PropertyModel<Set<String>>(model, "layerStyles"), allStyles);
         final IModel<List<String>> selectedStylesModel = 
                 new NullableSetAsListModel(new PropertyModel<Set<String>>(model, "styles"), allStyles);
+        final IModel<String> selectedDefaultModel = 
+                new LabelledEmptyStringModel(new PropertyModel<String>(model, "realDefault"), layerDefault);
         
-        defaultValue = new DropDownChoice<String>("defaultValue", new PropertyModel<String>(model, "defaultValue"), availableStylesModelDefault);
+        defaultValue = new DropDownChoice<String>("defaultValue", selectedDefaultModel, availableStylesModelDefault);
         add(defaultValue);
         
         final CheckBoxMultipleChoice<String> styles = new CheckBoxMultipleChoice<String>("styles", selectedStylesModel, availableStylesModelAllowed);

@@ -113,6 +113,24 @@ public class StyleParameterFilter extends ParameterFilter {
         super.setDefaultValue(defaultValue);
     }
     
+    /**
+     * Returns the default style name, or an empty string if set to use the layer specified default
+     * @return
+     */
+    public String getRealDefault() {
+        // Bypass the special processing this class normally does on the default value
+        return super.getDefaultValue();
+    }
+    
+    /**
+     * @see StyleParameterFilter#setDefaultValue()
+     * @param s
+     */
+    public void setRealDefault(String s) {
+        // Just use the regular set method
+        setDefaultValue(s);
+    }
+    
     @Override
     public StyleParameterFilter clone() {
         StyleParameterFilter clone = new StyleParameterFilter();

@@ -9,7 +9,7 @@
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
-        <include>wcs2_0*</include>
+        <include>*wcs2_0*</include>
       </includes>
     </fileSet>
   </fileSets>

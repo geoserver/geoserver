@@ -181,8 +181,6 @@ public class CoverageStoreFileResource extends StoreFileResource {
             	customParameters.put(AbstractGridFormat.USE_JAI_IMAGEREAD.getName().toString(), Boolean.valueOf(useJAIImageReadParam));
             }
             
-            CoverageInfo cinfo = builder.buildCoverage( reader, customParameters );
-            
             //check if the name of the coverage was specified
             String coverageName = form.getFirstValue("coverageName");
             String[] names = reader.getGridCoverageNames();
@@ -237,7 +235,7 @@ public class CoverageStoreFileResource extends StoreFileResource {
             cinfo.setName(coverageName);
         }
         if (nativeName != null) {
-            cinfo.setNativeName(nativeName);
+            cinfo.setNativeCoverageName(nativeName);
         }
         
         if ( !add ) {

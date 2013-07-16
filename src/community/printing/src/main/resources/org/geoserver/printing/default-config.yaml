@@ -25,7 +25,7 @@ hosts:
   - !ipMatch
     ip: www.camptocamp.org
   - !dnsMatch
-    host: labs.metacarta.com
+    host: demo.opengeo.org
     port: 80
   - !dnsMatch
     host: terraservice.net

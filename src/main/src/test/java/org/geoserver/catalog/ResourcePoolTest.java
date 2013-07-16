@@ -21,6 +21,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.util.List;
 
+import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -35,6 +36,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.RunTestSetup;
 import org.geoserver.test.SystemTest;
+import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataUtilities;
 import org.geotools.factory.GeoTools;
@@ -60,6 +62,8 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
     
     private static File rockFillSymbolFile;
     
+    protected static QName TIMERANGES = new QName(MockData.SF_URI, "timeranges", MockData.SF_PREFIX);
+    
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
@@ -74,6 +78,8 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         assertTrue(image.exists());
         FileUtils.copyFileToDirectory(image, images);
         rockFillSymbolFile = new File(images, image.getName()).getCanonicalFile();
+        
+        testData.addRasterLayer(TIMERANGES, "timeranges.zip", null, null, SystemTestData.class, getCatalog());
     }
 
     /**
@@ -285,5 +291,18 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         assertNotNull(uri);
         File actual = DataUtilities.urlToFile(uri.toURL()).getCanonicalFile();
         assertEquals(rockFillSymbolFile, actual);
+    }
+    
+    @Test
+    public void testPreserveStructuredReader() throws IOException {
+        // we have to make sure time ranges native name is set to trigger the bug in question
+        CoverageInfo ci = getCatalog().getCoverageByName(getLayerId(TIMERANGES));
+        assertTrue(ci.getGridCoverageReader(null, null) instanceof StructuredGridCoverage2DReader);
+        String name = ci.getGridCoverageReader(null, null).getGridCoverageNames()[0];
+        ci.setNativeCoverageName(name);
+        getCatalog().save(ci);
+        
+        ci = getCatalog().getCoverageByName(getLayerId(TIMERANGES));
+        assertTrue(ci.getGridCoverageReader(null, null) instanceof StructuredGridCoverage2DReader);
     }
 }

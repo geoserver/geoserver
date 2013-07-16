@@ -1262,7 +1262,7 @@ public class ResourcePool {
             // GeoServer does not need to be updated to the multicoverage stuff
             // (we might want to introduce a hint later for code that really wants to get the
             // multi-coverage reader)
-            return new SingleGridCoverage2DReader((GridCoverage2DReader) reader, coverageName);
+            return SingleGridCoverage2DReader.wrap((GridCoverage2DReader) reader, coverageName);
         } else {
             return (GridCoverage2DReader) reader;
         }

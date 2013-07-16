@@ -1,0 +1,28 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+    <wicket:panel>
+        <div>
+            <fieldset>
+                <legend>
+                    <span><wicket:message key="coverageBandsDetails">coverage bands details</wicket:message></span>
+                </legend>
+                <ul>
+                    <li>
+                        <div wicket:id="bands"></div>
+                    </li>
+                    <li>
+                        <ul>
+                            <li><a wicket:id="reload"><wicket:message key="reload">reload bands</wicket:message></a></li>
+                        </ul>
+                    </li>
+                </ul>
+
+            </fieldset>
+        </div>
+    </wicket:panel>
+    <wicket:fragment wicket:id="text">
+        <input type="text" wicket:id="text" />
+    </wicket:fragment>
+</body>
+</html>

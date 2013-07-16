@@ -16,9 +16,11 @@ import static org.junit.Assert.assertTrue;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.List;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -137,21 +139,58 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
     }
 
     @Test
-    public void testCoverage() throws Exception {
+    public void testSingleBandedCoverage() throws Exception {
         // build a feature type (it's already in the catalog, but we just want to
         // check it's built as expected
         // LINES is a feature type with a native SRS, so we want the bounds to be there
         Catalog cat = getCatalog();
         CatalogBuilder cb = new CatalogBuilder(cat);
         cb.setStore(cat.getCoverageStoreByName(MockData.TASMANIA_DEM.getLocalPart()));
-        CoverageInfo fti = cb.buildCoverage();
+        CoverageInfo ci = cb.buildCoverage();
 
         // perform basic checks
-        assertEquals(CRS.decode("EPSG:4326", true), fti.getCRS());
-        assertEquals("EPSG:4326", fti.getSRS());
-        assertNotNull(fti.getNativeCRS());
-        assertNotNull(fti.getNativeBoundingBox());
-        assertNotNull(fti.getLatLonBoundingBox());
+        assertEquals(CRS.decode("EPSG:4326", true), ci.getCRS());
+        assertEquals("EPSG:4326", ci.getSRS());
+        assertNotNull(ci.getNativeCRS());
+        assertNotNull(ci.getNativeBoundingBox());
+        assertNotNull(ci.getLatLonBoundingBox());
+        
+        // check the coverage dimensions
+        List<CoverageDimensionInfo> dimensions = ci.getDimensions();
+        assertEquals(1, dimensions.size());
+        CoverageDimensionInfo dimension = dimensions.get(0);
+        assertEquals("GRAY_INDEX", dimension.getName());
+        assertEquals(1, dimension.getNullValues().size());
+        assertEquals(-9999, dimension.getNullValues().get(0), 0d);
+        assertEquals(-9999, dimension.getRange().getMinimum(), 0d);
+        // Huston, we have a problem here...
+        // assertEquals(9999, dimension.getRange().getMaximum(), 0d);
+        assertNull(dimension.getUnit());
+    }
+    
+    @Test
+    public void testMultiBandCoverage() throws Exception {
+        Catalog cat = getCatalog();
+        CatalogBuilder cb = new CatalogBuilder(cat);
+        cb.setStore(cat.getCoverageStoreByName(MockData.TASMANIA_BM.getLocalPart()));
+        CoverageInfo ci = cb.buildCoverage();
+
+        // perform basic checks
+        assertEquals(CRS.decode("EPSG:4326", true), ci.getCRS());
+        assertEquals("EPSG:4326", ci.getSRS());
+        assertNotNull(ci.getNativeCRS());
+        assertNotNull(ci.getNativeBoundingBox());
+        assertNotNull(ci.getLatLonBoundingBox());
+        
+        // check the coverage dimensions
+        List<CoverageDimensionInfo> dimensions = ci.getDimensions();
+        assertEquals(3, dimensions.size());
+        CoverageDimensionInfo dimension = dimensions.get(0);
+        assertEquals("RED_BAND", dimension.getName());
+        assertEquals(0, dimension.getNullValues().size());
+        assertEquals(Double.NEGATIVE_INFINITY, dimension.getRange().getMinimum(), 0d);
+        assertEquals(Double.POSITIVE_INFINITY, dimension.getRange().getMaximum(), 0d);
+        assertEquals("W.m-2.Sr-1", dimension.getUnit());
     }
 
     @Test

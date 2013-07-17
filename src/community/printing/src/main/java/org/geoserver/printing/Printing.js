@@ -16,9 +16,9 @@ Ext.onReady(function() {
     
     var mapPanel = new GeoExt.MapPanel({
         region: "center",
-        layers: [new OpenLayers.Layer.WMS("Global Imagery",
-            "http://labs.metacarta.com/wms/vmap0",
-            {layers: "basic"})] ,
+        layers: [new OpenLayers.Layer.WMS("Natural Earth",
+            "http://demo.opengeo.org/geoserver/wms",
+            {layers: "ne:ne"})] ,
         center: [16,48],
         zoom: 5
     });

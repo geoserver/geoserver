@@ -143,6 +143,12 @@ public class CoverageStoreFileResource extends StoreFileResource {
             } else {
                 url = "file:data/" + workspace + "/" + coveragestore + "/" + uploadedFile.getName();
             }
+            if (url.contains("+")) {
+                url = url.replace("+", "%2B");
+            }
+            if (url.contains(" ")) {
+                url = url.replace(" ", "%20");
+            }
             info.setURL(url);
         }
         else {
@@ -169,7 +175,7 @@ public class CoverageStoreFileResource extends StoreFileResource {
         GridCoverage2DReader reader = null;
         try {
             reader = 
-                (GridCoverage2DReader) ((AbstractGridFormat) coverageFormat).getReader(uploadedFile.toURL());
+                (GridCoverage2DReader) ((AbstractGridFormat) coverageFormat).getReader(DataUtilities.fileToURL(uploadedFile));
             if ( reader == null ) {
                 throw new RestletException( "Could not aquire reader for coverage.", Status.SERVER_ERROR_INTERNAL);
             }

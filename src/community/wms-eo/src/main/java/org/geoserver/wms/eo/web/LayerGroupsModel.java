@@ -54,6 +54,7 @@ public class LayerGroupsModel extends LoadableDetachableModel<List<LayerGroupInf
         }
         
         Collections.sort(filteredGroups, new Comparator<LayerGroupInfo>() {
+            @Override
             public int compare(LayerGroupInfo g1, LayerGroupInfo g2) {
                 return g1.prefixedName().compareToIgnoreCase(g2.prefixedName());
             }    

@@ -56,6 +56,7 @@ public class EoLayerGroupPanel extends Panel implements ParamPanel {
      * Returns the form component used in the panel in case it is needed for related form components
      * validation
      */
+    @Override
     public FormComponent<LayerGroupInfo> getFormComponent() {
         return choice;
     }

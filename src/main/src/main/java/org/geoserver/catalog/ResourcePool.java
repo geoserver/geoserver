@@ -1245,6 +1245,9 @@ public class ResourcePool {
         
                     // readers might change the provided hints, pass down a defensive copy
                     reader = gridFormat.getReader(obj, new Hints(hints));
+                    if(reader == null) {
+                        throw new IOException("Failed to create reader from " + obj.getAbsolutePath() + " and hints " + hints);
+                    }
                     if(key != null) {
                         if(hints != null) {
                             hintCoverageReaderCache.put((CoverageHintReaderKey) key, reader);

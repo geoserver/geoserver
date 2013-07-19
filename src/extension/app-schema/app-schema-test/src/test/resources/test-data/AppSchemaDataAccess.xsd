@@ -238,7 +238,7 @@
                 </documentation>
               </annotation>
             </element>
-            <element name="isDenormalised" type="boolean" default="true" minOccuros="0">
+            <element name="isDenormalised" type="boolean" default="true" minOccurs="0">
               <annotation>
                 <documentation>
                   <![CDATA[

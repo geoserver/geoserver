@@ -16,10 +16,12 @@ import org.geoserver.catalog.LayerGroupInfo;
 @SuppressWarnings("serial")
 public class LayerGroupInfoChoiceRenderer implements IChoiceRenderer<LayerGroupInfo> {
 
+    @Override
     public Object getDisplayValue(LayerGroupInfo group) {
         return group.prefixedName();
     }
 
+    @Override
     public String getIdValue(LayerGroupInfo group, int index) {
         return group.getId();
     }

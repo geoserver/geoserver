@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import javax.xml.namespace.QName;
 
 import org.custommonkey.xmlunit.exceptions.XpathException;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.MockData;
@@ -59,6 +60,22 @@ public class DescribeCoverageTest extends WCSTestSupport {
     }
     
     @Test
+    public void testCustomUnit() throws Exception {
+        CoverageInfo ciRain = getCatalog().getCoverageByName(getLayerId(RAIN));
+        ciRain.getDimensions().get(0).setUnit("mm");
+        getCatalog().save(ciRain);
+        
+        Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=sf__rain");
+        assertNotNull(dom);
+        // print(dom, System.out);
+        
+        checkValidationErrors(dom, WCS20_SCHEMA);
+        assertXpathEvaluatesTo("1", "count(//wcs:CoverageDescription/gmlcov:rangeType/swe:DataRecord/swe:field)", dom);
+        assertXpathEvaluatesTo("rain", "//wcs:CoverageDescription/gmlcov:rangeType//swe:DataRecord/swe:field/@name", dom);
+        assertXpathEvaluatesTo("mm", "//wcs:CoverageDescription/gmlcov:rangeType/swe:DataRecord/swe:field/swe:Quantity/swe:uom/@code", dom);
+    }
+    
+    @Test
     public void testMultiBandKVP() throws Exception {
         Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=wcs__multiband");
         assertNotNull(dom);
@@ -106,7 +123,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
     public void gridCellCenterEnforce() throws Exception {
             Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=wcs__BlueMarble");
             assertNotNull(dom);
-//             print(dom, System.out);
+            print(dom, System.out);
             
             checkValidationErrors(dom, WCS20_SCHEMA);
             assertXpathEvaluatesTo("3", "count(//wcs:CoverageDescription//gmlcov:rangeType//swe:DataRecord//swe:field)", dom);

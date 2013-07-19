@@ -104,7 +104,7 @@ public class EoLayerGroupEditPage extends GeoServerSecuredPage {
     }
     
     private final void save() {
-        LayerGroupInfo lg = (LayerGroupInfo) lgModel.getObject();
+        LayerGroupInfo lg = lgModel.getObject();
         getCatalog().save(lg);
         
         this.extensionPanels.visitChildren(LayerGroupConfigurationPanel.class,
@@ -273,7 +273,7 @@ public class EoLayerGroupEditPage extends GeoServerSecuredPage {
         return new SubmitLink("save"){
             @Override
             public void onSubmit() {
-                LayerGroupInfo lg = (LayerGroupInfo) lgModel.getObject();
+                LayerGroupInfo lg = lgModel.getObject();
                 
                 // update the layer group entries
                 lg.getLayers().clear();

@@ -10,12 +10,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import javax.measure.unit.Unit;
-import javax.measure.unit.UnitFormat;
-
 import net.opengis.wcs20.DescribeCoverageType;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -40,7 +38,6 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.util.logging.Logging;
 import org.geotools.wcs.v2_0.WCS;
-import org.opengis.coverage.SampleDimension;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.PixelInCell;
@@ -245,8 +242,7 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
                 handleDomainSet(gg, 2, encodedId, srsName, axisSwap);
 
                 // handle rangetype
-                GridSampleDimension[] sampleDimensions = getSampleDimensions(reader);
-                handleRangeType(sampleDimensions);
+                handleRangeType(ci.getDimensions());
 
                 // service parameters
                 handleServiceParameters(ci);
@@ -312,34 +308,34 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
          * 
          * @param gc2d the {@link GridCoverage2D} for which to encode the RangeType.
          */
-        public void handleRangeType(final SampleDimension[] bands) {
+        public void handleRangeType(final List<CoverageDimensionInfo> bands) {
             start("gmlcov:rangeType");
             start("swe:DataRecord");
             
             // handle bands
-            for(SampleDimension sd:bands){
+            for(CoverageDimensionInfo sd : bands){
                 final AttributesImpl fieldAttr = new AttributesImpl();
-                fieldAttr.addAttribute("", "name", "name", "", sd.getDescription().toString());  // TODO NCNAME?  TODO Use Band[i] convention?                
+                fieldAttr.addAttribute("", "name", "name", "", sd.getName());                
                 start("swe:field",fieldAttr);
                 
                 start("swe:Quantity");
                 
                 // Description
                 start("swe:description");
-                chars(sd.getDescription().toString()); // TODO can we make up something better??
+                chars(sd.getName()); // TODO can we make up something better??
                 end("swe:description");
                 
                 //UoM
                 final AttributesImpl uomAttr = new AttributesImpl();
-                final Unit<?> uom=sd.getUnits();
-                uomAttr.addAttribute("", "code", "code", "", uom==null?"W.m-2.Sr-1":UnitFormat.getInstance().format(uom)); 
+                final String unit =sd.getUnit();
+                uomAttr.addAttribute("", "code", "code", "", unit == null ? "W.m-2.Sr-1" : unit); 
                 start("swe:uom",uomAttr);
                 end("swe:uom");
                 
                 // constraint on values
                 start("swe:constraint");
                 start("swe:AllowedValues");
-                handleSampleDimensionRange((GridSampleDimension) sd);// TODO make  this generic
+                handleSampleDimensionRange(sd);// TODO make  this generic
                 end("swe:AllowedValues");
                 end("swe:constraint");
                 

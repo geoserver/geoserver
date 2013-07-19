@@ -143,6 +143,12 @@ public class CoverageStoreFileResource extends StoreFileResource {
             } else {
                 url = "file:data/" + workspace + "/" + coveragestore + "/" + uploadedFile.getName();
             }
+            if (url.contains("+")) {
+                url = url.replace("+", "%2B");
+            }
+            if (url.contains(" ")) {
+                url = url.replace(" ", "%20");
+            }
             info.setURL(url);
         }
         else {
@@ -169,7 +175,7 @@ public class CoverageStoreFileResource extends StoreFileResource {
         GridCoverage2DReader reader = null;
         try {
             reader = 
-                (GridCoverage2DReader) ((AbstractGridFormat) coverageFormat).getReader(uploadedFile.toURL());
+                (GridCoverage2DReader) ((AbstractGridFormat) coverageFormat).getReader(DataUtilities.fileToURL(uploadedFile));
             if ( reader == null ) {
                 throw new RestletException( "Could not aquire reader for coverage.", Status.SERVER_ERROR_INTERNAL);
             }
@@ -180,8 +186,6 @@ public class CoverageStoreFileResource extends StoreFileResource {
             if (useJAIImageReadParam != null) {
             	customParameters.put(AbstractGridFormat.USE_JAI_IMAGEREAD.getName().toString(), Boolean.valueOf(useJAIImageReadParam));
             }
-            
-            CoverageInfo cinfo = builder.buildCoverage( reader, customParameters );
             
             //check if the name of the coverage was specified
             String coverageName = form.getFirstValue("coverageName");
@@ -237,7 +241,7 @@ public class CoverageStoreFileResource extends StoreFileResource {
             cinfo.setName(coverageName);
         }
         if (nativeName != null) {
-            cinfo.setNativeName(nativeName);
+            cinfo.setNativeCoverageName(nativeName);
         }
         
         if ( !add ) {

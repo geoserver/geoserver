@@ -310,6 +310,7 @@ public class EoLayerGroupEntryPanel extends Panel {
                     return Arrays.asList(NAME);
                 }
 
+                @Override
                 public IModel newModel(Object object) {
                     return new StyleDetachableModel((StyleInfo) object);
                 }

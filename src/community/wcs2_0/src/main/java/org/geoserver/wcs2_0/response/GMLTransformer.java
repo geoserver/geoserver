@@ -9,7 +9,6 @@ import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
-import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -22,6 +21,7 @@ import javax.media.jai.PlanarImage;
 import javax.media.jai.iterator.RectIter;
 import javax.media.jai.iterator.RectIterFactory;
 
+import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.platform.GeoServerExtensions;
@@ -801,7 +801,7 @@ class GMLTransformer extends TransformerBase {
 
                 // Description
                 start("swe:description");
-                chars(sd.toString());// TODO can we make up something better??
+                chars(sd.getDescription().toString());// TODO can we make up something better??
                 end("swe:description");
 
                 // UoM
@@ -815,7 +815,7 @@ class GMLTransformer extends TransformerBase {
                 // constraint on values
                 start("swe:constraint");
                 start("swe:AllowedValues");
-                handleSampleDimensionRange((GridSampleDimension) sd);// TODO make this generic
+                handleSampleDimensionRange(sd);// TODO make this generic
                 end("swe:AllowedValues");
                 end("swe:constraint");
 
@@ -884,13 +884,32 @@ class GMLTransformer extends TransformerBase {
          * 
          * @param sd the {@link SampleDimension} to encode a meaningful range for.
          */
-        public void handleSampleDimensionRange(GridSampleDimension sd) {
+        public void handleSampleDimensionRange(CoverageDimensionInfo sd) {
+            SampleDimensionType sdType = sd.getDimensionType();
+            handleSampleDimension(sdType);
 
-            final SampleDimensionType sdType = sd.getSampleDimensionType();
+        }
+
+        private void handleSampleDimension(SampleDimensionType sdType) {
+            // old data dirs upgrading will have this empty
+            if(sdType == null) {
+                // pick the one with the largest domain and be done with it
+                sdType = SampleDimensionType.REAL_64BITS;
+            }
             final NumberRange<? extends Number> indicativeRange = TypeMap.getRange(sdType);
             start("swe:interval");
             chars(indicativeRange.getMinValue() + " " + indicativeRange.getMaxValue());
             end("swe:interval");
+        }
+        
+        /**
+         * Tries to encode a meaningful range for a {@link SampleDimension}.
+         * 
+         * @param sd the {@link SampleDimension} to encode a meaningful range for.
+         */
+        public void handleSampleDimensionRange(SampleDimension sd) {
+            SampleDimensionType sdType = sd.getSampleDimensionType();
+            handleSampleDimension(sdType);
 
         }
 

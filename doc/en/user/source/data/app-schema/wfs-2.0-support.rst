@@ -1,4 +1,4 @@
-.. _app-schema.wms-support:
+.. _app-schema.wfs20-support:
 
 WFS 2.0 Support
 ===============

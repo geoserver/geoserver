@@ -81,6 +81,8 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     
     boolean sortable = true;
     
+    boolean selectable = true;
+    
     /**
      * An array of the selected items in the current page. Gets wiped out each
      * time the current page, the sorting or the filtering changes.
@@ -339,6 +341,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     protected CheckBox selectOneCheckbox(Item item) {
         CheckBox cb = new CheckBox("selectItem", new SelectionModel(item.getIndex()));
         cb.setOutputMarkupId(true);
+        cb.setVisible(selectable);
         cb.add(new AjaxFormComponentUpdatingBehavior("onclick") {
 
             @Override
@@ -352,6 +355,15 @@ public abstract class GeoServerTablePanel<T> extends Panel {
             
         });
         return cb;
+    }
+    
+    /**
+     * When set to false, will prevent the selection checkboxes from showing up
+     * @param selectable
+     */
+    public void setSelectable(boolean selectable) {
+        this.selectable = selectable;
+        selectAll.setVisible(selectable);
     }
     
     void setSelection(boolean selected) {

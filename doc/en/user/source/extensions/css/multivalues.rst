@@ -32,7 +32,7 @@ will be drawn.  For example, you could create a bulls-eye effect by drawing
 multiple circles on top of each other with decreasing sizes::
 
     * {
-        mark: mark(circle), mark(circle), mark(circle), mark(circle);
+        mark: symbol(circle), symbol(circle), symbol(circle), symbol(circle);
         mark-size: 40px, 30px, 20px, 10px;
     }
 
@@ -40,7 +40,7 @@ If you do not provide the same number of values for an auxiliary property, the
 list will be repeated as many times as needed to finish.  So::
 
     * {
-        mark: mark(circle), mark(circle), mark(circle), mark(circle);
+        mark: symbol(circle), symbol(circle), symbol(circle), symbol(circle);
         mark-size: 40px, 30px, 20px, 10px;
         mark-opacity: 12%;
     }

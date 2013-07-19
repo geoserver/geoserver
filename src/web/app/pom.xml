@@ -90,6 +90,11 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
+      <artifactId>kml</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
       <artifactId>gwc</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -911,30 +916,7 @@
       </dependencies>
     </profile>
     <profile>
-       <id>kml</id>
-       <activation>
-         <activeByDefault>true</activeByDefault>
-       </activation>
-       <dependencies>  
-         <dependency>
-           <groupId>org.geoserver</groupId>
-           <artifactId>kml</artifactId>
-           <version>${project.version}</version>
-         </dependency>
-       </dependencies>
-    </profile>
-    <profile>
-       <id>kml-old</id>
-       <dependencies>  
-         <dependency>
-           <groupId>org.geoserver.community</groupId>
-           <artifactId>kml-old</artifactId>
-           <version>${project.version}</version>
-         </dependency>
-      </dependencies>
-    </profile>
-		<profile>
-			<id>libjpeg-turbo</id>
+      <id>libjpeg-turbo</id>
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>

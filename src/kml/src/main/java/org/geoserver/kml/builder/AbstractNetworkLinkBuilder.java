@@ -40,6 +40,9 @@ public abstract class AbstractNetworkLinkBuilder {
         Document document = kml.createAndSetDocument();
         Map formatOptions = context.getRequest().getFormatOptions();
         String kmltitle = (String) formatOptions.get("kmltitle");
+        if(kmltitle == null) {
+            kmltitle = context.getMapContent().getTitle();
+        }
         document.setName(kmltitle);
         
         // get the callbacks for the document and let them loose

@@ -31,6 +31,7 @@ import org.geotools.util.Converters;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
+import de.micromata.opengis.kml.v_2_2_0.Document;
 import de.micromata.opengis.kml.v_2_2_0.Feature;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
 
@@ -240,6 +241,23 @@ public class KmlEncodingContext {
             // in this case, compose the already existing features with the
             // dynamically generated ones
             folder.setFeature(new CompositeList<Feature>(originalFeatures, features));
+        }
+    }
+    
+    /**
+     * Adds features to the document own list
+     * 
+     * @param folder
+     * @param features
+     */
+    public void addFeatures(Document document, List<Feature> features) {
+        List<Feature> originalFeatures = document.getFeature();
+        if (originalFeatures == null || originalFeatures.size() == 0) {
+            document.setFeature(features);
+        } else {
+            // in this case, compose the already existing features with the
+            // dynamically generated ones
+            document.setFeature(new CompositeList<Feature>(originalFeatures, features));
         }
     }
 

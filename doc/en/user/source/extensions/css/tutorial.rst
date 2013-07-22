@@ -152,8 +152,6 @@ This creates an example style with the following source::
 
     * {
       fill: lightgrey;
-      stroke: black;
-      mark: symbol(square);
     }
 
 This demonstrates the basic elements of a CSS style:

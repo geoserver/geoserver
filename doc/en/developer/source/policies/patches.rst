@@ -51,7 +51,9 @@ Assuming that ``origin`` points to your github repo the the patch workflow then 
 #. Visit your github repo page and issue the pull request. 
 
 At this point the core developers will be notified of the pull request and review it at the earliest 
-convenience. 
+convenience. Core developers will review the patch and might require changes or improvements to it, it
+will be up to the submitter to amend the pull request and keep it alive until it gets merged.
+Please be patient, pull requests are often reviewed in spare time so turn-around can be a little slow.
 
 Git diff
 ^^^^^^^^

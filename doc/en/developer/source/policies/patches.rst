@@ -54,6 +54,8 @@ At this point the core developers will be notified of the pull request and revie
 convenience. Core developers will review the patch and might require changes or improvements to it, it
 will be up to the submitter to amend the pull request and keep it alive until it gets merged.
 Please be patient, pull requests are often reviewed in spare time so turn-around can be a little slow.
+If a pull request becomes stale with no feedback from the submitter for a couple of months long, it will linked 
+form a JIRA issue (to avoid losing the partial work) and then be closed.
 
 Git diff
 ^^^^^^^^

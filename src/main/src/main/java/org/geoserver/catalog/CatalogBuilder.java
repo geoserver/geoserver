@@ -351,8 +351,12 @@ public class CatalogBuilder {
         ftinfo.setEnabled(true);
 
         // naming
-        ftinfo.setNativeName(featureType.getName().getLocalPart());
-        ftinfo.setName(featureType.getName().getLocalPart());
+        Name name = featureSource.getName();
+        if (name == null) {
+            name = featureType.getName();
+        }
+        ftinfo.setNativeName(name.getLocalPart());
+        ftinfo.setName(name.getLocalPart());
 
         WorkspaceInfo workspace = store.getWorkspace();
         NamespaceInfo namespace = catalog.getNamespaceByPrefix(workspace.getName());

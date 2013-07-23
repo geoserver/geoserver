@@ -23,4 +23,5 @@ Read on for information about:
    values
    styled-marks
    examples
+   cookbook
 

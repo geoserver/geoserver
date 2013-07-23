@@ -818,6 +818,8 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             AttributesImpl qatts = new AttributesImpl();
             boolean queryable = wmsConfig.isQueryable(layer);
             qatts.addAttribute("", "queryable", "queryable", "", queryable ? "1" : "0");
+            boolean opaque = wmsConfig.isOpaque(layer);
+            qatts.addAttribute("", "opaque", "opaque", "", opaque ? "1" : "0");
             Integer cascaded = wmsConfig.getCascadedHopCount(layer);
             if (cascaded != null) {
                 qatts.addAttribute("", "cascaded", "cascaded", "", String.valueOf(cascaded));

@@ -758,6 +758,13 @@ public class WMS implements ApplicationContextAware {
         }
     }
 
+    /**
+     * Returns true if the layer is opaque
+     */
+    public boolean isOpaque(LayerInfo layer) {
+        return layer.isOpaque();
+    }
+
     public Integer getCascadedHopCount(LayerInfo layer) {
         if (!(layer.getResource() instanceof WMSLayerInfo)) {
             return null;

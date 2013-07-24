@@ -48,6 +48,7 @@
           <descriptor>release/ext-mbtiles.xml</descriptor>
           <descriptor>release/ext-geopkg.xml</descriptor>
           <descriptor>release/ext-grib.xml</descriptor>
+          <descriptor>release/ext-pgraster.xml</descriptor>
           <descriptor>release/ext-dyndimension.xml</descriptor>
 		  <descriptor>release/ext-rest-ext.xml</descriptor>
         </descriptors>
@@ -159,7 +160,8 @@
         <module>netcdf-out</module>
         <module>mbtiles</module>
         <module>geopkg</module>
-		<module>grib</module>
+        <module>grib</module>
+        <module>pgraster</module>
         <module>dyndimension</module>
 		<module>rest-ext</module>
       </modules>
@@ -237,6 +239,15 @@
       </activation> 
       <modules>
         <module>netcdf</module>
+      </modules>
+    </profile>
+        <profile>
+      <id>pgraster</id>
+      <activation>
+        <property><name>pgraster</name></property>
+      </activation>
+      <modules>
+        <module>pgraster</module>
       </modules>
     </profile>
     <profile>

@@ -29,3 +29,4 @@ officially part of the GeoServer releases. They are however built along with the
    geopkg/index
    grib/grib
    rest/index
+   pgraster/pgraster

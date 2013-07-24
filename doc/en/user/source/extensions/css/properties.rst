@@ -164,7 +164,7 @@ Text Symbology (Labeling)
       * yes
     - * label-offset
       * expression 
-      * This is for fine-tuning label-anchor. x and y values specify pixels to adjust the label position. 
+      * This is for fine-tuning label-anchor. x and y values specify pixels to adjust the label position. For lines, a single value will make the label be parallel to the line, at the given distance, while two values will force a point style placement, with the label painted horizonally at the center of the line (plus the given offsets)
       * yes
     - * label-rotation
       * expression 

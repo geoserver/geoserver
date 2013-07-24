@@ -27,3 +27,4 @@ Each section uses data created especially for the Cookbooks (both CSS and SLD), 
    :maxdepth: 2
 
    cookbook_point
+   cookbook_line

@@ -610,42 +610,24 @@ This example alters the :ref:`css_cookbook_lines_simpleline` style at different 
 Code
 ~~~~
 
-.. code-block:: xml 
+.. code-block:: css
    :linenos: 
 
-      <FeatureTypeStyle>
-        <Rule>
-          <Name>Large</Name>
-          <MaxScaleDenominator>180000000</MaxScaleDenominator>
-          <LineSymbolizer>
-            <Stroke>
-              <CssParameter name="stroke">#009933</CssParameter>
-              <CssParameter name="stroke-width">6</CssParameter>
-            </Stroke>
-          </LineSymbolizer>
-        </Rule>
-        <Rule>
-          <Name>Medium</Name>
-          <MinScaleDenominator>180000000</MinScaleDenominator>
-          <MaxScaleDenominator>360000000</MaxScaleDenominator>
-          <LineSymbolizer>
-            <Stroke>
-              <CssParameter name="stroke">#009933</CssParameter>
-              <CssParameter name="stroke-width">4</CssParameter>
-            </Stroke>
-          </LineSymbolizer>
-        </Rule>
-        <Rule>
-          <Name>Small</Name>
-          <MinScaleDenominator>360000000</MinScaleDenominator>
-          <LineSymbolizer>
-            <Stroke>
-              <CssParameter name="stroke">#009933</CssParameter>
-              <CssParameter name="stroke-width">2</CssParameter>
-            </Stroke>
-          </LineSymbolizer>
-        </Rule>
-      </FeatureTypeStyle>
+    * {
+      stroke: #009933;
+    }
+
+    [@scale < 180000000] {
+      stroke-width: 6;
+    }
+
+    [@scale > 180000000] [@scale < 360000000] {
+      stroke-width: 4;
+    }
+
+    [@scale > 360000000] {
+      stroke-width: 2;
+    }
 
 Details
 ~~~~~~~
@@ -681,20 +663,7 @@ This style contains three rules.  The three rules are designed as follows:
 
 The order of these rules does not matter since the scales denominated in each rule do not overlap.
 
-The first rule (**lines 2-11**) is the smallest scale denominator, corresponding to when the view is "zoomed in".  The
-scale rule is set on **line 4**, so that the rule will apply to any map with a scale denominator of 180,000,000 or
-less.  **Line 7-8** draws the line to be dark green (``#009933``) with a width of 6 pixels.
-
-The second rule (**lines 12-22**) is the intermediate scale denominator, corresponding to when the view is "partially
-zoomed".  **Lines 14-15** set the scale such that the rule will apply to any map with scale denominators between
-180,000,000 and 360,000,000.  (The ``<MinScaleDenominator>`` is inclusive and the ``<MaxScaleDenominator>`` is
-exclusive, so a zoom level of exactly 360,000,000 would *not* apply here.)  Aside from the scale, the only difference
-between this rule and the previous is the width of the lines, which is set to 4 pixels on **line 19**.
-
-The third rule (**lines 23-32**) is the largest scale denominator, corresponding to when the map is "zoomed out".  The
-scale rule is set on **line 25**, so that the rule will apply to any map with a scale denominator of 360,000,000 or
-greater.  Again, the only other difference between this rule and the others is the width of the lines, which is set to
-2 pixels on **line 29**.
+The first rule provides the stroke color used at all zoom levels, dark gray, while the other three rules cascade over it applying the different stroke widths based on the current zoom level leveraging the "@scale" pseudo attribute. The "@scale" pseudo attribute can only be compared using the "<" and ">" operators, using any other operator will result in errors.
 
 The result of this style is that lines are drawn with larger widths as one zooms in and smaller widths as one zooms out.
 

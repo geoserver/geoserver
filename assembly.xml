@@ -11,6 +11,9 @@
       <includes>
         <include>cluster-*.jar</include>
       </includes>
+      <excludes>
+        <exclude>cluster-*-sources.jar</exclude>
+      </excludes>
     </fileSet>
     <fileSet>
       <directory>target/dependency</directory>

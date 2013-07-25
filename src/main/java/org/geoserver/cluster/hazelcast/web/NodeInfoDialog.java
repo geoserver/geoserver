@@ -35,6 +35,7 @@ public class NodeInfoDialog extends Panel {
         Member m = hz.getCluster().getLocalMember();
         InetSocketAddress address = m.getInetSocketAddress();
 
+        add(new Label("groupName", hz.getConfig().getGroupConfig().getName()));
         add(new Label("ip", address.getAddress().getHostAddress()));
         add(new Label("host", address.getHostName()));
         add(new Label("port", new Model(address.getPort())));

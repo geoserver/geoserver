@@ -8,7 +8,9 @@
         
     <hz:hazelcast id="hzInstance">
         <hz:config>
-            <!--hz:group name="dev" password="password"/>
+            <hz:instance-name>gscluster</hz:instance-name>
+            <hz:group name="gscluster" password="geoserver" />
+            <!--
             <hz:network port="5701" port-auto-increment="false">
                 <hz:join>
                     <hz:multicast enabled="false"
@@ -26,7 +28,8 @@
                     read-backup-data="true"
                     cache-value="true"
                     eviction-policy="NONE"
-                    merge-policy="hz.ADD_NEW_ENTRY"/-->
+                    merge-policy="hz.ADD_NEW_ENTRY"/>
+            -->
         </hz:config>
     </hz:hazelcast>
 

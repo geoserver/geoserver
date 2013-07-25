@@ -92,6 +92,12 @@
             <param-name>debug</param-name>
             <param-value>false</param-value>
         </init-param>
+        
+        <init-param>
+            <param-name>instance-name</param-name>
+            <param-value>gscluster</param-value>
+        </init-param>
+        
     </filter>
 
     <filter>

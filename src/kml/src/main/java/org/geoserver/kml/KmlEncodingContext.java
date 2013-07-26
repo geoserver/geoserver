@@ -105,6 +105,30 @@ public class KmlEncodingContext {
         this.service = wms.getServiceInfo();
         this.liveIcons = true;
         this.iconStyles = new HashMap<String,Style>();
+        
+        Boolean autofit = Converters.convert(request.getFormatOptions().get("autofit"), Boolean.class);
+        if(autofit != null && Converters.convert(autofit, Boolean.class)) {
+            double width = mapContent.getMapWidth();
+            double height = mapContent.getMapHeight();
+            ReferencedEnvelope bbox = mapContent.getViewport().getBounds();
+            double bbox_width = bbox.getWidth(); 
+            double bbox_height = bbox.getHeight();
+            // be on the safe side
+            if(bbox_width > 0 && bbox_height > 0 & width > 0 & height > 0) {
+                double ratio = bbox_width / bbox_height;
+                if(bbox_width > bbox_height) {
+                    height = width / ratio;
+                    int h = (int) Math.ceil(height);
+                    mapContent.setMapHeight(h);
+                    mapContent.getRequest().setHeight(h);
+                } else {
+                    width = height * ratio;
+                    int w = (int) Math.ceil(width);
+                    mapContent.setMapWidth(w);
+                    mapContent.getRequest().setWidth(w);
+                }
+            }
+        }
     }
     
     /**

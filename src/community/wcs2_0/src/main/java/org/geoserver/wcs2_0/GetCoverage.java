@@ -432,7 +432,7 @@ public class GetCoverage {
         GeneralParameterValue[] readParameters = CoverageUtils.getParameters(readParametersDescriptor, cinfo.getParameters());
         readParameters = (readParameters != null ? readParameters : new GeneralParameterValue[0]);
         // work in streaming fashion when JAI is involved
-        readParameters = RequestUtils.replaceParameter(
+        readParameters = WCSUtils.replaceParameter(
                 readParameters, 
                 Boolean.FALSE, 
                 AbstractGridFormat.USE_JAI_IMAGEREAD);

@@ -5,8 +5,6 @@ Polygons
 
 Polygons are two dimensional shapes that contain both an outer edge (or "stroke") and an inside (or "fill").  A polygon can be thought of as an irregularly-shaped point and is styled in similar ways to points.
 
-.. warning:: The code examples shown on this page are **not the full SLD code**, as they omit the SLD header and footer information for the sake of brevity.  Please use the links to download the full SLD for each example.
-
 .. _css_cookbook_polygons_attributes:
 
 Example polygons layer

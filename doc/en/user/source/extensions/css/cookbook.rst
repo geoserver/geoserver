@@ -29,3 +29,4 @@ Each section uses data created especially for the Cookbooks (both CSS and SLD), 
    cookbook_point
    cookbook_line
    cookbook_polygon
+   cookbook_raster

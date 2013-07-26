@@ -43,6 +43,9 @@ import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.processing.Operation;
 import org.opengis.filter.Filter;
 import org.opengis.geometry.Envelope;
+import org.opengis.parameter.GeneralParameterValue;
+import org.opengis.parameter.ParameterDescriptor;
+import org.opengis.parameter.ParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
@@ -599,5 +602,31 @@ public class WCSUtils {
             pixelsNumber *= rasterEnvelope.getSpan(i);
         }
         return pixelsNumber;
+    }
+
+    /**
+    * Replace or add the provided parameter in the read parameters
+    */
+    public static <T> GeneralParameterValue[] replaceParameter(
+            GeneralParameterValue[] readParameters, Object value, ParameterDescriptor<T> pd) {
+    
+        // scan all the params looking for the one we want to add
+        for (GeneralParameterValue gpv : readParameters) {
+            // in case of match of any alias add a param value to the lot
+            if (gpv.getDescriptor().getName().equals(pd.getName())) {
+                ((ParameterValue) gpv).setValue(value);
+                // leave
+                return readParameters;
+            }
+        }
+    
+        // add it to the array
+        // add to the list
+        GeneralParameterValue[] readParametersClone = new GeneralParameterValue[readParameters.length + 1];
+        System.arraycopy(readParameters, 0, readParametersClone, 0, readParameters.length);
+        final ParameterValue<T> pv = pd.createValue();
+        pv.setValue(value);
+        readParametersClone[readParameters.length] = pv;
+        return readParametersClone;
     }
 }

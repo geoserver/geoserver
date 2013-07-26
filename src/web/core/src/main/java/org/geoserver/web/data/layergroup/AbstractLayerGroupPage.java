@@ -138,6 +138,7 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
         form.add(envelopePanel = new EnvelopePanel( "bounds" )/*.setReadOnly(true)*/);
         envelopePanel.setRequired(true);
         envelopePanel.setCRSFieldVisible(true);
+        envelopePanel.setCrsRequired(true);
         envelopePanel.setOutputMarkupId( true );
         
         form.add(new GeoServerAjaxFormLink( "generateBounds") {

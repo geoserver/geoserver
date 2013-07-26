@@ -20,17 +20,17 @@ import org.vfny.geoserver.global.GeoserverDataDirectory;
  * @author Andrea Aime - GeoSolutions
  *
  */
-class FileModel implements IModel {
+public class FileModel implements IModel {
     static final Logger LOGGER = Logging.getLogger(FileModel.class);
     
     IModel delegate;
     File rootDir;
     
-    FileModel(IModel delegate) {
+    public FileModel(IModel delegate) {
         this(delegate, GeoserverDataDirectory.getGeoserverDataDirectory());
     }
 
-    FileModel(IModel delegate, File rootDir) {
+    public FileModel(IModel delegate, File rootDir) {
         this.delegate = delegate;
         this.rootDir = rootDir;
     }

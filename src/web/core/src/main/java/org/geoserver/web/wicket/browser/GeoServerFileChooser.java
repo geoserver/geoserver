@@ -12,6 +12,7 @@ import java.util.Collections;
 
 import javax.swing.filechooser.FileSystemView;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -263,12 +264,16 @@ public class GeoServerFileChooser extends Panel {
 			}
 			
 			try {
-			    return FileSystemView.getFileSystemView().getSystemDisplayName(f);
+			    final String displayName= FileSystemView.getFileSystemView().getSystemDisplayName(f);
+			    if(displayName!=null&& displayName.length()>0){
+			        return displayName;
+			    }
+			    return FilenameUtils.getPrefix(f.getAbsolutePath());
 			} catch(Exception e) {
 			    // on windows we can get the occasional NPE due to 
 			    // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6973685
-			    return f.getName();
 			}
+                        return f.getName();
 		}
 
 		public String getIdValue(Object o, int count) {

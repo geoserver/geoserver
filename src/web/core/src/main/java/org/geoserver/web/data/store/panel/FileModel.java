@@ -57,25 +57,27 @@ public class FileModel implements IModel {
     public void setObject(Object object) {
         String location = (String) object;
         
-        File dataDirectory = canonicalize(rootDir);
-        File file = canonicalize(new File(location));
-        if(isSubfile(dataDirectory, file)) {
-            File curr = file;
-            String path = null;
-            // paranoid check to avoid infinite loops
-            while(curr != null && !curr.equals(dataDirectory)){
-                if(path == null) {
-                    path = curr.getName();
-                } else {
-                    path = curr.getName() + "/" + path;
-                }
-                curr = curr.getParentFile();
-            } 
-            location = "file:" + path;
-        } else if(!GeoserverDataDirectory.findDataFile(location).equals(file)) {
-            // relative to the data directory, does not need fixing
-        } else {
-            location = "file://" + file.getAbsolutePath();
+        if(location != null) {
+            File dataDirectory = canonicalize(rootDir);
+            File file = canonicalize(new File(location));
+            if(isSubfile(dataDirectory, file)) {
+                File curr = file;
+                String path = null;
+                // paranoid check to avoid infinite loops
+                while(curr != null && !curr.equals(dataDirectory)){
+                    if(path == null) {
+                        path = curr.getName();
+                    } else {
+                        path = curr.getName() + "/" + path;
+                    }
+                    curr = curr.getParentFile();
+                } 
+                location = "file:" + path;
+            } else if(!GeoserverDataDirectory.findDataFile(location).equals(file)) {
+                // relative to the data directory, does not need fixing
+            } else {
+                location = "file://" + file.getAbsolutePath();
+            }
         }
         
         delegate.setObject(location);

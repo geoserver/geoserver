@@ -150,7 +150,19 @@ public class ConfigChangeEvent<T extends Info> extends Event {
     }
 
     public Class<T> getObjectInterface() {
-        return INTERFACES.get(getObjectClass());
+        Class clazz = INTERFACES.get(getObjectClass());
+        
+        // Fall back, mostly here to support EasyMock test objects in unit tests.
+        if(clazz==null) {
+            for(Class realClazz: INTERFACES.values()) {
+                if(realClazz.isAssignableFrom(getObjectClass())) {
+                    clazz=realClazz;
+                    break;
+                }
+            }
+        }
+        
+        return clazz;
     }
 
     public Type getChangeType() {

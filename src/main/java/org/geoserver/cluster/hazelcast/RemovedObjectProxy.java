@@ -15,7 +15,7 @@ public class RemovedObjectProxy implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        if ("id".equalsIgnoreCase(method.getName())) {
+        if ("getid".equalsIgnoreCase(method.getName())) {
             return id;
         }
         if ("getname".equalsIgnoreCase(method.getName())) {

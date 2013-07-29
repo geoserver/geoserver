@@ -68,6 +68,10 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer implements Me
     /** geoserver configuration */
     protected GeoServer gs;
     
+    ScheduledExecutorService getNewExecutor() {
+        return Executors.newSingleThreadScheduledExecutor();
+    }
+    
     public HzSynchronizer(HazelcastInstance hz, GeoServer gs) {
         this.hz = hz;
         this.gs = gs;
@@ -76,7 +80,7 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer implements Me
         topic.addMessageListener(this);
         
         queue = new ConcurrentLinkedQueue<Event>();
-        executor = Executors.newSingleThreadScheduledExecutor();
+        executor = getNewExecutor();
 
         gs.addListener(this);
         gs.getCatalog().addListener(this);

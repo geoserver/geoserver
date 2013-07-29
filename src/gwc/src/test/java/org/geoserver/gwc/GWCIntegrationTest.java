@@ -215,7 +215,8 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
      * If direct WMS integration is enabled, a GetMap requests that hits the regular WMS but matches
      * a gwc tile should return with the proper {@code geowebcache-tile-index} HTTP response header.
      */
-    @Test public void testDirectWMSIntegration() throws Exception {
+    @Test 
+    public void testDirectWMSIntegration() throws Exception {
         final GWC gwc = GWC.get();
         gwc.getConfig().setDirectWMSIntegrationEnabled(true);
 
@@ -237,13 +238,34 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         assertEquals("image/png", response.getContentType());
     }
 
-    @Test public void testDirectWMSIntegrationResponseHeaders() throws Exception {
+    @Test 
+    public void testDirectWMSIntegrationResponseHeaders() throws Exception {
         final GWC gwc = GWC.get();
         gwc.getConfig().setDirectWMSIntegrationEnabled(true);
 
         final String layerName = BASIC_POLYGONS.getPrefix() + ":" + BASIC_POLYGONS.getLocalPart();
 
         String request = buildGetMap(true, layerName, "EPSG:4326", null) + "&tiled=true";
+        MockHttpServletResponse response = getAsServletResponse(request);
+
+        assertEquals(200, response.getStatusCode());
+        assertEquals("image/png", response.getContentType());
+        assertEquals(layerName, response.getHeader("geowebcache-layer"));
+        assertEquals("[0, 0, 0]", response.getHeader("geowebcache-tile-index"));
+        assertEquals("-180.0,-90.0,0.0,90.0", response.getHeader("geowebcache-tile-bounds"));
+        assertEquals("EPSG:4326", response.getHeader("geowebcache-gridset"));
+        assertEquals("EPSG:4326", response.getHeader("geowebcache-crs"));
+    }
+    
+    @Test 
+    public void testDirectWMSIntegrationResponseHeaders13() throws Exception {
+        final GWC gwc = GWC.get();
+        gwc.getConfig().setDirectWMSIntegrationEnabled(true);
+
+        final String layerName = BASIC_POLYGONS.getPrefix() + ":" + BASIC_POLYGONS.getLocalPart();
+
+        String request = "wms?service=wms&version=1.3.0&request=GetMap&styles=&layers=" + layerName 
+                + "&srs=EPSG:4326&bbox=-90,-180,90,0&format=image/png&width=256&height=256&tiled=true";
         MockHttpServletResponse response = getAsServletResponse(request);
 
         assertEquals(200, response.getStatusCode());

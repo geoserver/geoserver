@@ -346,6 +346,50 @@ Text Symbology (Labeling) - continued
       * Specifies an extra margin (in pixels) to be applied to the label text when calculating label dimensions for use with the ``-gt-shield-resize`` option.  Similar to the ``margin`` shorthand property in CSS for HTML, its interpretation varies depending on how many margin values are provided: 1 = use that margin length on all sides of the label 2 = use the first for top & bottom margins and the second for left & right margins. 3 = use the first for the top margin, second for left & right margins, third for the bottom margin. 4 = use the first for the top margin, second for the right margin, third for the bottom margin, and fourth for the left margin.
       * none
 
+Raster Symbology 
+----------------
+
+.. list-table:: 
+    :widths: 15 15 60 10
+
+    - * **Property** 
+      * **Type**
+      * **Meaning**
+      * **Accepts Express -ion?**
+    - * raster-channels
+      * string
+      * The list of raster channels to be used in the output. It can be "auto" to make the renderer choose the best course of action, or a list of band numbers, a single one will generate a gray image, three will generate an RGB one, four will generate a RGBA one. E.g., "1 3 7" to choose the first, third and seventh band of the input raster to make a RGB image
+      * no
+    - * raster-geometry
+      * expression
+      * The attribute containing the raster to be painted. Normally not needed, but it would work if you had a custom vector data source that contains a GridCoverage attribute, in order to select it
+      * yes
+    - * raster-opacity
+      * floating point
+      * A value comprised between 0 and 1, 0 meaning completely transparent, 1 meaning completely opaque. This controls the whole raster trasparency. 
+      * no
+    - * raster-contrast-enhancement
+      * string
+      * Allows to stretch the range of data/colors in order to enhance tiny differences. Possible values are 'normalize', 'histogram' and 'none'
+      * no
+    - * raster-gamma
+      * floating point
+      * Gamma adjustment for the output raster
+      * no
+    - * raster-z-index
+      * integer
+      * Controls the z ordering of the raster output
+      * no
+    - * raster-color-map
+      * string
+      * Applies a color map to single banded input. The contents is a space separate list of ``color-map-entry(color, value)`` (opacity assumed to be 1), or ``color-map-entry(color, value, opacity)``. The values must be provided in increasing order.
+      * no
+    - * raster-color-map-type
+      * string
+      * Controls how the color map entries are interpreted, the possible values are "ramp", "intervals" and "values", with ramp being the default if no "raster-color-map-type" is provided. The default "ramp" behavior is to linearly interpolate color between the provided values, and assign the lowest color to all values below the lowest value, and the highest color to all values above the highest value. The "intervals" behavior instead assigns solid colors between values, whilst "values" only assigns colors to the specified values, every other value in the raster is not painted at all
+      * no
+ 
+
 Shared
 ------
 

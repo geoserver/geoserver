@@ -126,7 +126,7 @@ public class KMLReflectorTest extends WMSTestSupport {
                 "kml:kml/kml:Document/kml:NetworkLink[1]/kml:Url/kml:viewBoundScale",
                 dom);
         Map<String, Object> expectedKVP = KvpUtils
-                .parseQueryString("http://localhost:80/geoserver/wms?format_options=KMPLACEMARK%3Afalse%3BKMATTR%3Atrue%3BKMSCORE%3A40%3BSUPEROVERLAY%3Afalse%3B&service=wms&srs=EPSG%3A4326&width=2048&styles=BasicPolygons&height=2048&transparent=false&request=GetMap&layers=cite%3ABasicPolygons&format=application%2Fvnd.google-earth.kml+xml&version=1.1.1");
+                .parseQueryString("http://localhost:80/geoserver/wms?format_options=autofit%3Atrue%3BKMPLACEMARK%3Afalse%3BKMATTR%3Atrue%3BKMSCORE%3A40%3BSUPEROVERLAY%3Afalse%3B&service=wms&srs=EPSG%3A4326&width=2048&styles=BasicPolygons&height=2048&transparent=false&request=GetMap&layers=cite%3ABasicPolygons&format=application%2Fvnd.google-earth.kml+xml&version=1.1.1");
         Map<String, Object> resultedKVP = KvpUtils.parseQueryString(xpath.evaluate(
                 "kml:kml/kml:Document/kml:NetworkLink[1]/kml:Url/kml:href", dom));
 
@@ -249,7 +249,7 @@ public class KMLReflectorTest extends WMSTestSupport {
         Map<String, Object> kvp = KvpUtils.parseQueryString(result);
         String formatOptions = (String) kvp.get("format_options");
         assertEquals(
-                "LEGEND:true;SUPEROVERLAY:true;KMPLACEMARK:false;OVERLAYMODE:auto;KMSCORE:10;KMATTR:true;KMLTITLE:myCustomLayerTitle;",
+                "LEGEND:true;SUPEROVERLAY:true;AUTOFIT:true;KMPLACEMARK:false;OVERLAYMODE:auto;KMSCORE:10;KMATTR:true;KMLTITLE:myCustomLayerTitle;",
                 formatOptions);
     }
 

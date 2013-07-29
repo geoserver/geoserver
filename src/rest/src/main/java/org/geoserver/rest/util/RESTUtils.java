@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
@@ -126,15 +127,33 @@ public class RESTUtils {
         throws IOException {
         
         final File newFile = new File(directory, fileName);
-        if (deleteDirectoryContent && newFile.exists()) {
-        	FileUtils.cleanDirectory(directory);
+        
+        if(newFile.exists()) {
+            if (deleteDirectoryContent) {
+                FileUtils.cleanDirectory(directory);
+            } else {
+                // delete the file, otherwise replacing it with a smaller one will leave bytes at the end
+                newFile.delete();
+            }
         }
         
-        final ReadableByteChannel source =request.getEntity().getChannel();
-        final FileChannel outputChannel = IOUtils.getOuputChannel(newFile);
-        IOUtils.copyChannel(1024*1024, source,outputChannel );
-        IOUtils.closeQuietly(source);
-        IOUtils.closeQuietly(outputChannel);
+        final ReadableByteChannel source = request.getEntity().getChannel();
+        RandomAccessFile raf = null;
+        FileChannel outputChannel = null;
+        try {
+            raf = new RandomAccessFile(newFile, "rw");
+            outputChannel = raf.getChannel();
+            IOUtils.copyChannel(1024 * 1024, source, outputChannel);
+        } finally {
+            try {
+                if(raf != null) {
+                    raf.close();
+                }
+            } finally {
+                IOUtils.closeQuietly(source);
+                IOUtils.closeQuietly(outputChannel);
+            }
+        }
         return newFile;
     }
     

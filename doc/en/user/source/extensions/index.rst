@@ -14,6 +14,7 @@ see the :ref:`data_vector`, :ref:`data_raster`, and :ref:`data_database` section
    :maxdepth: 2
 
    controlflow/index
+   css/index
    excel
    geosearch
    imagemap
@@ -24,4 +25,3 @@ see the :ref:`data_vector`, :ref:`data_raster`, and :ref:`data_database` section
    styler
    wps/index
    xslt/index
-   css/index

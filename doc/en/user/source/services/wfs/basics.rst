@@ -14,7 +14,7 @@ The major differences between the WFS versions are:
 
 * WFS 1.1.0 and 2.0.0 return GML3 as the default GML, whereas in WFS 1.0.0, the default is GML2. GML3 adopts marginally different ways of specifying a geometry. GeoServer supports requests in both GML3 and GML2 formats.
 
-* In WFS 1.1.0 and 2.0.0, the SRS (Spatial Reference System, or projection) is specified with ``urn:x-ogc:def:crs:EPSG:XXXX``, whereas in WFS 1.0.0 the specification was ``http://www.opengis.net/gml/srs/epsg.xml#XXXX``. This change has implications for the `axis order <wfs_basics_axis>`_ of the returned data. 
+* In WFS 1.1.0 and 2.0.0, the SRS (Spatial Reference System, or projection) is specified with ``urn:x-ogc:def:crs:EPSG:XXXX``, whereas in WFS 1.0.0 the specification was ``http://www.opengis.net/gml/srs/epsg.xml#XXXX``. This change has implications for the :ref:`axis order <wfs_basics_axis>` of the returned data. 
 
 * WFS 1.1.0 and 2.0.0 support on-the-fly reprojection of data, which supports returning the data in a SRS other than the native SRS. 
 

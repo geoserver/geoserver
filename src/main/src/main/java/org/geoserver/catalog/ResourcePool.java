@@ -1241,12 +1241,15 @@ public class ResourcePool {
                     // Getting coverage reader using the format and the real path.
                     //
                     // /////////////////////////////////////////////////////////
-                    final File obj = GeoserverDataDirectory.findDataFile(info.getURL());
-        
+                    final String url = info.getURL();
+                    final File obj = GeoserverDataDirectory.findDataFile(url);
+                    // In case no File is returned, provide the original String url
+                    final Object input = obj != null ? obj : url;  
+
                     // readers might change the provided hints, pass down a defensive copy
-                    reader = gridFormat.getReader(obj, new Hints(hints));
+                    reader = gridFormat.getReader(input, new Hints(hints));
                     if(reader == null) {
-                        throw new IOException("Failed to create reader from " + obj.getAbsolutePath() + " and hints " + hints);
+                        throw new IOException("Failed to create reader from " + url + " and hints " + hints);
                     }
                     if(key != null) {
                         if(hints != null) {

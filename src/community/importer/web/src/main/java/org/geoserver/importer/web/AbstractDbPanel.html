@@ -1,0 +1,22 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:panel>
+  <form wicket:id="form">
+  
+      <ul>
+        <li>
+          <label for="connType"><wicket:message key="connType">connType</wicket:message> *</label>
+          <select class="field" wicket:id="connType" id="connType"></select>
+        </li>
+      </ul>
+      
+      <div wicket:id="paramPanelContainer">
+        <ul wicket:id="paramPanels"></ul>
+      </div>
+      
+      <div wicket:id="advancedPanel"></div>
+  
+  </form>
+</wicket:panel>
+</body>
+</html>

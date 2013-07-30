@@ -1,0 +1,11 @@
+echo '<html>'
+echo ' <head>'
+echo '  <link rel="stylesheet" href="github.css">'
+echo '  <link rel="stylesheet" href="rest.css">'
+echo '</head>'
+echo '<body>'
+echo '<div class="wikistyle content-body markdown-body">'
+
+markdown < $1
+
+echo '</div></body></html>'

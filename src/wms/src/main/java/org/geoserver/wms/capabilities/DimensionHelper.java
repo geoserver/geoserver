@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -228,10 +229,10 @@ abstract class DimensionHelper {
     
     private void handleCustomDimensionRaster(String dimName, DimensionInfo dimension,
             ReaderDimensionsAccessor dimAccessor) throws IOException {
-        final TreeSet<String> values = dimAccessor.getDomain(dimName);
+        final List<String> values = dimAccessor.getDomain(dimName);
         String metadata = getCustomDomainRepresentation(dimension, values);
 
-        writeCustomDimension(dimName, metadata, values.first(), dimension.getUnits(), dimension.getUnitSymbol());
+        writeCustomDimension(dimName, metadata, values.get(0), dimension.getUnits(), dimension.getUnitSymbol());
     }
 
     /**
@@ -473,7 +474,7 @@ abstract class DimensionHelper {
      * @param values
      * @return
      */
-    String getCustomDomainRepresentation(DimensionInfo dimension, TreeSet<String> values) {
+    String getCustomDomainRepresentation(DimensionInfo dimension, List<String> values) {
         String timeMetadata = null;
 
         final StringBuilder buff = new StringBuilder();
@@ -486,10 +487,10 @@ abstract class DimensionHelper {
             timeMetadata = buff.substring(0, buff.length() - 1).toString().replaceAll("\\[", "")
                     .replaceAll("\\]", "").replaceAll(" ", "");
         } else if (DimensionPresentation.DISCRETE_INTERVAL == dimension.getPresentation()) {
-            buff.append(values.first());
+            buff.append(values.get(0));
             buff.append("/");
 
-            buff.append(values.last());
+            buff.append(values.get(0));
             buff.append("/");
 
             final BigDecimal resolution = dimension.getResolution();

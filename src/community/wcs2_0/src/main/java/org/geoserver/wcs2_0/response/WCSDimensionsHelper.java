@@ -197,7 +197,7 @@ public class WCSDimensionsHelper {
         return accessor.getElevationDomain();
     }
 
-    public TreeSet<String> getDomain(final String domainName) throws IOException {
+    public List<String> getDomain(final String domainName) throws IOException {
         return accessor.getDomain(domainName);
     }
 

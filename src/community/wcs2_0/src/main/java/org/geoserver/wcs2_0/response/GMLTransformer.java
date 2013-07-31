@@ -336,7 +336,7 @@ class GMLTransformer extends TransformerBase {
 
             start(startTag);
             // Custom dimension only supports List presentation
-            final TreeSet<String> domain = helper.getDomain(name);
+            final List<String> domain = helper.getDomain(name);
             // TODO: check if we are in the list of instants case, or in the list of periods case
 
             // list case

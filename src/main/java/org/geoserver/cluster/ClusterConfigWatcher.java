@@ -16,12 +16,16 @@ public class ClusterConfigWatcher {
 
     ClusterConfig config;
     PropertyFileWatcher watcher;
+    
+    protected ClusterConfig getNewClusterConfig() {
+        return new ClusterConfig();
+    }
 
     public ClusterConfigWatcher(File file) {
         watcher = new PropertyFileWatcher(file) {
             @Override
             protected Properties parseFileContents(InputStream in) throws IOException {
-                ClusterConfig config = new ClusterConfig();
+                ClusterConfig config = getNewClusterConfig();
                 config.putAll(super.parseFileContents(in));
                 return config;
             }

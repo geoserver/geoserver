@@ -7,8 +7,6 @@ import java.util.logging.Level;
 import org.geoserver.cluster.Event;
 import org.geoserver.config.GeoServer;
 
-import com.hazelcast.core.HazelcastInstance;
-
 /**
  * Synchronizer that does a full geoserver reload on any event.
  * <p>
@@ -21,8 +19,8 @@ public class ReloadHzSynchronizer extends HzSynchronizer {
     /** lock during reload */
     protected AtomicBoolean eventLock = new AtomicBoolean();
 
-    public ReloadHzSynchronizer(HazelcastInstance hz, GeoServer gs) {
-        super(hz, gs);
+    public ReloadHzSynchronizer(HzCluster cluster, GeoServer gs) {
+        super(cluster, gs);
     }
     
     @Override

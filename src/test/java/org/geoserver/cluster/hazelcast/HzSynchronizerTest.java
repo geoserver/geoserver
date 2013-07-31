@@ -36,6 +36,7 @@ public abstract class HzSynchronizerTest {
     @Before
     public void setUp() throws Exception {
         hz = createMock(HazelcastInstance.class);
+        cluster = createMock(HzCluster.class);
         topic = createMock(ITopic.class);
         configWatcher = createMock(ClusterConfigWatcher.class);
         clusterConfig = createMock(ClusterConfig.class);
@@ -47,7 +48,11 @@ public abstract class HzSynchronizerTest {
         
         Cluster cluster = createMock(Cluster.class);
         Member member = createMock(Member.class);
-
+        
+        expect(this.cluster.getHz()).andStubReturn(hz);
+        expect(this.cluster.isEnabled()).andStubReturn(true);
+        
+        
         expect(hz.<Event>getTopic(TOPIC_NAME)).andReturn(topic);
         topic.addMessageListener(capture(captureTopicListener)); expectLastCall();
         
@@ -87,6 +92,7 @@ public abstract class HzSynchronizerTest {
     }
     
     protected HazelcastInstance hz;
+    protected HzCluster cluster;
     protected ITopic<Event> topic;
     protected GeoServer geoServer;
     protected Catalog catalog;
@@ -103,7 +109,7 @@ public abstract class HzSynchronizerTest {
     protected Capture<Runnable> captureExecutor;
     
     public List<Object> myMocks() {
-        return Arrays.asList(topic, configWatcher, clusterConfig, geoServer, catalog, hz, executor);
+        return Arrays.asList(topic, configWatcher, clusterConfig, geoServer, catalog, hz, executor, cluster);
     }
     
     public HzSynchronizerTest() {

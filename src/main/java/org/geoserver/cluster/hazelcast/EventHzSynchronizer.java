@@ -25,8 +25,6 @@ import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
 
-import com.hazelcast.core.HazelcastInstance;
-
 /**
  * Synchronizer that converts cluster events and dispatches them the GeoServer config/catalog.
  * <p>
@@ -37,10 +35,11 @@ import com.hazelcast.core.HazelcastInstance;
  */
 public class EventHzSynchronizer extends HzSynchronizer {
 
-    public EventHzSynchronizer(HazelcastInstance hz, GeoServer gs) {
-        super(hz, gs);
+    public EventHzSynchronizer(HzCluster cluster, GeoServer gs) {
+        super(cluster, gs);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void processEventQueue(Queue<Event> q) throws Exception {
         Catalog cat = gs.getCatalog();
@@ -64,10 +63,10 @@ public class EventHzSynchronizer extends HzSynchronizer {
                         subj = cat.getNamespace(id);
                     }
                     else if (StoreInfo.class.isAssignableFrom(clazz)) {
-                        subj = (CatalogInfo) cat.getStore(id, (Class) clazz);
+                        subj = cat.getStore(id, (Class<StoreInfo>) clazz);
                     }
                     else if (ResourceInfo.class.isAssignableFrom(clazz)) {
-                        subj = (CatalogInfo) cat.getResource(id, (Class) clazz);
+                        subj = cat.getResource(id, (Class<ResourceInfo>) clazz);
                     }
                     else if (LayerInfo.class.isAssignableFrom(clazz)) {
                         subj = cat.getLayer(id);
@@ -153,7 +152,7 @@ public class EventHzSynchronizer extends HzSynchronizer {
                         }
                     }
                     else if (ServiceInfo.class.isAssignableFrom(clazz)) {
-                        ServiceInfo subj = gs.getService(id, (Class) clazz);
+                        ServiceInfo subj = gs.getService(id, (Class<ServiceInfo>) clazz);
                         for (ConfigurationListener l : gs.getListeners()) {
                             try {
                                 l.handlePostServiceChange(subj);

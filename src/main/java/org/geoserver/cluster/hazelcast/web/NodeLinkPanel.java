@@ -9,18 +9,17 @@ import org.apache.wicket.model.Model;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 
-import com.hazelcast.core.HazelcastInstance;
+import org.geoserver.cluster.hazelcast.HzCluster;
 
 public class NodeLinkPanel extends Panel {
 
-    HazelcastInstance hz;
     GeoServerDialog dialog;
 
     @SuppressWarnings("unchecked")
-    public NodeLinkPanel(String id, HazelcastInstance hz) {
+    public NodeLinkPanel(String id, final HzCluster cluster) {
         super(id);
 
-        add(new SimpleAjaxLink("link", new Model(localIPAsString(hz))) {
+        add(new SimpleAjaxLink("link", new Model(localIPAsString(cluster.getHz()))) {
             @Override
             protected void onClick(AjaxRequestTarget target) {
                 //dialog.show(target);

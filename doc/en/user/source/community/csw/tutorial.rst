@@ -1,24 +1,14 @@
 .. _community_csw_tutorial:
 
-Catalogue Services for the Web : Tutorial
-==========================================
+Catalog Services for the Web (CSW) tutorial
+===========================================
 
-Installation
-------------
-
-* Install GeoServer as usual. We use the example data directory that is delivered with a fresh installation of GeoServer.
-
-* Install the csw plugin ``geoserver-*-csw-plugin.zip``:
-
-    * Place the jar files in ``WEB-INF/lib``.
-
-* Perform any configuration required by your servlet container, and then start the servlet. 
-
+This tutorial will show how to use the CSW module. It assumes a fresh installation of GeoServer with the :ref:`CSW module installed <community_csw_installing>`.
 
 Configuration
 -------------
 
-In the 'geoserver/data/csw' directory, we create a new file called 'MD_MetaData' (The ISO MetaDataProfile Mapping File) with the following contents::
+In the :file:`<data_dir>/csw` directory, create a new file named :file:`MD_Metadata` (ISO Metadata Profile mapping file) with the following contents::
 
   @fileIdentifier.CharacterString=id
   identificationInfo.AbstractMD_Identification.citation.CI_Citation.title.CharacterString=title
@@ -31,40 +21,39 @@ In the 'geoserver/data/csw' directory, we create a new file called 'MD_MetaData'
 Services
 --------
 
-When GeoServer is running, test GeoServer CSW in a web browser. If GeoServer is listening on ``localhost:8080`` we can query CSW capabilities as follows:
+With GeoServer running (and responding on ``http://localhost:8080``), test GeoServer CSW in a web browser by querying the CSW capabilities as follows::
 
-  * http://localhost:8080/geoserver/csw?service=csw&version=2.0.2&request=GetCapabilities
+  http://localhost:8080/geoserver/csw?service=csw&version=2.0.2&request=GetCapabilities
 
-We can request a description of our MetaData record:
- 
-  * http://localhost:8080/geoserver/csw?service=CSW&version=2.0.2&request=DescribeRecord&typeName=gmd:MD_Metadata
+We can request a description of our Metadata record::
+
+  http://localhost:8080/geoserver/csw?service=CSW&version=2.0.2&request=DescribeRecord&typeName=gmd:MD_Metadata
   
-This gives us the following result::
+This yields the following result::
 
-    <?xml version="1.0" encoding="UTF-8"?>
-    <csw:DescribeRecordResponse xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/cat/csw/2.0.2 http://localhost:8080/geoserver/schemas/csw/2.0.2CSW-discovery.xsd">
-    <csw:SchemaComponent targetNamespace="http://www.opengis.net/cat/csw/2.0.2" schemaLanguage="http://www.w3.org/XML/Schema">
-    <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" targetNamespace="http://www.isotc211.org/2005/gmd" elementFormDefault="qualified" version="2012-07-13">
+  <?xml version="1.0" encoding="UTF-8"?>
+  <csw:DescribeRecordResponse xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/cat/csw/2.0.2 http://localhost:8080/geoserver/schemas/csw/2.0.2CSW-discovery.xsd">
+  <csw:SchemaComponent targetNamespace="http://www.opengis.net/cat/csw/2.0.2" schemaLanguage="http://www.w3.org/XML/Schema">
+  <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" targetNamespace="http://www.isotc211.org/2005/gmd" elementFormDefault="qualified" version="2012-07-13">
 	<!-- ================================= Annotation ================================ -->
 	<xs:annotation>
 		<xs:documentation>Geographic MetaData (GMD) extensible markup language is a component of the XML Schema Implementation of Geographic Information Metadata documented in ISO/TS 19139:2007. GMD includes all the definitions of http://www.isotc211.org/2005/gmd namespace. The root document of this namespace is the file gmd.xsd. This identification.xsd schema implements the UML conceptual schema defined in A.2.2 of ISO 19115:2003. It contains the implementation of the following classes: MD_Identification, MD_BrowseGraphic, MD_DataIdentification, MD_ServiceIdentification, MD_RepresentativeFraction, MD_Usage, MD_Keywords, DS_Association, MD_AggregateInformation, MD_CharacterSetCode, MD_SpatialRepresentationTypeCode, MD_TopicCategoryCode, MD_ProgressCode, MD_KeywordTypeCode, DS_AssociationTypeCode, DS_InitiativeTypeCode, MD_ResolutionType.</xs:documentation>
 	</xs:annotation>
-	
 	...
   
-We can query all layers as follows:
+Query all layers as follows::
 
-  * http://localhost:8080/geoserver/csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd
+  http://localhost:8080/geoserver/csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd
   
-We can request a particular layer by ID:
+Request a particular layer by ID...::
 
-  * http://localhost:8080/geoserver/csw?service=CSW&version=2.0.2&request=GetRecordById&elementsetname=summary&id=CoverageInfoImpl--4a9eec43:132d48aac79:-8000&typeNames=gmd:MD_Metadata&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd
+  http://localhost:8080/geoserver/csw?service=CSW&version=2.0.2&request=GetRecordById&elementsetname=summary&id=CoverageInfoImpl--4a9eec43:132d48aac79:-8000&typeNames=gmd:MD_Metadata&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd
 
-Or use a filter to retrieve it by title:
+...or use a filter to retrieve it by Title::
   
-  * http://localhost:8080/geoserver/csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd&constraint=Title=%27mosaic%27
+  http://localhost:8080/geoserver/csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd&constraint=Title=%27mosaic%27
    
-either cases should return::
+Either case should return::
 
     <?xml version="1.0" encoding="UTF-8"?>
     <csw:GetRecordsResponse xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns="http://www.opengis.net/cat/csw/apiso/1.0" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0.2" xsi:schemaLocation="http://www.opengis.net/cat/csw/2.0.2 http://localhost:8080/geoserver/schemas/csw/2.0.2/record.xsd">
@@ -129,11 +118,11 @@ either cases should return::
       </csw:SearchResults>
     </csw:GetRecordsResponse>
 
-We can request the domain of a property, for example all values in title:
+We can request the domain of a property. For example, all values of "Title"::
   
-* http://localhost:8080/geoserver/csw?service=csw&version=2.0.2&request=GetDomain&propertyName=Title
+  http://localhost:8080/geoserver/csw?service=csw&version=2.0.2&request=GetDomain&propertyName=Title
    
-This should give us the following result::
+This should yield the following result::
 
     <?xml version="1.0" encoding="UTF-8"?>
     <csw:GetDomainResponse xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dct="http://purl.org/dc/terms/" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/cat/csw/2.0.2 http://localhost:8080/geoserver/schemas/csw/2.0.2/CSW-discovery.xsd">
@@ -162,3 +151,4 @@ This should give us the following result::
 	  </csw:ListOfValues>
       </csw:DomainValues>
     </csw:GetDomainResponse>
+

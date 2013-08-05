@@ -13,7 +13,7 @@
   <groupId>org.geoserver.importer</groupId>
   <artifactId>importer-web</artifactId>
   <packaging>jar</packaging>
-  <name>Web UI Module</name>
+  <name>Importer Web UI Module</name>
 
   <dependencies>
     <dependency>

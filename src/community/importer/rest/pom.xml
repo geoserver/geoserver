@@ -13,7 +13,7 @@
   <groupId>org.geoserver.importer</groupId>
   <artifactId>importer-rest</artifactId>
   <packaging>jar</packaging>
-  <name>REST Api Module</name>
+  <name>Importer REST Api Module</name>
 
   <dependencies>
     <dependency>

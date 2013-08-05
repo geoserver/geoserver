@@ -13,7 +13,7 @@
   <groupId>org.geoserver.importer</groupId>
   <artifactId>importer-bdb</artifactId>
   <packaging>jar</packaging>
-  <name>Berkley DB Persistence Module</name>
+  <name>Importer Berkley DB Persistence Module</name>
 
   <dependencies>
     <dependency>

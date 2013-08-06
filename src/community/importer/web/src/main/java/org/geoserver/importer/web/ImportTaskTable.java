@@ -399,24 +399,6 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
             List<PreviewLink> links = new ArrayList<PreviewLink>();
             links.add(new PreviewLink("layerPreview", preview.getWmsLink()+ "&format=application/openlayers"));
 
-            String gxpLink = 
-                    System.getProperty("opengeo.geoexplorer.url", "/geoexplorer");
-            gxpLink = gxpLink.endsWith("/") ? gxpLink.substring(0,gxpLink.length()-1) : gxpLink;
-
-            gxpLink += "/composer/?layers=" +
-                urlEncode(layer.getResource().getStore().getWorkspace().getName() + ":" +  layer.getName());
-
-            //geoexplorer needs bbox in spherical mercator
-            try {
-                ReferencedEnvelope e = layer.getResource().getLatLonBoundingBox().transform(EPSG_3857(), true);
-                if (e != null) {
-                    gxpLink += "&bbox=" + 
-                            String.format("%f,%f,%f,%f", e.getMinX(), e.getMinY(), e.getMaxX(), e.getMaxY()); 
-                }
-            } catch (Exception e) {
-                LOGGER.log(Level.WARNING, "Unable to reproject "+ layer.getName() + " to spherical mercator", e);
-            }
-            links.add(new PreviewLink("geoexplorer", gxpLink)); 
             links.add(new PreviewLink("googleearth", "../wms/kml?layers=" + layer.getName()));
 
             add(new DropDownChoice<PreviewLink>("links", new Model(links.get(0)), links, 

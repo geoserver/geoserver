@@ -1028,7 +1028,20 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             List<LayerGroupInfo> topLevelGroups = filterNestedGroups(layerGroups);
 
             for (LayerGroupInfo group : topLevelGroups) {
-                handleLayerGroup(group, layersAlreadyProcessed);
+                try {
+                    mark();
+                    handleLayerGroup(group, layersAlreadyProcessed);
+                    commit();
+                } catch (Exception e) {
+                    // report what layer we failed on to help the admin locate and fix it
+                    if (skipping) {
+                        reset();
+                    } else { 
+                        throw new ServiceException(
+                            "Error occurred trying to write out metadata for layer group: " + 
+                            group.getName(), e);
+                    }
+                }
             }
             
             return layersAlreadyProcessed;

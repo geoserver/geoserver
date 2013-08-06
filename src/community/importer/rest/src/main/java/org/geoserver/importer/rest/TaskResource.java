@@ -14,14 +14,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 
+import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
+
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.geoserver.rest.RestletException;
 import org.geoserver.rest.format.DataFormat;
 import org.geoserver.rest.format.StreamDataFormat;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.geoserver.importer.Directory;
 import org.geoserver.importer.FileData;
 import org.geoserver.importer.ImportContext;
@@ -36,7 +37,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.fileupload.RestletFileUpload;
-import org.restlet.ext.json.JsonRepresentation;
+
 import org.restlet.resource.Representation;
 
 /**
@@ -319,7 +320,7 @@ public class TaskResource extends BaseResource {
         } catch (JSONException jex) {
             throw new RestletException("Internal Error", Status.SERVER_ERROR_INTERNAL, jex);
         }
-        return new JsonRepresentation(progress);
+        return new JSONRepresentation(progress);
     }
 
     class ImportTaskJSONFormat extends StreamDataFormat {

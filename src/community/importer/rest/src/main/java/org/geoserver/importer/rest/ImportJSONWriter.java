@@ -61,7 +61,6 @@ import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.importer.transform.VectorTransformChain;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.restlet.data.Status;
-import org.restlet.ext.json.JsonRepresentation;
 
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
@@ -668,7 +667,8 @@ public class ImportJSONWriter {
         JSONArray errors = new JSONArray();
         errors.add(error);
         errorResponse.put("errors", errors);
-        JsonRepresentation rep = new JsonRepresentation(errorResponse.toString());
+        
+        JSONRepresentation rep = new JSONRepresentation(errorResponse);
         return new RestletException(rep, Status.CLIENT_ERROR_BAD_REQUEST);
     }
 

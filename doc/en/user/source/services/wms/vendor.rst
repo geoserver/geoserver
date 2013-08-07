@@ -48,7 +48,7 @@ Automatic buffer sizing cannot be computed if:
 In this event, the following defaults are used:
 
 * 0 pixels for :ref:`wms_getmap` requests
-* 2 pixels for :ref:`wms_getfeatureinfo` requests
+* 3 pixels for :ref:`wms_getfeatureinfo` requests
   
 If these are not sufficiently large, the explicit parameter can be used.
 

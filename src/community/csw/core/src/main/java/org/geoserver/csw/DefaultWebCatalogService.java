@@ -38,7 +38,7 @@ public class DefaultWebCatalogService implements WebCatalogService, ApplicationC
 
     private CSWInfo csw;
 
-    //private GeoServer gs;
+    private GeoServer gs;
 
     private CatalogStore store;
 
@@ -46,7 +46,11 @@ public class DefaultWebCatalogService implements WebCatalogService, ApplicationC
 
     public DefaultWebCatalogService(GeoServer gs) {
         this.csw = gs.getService(CSWInfo.class);
-       // this.gs = gs;
+        this.gs = gs;
+    }
+    
+    public CSWInfo getServiceInfo() {
+        return gs.getService(CSWInfo.class);
     }
 
     @Override

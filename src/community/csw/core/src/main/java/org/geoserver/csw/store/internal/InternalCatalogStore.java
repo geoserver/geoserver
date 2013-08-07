@@ -10,8 +10,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.opengis.cat.csw20.ElementSetType;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.csw.feature.MemoryFeatureCollection;
 import org.geoserver.csw.feature.sort.ComplexComparatorFactory;
@@ -59,11 +57,21 @@ public class InternalCatalogStore extends AbstractCatalogStore {
     public void addMapping(String typeName, CatalogStoreMapping mapping) {
         mappings.put(typeName, mapping);
     }
+    
+    /**
+     * Get Mapping
+     * 
+     * @param typeName
+     * @return the mapping
+     */
+    public CatalogStoreMapping getMapping(String typeName) {
+        return mappings.get(typeName);
+    }
 
     @Override
     public FeatureCollection getRecordsInternal(RecordDescriptor rd, Query q, Transaction t) throws IOException {
 
-        CatalogStoreMapping mapping = mappings.get(q.getTypeName());
+        CatalogStoreMapping mapping = getMapping(q.getTypeName());
 
         int startIndex = 0;
         if (q.getStartIndex() != null) {

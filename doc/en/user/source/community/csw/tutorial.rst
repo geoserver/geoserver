@@ -10,7 +10,7 @@ Configuration
 
 In the :file:`<data_dir>/csw` directory, create a new file named :file:`MD_Metadata` (ISO Metadata Profile mapping file) with the following contents::
 
-  @fileIdentifier.CharacterString=id
+  @fileIdentifier.CharacterString=prefixedName
   identificationInfo.AbstractMD_Identification.citation.CI_Citation.title.CharacterString=title
   identificationInfo.AbstractMD_Identification.descriptiveKeywords.MD_Keywords.keyword.CharacterString=keywords	
   identificationInfo.AbstractMD_Identification.abstract.CharacterString=abstract

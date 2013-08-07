@@ -28,6 +28,11 @@ import org.opengis.feature.type.AttributeDescriptor;
  */
 public interface WebCatalogService {
     /**
+     * The configuration of the service.
+     */
+    CSWInfo getServiceInfo();
+    
+    /**
      * Returns a object model representing the capabilities document
      */
     CapabilitiesType getCapabilities(GetCapabilitiesType request) throws ServiceException;

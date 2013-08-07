@@ -273,5 +273,11 @@
 				<module>libjpeg-turbo</module>
 			</modules>
 		</profile>    
+    <profile>
+      <id>geopkg</id>
+      <modules>
+        <module>geopkg</module>
+      </modules>
+    </profile>
   </profiles>
 </project>

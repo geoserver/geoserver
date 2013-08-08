@@ -59,9 +59,11 @@ public class DescribeLayerTest extends WMSTestSupport {
         
         dom = getAsDOM("sf/wms?service=wms&version=1.1.1&request=DescribeLayer" +
                 "&layers=PrimitiveGeoFeature", true);
+        print(dom);
         assertEquals("WMS_DescribeLayerResponse", dom.getDocumentElement().getNodeName());
 
         Element e = (Element) dom.getElementsByTagName("LayerDescription").item(0);
-        assertTrue(e.getAttribute("owsURL").contains("sf/wfs"));
+        String attribute = e.getAttribute("owsURL");
+        assertTrue(attribute.contains("sf/wfs"));
     }
 }

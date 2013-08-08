@@ -156,7 +156,7 @@ public class GetRecordsTest extends CSWInternalTestSupport {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&elementSetName=brief&constraint=AnyText like '%25about B%25'";
         Document d = getAsDOM(request);
         checkValidationErrors(d, new CSWConfiguration());
-        //print(d);
+        print(d);
 
         // basic checks
         assertXpathEvaluatesTo("3", "//csw:SearchResults/@numberOfRecordsMatched", d);

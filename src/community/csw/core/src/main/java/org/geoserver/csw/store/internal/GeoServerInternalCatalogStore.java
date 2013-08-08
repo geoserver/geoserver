@@ -5,14 +5,16 @@
 package org.geoserver.csw.store.internal;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.security.PropertyFileWatcher;
+import org.geotools.util.logging.Logging;
 
 /**
  * Internal Catalog Store that automatically loads mappings from mapping files in GeoServer Data Directory.
@@ -21,6 +23,31 @@ import org.geoserver.platform.GeoServerResourceLoader;
  *
  */
 public class GeoServerInternalCatalogStore extends InternalCatalogStore {
+    
+    protected static final Logger LOGGER = Logging.getLogger(GeoServerInternalCatalogStore.class);
+    
+    protected Map<String, PropertyFileWatcher> watchers = new HashMap<String, PropertyFileWatcher>();
+    
+    /**
+     * Get Mapping, update from file if changed
+     * 
+     * @param typeName
+     * @return the mapping
+     */
+    public CatalogStoreMapping getMapping(String typeName) {
+        
+        PropertyFileWatcher watcher = watchers.get(typeName);
+        
+        if (watcher!=null && watcher.isModified()  ) {
+            try {
+                addMapping (typeName, CatalogStoreMapping.parse(new HashMap<String, String>((Map) watcher.getProperties())));
+            } catch (IOException e) {
+                LOGGER.log(Level.WARNING, e.toString());
+            }
+        }
+        
+        return super.getMapping( typeName);
+    }
 
     /**
      * Create GeoServerInternalCatalogStore
@@ -32,12 +59,17 @@ public class GeoServerInternalCatalogStore extends InternalCatalogStore {
         super( geoserver.getCatalog());
         GeoServerResourceLoader loader = geoserver.getCatalog().getResourceLoader();
         File dir = loader.findOrCreateDirectory("csw");
-        for (File f : dir.listFiles()) {       
-            Properties properties = new Properties();
-            FileInputStream in = new FileInputStream(f);
-            properties.load(in);
-            in.close();
-            addMapping (f.getName(), CatalogStoreMapping.parse(new HashMap<String, String>((Map) properties)));
+        for (String typeName : descriptorByType.keySet()) {
+            File f = new File(dir, typeName + ".properties");
+
+            PropertyFileWatcher watcher = new PropertyFileWatcher(f);
+            watchers.put(typeName, watcher);
+            
+            if (f.exists()) {                               
+                addMapping (typeName, CatalogStoreMapping.parse(new HashMap<String, String>((Map) watcher.getProperties())));                
+            } else {
+                addMapping (typeName, new CatalogStoreMapping());
+            }            
         }
     }       
     

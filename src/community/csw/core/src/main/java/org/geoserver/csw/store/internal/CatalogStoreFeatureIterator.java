@@ -17,8 +17,6 @@ import org.geoserver.csw.records.RecordBuilder;
 import org.geoserver.csw.records.RecordDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
-import org.geotools.data.complex.filter.XPathUtil;
-import org.geotools.filter.SortByImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;

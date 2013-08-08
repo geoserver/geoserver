@@ -19,6 +19,7 @@ import org.apache.wicket.markup.html.IHeaderContributor;
 import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.panel.Panel;
 
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -37,10 +38,10 @@ class OpenLayersMapPanel extends Panel implements IHeaderContributor {
     final ResourceInfo resource;
     final StyleInfo style;
 
-    public OpenLayersMapPanel(String id, ResourceInfo resource, StyleInfo style) {
+    public OpenLayersMapPanel(String id, LayerInfo layer, StyleInfo style) {
         super(id);
-        bbox = resource.getLatLonBoundingBox();
-        this.resource = resource;
+        this.resource = layer.getResource();
+        this.bbox = resource.getLatLonBoundingBox();
         this.style = style;
         setOutputMarkupId(true);
     } 

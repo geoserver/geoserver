@@ -25,7 +25,7 @@ import org.geotools.util.logging.Logging;
  * 
  * @author Davide Savazzi - geo-solutions.it
  */
-public class DeleteEoGroupLink extends AjaxLink {
+class DeleteEoGroupLink extends AjaxLink {
 
     private LayerGroupTablePanel groupTable;
     private GeoServerDialog dialog;    

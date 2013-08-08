@@ -26,23 +26,15 @@
        <li>
          <input wicket:id="generateBounds" type="submit" wicket:message="value:generateBounds"></input>
        </li>
-	   <li wicket:id="browseImageLayerContainer">
-	   	 <div wicket:id="browseImageLayer"></div>
-	   </li>                            
-	   <li wicket:id="bandsLayerContainer">
-	   	 <div wicket:id="bandsLayer"></div>
-	   </li>                            	   
-	   <li wicket:id="outlineLayerContainer">
-	   	 <div wicket:id="outlineLayer"></div>
-	   </li>                            	   
        <li>
-         <div wicket:id="layers"></div>
-       </li>
-       <li>
-         <br>
-         <div wicket:id="contributedPanels">
-          <span wicket:id="content"></span>
-         </div>
+         <ul>
+           <li><label><wicket:message key="layers">Layers</wicket:message></label></li>
+           <li><a class="add-link" wicket:id="createStore"><wicket:message key="fromNewCoverageStore">Add Store</wicket:message></a> </li>
+           <li><a class="add-link" wicket:id="addFromStore"><wicket:message key="fromExistingStore">Add Store</wicket:message></a> </li>
+           <li><a class="add-link" wicket:id="addLayer"><wicket:message key="fromExistingLayer">Add Layer</wicket:message></a> <select wicket:id="layerType"></select></li>
+           <li><wicket:message key="createOutlines">Create outlines</wicket:message> <select wicket:id="sourceLayer"></select></li>
+           <div wicket:id="layers"></div>
+         </ul>
        </li>
        <li class="button-group selfclear">
          <a href="#" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
@@ -50,6 +42,8 @@
        </li>  
      </ul>
     </form>
+    <div wicket:id="popup"></div>
+    <div wicket:id="dialog"></div>
    </wicket:extend>
   </body>
 </html>

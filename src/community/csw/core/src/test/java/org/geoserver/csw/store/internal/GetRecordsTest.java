@@ -23,9 +23,7 @@ public class GetRecordsTest extends CSWInternalTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         // insert extra metadata
         ResourceInfo forestInfo = getCatalog().getLayerByName("Forests").getResource();
-        HashMap<String, Object> cswMetadata = new HashMap<String, Object>();
-        cswMetadata.put("date", "09/10/2012");
-        forestInfo.getMetadata().put("csw", cswMetadata);
+        forestInfo.getMetadata().put("date", "09/10/2012");
         forestInfo.setLatLonBoundingBox(new ReferencedEnvelope(-200, -180, -100, -90, CRS
                 .decode("EPSG:4326")));
         getCatalog().save(forestInfo);

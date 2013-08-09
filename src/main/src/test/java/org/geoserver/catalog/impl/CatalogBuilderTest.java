@@ -393,6 +393,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         FeatureSource fs = createMock(FeatureSource.class);
         expect(fs.getSchema()).andReturn(ft).anyTimes();
         expect(fs.getInfo()).andReturn(rInfo).anyTimes();
+        expect(fs.getName()).andReturn(ft.getName()).anyTimes();
         replay(fs);
             
         FeatureTypeInfo ftInfo = cb.buildFeatureType(fs);

@@ -18,7 +18,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         
         tester.assertRenderedPage(LayerGroupEditPage.class);
         // remove the first and second elements
-        tester.clickLink("form:layers:layers:listContainer:items:1:itemProperties:4:component:link");
+        // tester.clickLink("form:layers:layers:listContainer:items:1:itemProperties:4:component:link");
         // the regenerated list will have ids starting from 4
         //tester.clickLink("form:layers:layers:listContainer:items:4:itemProperties:4:component:link");
         // manually regenerate bounds

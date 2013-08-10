@@ -221,8 +221,10 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         String layer = getLayerId(MockData.BASIC_POLYGONS);
         String base = "wms?version=1.1.1&bbox=-4.5,-2.,4.5,7&format=jpeg&info_format=text/html" +
                 "&request=GetFeatureInfo&layers="
-                + layer + "&query_layers=" + layer + "&width=300&height=300&x=114&y=229";
-        Document dom = getAsDOM(base + "&styles=");
+                + layer + "&query_layers=" + layer + "&width=300&height=300&x=111&y=229";
+        String url = base + "&styles=";
+        Document dom = getAsDOM(url);
+        print(dom);
         // make sure the document is empty, the style we chose has thin lines
         assertXpathEvaluatesTo("0", "count(/html/body/table/tr)", dom);
 
@@ -242,13 +244,13 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         String layer = getLayerId(MockData.BASIC_POLYGONS);
         String base = "wms?version=1.1.1&bbox=-4.5,-2.,4.5,7&format=jpeg&info_format=text/html" +
                 "&request=GetFeatureInfo&layers="
-                + layer + "&query_layers=" + layer + "&width=300&height=300&x=114&y=229&styles=paramStroke";
+                + layer + "&query_layers=" + layer + "&width=300&height=300&x=111&y=229&styles=paramStroke";
         Document dom = getAsDOM(base);
         // make sure the document is empty, the style we chose has thin lines
         assertXpathEvaluatesTo("0", "count(/html/body/table/tr)", dom);
 
         // another request that will catch one feature due to the style with a thick stroke, make sure it's in
-        dom = getAsDOM(base + "&env=thickness:10");
+        dom = getAsDOM(base + "&env=thickness:12");
         // print(dom);
         assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[starts-with(.,'BasicPolygons.')])", dom);
         assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[. = 'BasicPolygons.1107531493630'])", dom);

@@ -106,6 +106,8 @@ import com.vividsolutions.jts.geom.Polygon;
 public class GetFeatureInfo {
 
     private static final Logger LOGGER = Logging.getLogger(GetFeatureInfo.class);
+    
+    static final int MIN_BUFFER_SIZE = Integer.getInteger("org.geoserver.wms.featureinfo.minBuffer", 5); 
 
     private WMS wms;
 
@@ -432,10 +434,11 @@ public class GetFeatureInfo {
                     rule.accept(estimator);
                 }
 
-                if (estimator.getBuffer() < 6.0 || !estimator.isEstimateAccurate()) {
-                    radius = 3.0;
+                int estimatedRadius = estimator.getBuffer() / 2;
+                if (estimatedRadius < MIN_BUFFER_SIZE || !estimator.isEstimateAccurate()) {
+                    radius = MIN_BUFFER_SIZE;
                 } else {
-                    radius = estimator.getBuffer() / 2.0;
+                    radius = estimatedRadius;
                 }
             }
         } else {

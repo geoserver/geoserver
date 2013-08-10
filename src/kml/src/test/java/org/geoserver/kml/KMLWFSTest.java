@@ -1,5 +1,8 @@
 package org.geoserver.kml;
 
+import static org.junit.Assert.*;
+
+import java.io.ByteArrayInputStream;
 import java.util.Map;
 
 import org.custommonkey.xmlunit.XMLAssert;
@@ -7,6 +10,8 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.wfs.WFSTestSupport;
 import org.junit.Test;
 import org.w3c.dom.Document;
+
+import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class KMLWFSTest extends WFSTestSupport {
     
@@ -29,9 +34,12 @@ public class KMLWFSTest extends WFSTestSupport {
 
     @Test
     public void testGetFeature() throws Exception {
-        Document doc = getAsDOM("wfs?service=WFS&version=1.1.0&request=GetFeature&typeName="
+        MockHttpServletResponse response = getAsServletResponse("wfs?service=WFS&version=1.1.0&request=GetFeature&typeName="
                 + getLayerId(MockData.AGGREGATEGEOFEATURE) + "&outputFormat="
                 + KMLMapOutputFormat.MIME_TYPE.replace("+", "%2B"));
+        assertEquals(200, response.getStatusCode());
+        assertEquals("inline; filename=" + MockData.AGGREGATEGEOFEATURE.getLocalPart() + ".kml", response.getHeader("Content-Disposition"));
+        Document doc = dom(new ByteArrayInputStream( response.getOutputStreamContent().getBytes()));
         checkAggregateGeoFeatureKmlContents(doc);
     }
     

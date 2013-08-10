@@ -290,7 +290,7 @@ public class BufferedImageLegendGraphicBuilder {
             } else {
                 
                 final Feature sampleFeature;
-                if (layer == null) {
+                if (layer == null || hasVectorTransformation) {
                     sampleFeature = createSampleFeature();
                 } else {                    
                     sampleFeature = createSampleFeature(layer);

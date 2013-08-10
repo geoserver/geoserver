@@ -20,6 +20,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -82,6 +83,7 @@ public class LayerGroupEntryPanel extends Panel {
                 return null;
             }
         }.setFilterable( false ));
+        layerTable.setItemReuseStrategy(new DefaultItemReuseStrategy());
         layerTable.setOutputMarkupId( true );
         
         add( new AjaxLink( "addLayer" ) {

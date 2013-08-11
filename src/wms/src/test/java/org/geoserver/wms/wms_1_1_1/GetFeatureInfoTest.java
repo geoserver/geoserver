@@ -9,14 +9,16 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
+import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
-
-import org.junit.Test;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -34,14 +36,23 @@ import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
+import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.geotools.util.logging.Logging;
+import org.junit.Test;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
+import org.opengis.geometry.MismatchedDimensionException;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.w3c.dom.Document;
+
+import com.vividsolutions.jts.geom.Envelope;
 
 public class GetFeatureInfoTest extends WMSTestSupport {
     
@@ -88,6 +99,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         testData.addStyle("raster","raster.sld",GetFeatureInfoTest.class,catalog);
         testData.addStyle("rasterScales","rasterScales.sld",GetFeatureInfoTest.class,catalog);
         testData.addStyle("squares","squares.sld",GetFeatureInfoTest.class,catalog);
+        testData.addStyle("scaleBased","scaleBased.sld",GetFeatureInfoTest.class,catalog);
         testData.addVectorLayer(SQUARES,Collections.EMPTY_MAP,"squares.properties",
                 GetFeatureInfoTest.class,catalog);
         Map propertyMap = new HashMap();
@@ -670,4 +682,21 @@ public class GetFeatureInfoTest extends WMSTestSupport {
        Document dom = getAsDOM(request);
        assertEquals("wfs:FeatureCollection", dom.getDocumentElement().getNodeName());
    }
+   
+   /**
+    * The rendering engine has a 10-6 tolerance when evaluating rule scale activation, GetFeatureInfo did not
+    * @throws Exception
+    */
+   @Test 
+   public void testScaleTolerance() throws Exception {
+       String layer = getLayerId(MockData.BASIC_POLYGONS);
+       String getMap = "wms?version=1.1.1&bbox=-10000,20000,10000,40000&srs=EPSG:900913&styles=scaleBased&format=image/png&info_format=text/html" +
+               "&request=GetMap&layers="
+               + layer + "&query_layers=" + layer + "&width=2041&height=2041";
+       
+       BufferedImage image = getAsImage(getMap, "image/png");
+       ImageIO.write(image, "png", new File("/tmp/test.png"));
+       assertPixel(image, 150, 150, Color.BLUE);
+   }
+   
 }

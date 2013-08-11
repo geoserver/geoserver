@@ -108,6 +108,8 @@ public class GetFeatureInfo {
     private static final Logger LOGGER = Logging.getLogger(GetFeatureInfo.class);
     
     static final int MIN_BUFFER_SIZE = Integer.getInteger("org.geoserver.wms.featureinfo.minBuffer", 5); 
+    
+    private static final double TOLERANCE = 1e-6;
 
     private WMS wms;
 
@@ -635,8 +637,8 @@ public class GetFeatureInfo {
 
         for (FeatureTypeStyle fts : style.getFeatureTypeStyles()) {
             for (Rule r : fts.rules()) {
-                if ((r.getMinScaleDenominator() <= scaleDenominator)
-                        && (r.getMaxScaleDenominator() > scaleDenominator)) {
+                if ((r.getMinScaleDenominator() - TOLERANCE <= scaleDenominator)
+                        && (r.getMaxScaleDenominator() + TOLERANCE > scaleDenominator)) {
                     result.add(r);
                 }
             }

@@ -444,7 +444,7 @@ For this example, we are nesting gsml:GeologicUnit in gsml:MappedFeature as gsml
         <isMultiple>true</isMultiple>			            				
         <ClientProperty>
 	       <name>xlink:href</name>
-	       <value>strConcat('urn:cgi:feature:MappedFeature:', getId())</value>
+	       <value>strConcat('urn:cgi:feature:MappedFeature:', ID)</value>
         </ClientProperty>     	
       </AttributeMapping>
 
@@ -457,6 +457,5 @@ This would be the encoded result for gsml:GeologicUnit::
            <gsml:occurrence xlink:href="urn:cgi:feature:MappedFeature:mf3"/>
 
 .. note::
-   * In the example above, we use *strConcat('urn:cgi:feature:MappedFeature:', getId())* as Client Property value. The function *getId()* would return the id value from the nested feature table (gsml:MappedFeature). You can use other column names from the nested feature data store. 
-   * Lastly, don't forget to add *XLink* in your mapping file namespaces section, or you could end up with a StackOverflowException as the *xlink:href* client property won't be recognized and the mappings would chain endlessly.
+   * Don't forget to add *XLink* in your mapping file namespaces section, or you could end up with a StackOverflowException as the *xlink:href* client property won't be recognized and the mappings would chain endlessly.
    * :ref:`app-schema.resolve` may be used to force app-schema to do full feature chaining up to a certain level, even if an xlink reference is specified.

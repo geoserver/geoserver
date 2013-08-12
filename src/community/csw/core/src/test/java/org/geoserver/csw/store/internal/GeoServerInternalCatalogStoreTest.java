@@ -8,7 +8,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import org.apache.commons.io.FileUtils;
 import org.geoserver.csw.CSWTestSupport;
 import org.junit.Test;
 
@@ -17,22 +16,19 @@ public class GeoServerInternalCatalogStoreTest extends CSWTestSupport {
     @Test
     public void testModifyMappingFiles() throws IOException, InterruptedException {
         
-        //test empty mappings
-        InternalCatalogStore store = new GeoServerInternalCatalogStore(this.getGeoServer());
-        
-        assertNull(store.getMapping("MD_Metadata").getElement("fileIdentifier.CharacterString"));
-        assertNull(store.getMapping("Record").getElement("identifier.value"));        
-        
-        // copy all mappings into the data directory
+        //clear any existing mappings
         File root = testData.getDataDirectoryRoot();
         File csw = new File(root, "csw");
-        File records = new File("./src/main/resources/org/geoserver/csw/store/internal");
-        FileUtils.copyDirectory(records, csw); 
+        if (csw.exists()) {
+            csw.delete();
+        }
         
-        //wait a second, that is exactly what it takes FileWatcher to update
-        Thread.sleep(1001);
+        //create new store
+        InternalCatalogStore store = new GeoServerInternalCatalogStore(this.getGeoServer());
         
-        //now there should be mappings
+        //test if we have default mapping
+        File record = new File(csw, "Record.properties");
+        assertTrue(record.exists());
         
         assertNotNull(store.getMapping("MD_Metadata").getElement("fileIdentifier.CharacterString"));
         assertNotNull(store.getMapping("Record").getElement("identifier.value")); 
@@ -41,12 +37,15 @@ public class GeoServerInternalCatalogStoreTest extends CSWTestSupport {
         
         //modify mapping file
         
-        File record = new File(csw, "Record.properties");
+        //wait one second, so the modification time will change and change is detected (on linux the resolution is 1s instead of 1ms)
+        Thread.sleep(1001);
+                
         PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(record, true)));
-        out.println("\nformat.value='img/jpeg'");
-        out.close();     
-
-        //wait a second, that is exactly what it takes FileWatcher to update
+        out.println("\nformat.value='img/jpeg'");  
+        out.close();   
+        
+        
+        //wait one second, that is exactly what it takes FileWatcher to update
         Thread.sleep(1001);
                 
         //mapping should be automatically reloaded

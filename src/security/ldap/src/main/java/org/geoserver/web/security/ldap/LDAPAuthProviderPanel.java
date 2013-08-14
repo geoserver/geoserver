@@ -4,16 +4,13 @@
  */
 package org.geoserver.web.security.ldap;
 
-import java.net.URI;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.logging.Level;
 
-import javax.naming.Context;
-import javax.naming.NamingException;
-import javax.naming.ldap.InitialLdapContext;
-import javax.naming.ldap.LdapContext;
+import javax.naming.AuthenticationException;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSession;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
@@ -28,12 +25,19 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
+import org.geoserver.security.ldap.GeoserverLdapBindAuthenticator;
 import org.geoserver.security.ldap.LDAPAuthenticationProvider;
+import org.geoserver.security.ldap.LDAPSecurityProvider;
 import org.geoserver.security.ldap.LDAPSecurityServiceConfig;
 import org.geoserver.security.web.auth.AuthenticationProviderPanel;
 import org.geoserver.security.web.usergroup.UserGroupServiceChoice;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.util.MapModel;
+import org.springframework.ldap.core.support.DefaultTlsDirContextAuthenticationStrategy;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
+import org.springframework.security.ldap.authentication.SpringSecurityAuthenticationSource;
 
 /**
  * Configuration panel for {@link LDAPAuthenticationProvider}.
@@ -145,43 +149,40 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
                     ((FormComponent)LDAPAuthProviderPanel.this.get("useTLS")).processInput();
 
                     ((FormComponent)LDAPAuthProviderPanel.this.get("userDnPattern")).processInput();
+                    ((FormComponent)LDAPAuthProviderPanel.this.get("userFilter")).processInput();
+                    ((FormComponent)LDAPAuthProviderPanel.this.get("userFormat")).processInput();
                     
-                    Map map = (Map) TestLDAPConnectionPanel.this.getDefaultModelObject();
-                    String username = (String) map.get("username");
-                    String password = (String) map.get("password");
+                    String username = (String)((FormComponent)TestLDAPConnectionPanel.this.get("username")).getConvertedInput();
+                    String password = (String)((FormComponent)TestLDAPConnectionPanel.this.get("password")).getConvertedInput();
                     
                     LDAPSecurityServiceConfig ldapConfig = (LDAPSecurityServiceConfig) getForm().getModelObject();
                     doTest(ldapConfig, username, password);
 
-                    target.addComponent(((GeoServerBasePage)getPage()).get("feedback"));
+                    target.addComponent(getPage().get("feedback"));
                 }
 
                 void doTest(LDAPSecurityServiceConfig ldapConfig, String username,
                         String password) {
 
-                    LdapContext ctx = null;
+                    
                     try {
-                        Hashtable env = new Hashtable(11);
-                        env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-    
-                        // Must use the name of the server that is found in its certificate
-                        env.put(Context.PROVIDER_URL, ldapConfig.getServerURL());
-    
-                        env.put(Context.SECURITY_AUTHENTICATION, "simple");
-                        URI url = new URI(ldapConfig.getServerURL());
-
-                        if (ldapConfig.getUserDnPattern() == null) {
-                            error("No user dn pattern specified");
+                        
+                        if (ldapConfig.getUserDnPattern() == null && ldapConfig.getUserFilter() == null) {
+                            error("Neither user dn pattern or user filter specified");
                             return;
                         }
                         
-                        String p = ldapConfig.getUserDnPattern().replaceAll("\\{0\\}", username) + "," + 
-                                url.getPath().substring(1);
-                        env.put(Context.SECURITY_PRINCIPAL, p);
-                        env.put(Context.SECURITY_CREDENTIALS, password);
+                        LDAPSecurityProvider provider = new LDAPSecurityProvider(null);
+                        LDAPAuthenticationProvider authProvider = (LDAPAuthenticationProvider) provider
+                                .createAuthenticationProvider(ldapConfig);
+                        Authentication authentication = authProvider
+                                .authenticate(new UsernamePasswordAuthenticationToken(
+                                        username, password));
+                        if(authentication == null || !authentication.isAuthenticated()) {
+                            throw new AuthenticationException("Cannot authenticate " + username);
+                        }
 
-                        ctx = new InitialLdapContext(env, null);
-
+                        provider.destroy(null);
                         info(new StringResourceModel(LDAPAuthProviderPanel.class.getSimpleName() + 
                             ".connectionSuccessful", null).getObject());
                     } catch (Exception e) {
@@ -189,12 +190,7 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
                         LOGGER.log(Level.WARNING, e.getMessage(), e);
                     }
                     finally {
-                        if (ctx != null) {
-                            try {
-                                ctx.close();
-                            } catch (NamingException e) {
-                            }
-                        }
+                        
                     }
                     
                 }

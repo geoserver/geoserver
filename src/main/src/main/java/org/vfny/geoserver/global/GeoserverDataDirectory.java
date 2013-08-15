@@ -226,6 +226,8 @@ public class GeoserverDataDirectory {
         }
 
         // do we ever have something that is not a file system reference?
+        // yes. See GEOS-5931: cases like sde://user:pass@server:port or 
+        // pgraster://user:pass@server:port or similar custom store URLs.
         if (path.startsWith("file:")) {
             path = path.substring(5); // remove 'file:' prefix
 
@@ -239,7 +241,12 @@ public class GeoserverDataDirectory {
                 return new File(baseDir, path);
             }
         } else {
-            return new File(path);
+            File file = new File(path);
+            if (file.exists()) {
+                return file;
+            } 
+            // Allows dealing with custom url Strings. Don't return a file for them
+            return null;
         }
     }
 

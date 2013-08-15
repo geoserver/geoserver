@@ -7,9 +7,14 @@ package org.geoserver.wms.wms_1_1_1;
 import static org.junit.Assert.*;
 
 import org.custommonkey.xmlunit.XMLAssert;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerGroupInfo.Mode;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.ResourceErrorHandling;
+import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Before;
@@ -31,10 +36,19 @@ public class CapabilitiesModifyingTest extends GeoServerSystemTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         
-        for (FeatureTypeInfo ft : getCatalog().getFeatureTypes()) {
+        Catalog catalog = getCatalog();
+        for (FeatureTypeInfo ft : catalog.getFeatureTypes()) {
             ft.setLatLonBoundingBox(null);
-            getCatalog().save(ft);
+            catalog.save(ft);
         }
+
+        // create a misconfigured layer group
+        LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
+        lg.getLayers().add(catalog.getLayerByName(getLayerId(MockData.LAKES)));
+        lg.setName("test");
+        lg.setMode(Mode.NAMED);
+        
+        catalog.add(lg);
     }
     
     @Test

@@ -11,7 +11,6 @@ import static org.geoserver.jdbcconfig.internal.DbUtils.logStatement;
 import static org.geoserver.jdbcconfig.internal.DbUtils.params;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Proxy;
 import java.net.URL;
@@ -53,7 +52,6 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.impl.CoverageAccessInfoImpl;
-import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.impl.GeoServerInfoImpl;
 import org.geoserver.config.impl.JAIInfoImpl;
 import org.geoserver.ows.util.OwsUtils;
@@ -200,7 +198,7 @@ public class ConfigDatabase {
         } else {
             LOGGER.fine("Filter is not fully supported, doing scan of supported part to return the number of matches");
             // going the expensive route, filtering as much as possible
-            CloseableIterator<T> iterator = query(of, filter, null, null, null);
+            CloseableIterator<T> iterator = query(of, filter, null, null, (SortBy)null);
             try {
                 return Iterators.size(iterator);
             } finally {
@@ -209,9 +207,18 @@ public class ConfigDatabase {
         }
         return count;
     }
-
+    
     public <T extends Info> CloseableIterator<T> query(final Class<T> of, final Filter filter,
             @Nullable Integer offset, @Nullable Integer limit, @Nullable SortBy sortOrder) {
+        if(sortOrder == null) {
+            return query(of, filter, offset, limit, new SortBy[]{});
+        } else {
+            return query(of, filter, offset, limit, new SortBy[]{sortOrder});
+        }
+    }
+    
+    public <T extends Info> CloseableIterator<T> query(final Class<T> of, final Filter filter,
+            @Nullable Integer offset, @Nullable Integer limit, @Nullable SortBy... sortOrder) {
 
         checkNotNull(of);
         checkNotNull(filter);

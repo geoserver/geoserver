@@ -179,13 +179,13 @@ idExpression (optional)
 A CQL expression that is used to set the custom ``gml:id`` of the output feature type. This should be the name of a database column on its own. Using functions would cause an exception because it is not supported with the default joining implementation. 
  
 .. note:: 
-         Every feature type must have a ``gml:id``. This requirement is an implementation limitation (strictly, ``gml:id`` is optional in GML). 
+         Every feature must have a ``gml:id``. This requirement is an implementation limitation (strictly, ``gml:id`` is optional in GML). 
 
          * If idExpression is unspecified, ``gml:id`` will be ``<the table name>.<primary key>``, e.g. ``MAPPEDFEATURE.1``.
       
          * In the absence of primary keys, this will be ``<the table name>.<generated gml id>``, e.g. ``MAPPEDFEATURE.fid--46fd41b8_1407138b56f_-7fe0``. 
          
-         * If using property files instead of database tables, the default ``gml:id`` will be the row id from the property file, e.g. ``1``.
+         * If using property files instead of database tables, the default ``gml:id`` will be the row key found before the equals ("=") in the property file, e.g. the feature with row "mf1=Mudstone|POINT(1 2)|..." will have gml:id ``mf1``.
 
 .. note:: ``gml:id`` must be an `NCName <http://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-NCName>`_.
 

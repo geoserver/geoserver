@@ -17,7 +17,7 @@ public class CSWInternalTestSupport extends CSWTestSupport {
         // copy all mappings into the data directory
         File root = testData.getDataDirectoryRoot();
         File csw = new File(root, "csw");
-        File records = new File("./src/main/resources/org/geoserver/csw/store/internal");
+        File records = new File("./src/test/resources/org/geoserver/csw/store/internal");
         FileUtils.copyDirectory(records, csw);
         
         super.setUpTestData(testData);

@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.config.GeoServer;
+import org.geoserver.data.util.IOUtils;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.security.PropertyFileWatcher;
 import org.geotools.util.logging.Logging;
@@ -65,11 +66,11 @@ public class GeoServerInternalCatalogStore extends InternalCatalogStore {
             PropertyFileWatcher watcher = new PropertyFileWatcher(f);
             watchers.put(typeName, watcher);
             
-            if (f.exists()) {                               
-                addMapping (typeName, CatalogStoreMapping.parse(new HashMap<String, String>((Map) watcher.getProperties())));                
-            } else {
-                addMapping (typeName, new CatalogStoreMapping());
-            }            
+            if (!f.exists()) {           
+                IOUtils.copy(getClass().getResourceAsStream(typeName + ".properties"),f);
+            }
+            
+            addMapping (typeName, CatalogStoreMapping.parse(new HashMap<String, String>((Map) watcher.getProperties())));
         }
     }       
     

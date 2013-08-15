@@ -967,6 +967,20 @@
       </dependencies>
 		</profile>        
     <profile>
+      <id>importer</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.importer</groupId>
+          <artifactId>importer-web</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.importer</groupId>
+          <artifactId>importer-rest</artifactId>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>geopkg</id>
       <dependencies>
         <dependency>

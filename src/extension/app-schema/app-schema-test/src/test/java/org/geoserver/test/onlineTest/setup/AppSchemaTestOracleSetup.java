@@ -131,17 +131,18 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
 			IOException {
 
 		String parser;
-		if (is3D) {
-			// use 3D parser
-			String user = System.getProperty("SC4OUser");
-			if (user == null) {
-				throw new UnsupportedOperationException(
-						"Please specify SC4OUser parameter to run 3D tests with Oracle!");
-			}
-			parser = user + ".SC4O.ST_GeomFromEWKT";
-		} else {
-			parser = "SDO_GEOMETRY"; //default wkt parser procedure, does not support 3D
-    	}
+        if (is3D) {
+            // use 3D parser
+            // if SC4OUser is different from the database user, it will be specified
+            // else, use the current database user
+            String user = System.getProperty("SC4OUser");
+            if (user == null) {
+                user = System.getProperty("user");
+            }
+            parser = user + ".SC4O.ST_GeomFromEWKT";
+        } else {
+            parser = "SDO_GEOMETRY"; // default wkt parser procedure, does not support 3D
+        }
     	
         StringBuffer buf = new StringBuffer();
         StringBuffer spatialIndex = new StringBuffer();

@@ -164,9 +164,10 @@ For Oracle:
       If the online test user is different from the user used for installation of the package, the online test user must be given permission to use the package.
       You must also execute as an admin user the following command for the online test user:
       CALL DBMS_JAVA.GRANT_PERMISSION('onlinetestuser','java.lang.RuntimePermission','getClassLoader','');
-
-      Afterwards, you have to tell the online testing system to use the JTS method for wkt parsing rather than the regular oracle method SDO_GEOMETRY.
-      You do this with the system property -Dwktparser. The method you need is SC4O.ST_GeomFromEWKT but you need to specify the user where the package was installed.
+      
+      Afterwards, you have to tell the online testing system the user where the SC4O package was installed. You do this by specifying the system property -DSC4OUser.
+      If this is the same as the online test user, you can omit this parameter.
+      The online test will use the JTS method for wkt parsing (ST_GeomFromEWKT) rather than the regular oracle method SDO_GEOMETRY.      
       For example, I installed the package using the System user. Then I gave onlinetestuser permission to execute it.
-      I run the test with -Dwktparser=System.SC4O.ST_GeomFromEWKT
+      I run the test with -DSC4OUser=System so it can use System.SC4O.ST_GeomFromEWKT method.
 

@@ -41,6 +41,7 @@ import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
@@ -57,6 +58,7 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Test;
 import org.springframework.util.xml.SimpleNamespaceContext;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -659,8 +661,9 @@ public class KMLReflectorTest extends WMSTestSupport {
             XMLAssert.assertXpathEvaluatesTo("0.0017851936218678816,-0.0010838268792710709,101.0", base + "/kml:Point/kml:coordinates", doc);
             XMLAssert.assertXpathEvaluatesTo("1", base + "/kml:Polygon/kml:extrude", doc);
             XMLAssert.assertXpathEvaluatesTo("relativeToGround", base + "/kml:Polygon/kml:altitudeMode", doc);
-            XMLAssert.assertXpathEvaluatesTo("6.0E-4,-0.0018,101.0 0.0010,-6.0E-4,101.0 0.0024,-1.0E-4,101.0 0.0031,-0.0015,101.0 6.0E-4,-0.0018,101.0", 
-                    base + "/kml:Polygon/kml:outerBoundaryIs/kml:LinearRing/kml:coordinates", doc);
+            
+            assertXPathCoordinates( "LinearRing","6.0E-4,-0.0018,101.0 0.0010,-6.0E-4,101.0 0.0024,-1.0E-4,101.0 0.0031,-0.0015,101.0 6.0E-4,-0.0018,101.0", 
+            			base + "/kml:Polygon/kml:outerBoundaryIs/kml:LinearRing/kml:coordinates", doc);
         } finally {
             if(template != null) {
                 template.delete();
@@ -668,6 +671,56 @@ public class KMLReflectorTest extends WMSTestSupport {
         }
     }
     
+    private void assertXPathCoordinates( String message, String expectedText, String xpath, Document doc ) throws XpathException {
+    	XpathEngine engine = XMLUnit.newXpathEngine();
+        String text = engine.evaluate(xpath, doc);
+        if( equalsRegardingNull( expectedText, text ) ){
+        	return;
+        }
+        if( expectedText != null && text != null ){
+        	String expectedCoordinates[] = expectedText.split("(\\s|,)");
+        	String actualCoordiantes[] = text.split("(\\s|,)");
+        	if( expectedCoordinates.length == actualCoordiantes.length ){
+        		final int LENGTH = actualCoordiantes.length;
+        		boolean checked = true;
+        		LIST: for( int i = 0; i< LENGTH; i++){
+        			String expected = expectedCoordinates[i];
+        			String actual = actualCoordiantes[i];
+        			if( expected.length() == actual.length()){
+        				if( !expected.equals(actual)){
+        					checked = false;
+        					break LIST; // normal equals check will report issue
+        				}
+        			}
+        			else {
+        				try {
+	        				double expectedOrdinate = Double.parseDouble(expected);
+	        				double actualOridnate = Double.parseDouble(actual);
+	        				if (Double.compare(expectedOrdinate, actualOridnate) != 0) {
+		        		        // Could do a Math.abs(expectedOrdinate - actualOridnate) <= delta check
+	        					break LIST; // normal equals check will report issue
+	        				}
+        				}
+        				catch (NumberFormatException formatException ){
+        					checked = false;
+        					break LIST; // normal equals check will report issue
+        				}
+        			}
+        		}
+    			if( checked) {
+    				return; // double based comparison checked all elements
+    			}
+        	}
+        }
+        // call normal assertEquals for consistent failure message    
+        assertEquals( message,  expectedText, text );
+    }
+    private boolean equalsRegardingNull(String expected, String actual ){
+    	if( expected == null ){
+    		return actual == null;
+    	}
+    	return expected.equals(actual); // fast string equals check
+    }
     @Test
     public void testHeightTemplateNoExtrude() throws Exception {
         File template = null;
@@ -690,8 +743,12 @@ public class KMLReflectorTest extends WMSTestSupport {
             XMLAssert.assertXpathEvaluatesTo("0.0017851936218678816,-0.0010838268792710709,101.0", base + "/kml:Point/kml:coordinates", doc);
             XMLAssert.assertXpathEvaluatesTo("0", base + "/kml:Polygon/kml:extrude", doc);
             XMLAssert.assertXpathEvaluatesTo("relativeToGround", base + "/kml:Polygon/kml:altitudeMode", doc);
-            XMLAssert.assertXpathEvaluatesTo("6.0E-4,-0.0018,101.0 0.0010,-6.0E-4,101.0 0.0024,-1.0E-4,101.0 0.0031,-0.0015,101.0 6.0E-4,-0.0018,101.0", 
-                    base + "/kml:Polygon/kml:outerBoundaryIs/kml:LinearRing/kml:coordinates", doc);
+            
+            // Coordinate Formatting in JDK 1.7.0 does not include trailing 0 - see GEOS-5973
+            // JDK 1.6: 0.0010  
+            // JDK 1.7: 0.001
+            assertXPathCoordinates("kml:LinearRing","6.0E-4,-0.0018,101.0 0.001,-6.0E-4,101.0 0.0024,-1.0E-4,101.0 0.0031,-0.0015,101.0 6.0E-4,-0.0018,101.0", 
+	                    base + "/kml:Polygon/kml:outerBoundaryIs/kml:LinearRing/kml:coordinates", doc);
         } finally {
             if(template != null) {
                 template.delete();

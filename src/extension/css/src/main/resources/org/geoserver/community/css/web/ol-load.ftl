@@ -21,9 +21,11 @@ map.addLayer(new OpenLayers.Layer.WMS("GeoServer WMS", "../wms",
       layers: "${layer}",
       styles: "${style}",
       format: "image/png",
+      format_options: "layout:css-legend;fontAntiAliasing:true",
       random: ${cachebuster?c}
     }, {
-      singleTile: true
+      singleTile: true,
+      ratio: 1
     }
   )
 );

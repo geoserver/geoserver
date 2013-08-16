@@ -1,5 +1,5 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 
@@ -10,8 +10,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
+
 import net.opengis.wcs20.GetCapabilitiesType;
-import org.geoserver.catalog.Catalog;
+
 import org.geoserver.platform.OWS20Exception;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.response.WCSCapsTransformer;
@@ -31,24 +32,21 @@ public class GetCapabilities {
     protected Logger LOGGER = Logging.getLogger(DefaultWebCoverageService20.class);
     
     private WCSInfo wcs;
-    private Catalog catalog;
     private CoverageResponseDelegateFinder responseFactory;
 
     public static final List<String> PROVIDED_VERSIONS =
             Collections.unmodifiableList(Arrays.asList(
-                WCS20Const.V20x,
+                WCS20Const.V201,
                 WCS20Const.V20,
                 WCS20Const.V111,
                 WCS20Const.V110));
 
-    public GetCapabilities(WCSInfo wcs, Catalog catalog, CoverageResponseDelegateFinder responseFactory) {
+    public GetCapabilities(WCSInfo wcs, CoverageResponseDelegateFinder responseFactory) {
         this.wcs = wcs;
-        this.catalog = catalog;
         this.responseFactory = responseFactory;
     }
 
     TransformerBase run(GetCapabilitiesType request) throws WCS20Exception {
-//        String acceptedVersion = request.getAcceptVersions() == null ? null : request.getAcceptVersions().getVersion();
         List<String> acceptedVersions = request.getAcceptVersions() == null ? null : request.getAcceptVersions().getVersion();
 
         String negotiatedVersion = RequestUtils.getVersionOws20(PROVIDED_VERSIONS, acceptedVersions);
@@ -58,7 +56,7 @@ public class GetCapabilities {
             WCSCapsTransformer capsTransformer = new WCSCapsTransformer(wcs.getGeoServer());
             capsTransformer.setEncoding(Charset.forName((wcs.getGeoServer().getSettings().getCharset())));
             return capsTransformer;
-        } else if (WCS20Const.V20.equals(negotiatedVersion) || WCS20Const.V20x.equals(negotiatedVersion)) {
+        } else if (WCS20Const.V20.equals(negotiatedVersion) || WCS20Const.V201.equals(negotiatedVersion)) {
             WCS20GetCapabilitiesTransformer capsTransformer = new WCS20GetCapabilitiesTransformer(wcs.getGeoServer(), responseFactory);
             capsTransformer.setEncoding(Charset.forName((wcs.getGeoServer().getSettings().getCharset())));
             return capsTransformer;

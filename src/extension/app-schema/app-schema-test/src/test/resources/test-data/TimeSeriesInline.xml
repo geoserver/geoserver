@@ -92,7 +92,7 @@
 				<AttributeMapping>
 					<targetAttribute>csml:value/csml:PointSeriesCoverage/csml:pointSeriesDomain/csml:TimeSeries/csml:timePositionList</targetAttribute>					
 					<sourceExpression>
-						<OCQL>dateFormat('yyyy-MM-dd', POSITION)</OCQL>
+						<OCQL>FormatDateTimezone('yyyy-MM-dd', POSITION, 'UTC')</OCQL>
 					</sourceExpression>
 					<isList>true</isList>
      			</AttributeMapping>

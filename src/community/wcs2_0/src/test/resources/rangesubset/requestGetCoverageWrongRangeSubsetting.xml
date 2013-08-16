@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wcs:GetCoverage xmlns:wcs="http://www.opengis.net/wcs/2.0"
+    xmlns:gml="http://www.opengis.net/gml/3.2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:rsub="http://www.opengis.net/wcs/range-subsetting/1.0"
+    service="WCS" version="2.0.1">
+    <wcs:CoverageId>wcs__BlueMarble</wcs:CoverageId>
+    <wcs:Extension>    
+        <rsub:rangeSubset>
+            <rsub:rangeItem>
+                <rsub:rangeComponent>Band1</rsub:rangeComponent>
+            </rsub:rangeItem>    
+            <rsub:rangeItem>        
+                <rsub:rangeInterval>
+                    <rsub:startComponent>Band3</rsub:startComponent>
+                    <rsub:endComponent>Band5</rsub:endComponent>
+                </rsub:rangeInterval>
+            </rsub:rangeItem>        
+        </rsub:rangeSubset>
+    </wcs:Extension>
+</wcs:GetCoverage>

@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -24,6 +24,7 @@ import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.RoleCalculator;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.util.StringUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
@@ -228,6 +229,7 @@ public abstract class GeoServerPreAuthenticatedUserNameFilter extends GeoServerP
         }
 
         roles.addAll(getConverter().convertRolesFromString(rolesString, principal));
+        LOGGER.log(Level.FINE,"for principal " + principal + " found roles " + StringUtils.collectionToCommaDelimitedString(roles) + " in header " + getRolesHeaderAttribute());
         return roles;        
     }
 

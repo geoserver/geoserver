@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:wicket="http://wicket.apache.org/">
+<wicket:head>
+</wicket:head>    
+<body>
+<wicket:extend>
+         <fieldset>
+         <legend>
+          <span><wicket:message key="chainConfigFilter"></wicket:message></span>
+          <a href="#" wicket:id="chainConfigFilterHelp" class="help-link"></a>
+         </legend>                    
+         <ul>
+         
+         <li>
+             <label for="exceptionTranslationName"><wicket:message key="exceptionTranslationName"></wicket:message></label>
+             <select wicket:id="exceptionTranslationName"></select>
+        </li>                                                    
+        <li>
+             <label for="interceptorName"><wicket:message key="interceptorName"></wicket:message></label>
+             <select wicket:id="interceptorName"></select>
+        </li>          
+                  
+        </ul>
+      </fieldset>
+      <fieldset class="noTitle">
+       <ul>
+         <li>
+                <div wicket:id="authFilterChain"></div>
+         </li>
+        </ul>
+      </fieldset>      
+</wicket:extend>
+</body>
+</html>
+

@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -137,4 +137,15 @@ public interface CoverageInfo extends ResourceInfo {
     
     GridCoverageReader getGridCoverageReader( ProgressListener listener, Hints hints ) 
         throws IOException;
+    
+    /**
+     * Returns the native coverage name (might be null for single coverage formats)
+     * @return
+     */
+    String getNativeCoverageName();
+    
+    /**
+     * Sets the native coverage name (used to pick up a specific coverage from withing a reader)
+     */
+    void setNativeCoverageName(String nativeCoverageName);
  }

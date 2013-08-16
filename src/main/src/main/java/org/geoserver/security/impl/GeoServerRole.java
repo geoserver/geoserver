@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security.impl;
@@ -44,10 +44,6 @@ public class GeoServerRole  implements GrantedAuthority,  Comparable<GeoServerRo
      */
     public final static GeoServerRole ANY_ROLE = new GeoServerRole("*");
 
-    /**
-     * Pre-defined null role 
-     */
-    public final static GeoServerRole NULL_ROLE = new GeoServerRole("null");
         
     /**
      * Predefined anonymous role

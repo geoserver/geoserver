@@ -1,9 +1,10 @@
-/* Copyright (c) 2001 - 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.web;
 
+import org.geoserver.security.GeoServerSecurityFilterChainProxy;
 import org.springframework.security.core.Authentication;
 
 /**
@@ -16,6 +17,8 @@ public class AuthenticatedComponentAuthorizer implements ComponentAuthorizer {
 
     @Override
     public boolean isAccessAllowed(Class componentClass, Authentication authentication) {
+        if (GeoServerSecurityFilterChainProxy.isSecurityEnabledForCurrentRequest()==false)
+            return true;
         return authentication != null && authentication.isAuthenticated();
     }
 

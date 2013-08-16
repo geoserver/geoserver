@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -76,6 +76,8 @@ public class JDBCConnectAuthProvider extends GeoServerAuthenticationProvider {
             } catch (IOException ex ) {
                 log(new AuthenticationServiceException(ex.getLocalizedMessage(),ex));
                 return null;
+            } catch (UsernameNotFoundException ex) {
+                log(ex);
             } catch (AuthenticationException ex) {
                 log(ex);
                 return null;

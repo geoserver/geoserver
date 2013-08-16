@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (c) 2013 OpenPlans - www.openplans.org. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+  
+	<bean id="wmsEoStyleCatalogListener" class="org.geoserver.wms.eo.EoStyleCatalogListener">
+		<constructor-arg ref="catalog" />
+		<constructor-arg ref="resourceLoader" />
+	</bean>
+
+	<bean id="wmsGetFeatureInfoXML" class="org.geoserver.wms.eo.XMLFeatureInfoOutputFormat">
+		<constructor-arg ref="wms" />
+	</bean>
+ 
+  	<bean id="wmsEoLayerGroupMenuPage" class="org.geoserver.web.MenuPageInfo">
+    	<property name="id" value="wmsEoLayerGroupMenuPage" />
+    	<property name="titleKey" value="wmsEoLayerGroupMenuPage.title" />
+    	<property name="descriptionKey" value="wmsEoLayerGroupMenuPage.description" />
+    	<property name="componentClass" value="org.geoserver.wms.eo.web.EoLayerGroupPage" />
+    	<property name="category" ref="dataCategory"/>
+    	<property name="icon" value="../../../web/img/icons/silk/layers.png" />
+    	<property name="order" value="26" />
+    	<property name="authorizer" ref="workspaceAdminAuthorizer"/>
+  	</bean>
+    
+	<!-- GetMap callback -->
+	<bean id="getMapCallback" class="org.geoserver.wms.eo.EOGetMapChecker">
+	   <constructor-arg ref="catalog"/>  
+	</bean>
+	
+
+    <!-- Massage GetFeatureInfo Requests -->
+    <bean id="featureInfoMassager" class="org.geoserver.wms.eo.EOGetFeatureInfoChecker"/>	
+</beans>

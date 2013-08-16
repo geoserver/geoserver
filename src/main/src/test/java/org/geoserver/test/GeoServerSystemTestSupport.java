@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -6,7 +6,9 @@ package org.geoserver.test;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
+import static org.junit.Assert.assertEquals;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -26,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import javax.imageio.ImageIO;
 import javax.servlet.Filter;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -38,7 +41,12 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
@@ -47,13 +55,12 @@ import net.sf.json.JSON;
 import net.sf.json.JSONSerializer;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.xml.serialize.OutputFormat;
-import org.apache.xml.serialize.XMLSerializer;
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.TestHttpClientProvider;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
@@ -88,11 +95,13 @@ import org.geoserver.security.password.GeoServerPBEPasswordEncoder;
 import org.geoserver.security.password.GeoServerPlainTextPasswordEncoder;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
+import org.geotools.data.ows.HTTPClient;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.util.logging.Log4JLoggerFactory;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.XSD;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.GrantedAuthorityImpl;
@@ -137,7 +146,7 @@ import com.mockrunner.mock.web.MockServletOutputStream;
  * a different test setup frequency should annotate themselves with the appropriate {@link TestSetup}
  * annotation. For example to implement a repeated setup:
  * <code><pre> 
- *  {@literal @}TestSetup(run=TestSetupFrequency.REPEATED}
+ *  {@literal @}TestSetup(run=TestSetupFrequency.REPEAT)
  *  public class MyTest extends GeoServerSystemTestSupport {
  *  
  *  }
@@ -176,6 +185,9 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         LoggingUtils.configureGeoServerLogging(loader, getClass().getResourceAsStream(getLogConfiguration()), false, true, null);
 
         setUpTestData(testData);
+        
+        // put the mock http server in test mode
+        TestHttpClientProvider.startTest();
 
         // if we have data, create a mock servlet context and start up the spring configuration
         if (testData.isTestDataAvailable()) {
@@ -216,6 +228,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             onTearDown(testData);
 
             destroyGeoServer();
+            
+            TestHttpClientProvider.endTest();
 
             // some tests do need a kick on the GC to fully clean up
             if(isMemoryCleanRequired()) {
@@ -812,14 +826,16 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
 
         request.setScheme("http");
         request.setServerName("localhost");
+        request.setServerPort(8080);
         request.setContextPath("/geoserver");
         request.setRequestURI(ResponseUtils.stripQueryString(ResponseUtils.appendPath(
                     "/geoserver/", path)));
-        request.setRequestURL(ResponseUtils.appendPath("http://localhost/geoserver", path ) );
+        request.setRequestURL(ResponseUtils.appendPath("http://localhost:8080/geoserver", path ) );
         request.setQueryString(ResponseUtils.getQueryString(path));
         request.setRemoteAddr("127.0.0.1");
         request.setServletPath(ResponseUtils.makePathAbsolute( ResponseUtils.stripRemainingPath(path)) );
         request.setPathInfo(ResponseUtils.makePathAbsolute( ResponseUtils.stripBeginningPath( path)));
+        request.setHeader("Host", "localhost:8080");
         
         // deal with authentication
         if(username != null) {
@@ -1146,7 +1162,22 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             throws Exception {
         return getAsDOM(path, true);
     }
-    
+
+    /**
+     * Executes an ows request using the GET method and returns the result as an 
+     * xml document, with the ability to override the XML document encoding. 
+     * 
+     * @param path The portion of the request after the context, 
+     *   example: 'wms?request=GetMap&version=1.1.1&..."
+     * @param encoding Override for the encoding of the document.
+     * 
+     * @return A result of the request parsed into a dom.
+     * 
+     * @throws Exception
+     */
+    protected Document getAsDOM(final String path, String encoding) throws Exception {
+        return getAsDOM(path, true, encoding);
+    }
     /**
      * Executes a request using the GET method and parses the result as a json object.
      * 
@@ -1162,6 +1193,20 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     protected JSON json(MockHttpServletResponse response) {
         String content = response.getOutputStreamContent();
         return JSONSerializer.toJSON(content);
+    }
+    
+    /**
+     * Retries the request result as a BufferedImage, checking the mime type is the expected one
+     * @param path
+     * @param mime
+     * @return
+     * @throws Exception
+     */
+    protected BufferedImage getAsImage(String path, String mime) throws Exception {
+        MockHttpServletResponse resp = getAsServletResponse(path);
+        assertEquals(mime, resp.getContentType());
+        InputStream is = getBinaryInputStream(resp);
+        return ImageIO.read(is);
     }
 
     /**
@@ -1182,7 +1227,29 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     throws Exception {
         return dom(get(path), skipDTD);
     }
-    
+
+    /**
+     * Executes an ows request using the GET method and returns the result as an xml document.
+     * 
+     * @param path
+     *                The portion of the request after the context, example:
+     *                'wms?request=GetMap&version=1.1.1&..."
+     * @param skipDTD
+     *                if true, will avoid loading and validating against the response document
+     *                schema or DTD
+     *
+     * @param encoding 
+     *                Overide for the encoding of the document.
+     * 
+     * @return A result of the request parsed into a dom.
+     * 
+     * @throws Exception
+     */
+    protected Document getAsDOM(final String path, final boolean skipDTD, String encoding)
+            throws Exception {
+        return dom(get(path), skipDTD, encoding);
+    }
+
     /**
      * Executes an ows request using the POST method with key value pairs 
      * form encoded, returning the result as a dom.
@@ -1266,8 +1333,20 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * @param skipDTD If true, will skip loading and validating against the associated DTD
      */
     protected Document dom(InputStream input, boolean skipDTD) throws ParserConfigurationException, SAXException, IOException {
+        return dom(input, skipDTD, null);
+    }
+
+    protected Document dom(InputStream stream, boolean skipDTD, String encoding) 
+        throws ParserConfigurationException, SAXException, IOException {
+
+        InputSource input = new InputSource(stream);
+        if (encoding != null) {
+            input.setEncoding(encoding);
+        }
+
         if(skipDTD) {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); 
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            
             factory.setNamespaceAware( true );
             factory.setValidating( false );
            
@@ -1383,9 +1462,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
                 request.setupAddParameter(key, (String) value);
             } else {
                 String[] values = (String[]) value;
-                for (String v : values) {
-                    request.setupAddParameter(key, v);
-                }
+                request.setupAddParameter(key, values);
             }
         }
          
@@ -1673,15 +1750,11 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      *            stream to which output is written
      */
     protected void print(Document document, OutputStream output) {
-        OutputFormat format = new OutputFormat(document);
-        // setIndenting must be first as it resets indent and line width
-        format.setIndenting(true);
-        format.setIndent(4);
-        format.setLineWidth(200);
-        XMLSerializer serializer = new XMLSerializer(output, format);
         try {
-            serializer.serialize(document);
-        } catch (IOException e) {
+            Transformer tx = TransformerFactory.newInstance().newTransformer();
+            tx.setOutputProperty(OutputKeys.INDENT, "yes");
+            tx.transform(new DOMSource(document), new StreamResult(output));
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

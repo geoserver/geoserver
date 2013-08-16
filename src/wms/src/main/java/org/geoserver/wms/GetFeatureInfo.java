@@ -1,5 +1,5 @@
-/* Copyright (c) 2010 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms;
@@ -34,7 +34,7 @@ import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
@@ -106,6 +106,8 @@ import com.vividsolutions.jts.geom.Polygon;
 public class GetFeatureInfo {
 
     private static final Logger LOGGER = Logging.getLogger(GetFeatureInfo.class);
+    
+    static final int MIN_BUFFER_SIZE = Integer.getInteger("org.geoserver.wms.featureinfo.minBuffer", 5); 
 
     private WMS wms;
 
@@ -242,7 +244,7 @@ public class GetFeatureInfo {
                         times, elevations, names);
             } else if (layer.getType() == MapLayerInfo.TYPE_RASTER) {
                 final CoverageInfo cinfo = requestedLayers.get(i).getCoverage();
-                final AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) cinfo
+                final GridCoverage2DReader reader = (GridCoverage2DReader) cinfo
                         .getGridCoverageReader(new NullProgressListener(),
                                 GeoTools.getDefaultHints());
                 
@@ -338,7 +340,7 @@ public class GetFeatureInfo {
     }
 
     @SuppressWarnings("rawtypes")
-    private FeatureCollection identifyRasterLayer(AbstractGridCoverage2DReader reader,
+    private FeatureCollection identifyRasterLayer(GridCoverage2DReader reader,
             DirectPosition position, GeneralParameterValue[] parameters, CoverageInfo cinfo,
             GetMapRequest getMapReq) throws Exception {
 
@@ -375,7 +377,7 @@ public class GetFeatureInfo {
                 // could probably optimize)
                 //
                 parameter.setValue(new GridGeometry2D(new GridEnvelope2D(integerRasterArea), reader
-                        .getOriginalGridToWorld(PixelInCell.CELL_CENTER), reader.getCrs()));
+                        .getOriginalGridToWorld(PixelInCell.CELL_CENTER), reader.getCoordinateReferenceSystem()));
             }
 
         }
@@ -432,10 +434,11 @@ public class GetFeatureInfo {
                     rule.accept(estimator);
                 }
 
-                if (estimator.getBuffer() < 6.0 || !estimator.isEstimateAccurate()) {
-                    radius = 3.0;
+                int estimatedRadius = estimator.getBuffer() / 2;
+                if (estimatedRadius < MIN_BUFFER_SIZE || !estimator.isEstimateAccurate()) {
+                    radius = MIN_BUFFER_SIZE;
                 } else {
-                    radius = estimator.getBuffer() / 2.0;
+                    radius = estimatedRadius;
                 }
             }
         } else {

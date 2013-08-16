@@ -1,26 +1,34 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.jdbcconfig.config;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.GeoServerFacade;
 import org.geoserver.config.GeoServerImplTest;
+import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.impl.GeoServerImpl;
+import org.geoserver.config.impl.SettingsInfoImpl;
+import org.geoserver.jdbcconfig.JDBCConfigTestSupport;
 import org.geoserver.jdbcconfig.catalog.JDBCCatalogFacade;
 import org.geoserver.jdbcconfig.internal.ConfigDatabase;
-import org.geoserver.jdbcconfig.internal.JdbcConfigTestSupport;
+import org.junit.After;
+import org.junit.Test;
 
 public class JDBCGeoServerImplTest extends GeoServerImplTest {
 
     private GeoServerFacade facade;
 
-    private JdbcConfigTestSupport testSupport;
+    private JDBCConfigTestSupport testSupport;
 
     @Override
-    protected void setUp() throws Exception {
-        testSupport = new JdbcConfigTestSupport();
+    public void setUp() throws Exception {
+        testSupport = new JDBCConfigTestSupport();
         testSupport.setUp();
 
         ConfigDatabase configDb = testSupport.getDatabase();
@@ -29,9 +37,8 @@ public class JDBCGeoServerImplTest extends GeoServerImplTest {
         super.setUp();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
         facade.dispose();
         testSupport.tearDown();
     }
@@ -46,4 +53,24 @@ public class JDBCGeoServerImplTest extends GeoServerImplTest {
         return gs;
     }
 
+    @Override
+    public void testAddService() throws Exception {
+        super.testAddService();
+
+        //ensure s.getGeoServer() != null
+        ServiceInfo s = geoServer.getServiceByName( "foo", ServiceInfo.class );
+        assertNotNull(s.getGeoServer());
+    }
+
+    @Test
+    public void testGlobalSettingsWithId() throws Exception {
+        SettingsInfoImpl settings = new SettingsInfoImpl();
+        settings.setId("settings");
+        
+        GeoServerInfo global = geoServer.getFactory().createGlobal();
+        global.setSettings(settings);
+
+        geoServer.setGlobal(global);
+        assertEquals( global, geoServer.getGlobal() );
+    }
 }

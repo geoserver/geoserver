@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -11,7 +11,13 @@ import static org.geoserver.catalog.Predicates.contains;
 import static org.geoserver.catalog.Predicates.desc;
 import static org.geoserver.catalog.Predicates.equal;
 import static org.geoserver.catalog.Predicates.or;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
@@ -21,8 +27,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
-
-import junit.framework.TestCase;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogException;
@@ -35,6 +39,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.Predicates;
@@ -57,6 +62,7 @@ import org.opengis.filter.MultiValuedFilter.MatchAction;
 import org.opengis.filter.sort.SortBy;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -130,8 +136,8 @@ public class CatalogImplTest {
         s.setFilename( "styleFilename" );
         
         l = factory.createLayer();
-        l.setEnabled(true);
         l.setResource( ft );
+        l.setEnabled(true);
         l.setDefaultStyle( s );
 
         lg = factory.createLayerGroup();
@@ -965,6 +971,36 @@ public class CatalogImplTest {
         assertEquals( 1, ft3.getKeywords().size() );
     }
     
+    @Test
+    public void testModifyMetadataLinks() {
+        addFeatureType();
+        
+        FeatureTypeInfo ft2 = catalog.getFeatureTypeByName(ft.getName());
+        MetadataLinkInfo ml = catalog.getFactory().createMetadataLink();
+        ml.setContent("http://www.geoserver.org/meta");
+        ml.setType("text/plain");
+        ml.setMetadataType("iso");
+        ft2.getMetadataLinks().clear();
+        ft2.getMetadataLinks().add(ml);
+        catalog.save(ft2);
+        
+        FeatureTypeInfo ft3 = catalog.getFeatureTypeByName(ft.getName());
+        MetadataLinkInfo ml3 = ft3.getMetadataLinks().get(0);
+        ml3.setType("application/json");
+        
+        // do not save and grab another, the metadata link must not have been modified
+        FeatureTypeInfo ft4 = catalog.getFeatureTypeByName(ft.getName());
+        MetadataLinkInfo ml4 = ft4.getMetadataLinks().get(0);
+        assertEquals("text/plain", ml4.getType());
+        
+        
+        // now save and grab yet another, the modification must have happened
+        catalog.save(ft3);
+        FeatureTypeInfo ft5 = catalog.getFeatureTypeByName(ft.getName());
+        MetadataLinkInfo ml5 = ft5.getMetadataLinks().get(0);
+        assertEquals("application/json", ml5.getType());
+    }
+    
     
     @Test
     public void testFeatureTypeEvents() {
@@ -1108,8 +1144,8 @@ public class CatalogImplTest {
         
         addStyle();
         LayerInfo l = catalog.getFactory().createLayer();
-        l.setEnabled(true);
         l.setResource(ft);
+        l.setEnabled(true);
         l.setDefaultStyle( s );
         
         catalog.add(l);
@@ -1734,8 +1770,8 @@ public class CatalogImplTest {
         catalog.add(s2);
         
         LayerInfo l2 = factory.createLayer();
-        l2.setEnabled(true);
         l2.setResource(ft2);
+        l2.setEnabled(true);
         l2.setDefaultStyle(s2);
         catalog.add(l2);
         
@@ -1781,8 +1817,9 @@ public class CatalogImplTest {
 
     @Test
     public void testLayerGroupTitle() {
+        addLayer();
         LayerGroupInfo lg2 = catalog.getFactory().createLayerGroup();
-        lg2.setWorkspace(catalog.getDefaultWorkspace());
+        //lg2.setWorkspace(catalog.getDefaultWorkspace());
         lg2.setName("layerGroup2");
         lg2.setTitle("layerGroup2 title");
         lg2.getLayers().add(l);
@@ -1803,8 +1840,9 @@ public class CatalogImplTest {
     
     @Test
     public void testLayerGroupAbstract() {
+        addLayer();
         LayerGroupInfo lg2 = catalog.getFactory().createLayerGroup();
-        lg2.setWorkspace(catalog.getDefaultWorkspace());
+        //lg2.setWorkspace(catalog.getDefaultWorkspace());
         lg2.setName("layerGroup2");
         lg2.setAbstract("layerGroup2 abstract");
         lg2.getLayers().add(l);
@@ -1821,6 +1859,152 @@ public class CatalogImplTest {
         
         lg2 = catalog.getLayerGroupByName("layerGroup2");
         assertEquals("another abstract", lg2.getAbstract());        
+    }
+    
+    @Test
+    public void testLayerGroupType() {
+        addLayer();
+        LayerGroupInfo lg2 = catalog.getFactory().createLayerGroup();
+        lg2.setWorkspace(null);
+        lg2.setName("layerGroup2");
+        lg2.setMode(LayerGroupInfo.Mode.NAMED);
+        lg2.getLayers().add(l);
+        lg2.getStyles().add(s);
+        catalog.add(lg2);
+
+        assertEquals(1, catalog.getLayerGroups().size());
+        
+        lg2 = catalog.getLayerGroupByName("layerGroup2");
+        assertEquals(LayerGroupInfo.Mode.NAMED, lg2.getMode());
+
+        lg2.setMode(LayerGroupInfo.Mode.SINGLE);
+        catalog.save(lg2);
+        
+        lg2 = catalog.getLayerGroupByName("layerGroup2");
+        assertEquals(LayerGroupInfo.Mode.SINGLE, lg2.getMode());
+    }
+    
+    @Test
+    public void testLayerGroupRootLayer() {
+        addLayer();
+        LayerGroupInfo lg2 = catalog.getFactory().createLayerGroup();
+        lg2.setWorkspace(null);
+        lg2.setName("layerGroup2");
+        lg2.getLayers().add(l);
+        lg2.getStyles().add(s);        
+        lg2.setRootLayer(l);
+        
+        lg2.setMode(LayerGroupInfo.Mode.SINGLE);
+        try {
+            catalog.add(lg2);
+            fail("only EO layer groups can have a root layer");
+        } catch (IllegalArgumentException e) {
+            assertTrue(true);
+        }
+        
+        lg2.setMode(LayerGroupInfo.Mode.NAMED);
+        try {
+            catalog.add(lg2);
+            fail("only EO layer groups can have a root layer");
+        } catch (IllegalArgumentException e) {
+            assertTrue(true);
+        }
+
+        lg2.setMode(LayerGroupInfo.Mode.CONTAINER);
+        try {
+            catalog.add(lg2);
+            fail("only EO layer groups can have a root layer");
+        } catch (IllegalArgumentException e) {
+            assertTrue(true);
+        }
+
+        lg2.setMode(LayerGroupInfo.Mode.EO);
+        lg2.setRootLayer(null);
+        try {
+            catalog.add(lg2);
+            fail("EO layer groups must have a root layer");
+        } catch (IllegalArgumentException e) {
+            assertTrue(true);
+        }
+        
+        lg2.setRootLayer(l);
+        try {
+            catalog.add(lg2);
+            fail("EO layer groups must have a root layer style");
+        } catch (IllegalArgumentException e) {
+            assertTrue(true);
+        }
+        
+        lg2.setRootLayerStyle(s);
+        
+        catalog.add(lg2);
+        assertEquals(1, catalog.getLayerGroups().size());
+        
+        lg2 = catalog.getLayerGroupByName("layerGroup2");
+        assertEquals(LayerGroupInfo.Mode.EO, lg2.getMode());
+        assertEquals(l, lg2.getRootLayer());
+        assertEquals(s, lg2.getRootLayerStyle());
+    }
+    
+    @Test
+    public void testLayerGroupRenderingLayers() {
+        addDataStore();
+        addNamespace();
+        FeatureTypeInfo ft1, ft2, ft3;
+        catalog.add(ft1 = newFeatureType("ft1", ds));
+        catalog.add(ft2 = newFeatureType("ft2", ds));
+        catalog.add(ft3 = newFeatureType("ft3", ds));
+
+        StyleInfo s1, s2, s3;
+        catalog.add(s1 = newStyle("s1", "s1Filename"));
+        catalog.add(s2 = newStyle("s2", "s2Filename"));
+        catalog.add(s3 = newStyle("s3", "s3Filename"));
+
+        LayerInfo l1, l2, l3;
+        catalog.add(l1 = newLayer(ft1, s1));
+        catalog.add(l2 = newLayer(ft2, s2));
+        catalog.add(l3 = newLayer(ft3, s3));
+        
+        LayerGroupInfo lg2 = catalog.getFactory().createLayerGroup();
+        lg2.setWorkspace(catalog.getDefaultWorkspace());
+        lg2.setName("layerGroup2");
+        lg2.getLayers().add(l1);
+        lg2.getLayers().add(l2);
+        lg2.getLayers().add(l3);        
+        lg2.getStyles().add(s1);        
+        lg2.getStyles().add(s2);        
+        lg2.getStyles().add(s3);                
+        
+        lg2.setRootLayer(l);
+        lg2.setRootLayerStyle(s);
+        
+        lg2.setMode(LayerGroupInfo.Mode.SINGLE);
+        assertEquals(lg2.getLayers(), lg2.layers());
+        assertEquals(lg2.getStyles(), lg2.styles());
+        
+        lg2.setMode(LayerGroupInfo.Mode.NAMED);
+        assertEquals(lg2.getLayers(), lg2.layers());
+        assertEquals(lg2.getStyles(), lg2.styles());
+        
+        lg2.setMode(LayerGroupInfo.Mode.CONTAINER);
+        try {
+            assertEquals(lg2.getLayers(), lg2.layers());
+            fail("Layer group of Type Container can not be rendered");
+        } catch (UnsupportedOperationException e) {
+            assertTrue(true);
+        }
+        try {
+            assertEquals(lg2.getStyles(), lg2.styles());
+            fail("Layer group of Type Container can not be rendered");
+        } catch (UnsupportedOperationException e) {
+            assertTrue(true);
+        }        
+        
+        lg2.setMode(LayerGroupInfo.Mode.EO);
+        assertEquals(1, lg2.layers().size());
+        assertEquals(1, lg2.styles().size());
+        assertEquals(l, lg2.layers().iterator().next());
+        assertEquals(s, lg2.styles().iterator().next());        
     }
     
     static class TestListener implements CatalogListener {

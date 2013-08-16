@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -46,8 +46,7 @@ public class LoggingStartupContextListenerTest {
         context.setInitParameter("GEOSERVER_LOG_LOCATION", new File(tmp, "foo.log").getAbsolutePath());
 
         Logger logger = Logger.getRootLogger();
-        System.out.println(logger);
-        assertNull(logger.getAppender("geoserverlogfile"));
+        assertNull("Expected geoserverlogfile to be null.  But was: "+logger.getAppender("geoserverlogfile"), logger.getAppender("geoserverlogfile"));
 
         String rel = System.getProperty(LoggingUtils.RELINQUISH_LOG4J_CONTROL);
         System.setProperty(LoggingUtils.RELINQUISH_LOG4J_CONTROL, "false");

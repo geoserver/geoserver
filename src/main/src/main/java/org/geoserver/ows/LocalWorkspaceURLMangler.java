@@ -1,9 +1,10 @@
-/* Copyright (c) 2001 - 2010 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.ows;
 
+import static org.geoserver.ows.util.ResponseUtils.stripRemainingPath;
 import java.util.Map;
 
 /**
@@ -35,7 +36,7 @@ public class LocalWorkspaceURLMangler implements URLMangler {
     public void mangleURL(StringBuilder baseURL, StringBuilder path, Map<String, String> kvp,
             URLType type) {
         
-        if (type == URLType.SERVICE && path.toString().equalsIgnoreCase(ows)) {
+        if (type == URLType.SERVICE && stripRemainingPath(path.toString()).equalsIgnoreCase(ows)) {
             if (LocalWorkspace.get() != null) {
                 path.insert(0, LocalWorkspace.get().getName()+"/");
                 

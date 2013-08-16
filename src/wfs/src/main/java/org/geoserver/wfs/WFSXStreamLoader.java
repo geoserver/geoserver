@@ -1,8 +1,10 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs;
+
+import java.util.HashMap;
 
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.util.XStreamPersister;
@@ -38,17 +40,13 @@ public class WFSXStreamLoader extends XStreamServiceLoader<WFSInfo> {
         wfs.setMaxFeatures(1000000);
 
         //gml2
-        GMLInfoImpl gml2 = new GMLInfoImpl();
-        gml2.setSrsNameStyle( GMLInfo.SrsNameStyle.XML );
-        gml2.setOverrideGMLAttributes(true);
-        wfs.getGML().put( WFSInfo.Version.V_10 , gml2 );
+        addGml(wfs, WFSInfo.Version.V_10, GMLInfo.SrsNameStyle.XML, true);
         
         //gml3
-        GMLInfoImpl gml3 = new GMLInfoImpl();
-        gml3.setSrsNameStyle( GMLInfo.SrsNameStyle.URN );
-        gml3.setOverrideGMLAttributes(false);
-        wfs.getGML().put( WFSInfo.Version.V_11 , gml3);
+        addGml(wfs, WFSInfo.Version.V_11, GMLInfo.SrsNameStyle.URN, false);
         
+        //gml3.2
+        addGml(wfs, WFSInfo.Version.V_20, SrsNameStyle.URN2, false);
         return wfs;
     }
 
@@ -67,24 +65,34 @@ public class WFSXStreamLoader extends XStreamServiceLoader<WFSInfo> {
         if (!service.getVersions().contains(WFSInfo.Version.V_20.getVersion())) {
             service.getVersions().add(WFSInfo.Version.V_20.getVersion());
         }
-
+        
         //set the defaults for GMLInfo if they are not set
+        if(service.getGML() == null) {
+            ((WFSInfoImpl) service).setGML(new HashMap<WFSInfo.Version, GMLInfo>());           
+        }
         GMLInfo gml = service.getGML().get(WFSInfo.Version.V_10);
-        if (gml.getOverrideGMLAttributes() == null) {
+        if(gml == null) {
+            addGml(service, WFSInfo.Version.V_10, SrsNameStyle.URL, false);
+        } else if (gml.getOverrideGMLAttributes() == null) {
             gml.setOverrideGMLAttributes(true);
         }
         gml = service.getGML().get(WFSInfo.Version.V_11);
-        if (gml.getOverrideGMLAttributes() == null) {
+        if(gml == null) {
+            addGml(service, WFSInfo.Version.V_11, SrsNameStyle.URN, false);
+        } else if (gml.getOverrideGMLAttributes() == null) {
             gml.setOverrideGMLAttributes(false);
         }
         gml = service.getGML().get(WFSInfo.Version.V_20);
         if (gml == null) {
-            gml = new GMLInfoImpl();
-            gml.setOverrideGMLAttributes(false);
-            gml.setSrsNameStyle(SrsNameStyle.URN2);
-            service.getGML().put(WFSInfo.Version.V_20, gml);
+            addGml(service, WFSInfo.Version.V_20, SrsNameStyle.URN2, false);
         }
         return service;
     }
 
+    void addGml(WFSInfo info, WFSInfo.Version ver, SrsNameStyle srs, boolean overrideGmlAtts) {
+        GMLInfo gml = new GMLInfoImpl();
+        gml.setSrsNameStyle(srs);
+        gml.setOverrideGMLAttributes(overrideGmlAtts);
+        info.getGML().put(ver, gml);
+    }
 }

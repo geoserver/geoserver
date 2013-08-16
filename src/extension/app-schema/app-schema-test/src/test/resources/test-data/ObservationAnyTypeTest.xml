@@ -45,7 +45,7 @@
 						om:Observation
 					</targetAttribute>
                     <idExpression>
-                        <OCQL>strConcat('observation:', getID())</OCQL>
+                        <OCQL>strConcat('observation:', ID)</OCQL>
                     </idExpression>
                 </AttributeMapping>               
                

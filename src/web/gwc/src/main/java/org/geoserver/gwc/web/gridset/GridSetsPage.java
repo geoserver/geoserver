@@ -1,10 +1,9 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.gwc.web.gridset;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -206,7 +205,7 @@ public class GridSetsPage extends GeoServerSecuredPage {
                     GWC gwc = GWC.get();
                     try {
                         gwc.removeGridSets(selectedGridsetIds);
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         getPage().error(e.getMessage());
                         LOGGER.log(Level.WARNING, e.getMessage(), e);
                     }

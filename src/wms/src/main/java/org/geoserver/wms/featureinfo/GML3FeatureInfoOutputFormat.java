@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.featureinfo;
@@ -26,7 +26,6 @@ import org.geoserver.wfs.xml.GML3OutputFormat;
 import org.geoserver.wfs.xml.v1_1_0.WFS;
 import org.geoserver.wfs.xml.v1_1_0.WFSConfiguration;
 import org.geoserver.wms.GetFeatureInfoRequest;
-import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.gml2.bindings.GML2EncodingUtils;
@@ -48,7 +47,7 @@ public class GML3FeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
     /**
      * The MIME type of the format this response produces: <code>"application/vnd.ogc.gml"</code>
      */
-    private static final String FORMAT = "application/vnd.ogc.gml/3.1.1";
+    public static final String FORMAT = "application/vnd.ogc.gml/3.1.1";
 
     private WMS wms;
 
@@ -56,8 +55,12 @@ public class GML3FeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
      * Default constructor, sets up the supported output format string.
      */
     public GML3FeatureInfoOutputFormat(final WMS wms) {
-        super(FORMAT);
-        this.wms = wms;
+        this(wms, FORMAT);
+    }
+    
+    protected GML3FeatureInfoOutputFormat(WMS wms, String format) {
+        super(format);
+        this.wms = wms;        
     }
 
     /**

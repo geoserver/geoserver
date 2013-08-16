@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -183,6 +183,7 @@ public class LegacyServicesReader {
         value( "serviceLevel", wfsElement, wfs, Integer.class );
         value( "srsXmlStyle", wfsElement, wfs, Boolean.class, false, Boolean.TRUE );
         value( "featureBounding", wfsElement, wfs, Boolean.class, false, Boolean.FALSE );
+        value( "hitsIgnoreMaxFeatures", wfsElement, wfs, Boolean.class, false, Boolean.FALSE);
         
         return wfs;
     }

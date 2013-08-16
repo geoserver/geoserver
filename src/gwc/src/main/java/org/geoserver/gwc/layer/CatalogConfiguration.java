@@ -1,4 +1,4 @@
-/* Copyright (c) 2010 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -37,6 +37,7 @@ import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.TileLayerDispatcher;
+import org.geowebcache.locks.LockProvider;
 
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
@@ -623,8 +624,8 @@ public class CatalogConfiguration implements Configuration {
                             issueTileLayerInfoChangeNotifications(old, modified);
                         }
                     } catch (RuntimeException e) {
-                        LOGGER.log(Level.SEVERE, "Error issuing chanve events for tile layer "
-                                + modified, e);
+                        LOGGER.log(Level.SEVERE, "Error issuing change events for tile layer "
+                                + modified +".  This may result in leaked tiles that will not be truncated.", e);
                     }
                 }
             } finally {
@@ -653,6 +654,8 @@ public class CatalogConfiguration implements Configuration {
         if (isRename) {
             mediator.layerRenamed(oldLayerName, layerName);
         }
+        // FIXME: There should be a way to ask GWC to "truncate redundant caches" rather than doing
+        //         all this detective work.
 
         // First, remove the entire layer cache for any removed gridset
         Set<XMLGridSubset> oldGridSubsets = oldInfo.getGridSubsets();
@@ -680,9 +683,11 @@ public class CatalogConfiguration implements Configuration {
             }
         }
 
-        if (!newInfo.cachedStyles().equals(oldInfo.cachedStyles())) {
-            Set<String> oldStyles = new HashSet<String>(oldInfo.cachedStyles());
-            Set<String> newStyles = new HashSet<String>(newInfo.cachedStyles());
+        Set<String> oldStyles = oldInfo.cachedStyles();
+        Set<String> newStyles = newInfo.cachedStyles();
+        
+        if (!newStyles.equals(oldStyles)) {
+            oldStyles = new HashSet<String>(oldStyles);
             oldStyles.removeAll(newStyles);
             for (String removedStyle : oldStyles) {
                 mediator.truncateByLayerAndStyle(layerName, removedStyle);

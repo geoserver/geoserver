@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -551,6 +551,15 @@ public class GetFeaturePagingTest extends WFS20TestSupport {
                 "typename=" + typeName + "&startIndex=15&resulttype=hits");
         assertStartIndexCount(doc, "previous", 0, 15);
         assertFalse(doc.getDocumentElement().hasAttribute("next"));
+    }
+    
+    @Test
+    public void testCountZero() throws Exception {
+        Document doc = getAsDOM("/wfs?request=GetFeature&version=2.0.0&service=wfs&" +
+                "typename=gs:Fifteen&count=0");
+        XMLAssert.assertXpathExists("/wfs:FeatureCollection", doc);
+        XMLAssert.assertXpathEvaluatesTo("0", "/wfs:FeatureCollection/@numberMatched", doc);
+        XMLAssert.assertXpathEvaluatesTo("0", "/wfs:FeatureCollection/@numberReturned", doc);
     }
 
 }

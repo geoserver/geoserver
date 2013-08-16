@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.map;
@@ -36,11 +36,12 @@ import org.geoserver.ows.HttpServletRequestAware;
 import org.geoserver.ows.KvpRequestReader;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSErrorCode;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureReader;
 import org.geotools.data.Query;
@@ -104,16 +105,24 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
     private WMS wms;
 
     /**
+     * EntityResolver provider, used in SLD parsing
+     */
+    EntityResolverProvider entityResolverProvider;
+    
+    /**
      * This flags allows the kvp reader to go beyond the SLD library mode specification and match
      * the first style that can be applied to a given layer. This is for backwards compatibility
      */
     private boolean laxStyleMatchAllowed = true;
-
+    
+    
     public GetMapKvpRequestReader(WMS wms) {
         super(GetMapRequest.class);
         this.wms = wms;
+        this.entityResolverProvider = new EntityResolverProvider(wms.getGeoServer());
     }
 
+    
     /**
      * Implements {@link HttpServletRequestAware#setHttpRequest(HttpServletRequest)} to gather
      * request information for some properties like {@link GetMapRequest#isGet()} and
@@ -213,7 +222,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
                 if (o instanceof LayerInfo) {
                     layers.add(new MapLayerInfo((LayerInfo) o));
                 } else if (o instanceof LayerGroupInfo) {
-                    for (LayerInfo l : ((LayerGroupInfo) o).getLayers()) {
+                    for (LayerInfo l : ((LayerGroupInfo) o).layers()) {
                         layers.add(new MapLayerInfo(l));
                     }
                 } else if (o instanceof MapLayerInfo) {
@@ -323,18 +332,20 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
 
                     if (o instanceof LayerGroupInfo) {
                         LayerGroupInfo groupInfo = (LayerGroupInfo) o;
-                        for (int j = 0; j < groupInfo.getStyles().size(); j++) {
-                            StyleInfo si = groupInfo.getStyles().get(j);
+                        List<LayerInfo> layers = groupInfo.layers();
+                        List<StyleInfo> styles = groupInfo.styles();
+                        for (int j = 0; j < styles.size(); j++) {
+                            StyleInfo si = styles.get(j);
                             if (si != null){
                                 newStyles.add(si.getStyle());
                             } else {
-                                LayerInfo layer = groupInfo.getLayers().get(j);
+                                LayerInfo layer = layers.get(j);
                                 newStyles.add(getDefaultStyle(layer));
                             }
                         }
                         // expand the filter on the layer group to all its sublayers
                         if (filters != null) {
-                            for (int j = 0; j < groupInfo.getLayers().size(); j++) {
+                            for (int j = 0; j < layers.size(); j++) {
                                 newFilters.add(getFilter(filters, i));
                             }
                         }
@@ -437,9 +448,9 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
                 //
                 // Adding a coverage layer
                 //
-                AbstractGridCoverage2DReader reader;
+                GridCoverage2DReader reader;
                 try {
-                    reader = (AbstractGridCoverage2DReader) layer.getCoverageReader();
+                    reader = (GridCoverage2DReader) layer.getCoverageReader();
                 } catch (IOException e) {
                     throw new ServiceException(e);
                 }
@@ -541,8 +552,8 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
             filters = null;
         }
         return filters;
-    }
-
+    }   
+    
     /**
      * validates an sld document.
      * 
@@ -550,29 +561,28 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
     private List validateSld(InputStream stream, GetMapRequest getMap) {
         try {
             if (getMap.getSldVersion() != null) {
-                return Styles.validate(stream, new Version(getMap.getSldVersion()));
+                return Styles.validate(stream, entityResolverProvider.getEntityResolver(), new Version(getMap.getSldVersion()));
             }
             else {
-                return Styles.validate(stream);
+                return Styles.validate(stream, entityResolverProvider.getEntityResolver());
             }
         } 
         catch (IOException e) {
             throw new ServiceException("Error validating style", e);
         }
     }
-
+    
     /**
      * Parses an sld document.
      */
     private StyledLayerDescriptor parseSld(GetMapRequest getMap, InputStream stream) {
-       
         StyledLayerDescriptor sld;
         try {
             if (getMap.getSldVersion() != null) {
-                sld = Styles.parse(stream, new Version(getMap.getSldVersion()));
+                sld = Styles.parse(stream, entityResolverProvider.getEntityResolver(), new Version(getMap.getSldVersion()));
             }
             else {
-                sld = Styles.parse(stream);
+                sld = Styles.parse(stream, entityResolverProvider.getEntityResolver());
             }
         }
         catch(IOException e) {
@@ -655,7 +665,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
                 Style style = findStyleOf(request, currLayer, styleName, styledLayers);
                 styles.add(style);
             } else if (o instanceof LayerGroupInfo) {
-                List<LayerInfo> subLayers = ((LayerGroupInfo) o).getLayers();
+                List<LayerInfo> subLayers = ((LayerGroupInfo) o).layers();
                 for (LayerInfo layer : subLayers) {
                     currLayer = new MapLayerInfo(layer);
                     layers.add(currLayer);
@@ -729,10 +739,12 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
                 } else {
                     if (wms.getLayerGroupByName(layerName) != null) {
                         LayerGroupInfo group = wms.getLayerGroupByName(layerName);
-                        for (int i = 0; i < group.getLayers().size(); i++) {
-                            LayerInfo layer = group.getLayers().get(i);
+                        List<LayerInfo> groupLayers = group.layers();
+                        List<StyleInfo> groupStyles = group.styles();
+                        for (int i = 0; i < groupLayers.size(); i++) {
+                            LayerInfo layer = groupLayers.get(i);
                             layers.add(new MapLayerInfo(layer));
-                            StyleInfo style = group.getStyles().get(i);
+                            StyleInfo style = groupStyles.get(i);
                             if (style != null) {
                                 styles.add(style.getStyle());
                             } else {
@@ -1236,9 +1248,9 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
                 layersOrGroups.add(layerInfo);
             } else {
                 LayerGroupInfo layerGroup = wms.getLayerGroupByName(layerName);
-                if (layerGroup == null) {
-                    throw new ServiceException("Could not find layer " + layerName,
-                            "LayerNotDefined");
+                if (layerGroup == null || LayerGroupInfo.Mode.CONTAINER.equals(layerGroup.getMode())) {
+                    throw new ServiceException("Could not find layer " + layerName, 
+                            "LayerNotDefined", "layers");
                 }
                 layersOrGroups.add(layerGroup);
             }

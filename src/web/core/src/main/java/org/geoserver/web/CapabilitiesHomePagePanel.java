@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -82,10 +82,11 @@ public class CapabilitiesHomePagePanel extends Panel {
 
         final Map<String, List<CapsInfo>> byService = new HashMap<String, List<CapsInfo>>();
         for (CapsInfo c : capsLinks) {
-            List<CapsInfo> serviceLinks = byService.get(c.getService());
+            final String key=c.getService().toLowerCase();// to avoid problems with uppercase definitions
+            List<CapsInfo> serviceLinks = byService.get(key);
             if (serviceLinks == null) {
                 serviceLinks = new ArrayList<CapsInfo>();
-                byService.put(c.getService(), serviceLinks);
+                byService.put(key, serviceLinks);
             }
             serviceLinks.add(c);
         }

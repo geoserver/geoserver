@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!-- 
+  Composition Part mapping file
+-->
+<as:AppSchemaDataAccess xmlns:as="http://www.geotools.org/app-schema"
+	xmlns:ogc="http://www.opengis.net/ogc" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.geotools.org/app-schema AppSchemaDataAccess.xsd
+                      http://www.opengis.net/ogc http://schemas.opengis.net/filter/1.1.0/expr.xsd">
+	<namespaces>
+		<!--
+			declare here the namespaces and prefixes used by the parser to
+			resolve <type> elements.
+		-->
+		 <Namespace>
+            <prefix>gsml</prefix>
+            <uri>urn:cgi:xmlns:CGI:GeoSciML-Core:3.0.0</uri>
+        </Namespace>
+        <Namespace>
+            <prefix>gml</prefix>
+            <uri>http://www.opengis.net/gml/3.2</uri>
+        </Namespace>
+		<Namespace>
+			<prefix>xlink</prefix>
+			<uri>http://www.w3.org/1999/xlink</uri>
+		</Namespace>
+		<Namespace>
+			<prefix>sa</prefix>
+			<uri>http://www.opengis.net/sampling/1.0</uri>
+		</Namespace>
+		<Namespace>
+			<prefix>om</prefix>
+			<uri>http://www.opengis.net/om/1.0</uri>
+		</Namespace>
+		<Namespace>
+			<prefix>cv</prefix>
+			<uri>http://www.opengis.net/cv/0.2.1</uri>
+		</Namespace>
+		<Namespace>
+			<prefix>swe</prefix>
+			<uri>http://www.opengis.net/swe/1.0.1</uri>
+		</Namespace>
+		<Namespace>
+			<prefix>sml</prefix>
+			<uri>http://www.opengis.net/sensorML/1.0.1</uri>
+		</Namespace>
+	</namespaces>
+	<sourceDataStores>
+		<DataStore>
+			<id>CompositionPart</id>
+			<parameters>
+				<Parameter>
+					<name>directory</name>
+					<!-- path can be relative to this file if starts with "file: -->
+					<value>file:./</value>
+				</Parameter>
+			</parameters>
+		</DataStore>
+	</sourceDataStores>
+	<targetTypes>
+		 <FeatureType>
+            <schemaUri>https://www.seegrid.csiro.au/subversion/GeoSciML/branches/3.0.0_rc1_gml3.2/geosciml-core/3.0.0/xsd/geosciml-core.xsd</schemaUri>
+        </FeatureType>
+	</targetTypes>
+	<typeMappings>
+		<FeatureTypeMapping>
+			<sourceDataStore>CompositionPart</sourceDataStore>
+			<sourceType>CompositionPart</sourceType>
+			<targetElement>gsml:CompositionPart</targetElement>
+			<attributeMappings>
+				<AttributeMapping>
+					<targetAttribute>gsml:CompositionPart</targetAttribute>
+					<idExpression><OCQL>ROW_ID</OCQL></idExpression>
+				</AttributeMapping>
+				<AttributeMapping>
+					<targetAttribute>gsml:role</targetAttribute>
+					<sourceExpression>
+						<OCQL>COMPONENT_ROLE</OCQL>
+					</sourceExpression>
+                    <ClientProperty>
+                        <name>codeSpace</name>
+                        <value>'urn:cgi:classifierScheme:Example:CompositionPartRole'</value>
+                    </ClientProperty> 
+                    <ClientProperty>
+                        <name>xlink:href</name>
+                        <value>'urn:ogc:def:nil:OGC::unknown'</value>
+                    </ClientProperty>
+				</AttributeMapping> 				
+			</attributeMappings>
+		</FeatureTypeMapping>
+	</typeMappings>
+</as:AppSchemaDataAccess>

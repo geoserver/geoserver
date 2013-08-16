@@ -1,5 +1,5 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wcs2_0.exception;
@@ -69,6 +69,11 @@ public class WCS20Exception extends OWS20Exception {
 
     public WCS20Exception(String message, OWS20Exception.OWSExceptionCode code, String locator) {
         super(message, code, locator);
+    }
+    
+    public WCS20Exception(String message, OWS20Exception.OWSExceptionCode code, String locator, Throwable cause) {
+        super(message, code, locator);
+        initCause(cause);
     }
 
     public WCS20Exception(String message, Throwable cause) {

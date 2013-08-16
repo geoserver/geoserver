@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -67,29 +67,6 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 "fourbits.zip", null, props,SystemTestData.class,catalog);
         
     }
-    
-//    @Override
-//    protected void populateDataDirectory(MockData dataDirectory) throws Exception {
-//        super.populateDataDirectory(dataDirectory);
-//        
-//        // this also adds the raster style
-//        dataDirectory.addWcs10Coverages();
-//
-//        
-//        dataDirectory.addStyle("indexed",
-//                GetMapIntegrationTest.class.getResource("indexed.sld"));
-//        dataDirectory.addCoverage(new QName(MockData.SF_URI, "indexed", MockData.SF_PREFIX),
-//                GetMapIntegrationTest.class.getResource("indexed.tif"), "tif", "indexed");
-//        dataDirectory.addCoverage(new QName(MockData.SF_URI, "paletted", MockData.SF_PREFIX),
-//                GetMapIntegrationTest.class.getResource("paletted.tif"), "tif", "raster");
-//        // a filterable mosaic
-//        dataDirectory.addCoverageFromZip(new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX), 
-//                MockData.class.getResource("raster-filter-test.zip"), null, "raster");
-//        // a 4 bits world image
-//        dataDirectory.addCoverageFromZip(new QName(MockData.SF_URI, "fourbits", MockData.SF_PREFIX),
-//                MockData.class.getResource("fourbits.zip"), null, "raster");
-//    }
-    
     
     @Test
     public void testIndexed() throws Exception {

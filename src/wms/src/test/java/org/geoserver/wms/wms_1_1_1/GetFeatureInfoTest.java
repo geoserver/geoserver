@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.wms_1_1_1;
@@ -221,8 +221,10 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         String layer = getLayerId(MockData.BASIC_POLYGONS);
         String base = "wms?version=1.1.1&bbox=-4.5,-2.,4.5,7&format=jpeg&info_format=text/html" +
                 "&request=GetFeatureInfo&layers="
-                + layer + "&query_layers=" + layer + "&width=300&height=300&x=114&y=229";
-        Document dom = getAsDOM(base + "&styles=");
+                + layer + "&query_layers=" + layer + "&width=300&height=300&x=111&y=229";
+        String url = base + "&styles=";
+        Document dom = getAsDOM(url);
+        print(dom);
         // make sure the document is empty, the style we chose has thin lines
         assertXpathEvaluatesTo("0", "count(/html/body/table/tr)", dom);
 
@@ -242,13 +244,13 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         String layer = getLayerId(MockData.BASIC_POLYGONS);
         String base = "wms?version=1.1.1&bbox=-4.5,-2.,4.5,7&format=jpeg&info_format=text/html" +
                 "&request=GetFeatureInfo&layers="
-                + layer + "&query_layers=" + layer + "&width=300&height=300&x=114&y=229&styles=paramStroke";
+                + layer + "&query_layers=" + layer + "&width=300&height=300&x=111&y=229&styles=paramStroke";
         Document dom = getAsDOM(base);
         // make sure the document is empty, the style we chose has thin lines
         assertXpathEvaluatesTo("0", "count(/html/body/table/tr)", dom);
 
         // another request that will catch one feature due to the style with a thick stroke, make sure it's in
-        dom = getAsDOM(base + "&env=thickness:10");
+        dom = getAsDOM(base + "&env=thickness:12");
         // print(dom);
         assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[starts-with(.,'BasicPolygons.')])", dom);
         assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[. = 'BasicPolygons.1107531493630'])", dom);
@@ -524,7 +526,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
     @Test 
     public void testGroupWorkspaceQualified() throws Exception {
         // check the group works without workspace qualification
-        String url = "wms?request=getmap&service=wms&version=1.1.1"
+        String url = "wms?service=wms&version=1.1.1"
                 + "&layers=nature&width=100&height=100&format=image/png"
                 + "&srs=epsg:4326&bbox=-0.002,-0.003,0.005,0.002&info_format=text/plain" +
                 		"&request=GetFeatureInfo&query_layers=nature&x=50&y=50&feature_count=2";

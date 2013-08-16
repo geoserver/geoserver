@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -163,11 +163,11 @@ public class RasterZonalStatsTest extends WPSTestSupport {
 
         assertXpathEvaluatesTo("1281.0", "//feature:restricted[feature:z_cat=3]/feature:min", dom);
         assertXpathEvaluatesTo("1695.0", "//feature:restricted[feature:z_cat=3]/feature:max", dom);
-        assertXpathEvaluatesTo("2.743147E7", "//feature:restricted[feature:z_cat=3]/feature:sum",
+        assertXpathEvaluatesTo("2.743144E7", "//feature:restricted[feature:z_cat=3]/feature:sum",
                 dom);
-        assertXpathEvaluatesTo("1472.514359332219",
+        assertXpathEvaluatesTo("1472.5127489398305",
                 "//feature:restricted[feature:z_cat=3]/feature:avg", dom);
-        assertXpathEvaluatesTo("93.61445950603424",
+        assertXpathEvaluatesTo("93.61336732245832",
                 "//feature:restricted[feature:z_cat=3]/feature:stddev", dom);
     }
 

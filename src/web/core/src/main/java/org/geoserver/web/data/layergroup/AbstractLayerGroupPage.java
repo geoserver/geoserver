@@ -1,21 +1,20 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.web.data.layergroup;
 
 import java.lang.reflect.Constructor;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.Page;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
@@ -25,6 +24,7 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.validator.AbstractValidator;
 import org.geoserver.catalog.CatalogBuilder;
@@ -35,21 +35,15 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
-import org.geoserver.web.data.layer.LayerDetachableModel;
-import org.geoserver.web.data.style.StyleDetachableModel;
 import org.geoserver.web.data.workspace.WorkspaceChoiceRenderer;
 import org.geoserver.web.data.workspace.WorkspacesModel;
 import org.geoserver.web.publish.LayerGroupConfigurationPanel;
 import org.geoserver.web.publish.LayerGroupConfigurationPanelInfo;
 import org.geoserver.web.wicket.EnvelopePanel;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
-import org.geoserver.web.wicket.GeoServerDataProvider;
-import org.geoserver.web.wicket.GeoServerDataProvider.BeanProperty;
-import org.geoserver.web.wicket.GeoServerDataProvider.Property;
-import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
 
 /**
  * Handles layer group
@@ -62,8 +56,9 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
     EnvelopePanel envelopePanel;
     LayerGroupEntryPanel lgEntryPanel;
     String layerGroupId;
-    
+    protected RootLayerEntryPanel rootLayerPanel;    
     private ListView<LayerGroupConfigurationPanelInfo> extensionPanels;
+    
     /**
      * Subclasses must call this method to initialize the UI for this page 
      * @param layerGroup
@@ -72,15 +67,50 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
         this.returnPageClass = LayerGroupPage.class;
         lgModel = new LayerGroupDetachableModel( layerGroup );
         layerGroupId = layerGroup.getId();
-        
-        Form form = new Form( "form", new CompoundPropertyModel( lgModel ) );
 
+        Form form = new Form( "form", new CompoundPropertyModel( lgModel ) ) {
+            @Override
+            public IConverter getConverter(Class<?> type) {
+                if (LayerInfo.class.isAssignableFrom(type)) {
+                    return new LayerInfoConverter();
+                } else if (StyleInfo.class.isAssignableFrom(type)) {
+                    return new StyleInfoConverter(); 
+                } else {
+                    return super.getConverter(type);
+                }
+            }
+        };
+        
         add(form);
+
+        final WebMarkupContainer rootLayerPanelContainer = new WebMarkupContainer("rootLayerContainer");
+        rootLayerPanelContainer.setOutputMarkupId(true);
+        form.add(rootLayerPanelContainer);        
+        
+        rootLayerPanel = new RootLayerEntryPanel("rootLayer", form, layerGroup.getWorkspace());
+        rootLayerPanelContainer.add(rootLayerPanel);
+
+        updateRootLayerPanel(layerGroup.getMode());
+        
         TextField name = new TextField("name");
         name.setRequired(true);
         //JD: don't need this, this is validated at the catalog level
         //name.add(new GroupNameValidator());
         form.add(name);
+
+        final DropDownChoice<LayerGroupInfo.Mode> modeChoice = new DropDownChoice<LayerGroupInfo.Mode>("mode", new LayerGroupModeModel(), new LayerGroupModeChoiceRenderer());
+        modeChoice.setNullValid(false);
+        modeChoice.setRequired(true);
+        modeChoice.add(new OnChangeAjaxBehavior() {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                LayerGroupInfo.Mode mode = modeChoice.getModelObject();
+                updateRootLayerPanel(mode);
+                target.addComponent(rootLayerPanelContainer);
+            }
+        });
+        
+        form.add(modeChoice);
         
         form.add(new TextField("title"));
         form.add(new TextArea("abstract"));
@@ -99,6 +129,7 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
         form.add(envelopePanel = new EnvelopePanel( "bounds" )/*.setReadOnly(true)*/);
         envelopePanel.setRequired(true);
         envelopePanel.setCRSFieldVisible(true);
+        envelopePanel.setCrsRequired(true);
         envelopePanel.setOutputMarkupId( true );
         
         form.add(new GeoServerAjaxFormLink( "generateBounds") {
@@ -143,6 +174,11 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
         form.add(cancelLink());
     }
 
+    private void updateRootLayerPanel(LayerGroupInfo.Mode mode) {
+        rootLayerPanel.setEnabled(LayerGroupInfo.Mode.EO.equals(mode));   
+        rootLayerPanel.setVisible(LayerGroupInfo.Mode.EO.equals(mode));
+    }    
+    
     private ListView<LayerGroupConfigurationPanelInfo> extensionPanels() {
 
         final GeoServerApplication gsapp = getGeoServerApplication();
@@ -186,16 +222,26 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
         return new SubmitLink("save"){
             @Override
             public void onSubmit() {
+                // validation
                 if(lgEntryPanel.getEntries().size() == 0) {
                     error((String) new ParamResourceModel("oneLayerMinimum", getPage()).getObject());
                     return;
                 }
+
+                LayerGroupInfo lg = (LayerGroupInfo) lgModel.getObject();
+
+                if (!LayerGroupInfo.Mode.EO.equals(lg.getMode())) {
+                    lg.setRootLayer(null);
+                    lg.setRootLayerStyle(null);
+                } else {
+                    if (lg.getRootLayerStyle() == null && lg.getRootLayer() != null) {
+                        lg.setRootLayerStyle(lg.getRootLayer().getDefaultStyle());
+                    }
+                }
                 
                 // update the layer group entries
-                LayerGroupInfo lg = (LayerGroupInfo) lgModel.getObject();
                 lg.getLayers().clear();
                 lg.getStyles().clear();
-                
                 for ( LayerGroupEntry entry : lgEntryPanel.getEntries() ) {
                     lg.getLayers().add(entry.getLayer());
                     lg.getStyles().add(entry.getStyle());
@@ -229,103 +275,6 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
      * Subclasses 
      */
     protected abstract void onSubmit();
-    
-    abstract static class StyleListPanel extends GeoServerTablePanel<StyleInfo> {
-
-        static Property<StyleInfo> NAME = 
-            new BeanProperty<StyleInfo>("name", "name");
-        
-        public StyleListPanel(String id) {
-            super(id, new GeoServerDataProvider<StyleInfo>() {
-                @Override
-                protected List<StyleInfo> getItems() {
-                    return getCatalog().getStyles();
-                }
-
-                @Override
-                protected List<Property<StyleInfo>> getProperties() {
-                    return Arrays.asList( NAME );
-                }
-
-                public IModel newModel(Object object) {
-                    return new StyleDetachableModel( (StyleInfo) object );
-                }
-            });
-            getTopPager().setVisible(false);
-        }
-
-        @Override
-        protected Component getComponentForProperty(String id, IModel itemModel,
-                Property<StyleInfo> property) {
-            final StyleInfo style = (StyleInfo) itemModel.getObject();
-            if ( property == NAME ) {
-                return new SimpleAjaxLink( id, NAME.getModel( itemModel ) ) {
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        handleStyle(style, target);
-                    }
-                };
-            }
-            
-            return null;
-        }
-        
-        protected abstract void handleStyle( StyleInfo style, AjaxRequestTarget target );
-
-    }
-
-    abstract static class LayerListPanel extends GeoServerTablePanel<LayerInfo> {
-        static Property<LayerInfo> NAME = 
-            new BeanProperty<LayerInfo>("name", "name");
-        
-        static Property<LayerInfo> STORE = 
-            new BeanProperty<LayerInfo>("store", "resource.store.name");
-        
-        static Property<LayerInfo> WORKSPACE = 
-            new BeanProperty<LayerInfo>("workspace", "resource.store.workspace.name");
-        
-        LayerListPanel( String id ) {
-            super( id, new GeoServerDataProvider<LayerInfo>() {
-
-                @Override
-                protected List<LayerInfo> getItems() {
-                    return getCatalog().getLayers();
-                }
-
-                @Override
-                protected List<Property<LayerInfo>> getProperties() {
-                    return Arrays.asList( NAME, STORE, WORKSPACE );
-                }
-
-                public IModel newModel(Object object) {
-                    return new LayerDetachableModel((LayerInfo)object);
-                }
-
-            });
-            getTopPager().setVisible(false);
-        }
-        
-        @Override
-        protected Component getComponentForProperty(String id, final IModel itemModel,
-                Property<LayerInfo> property) {
-            IModel model = property.getModel( itemModel );
-            if ( NAME == property ) {
-                return new SimpleAjaxLink( id, model ) {
-                    @Override
-                    protected void onClick(AjaxRequestTarget target) {
-                        LayerInfo layer = (LayerInfo) itemModel.getObject();
-                        handleLayer( layer, target );
-                    }
-                };
-            }
-            else {
-                return new Label( id, model );
-            }
-        }
-        
-        protected void handleLayer( LayerInfo layer, AjaxRequestTarget target ) {
-        }
-    }
     
     class GroupNameValidator extends AbstractValidator {
 

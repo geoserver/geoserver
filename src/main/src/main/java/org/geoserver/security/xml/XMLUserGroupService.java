@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security.xml;
@@ -20,6 +20,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.geoserver.security.GeoServerUserGroupStore;
 import org.geoserver.security.KeyStoreProvider;
 import org.geoserver.security.config.FileBasedSecurityServiceConfig;
@@ -140,10 +141,14 @@ public class XMLUserGroupService extends AbstractUserGroupService {
         try {
             
             Document doc=null;
+            FileInputStream is = null;
             try {
-                doc = builder.parse(new FileInputStream(userFile));
+                is = new FileInputStream(userFile);
+				doc = builder.parse(is);
             } catch (SAXException e) {
                 throw new IOException(e);
+            } finally {
+            	IOUtils.closeQuietly(is);
             }
             
             if (isValidatingXMLSchema()) {
@@ -184,6 +189,12 @@ public class XMLUserGroupService extends AbstractUserGroupService {
                 user.getProperties().clear();       // set properties
                 for (Object key: userProps.keySet()) {
                     user.getProperties().put(key, userProps.get(key));
+                    SortedSet<GeoServerUser> propUsers = helper.propertyMap.get(key);
+                    if (propUsers==null) {
+                        propUsers=new TreeSet<GeoServerUser>();
+                        helper.propertyMap.put((String)key, propUsers);
+                    }
+                    propUsers.add(user);
                 }
             }
                         

@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.catalog.CascadeRemovalReporter.ModificationType;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -127,54 +128,121 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
         catalog.remove(resource);
     }
 
-    public void visit(StyleInfo style) {
-        // add users of this style among the related objects: layers
-        List<LayerInfo> layer = catalog.getLayers();
-        for (LayerInfo li : layer) {
-            // if it's the default style, reset it to the default one
-            StyleInfo ds = li.getDefaultStyle();
-            if (ds != null && ds.equals(style)) {
-                try {
-                    li.setDefaultStyle(new CatalogBuilder(catalog).getDefaultStyle(li.getResource()));
-                    catalog.save(li);
-                } catch(IOException e) {
-                    // we fall back on the default style (since we cannot roll back the
-                    // entire operation, no transactions in the catalog)
-                    LOGGER.log(Level.WARNING, "Could not find default style for resource " 
-                            + li.getResource() + " resetting the default to point", e);
-                    li.setDefaultStyle(catalog.getStyleByName(StyleInfo.DEFAULT_POINT));
-                    catalog.save(li);
-                }
+    private StyleInfo getResourceDefaultStyle(ResourceInfo resource, StyleInfo removedStyle) {
+        StyleInfo style = null;
+        try {
+            style = new CatalogBuilder(catalog).getDefaultStyle(resource);
+        } catch (IOException e) {
+            // we fall back on the default style (since we cannot roll back the
+            // entire operation, no transactions in the catalog)
+            LOGGER.log(Level.WARNING, "Could not find default style for resource " 
+                    + resource + ", using Point style", e);
+        }        
+        
+        if (style == null || style.equals(removedStyle)) {
+            return catalog.getStyleByName(StyleInfo.DEFAULT_POINT);
+        }
+        
+        return style;
+    }
+    
+    private void removeStyleInLayer(LayerInfo layer, StyleInfo style) {
+        boolean dirty = false;
+        
+        // remove it from the associated styles
+        if (layer.getStyles().remove(style)) {
+            dirty = true;
+        }
+        
+        // if it's the default style, choose an associated style or reset it to the default one
+        StyleInfo ds = layer.getDefaultStyle();
+        if (ds != null && ds.equals(style)) {
+            dirty = true;
+
+            StyleInfo newDefaultStyle;
+            if (layer.getStyles().size() > 0) {
+                newDefaultStyle = layer.getStyles().iterator().next();
+                layer.getStyles().remove(newDefaultStyle);
+            } else {
+                newDefaultStyle = getResourceDefaultStyle(layer.getResource(), style);
             }
-            // remove it also from the associated styles
-            if(li.getStyles().remove(style)) {
-                catalog.save(li);
+            
+            layer.setDefaultStyle(newDefaultStyle);
+        }
+        
+        
+        if (dirty) {
+            catalog.save(layer);
+        }        
+    }
+    
+    private void removeStyleInLayerGroup(LayerGroupInfo group, StyleInfo style) {
+        boolean dirty = false;
+
+        // root layer style
+        if (style.equals(group.getRootLayerStyle())) {
+            group.setRootLayerStyle(getResourceDefaultStyle(group.getRootLayer().getResource(), style));
+            dirty = true;
+        }
+        
+        // layer styles
+        List<StyleInfo> styles = group.getStyles();
+        for (int i = 0; i < styles.size(); i++) {
+            StyleInfo publishedStyle = styles.get(i);
+            if (publishedStyle != null && publishedStyle.equals(style)) {
+                // if publishedStyle is not null, we have a layer
+                LayerInfo layer = (LayerInfo) group.getLayers().get(i);
+                
+                if (!layer.getDefaultStyle().equals(style)) {
+                    // use default style
+                    styles.set(i, layer.getDefaultStyle());
+                } else {
+                    styles.set(i, getResourceDefaultStyle(layer.getResource(), style));
+                }
+                
+                dirty = true;
             }
         }
+        
+        if (dirty) {
+            catalog.save(group);        
+        }
+    }
+    
+    public void visit(StyleInfo style) {
+        // remove style references in layers
+        List<LayerInfo> layers = catalog.getLayers();
+        for (LayerInfo layer : layers) {
+            removeStyleInLayer(layer, style);
+        }
 
-        // groups can also refer styles, reset each reference to the
+        // groups can also refer to style, reset each reference to the
         // associated layer default style
         List<LayerGroupInfo> groups = catalog.getLayerGroups();
         for (LayerGroupInfo group : groups) {
-            List<StyleInfo> styles = group.getStyles();
-            boolean dirty = false;
-            for (int i = 0; i < styles.size(); i++) {
-                StyleInfo si = styles.get(i);
-                if(si != null && si.equals(style)) {
-                    styles.set(i, group.getLayers().get(i).getDefaultStyle());
-                    dirty = true;
-                }
-            }
-            if(dirty)
-                catalog.save(group);
+            removeStyleInLayerGroup(group, style);
         }
         
         // finally remove the style
         catalog.remove(style);
     }
 
-    public void visit(LayerGroupInfo layerGroup) {
-        catalog.remove(layerGroup);
+    public void visit(LayerGroupInfo layerGroupToRemove) {
+        // remove layerGroupToRemove references from other groups
+        List<LayerGroupInfo> groups = catalog.getLayerGroups();
+        for (LayerGroupInfo group : groups) {
+            if (group.getLayers().remove(layerGroupToRemove)) {
+                if (group.getLayers().size() == 0) {
+                    // if group is empty, delete it
+                    visit(group);
+                } else {
+                    catalog.save(group);
+                }
+            }
+        }
+        
+        // finally remove the group
+        catalog.remove(layerGroupToRemove);
     }
 
     public void visit(WMSLayerInfo wmsLayer) {

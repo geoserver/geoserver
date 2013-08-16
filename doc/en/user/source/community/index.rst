@@ -13,16 +13,14 @@ officially part of the GeoServer releases. They are however built along with the
 
 
 .. toctree::
-   :maxdepth: 1 
+   :maxdepth: 1
 
    authkey/index
-   css/index
    dxf/index
    dds/index
-   inspire/index
-   monitoring/index
    printing/index
    python/index
    scripting/index
    spatialite/index
-   xslt/index
+   libjpeg-turbo/index
+   csw/index

@@ -60,7 +60,7 @@ Connecting a remote WMS allows for the following features:
 
 * **GetFeatureInfo**.  WMS GetFeatureInfo requests will be passed to the remote WMS.  If the remote WMS supports the ``application/vnd.ogc.gml`` format the request will be successful. 
 
-* Full **REST Configuration**. Requires the optional :ref:`rest_extension` extension.  See the :ref:`rest_config_api_ref` for more information about the GeoServer REST interface.
+* Full **REST Configuration**. See the :ref:`rest` section for more information about the GeoServer REST interface.
 
 Limitations
 -----------

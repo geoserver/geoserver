@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -36,11 +36,13 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerGroupInfo.Mode;
 import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -113,6 +115,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.ConversionException;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.SingleValueConverterWrapper;
@@ -142,7 +145,8 @@ import com.vividsolutions.jts.geom.Geometry;
  */
 public class XStreamPersister {
 
-    
+    private boolean unwrapNulls = true;
+   
     /**
      * Callback interface or xstream persister.
      */
@@ -267,6 +271,16 @@ public class XStreamPersister {
         init(xs);
     }
     
+    /**
+     * Sets null handling in proxy objects.
+     * Defaults to unwrap. If set to false, proxy object are not transformed to nulls.
+     * 
+     * @param unwrapNulls
+     */
+    public void setUnwrapNulls(boolean unwrapNulls) {
+        this.unwrapNulls = unwrapNulls;
+    }
+
     protected void init(XStream xs) {
         // Default implementations
         initImplementationDefaults(xs);
@@ -292,6 +306,7 @@ public class XStreamPersister {
         xs.alias( "attribute", AttributeTypeInfo.class );
         xs.alias( "layer", LayerInfo.class);
         xs.alias( "layerGroup", LayerGroupInfo.class);
+        xs.alias( "published", PublishedInfo.class);
         xs.alias( "gridGeometry", GridGeometry2D.class);
         xs.alias( "projected", DefaultProjectedCRS.class);
         xs.alias( "attribution", AttributionInfo.class );
@@ -388,7 +403,10 @@ public class XStreamPersister {
         
         // LayerGroupInfo
         xs.registerLocalConverter(impl(LayerGroupInfo.class), "workspace", new ReferenceConverter(WorkspaceInfo.class));
+        xs.registerLocalConverter(impl(LayerGroupInfo.class), "rootLayer", new ReferenceConverter(LayerInfo.class));
+        xs.registerLocalConverter(impl(LayerGroupInfo.class), "rootLayerStyle", new ReferenceConverter(StyleInfo.class));        
         xs.registerLocalConverter(impl(LayerGroupInfo.class), "layers", new ReferenceCollectionConverter( LayerInfo.class ));
+        xs.registerLocalConverter(impl(LayerGroupInfo.class), "publishables", new ReferenceCollectionConverter( PublishedInfo.class, LayerInfo.class, LayerGroupInfo.class ));
         xs.registerLocalConverter(impl(LayerGroupInfo.class), "styles", new ReferenceCollectionConverter( StyleInfo.class ));
         xs.registerLocalConverter(impl(LayerGroupInfo.class), "metadata", new MetadataMapConverter() );
         
@@ -986,16 +1004,27 @@ public class XStreamPersister {
             if ( catalog != null ) {
                 resolved = ResolvingProxy.resolve( catalog, proxy );
             }
-            
-            return CatalogImpl.unwrap( resolved );
+            if(unwrapNulls) {
+                return CatalogImpl.unwrap( resolved );
+            } else {
+                return resolved != null ? CatalogImpl.unwrap( resolved ) : proxy;
+            }
+            //            
         }
     }
     class ReferenceCollectionConverter extends LaxCollectionConverter {
         Class clazz;
+        Class[] subclasses;
 
         public ReferenceCollectionConverter(Class clazz) {
             super( getXStream().getMapper() );
             this.clazz = clazz;
+        }
+        
+        public ReferenceCollectionConverter(Class clazz, Class... subclasses) {
+            super( getXStream().getMapper() );
+            this.clazz = clazz;
+            this.subclasses = subclasses;
         }
 
         @Override
@@ -1009,15 +1038,39 @@ public class XStreamPersister {
                 elementName = cam.serializedClass( item.getClass() );
             }
             writer.startNode(elementName);
-            if(item != null)
+            if(item != null) {
+                if(subclasses != null) {
+                    Class theClass = null;
+                    for (Class clazz : subclasses) {
+                        if(clazz.isInstance(item)) {
+                            theClass = clazz;
+                            break;
+                        }
+                    }
+                    if(theClass == null) {
+                        throw new ConversionException("Unexpected item " 
+                                + item + " whose type is not among: " + subclasses);
+                    }
+                    String typeName = cam.serializedClass( theClass );
+                    writer.addAttribute("type", typeName);
+                }
+                
                 context.convertAnother( item, new ReferenceConverter( clazz ) );
+            }
             writer.endNode();
         }
         
         @Override
         protected Object readItem(HierarchicalStreamReader reader,
                 UnmarshallingContext context, Object current) {
-            return context.convertAnother( current, clazz, new ReferenceConverter( clazz ) );
+            Class theClass = clazz;
+            if(subclasses != null) {
+                String attribute = reader.getAttribute("type");
+                if(attribute != null) {
+                    theClass = mapper().realClass(attribute);
+                }
+            }
+            return context.convertAnother( current, theClass, new ReferenceConverter( theClass ) );
         }
     }
     /**
@@ -1740,6 +1793,13 @@ public class XStreamPersister {
 
             LayerGroupInfoImpl lgi = (LayerGroupInfoImpl) super
                     .doUnmarshal(result, reader, context);
+            
+            if (lgi.getMode() ==  null) {
+                lgi.setMode(Mode.SINGLE);
+            }
+            
+            lgi.convertLegacyLayers();
+            
             MetadataMap metadata = lgi.getMetadata();
             
             /**
@@ -1827,6 +1887,9 @@ public class XStreamPersister {
             writer.startNode("sql");
             writer.setValue(vt.getSql());
             writer.endNode();
+            writer.startNode("escapeSql");
+            writer.setValue(Boolean.toString(vt.isEscapeSql()));
+            writer.endNode();
             if(vt.getPrimaryKeyColumns() != null) {
                 for(String pk : vt.getPrimaryKeyColumns()) {
                     writer.startNode("keyColumn");
@@ -1879,7 +1942,19 @@ public class XStreamPersister {
         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
             String name = readValue("name", String.class, reader);
             String sql = readValue("sql", String.class, reader);
-            VirtualTable vt = new VirtualTable(name, sql);
+            
+            // escapeSql value may be missing from existing definitions.  In this 
+            // case set it to false to prevent changing behaviour
+            boolean escapeSql;
+            try {
+                escapeSql = Boolean.valueOf(readValue("escapeSql", String.class, reader));
+            } catch (IllegalArgumentException e) {
+                escapeSql = false;
+                // the reader is now in the wrong position, it must be moved back a line
+                reader.moveUp();
+            }
+                
+            VirtualTable vt = new VirtualTable(name, sql, escapeSql);
             List<String> primaryKeys = new ArrayList<String>();
             while(reader.hasMoreChildren()) {
                 reader.moveDown();

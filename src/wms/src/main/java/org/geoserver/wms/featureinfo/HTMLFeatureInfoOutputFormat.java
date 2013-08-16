@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.featureinfo;
@@ -13,6 +13,8 @@ import java.util.List;
 
 import net.opengis.wfs.FeatureCollectionType;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.template.DirectTemplateFeatureCollectionFactory;
 import org.geoserver.template.FeatureWrapper;
@@ -21,11 +23,15 @@ import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.WMS;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
+import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.Name;
 
 import freemarker.template.Configuration;
+import freemarker.template.SimpleHash;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import freemarker.template.TemplateModel;
+import freemarker.template.TemplateModelException;
 
 /**
  * Produces a FeatureInfo response in HTML. Relies on {@link AbstractFeatureInfoResponse} and the
@@ -53,7 +59,19 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
         // initialize the template engine, this is static to maintain a cache
         // over instantiations of kml writer
         templateConfig = new Configuration();
-        templateConfig.setObjectWrapper(new FeatureWrapper(tfcFactory));
+        templateConfig.setObjectWrapper(new FeatureWrapper(tfcFactory) {
+    
+            @Override
+            public TemplateModel wrap(Object object) throws TemplateModelException {
+                if (object instanceof FeatureCollection) {
+                    SimpleHash map = (SimpleHash) super.wrap(object);                    
+                    map.put("request", Dispatcher.REQUEST.get().getKvp());    
+                    return map;
+                }
+                return super.wrap(object);
+            }
+    
+        });
     }
 
     GeoServerTemplateLoader templateLoader;
@@ -111,7 +129,7 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
                 FeatureCollection fc = collections.get(i);
                 if (fc != null && fc.size() > 0) {
                     Template content = null;
-                    if (! (fc instanceof SimpleFeatureCollection)) {
+                    if (! (fc.getSchema() instanceof SimpleFeatureType)) {
                         //if there is a specific template for complex features, use that.
                         content = getTemplate(FeatureCollectionDecorator.getName(fc), "complex_content.ftl", charSet);
                     }                

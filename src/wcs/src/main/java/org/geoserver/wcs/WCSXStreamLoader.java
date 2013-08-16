@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -56,6 +56,9 @@ public class WCSXStreamLoader extends XStreamServiceLoader<WCSInfo> {
         Version v201 = new Version("2.0.1");        
         if(!service.getVersions().contains(v201)) {
             service.getVersions().add(v201);
+        }
+        if(service.getSRS() == null) {
+            ((WCSInfoImpl) service).setSRS(new ArrayList<String>());
         }
         return service;
     }

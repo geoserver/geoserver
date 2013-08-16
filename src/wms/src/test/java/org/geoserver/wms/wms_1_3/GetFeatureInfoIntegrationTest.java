@@ -1,14 +1,16 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.wms_1_3;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +20,7 @@ import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
 
+import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -29,6 +32,7 @@ import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
+import org.geoserver.wms.featureinfo.GML3FeatureInfoOutputFormat;
 import org.geoserver.wms.featureinfo.GetFeatureInfoKvpReader;
 import org.geoserver.wms.wms_1_1_1.CapabilitiesTest;
 import org.geotools.util.logging.Logging;
@@ -53,7 +57,6 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
         testData.setUpWcs10RasterLayers();
-        
     }
     
     @Override
@@ -84,6 +87,7 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         testData.addStyle("raster","raster.sld",CapabilitiesTest.class,catalog);
         testData.addStyle("rasterScales","rasterScales.sld",CapabilitiesTest.class,catalog);
         testData.addStyle("squares","squares.sld",CapabilitiesTest.class,catalog);
+        testData.addStyle("forestsManyRules", "ForestsManyRules.sld", CapabilitiesTest.class, catalog);
         testData.addVectorLayer(SQUARES,Collections.EMPTY_MAP,"squares.properties",
                 CapabilitiesTest.class,catalog);
         Map propertyMap = new HashMap();
@@ -218,6 +222,37 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         assertNotNull(result);
         assertTrue(result.indexOf("Green Forest") > 0);
     }
+    
+    @Test
+    public void testCustomTemplateManyRules() throws Exception {
+        // setup custom template
+        File root = getTestData().getDataDirectoryRoot();
+        File target = new File(root, "workspaces/" + MockData.FORESTS.getPrefix() + "/content.ftl");
+        File source = new File("./src/test/resources/org/geoserver/wms/content.ftl");
+        try {
+            assertTrue(source.exists());
+            FileUtils.copyFile(source, target);
+
+            // request with default style, just one rule
+            String layer = getLayerId(MockData.FORESTS);
+            String request = "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg&info_format=text/html&request=GetFeatureInfo&layers="
+                    + layer + "&query_layers=" + layer + "&width=20&height=20&i=10&j=10";
+            Document dom = getAsDOM(request);
+            // print(dom);
+
+            assertXpathExists("/html/body/ul/li/b[text() = 'Type: Forests']", dom);
+
+            // request with a style having 21 rules, used to fail, see GEOS-5534
+            request = "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=forestsManyRules&format=jpeg&info_format=text/html&request=GetFeatureInfo&layers="
+                    + layer + "&query_layers=" + layer + "&width=20&height=20&i=10&j=10";
+            dom = getAsDOM(request);
+            // print(dom);
+
+            assertXpathExists("/html/body/ul/li/b[text() = 'Type: Forests']", dom);
+        } finally {
+            FileUtils.deleteQuietly(target);
+        }
+    }
 
     /**
      * Tests a simple GetFeatureInfo works, and that the result contains the expected polygon
@@ -234,7 +269,7 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         // count lines that do contain a forest reference
         assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[starts-with(.,'Forests.')])", dom);
     }
-
+    
     /**
      * Tests GetFeatureInfo with a buffer specified works, and that the result contains the expected
      * polygon
@@ -280,7 +315,7 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
     public void testAutoBuffer() throws Exception {
         String layer = getLayerId(MockData.BASIC_POLYGONS);
         String base = "wms?version=1.3.0&bbox=-4.5,-2.,4.5,7&format=jpeg&info_format=text/html&request=GetFeatureInfo&layers="
-                + layer + "&query_layers=" + layer + "&width=300&height=300&i=114&j=229";
+                + layer + "&query_layers=" + layer + "&width=300&height=300&i=111&j=229";
         Document dom = getAsDOM(base + "&styles=");
         // make sure the document is empty, the style we chose has thin lines
         assertXpathEvaluatesTo("0", "count(/html/body/table/tr)", dom);
@@ -404,6 +439,25 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
                 "//wfs:FeatureCollection/gml:featureMember/wcs:BlueMarble/wcs:GREEN_BAND", dom);
         assertXpathEvaluatesTo("126.0",
                 "//wfs:FeatureCollection/gml:featureMember/wcs:BlueMarble/wcs:BLUE_BAND", dom);
+    }
+    
+    @Test
+    public void testCoverageGML31() throws Exception {
+        // http://jira.codehaus.org/browse/GEOS-3996
+        String layer = getLayerId(TASMANIA_BM);
+        String request = "wms?version=1.3.0&service=wms&request=GetFeatureInfo" + "&layers="
+                + layer + "&styles=&bbox=-44.5,146.5,-43,148&width=600&height=600"
+                + "&info_format=" + GML3FeatureInfoOutputFormat.FORMAT + "&query_layers=" + layer
+                + "&i=300&j=300&srs=EPSG:4326";
+        Document dom = getAsDOM(request);
+        print(dom);
+
+        assertXpathEvaluatesTo("26.0",
+                "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:RED_BAND", dom);
+        assertXpathEvaluatesTo("70.0",
+                "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:GREEN_BAND", dom);
+        assertXpathEvaluatesTo("126.0",
+                "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:BLUE_BAND", dom);
     }
 
     @Test

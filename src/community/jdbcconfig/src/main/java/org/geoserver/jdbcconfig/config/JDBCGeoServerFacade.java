@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -57,6 +57,7 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
     @Override
     public void setGeoServer(GeoServer geoServer) {
         this.geoServer = geoServer;
+        this.db.setGeoServer(geoServer);
     }
 
     @Override
@@ -72,7 +73,9 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
             SettingsInfo defaultSettings = geoServer.getFactory().createSettings();
             add(defaultSettings);
             global.setSettings(defaultSettings);
-        }else if(null == global.getSettings().getId()){
+        //JD: disabling this check, global settings should have an id 
+        //}else if(null == global.getSettings().getId()){
+        }else {
             add(global.getSettings());
         }
         if (null == getGlobal()) {
@@ -133,6 +136,7 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
     @Override
     public void add(ServiceInfo service) {
         setId(service, ServiceInfo.class);
+        service.setGeoServer(geoServer);
         db.add(service);
     }
 
@@ -264,7 +268,7 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
 
     public <T extends Info> T get(Class<T> type, Filter filter) throws IllegalArgumentException {
 
-        CloseableIterator<T> it = db.query(type, filter, null, 2, null);
+        CloseableIterator<T> it = db.query(type, filter, null, 2, (org.opengis.filter.sort.SortBy)null);
         T result = null;
         try {
             if (it.hasNext()) {

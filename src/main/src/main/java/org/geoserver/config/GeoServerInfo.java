@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -216,7 +216,7 @@ public interface GeoServerInfo extends Info {
      * @deprecated use {@link #getSettings()}
      */
     boolean isVerboseExceptions();
-    
+
     /**
      * Set the XML error handling mode for the server.
      * 
@@ -279,6 +279,20 @@ public interface GeoServerInfo extends Info {
      * Gets log buffer size of XML Post Request for WFS,WMS,...
      */
     Integer getXmlPostRequestLogBufferSize();
+    
+    /**
+     * If true it enables evaluation of XML entities contained in XML files received in a service (WMS, WFS, ...) request.
+     * Default is FALSE.
+     * Enabling this feature is a security risk.
+     */
+    void setXmlExternalEntitiesEnabled(Boolean xmlExternalEntitiesEnabled);
+    
+    /**
+     * If true it enables evaluation of XML entities contained in XML files received in a service (WMS, WFS, ...) request.
+     * Default is FALSE.
+     * Enabling this feature is a security risk.
+     */
+    Boolean isXmlExternalEntitiesEnabled();
     
     /**
      * A map of metadata for services.

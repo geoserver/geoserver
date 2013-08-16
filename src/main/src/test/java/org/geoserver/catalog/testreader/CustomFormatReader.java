@@ -1,31 +1,40 @@
-/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog.testreader;
 
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReaderSpi;
+
 import java.awt.Color;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
+
 import javax.imageio.spi.ImageInputStreamSpi;
 import javax.imageio.stream.ImageInputStream;
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
+
 import org.geotools.coverage.Category;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.factory.Hints;
 import org.geotools.gce.geotiff.GeoTiffReader;
+import org.geotools.image.ImageWorker;
 import org.geotools.image.io.ImageIOExt;
 import org.geotools.resources.i18n.Vocabulary;
 import org.geotools.resources.i18n.VocabularyKeys;
+import org.geotools.util.Converters;
 import org.geotools.util.NumberRange;
 import org.opengis.coverage.grid.Format;
 import org.opengis.parameter.GeneralParameterValue;
@@ -67,22 +76,28 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
     @Override public GridCoverage2D read(GeneralParameterValue[] params)
             throws IOException {
         boolean haveDimension = false;
+        final List<GridCoverage2D> returnValues= new ArrayList<GridCoverage2D>();
         for (GeneralParameterValue p : params) {
             if (p.getDescriptor().getName().toString().equalsIgnoreCase(
                         CustomFormat.CUSTOM_DIMENSION_NAME)) {
                 haveDimension = true;
-                final String value = String.valueOf(extractValue(p));
-                for (String filename : this.dataDirectory.list()) {
-                    if (isDataFile(filename)) {
-                        final String dimValue = getDimensionValue(filename);
-                        if (dimValue.equalsIgnoreCase(value)) {
-                            return createCoverage(filename);
+                final List<?> value = extractValue(p);
+                for(Object o:value){
+                    final String s=Converters.convert(o, String.class);
+                    for (String filename : this.dataDirectory.list()) {
+                        if (isDataFile(filename)) {
+                            final String dimValue = getDimensionValue(filename);
+                            if (dimValue.equalsIgnoreCase(s)) {
+                                returnValues.add(createCoverage(filename));
+                                break;
+                            }
                         }
                     }
                 }
             }
         }
-        
+
+        final int size = returnValues.size();
         if (!haveDimension) {
             // No dimension value specified; just return first image
             for (String filename : this.dataDirectory.list()) {
@@ -90,6 +105,28 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
                     return createCoverage(filename);
                 }
             }
+        } else if (size>0) {
+            // single value
+            if(size==1){
+                return returnValues.get(0);
+            } else {
+                // we return a multiband coverage that uses the original ones as sources
+                final ImageWorker worker= new ImageWorker(returnValues.get(0).getRenderedImage());
+                for(int i=1;i<size;i++){
+                    worker.addBand(returnValues.get(i).getRenderedImage(), false);
+                }
+                final GridSampleDimension sds[]= new GridSampleDimension[size];
+                Arrays.fill(sds, returnValues.get(0).getSampleDimensions()[0]);
+                return new GridCoverageFactory().create(
+                        "result",
+                        worker.getRenderedImage(),
+                        returnValues.get(0).getEnvelope(),
+                        sds,
+                        null,
+                        null);
+                
+            }
+            
         }
         return null;
     }
@@ -109,17 +146,21 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
     }
     
     private String dimensionValueList() {
-        final StringBuilder sb = new StringBuilder();
+        final TreeSet<String>elements= new TreeSet<String>();
         for (String filename : this.dataDirectory.list()) {
             if (isDataFile(filename)) {
-                sb.append(getDimensionValue(filename));
-                sb.append(',');
+                elements.add(getDimensionValue(filename));
             }
         }
-        final int len = sb.length();
-        if (len == 0) {
+        if(elements.size()<=0){
             return null;
         }
+
+        final StringBuilder sb = new StringBuilder();
+        for(String item:elements){
+            sb.append(item).append(',');
+        }
+        final int len = sb.length();
         return sb.substring(0, len - 1);
     }
     
@@ -213,19 +254,19 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
     }
     
     /** Helper for read method. */
-    private static Object extractValue(GeneralParameterValue param) {
-        Object retVal = null;
+    private static List<?> extractValue(GeneralParameterValue param) {
         if (param instanceof ParameterValue<?>) {
             final Object paramVal = ((ParameterValue<?>)param).getValue();
             if (paramVal != null) {
                 if (paramVal instanceof List) {
                     final List<?> list = (List<?>)paramVal;
-                    if (!list.isEmpty()) retVal = list.get(0);
+                    return list;
                 } else {
-                    retVal = paramVal;
+                    throw new UnsupportedOperationException("Custom dimension value must be a list");
                 }
             }
         }
-        return retVal;
+        throw new UnsupportedOperationException("Custom dimension value must be a list");
     }
+    
 }

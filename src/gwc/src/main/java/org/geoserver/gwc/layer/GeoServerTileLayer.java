@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -29,17 +29,18 @@ import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.RenderedImageMap;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.geotools.util.CanonicalSet;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.config.ConfigurationException;
@@ -55,7 +56,6 @@ import org.geowebcache.grid.GridSubset;
 import org.geowebcache.grid.OutsideCoverageException;
 import org.geowebcache.grid.SRS;
 import org.geowebcache.io.Resource;
-import org.geowebcache.layer.GridLocObj;
 import org.geowebcache.layer.LayerListenerList;
 import org.geowebcache.layer.MetaTile;
 import org.geowebcache.layer.TileLayer;
@@ -63,6 +63,7 @@ import org.geowebcache.layer.TileLayerListener;
 import org.geowebcache.layer.meta.ContactInformation;
 import org.geowebcache.layer.meta.LayerMetaInformation;
 import org.geowebcache.layer.updatesource.UpdateSourceDefinition;
+import org.geowebcache.locks.LockProvider.Lock;
 import org.geowebcache.mime.FormatModifier;
 import org.geowebcache.mime.MimeException;
 import org.geowebcache.mime.MimeType;
@@ -94,7 +95,7 @@ public class GeoServerTileLayer extends TileLayer {
     private static LayerListenerList listeners = new LayerListenerList();
 
     private final GridSetBroker gridSetBroker;
-
+    
     public GeoServerTileLayer(final LayerGroupInfo layerGroup, final GWCConfig configDefaults,
             final GridSetBroker gridsets) {
         checkNotNull(layerGroup, "layerGroup");
@@ -129,6 +130,7 @@ public class GeoServerTileLayer extends TileLayer {
         this.layerInfo = null;
         this.layerGroupInfo = layerGroup;
         this.info = state;
+        TileLayerInfoUtil.checkAutomaticStyles(layerGroup, state);
     }
 
     public GeoServerTileLayer(final LayerInfo layerInfo, final GridSetBroker gridsets,
@@ -141,8 +143,9 @@ public class GeoServerTileLayer extends TileLayer {
         this.layerInfo = layerInfo;
         this.layerGroupInfo = null;
         this.info = state;
+        TileLayerInfoUtil.checkAutomaticStyles(layerInfo, state);
     }
-
+    
     @Override
     public String getId() {
         return info.getId();
@@ -467,9 +470,6 @@ public class GeoServerTileLayer extends TileLayer {
         }
     }
 
-    private static final CanonicalSet<GridLocObj> META_GRID_LOCKS = CanonicalSet
-            .newInstance(GridLocObj.class);
-
     private ConveyorTile getMetatilingReponse(ConveyorTile tile, final boolean tryCache,
             final int metaX, final int metaY) throws GeoWebCacheException, IOException {
 
@@ -482,9 +482,10 @@ public class GeoServerTileLayer extends TileLayer {
         }
 
         final GeoServerMetaTile metaTile = createMetaTile(tile, metaX, metaY);
-        final GridLocObj metaGridLoc;
-        metaGridLoc = META_GRID_LOCKS.unique(new GridLocObj(metaTile.getMetaGridPos(), 32));
-        synchronized (metaGridLoc) {
+        Lock lock = null;
+        try {
+            /** ****************** Acquire lock ******************* */
+            lock = GWC.get().getLockProvider().getLock(buildLockKey(tile, metaTile));
             // got the lock on the meta tile, try again
             if (tryCache && tryCacheFetch(tile)) {
                 LOGGER.finest("--> " + Thread.currentThread().getName() + " returns cache hit for "
@@ -495,20 +496,51 @@ public class GeoServerTileLayer extends TileLayer {
                         + Arrays.toString(metaTile.getMetaGridPos()) + " on " + metaTile);
                 RenderedImageMap map;
                 try {
+                    long requestTime = System.currentTimeMillis();
                     map = dispatchGetMap(tile, metaTile);
                     checkNotNull(map, "Did not obtain a WebMap from GeoServer's Dispatcher");
                     metaTile.setWebMap(map);
-                    saveTiles(metaTile, tile);
+                    saveTiles(metaTile, tile, requestTime);
                 } catch (Exception e) {
                     throw new GeoWebCacheException("Problem communicating with GeoServer", e);
-                } finally {
-                    META_GRID_LOCKS.remove(metaGridLoc);
-                    metaTile.dispose();
-                }
+                } 
             }
+            /** ****************** Return lock and response ****** */
+        } finally {
+            if(lock != null) {
+                lock.release();
+            }
+            metaTile.dispose();
         }
 
+
         return finalizeTile(tile);
+    }
+    
+    private String buildLockKey(ConveyorTile tile, GeoServerMetaTile metaTile) {
+        StringBuilder metaKey = new StringBuilder();
+        
+        final long[] tileIndex;
+        if(metaTile != null) {
+            tileIndex = metaTile.getMetaGridPos();
+            metaKey.append("gsmeta_");
+        } else {
+            tileIndex = tile.getTileIndex();
+            metaKey.append("tile_");
+        }
+        long x = tileIndex[0];
+        long y = tileIndex[1];
+        long z = tileIndex[2];
+
+        metaKey.append(tile.getLayerId());
+        metaKey.append("_").append(tile.getGridSetId());
+        metaKey.append("_").append(x).append("_").append(y).append("_").append(z);
+        if(tile.getParametersId() != null) {
+            metaKey.append("_").append(tile.getParametersId());
+        }            
+        metaKey.append(".").append(tile.getMimeType().getFileExtension());
+
+        return metaKey.toString();
     }
 
     private RenderedImageMap dispatchGetMap(final ConveyorTile tile, final MetaTile metaTile)
@@ -660,16 +692,6 @@ public class GeoServerTileLayer extends TileLayer {
             metaX = metaY = 1;
         }
         getMetatilingReponse(tile, tryCache, metaX, metaY);
-    }
-
-    @Override
-    public void acquireLayerLock() {
-        // throw new UnsupportedOperationException("not implemented yet");
-    }
-
-    @Override
-    public void releaseLayerLock() {
-        // throw new UnsupportedOperationException("not implemented yet");
     }
 
     /**
@@ -945,7 +967,62 @@ public class GeoServerTileLayer extends TileLayer {
      */
     @Override
     public int getExpireClients(int zoomLevel) {
-        // TODO: make configurable
+        if(layerInfo != null) {
+            return getLayerMaxAge(layerInfo);
+        } else if(layerGroupInfo != null) {
+            return getGroupMaxAge(layerGroupInfo);
+        } else {
+            if(LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.log(Level.FINE, "Found a GeoServerTileLayer that is not base on either" +
+                		"LayerInfo or LayerGroupInfo, setting its max age to 0");
+            }
+            return 0;
+        }
+    }
+
+    /**
+     * Returns the max age of a layer group by looking for the minimum max age of its components
+     * 
+     * @param lg
+     * @return
+     */
+    private int getGroupMaxAge(LayerGroupInfo lg) {
+        int maxAge = Integer.MAX_VALUE;
+        for (PublishedInfo pi : lg.getLayers()) {
+            int piAge;
+            if(pi instanceof LayerInfo) {
+                piAge = getLayerMaxAge((LayerInfo) pi);
+            } else if(pi instanceof LayerGroupInfo) {
+                piAge = getGroupMaxAge((LayerGroupInfo) pi);
+            } else {
+                if(LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.log(Level.FINE, "Found a PublishedInfo that is nor LayerInfo nor " +
+                    		"LayerGroupInfo, setting its max age to 0: " + pi);
+                }
+                piAge = 0;
+            }
+            maxAge = Math.min(piAge, maxAge);
+        }
+        
+        return maxAge;
+    }
+
+    /**
+     * Returns the max age for the specified layer
+     * @return
+     */
+    private int getLayerMaxAge(LayerInfo li) {
+        MetadataMap metadata = li.getResource().getMetadata();
+        Object enabled = metadata.get(ResourceInfo.CACHING_ENABLED);
+        if (enabled != null && enabled.toString().equalsIgnoreCase("true")) {
+            Integer maxAge = metadata.get(ResourceInfo.CACHE_AGE_MAX, Integer.class);
+            if(maxAge != null) {
+                return maxAge;
+            } else {
+                return 0;
+            }
+        }
+        
         return 0;
     }
 
@@ -981,5 +1058,22 @@ public class GeoServerTileLayer extends TileLayer {
     public String toString() {
         return new StringBuilder(getClass().getSimpleName()).append("[").append(info).append("]")
                 .toString();
+    }
+
+    @Override
+    public List<MimeType> getInfoMimeTypes() {
+        // Get the formats WMS supports for GetFeatureInfo
+        List<String> typeStrings = ((WMS) GeoServerExtensions.bean("wms")).getAvailableFeatureInfoFormats();
+        List<MimeType> types = new ArrayList<MimeType>(typeStrings.size());
+        for(String typeString: typeStrings) {
+            try {
+                types.add(MimeType.createFromFormat(typeString));
+            } catch (MimeException e) {
+                if (LOGGER.isLoggable(Level.WARNING)){
+                    LOGGER.log(Level.WARNING, e.getMessage(), e);
+                }
+            }
+        }
+        return types;
     }
 }

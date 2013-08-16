@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -9,6 +9,7 @@ import static org.junit.Assert.*;
 import java.io.FileReader;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
@@ -88,6 +89,17 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         
         tester.assertRenderedPage(StylePage.class);
         assertNotNull(getCatalog().getStyleByName("test"));
+    }
+    
+    @Test
+    public void testNewStyleNoSLD() throws Exception {
+        
+        FormTester form = tester.newFormTester("form");
+        form.setValue("name", "test");
+        form.submit();
+        
+        tester.assertRenderedPage(StyleNewPage.class);
+        assertTrue(tester.getMessages(FeedbackMessage.ERROR).size() > 0);
     }
     
 //    Cannot make this one to work, the sld text area is not filled in the test

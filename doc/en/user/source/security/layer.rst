@@ -64,29 +64,22 @@ The syntax is::
 
 .. _access_mode:
 
-Access Mode
------------
+Access modes
+------------
 
 The access mode defines what level of access should be granted on a specific workspace/layer to a particular role. There are three types of access mode:
 
-* ``r``—*read* data from a workspace/layer
-* ``w``—*write* data in a workspace/layer
-* ``a``—*admin* (access and modify configuration) a workspace/layer
-   
-The read and write modes apply to the data of a layer, whereas the admin mode applies to the configuration of a layer.
+* ``r``—**Read mode** (read data from a workspace/layer)
+* ``w``—**Write mode** (write data to a workspace/layer)
+* ``a``—**Admin mode** (access and modify the configuration of a workspace/layer)
 
-.. note::
+Some notes on the above access modes:
 
-   Currently it is only possible to assign admin permission to an entire 
-   workspace, and not on a layer by layer basis. For example::
-   
-       topp.*.a=ROLE_TOPP_ADMIN
-       
-   The following is not supported::
-   
-       topp.*.a=ROLE_TOPP_ADMIN
-   
-   Administrative access is only assignable at the workspace level, and not at the layer level.
+* Write does not imply Read, but Admin implies both Write *and* Read.
+* Read and Write apply to the data of a layer, while Admin applies to the configuration of a layer.
+* As Admin mode only refers to the configuration of the layer, it is not required for any OGC service request.
+
+.. note:: Currently, it is possible to assign Admin permission only to an entire workspace, and not to specific layers.
    
 Examples
 --------

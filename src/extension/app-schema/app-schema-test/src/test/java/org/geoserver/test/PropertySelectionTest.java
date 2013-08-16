@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2009 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -128,7 +128,7 @@ public class PropertySelectionTest extends AbstractAppSchemaTestSupport {
 
         // test exception refering to missing column
         assertTrue(evaluate("//ows:ExceptionText", doc)
-                .endsWith("No value for xpath: DOESNT_EXIST"));
+                .contains("Could not find working property accessor for attribute (DOESNT_EXIST)"));
 
     }
 

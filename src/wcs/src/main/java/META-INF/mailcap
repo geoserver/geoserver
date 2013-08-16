@@ -1,0 +1,7 @@
+#
+# Mailcap extensions for GeoServer WCS 1.1/2.0 mime multipart encoding
+#
+# Content handlers (for two fake mime types, the content handlers will return
+# the actual mime type
+#
+geoserver/coverageDelegate;;		x-java-content-handler=org.geoserver.wcs.responses.CoverageDelegateHandler

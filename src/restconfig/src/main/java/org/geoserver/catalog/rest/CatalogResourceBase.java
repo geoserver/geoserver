@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2009 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog.rest;
@@ -23,6 +23,7 @@ import org.geoserver.rest.RestletException;
 import org.geoserver.rest.format.DataFormat;
 import org.geoserver.rest.format.MediaTypes;
 import org.geoserver.rest.format.ReflectiveXMLFormat;
+import org.geoserver.security.GeoServerSecurityManager;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -156,18 +157,8 @@ public abstract class CatalogResourceBase extends ReflectiveResource {
         if (SecurityContextHolder.getContext() == null) {
             return false;
         }
-
-        //TODO: change to getSecurityMangager().isAuthenticatedAsAdmin() once security work lands
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null) {
-            return false;
-        }
-
-        for (GrantedAuthority authority : auth.getAuthorities()) {
-            if ("ROLE_ADMINISTRATOR".equals(authority.getAuthority()))
-                return true;
-        }
-        return false;
+        return GeoServerExtensions.bean(GeoServerSecurityManager.class).
+                checkAuthenticationForAdminRole();
     } 
     
     protected void calculateOptionalFields(ResourceInfo message, ResourceInfo resource) {

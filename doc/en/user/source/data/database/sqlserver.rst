@@ -88,3 +88,29 @@ You can determine the port in use by connecting to your SQL server instance usin
 
     C:\>netstat -a | find "sql1"
     TCP   DPI908194:1918   maittestsql1.dpi.nsw.gov.au:2646   ESTABLISHED
+
+
+Using the geometry metadata table
+`````````````````````````````````
+
+The SQL server data store can determine the geometry type and native SRID of a particular column only by data inspection,
+by looking at the first row in the table. Of course this is error prone, and works only if there is data in the table.
+The administrator can address the above issue by manually creating a geometry metadata table describing each geometry column.
+Its presence is indicated via the SQL Server datastore connection parameter named *Geometry metadata table*
+(which may be a simple table name or a schema-qualified one).
+The table has the following structure (the table name is flexible, just specify the one chosen in the data store connection parameter)::
+
+	CREATE TABLE GEOMETRY_COLUMNS(
+	   F_TABLE_SCHEMA VARCHAR(30) NOT NULL, 
+	   F_TABLE_NAME VARCHAR(30) NOT NULL, 
+	   F_GEOMETRY_COLUMN VARCHAR(30) NOT NULL, 
+	   COORD_DIMENSION INTEGER, 
+	   SRID INTEGER NOT NULL, 
+	   TYPE VARCHAR(30) NOT NULL,
+	   UNIQUE(F_TABLE_SCHEMA, F_TABLE_NAME, F_GEOMETRY_COLUMN),
+	   CHECK(TYPE IN ('POINT','LINE', 'POLYGON', 'COLLECTION', 'MULTIPOINT', 'MULTILINE', 'MULTIPOLYGON', 'GEOMETRY') ));
+	   
+When the table is present the store first searches it for information about each geometry column
+to be classified, and falls back on data inspection only if the table does not contain any information.
+
+

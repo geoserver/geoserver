@@ -1,9 +1,10 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.vfny.geoserver.util;
 
+import java.awt.image.RenderedImage;
 import java.awt.image.SampleModel;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ import org.geoserver.wcs.WCSInfo;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.DecimationPolicy;
 import org.geotools.coverage.grid.io.OverviewPolicy;
 import org.geotools.coverage.processing.CoverageProcessor;
@@ -42,6 +43,9 @@ import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.processing.Operation;
 import org.opengis.filter.Filter;
 import org.opengis.geometry.Envelope;
+import org.opengis.parameter.GeneralParameterValue;
+import org.opengis.parameter.ParameterDescriptor;
+import org.opengis.parameter.ParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
@@ -139,7 +143,14 @@ public class WCSUtils {
     public static GridCoverage2D crop(
             final GridCoverage2D coverage,
             final Envelope bounds) {
-        Polygon polygon = JTS.toGeometry(new ReferencedEnvelope(bounds));
+        
+        // checks
+        final ReferencedEnvelope cropBounds = new ReferencedEnvelope(bounds);
+        final ReferencedEnvelope coverageBounds = new ReferencedEnvelope(coverage.getEnvelope());
+        if(cropBounds.contains((com.vividsolutions.jts.geom.Envelope)coverageBounds)){
+            return coverage;
+        }
+        Polygon polygon = JTS.toGeometry(cropBounds);
         Geometry roi = polygon.getFactory().createMultiPolygon(new Polygon[] {polygon});
 
         // perform the crops
@@ -301,7 +312,7 @@ public class WCSUtils {
      */
 	public static void checkOutputLimits(WCSInfo info, GridEnvelope2D gridRange2D, SampleModel sampleModel) {
         // do we have to check a limit at all?
-	    long limit = info.getMaxOutputMemory() * 1024;
+	long limit = info.getMaxOutputMemory() * 1024;
         if(limit <= 0) {
             return;
         }
@@ -318,7 +329,7 @@ public class WCSUtils {
     /**
      * Checks the coverage read is below the input limits. Mind, at this point the reader might have
      * have subsampled the original image in some way so it is expected the coverage is actually
-     * smaller than what computed but {@link #checkInputLimits(CoverageInfo, AbstractGridCoverage2DReader, GeneralEnvelope)},
+     * smaller than what computed but {@link #checkInputLimits(CoverageInfo, GridCoverage2DReader, GeneralEnvelope)},
      * however that method might have failed the computation due to lack of metadata (or wrong metadata)
      * so it's safe to double check the actual coverage wit this one.
      * Mind, this method might cause the coverage to be fully read in memory (if that is the case,
@@ -344,21 +355,22 @@ public class WCSUtils {
     }
     
     /**
-     * Computes the size of a grid coverage given its grid envelope and the target sample model
+     * Computes the size of a grid coverage in bytes given its grid envelope and the target sample model
      * @param envelope
      * @param sm
      * @return
      */
     static long getCoverageSize(GridEnvelope2D envelope, SampleModel sm) {
-        long pixels = 1;
-        for(int i = 0; i < envelope.getDimension(); i++) {
-            pixels *= envelope.getSpan(i);
-        }
+        // === compute the coverage memory usage and compare with limit
+        final long pixelsNumber = computePixelsNumber(envelope);
+        
+        
         long pixelSize = 0;
-        for (int i = 0; i < sm.getNumBands(); i++) {
+        final int numBands=sm.getNumBands();
+        for (int i = 0; i < numBands; i++) {
             pixelSize += sm.getSampleSize(i);
         }
-        return pixels * pixelSize / 8;
+        return pixelsNumber * pixelSize / 8;
     }
 
     /**
@@ -372,7 +384,7 @@ public class WCSUtils {
      * @throws WcsException if the coverage size exceeds the configured limits
      */
     public static void checkInputLimits(WCSInfo info, CoverageInfo meta, 
-            AbstractGridCoverage2DReader reader, GridGeometry2D gridGeometry) throws WcsException {
+            GridCoverage2DReader reader, GridGeometry2D gridGeometry) throws WcsException {
         // do we have to check a limit at all?
         long limit = info.getMaxInputMemory() * 1024;
         if(limit <= 0) {
@@ -385,7 +397,7 @@ public class WCSUtils {
             // if necessary reproject back to the original CRS
             GeneralEnvelope requestedEnvelope = new GeneralEnvelope(gridGeometry.getEnvelope());
             final CoordinateReferenceSystem requestCRS = requestedEnvelope.getCoordinateReferenceSystem();
-            final CoordinateReferenceSystem nativeCRS = reader.getCrs();
+            final CoordinateReferenceSystem nativeCRS = reader.getCoordinateReferenceSystem();
             if(!CRS.equalsIgnoreMetadata(requestCRS, nativeCRS)) {
                 requestedEnvelope = CRS.transform(CRS.findMathTransform(requestCRS, nativeCRS, true), requestedEnvelope);
             }
@@ -540,5 +552,81 @@ public class WCSUtils {
         } else {
             return null;
         }
+    }
+
+    /**
+     * Checks the coverage described by the specified source coverage and target band names does not exceeds the output
+     * @param wcs
+     * @param gridRange2D
+     * @param indexes
+     */
+    public static void checkOutputLimits(WCSInfo wcs, GridCoverage2D gc,
+            int[] indexes) {
+        // do we have to check a limit at all?
+        long limit = wcs.getMaxOutputMemory() * 1024;
+        if(limit <= 0) {
+            return;
+        }
+        
+        // === compute the coverage memory usage and compare with limit
+        final long pixelsNumber = computePixelsNumber(gc.getGridGeometry().getGridRange2D());
+        
+        // bands
+        long pixelSize = 0;
+        final RenderedImage image= gc.getRenderedImage();
+        final SampleModel sm=image.getSampleModel();
+        for (int band:indexes) {
+            pixelSize += sm.getSampleSize(band);
+        }
+        long actual= pixelsNumber * pixelSize / 8; // in bytes
+        
+        if(actual > limit) {
+            throw new WcsException("This request is trying to generate too much data, " +
+                    "the limit is " + formatBytes(limit) + " but the actual amount of bytes to be " +
+                            "written in the output is " + formatBytes(actual));
+        }
+        
+    }
+
+    /**
+     * Computes the number of pixels for this {@link GridEnvelope2D}.
+     * 
+     * @param rasterEnvelope the {@link GridEnvelope2D} to compute the number of pixels for
+     * @return the number of pixels for the provided {@link GridEnvelope2D}
+     */
+    private static long computePixelsNumber(GridEnvelope2D rasterEnvelope){
+        // pixels
+        long pixelsNumber=1;
+        final int dimensions= rasterEnvelope.getDimension();
+        for(int i = 0; i <dimensions; i++) {
+            pixelsNumber *= rasterEnvelope.getSpan(i);
+        }
+        return pixelsNumber;
+    }
+
+    /**
+    * Replace or add the provided parameter in the read parameters
+    */
+    public static <T> GeneralParameterValue[] replaceParameter(
+            GeneralParameterValue[] readParameters, Object value, ParameterDescriptor<T> pd) {
+    
+        // scan all the params looking for the one we want to add
+        for (GeneralParameterValue gpv : readParameters) {
+            // in case of match of any alias add a param value to the lot
+            if (gpv.getDescriptor().getName().equals(pd.getName())) {
+                ((ParameterValue) gpv).setValue(value);
+                // leave
+                return readParameters;
+            }
+        }
+    
+        // add it to the array
+        // add to the list
+        GeneralParameterValue[] readParametersClone = new GeneralParameterValue[readParameters.length + 1];
+        System.arraycopy(readParameters, 0, readParametersClone, 0, readParameters.length);
+        final ParameterValue<T> pv = pd.createValue();
+        pv.setValue(value);
+        readParametersClone[readParameters.length] = pv;
+        return readParametersClone;
     }
 }

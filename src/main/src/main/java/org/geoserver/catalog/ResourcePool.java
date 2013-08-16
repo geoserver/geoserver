@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -48,8 +48,10 @@ import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.util.CoverageStoreUtils;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.feature.retype.RetypingFeatureSource;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataAccessFactory;
 import org.geotools.data.DataAccessFactory.Param;
@@ -95,6 +97,7 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
+import org.springframework.context.ApplicationContext;
 import org.vfny.geoserver.global.GeoServerFeatureLocking;
 import org.vfny.geoserver.global.GeoserverDataDirectory;
 import org.vfny.geoserver.util.DataStoreUtils;
@@ -110,6 +113,8 @@ import org.vfny.geoserver.util.DataStoreUtils;
  *
  */
 public class ResourcePool {
+
+    private static final String PROJECTION_POLICY_SEPARATOR = "_pp_";
 
     /**
      * Hint to specify if reprojection should occur while loading a 
@@ -147,38 +152,213 @@ public class ResourcePool {
     private static final String IMAGE_MOSAIC = "ImageMosaic";
 
     Catalog catalog;
-    HashMap<String, CoordinateReferenceSystem> crsCache;
-    DataStoreCache dataStoreCache;
-    FeatureTypeCache featureTypeCache;
-    FeatureTypeAttributeCache featureTypeAttributeCache;
-    WMSCache wmsCache;
-    CoverageReaderCache coverageReaderCache;
-    CoverageHintReaderCache hintCoverageReaderCache;
-    HashMap<StyleInfo,Style> styleCache;
+    Map<String, CoordinateReferenceSystem> crsCache;
+    Map<String, DataAccess> dataStoreCache;
+    Map<String, FeatureType> featureTypeCache;
+    Map<String, List<AttributeTypeInfo>> featureTypeAttributeCache;
+    Map<String, WebMapServer> wmsCache;
+    Map<String, GridCoverageReader>  coverageReaderCache;
+    Map<CoverageHintReaderKey, GridCoverageReader> hintCoverageReaderCache;
+    Map<StyleInfo,Style> styleCache;
     List<Listener> listeners;
     ThreadPoolExecutor coverageExecutor;
     CatalogRepository repository;
-    
-    public ResourcePool(Catalog catalog) {
+
+    /**
+     * Creates a new instance of the resource pool.
+     */
+    public static ResourcePool create(Catalog catalog) {
+        return create(catalog, null);
+    }
+
+    /**
+     * Creates a new instance of the resource pool explicitly supplying the application 
+     * context.
+     */
+    public static ResourcePool create(Catalog catalog, ApplicationContext appContext) {
+        //look for an implementation in spring context
+        ResourcePool pool = appContext == null ? GeoServerExtensions.bean(ResourcePool.class) : 
+            GeoServerExtensions.bean(ResourcePool.class, appContext);
+        if (pool == null) {
+            pool = new ResourcePool();
+        }
+        pool.setCatalog(catalog);
+        return pool;
+    }
+
+    protected ResourcePool() {
+        crsCache = createCrsCache();
+        dataStoreCache = createDataStoreCache();
+        featureTypeCache = createFeatureTypeCache(FEATURETYPE_CACHE_SIZE_DEFAULT);
+        
+        featureTypeAttributeCache = createFeatureTypeAttributeCache(FEATURETYPE_CACHE_SIZE_DEFAULT);
+        coverageReaderCache = createCoverageReaderCache();
+        hintCoverageReaderCache = createHintCoverageReaderCache();
+        
+        wmsCache = createWmsCache();
+        styleCache = createStyleCache();
+
+        listeners = new CopyOnWriteArrayList<Listener>();
+    }
+
+    /**
+     * Creates the resource pool.
+     * <p>
+     * Client code should use {@link ResourcePool#create(Catalog)} instead of calling
+     * this constructor directly.
+     * </p>
+     */
+    protected ResourcePool(Catalog catalog) {
+        this();
+        setCatalog(catalog);
+    }
+
+    public Catalog getCatalog() {
+        return catalog;
+    }
+
+    public void setCatalog(Catalog catalog) {
         this.catalog = catalog;
         this.repository = new CatalogRepository(catalog);
 
-        crsCache = new HashMap<String, CoordinateReferenceSystem>();
-        dataStoreCache = new DataStoreCache();
-        featureTypeCache = new FeatureTypeCache(FEATURETYPE_CACHE_SIZE_DEFAULT);
-        
-        featureTypeAttributeCache = new FeatureTypeAttributeCache(FEATURETYPE_CACHE_SIZE_DEFAULT);
-        coverageReaderCache = new CoverageReaderCache();
-        hintCoverageReaderCache = new CoverageHintReaderCache();
-        
-        wmsCache = new WMSCache();
-        
-        styleCache = new HashMap<StyleInfo, Style>();
-        listeners = new CopyOnWriteArrayList<Listener>();
-        
-        catalog.addListener( new CacheClearingListener() );
+        catalog.removeListeners(CacheClearingListener.class);
+        catalog.addListener(new CacheClearingListener());
+    }
+
+    /**
+     * Returns the cache for {@link CoordinateReferenceSystem} objects.
+     * <p>
+     * The cache key is the CRS identifier (see {@link #getCRS(String)}) for allowable forms.
+     * </p>
+     * <p>
+     * The concrete Map implementation is determined by {@link #createCrsCache()}.
+     * </p>
+     */
+    public Map<String, CoordinateReferenceSystem> getCrsCache() {
+        return crsCache;
+    }
+
+    protected Map<String,CoordinateReferenceSystem> createCrsCache() {
+        return new HashMap<String, CoordinateReferenceSystem>();
+    }
+
+    /**
+     * Returns the cache for {@link DataAccess} objects.
+     * <p>
+     * The cache key is the corresponding DataStoreInfo id ({@link CatalogInfo#getId()}).
+     * </p>
+     * <p>
+     * The concrete Map implementation is determined by {@link #createDataStoreCache()}.
+     * </p>
+     */
+    public Map<String, DataAccess> getDataStoreCache() {
+        return dataStoreCache;
+    }
+
+    protected Map<String,DataAccess> createDataStoreCache() {
+        return new DataStoreCache();
+    }
+
+    /**
+     * Returns the cache for {@link FeatureType} objects.
+     * <p>
+     * The cache key is the corresponding FeatureTypeInfo id ({@link CatalogInfo#getId()}.
+     * </p>
+     * <p>
+     * The concrete Map implementation is determined by {@link #createFeatureTypeCache(int)}.
+     * </p>
+     */
+    public Map<String, FeatureType> getFeatureTypeCache() {
+        return featureTypeCache;
+    }
+
+    protected Map<String,FeatureType> createFeatureTypeCache(int size) {
+        // for each feature type we cache two versions, one with the projection policy applied, one
+        // without it
+        return new FeatureTypeCache(size * 2);
+    }
+
+    /**
+     * Returns the cache for {@link AttributeTypeInfo} objects for a particular feature type.
+     * <p>
+     * The cache key is the corresponding FeatureTypeInfo id ({@link CatalogInfo#getId()}.
+     * </p>
+     * <p>
+     * The concrete Map implementation is determined by {@link #createFeatureTypeAttributeCache(int)}
+     * </p>
+     */
+    public Map<String, List<AttributeTypeInfo>> getFeatureTypeAttributeCache() {
+        return featureTypeAttributeCache;
+    }
+
+    protected Map<String, List<AttributeTypeInfo>> createFeatureTypeAttributeCache(int size) {
+        // for each feature type we cache two versions, one with the projection policy applied, one
+        // without it
+        return new FeatureTypeAttributeCache(size * 2);
+    }
+
+    /**
+     * Returns the cache for {@link GridCoverageReader} objects for a particular coverage.
+     * <p>
+     * The cache key is the corresponding Coverage id ({@link CatalogInfo#getId()}.
+     * </p>
+     * <p>
+     * The concrete Map implementation is determined by {@link #createCoverageReaderCache()}
+     * </p>
+     */
+    public Map<String, GridCoverageReader> getCoverageReaderCache() {
+        return coverageReaderCache;
+    }
+
+    protected Map<String, GridCoverageReader> createCoverageReaderCache() {
+        return new CoverageReaderCache();
+    }
+
+    /**
+     * Returns the cache for {@link GridCoverageReader} objects for a particular coverage hint.
+     * <p>
+     * The concrete Map implementation is determined by {@link #createHintCoverageReaderCache()}
+     * </p>
+     */
+    public Map<CoverageHintReaderKey, GridCoverageReader> getHintCoverageReaderCache() {
+        return hintCoverageReaderCache;
     }
     
+    protected Map<CoverageHintReaderKey, GridCoverageReader> createHintCoverageReaderCache() {
+        return new CoverageHintReaderCache();
+    }
+
+    /**
+     * Returns the cache for {@link Style} objects for a particular style.
+     * <p>
+     * The concrete Map implementation is determined by {@link #createStyleCache()}
+     * </p>
+     */
+    public Map<StyleInfo, Style> getStyleCache() {
+        return styleCache;
+    }
+
+    protected Map<StyleInfo, Style> createStyleCache() {
+        return new HashMap<StyleInfo, Style>();
+    }
+
+    /**
+     * Returns the cache for {@link WebMapServer} objects for a particular {@link WMSStoreInfo}.
+     * <p>
+     * The cache key is the corresponding {@link WMSStoreInfo} id ({@link CatalogInfo#getId()}.
+     * </p>
+     * <p>
+     * The concrete Map implementation is determined by {@link #createWmsCache()}
+     * </p>
+     */
+    public Map<String, WebMapServer> getWmsCache() {
+        return wmsCache;
+    }
+
+    protected Map<String, WebMapServer> createWmsCache() {
+        return new WMSCache();
+    }
+
     /**
      * Sets the size of the feature type cache.
      * <p>
@@ -188,9 +368,9 @@ public class ResourcePool {
     public void setFeatureTypeCacheSize(int featureTypeCacheSize) {
         synchronized (this) {
             featureTypeCache.clear();
-            featureTypeCache = new FeatureTypeCache(featureTypeCacheSize);
+            featureTypeCache = createFeatureTypeCache(featureTypeCacheSize);
             featureTypeAttributeCache.clear();
-            featureTypeAttributeCache = new FeatureTypeAttributeCache(featureTypeCacheSize);
+            featureTypeAttributeCache = createFeatureTypeAttributeCache(featureTypeCacheSize);
         }
     }
     
@@ -413,7 +593,7 @@ public class ResourcePool {
      *
      * <p>
      * This is used to smooth any relative path kind of issues for any file
-     * URLS. This code should be expanded to deal with any other context
+     * URLS or directory. This code should be expanded to deal with any other context
      * sensitve isses dataStores tend to have.
      * </p>
      *
@@ -442,6 +622,14 @@ public class ResourcePool {
             } else if (value instanceof URL && ((URL) value).getProtocol().equals("file")) {
                 File fixedPath = GeoserverDataDirectory.findDataFile(((URL) value).toString());
                 entry.setValue(DataUtilities.fileToURL(fixedPath));
+            } else if ((key != null) && key.equals("directory") && value instanceof String) {
+                String path = (String) value;
+                //if a url is used for a directory (for example property store), convert it to path
+                
+                if (path.startsWith("file:")) {
+                    File fixedPath = GeoserverDataDirectory.findDataFile((String) value);
+                    entry.setValue(fixedPath.toString());            
+                }
             }
         }
 
@@ -627,11 +815,12 @@ public class ResourcePool {
     }
     
     FeatureType getFeatureType( FeatureTypeInfo info, boolean handleProjectionPolicy ) throws IOException {
-        boolean cacheable = isCacheable(info) && handleProjectionPolicy;
-        FeatureType ft = (FeatureType) featureTypeCache.get( info.getId() );
+        boolean cacheable = isCacheable(info);
+        String key = getFeatureTypeInfoKey(info, handleProjectionPolicy);
+        FeatureType ft = (FeatureType) featureTypeCache.get(key);
         if ( ft == null || !cacheable ) {
             synchronized ( featureTypeCache ) {
-                ft = (FeatureType) featureTypeCache.get( info.getId() );
+                ft = (FeatureType) featureTypeCache.get(key);
                 if ( ft == null || !cacheable) {
                     
                     //grab the underlying feature type
@@ -713,7 +902,7 @@ public class ResourcePool {
                     } // end special case for SimpleFeatureType
                     
                     if(cacheable) {
-                        featureTypeCache.put( info.getId(), ft );
+                        featureTypeCache.put(key, ft );
                     } else if(vtName != null) {
                         JDBCDataStore jstore = (JDBCDataStore) dataAccess;
                         jstore.removeVirtualTable(vtName);
@@ -723,6 +912,10 @@ public class ResourcePool {
         }
         
         return ft;
+    }
+
+    private String getFeatureTypeInfoKey(FeatureTypeInfo info, boolean handleProjectionPolicy) {
+        return info.getId() + PROJECTION_POLICY_SEPARATOR + handleProjectionPolicy;
     }
     
     /**
@@ -833,7 +1026,8 @@ public class ResourcePool {
      * @param info The feature type metadata.
      */
     public void clear( FeatureTypeInfo info ) {
-        featureTypeCache.remove( info.getId() );
+        featureTypeCache.remove(getFeatureTypeInfoKey(info, true));
+        featureTypeCache.remove(getFeatureTypeInfoKey(info, false));
         featureTypeAttributeCache.remove( info.getId() );
     }
     
@@ -984,12 +1178,27 @@ public class ResourcePool {
     @SuppressWarnings("deprecation")
     public GridCoverageReader getGridCoverageReader( CoverageStoreInfo info, Hints hints ) 
         throws IOException {
+        return getGridCoverageReader(info, (String) null, hints);
+    }
+    
+    /**
+     * Returns a coverage reader, caching the result.
+     *  
+     * @param info The coverage metadata.
+     * @param hints Hints to use when loading the coverage, may be <code>null</code>.
+     * 
+     * @throws IOException Any errors that occur loading the reader.
+     */
+    @SuppressWarnings("deprecation")
+    public GridCoverageReader getGridCoverageReader(CoverageStoreInfo info, String coverageName, Hints hints) 
+        throws IOException {
         
         final AbstractGridFormat gridFormat = info.getFormat();
         if(gridFormat == null) {
             throw new IOException("Could not find the raster plugin for format " + info.getType());
         }
         
+        // look into the cache
         GridCoverageReader reader = null;
         Object key;
         if ( hints != null && info.getId() != null) {
@@ -997,7 +1206,9 @@ public class ResourcePool {
             final String formatName = gridFormat.getName();
             if (formatName.equalsIgnoreCase(IMAGE_MOSAIC) || formatName.equalsIgnoreCase(IMAGE_PYRAMID)){
                 if (coverageExecutor != null){
-                    if (hints != null){
+                    if (hints != null) {
+                        // do not modify the caller hints
+                        hints = new Hints(hints);
                         hints.add(new RenderingHints(Hints.EXECUTOR_SERVICE, coverageExecutor));
                     } else {
                         hints = new Hints(new RenderingHints(Hints.EXECUTOR_SERVICE, coverageExecutor));
@@ -1006,7 +1217,7 @@ public class ResourcePool {
             }
             
             key = new CoverageHintReaderKey(info.getId(), hints);
-            reader = (GridCoverageReader) hintCoverageReaderCache.get( key );    
+            reader = (GridCoverage2DReader) hintCoverageReaderCache.get( key );
         } else {
             key = info.getId();
             if(key != null) {
@@ -1014,39 +1225,53 @@ public class ResourcePool {
             }
         }
         
-        if (reader != null) {
-            return reader;
-        }
-        
-        synchronized ( hints != null ? hintCoverageReaderCache : coverageReaderCache ) {
-            if (key != null) {
-                if (hints != null) {
-                    reader = (GridCoverageReader) hintCoverageReaderCache.get(key);
-                } else {
-                    reader = (GridCoverageReader) coverageReaderCache.get(key);
-                }
-            }
-            if (reader == null) {
-                /////////////////////////////////////////////////////////
-                //
-                // Getting coverage reader using the format and the real path.
-                //
-                // /////////////////////////////////////////////////////////
-                final File obj = GeoserverDataDirectory.findDataFile(info.getURL());
-    
-                reader = gridFormat.getReader(obj,hints);
-                if(key != null) {
-                    if(hints != null) {
-                        hintCoverageReaderCache.put((CoverageHintReaderKey) key, reader);
+        // if not found in cache, create it
+        if(reader == null) {
+            synchronized ( hints != null ? hintCoverageReaderCache : coverageReaderCache ) {
+                if (key != null) {
+                    if (hints != null) {
+                        reader = (GridCoverageReader) hintCoverageReaderCache.get(key);
                     } else {
-                        coverageReaderCache.put((String) key, reader);
+                        reader = (GridCoverageReader) coverageReaderCache.get(key);
+                    }
+                }
+                if (reader == null) {
+                    /////////////////////////////////////////////////////////
+                    //
+                    // Getting coverage reader using the format and the real path.
+                    //
+                    // /////////////////////////////////////////////////////////
+                    final String url = info.getURL();
+                    final File obj = GeoserverDataDirectory.findDataFile(url);
+                    // In case no File is returned, provide the original String url
+                    final Object input = obj != null ? obj : url;  
+
+                    // readers might change the provided hints, pass down a defensive copy
+                    reader = gridFormat.getReader(input, new Hints(hints));
+                    if(reader == null) {
+                        throw new IOException("Failed to create reader from " + url + " and hints " + hints);
+                    }
+                    if(key != null) {
+                        if(hints != null) {
+                            hintCoverageReaderCache.put((CoverageHintReaderKey) key, reader);
+                        } else {
+                            coverageReaderCache.put((String) key, reader);
+                        }
                     }
                 }
             }
         }
         
-        return reader;
-            
+        // wrap it if we are dealing with a multi-coverage reader
+        if(coverageName != null) {
+            // force the result to work against a single coverage, so that the OGC service portion of
+            // GeoServer does not need to be updated to the multicoverage stuff
+            // (we might want to introduce a hint later for code that really wants to get the
+            // multi-coverage reader)
+            return SingleGridCoverage2DReader.wrap((GridCoverage2DReader) reader, coverageName);
+        } else {
+            return (GridCoverage2DReader) reader;
+        }
     }
     
     /**
@@ -1219,27 +1444,9 @@ public class ResourcePool {
                 synchronized (wmsCache) {
                     wms = (WebMapServer) wmsCache.get(id);
                     if (wms == null) {
-                        HTTPClient client;
-                        if (info.isUseConnectionPooling()) {
-                            client = new MultithreadedHttpClient();
-                            if (info.getMaxConnections() > 0) {
-                                int maxConnections = info.getMaxConnections();
-                                MultithreadedHttpClient mtClient = (MultithreadedHttpClient) client;
-                                mtClient.setMaxConnections(maxConnections);
-                            }
-                        } else {
-                            client = new SimpleHttpClient();
-                        }
-                        String username = info.getUsername();
-                        String password = info.getPassword();
-                        int connectTimeout = info.getConnectTimeout();
-                        int readTimeout = info.getReadTimeout();
-                        client.setUser(username);
-                        client.setPassword(password);
-                        client.setConnectTimeout(connectTimeout);
-                        client.setReadTimeout(readTimeout);
-
-                        URL serverURL = new URL(info.getCapabilitiesURL());
+                        HTTPClient client = getHTTPClient(info);
+                        String capabilitiesURL = info.getCapabilitiesURL();
+                        URL serverURL = new URL(capabilitiesURL);
                         wms = new WebMapServer(serverURL, client);
                         
                         wmsCache.put(id, wms);
@@ -1255,6 +1462,39 @@ public class ResourcePool {
         }
     }
     
+    private HTTPClient getHTTPClient(WMSStoreInfo info) {
+        String capabilitiesURL = info.getCapabilitiesURL();
+        
+        // check for mock bindings. Since we are going to run this code in production as well,
+        // guard it so that it only triggers if the MockHttpClientProvider has any active binding
+        if(TestHttpClientProvider.testModeEnabled() && capabilitiesURL.startsWith(TestHttpClientProvider.MOCKSERVER)) {
+            HTTPClient client = TestHttpClientProvider.get(capabilitiesURL);
+            return client;
+        }
+        
+        HTTPClient client;
+        if (info.isUseConnectionPooling()) {
+            client = new MultithreadedHttpClient();
+            if (info.getMaxConnections() > 0) {
+                int maxConnections = info.getMaxConnections();
+                MultithreadedHttpClient mtClient = (MultithreadedHttpClient) client;
+                mtClient.setMaxConnections(maxConnections);
+            }
+        } else {
+            client = new SimpleHttpClient();
+        }
+        String username = info.getUsername();
+        String password = info.getPassword();
+        int connectTimeout = info.getConnectTimeout();
+        int readTimeout = info.getReadTimeout();
+        client.setUser(username);
+        client.setPassword(password);
+        client.setConnectTimeout(connectTimeout);
+        client.setReadTimeout(readTimeout);
+        
+        return client;
+    }
+
     /**
      * Locates and returns a WMS {@link Layer} based on the configuration stored in WMSLayerInfo 
      * @param info
@@ -1311,7 +1551,7 @@ public class ResourcePool {
                         throw new IOException( "No such file: " + info.getFilename());
                     }
                     
-                    style = Styles.style(Styles.parse(styleFile, info.getSLDVersion()));
+                    style = Styles.style(Styles.parse(styleFile, null, info.getSLDVersion()));
                     
                     //set the name of the style to be the name of hte style metadata
                     // remove this when wms works off style info
@@ -1501,7 +1741,8 @@ public class ResourcePool {
             super(maxSize);
         }
         
-        protected void dispose(String id, FeatureType featureType) {
+        protected void dispose(String key, FeatureType featureType) {
+            String id = key.substring(0, key.indexOf(PROJECTION_POLICY_SEPARATOR));
         	FeatureTypeInfo info = catalog.getFeatureType(id);
             LOGGER.info( "Disposing feature type '" + info.getName() + "'");
             fireDisposed(info, featureType);
@@ -1575,7 +1816,7 @@ public class ResourcePool {
      * 
      * @author Andrea Aime - GeoSolutions
      */
-    static class CoverageHintReaderKey {
+    public static class CoverageHintReaderKey {
         String id;
         Hints hints;
         

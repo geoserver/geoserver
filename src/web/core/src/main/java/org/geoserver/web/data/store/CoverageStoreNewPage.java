@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2009 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -64,6 +64,11 @@ public class CoverageStoreNewPage extends AbstractCoverageStorePage {
                     "The coverage store could not be saved. Failure message: " + e.getMessage());
         }
 
+        onSuccessfulSave(info, catalog, savedStore);
+    }
+
+    protected void onSuccessfulSave(final CoverageStoreInfo info, final Catalog catalog,
+            CoverageStoreInfo savedStore) {
         // the StoreInfo save succeeded... try to present the list of coverages (well, _the_
         // coverage while the getotools coverage api does not allow for more than one
         NewLayerPage layerChooserPage;

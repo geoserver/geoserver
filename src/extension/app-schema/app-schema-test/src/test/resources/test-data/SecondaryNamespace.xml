@@ -36,7 +36,7 @@
                 <AttributeMapping>
                     <targetAttribute>ex:ShapeContent</targetAttribute>
                     <idExpression>
-                        <OCQL>getId()</OCQL>
+                        <OCQL>ID</OCQL>
                     </idExpression>
                 </AttributeMapping>
                 <AttributeMapping>

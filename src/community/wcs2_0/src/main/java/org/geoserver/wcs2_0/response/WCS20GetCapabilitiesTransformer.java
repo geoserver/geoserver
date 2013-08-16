@@ -1,16 +1,20 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wcs2_0.response;
 
-import static org.apache.commons.lang.StringUtils.*;
-import static org.geoserver.ows.util.ResponseUtils.*;
+import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.geoserver.ows.util.ResponseUtils.appendQueryString;
+import static org.geoserver.ows.util.ResponseUtils.buildURL;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -22,52 +26,57 @@ import java.util.logging.Logger;
 
 import net.opengis.wcs20.GetCapabilitiesType;
 
-import org.geoserver.catalog.Catalog;
+import org.geoserver.ExtendedCapabilitiesProvider;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.KeywordInfo;
-import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.ows.URLMangler;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
+import org.geoserver.wcs2_0.GetCoverage;
 import org.geoserver.wcs2_0.WCS20Const;
 import org.geoserver.wcs2_0.util.NCNameResourceCodec;
-import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.geotools.wcs.v2_0.WCS;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
+import org.opengis.geometry.BoundingBox;
 import org.vfny.geoserver.global.CoverageInfoLabelComparator;
 import org.vfny.geoserver.wcs.WcsException;
+import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
+import org.xml.sax.helpers.NamespaceSupport;
 
 /**
- *
+ * Transformer for GetCapabilities
+ * 
  * @author Emanuele Tajariol (etj) - GeoSolutions
+ * @author Simone Giannecchini, GeoSolutions 
  */
 public class WCS20GetCapabilitiesTransformer extends TransformerBase {
 
-    private static final Logger LOGGER = Logging.getLogger(WCS20GetCapabilitiesTransformer.class.getPackage()
-            .getName());
+    private static final Logger LOGGER = Logging.getLogger(WCS20GetCapabilitiesTransformer.class);
 
-    protected static final String CUR_VERSION = WCS20Const.V20x;
+    protected static final String CUR_VERSION = WCS20Const.V201;
 
     private WCSInfo wcs;
-
-    private Catalog catalog;
 
     private final boolean skipMisconfigured;
 
     private CoverageResponseDelegateFinder responseFactory;
 
-    enum SECTIONS {ServiceIdentification, ServiceProvider, OperationsMetadata, ServiceMetadata, Contents, Languages, All;
+    /** {@link Enum} that identifies the various sections.*/
+    enum SECTIONS {
+        ServiceIdentification, ServiceProvider, OperationsMetadata, ServiceMetadata, Contents, Languages, All;
 
         public static final Set<String> names;
         static  {
@@ -83,7 +92,6 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
 
     public WCS20GetCapabilitiesTransformer(GeoServer gs, CoverageResponseDelegateFinder responseFactory) {
         this.wcs = gs.getService(WCSInfo.class);
-        this.catalog = gs.getCatalog();
         this.skipMisconfigured = ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS.equals(
                 gs.getGlobal().getResourceErrorHandling());
         this.responseFactory = responseFactory;
@@ -104,6 +112,9 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
          * @uml.associationEnd multiplicity="(0 1)"
          */
         private GetCapabilitiesType request;
+        private List<WCSExtendedCapabilitiesProvider> extensions;
+        private org.geoserver.ExtendedCapabilitiesProvider.Translator translator;
+        private TranslatorHelper helper;
 
         /**
          * Creates a new WFSCapsTranslator object.
@@ -113,6 +124,40 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
          */
         public WCS20GetCapabilitiesTranslator(ContentHandler handler) {
             super(handler, null, null);
+            this.helper = new TranslatorHelper();
+            this.extensions = GeoServerExtensions.extensions(WCSExtendedCapabilitiesProvider.class);
+            // register namespaces provided by extended capabilities
+            NamespaceSupport namespaces = getNamespaceSupport();
+            namespaces.declarePrefix("wcscrs", "http://www.opengis.net/wcs/service-extension/crs/1.0");
+            namespaces.declarePrefix("int", "http://www.opengis.net/WCS_service-extension_interpolation/1.0");
+
+            for (WCSExtendedCapabilitiesProvider cp : extensions) {
+                cp.registerNamespaces(namespaces);
+            }
+            this.translator = new ExtendedCapabilitiesProvider.Translator() {
+                
+                @Override
+                public void start(String element, Attributes attributes) {
+                    WCS20GetCapabilitiesTranslator.this.start(element, attributes);
+                }
+                
+                @Override
+                public void start(String element) {
+                    WCS20GetCapabilitiesTranslator.this.start(element);
+                    
+                }
+                
+                @Override
+                public void end(String element) {
+                    WCS20GetCapabilitiesTranslator.this.end(element);
+                    
+                }
+                
+                @Override
+                public void chars(String text) {
+                    WCS20GetCapabilitiesTranslator.this.chars(text);
+                }
+            };
         }
 
         /**
@@ -126,8 +171,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
          */
         public void encode(Object o) throws IllegalArgumentException {
             if (!(o instanceof GetCapabilitiesType)) {
-                throw new IllegalArgumentException(new StringBuffer("Not a GetCapabilitiesType: ")
-                        .append(o).toString());
+                throw new IllegalArgumentException("Not a GetCapabilitiesType: "+o!=null?o.toString():"null");
             }
 
             this.request = (GetCapabilitiesType) o;
@@ -151,7 +195,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             }
 
             // check and init sections
-                        // handle the sections directive
+            // handle the sections directive
             boolean allSections;
             List<String> sections;
             if (request.getSections() == null) {
@@ -172,14 +216,14 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
 
             final AttributesImpl attributes = WCS20Const.getDefaultNamespaces();
             attributes.addAttribute("", "version", "version", "", CUR_VERSION);
-            attributes.addAttribute("", "xmlns:wcscrs", "xmlns:wcscrs", "", "http://www.opengis.net/wcs/service-extension/crs/1.0");
-            attributes.addAttribute("", "xmlns:int", "xmlns:int", "", "http://www.opengis.net/WCS_service-extension_interpolation/1.0");
             attributes.addAttribute("", "updateSequence", "updateSequence", "", String.valueOf(updateSequence));
+            helper.registerNamespaces(getNamespaceSupport(), attributes);
             
             // TODO: add a config to choose the canonical or local schema 
-            final String locationDef = WCS.NAMESPACE + " http://schemas.opengis.net/wcs/2.0/wcsGetCapabilities.xsd";  
+            String location = buildSchemaLocation(request.getBaseUrl(), WCS.NAMESPACE, "http://schemas.opengis.net/wcs/2.0/wcsGetCapabilities.xsd");
+            
             // final String locationDef = WCS.NAMESPACE + " " + buildSchemaURL(request.getBaseUrl(), "wcs/2.0/wcsGetCapabilities.xsd");//
-            attributes.addAttribute("", "xsi:schemaLocation", "xsi:schemaLocation", "", locationDef);
+            attributes.addAttribute("", "xsi:schemaLocation", "xsi:schemaLocation", "", location);
 
             start("wcs:Capabilities", attributes);
 
@@ -202,7 +246,15 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
 
             end("wcs:Capabilities");
         }
+        
+        String buildSchemaLocation(String schemaBaseURL, String... locations) {
+            for (WCSExtendedCapabilitiesProvider cp : extensions) {
+                locations = helper.append(locations, cp.getSchemaLocations(schemaBaseURL));
+            }
 
+            return helper.buildSchemaLocation(locations);
+        }
+        
         private void handleServiceMetadata(GetCapabilitiesType ct) {
             start("wcs:ServiceMetadata");
             
@@ -228,15 +280,23 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             // the CRS extension requires us to declare the full list of supported CRS
             start("wcs:Extension");
             // add the supported CRS
-            for (String code : CRS.getSupportedCodes("EPSG")) {
+            Collection<String> codes;
+            if(wcs.getSRS() == null || wcs.getSRS().isEmpty()) {
+                codes = CRS.getSupportedCodes("EPSG");
+            } else {
+                codes = wcs.getSRS();
+            }
+            for (String code : codes) {
                 if(!code.equals("WGS84(DD)")) {
                      element("wcscrs:crsSupported", "http://www.opengis.net/def/crs/EPSG/0/" + code);
                 }
             }
+
             // add the supported interpolation methods
             element("int:interpolationSupported", "http://www.opengis.net/def/interpolation/OGC/1/nearest-neighbor");
             element("int:interpolationSupported", "http://www.opengis.net/def/interpolation/OGC/1/linear");
             element("int:interpolationSupported", "http://www.opengis.net/def/interpolation/OGC/1/cubic");
+            
             end("wcs:Extension");
             
             end("wcs:ServiceMetadata");
@@ -260,35 +320,49 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             handleKeywords(wcs.getKeywords());
 
             element("ows:ServiceType", "urn:ogc:service:wcs"); // TODO: check this: some docs specify a "OGC WCS" string
-            element("ows:ServiceTypeVersion", WCS20Const.V20x);
+            element("ows:ServiceTypeVersion", WCS20Const.V201);
             element("ows:ServiceTypeVersion", WCS20Const.V111);
             element("ows:ServiceTypeVersion", WCS20Const.V110);
 
             element("ows:Profile", "http://www.opengis.net/spec/WCS/2.0/conf/core");
-            element("ows:Profile", "http://www.opengis.net/spec/WCS_protocol-binding_get-kvp/1.0"); // requirement #1 in OGC 09-147r1
-            // element("ows:Profile", "http://www.opengis.net/spec/WCS_protocol-binding_get-kvp/1.0/conf/get-kvp"); // sample getCapa in OGC 09-110r4
+            element("ows:Profile", "http://www.opengis.net/spec/WCS_protocol-binding_get-kvp/1.0.1"); // requirement #1 in OGC 09-147r3
             element("ows:Profile", "http://www.opengis.net/spec/WCS_protocol-binding_post-xml/1.0");
 
-            element("ows:Profile","http://www.opengis.net/spec/WCS_service-extension_scaling/1.0/conf/scaling");
-            element("ows:Profile","http://www.opengis.net/spec/WCS_service-extension_range-subsetting/1.0/conf/record-subsetting");
-            // don't believe we support these
-            // element("ows:Profile","http://www.opengis.net/spec/WCS_service-extension_array-subsetting/1.0/conf/array-subsetting");
-            // element("ows:Profile","http://www.opengis.net/spec/WCS_service-extension_range-subsetting/1.0/conf/nested-subsetting");
-            element("ows:Profile", "http://www.opengis.net/spec/WCS_service-extension_crs/1.0/conf/crs");
+            
+            
+            
             // don't believe we support this one
             // element("ows:Profile", "http://www.opengis.net/spec/WCS_service-extension_crs/1.0/conf/crs-discrete-coverage");
             element("ows:Profile", "http://www.opengis.net/spec/WCS_service-extension_crs/1.0/conf/crs-gridded-coverage");
             
             // element("ows:Profile","http://www.opengis.net/spec/WCS_coverage-encoding/1.0/conf/coverage-encoding"); // TODO: check specs and URL
-            element("ows:Profile","http://www.opengis.net/spec/GMLCOV_geotiff-coverages/1.0/conf/geotiff-coverage");
-            element("ows:Profile","http://www.opengis.net/spec/WCS_coverage-encoding_geotiff/1.0/"); // TODO: check specs and URL
-            element("ows:Profile","http://www.opengis.net/spec/WCS_coverage-encoding_gml/1.0/"); // TODO: check specs and URL
             
+            // === GeoTiff encoding extension
+            element("ows:Profile"," http://www.opengis.net/spec/WCS_geotiff-coverages/1.0/conf/geotiff-coverage");// TODO: check specs and URL
             
+            // === GML encoding
+            element("ows:Profile","http://www.opengis.net/spec/GMLCOV/1.0/conf/gml-coverage");
+            element("ows:Profile","http://www.opengis.net/spec/GMLCOV/1.0/conf/special-format");
+            element("ows:Profile","http://www.opengis.net/spec/GMLCOV/1.0/conf/multipart");
+            
+            // === Scaling Extension
+            element("ows:Profile","http://www.opengis.net/spec/WCS_service-extension_scaling/1.0/conf/scaling");
+            
+            // === CRS Extension
+            element("ows:Profile", "http://www.opengis.net/spec/WCS_service-extension_crs/1.0/conf/crs");
+            
+            // === Interpolation
             element("ows:Profile", "http://www.opengis.net/spec/WCS_service-extension_interpolation/1.0/conf/interpolation");
+            element("ows:Profile", "http://www.opengis.net/spec/WCS_service-extension_interpolation/1.0/conf/interpolation-per-axis"); // TODO for time axis
             element("ows:Profile","http://www.opengis.net/spec/WCS_service-extension_interpolation/1.0/conf/nearest-neighbor");
             element("ows:Profile","http://www.opengis.net/spec/WCS_service-extension_interpolation/1.0/conf/linear");
             element("ows:Profile","http://www.opengis.net/spec/WCS_service-extension_interpolation/1.0/conf/cubic");
+            
+            // === Range Subsetting
+            element("ows:Profile","http://www.opengis.net/spec/WCS_service-extension_range-subsetting/1.0/conf/record-subsetting");
+            // TODO don't believe we support these 
+            // element("ows:Profile","http://www.opengis.net/spec/WCS_service-extension_array-subsetting/1.0/conf/array-subsetting");
+            // element("ows:Profile","http://www.opengis.net/spec/WCS_service-extension_range-subsetting/1.0/conf/nested-subsetting");
 
             String fees = wcs.getFees();
             if ( isBlank(fees)) {
@@ -342,11 +416,6 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             handleOperation("GetCapabilities", null);
             handleOperation("DescribeCoverage", null);
             handleOperation("GetCoverage", null);
-//            new HashMap<String, List<String>>() {
-//                {
-//                    put("store", Arrays.asList("True", "False"));
-//                }
-//            });
 
             // specify that we do support xml post encoding, clause 8.3.2.2 of
             // the WCS 1.1.1 spec
@@ -359,6 +428,16 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
 //            element("ows:Value", "application/xml");
             end("ows:AllowedValues");
             end("ows:Constraint");
+            
+            if(extensions != null && extensions.size() > 0) {
+                try {
+                    for (WCSExtendedCapabilitiesProvider provider : extensions) {
+                        provider.encodeExtendedOperations(translator, wcs, request);
+                    }
+                } catch (Exception e) {
+                    throw new ServiceException("Extended capabilities provider threw error", e);
+                }
+            }
 
             end("ows:OperationsMetadata");
         }
@@ -462,12 +541,12 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             end("ows:ServiceContact");
         }
 
-        private void handleEnvelope(ReferencedEnvelope envelope) {
+        private void handleWGS84BoundingBox(BoundingBox envelope) {
             start("ows:WGS84BoundingBox");
-            element("ows:LowerCorner", new StringBuffer(Double.toString(envelope.getLowerCorner()
+            element("ows:LowerCorner", new StringBuilder(Double.toString(envelope.getLowerCorner()
                     .getOrdinate(0))).append(" ").append(envelope.getLowerCorner().getOrdinate(1))
                     .toString());
-            element("ows:UpperCorner", new StringBuffer(Double.toString(envelope.getUpperCorner()
+            element("ows:UpperCorner", new StringBuilder(Double.toString(envelope.getUpperCorner()
                     .getOrdinate(0))).append(" ").append(envelope.getUpperCorner().getOrdinate(1))
                     .toString());
             end("ows:WGS84BoundingBox");
@@ -476,8 +555,9 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
         private void handleContents() {
             start("wcs:Contents");
 
-            List<CoverageInfo> coverages =
-                    new ArrayList<CoverageInfo>(wcs.getGeoServer().getCatalog().getCoverages());
+            @SuppressWarnings("unchecked")
+            final Set<CoverageInfo> coverages = new TreeSet<CoverageInfo>(new CoverageInfoLabelComparator());
+            coverages.addAll(wcs.getGeoServer().getCatalog().getCoverages());
 
             // filter out disabled coverages
             for (Iterator<CoverageInfo> it = coverages.iterator(); it.hasNext();) {
@@ -486,19 +566,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
                     it.remove();
                 }
             }
-
-            // filter out coverages that are not in the requested namespace
-// namespaces not in 2.0
-//            if(request.getNamespace() != null) {
-//                String namespace = request.getNamespace();
-//                for (Iterator it = coverages.iterator(); it.hasNext();) {
-//                    CoverageInfo cv = (CoverageInfo) it.next();
-//                    if(!namespace.equals(cv.getStore().getWorkspace().getName()))
-//                        it.remove();
-//                }
-//            }
-
-            Collections.sort(coverages, new CoverageInfoLabelComparator());
+            
             for (CoverageInfo cv : coverages) {
                 try {
                     mark();
@@ -515,58 +583,61 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
                     }
                 }
             }
+            
+            if(extensions != null && extensions.size() > 0) {
+                start("wcs:Extension");
+                try {
+                    for (WCSExtendedCapabilitiesProvider provider : extensions) {
+                        provider.encodeExtendedContents(translator, wcs, new ArrayList<CoverageInfo>(coverages), request);
+                    }
+                } catch (Exception e) {
+                    throw new ServiceException("Extended capabilities provider threw error", e);
+                }
+                end("wcs:Extension");
+            }
 
             end("wcs:Contents");
         }
 
-        private void handleCoverageSummary(CoverageInfo cv) {
+        private void handleCoverageSummary(CoverageInfo cv) throws Exception {
             start("wcs:CoverageSummary");
             String covId = NCNameResourceCodec.encode(cv);
             element("wcs:CoverageId", covId);
-            element("wcs:CoverageSubtype", "GridCoverage");
+            element("wcs:CoverageSubtype", "RectifiedGridCoverage");  // TODO make this parametric
 
-            handleEnvelope(cv.getLatLonBoundingBox());
+            handleWGS84BoundingBox(cv.getLatLonBoundingBox());
+            handleBoundingBox(cv.boundingBox());
 
             end("wcs:CoverageSummary");
         }
 
         /**
-         * Converts each metadata URL to XML.
-         *
-         * @param links
-         *              a collection of links
-         * @param linkType
-         *              the type of links
+         * Spits out the boundingbox for the current coverage taking into account the reprojection policy.
+         * 
+         * @param boundingBox an instance of reference
+         * @throws Exception in case we don't manage to retrieve the CRS EPSG code for this bbox (It should not happen!)
          */
-        private void handleMetadataLinks(List<MetadataLinkInfo> links, String linkType) {
-            for (MetadataLinkInfo  mdl : links) {
-                if (mdl != null) {
-                    handleMetadataLink(mdl, linkType);
-                }
-            }
-        }
-
-        private void handleMetadataLink(MetadataLinkInfo mdl, String linkType) {
-            AttributesImpl attributes = new AttributesImpl();
-
-            if ( isNotBlank(mdl.getAbout())) {
-                attributes.addAttribute("", "about", "about", "", mdl.getAbout());
-            }
-
-            if ( isNotBlank(mdl.getMetadataType()) ) {
-                attributes.addAttribute("", "metadataType", "metadataType", "", mdl
-                        .getMetadataType());
-            }
-
-            if ( isNotBlank(linkType) ) {
-                attributes.addAttribute("", "xlink:type", "xlink:type", "", linkType);
-            }
-
-            if ( isNotBlank(mdl.getContent()) ) {
-                attributes.addAttribute("", "xlink:href", "xlink:href",
-                        "", mdl.getContent());
-                element("ows:Metadata", null, attributes);
-            }
+        private void handleBoundingBox(BoundingBox boundingBox) throws Exception {
+            // CRS for this bbox
+            final AttributesImpl attributes = new AttributesImpl();
+            attributes.addAttribute(
+                    "", 
+                    "crs", 
+                    "crs", 
+                    "", 
+                    GetCoverage.SRS_STARTER+CRS.lookupIdentifier(boundingBox.getCoordinateReferenceSystem(), false));
+            
+            start("ows:BoundingBox",attributes);            
+            // LowerCorner
+            element("ows:LowerCorner", new StringBuilder(Double.toString(boundingBox.getLowerCorner()
+                    .getOrdinate(0))).append(" ").append(boundingBox.getLowerCorner().getOrdinate(1))
+                    .toString());
+            // UpperCorner    
+            element("ows:UpperCorner", new StringBuilder(Double.toString(boundingBox.getUpperCorner()
+                    .getOrdinate(0))).append(" ").append(boundingBox.getUpperCorner().getOrdinate(1))
+                    .toString());    
+            end("ows:BoundingBox");
+            
         }
 
         private void handleLanguages() {

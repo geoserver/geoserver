@@ -1,9 +1,10 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security;
 
+import org.geoserver.platform.GeoServerExtensions;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,22 +29,9 @@ public class WorkspaceAccessLimits extends AccessLimits {
     }
 
     private static boolean isAuthenticatedAsAdmin() {
-        //TODO: change this to SecurityUtil.isAuthenticatedAsAdmin() once the security patch lands
-        if (SecurityContextHolder.getContext() == null) {
-            return false;
-        }
-
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) {
-            return false;
-        }
-
-        for (GrantedAuthority ga : auth.getAuthorities()) {
-            if ("ROLE_ADMINISTRATOR".equals(ga.getAuthority())) {
-                return true;
-            }
-        }
-        return false;
+        
+        return GeoServerExtensions.bean(GeoServerSecurityManager.class).
+                checkAuthenticationForAdminRole();
     }
 
     public WorkspaceAccessLimits(CatalogMode mode, boolean readable, boolean writable, boolean adminable) {

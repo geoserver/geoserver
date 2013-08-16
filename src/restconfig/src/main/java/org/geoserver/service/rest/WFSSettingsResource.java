@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2012 TOPP - www.openplans.org.  All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -84,6 +84,7 @@ public class WFSSettingsResource extends ServiceSettingsResource {
                     properties.put("verbose", wfsInfo.isVerbose() ? "true" : "false");
                     properties.put("maxFeatures", String.valueOf(wfsInfo.getMaxFeatures()));
                     properties.put("isFeatureBounding", wfsInfo.isFeatureBounding() ? "true" : "false");
+                    properties.put("hitsIgnoreMaxFeatures", wfsInfo.isHitsIgnoreMaxFeatures() ? "true" : "false");
                     properties.put("serviceLevel", wfsInfo.getServiceLevel());
                     properties.put("isCanonicalSchemaLocation", wfsInfo.isCanonicalSchemaLocation() ? "true" : "false");
                     properties.put("encodeFeatureMember", wfsInfo.isEncodeFeatureMember() ? "true" : "false");

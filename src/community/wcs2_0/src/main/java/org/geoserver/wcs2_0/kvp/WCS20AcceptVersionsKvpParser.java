@@ -1,18 +1,14 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wcs2_0.kvp;
 
-import java.util.Collection;
 import net.opengis.ows20.AcceptVersionsType;
 import net.opengis.ows20.Ows20Factory;
 
-import org.eclipse.emf.ecore.EObject;
 import org.geoserver.ows.kvp.AcceptVersionsKvpParser;
-import org.geoserver.ows.util.KvpUtils;
 import org.geotools.util.Version;
-import org.geotools.xml.EMFUtils;
 
 /**
  * Parses the OWS 2.0 capabilities negotiation related AcceptVersion parameter

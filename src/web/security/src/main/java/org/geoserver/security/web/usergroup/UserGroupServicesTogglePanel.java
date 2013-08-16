@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -34,9 +34,9 @@ public class UserGroupServicesTogglePanel
 
             SecurityUserGroupServiceConfig config = model.getObject();
             add(new UserPanel("users", config.getName())
-                .setHeaderVisible(false).setPagersVisible(false, true));
+                .setHeaderVisible(true).setPagersVisible(false, true));
             add(new GroupPanel("groups", config.getName())
-                .setHeaderVisible(false).setPagersVisible(false, true));
+                .setHeaderVisible(true).setPagersVisible(false, true));
         }
     }
 }

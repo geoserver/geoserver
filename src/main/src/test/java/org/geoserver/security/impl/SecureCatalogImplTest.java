@@ -1,9 +1,14 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security.impl;
 
+import java.util.Collections;
+import java.util.Iterator;
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -11,11 +16,19 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.impl.AbstractCatalogDecorator;
+import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
+import org.geoserver.security.AbstractCatalogFilter;
+import org.geoserver.security.CatalogFilterAccessManager;
 import org.geoserver.security.ResourceAccessManager;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.decorators.ReadOnlyDataStoreTest;
@@ -25,6 +38,9 @@ import org.geoserver.security.decorators.SecuredLayerGroupInfo;
 import org.geoserver.security.decorators.SecuredLayerInfo;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengis.filter.Filter;
+import org.opengis.filter.sort.SortBy;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 public class SecureCatalogImplTest extends AbstractAuthorizationTest {
@@ -34,6 +50,8 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         super.setUp();
 
         populateCatalog();
+        
+        Dispatcher.REQUEST.remove();
     }
 
     @Test 
@@ -312,6 +330,54 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     }
 
     @Test
+    public void testCatalogFilteredGetLayers() throws Exception {
+        ResourceAccessManager manager = buildManager("publicRead.properties");
+
+        CatalogFilterAccessManager filter = new CatalogFilterAccessManager();
+        filter.setDelegate(manager);
+
+        // make a catalog that uses our layers
+        Catalog withLayers = new AbstractCatalogDecorator(catalog) {
+
+            @Override
+            public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter, Integer offset, Integer count, SortBy sortBy) {
+                return new CloseableIteratorAdapter<T>((Iterator<T>) layers.iterator());
+            }
+        };
+
+        // and the secure catalog with the filter
+        SecureCatalogImpl sc = new SecureCatalogImpl(withLayers, filter) {
+
+            @Override
+            // override so we don't need GeoServerSecurityManager
+            protected boolean isAdmin(Authentication authentication) {
+                return false;
+            }
+
+        };
+
+        // base behavior sanity
+        assertTrue(layers.size() > 1);
+        assertTrue(sc.getLayers().size() > 1);
+
+        // setup a catalog filter that will hide the layer
+        // an example of this happening is when the LocalWorkspaceCatalogFilter
+        // detects 'LocalLayer.get' contains the local layer
+        // the result is it gets filtered out
+        filter.setCatalogFilters(Collections.singletonList(new AbstractCatalogFilter() {
+
+            @Override
+            public boolean hideLayer(LayerInfo layer) {
+                return layer != statesLayer;
+            }
+
+        }));
+
+        assertEquals(1, sc.getLayers().size());
+        assertEquals(statesLayer.getName(), sc.getLayers().get(0).getName());
+    }
+
+    @Test
     public void testComplex() throws Exception {
         ResourceAccessManager manager = buildManager("complex.properties");
         SecureCatalogImpl sc = new SecureCatalogImpl(catalog, manager);
@@ -389,4 +455,28 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         assertTrue(layerGroup instanceof SecuredLayerGroupInfo);
         assertEquals(0, layerGroup.getLayers().size());
     }        
+    
+    @Test
+    public void testEoLayerGroupMustBeHiddenIfItsRootLayerIsHidden() throws Exception {
+        LayerGroupInfo eoRoadsLayerGroup = buildLayerGroup("eoRoadsLayerGroup", LayerGroupInfo.Mode.EO, roadsLayer, lineStyle, toppWs, statesLayer);
+        LayerGroupInfo eoStatesLayerGroup = buildLayerGroup("eoStatesLayerGroup", LayerGroupInfo.Mode.EO, statesLayer, lineStyle, toppWs, roadsLayer);
+        
+        Catalog eoCatalog = createNiceMock(Catalog.class);
+        expect(eoCatalog.getLayerGroupByName("topp", eoRoadsLayerGroup.getName())).andReturn(eoRoadsLayerGroup).anyTimes();
+        expect(eoCatalog.getLayerGroupByName("topp", eoStatesLayerGroup.getName())).andReturn(eoStatesLayerGroup).anyTimes();        
+        replay(eoCatalog);
+        
+        ResourceAccessManager manager = buildManager("lockedLayerInLayerGroup.properties");
+        SecureCatalogImpl sc = new SecureCatalogImpl(eoCatalog, manager);
+        SecurityContextHolder.getContext().setAuthentication(roUser);
+        
+        // if root layer is not hidden
+        LayerGroupInfo layerGroup = sc.getLayerGroupByName("topp", "eoRoadsLayerGroup");                
+        assertNotNull(layerGroup);
+        assertNotNull(layerGroup.getRootLayer());
+        
+        // if root layer is hidden
+        layerGroup = sc.getLayerGroupByName("topp", "eoStatesLayerGroup");                
+        assertNull(layerGroup);        
+    }
 }

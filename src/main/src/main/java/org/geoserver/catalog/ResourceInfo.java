@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -33,6 +33,17 @@ public interface ResourceInfo extends CatalogInfo {
      * Prefix for custom dimensions
      */
     public static final String CUSTOM_DIMENSION_PREFIX = "custom_dimension_";
+    
+    /**
+     * Key for the HTTP caching max age value in the metadata map
+     */
+    public static final String CACHE_AGE_MAX = "cacheAgeMax";
+    
+    /**
+     * Key for enabling/disabling HTTP caching flag in the metadata map
+     */
+    public static final String CACHING_ENABLED = "cachingEnabled";
+    
 
     /**
      * The catalog the resource is part of.

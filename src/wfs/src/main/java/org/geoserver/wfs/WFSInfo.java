@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -232,5 +232,18 @@ public interface WFSInfo extends ServiceInfo {
      * set the response encoding option, featureMembers or featureMember
      */
     void setEncodeFeatureMember(boolean encodeFeatureMember);
+    
+    
+    /**
+     * Get the flag that determines if WFS hit requests (counts) will ignore
+     * the maximum features limit for this server
+     * @return hitsIgnoreMaxFeatures
+     */ 
+    boolean isHitsIgnoreMaxFeatures();
+    
+    /**
+     * Set the option to ignore the maximum feature limit for WFS hit counts
+     */
+    void setHitsIgnoreMaxFeatures(boolean hitsIgnoreMaxFeatures);
     
 }

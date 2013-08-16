@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs.xml.v1_1_0;
@@ -12,6 +12,7 @@ import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.QueryType;
 import net.opengis.wfs.ResultTypeType;
 import net.opengis.wfs.WfsFactory;
+import org.geoserver.wfs.xml.SqlViewParamsExtractor;
 
 import org.geotools.util.Converters;
 import org.geotools.xml.AbstractComplexBinding;
@@ -177,7 +178,7 @@ public class GetFeatureTypeBinding extends AbstractComplexBinding {
     public Object parse(ElementInstance instance, Node node, Object value)
         throws Exception {
         GetFeatureType getFeature = wfsfactory.createGetFeatureType();
-
+        
         //lt;xsd:element maxOccurs="unbounded" ref="wfs:Query"/&gt;
         getFeature.getQuery().addAll(node.getChildValues(QueryType.class));
 
@@ -217,6 +218,10 @@ public class GetFeatureTypeBinding extends AbstractComplexBinding {
             getFeature.setTraverseXlinkExpiry((BigInteger) node.getAttributeValue(
                     "traverseXlinkExpiry"));
         }
+        
+        // viewParams
+        SqlViewParamsExtractor.viewParams(getFeature, node);
+
 
         return getFeature;
     }

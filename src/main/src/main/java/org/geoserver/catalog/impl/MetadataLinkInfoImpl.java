@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -17,6 +17,19 @@ public class MetadataLinkInfoImpl implements MetadataLinkInfo {
     String metadataType;
 
     String content;
+    
+    public MetadataLinkInfoImpl() {
+        // nothing to do
+    }
+    
+    public MetadataLinkInfoImpl(MetadataLinkInfoImpl other) {
+        this.id = other.id;
+        this.type = other.type;
+        this.about = other.about;
+        this.metadataType = other.metadataType;
+        this.content = other.content;
+    }
+
 
     public String getId() {
         return id;

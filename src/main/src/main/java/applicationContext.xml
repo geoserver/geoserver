@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -13,6 +13,9 @@
      -->
     <bean id="resourceLoader" class="org.geoserver.platform.GeoServerResourceLoader"/>
     <bean id="dataDirectory" class="org.geoserver.config.GeoServerDataDirectory">
+       <constructor-arg ref="resourceLoader"/>
+    </bean>
+    <bean id="manifestLoader" class="org.geoserver.ManifestLoader">
        <constructor-arg ref="resourceLoader"/>
     </bean>
     
@@ -208,4 +211,14 @@
   
   <!-- Automatically injects a env map into the env function -->
   <bean id="enviromentInjector" class="org.geoserver.ows.EnviromentInjectionCallback"/>
+  
+  <!-- Thread local transfers -->
+  <bean id="dispatcherRequestTransfer" class="org.geoserver.threadlocals.PublicThreadLocalTransfer">
+    <constructor-arg index="0" value="org.geoserver.ows.Dispatcher"/>
+    <constructor-arg index="1" value="REQUEST"/>
+  </bean>
+  <bean id="adminRequestTransfer" class="org.geoserver.threadlocals.AdminRequestThreadLocalTransfer"/>
+  <bean id="authenticationTransfer" class="org.geoserver.threadlocals.AuthenticationThreadLocalTransfer"/>
+  <bean id="localLayerTransfer" class="org.geoserver.threadlocals.LocalLayerThreadLocalTransfer"/>
+  <bean id="localWorkspaceTransfer" class="org.geoserver.threadlocals.LocalWorkspaceThreadLocalTransfer"/>
 </beans>

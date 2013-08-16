@@ -1,49 +1,44 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.web;
 
-import java.util.ArrayList;
+import java.io.File;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.regex.Pattern;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.CheckBox;
-import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
-import org.apache.wicket.markup.html.form.RadioChoice;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.util.convert.IConverter;
-import org.apache.wicket.util.value.AttributeMap;
-import org.apache.wicket.util.value.IValueMap;
-import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.validator.AbstractValidator;
 import org.apache.wicket.validation.validator.MinimumValidator;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.FileExistsValidator;
 import org.geoserver.web.wicket.LiveCollectionModel;
+import org.geoserver.web.wicket.ParamResourceModel;
+import org.geoserver.web.wicket.SRSListTextArea;
+import org.geoserver.web.wicket.browser.GeoServerFileChooser;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSInfo.WMSInterpolation;
 import org.geoserver.wms.WatermarkInfo.Position;
 import org.geoserver.wms.web.publish.LayerAuthoritiesAndIdentifiersPanel;
-import org.geotools.referencing.CRS;
+import org.geoserver.web.data.store.panel.FileModel;
 
 /**
  * Edits the WMS service details 
@@ -58,6 +53,8 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
     
     static final List<String> KML_SUPEROVERLAY_MODES = Arrays.asList(new String[] {WMS.KML_SUPEROVERLAY_MODE_AUTO, 
             WMS.KML_SUPEROVERLAY_MODE_RASTER, WMS.KML_SUPEROVERLAY_MODE_OVERVIEW, WMS.KML_SUPEROVERLAY_MODE_HYBRID, WMS.KML_SUPEROVERLAY_MODE_CACHED});
+    
+    ModalWindow modal;
 
     public WMSAdminPage() {
         super();
@@ -77,21 +74,16 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
     
     @SuppressWarnings("unchecked")
     protected void build(IModel info, Form form) {
+        // popups support
+        form.add(modal = new ModalWindow("modal"));
+        
         // authority URLs and Identifiers for the root layer
         LayerAuthoritiesAndIdentifiersPanel authAndIds;
         authAndIds = new LayerAuthoritiesAndIdentifiersPanel("authoritiesAndIds", true, info);
         form.add(authAndIds);
 
         // limited srs list
-        TextArea srsList = new TextArea("srs", LiveCollectionModel.list(new PropertyModel(info, "sRS"))) {
-            @Override
-            public IConverter getConverter(Class type) {
-                return new SRSListConverter();
-            }
-                
-        };
-        srsList.add(new SRSListValidator());
-        srsList.setType(List.class);
+        TextArea srsList = new SRSListTextArea("srs", LiveCollectionModel.list(new PropertyModel(info, "sRS")));
         form.add(srsList);
 
         form.add(new CheckBox("bBOXForEachCRS"));
@@ -117,7 +109,11 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         form.add(maxErrors);
     	// watermark
     	form.add(new CheckBox("watermark.enabled"));
-    	form.add(new TextField("watermark.uRL").add(new FileExistsValidator(true)));
+    	TextField watermarkUrlField = new TextField("watermark.uRL", new FileModel(new PropertyModel<String>(form.getModel(), "watermark.URL")));
+    	watermarkUrlField.add(new FileExistsValidator(true));
+    	watermarkUrlField.setOutputMarkupId(true);
+        form.add(watermarkUrlField);
+        form.add(chooserButton("chooser", new ParamResourceModel("chooseWatermark", this).getString(), watermarkUrlField));
     	TextField<Integer> transparency = new TextField<Integer>("watermark.transparency");
     	transparency.add(new RangeValidator<Integer>(0,100));
         form.add(transparency);
@@ -176,6 +172,44 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         form.add(kmScoreField);
     }
     
+    protected Component chooserButton(String linkId, final String windowTitle, final TextField<String> textField) {
+        AjaxSubmitLink link = new AjaxSubmitLink(linkId) {
+            
+            @Override
+            public boolean getDefaultFormProcessing() {
+                return false;
+            }
+            
+            @Override
+            public void onSubmit(AjaxRequestTarget target, Form form) {
+                File file = null;
+                textField.processInput();
+                String input = (String) textField.getConvertedInput();
+                if (input != null && !input.equals("")) {
+                    file = new File(input);
+                }
+
+                GeoServerFileChooser chooser = new GeoServerFileChooser(modal.getContentId(), new Model(file)) {
+                    protected void fileClicked(File file, AjaxRequestTarget target) {
+                      // clear the raw input of the field won't show the new model value
+                      textField.clearInput();
+                      textField.setModelObject(file.getAbsolutePath());
+
+                      target.addComponent(textField);
+                      dialog.close(target);
+                    };
+                };
+                chooser.setFileTableHeight(null);
+                modal.setContent(chooser);
+                modal.setTitle(windowTitle);
+                modal.show(target);
+            }
+
+        };
+        return link;
+    }
+
+    
     MapModel defaultedModel(IModel baseModel, String key, Object defaultValue) {
         MapModel model = new MapModel(baseModel, key);
         if(model.getObject() == null)
@@ -223,47 +257,5 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         
     }
     
-    private static class SRSListConverter implements IConverter {
-            static final Pattern COMMA_SEPARATED = Pattern.compile("\\s*,\\s*", Pattern.MULTILINE); 
-            
-            public String convertToString(Object value, Locale locale) {
-                List<String> srsList = (List<String>) value;
-                if(srsList.isEmpty())
-                    return "";
-                    
-                StringBuffer sb = new StringBuffer();
-                for (String srs : srsList) {
-                    sb.append(srs).append(", ");
-                }
-                sb.setLength(sb.length() - 2);
-                return sb.toString();
-            }
-            
-            public Object convertToObject(String value, Locale locale) {
-                if(value == null || value.trim().equals(""))
-                    return Collections.emptyList();
-                return new ArrayList<String>(Arrays.asList(COMMA_SEPARATED.split(value)));
-            }
-    }
     
-    private static class SRSListValidator extends AbstractValidator {
-
-        @Override
-        protected void onValidate(IValidatable validatable) {
-            List<String> srsList = (List<String>) validatable.getValue();
-            List<String> invalid = new ArrayList<String>();
-            for (String srs : srsList) {
-                try {
-                    CRS.decode("EPSG:" + srs);
-                } catch(Exception e) {
-                    invalid.add(srs);
-                }
-            }
-            
-            if(invalid.size() > 0)
-                error(validatable, "WMSAdminPage.unknownEPSGCodes", Collections.singletonMap("codes", invalid.toString()));
-            
-        }
-        
-    }
 }

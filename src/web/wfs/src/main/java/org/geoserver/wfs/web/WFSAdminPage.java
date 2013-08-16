@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -56,8 +56,10 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
     
     @SuppressWarnings({ "rawtypes", "unchecked" })
     protected void build(final IModel info, Form form) {
+        // max features
         form.add( new TextField<Integer>( "maxFeatures" ).add(new MinimumValidator<Integer>(0)) );
         form.add( new CheckBox("featureBounding") );
+        form.add( new CheckBox("hitsIgnoreMaxFeatures"));
         
         //service level
         RadioGroup sl = new RadioGroup( "serviceLevel" );

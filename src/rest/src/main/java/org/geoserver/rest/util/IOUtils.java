@@ -1,5 +1,5 @@
-/* Copyright (c) 2008 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 
@@ -528,23 +528,6 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
 			}
 		}
 		return channel;
-	}
-
-	/**
-	 * Get an output <code>FileChannel</code> for the provided
-	 * <code>File</code>
-	 * 
-	 * @param file
-	 *            <code>File</code> for which we need to get an output
-	 *            <code>FileChannel</code>
-	 * @return a <code>FileChannel</code>
-	 * @throws IOException in case something bad happens.
-	 */
-	public static FileChannel getOuputChannel(File file)
-			throws IOException {
-		inputNotNull(file);
-		return new RandomAccessFile(file, "rw").getChannel();
-	
 	}
 
 	/**

@@ -1,4 +1,4 @@
-/* Copyright (c) 2011-2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  *           (c) 1999-2001 Eric Albert (ejalbert@cs.stanford.edu) 
  *
  * This code is licensed under the GPL 2.0 license, available at the root

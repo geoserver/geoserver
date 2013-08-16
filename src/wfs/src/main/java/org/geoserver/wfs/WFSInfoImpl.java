@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -17,6 +17,7 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
     protected boolean featureBounding = true;
     protected boolean canonicalSchemaLocation = false;
     protected boolean encodeFeatureMember = false;    
+    protected boolean hitsIgnoreMaxFeatures = false;
     
     public WFSInfoImpl() {
     }
@@ -92,6 +93,7 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
         result = prime * result
                 + ((serviceLevel == null) ? 0 : serviceLevel.hashCode());
         result = prime * result + (encodeFeatureMember ? 83 : 87);
+        result = prime * result + (hitsIgnoreMaxFeatures ? 29 : 197);
         return result;
     }
 
@@ -122,6 +124,18 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
             return false;
         if (encodeFeatureMember != other.isEncodeFeatureMember())
             return false;
+        if (hitsIgnoreMaxFeatures != other.isHitsIgnoreMaxFeatures())
+            return false;
         return true;
+    }
+
+    @Override
+    public boolean isHitsIgnoreMaxFeatures() {
+        return hitsIgnoreMaxFeatures;
+    }
+
+    @Override
+    public void setHitsIgnoreMaxFeatures(boolean hitsIgnoreMaxFeatures) {
+        this.hitsIgnoreMaxFeatures = hitsIgnoreMaxFeatures;
     }
 }

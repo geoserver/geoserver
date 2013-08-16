@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -21,7 +21,7 @@ public class AuthenticationKeyMangler implements URLMangler {
         if (authentication instanceof KeyAuthenticationToken) {
             KeyAuthenticationToken kat = (KeyAuthenticationToken) authentication;
             String key = (String) kat.getCredentials();
-            kvp.put(KeyAuthenticationToken.KEY, key);
+            kvp.put(kat.getAuthKeyParamName(), key);
         }
 
     }

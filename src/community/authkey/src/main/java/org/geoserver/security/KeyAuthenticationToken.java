@@ -1,10 +1,13 @@
-/* Copyright (c) 2001 - 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.security;
 
+import java.util.Collection;
+
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**
@@ -13,16 +16,21 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class KeyAuthenticationToken extends AbstractAuthenticationToken {
     private static final long serialVersionUID = -6354705060521817602L;
 
-    public static final String KEY = "authkey";
+    public static final String DEFAULT_URL_PARAM = "authkey";
 
-    private String key;
+    private String key,authKeyParamName;
 
-    private UserDetails user;
-
-    public KeyAuthenticationToken(String key, UserDetails user) {
-        super(user.getAuthorities());
+    public KeyAuthenticationToken(String key, String authKeyParamName, UserDetails user) {
+        this(key,authKeyParamName,user,user.getAuthorities());
+    }
+    
+    public KeyAuthenticationToken(String key, String authKeyParamName,UserDetails user, 
+            Collection<? extends GrantedAuthority> authorities) {
+        super(authorities);
         this.key = key;
-        this.user = user;
+        setDetails(user);
+        this.authKeyParamName=authKeyParamName;
+        setAuthenticated(true);
     }
 
     public Object getCredentials() {
@@ -30,7 +38,11 @@ public class KeyAuthenticationToken extends AbstractAuthenticationToken {
     }
 
     public Object getPrincipal() {
-        return user.getUsername();
+        return ((UserDetails)getDetails()).getUsername();
+    }
+
+    public String getAuthKeyParamName() {
+        return authKeyParamName;
     }
 
 }

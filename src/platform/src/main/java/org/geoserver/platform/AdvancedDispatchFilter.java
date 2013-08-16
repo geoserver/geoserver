@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2010 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.platform;
@@ -64,6 +64,11 @@ public class AdvancedDispatchFilter implements Filter {
             }
             
             String path = delegate.getPathInfo();
+            
+            if (path == null) {
+                return;
+            }
+            
             int slash = path.indexOf('/', 1);
             if (slash > -1 ) {
                 this.servletPath = path.substring(0, slash);

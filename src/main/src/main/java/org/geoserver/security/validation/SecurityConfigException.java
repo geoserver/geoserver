@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -106,6 +106,14 @@ public class SecurityConfigException extends AbstractSecurityException {
     public static final String FILTER_CHAIN_NULL_ERROR="FILTER_CHAIN_NULL_ERROR";
     public static final String FILTER_CHAIN_NAME_MANDATORY="FILTER_CHAIN_NAME_MANDATORY";
     public static final String FILTER_CHAIN_EMPTY_$1="FILTER_CHAIN_EMPTY";
+    
+    public static final String FILTER_CHAIN_NOT_REMOVEABLE_$1="FILTER_CHAIN_NOT_REMOVEABLE";
+    public static final String FILTER_CHAIN_NAME_NOT_UNIQUE_$1="FILTER_CHAIN_NAME_NOT_UNIQUE";
+    public static final String UNKNOWN_INTERCEPTOR_FILTER_$2="UNKNOWN_INTERCEPTOR_FILTER";
+    public static final String INTERCEPTOR_FILTER_MANDATORY_$1="INTERCEPTOR_FILTER_MANDATORY";
+    public static final String UNKNOWN_EXCEPTION_FILTER_$2="UNKNOWN_EXCEPTION_FILTER";
+    public static final String EXCEPTION_FILTER_MANDATORY_$1="INTERCEPTOR_EXCEPTION_MANDATORY";
+            
     public static final String PATTERN_LIST_EMPTY_$1="PATTERN_LIST_EMPTY";
     public static final String ANONYMOUS_NOT_LAST_$1="ANONYMOUS_NOT_LAST";
     public static final String UNKNOWN_ROLE_FILTER_$2="UNKNOWN_ROLE_FILTER";

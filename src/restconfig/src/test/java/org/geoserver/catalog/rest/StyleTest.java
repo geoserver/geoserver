@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2009 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog.rest;
@@ -41,6 +41,11 @@ public class StyleTest extends CatalogRESTTestSupport {
     @Before
     public void addPondsStyle() throws IOException {
        getTestData().addStyle(SystemTestData.PONDS.getLocalPart(), getCatalog());
+    }
+    
+    @Before
+    public void restoreLayers() throws IOException {
+        revertLayer(SystemTestData.BASIC_POLYGONS);
     }
 
     @Test

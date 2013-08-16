@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,6 +8,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
+import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.sax.TransformerHandler;
+import javax.xml.transform.stream.StreamResult;
+
 import net.opengis.ows11.BoundingBoxType;
 import net.opengis.wps10.ComplexDataType;
 import net.opengis.wps10.ExecuteResponseType;
@@ -16,8 +20,6 @@ import net.opengis.wps10.LiteralDataType;
 import net.opengis.wps10.OutputDataType;
 import net.opengis.wps10.OutputDefinitionType;
 
-import org.apache.xml.serialize.OutputFormat;
-import org.apache.xml.serialize.XMLSerializer;
 import org.geoserver.ows.Response;
 import org.geoserver.ows.XmlObjectEncodingResponse;
 import org.geoserver.platform.Operation;
@@ -189,10 +191,11 @@ public class ExecuteProcessResponse extends Response {
         Object rawResult = result.getData().getComplexData().getData().get(0);
         if (rawResult instanceof XMLEncoderDelegate) {
             XMLEncoderDelegate delegate = (XMLEncoderDelegate) rawResult;
-            XMLSerializer xmls = new XMLSerializer(output, new OutputFormat());
-            xmls.setNamespaces(true);
 
             try {
+                TransformerHandler xmls = 
+                    ((SAXTransformerFactory)SAXTransformerFactory.newInstance()).newTransformerHandler();
+                xmls.setResult(new StreamResult(output));
                 delegate.encode(xmls);
             } catch (IOException e) {
                 throw e;

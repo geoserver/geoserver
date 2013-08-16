@@ -1,9 +1,0 @@
-
-{
-   "contact":
-        {
-            "address":"1311 30th st nw","addressCity":"Alexandria","addressCountry":"Egypt","addressPostalCode":"20037-1710","addressState":"DC",
-            "addressType":"Work","contactEmail":"claudius.ptolomaeus@gmail.com","contactOrganization":"The ancient geographes INC",
-            "contactPerson":"Claudius Ptolomaeus","contactPosition":"Chief geographer","contactVoice":2022859008
-        }
-}

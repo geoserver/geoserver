@@ -1,5 +1,5 @@
-/* Copyright (c) 2010 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.capabilities;
@@ -20,27 +20,10 @@ import org.geoserver.wms.GetCapabilitiesRequest;
  * @author groldan
  * 
  */
-public class Capabilities_1_3_0_Response extends Response {
+public class Capabilities_1_3_0_Response extends BaseCapabilitiesResponse {
 
     public Capabilities_1_3_0_Response() {
-        super(Capabilities_1_3_0_Transformer.class);
-    }
-
-    /**
-     * @return {@code "application/vnd.ogc.wms_xml"}
-     * @see org.geoserver.ows.Response#getMimeType(java.lang.Object,
-     *      org.geoserver.platform.Operation)
-     */
-    @Override
-    public String getMimeType(final Object value, final Operation operation)
-            throws ServiceException {
-
-        if (value instanceof Capabilities_1_3_0_Transformer) {
-            return Capabilities_1_3_0_Transformer.WMS_CAPS_MIME;
-        }
-
-        throw new IllegalArgumentException(value == null ? "null" : value.getClass().getName()
-                + "/" + operation.getId());
+        super(Capabilities_1_3_0_Transformer.class,Capabilities_1_3_0_Transformer.WMS_CAPS_MIME);
     }
 
     /**

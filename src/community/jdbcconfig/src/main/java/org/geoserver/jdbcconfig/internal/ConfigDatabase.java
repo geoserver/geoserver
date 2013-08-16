@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -11,7 +11,6 @@ import static org.geoserver.jdbcconfig.internal.DbUtils.logStatement;
 import static org.geoserver.jdbcconfig.internal.DbUtils.params;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Proxy;
 import java.net.URL;
@@ -38,6 +37,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.Predicates;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
@@ -48,7 +48,9 @@ import org.geoserver.catalog.impl.StoreInfoImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.impl.CoverageAccessInfoImpl;
 import org.geoserver.config.impl.GeoServerInfoImpl;
 import org.geoserver.config.impl.JAIInfoImpl;
@@ -95,6 +97,8 @@ public class ConfigDatabase {
     private DbMappings dbMappings;
 
     private CatalogImpl catalog;
+
+    private GeoServer geoServer;
 
     private NamedParameterJdbcOperations template;
 
@@ -147,25 +151,12 @@ public class ConfigDatabase {
         LOGGER.info("------------- Running catalog database init script " + initScript
                 + " ------------");
 
-        InputStream stream = initScript.openStream();
-        List<String> lines;
-        try {
-            lines = org.apache.commons.io.IOUtils.readLines(stream);
-        } finally {
-            stream.close();
-        }
-        String[] sql = lines.toArray(new String[lines.size()]);
-        for(String statement : sql){
-            if(statement.trim().length() == 0){
-                continue;
-            }
-            LOGGER.info("Running: " + statement);
-            template.getJdbcOperations().update(statement);
-        }
+        Util.runScript(initScript, template.getJdbcOperations(), LOGGER);
+        
         LOGGER.info("Initialization SQL script run sucessfully");
     }
 
-    DbMappings getDbMappings() {
+    public DbMappings getDbMappings() {
         return dbMappings;
     }
 
@@ -178,6 +169,14 @@ public class ConfigDatabase {
         return this.catalog;
     }
 
+    public void setGeoServer(GeoServer geoServer) {
+        this.geoServer = geoServer;
+    }
+
+    public GeoServer getGeoServer() {
+        return geoServer;
+    }
+    
     public <T extends CatalogInfo> int count(final Class<T> of, final Filter filter) {
 
         QueryBuilder<T> sqlBuilder = QueryBuilder.forCount(of, dbMappings).filter(filter);
@@ -199,7 +198,7 @@ public class ConfigDatabase {
         } else {
             LOGGER.fine("Filter is not fully supported, doing scan of supported part to return the number of matches");
             // going the expensive route, filtering as much as possible
-            CloseableIterator<T> iterator = query(of, filter, null, null, null);
+            CloseableIterator<T> iterator = query(of, filter, null, null, (SortBy)null);
             try {
                 return Iterators.size(iterator);
             } finally {
@@ -208,9 +207,18 @@ public class ConfigDatabase {
         }
         return count;
     }
-
+    
     public <T extends Info> CloseableIterator<T> query(final Class<T> of, final Filter filter,
             @Nullable Integer offset, @Nullable Integer limit, @Nullable SortBy sortOrder) {
+        if(sortOrder == null) {
+            return query(of, filter, offset, limit, new SortBy[]{});
+        } else {
+            return query(of, filter, offset, limit, new SortBy[]{sortOrder});
+        }
+    }
+    
+    public <T extends Info> CloseableIterator<T> query(final Class<T> of, final Filter filter,
+            @Nullable Integer offset, @Nullable Integer limit, @Nullable SortBy... sortOrder) {
 
         checkNotNull(of);
         checkNotNull(filter);
@@ -771,8 +779,8 @@ public class ConfigDatabase {
             }
             resolveTransient(layer.getResource());
         } else if (real instanceof LayerGroupInfo) {
-            for (LayerInfo l : ((LayerGroupInfo) real).getLayers()) {
-                resolveTransient(l);
+            for (PublishedInfo p : ((LayerGroupInfo) real).getLayers()) {
+                resolveTransient(p);
             }
             for (StyleInfo s : ((LayerGroupInfo) real).getStyles()) {
                 resolveTransient(s);
@@ -887,6 +895,9 @@ public class ConfigDatabase {
                 if (global.getJAI() == null) {
                     global.setJAI(new JAIInfoImpl());
                 }
+            }
+            if (info instanceof ServiceInfo) {
+                ((ServiceInfo)info).setGeoServer(geoServer);
             }
 
             return info;

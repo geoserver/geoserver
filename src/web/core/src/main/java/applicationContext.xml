@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- 
- Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+ Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
@@ -256,14 +256,20 @@
       </list>
     </property>
   </bean>
-
-  <!-- Layer configuration panels -->
-  <bean id="basicLayerConfigPanel" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
-    <property name="id" value="basic" />
-    <property name="titleKey" value="publish.layer.config.basic" />
-    <property name="componentClass" value="org.geoserver.web.publish.BasicLayerConfig" />
+  <bean id="coverageBandsConfigPanel"
+    class="org.geoserver.web.data.resource.ResourceConfigurationPanelInfo">
+    <property name="id" value="coverage" />
+    <property name="titleKey" value="data.resource.config.coverage" />
+    <property name="componentClass"
+      value="org.geoserver.web.data.resource.CoverageBandsConfigurationPanel" />
+    <property name="supportedTypes">
+      <list>
+        <value>org.geoserver.catalog.CoverageInfo</value>
+      </list>
+    </property>
   </bean>
 
+  <!-- Layer configuration panels -->
   <bean id="httpLayerConfigPanel" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
     <property name="id" value="http" />
     <property name="titleKey" value="publish.layer.config.http" />
@@ -303,6 +309,15 @@
       value="org.geoserver.web.data.store.raster.GeoTIFFRasterEditPanel" />
   </bean>
 
+  <bean id="imageMosaicStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
+    <property name="id" value="imagemosaicRaster" />
+    <property name="factoryClass" value="org.geotools.gce.imagemosaic.ImageMosaicFormat" />
+    <property name="iconBase" value="org.geoserver.web.GeoServerApplication" />
+    <property name="icon" value="img/icons/geosilk/page_white_raster.png" />
+    <property name="componentClass"
+      value="org.geoserver.web.data.store.raster.DirectoryRasterEditPanel" />
+  </bean>
+
   <bean id="arcGridStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
     <property name="id" value="arcgridRaster" />
     <property name="factoryClass" value="org.geotools.gce.arcgrid.ArcGridFormat" />
@@ -314,7 +329,7 @@
 
   <bean id="gtopo30StorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
     <property name="id" value="gtopo30Raster" />
-    <property name="factoryClass" value="org.geotools.gce.arcgrid.ArcGridFormat" />
+    <property name="factoryClass" value="org.geotools.gce.gtopo30.GTopo30Format" />
     <property name="iconBase" value="org.geoserver.web.GeoServerApplication" />
     <property name="icon" value="img/icons/geosilk/page_white_raster.png" />
     <property name="componentClass"

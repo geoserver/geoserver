@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -51,12 +51,18 @@ public class GeoServerCustomFilterTest extends GeoServerSystemTestSupport {
 
     @After
     public void removeCustomFilterConfig() throws Exception {
-        GeoServerSecurityManager secMgr= getSecurityManager();
-        if(secMgr.listFilters().contains("custom")) {
+        GeoServerSecurityManager secMgr = getSecurityManager();
+        if (secMgr.listFilters().contains("custom")) {
             secMgr.removeFilter(secMgr.loadFilterConfig("custom"));
         }
+        secMgr.getSecurityConfig().getFilterChain().remove("custom");
+        
+        SecurityManagerConfig mgrConfig = secMgr.getSecurityConfig();
+        secMgr.saveSecurityConfig(mgrConfig);
     }
-    @Test public void testInactive() throws Exception {
+    
+    @Test 
+    public void testInactive() throws Exception {
         HttpServletRequest request = createRequest("/foo");
         MockHttpServletResponse response = dispatch(request);
         assertNull(response.getHeader("foo"));

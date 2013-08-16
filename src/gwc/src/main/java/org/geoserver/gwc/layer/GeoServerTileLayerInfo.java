@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -65,8 +65,33 @@ public interface GeoServerTileLayerInfo extends Serializable, Cloneable {
      */
     public abstract Set<ParameterFilter> getParameterFilters();
 
+    /**
+     * Replace the set of parameter filters
+     * @param parameterFilters
+     */
     public abstract void setParameterFilters(Set<ParameterFilter> parameterFilters);
+    
+    /**
+     * Add a parameter filter, replacing any existing filter with the same key.
+     * @param parameterFilter
+     * @return true if an existing filter was replaced, false otherwise.
+     */
+    public abstract boolean addParameterFilter(ParameterFilter parameterFilter);
+    
+    /**
+     * Remove the filter with the specified key
+     * @param key
+     * @return true if the filter existed, false otherwise
+     */
+    public abstract boolean removeParameterFilter(String key);
 
     public abstract GeoServerTileLayerInfo clone();
+
+    /**
+     * Get the ParameterFilter with the specified key
+     * @param key
+     * @return
+     */
+    public abstract ParameterFilter getParameterFilter(String key);
 
 }

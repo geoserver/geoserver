@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.rest.util;
@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
@@ -19,9 +20,11 @@ import java.util.zip.ZipFile;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FileUtils;
+import org.geoserver.rest.RestletException;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
+import org.restlet.data.Status;
 import org.vfny.geoserver.global.ConfigurationException;
 import org.vfny.geoserver.global.GeoserverDataDirectory;
 
@@ -84,9 +87,12 @@ public class RESTUtils {
         final File dir = GeoserverDataDirectory.findCreateConfigDir("data");
         return handleBinUpload( datasetName + "." + extension, dir, request );
     }
-    
+
     /**
-     * Reads content from the body of a request and writes it to a file.
+     * Reads content from the body of a request and writes it to a file in the given directory.
+     * 
+     * If the file already exists, the directory content will be deleted recursively 
+     * before creating the new file.
      * 
      * @param fileName The name of the file to write out.
      * @param directory The directory to write the file to.
@@ -96,21 +102,58 @@ public class RESTUtils {
      * 
      * @throws IOException Any I/O errors that occur.
      * 
+     * @deprecated use {@link #handleBinUpload(String, File, boolean, Request)}.
+     */
+    public static File handleBinUpload(String fileName, File directory, Request request)
+            throws IOException {
+        return handleBinUpload(fileName, directory, true, request);
+    }
+    
+    /**
+     * Reads content from the body of a request and writes it to a file.
+     * 
+     * @param fileName The name of the file to write out.
+     * @param directory The directory to write the file to.
+     * @param deleteDirectoryContent Delete directory content if the file already exists.
+     * @param request The request.
+     * 
+     * @return The file object representing the newly written file.
+     * 
+     * @throws IOException Any I/O errors that occur.
+     * 
      * TODO: move this to IOUtils.
      */
-    public static File handleBinUpload(String fileName, File directory, Request request ) 
+    public static File handleBinUpload(String fileName, File directory, boolean deleteDirectoryContent, Request request) 
         throws IOException {
         
         final File newFile = new File(directory, fileName);
-        if (newFile.exists()) {
-        	FileUtils.cleanDirectory(directory);
+        
+        if(newFile.exists()) {
+            if (deleteDirectoryContent) {
+                FileUtils.cleanDirectory(directory);
+            } else {
+                // delete the file, otherwise replacing it with a smaller one will leave bytes at the end
+                newFile.delete();
+            }
         }
         
-        final ReadableByteChannel source =request.getEntity().getChannel();
-        final FileChannel outputChannel = IOUtils.getOuputChannel(newFile);
-        IOUtils.copyChannel(1024*1024, source,outputChannel );
-        IOUtils.closeQuietly(source);
-        IOUtils.closeQuietly(outputChannel);
+        final ReadableByteChannel source = request.getEntity().getChannel();
+        RandomAccessFile raf = null;
+        FileChannel outputChannel = null;
+        try {
+            raf = new RandomAccessFile(newFile, "rw");
+            outputChannel = raf.getChannel();
+            IOUtils.copyChannel(1024 * 1024, source, outputChannel);
+        } finally {
+            try {
+                if(raf != null) {
+                    raf.close();
+                }
+            } finally {
+                IOUtils.closeQuietly(source);
+                IOUtils.closeQuietly(outputChannel);
+            }
+        }
         return newFile;
     }
     
@@ -186,16 +229,25 @@ public class RESTUtils {
      */
     public static File handleEXTERNALUpload(Request request) throws IOException {
         //get the URL for this file to upload
-        final InputStream inStream=request.getEntity().getStream();
-        final String stringURL=IOUtils.getStringFromStream(inStream);
-        final URL fileURL=new URL(stringURL);
-
-        final File inputFile= IOUtils.URLToFile(fileURL);
-        if(inputFile!=null && inputFile.exists() && inputFile.canRead()) {
-            return inputFile;
+        InputStream inStream = null;
+        URL fileURL ;
+        try {
+            inStream = request.getEntity().getStream();
+            final String stringURL = IOUtils.getStringFromStream(inStream);
+            fileURL = new URL(stringURL);
+        } finally {
+            IOUtils.closeQuietly(inStream);
         }
 
-        return null;
+        final File inputFile = IOUtils.URLToFile(fileURL);
+        if(inputFile == null || !inputFile.exists()) {
+            throw new RestletException("Failed to locate the input file " + fileURL, Status.CLIENT_ERROR_BAD_REQUEST);
+        } else if(!inputFile.canRead()) {
+            throw new RestletException("Input file is not readable, check filesystem permissions: " + fileURL, 
+                    Status.CLIENT_ERROR_BAD_REQUEST);
+        }
+
+        return inputFile;
     }
     
     static Set<String> ZIP_MIME_TYPES = new HashSet();

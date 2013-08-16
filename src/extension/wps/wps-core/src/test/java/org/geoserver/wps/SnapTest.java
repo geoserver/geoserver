@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -35,6 +35,8 @@ public class SnapTest extends WPSTestSupport {
         WFSInfo wfs = getGeoServer().getService( WFSInfo.class );
         wfs.setFeatureBounding(true);
         getGeoServer().save(wfs);
+        // workaround for GEOS-5650
+        getGeoServer().save(getGeoServer().getService(WPSInfo.class));
     }
 
     @Test

@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -83,8 +83,8 @@ public class LocalWorkspaceLayersTest extends GeoServerSystemTestSupport {
         catalog.add(citeFeatureType);
         
         LayerInfo citeLayer = factory.createLayer();
-        citeLayer.setEnabled(true);
         citeLayer.setResource(citeFeatureType);
+        citeLayer.setEnabled(true);
         //citeLayer.setName("citeLayer");
         catalog.add(citeLayer);
 
@@ -104,8 +104,8 @@ public class LocalWorkspaceLayersTest extends GeoServerSystemTestSupport {
         catalog.add(sfFeatureType);
 
         LayerInfo sfLayer = factory.createLayer();
-        sfLayer.setEnabled(true);
         sfLayer.setResource(sfFeatureType);
+        sfLayer.setEnabled(true);
         //sfLayer.setName("sfLayer");
         catalog.add(sfLayer);
 

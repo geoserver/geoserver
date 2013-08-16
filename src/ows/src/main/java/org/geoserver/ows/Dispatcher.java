@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.ows;
@@ -875,7 +875,7 @@ public class Dispatcher extends AbstractController {
                 Response r2 = (Response) responses.get(1);
 
                 if (r1.getBinding().equals(r2.getBinding())) {
-                    String msg = "Multiple responses: (" + result.getClass() + ")";
+                    String msg = "Multiple responses: (" + result.getClass() + "): " + r1 + ", " + r2;
                     throw new RuntimeException(msg);
                 }
             }

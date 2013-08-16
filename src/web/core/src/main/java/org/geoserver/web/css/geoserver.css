@@ -392,6 +392,10 @@ padding: 0.44em 0 0.5em;
 width: 90%;
 }
 
+ul.choiceList>li>label, ul.choiceList>li>input[type=checkbox] {
+display:inline;
+}
+
 textarea.small {
 height: 3em;
 }
@@ -1143,4 +1147,24 @@ margin-bottom: 0px;
 .page-header ul {
 margin: 0.2em; /* override blueprint's settings for unordered lists */
 list-style-type: none;
+}
+
+/*-------------
+  Customize Wicket's autocomplete
+  -------------*/
+
+div.wicket-aa {
+    background-color:white;
+    border:1px solid #CCCCCC;
+    color:black;
+}
+div.wicket-aa ul {
+   list-style-image:none;
+   list-style-position:outside;
+   list-style-type:none;
+   margin:0pt;
+   padding:5px;
+}
+div.wicket-aa ul li.selected {
+    background-color:#CCCCCC;
 }

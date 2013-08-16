@@ -1,21 +1,29 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.wms_1_3;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.net.URL;
 import java.util.Collections;
 
 import javax.xml.namespace.QName;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSTestSupport;
 import org.junit.Test;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
@@ -148,7 +156,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
          "  </UserStyle> "+
          " </NamedLayer> "+
          "</StyledLayerDescriptor>";
-    
+     
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
@@ -159,7 +167,27 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 Collections.EMPTY_MAP,"states.properties",org.geoserver.wms.wms_1_1_1.GetMapIntegrationTest.class,catalog);
     } 
      
-
+    @Test
+    public void testRepeatedValues() throws Exception {
+        String baseRequest = "wms?service=wms&version=1.3.0&bbox=" + bbox
+                + "&styles=&layers=" + layers + "&format=image/png" + "&request=GetMap"
+                + "&width=550" + "&height=250" + "&srs=EPSG:4326";
+        
+        // parameter repeated, but with the same value, should work
+        MockHttpServletResponse response = getAsServletResponse(baseRequest + "&format=image/png");
+        checkImage(response);
+        
+        // parameter repeated 2 times, but with the same value, should work
+        response = getAsServletResponse(baseRequest + "&format=image/png&format=image/png");
+        checkImage(response);
+        
+        // parameter repeated with 2 different values, should throw an exception
+        Document dom = getAsDOM(baseRequest + "&format=image/jpeg");
+        assertEquals("ServiceExceptionReport", dom.getDocumentElement().getNodeName()); 
+        Element serviceException = (Element) dom.getDocumentElement().getElementsByTagName("ServiceException").item(0);
+        assertEquals("InvalidParameterValue", serviceException.getAttribute("code"));
+        assertEquals("FORMAT", serviceException.getAttribute("locator"));
+    }
     
     @Test
     public void testSldBody10() throws Exception {
@@ -230,4 +258,135 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 + STATES_SLD11.replaceAll("=", "%3D") + "&VALIDATESCHEMA=true");
         checkImage(response);
     }
+    
+    
+    @Test    
+    public void testLayerGroupSingle() throws Exception {
+        Catalog catalog = getCatalog();
+        LayerGroupInfo group = createLakesPlacesLayerGroup(catalog, LayerGroupInfo.Mode.SINGLE, null);
+        try {
+            String url = "wms?LAYERS="
+                    + group.getName()
+                    + "&STYLES=&FORMAT=image%2Fpng&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=0.0000,-0.0020,0.0035,0.0010";
+            BufferedImage image = getAsImage(url, "image/png");
+
+            assertPixel(image, 150, 160, Color.WHITE);
+            // places
+            assertPixel(image, 180, 16, COLOR_PLACES_GRAY);
+            // lakes
+            assertPixel(image, 90, 200, COLOR_LAKES_BLUE);
+        } finally {
+            catalog.remove(group);
+        }        
+    }
+
+    @Test    
+    public void testLayerGroupNamed() throws Exception {
+        Catalog catalog = getCatalog();
+        LayerGroupInfo group = createLakesPlacesLayerGroup(catalog, LayerGroupInfo.Mode.NAMED, null);
+        try {
+            String url = "wms?LAYERS="
+                    + group.getName()
+                    + "&STYLES=&FORMAT=image%2Fpng&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=0.0000,-0.0020,0.0035,0.0010";
+            BufferedImage image = getAsImage(url, "image/png");
+
+            assertPixel(image, 150, 160, Color.WHITE);
+            // places
+            assertPixel(image, 180, 16, COLOR_PLACES_GRAY);
+            // lakes
+            assertPixel(image, 90, 200, COLOR_LAKES_BLUE);
+        } finally {
+            catalog.remove(group);
+        }               
+    }
+
+    @Test
+    public void testLayerGroupContainer() throws Exception {
+        Catalog catalog = getCatalog();
+        LayerGroupInfo group = createLakesPlacesLayerGroup(catalog, LayerGroupInfo.Mode.CONTAINER, null);
+        try {
+            String url = "wms?LAYERS="
+                    + group.getName()
+                    + "&STYLES=&FORMAT=image%2Fpng&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=0.0000,-0.0020,0.0035,0.0010";
+            // this group is not meant to be called directly so we should get an exception
+            MockHttpServletResponse resp = getAsServletResponse(url);
+            assertEquals("text/xml", resp.getContentType());
+            
+            Document dom = getAsDOM(url);
+            assertEquals("ServiceExceptionReport", dom.getDocumentElement().getNodeName()); 
+            
+            Element serviceException = (Element) dom.getDocumentElement().getElementsByTagName("ServiceException").item(0);
+            assertEquals("LayerNotDefined", serviceException.getAttribute("code"));
+            assertEquals("layers", serviceException.getAttribute("locator"));
+            assertEquals("Could not find layer " + group.getName(), serviceException.getTextContent().trim());
+        } finally {
+            catalog.remove(group);
+        }
+    }
+    
+    @Test
+    public void testLayerGroupModeEo() throws Exception {
+        Catalog catalog = getCatalog();
+        LayerGroupInfo group = createLakesPlacesLayerGroup(catalog, LayerGroupInfo.Mode.EO, catalog.getLayerByName(getLayerId(MockData.LAKES)));
+        try {
+            String url = "wms?LAYERS="
+                    + group.getName()
+                    + "&STYLES=&FORMAT=image%2Fpng&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=0.0000,-0.0020,0.0035,0.0010";
+            BufferedImage image = getAsImage(url, "image/png");
+            
+            assertPixel(image, 150, 160, Color.WHITE);
+            // no places
+            assertPixel(image, 180, 16, Color.WHITE);
+            // lakes
+            assertPixel(image, 90, 200, COLOR_LAKES_BLUE);
+        } finally {
+            catalog.remove(group);
+        }
+    }   
+    
+    @Test
+    public void testSldExternalEntities() throws Exception {
+        URL sldUrl = GetMapIntegrationTest.class.getResource("../externalEntities.sld");
+        String url = "wms?bbox=" + bbox + "&styles="
+                + "&layers=" + layers + "&Format=image/png" + "&request=GetMap" + "&width=550"
+                + "&height=250" + "&srs=EPSG:4326" + "&sld=" + sldUrl.toString();
+
+        WMS wms = new WMS(getGeoServer());
+        GeoServerInfo geoserverInfo = wms.getGeoServer().getGlobal();
+        try {
+            // enable entities in external SLD files
+            geoserverInfo.setXmlExternalEntitiesEnabled(true);
+            getGeoServer().save(geoserverInfo);
+            
+            // if entities evaluation is enabled
+            // the parser will try to read a file on the local file system
+            // if the file is found, its content will be used to replace the entity
+            // if the file is not found the parser will throw a FileNotFoundException
+            String response = getAsString(url);            
+            assertTrue(response.indexOf("java.io.FileNotFoundException") > -1);
+            
+            // disable entities
+            geoserverInfo.setXmlExternalEntitiesEnabled(false);
+            getGeoServer().save(geoserverInfo);
+
+            // if entities evaluation is disabled
+            // the parser will throw a MalformedURLException when it finds an entity
+            response = getAsString(url);
+            assertTrue(response.indexOf("java.net.MalformedURLException") > -1);
+
+            // try default: disabled entities
+            geoserverInfo.setXmlExternalEntitiesEnabled(null);
+            getGeoServer().save(geoserverInfo);
+
+            // if entities evaluation is disabled
+            // the parser will throw a MalformedURLException when it finds an entity
+            response = getAsString(url);
+            assertTrue(response.indexOf("java.net.MalformedURLException") > -1);            
+            
+        } finally {
+            // default
+            geoserverInfo.setXmlExternalEntitiesEnabled(null);
+            getGeoServer().save(geoserverInfo);             
+        }
+    }  
 }

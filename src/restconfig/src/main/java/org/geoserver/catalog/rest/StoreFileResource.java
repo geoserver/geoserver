@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2009 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog.rest;
@@ -127,7 +127,11 @@ public abstract class StoreFileResource extends Resource {
             }
         } 
         catch (Throwable t) {
-            throw new RestletException( "Error while storing uploaded file:", Status.SERVER_ERROR_INTERNAL, t );
+            if(t instanceof RestletException) {
+                throw (RestletException) t;
+            } else {
+                throw new RestletException( "Error while storing uploaded file:", Status.SERVER_ERROR_INTERNAL, t );
+            }
         }
         
         //handle the case that the uploaded file was a zip file, if so unzip it

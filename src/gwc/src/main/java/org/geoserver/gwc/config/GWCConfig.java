@@ -1,10 +1,10 @@
-/* Copyright (c) 2011 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.gwc.config;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.*;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
+import org.geowebcache.locks.LockProvider;
 
 public class GWCConfig implements Cloneable, Serializable {
 
@@ -67,6 +68,8 @@ public class GWCConfig implements Cloneable, Serializable {
      * Default cache formats for non coverage/vector layers (LayerGroups and WMS layers)
      */
     private HashSet<String> defaultOtherCacheFormats;
+    
+    private String lockProviderName;
 
     /**
      * Creates a new GWC config with default values
@@ -324,5 +327,19 @@ public class GWCConfig implements Cloneable, Serializable {
     @Override
     public boolean equals(Object o) {
         return EqualsBuilder.reflectionEquals(this, o);
+    }
+    
+    public String getLockProviderName() {
+        return lockProviderName;
+    }
+    
+    /**
+     * Sets the name of the {@link LockProvider} Spring bean to be used as the lock provider
+     * for this GWC instance
+     * 
+     * @param lockProviderName
+     */
+    public void setLockProviderName(String lockProviderName) {
+        this.lockProviderName = lockProviderName;
     }
 }

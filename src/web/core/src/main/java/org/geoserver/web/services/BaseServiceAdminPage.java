@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -123,6 +123,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         
         //add the extension panels
         ListView extensionPanels = createExtensionPanelList("extensions", infoModel);
+        extensionPanels.setReuseItems(true);
         form.add(extensionPanels);
         
         SubmitLink submit = new SubmitLink("submit",new StringResourceModel( "save", (Component)null, null) ) {

@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -97,7 +97,7 @@ public class CustomDimensionsTest extends CoverageTestSupport {
                 "  </rangeSubset>\n" + 
                 "  <output>\n" + 
                 "    <crs>EPSG:4326</crs>\n" + 
-                "    <format>GeoTIFF</format>\n" + 
+                "    <format>GEOTIFF</format>\n" + 
                 "  </output>\n" + 
                 "</GetCoverage>";
         return request;

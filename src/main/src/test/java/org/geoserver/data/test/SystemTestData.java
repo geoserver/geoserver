@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -48,13 +48,14 @@ import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.property.PropertyDataStore;
 import org.geotools.data.property.PropertyDataStoreFactory;
 import org.geotools.feature.NameImpl;
+import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
@@ -76,6 +77,9 @@ import org.springframework.context.ApplicationContext;
  *
  */
 public class SystemTestData extends CiteTestData {
+    
+    /** Multiband tiff */
+    private static final QName MULTIBAND = new QName(WCS_URI, "multiband", WCS_PREFIX);
     
     static final Logger LOGGER = Logging.getLogger(SystemTestData.class);
 
@@ -152,6 +156,7 @@ public class SystemTestData extends CiteTestData {
         addDefaultRasterLayer(TASMANIA_BM, catalog);
         addDefaultRasterLayer(ROTATED_CAD, catalog);
         addDefaultRasterLayer(WORLD, catalog);
+        addDefaultRasterLayer(MULTIBAND,catalog);
     }
 
     public void setUpWcs10RasterLayers() throws IOException {
@@ -377,14 +382,30 @@ public class SystemTestData extends CiteTestData {
      * @param scope Class from which to load sld resource from.
      */
     public void addStyle(String name, String filename, Class scope, Catalog catalog) throws IOException {
+        addStyle((WorkspaceInfo)null, name, filename, scope, catalog);
+    }
+
+    /**
+     * Adds a style to the test setup.
+     * <p>
+     * To set up the style a file named <tt>filename</tt> is copied from the classpath relative
+     * to the <tt>scope</tt> parameter.
+     * </p>
+     * @param ws The workspace to include the style in.
+     * @param name The name of the style.
+     * @param filename The filename to copy from classpath.
+     * @param scope Class from which to load sld resource from.
+     */
+    public void addStyle(WorkspaceInfo ws, String name, String filename, Class scope, Catalog catalog) throws IOException {
         File styles = catalog.getResourceLoader().findOrCreateDirectory(data, "styles");
 
         catalog.getResourceLoader().copyFromClassPath(filename, new File(styles, filename), scope);
 
-        StyleInfo style = catalog. getStyleByName(name);
+        StyleInfo style = catalog.getStyleByName(ws, name);
         if (style == null) {
             style = catalog.getFactory().createStyle();
             style.setName(name);
+            style.setWorkspace(ws);
         }
         style.setFilename(filename);
         if (style.getId() == null) {
@@ -394,6 +415,7 @@ public class SystemTestData extends CiteTestData {
             catalog.save(style);
         }
     }
+    
     /**
      * Adds a vector layer to the catalog setup.
      * <p>
@@ -598,6 +620,9 @@ public class SystemTestData extends CiteTestData {
         else if (name.equals(WORLD)) {
             addRasterLayer(name, "world.tiff", null, catalog);
         }
+        else if (name.equals(MULTIBAND)) {
+            addRasterLayer(name, "multiband.tiff", null, catalog);
+        }
         else {
             throw new IllegalArgumentException("Unknown default raster layer: " + name);
         }
@@ -704,9 +729,9 @@ public class SystemTestData extends CiteTestData {
         if (format == null) {
             throw new RuntimeException("No format for " + file.getCanonicalPath());
         }
-        AbstractGridCoverage2DReader reader = null;
+        GridCoverage2DReader reader = null;
         try {
-            reader = (AbstractGridCoverage2DReader) format.getReader(file);
+            reader = (GridCoverage2DReader) format.getReader(file);
             if (reader == null) {
                 throw new RuntimeException("No reader for " + file.getCanonicalPath() + " with format " + format.getName());
             }
@@ -741,7 +766,13 @@ public class SystemTestData extends CiteTestData {
             CoverageInfo coverage = null;
             
             try {
-                coverage = builder.buildCoverage(reader, null);
+
+                coverage = builder.buildCoverage(reader,null );
+                // coverage read params
+                if (format instanceof ImageMosaicFormat) {
+                    //  make sure we work in immediate mode
+                    coverage.getParameters().put(AbstractGridFormat.USE_JAI_IMAGEREAD.getName().getCode(), Boolean.FALSE);
+                } 
             } catch (Exception e) {
                 throw new IOException(e);
             }
@@ -856,6 +887,7 @@ public class SystemTestData extends CiteTestData {
         settings.setOnlineResource("http://geoserver.org");
         settings.setVerbose(false);
         settings.setVerboseExceptions(false);
+        settings.setLocalWorkspaceIncludesPrefix(false);
 
         if (ws != null) {
             if (settings.getId() != null) {
@@ -890,7 +922,7 @@ public class SystemTestData extends CiteTestData {
     
     @Override
     public void tearDown() throws Exception {
-        FileUtils.deleteDirectory(data);
+        FileUtils.deleteDirectory(data);        
     }
     
     @Override

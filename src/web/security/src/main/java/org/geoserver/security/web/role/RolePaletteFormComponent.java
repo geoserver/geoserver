@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -90,4 +90,16 @@ public class RolePaletteFormComponent extends PaletteFormComponent<GeoServerRole
     public List<GeoServerRole> getSelectedRoles() {
         return new ArrayList(palette.getModelCollection());
     }
+    
+    @Override
+    protected String getSelectedHeaderPropertyKey() {
+        return "RolePaletteFormComponent.selectedHeader";
+    }
+    
+    @Override
+    protected String getAvaliableHeaderPropertyKey() {
+        // TODO Auto-generated method stub
+        return "RolePaletteFormComponent.availableHeader";
+    }
+
 }

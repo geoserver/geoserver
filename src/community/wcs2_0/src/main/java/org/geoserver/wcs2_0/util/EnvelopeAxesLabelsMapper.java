@@ -21,8 +21,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.geotools.referencing.CRS;
-import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.referencing.cs.DefaultCoordinateSystemAxis;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
@@ -59,7 +57,8 @@ public class EnvelopeAxesLabelsMapper {
         final ArrayList<String> retValue=new ArrayList<String>();
         if (!axesSwitch) {
             for (int i = 0; i < dimension; i++) {
-                retValue.add(cs.getAxis(i).getAbbreviation()); // use axis abbreviation
+                CoordinateSystemAxis axis = cs.getAxis(i);
+                retValue.add(getAxisLabel(axis)); // use axis abbreviation
             }
         } else {
             int northing=-1, easting=-1;
@@ -70,7 +69,7 @@ public class EnvelopeAxesLabelsMapper {
                 } else if (Math.abs(DefaultCoordinateSystemAxis.getAngle(axis.getDirection(), DefaultCoordinateSystemAxis.LATITUDE.getDirection()))<1E-6){
                     northing = i;
                 }
-                retValue.add(axis.getAbbreviation()); // use axis abbreviation
+                retValue.add(getAxisLabel(axis)); // use axis abbreviation
             }       
             
             // now switch them
@@ -81,6 +80,19 @@ public class EnvelopeAxesLabelsMapper {
         return retValue;
     }
     
+    private String getAxisLabel(CoordinateSystemAxis axis) {
+        // some default axis have weird abbreviations (greek letters), handle them separately
+        String label = axis.getAbbreviation();
+        if(label.equals(DefaultCoordinateSystemAxis.LONGITUDE.getAbbreviation())) {
+            return "lon";
+        } else if(label.equals(DefaultCoordinateSystemAxis.LATITUDE.getAbbreviation())) {
+            return "lat";
+        } else {
+            
+            return label;
+        }
+    }
+
     public int getAxisIndex(final Envelope envelope, final String axisAbbreviation){
         final int[] val= getAxesIndexes(envelope, Arrays.asList(axisAbbreviation));
         return (val==null?-1:val[0]);
@@ -104,7 +116,8 @@ public class EnvelopeAxesLabelsMapper {
             // search for this dimension in cs axes
             for(int j=0;j<crsDimension;j++){
                 // check exact abbreviation
-                if(cs.getAxis(j).getAbbreviation().equals(axisAbbreviation)){
+                CoordinateSystemAxis axis = cs.getAxis(j);
+                if(getAxisLabel(axis).equals(axisAbbreviation)){
                     pos=j; // FOUND!!!
                     break;
                 }

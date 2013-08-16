@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -77,38 +77,5 @@ public class AuthenticationPageTest extends AbstractSecurityWicketTestSupport {
         return false;
     }
 
-    @Test
-    public void testSetFilter() throws Exception {
-        initializeForXML();
-        activateRORoleService();
-
-        tester.startPage(page = new AuthenticationPage());
-        // TODO, different values for allowSessionCreation, no idea why
-//        tester.assertModelValue("form:filterChain:requestChain", 
-//            GeoServerSecurityFilterChain.lookupRequestChainByName("web", getSecurityManager())); 
-        tester.assertComponent("form:filterChain:authFilterChain:recorder", Recorder.class);
-
-        List<String> selected = 
-            (List<String>) (page.get("form:filterChain:authFilterChain")).getDefaultModelObject();
-        assertEquals(3, selected.size());
-        assertTrue(selected.contains(FORM_LOGIN_FILTER));
-        assertTrue(selected.contains(ANONYMOUS_FILTER));
-        assertTrue(selected.contains(REMEMBER_ME_FILTER));
-
-        GeoServerSecurityFilterChain filterChain = 
-            getSecurityManager().getSecurityConfig().getFilterChain();
-
-        assertTrue(filterChain.getRequestChainByName("web").getFilterNames().contains(ANONYMOUS_FILTER));
-        assertTrue(filterChain.getRequestChainByName("web").getFilterNames().contains(REMEMBER_ME_FILTER));
-        assertFalse(filterChain.getRequestChainByName("web").getFilterNames().contains(BASIC_AUTH_FILTER));
-        
-        FormTester form = tester.newFormTester("form");
-        form.setValue("filterChain:authFilterChain:recorder", BASIC_AUTH_FILTER);
-        form.submit("save");
-        tester.assertNoErrorMessage();
-
-        filterChain = getSecurityManager().getSecurityConfig().getFilterChain();
-        assertTrue(filterChain.getRequestChainByName("web").getFilterNames().contains(BASIC_AUTH_FILTER));
-    }
 }
 

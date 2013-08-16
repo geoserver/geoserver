@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms;
@@ -33,23 +33,27 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import net.sf.cglib.transform.impl.AddStaticInitTransformer;
-
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.FeatureSource;
 import org.geotools.map.FeatureLayer;
+import org.geotools.map.GridCoverageLayer;
+import org.geotools.map.Layer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.Style;
 import org.geotools.xml.transform.TransformerBase;
+import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.vfny.geoserver.Request;
@@ -79,6 +83,10 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
 
     protected static final Color BG_COLOR = Color.white;
 
+    protected static final Color COLOR_PLACES_GRAY = new Color(170, 170, 170);
+    protected static final Color COLOR_LAKES_BLUE = new Color(64, 64, 192);
+    
+    
     /**
      * @return The global wms singleton from the application context.
      */
@@ -87,6 +95,13 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
         // WMS wms = new WMS(getGeoServer());
         // wms.setApplicationContext(applicationContext);
         return wms;
+    }
+
+    /**
+     * @return The global web map service singleton from the application context.
+     */
+    protected WebMapService getWebMapService() {
+        return (WebMapService) applicationContext.getBean("webMapService");
     }
 
     @Override
@@ -148,7 +163,7 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
      * 
      * @return A new map layer.
      */
-    protected FeatureLayer createMapLayer(QName layerName) throws IOException {
+    protected Layer createMapLayer(QName layerName) throws IOException {
         return createMapLayer(layerName, null);
     }
 
@@ -165,23 +180,38 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
      * 
      * @return A new map layer.
      */
-    protected FeatureLayer createMapLayer(QName layerName, String styleName) throws IOException {
-        // TODO: support coverages
+    protected Layer createMapLayer(QName layerName, String styleName) throws IOException {
         Catalog catalog = getCatalog();
-        org.geoserver.catalog.FeatureTypeInfo info = catalog.getFeatureTypeByName(
-                layerName.getNamespaceURI(), layerName.getLocalPart());
+
         LayerInfo layerInfo = catalog.getLayerByName(layerName.getLocalPart());
         Style style = layerInfo.getDefaultStyle().getStyle();
         if (styleName != null) {
             style = catalog.getStyleByName(styleName).getStyle();
         }
 
-        FeatureSource<? extends FeatureType, ? extends Feature> featureSource;
-        featureSource = info.getFeatureSource(null, null);
+        FeatureTypeInfo info = catalog.getFeatureTypeByName(
+                layerName.getNamespaceURI(), layerName.getLocalPart());
+        Layer layer = null;
+        if (info != null) {
+            FeatureSource<? extends FeatureType, ? extends Feature> featureSource;
+            featureSource = info.getFeatureSource(null, null);
 
-        FeatureLayer layer = new FeatureLayer(featureSource, style);
-        layer.setTitle(layer.getTitle());
+            layer = new FeatureLayer(featureSource, style);
+        }
+        else {
+            //try a coverage
+            CoverageInfo cinfo = 
+                catalog.getCoverageByName(layerName.getNamespaceURI(), layerName.getLocalPart());
+            GridCoverage2D cov = (GridCoverage2D) cinfo.getGridCoverage(null, null);
+        
+            layer = new GridCoverageLayer(cov, style);
+        }
 
+        if (layer == null) {
+            throw new IllegalArgumentException("Could not find layer for " + layerName);
+        }
+
+        layer.setTitle(layerInfo.getTitle());
         return layer;
     }
 
@@ -403,7 +433,7 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
      * @see #checkImage(MockHttpServletResponse, String)
      */
     protected void checkImage(MockHttpServletResponse response) {
-        checkImage(response, "image/png");
+        checkImage(response, "image/png", -1, -1);
     }
     
     /**
@@ -411,31 +441,21 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
      * actual image into a buffered image.
      * 
      */
-    protected void checkImage(MockHttpServletResponse response, String mimeType) {
+    protected void checkImage(MockHttpServletResponse response, String mimeType, int width, int height) {
         assertEquals(mimeType, response.getContentType());
         try {
             BufferedImage image = ImageIO.read(getBinaryInputStream(response));
             assertNotNull(image);
-            assertEquals(image.getWidth(), 550);
-            assertEquals(image.getHeight(), 250);
+            if(width > 0) {
+                assertEquals(width, image.getWidth());
+            }
+            if(height > 0) {
+                assertEquals(height, image.getHeight());
+            }
         } catch (Throwable t) {
             t.printStackTrace();
             fail("Could not read image returned from GetMap:" + t.getLocalizedMessage());
         }
-    }
-    
-    /**
-     * Retries the request result as a BufferedImage, checking the mime type is the expected one
-     * @param path
-     * @param mime
-     * @return
-     * @throws Exception
-     */
-    protected BufferedImage getAsImage(String path, String mime) throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse(path);
-        assertEquals(mime, resp.getContentType());
-        InputStream is = getBinaryInputStream(resp);
-        return ImageIO.read(is);
     }
     
     /**
@@ -490,4 +510,32 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
         
     }
 
+    protected LayerGroupInfo createLakesPlacesLayerGroup(Catalog catalog, LayerGroupInfo.Mode mode, LayerInfo rootLayer) throws Exception {
+        return createLakesPlacesLayerGroup(catalog, "lakes_and_places", mode, rootLayer);
+    }    
+
+    protected LayerGroupInfo createLakesPlacesLayerGroup(Catalog catalog, String name, LayerGroupInfo.Mode mode, LayerInfo rootLayer) throws Exception {
+        LayerInfo lakes = catalog.getLayerByName(getLayerId(MockData.LAKES));
+        LayerInfo places = catalog.getLayerByName(getLayerId(MockData.NAMED_PLACES));
+
+        LayerGroupInfo group = catalog.getFactory().createLayerGroup();
+        group.setName(name);
+        
+        group.setMode(mode);
+        if (rootLayer != null) {
+            group.setRootLayer(rootLayer);
+            group.setRootLayerStyle(rootLayer.getDefaultStyle());
+        }
+        
+        group.getLayers().add(lakes);
+        group.getLayers().add(places);
+
+        CatalogBuilder cb = new CatalogBuilder(catalog);
+        cb.calculateLayerGroupBounds(group);
+        
+        catalog.add(group);
+        
+        return group;
+    }    
+        
 }

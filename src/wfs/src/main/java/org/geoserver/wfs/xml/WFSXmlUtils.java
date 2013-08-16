@@ -1,6 +1,6 @@
 /* 
- * Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+ * Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs.xml;
@@ -60,7 +60,7 @@ public class WFSXmlUtils {
             strict = Boolean.TRUE;
         }
         parser.setValidating(strict.booleanValue());
-        parser.getURIHandlers().add(new WFSURIHandler(geoServer));
+        parser.getURIHandlers().add(0, new WFSURIHandler(geoServer));
 
         Catalog catalog = geoServer.getCatalog();
         //"inject" namespace mappings

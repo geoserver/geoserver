@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.map;
@@ -61,23 +61,20 @@ import org.geoserver.wms.decoration.WatermarkDecoration;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.ImageWorker;
-import org.geotools.image.palette.InverseColorMapOp;
 import org.geotools.map.Layer;
 import org.geotools.map.StyleLayer;
 import org.geotools.parameter.Parameter;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.referencing.operation.builder.GridToEnvelopeMapper;
-import org.geotools.renderer.GTRenderer;
+import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.renderer.lite.gridcoverage2d.GridCoverageRenderer;
-import org.geotools.renderer.shape.ShapefileRenderer;
 import org.geotools.resources.image.ColorUtilities;
 import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.Style;
@@ -397,14 +394,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         graphic.setRenderingHints(hintsMap);
 
         RenderingHints hints = new RenderingHints(hintsMap);
-        GTRenderer renderer;
-        if (DefaultWebMapService.useShapefileRenderer()) {
-            renderer = new ShapefileRenderer();
-        } else {
-            StreamingRenderer sr = new StreamingRenderer();
-            sr.setThreadPool(DefaultWebMapService.getRenderingPool());
-            renderer = sr;
-        }
+        StreamingRenderer renderer = new StreamingRenderer();
+        renderer .setThreadPool(DefaultWebMapService.getRenderingPool());
         renderer.setMapContent(mapContent);
         renderer.setJava2DHints(hints);
 
@@ -413,13 +404,13 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         rendererParams.put("optimizedDataLoadingEnabled", new Boolean(true));
         rendererParams.put("renderingBuffer", new Integer(mapContent.getBuffer()));
         rendererParams.put("maxFiltersToSendToDatastore", DefaultWebMapService.getMaxFilterRules());
-        rendererParams.put(ShapefileRenderer.SCALE_COMPUTATION_METHOD_KEY,
-                ShapefileRenderer.SCALE_OGC);
+        rendererParams.put(StreamingRenderer.SCALE_COMPUTATION_METHOD_KEY,
+                StreamingRenderer.SCALE_OGC);
         if (AA_NONE.equals(antialias)) {
-            rendererParams.put(ShapefileRenderer.TEXT_RENDERING_KEY,
+            rendererParams.put(StreamingRenderer.TEXT_RENDERING_KEY,
                     StreamingRenderer.TEXT_RENDERING_STRING);
         } else {
-            rendererParams.put(ShapefileRenderer.TEXT_RENDERING_KEY,
+            rendererParams.put(StreamingRenderer.TEXT_RENDERING_KEY,
                     StreamingRenderer.TEXT_RENDERING_ADAPTIVE);
         }
         if (DefaultWebMapService.isLineWidthOptimizationEnabled()) {
@@ -744,17 +735,21 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         // extract the raster symbolizers 
         //
         List<RasterSymbolizer> symbolizers = getRasterSymbolizers(mapContent, 0);
-        if (symbolizers.size() != 1)
+        if (symbolizers.size() != 1){
             return null;
+        }
         RasterSymbolizer symbolizer = symbolizers.get(0);
 
         //
-        // Get a reader
+        // Get the reader
         //
         final Feature feature = mapContent.layers().get(0).getFeatureSource().getFeatures().features().next();
-        final AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) feature.getProperty("grid").getValue();
+        final GridCoverage2DReader reader = (GridCoverage2DReader) feature.getProperty("grid").getValue();
         final Object params = feature.getProperty("params").getValue();
 
+        // 
+        // Tiling
+        //
         // if there is a output tile size hint, use it, otherwise use the output size itself
         final int tileSizeX;
         final int tileSizeY;
@@ -766,7 +761,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         }
         
         //
-        // dimensions
+        // Dimensions
         //
         final int mapWidth = mapContent.getMapWidth();
         final int mapHeight= mapContent.getMapHeight();
@@ -789,7 +784,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         }
   
         //
-        // grab the interpolation
+        // Grab the interpolation
         //
         Interpolation interpolation = Interpolation.getInstance(Interpolation.INTERP_NEAREST);
         if (wms != null) {
@@ -803,12 +798,10 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         }
 
         //
-        // read best available coverage and render it
+        // Dead best available coverage and render it
         //        
-        final CoordinateReferenceSystem coverageCRS= reader.getCrs();
+        final CoordinateReferenceSystem coverageCRS= reader.getCoordinateReferenceSystem();
         final GridGeometry2D readGG;
-        final ReferencedEnvelope bufferedEnvelope;
-        final Rectangle bufferedTargetArea;
         final boolean equalsMetadata=CRS.equalsIgnoreMetadata(mapCRS, coverageCRS);
         boolean sameCRS;
         try {
@@ -818,57 +811,50 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             ioe.initCause(e1);
             throw ioe;
         }
-        
-        if(sameCRS){
+        final boolean needsGutter=!sameCRS||!(interpolation instanceof InterpolationNearest);
+        if(!needsGutter){
             readGG = new GridGeometry2D(
-                    new GridEnvelope2D(mapRasterArea),
-                    mapEnvelope );
-            bufferedTargetArea=null;
-            bufferedEnvelope=null;
+                        new GridEnvelope2D(mapRasterArea),
+                        mapEnvelope
+                     );
             
         }else{
             //
             // SG added gutter to the drawing. We need to investigate much more and also we need to do this only when needed
             //
-            bufferedTargetArea = (Rectangle) mapRasterArea.clone();
+            // enlarge raster area
+            Rectangle bufferedTargetArea = (Rectangle) mapRasterArea.clone();
             bufferedTargetArea.add(mapRasterArea.x+mapRasterArea.width+10, mapRasterArea.y+mapRasterArea.height+10);
             bufferedTargetArea.add(mapRasterArea.x-10, mapRasterArea.y-10);
-            final GridToEnvelopeMapper ge = new GridToEnvelopeMapper(new GridEnvelope2D(mapRasterArea), mapEnvelope);
             
-            readGG = new GridGeometry2D(
-                    new GridEnvelope2D(bufferedTargetArea),
-                    PixelInCell.CELL_CORNER,
-                    ge.createTransform(),
-                    mapCRS, 
-                    null );
-            bufferedEnvelope=new ReferencedEnvelope(readGG.getEnvelope2D());    
+            // now create the final envelope accordingly
+            try {
+                readGG = new GridGeometry2D(
+                        new GridEnvelope2D(bufferedTargetArea),
+                        PixelInCell.CELL_CORNER,
+                        new AffineTransform2D(worldToScreen.createInverse()),
+                        mapCRS, 
+                        null );
+            } catch (Exception e) {
+                final IOException ioe= new IOException();
+                ioe.initCause(e);
+                throw ioe;
+            }    
         }
 
         // actual read
         RenderedImage image = null;
         try {
             
-            final GridCoverage2D coverage;
+            
             final Color readerBgColor = transparent ? null : bgColor;
-            // SG take into account gutter for reprojection
-            if(sameCRS) {
-                coverage = readBestCoverage(
+            final GridCoverage2D coverage = readBestCoverage(
                         reader, 
                         params,
-                        mapEnvelope,
-                        mapRasterArea, 
+                        ReferencedEnvelope.reference(readGG.getEnvelope()),
+                        readGG.getGridRange2D(), 
                         interpolation,
                         readerBgColor);
-            }else{
-                coverage = readBestCoverage(
-                        reader, 
-                        params,
-                        bufferedEnvelope,
-                        bufferedTargetArea, 
-                        interpolation,
-                        readerBgColor);
-            }
-             
             
 
             //
@@ -880,25 +866,12 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                     image = createBkgImage((float) mapWidth,(float) mapHeight, bgColor,null);
                 } else {
                     
-                    final GridCoverageRenderer gcr;
-                    if(sameCRS){
-                        
-                      gcr = new GridCoverageRenderer(
-                              mapCRS,
-                              mapEnvelope, mapRasterArea, worldToScreen,
-                              new RenderingHints(JAI.KEY_INTERPOLATION,interpolation));
-                    } else {
-                        //
-                        // SG added gutter to the drawing. We need to investigate much more and also we need to do this only when needed
-                        //
-                        gcr = new GridCoverageRenderer(
-                                mapCRS,
-                                bufferedEnvelope, 
-                                bufferedTargetArea, 
-                                worldToScreen, 
-                                new RenderingHints(JAI.KEY_INTERPOLATION,interpolation));     
-                    }
-
+                    final GridCoverageRenderer gcr = new GridCoverageRenderer(
+                            mapCRS,
+                            ReferencedEnvelope.reference(readGG.getEnvelope()),
+                            readGG.getGridRange2D(), 
+                            worldToScreen, 
+                            new RenderingHints(JAI.KEY_INTERPOLATION,interpolation));   
                     
                     // create a solid color empty image
                     image = gcr.renderImage(coverage, symbolizer, interpolation,
@@ -956,7 +929,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
         //
         // IndexColorModel
-        //
+        // 
         final ImageWorker worker = new ImageWorker(image);
         final int transparencyType=cm.getTransparency();
         
@@ -1126,7 +1099,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             }
         }
         
-        // RenderedImageBrowser.showChain(image);
+//         RenderedImageBrowser.showChain(image);
         return image;
     }
 
@@ -1199,9 +1172,9 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * @throws IOException
      */
     private static GridCoverage2D readBestCoverage(
-            final AbstractGridCoverage2DReader reader, 
+            final GridCoverage2DReader reader, 
             final Object params,
-            final ReferencedEnvelope requestedModelArea,
+            final ReferencedEnvelope envelope,
             final Rectangle requestedRasterArea,
             final Interpolation interpolation,
             final Color bgColor) throws IOException {
@@ -1213,17 +1186,16 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         //
         ////
         try {
-            final CoordinateReferenceSystem coverageCRS=reader.getCrs();
-            final CoordinateReferenceSystem requestCRS= requestedModelArea.getCoordinateReferenceSystem();
+            final CoordinateReferenceSystem coverageCRS=reader.getCoordinateReferenceSystem();
+            final CoordinateReferenceSystem requestCRS= envelope.getCoordinateReferenceSystem();
             final ReferencedEnvelope coverageEnvelope=new ReferencedEnvelope(reader.getOriginalEnvelope());
             if(CRS.equalsIgnoreMetadata(coverageCRS, requestCRS)){
-                if(!coverageEnvelope.intersects((BoundingBox)requestedModelArea))
+                if(!coverageEnvelope.intersects((BoundingBox)envelope))
                     return null;
             }else{
                 
                 ReferencedEnvelope dataEnvelopeWGS84 = coverageEnvelope.transform(DefaultGeographicCRS.WGS84, true);
-                ReferencedEnvelope requestEnvelopeWGS84 = requestedModelArea.transform(
-                        DefaultGeographicCRS.WGS84, true);
+                ReferencedEnvelope requestEnvelopeWGS84 = envelope.transform(DefaultGeographicCRS.WGS84, true);
                 if (!dataEnvelopeWGS84.intersects((BoundingBox) requestEnvelopeWGS84))
                     return null;                
             }
@@ -1235,12 +1207,12 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         }
 
         // //
-        // It is an AbstractGridCoverage2DReader, let's use parameters
+        // It is an GridCoverage2DReader, let's use parameters
         // if we have any supplied by a user.
         // //
         // first I created the correct ReadGeometry
         final Parameter<GridGeometry2D> readGG = (Parameter<GridGeometry2D>) AbstractGridFormat.READ_GRIDGEOMETRY2D.createValue();
-        readGG.setValue(new GridGeometry2D(new GridEnvelope2D(requestedRasterArea), requestedModelArea));
+        readGG.setValue(new GridGeometry2D(new GridEnvelope2D(requestedRasterArea), envelope));
         
         final Parameter<Interpolation> readInterpolation=(Parameter<Interpolation>) ImageMosaicFormat.INTERPOLATION.createValue(); 
         readInterpolation.setValue(interpolation);
@@ -1334,8 +1306,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * @return
      */
     static List<RasterSymbolizer> getRasterSymbolizers(WMSMapContent mc, int layerIndex) {
-        double scaleDenominator = RendererUtilities.calculateOGCScale(mc.getRenderingArea(),
-                mc.getMapWidth(), null);
+        double scaleDenominator = mc.getScaleDenominator();
         Layer layer = mc.layers().get(layerIndex);
         FeatureType featureType = layer.getFeatureSource().getSchema();
         Style style = layer.getStyle();

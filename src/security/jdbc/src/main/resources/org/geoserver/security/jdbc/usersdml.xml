@@ -44,8 +44,42 @@
 	insert into user_props(username,propname,propvalue) values (?,?,?)
   </entry>
   <entry key="userprops.deleteAll">
-	delete from user_props 
+	delete from user_props 		
   </entry>
+  
+    <!-- since GeoServer version 2.3.0 -->  
+  <entry key="user.usersHavingProperty">
+    select u.name,u.password,u.enabled from users u ,user_props p where u.name=p.username and p.propname = ? 
+  </entry>
+    <entry key="userprops.usersHavingProperty">
+    select p.username,p.propname,p.propvalue from user_props p  where exists (select p1.username from user_props p1 where p.username=p1.username and p1.propname = ?) 
+  </entry> 
+  <entry key="userprops.userCountHavingProperty">
+    select count(*) from user_props p where  p.propname = ? 
+  </entry>
+    
+  <entry key="user.usersNotHavingProperty">
+    select u.name,u.password,u.enabled from users u  where not exists (select p.username from user_props p where u.name=p.username and p.propname = ?) 
+  </entry>
+  <entry key="userprops.usersNotHavingProperty">
+    select p.username,p.propname,p.propvalue from user_props p  where not exists (select p1.username from user_props p1 where p.username=p1.username and p1.propname = ?) 
+  </entry>  
+  <entry key="userprops.userCountNotHavingProperty">
+    select count(*) from users u  where not exists (select p.username from user_props p where u.name=p.username and p.propname = ?) 
+  </entry>
+      
+   <entry key="user.usersHavingPropertyValue">
+    select u.name,u.password,u.enabled from users u ,user_props p where u.name=p.username and p.propname=? and p.propvalue=? 
+  </entry>
+  <entry key="userprops.usersHavingPropertyValue">
+    select p.username,p.propname,p.propvalue from user_props p  where exists (select p1.username from user_props p1 where p.username=p1.username and p1.propname = ? and p1.propvalue=?) 
+  </entry>    
+  <entry key="userprops.userCountHavingPropertyValue">
+    select count(*) from user_props p where  p.propname = ? and p.propvalue = ? 
+  </entry>      
+        
+  <!--  end GeoServer version 2.3.0 -->  
+  
   
   <entry key="groups.count">
 	select count(*) from groups

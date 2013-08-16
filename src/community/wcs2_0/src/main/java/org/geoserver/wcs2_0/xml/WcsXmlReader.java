@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -29,6 +29,7 @@ public class WcsXmlReader extends XmlRequestReader {
         this.configuration = configuration;
     }
 
+    @SuppressWarnings("rawtypes")
     public Object read(Object request, Reader reader, Map kvp) throws Exception {
         // create the parser instance
         Parser parser = new Parser(configuration);

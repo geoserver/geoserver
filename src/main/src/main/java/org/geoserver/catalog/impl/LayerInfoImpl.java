@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -22,6 +22,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geotools.util.logging.Logging;
 
+
 public class LayerInfoImpl implements LayerInfo {
     
     static final Logger LOGGER = Logging.getLogger(LayerInfoImpl.class);
@@ -35,21 +36,31 @@ public class LayerInfoImpl implements LayerInfo {
     // TODO: revert to normal property when the resource/publishing split is done
     transient protected String name;
 
+    private String title;
+    
+    private String abstractTxt;
+    
     protected String path;
 
     protected LayerInfo.Type type;
 
     protected StyleInfo defaultStyle;
 
-    protected Set styles = new HashSet();
+    protected Set<StyleInfo> styles = new HashSet<StyleInfo>();
 
     protected ResourceInfo resource;
 
     protected LegendInfo legend;
 
-    protected boolean enabled;
-    
-    protected Boolean advertised;
+    // this property has been left to ensure backwards compatibility with xstream but it's marked transient
+    // to avoid its value being serialized.
+    // TODO: revert to normal property when the resource/publishing split is done
+    transient protected boolean enabled;
+
+    // this property has been left to ensure backwards compatibility with xstream but it's marked transient
+    // to avoid its value being serialized.
+    // TODO: revert to normal property when the resource/publishing split is done
+    transient protected Boolean advertised;
 
     protected Boolean queryable;
 
@@ -75,6 +86,7 @@ public class LayerInfoImpl implements LayerInfo {
      */
     protected List<LayerIdentifierInfo> identifiers = new ArrayList<LayerIdentifierInfo>(1);
 
+    @Override
     public String getId() {
         return id;
     }
@@ -82,7 +94,8 @@ public class LayerInfoImpl implements LayerInfo {
     public void setId(String id) {
         this.id = id;
     }
-    
+
+    @Override    
     public String getName() {
         if (resource == null) {
             throw new NullPointerException("Unable to get Layer name without an underlying resource");
@@ -92,6 +105,7 @@ public class LayerInfoImpl implements LayerInfo {
         // return name;
     }
 
+    @Override    
     public void setName(String name) {
         // TODO: remove this log and reinstate field assignment when resource/publish split is complete
         LOGGER.log(Level.FINE, "Warning, some code is setting the LayerInfo name, but that will be ignored");
@@ -103,73 +117,93 @@ public class LayerInfoImpl implements LayerInfo {
         resource.setName(name);
     }
 
+    @Override    
     public String prefixedName() {
         return this.getResource().getStore().getWorkspace().getName() + ":" + getName();
     }
 
+    @Override    
     public Type getType() {
         return type;
     }
-
+    
+    @Override
     public void setType(Type type) {
         this.type = type;
     }
 
+    @Override    
     public String getPath() {
         return path;
     }
-
+    
+    @Override
     public void setPath(String path) {
         this.path = path;
     }
-
+    
+    @Override
     public StyleInfo getDefaultStyle() {
         return defaultStyle;
     }
 
+    @Override    
     public void setDefaultStyle(StyleInfo defaultStyle) {
         this.defaultStyle = defaultStyle;
     }
 
-    public Set getStyles() {
+    public Set<StyleInfo> getStyles() {
         return styles;
     }
 
-    public void setStyles(Set styles) {
+    public void setStyles(Set<StyleInfo> styles) {
         this.styles = styles;
     }
 
+    @Override
     public ResourceInfo getResource() {
         return resource;
     }
 
+    @Override
     public void setResource(ResourceInfo resource) {
         this.resource = resource;
     }
 
+    @Override
     public LegendInfo getLegend() {
         return legend;
     }
 
+    @Override
     public void setLegend(LegendInfo legend) {
         this.legend = legend;
     }
 
+    @Override
     public AttributionInfo getAttribution() {
         return attribution;
     }
 
+    @Override
     public void setAttribution(AttributionInfo attribution) {
         this.attribution = attribution;
     }
 
+    @Override
     public boolean isEnabled() {
-        return enabled;
+        if (resource == null) {
+            throw new NullPointerException("Unable to get Layer enabled flag without an underlying resource");
+        }
+        return resource.isEnabled();
+        // TODO: uncomment back when resource/publish split is complete
+        // return name;
     }
 
     /**
      * @see LayerInfo#enabled()
      */
+    @Override
     public boolean enabled() {
         ResourceInfo resource = getResource();
         boolean resourceEnabled = resource != null && resource.enabled();
@@ -177,22 +211,28 @@ public class LayerInfoImpl implements LayerInfo {
         return resourceEnabled && thisEnabled;
     }
 
+    @Override
     public void setEnabled(boolean enabled) {
+        // TODO: remove this log and reinstate field assignment when resource/publish split is complete
+        LOGGER.log(Level.FINE, "Warning, some code is setting the LayerInfo enabled flag, but that will be ignored");
         this.enabled = enabled;
-        ResourceInfo resource = getResource();
-        if (resource != null) {
-            resource.setEnabled(enabled);
+        
+        if (resource == null) {
+            throw new NullPointerException("Layer enabled flag must not be set without an underlying resource");
         }
-    }
+        resource.setEnabled(enabled);
+   }
 
+    @Override
     public MetadataMap getMetadata() {
         return metadata;
     }
-
+    
     public void setMetadata(MetadataMap metadata) {
         this.metadata = metadata;
     }
     
+    @Override
     public void accept(CatalogVisitor visitor) {
         visitor.visit(this);
     }
@@ -203,7 +243,6 @@ public class LayerInfoImpl implements LayerInfo {
         int result = 1;
         result = prime * result
                 + ((defaultStyle == null) ? 0 : defaultStyle.hashCode());
-        result = prime * result + (enabled ? 1231 : 1237);
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((legend == null) ? 0 : legend.hashCode());
         // TODO: add back when resource publish split is in place
@@ -219,6 +258,7 @@ public class LayerInfoImpl implements LayerInfo {
         return result;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
@@ -231,8 +271,6 @@ public class LayerInfoImpl implements LayerInfo {
             if (other.getDefaultStyle() != null)
                 return false;
         } else if (!defaultStyle.equals(other.getDefaultStyle()))
-            return false;
-        if (enabled != other.isEnabled())
             return false;
         if (id == null) {
             if (other.getId() != null)
@@ -296,38 +334,36 @@ public class LayerInfoImpl implements LayerInfo {
                 ", resource:").append(resource).append(']').toString();
     }
 
+    @Override
     public void setQueryable(boolean queryable) {
         this.queryable = queryable;
     }
 
+    @Override
     public boolean isQueryable() {
         return this.queryable == null? true : this.queryable.booleanValue();
     }
 
     @Override
     public boolean isAdvertised() {
-        if(this.advertised != null) {
-            return advertised;
-        } 
-        
-        // check the metadata map for backwards compatibility with 2.1.x series
-        MetadataMap md = getMetadata();
-        if(md == null) {
-            return true;
+        if (resource == null) {
+            throw new NullPointerException("Unable to get Layer advertised flag without an underlying resource");
         }
-        Boolean metadataAdvertised = md.get(KEY_ADVERTISED, Boolean.class);
-        if(metadataAdvertised == null) {
-            metadataAdvertised = true;
-        }
-        return metadataAdvertised;
+        return resource.isAdvertised();
+        // TODO: uncomment back when resource/publish split is complete
+        // return name;
     }
 
     @Override
     public void setAdvertised(boolean advertised) {
+        // TODO: remove this log and reinstate field assignment when resource/publish split is complete
+        LOGGER.log(Level.FINE, "Warning, some code is setting the LayerInfo advertised flag, but that will be ignored");
         this.advertised = advertised;
-        if(resource != null) {
-            resource.setAdvertised(advertised);
+        
+        if (resource == null) {
+            throw new NullPointerException("Layer advertised flag must not be set without an underlying resource");
         }
+        resource.setAdvertised(advertised);
     }
 
     @Override
@@ -348,4 +384,23 @@ public class LayerInfoImpl implements LayerInfo {
         this.identifiers = identifiers;
     }
 
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
+    @Override
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    @Override
+    public String getAbstract() {
+        return abstractTxt;
+    }
+
+    @Override
+    public void setAbstract(String abstractTxt) {
+        this.abstractTxt = abstractTxt;
+    }
 }

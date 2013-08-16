@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -40,6 +40,11 @@ public class WFSLoader extends LegacyServiceLoader<WFSInfo> {
         Boolean featureBounding = (Boolean) properties.get( "featureBounding");
         if ( featureBounding != null ) {
             wfs.setFeatureBounding( featureBounding );
+        }
+        
+        Boolean hitsIgnoreMaxFeatures = (Boolean) properties.get( "hitsIgnoreMaxFeatures");
+        if (hitsIgnoreMaxFeatures != null) {
+            wfs.setHitsIgnoreMaxFeatures( hitsIgnoreMaxFeatures );
         }
         
         //gml2

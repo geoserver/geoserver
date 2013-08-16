@@ -47,7 +47,7 @@ When finished, you will need to commit the content (if you have commit rights) o
 Tips
 ~~~~
 
-* See the `GeoServer Documentation Manual <http://docs.geoserver.org/trunk/en/docguide>`_ for more information about writing documentation.
+* See the `GeoServer Documentation Manual <http://docs.geoserver.org/latest/en/docguide/>`_ for more information about writing documentation.
 * The Developer Manual exists at :file:`/doc/en/developer`.  The same procedures for editing the User Manual apply to the Developer Manual.
 
 

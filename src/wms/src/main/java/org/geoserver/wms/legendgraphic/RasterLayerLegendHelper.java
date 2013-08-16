@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.legendgraphic;
@@ -70,7 +70,8 @@ public class RasterLayerLegendHelper {
     private Color bgColor;
 
     private ColorMapLegendCreator cMapLegendCreator;
-
+    
+    
     /**
      * Constructor for a RasterLayerLegendHelper.
      * 
@@ -78,15 +79,18 @@ public class RasterLayerLegendHelper {
      * It takes a {@link GetLegendGraphicRequest} object in order to do its magic.
      * 
      * @param request
-     *            the {@link GetLegendGraphicRequest} for which we want to builda legend
+     *            the {@link GetLegendGraphicRequest} for which we want to build a legend
+     * @param style the {@link Style} for which we want to build a legend
+     * @param rule the {@link Rule} to use for rendering
      */
-    public RasterLayerLegendHelper(final GetLegendGraphicRequest request) {
+    public RasterLayerLegendHelper(final GetLegendGraphicRequest request,Style style,String ruleName) {
         PackagedUtils.ensureNotNull(request, "The provided GetLegendGraphicRequest is null");
-        parseRequest(request);
+        
+        parseRequest(request,style,ruleName);
     }
 
     @SuppressWarnings("unchecked")
-    private void parseRequest(final GetLegendGraphicRequest request) {
+    private void parseRequest(final GetLegendGraphicRequest request,Style gt2Style,String ruleName) {
         // get the requested layer
         // and check that it is actually a grid
         // final FeatureType layer = request.getLayer();
@@ -95,13 +99,12 @@ public class RasterLayerLegendHelper {
         // if(!found)
         // throw new IllegalArgumentException("Unable to create legend for non raster style");
 
-        // get the style and its rules
-        final Style gt2Style = request.getStyle();
+        
         final FeatureTypeStyle[] ftStyles = gt2Style.getFeatureTypeStyles();
         final double scaleDenominator = request.getScale();
 
         final Rule[] applicableRules;
-        String ruleName = request.getRule();
+        
         if (ruleName != null) {
             Rule rule = LegendUtils.getRule(ftStyles, ruleName);
             if (rule == null) {
@@ -111,9 +114,8 @@ public class RasterLayerLegendHelper {
         } else {
             applicableRules = LegendUtils.getApplicableRules(ftStyles, scaleDenominator);
         }
-        if (applicableRules.length != 1)
-            throw new IllegalArgumentException(
-                    "Unable to create a legend for this style, we need exactly 1 rule");
+        // no rules means no legend has to be produced
+        if (applicableRules.length != 0) {
 
 //        final NumberRange<Double> scaleRange = NumberRange.create(scaleDenominator,
 //                scaleDenominator);
@@ -189,6 +191,7 @@ public class RasterLayerLegendHelper {
 
         } else
             cMapLegendCreator = null;
+        }
 
     }
 
@@ -198,6 +201,9 @@ public class RasterLayerLegendHelper {
      * @return a {@link BufferedImage} that represents the legend for the provided request.
      */
     public BufferedImage getLegend() {
+        if(rasterSymbolizer == null) {
+            return null;
+        }
         return createResponse();
     }
 

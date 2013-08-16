@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wfs.xml.v1_0_0;
@@ -11,6 +11,7 @@ import javax.xml.namespace.QName;
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.QueryType;
 import net.opengis.wfs.WfsFactory;
+import org.geoserver.wfs.xml.SqlViewParamsExtractor;
 
 import org.geotools.util.Converters;
 import org.geotools.xml.AbstractComplexBinding;
@@ -130,6 +131,10 @@ public class GetFeatureTypeBinding extends AbstractComplexBinding {
         
         //queries
         getFeature.getQuery().addAll(node.getChildValues(QueryType.class));
+        
+        // viewParams
+        SqlViewParamsExtractor.viewParams(getFeature, node);
+
 
         return getFeature;
     }

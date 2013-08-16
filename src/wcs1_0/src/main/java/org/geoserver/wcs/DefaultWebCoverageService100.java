@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.media.jai.Interpolation;
@@ -50,8 +51,9 @@ import org.geotools.coverage.grid.GeneralGridGeometry;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.parameter.DefaultParameterDescriptor;
 import org.geotools.referencing.CRS;
@@ -64,6 +66,7 @@ import org.opengis.filter.Filter;
 import org.opengis.geometry.Envelope;
 import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.GeneralParameterValue;
+import org.opengis.parameter.ParameterDescriptor;
 import org.opengis.parameter.ParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
@@ -205,7 +208,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             // GRAB A READER
             //
             // grab the reader using the default params
-            final AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) meta
+            final GridCoverage2DReader reader = (GridCoverage2DReader) meta
                     .getGridCoverageReader(null, WCSUtils.getReaderHints(wcs));
             if (reader == null) {
                 // cannot instantiate a reader, we should return an empty array
@@ -307,8 +310,10 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
              * reading parameters. If it is the case, one can adds it to the request. If an
              * exception is thrown, we have nothing to do.
              */
-            final List<GeneralParameterDescriptor> parameterDescriptors = readParametersDescriptor
-                    .getDescriptor().descriptors();
+            final List<GeneralParameterDescriptor> parameterDescriptors = new ArrayList<GeneralParameterDescriptor>(
+                    readParametersDescriptor.getDescriptor().descriptors());
+            Set<ParameterDescriptor<List>> dynamicParameters = reader.getDynamicParameters();
+            parameterDescriptors.addAll(dynamicParameters);
 
             //
             // TIME
@@ -404,6 +409,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                     String axisName = axis.getName();
                     if (!axisName.equalsIgnoreCase(WCSUtils.ELEVATION)) {
                         Object dimInfo = meta.getMetadata().get(ResourceInfo.CUSTOM_DIMENSION_PREFIX + axisName);
+                        axisName = axisName.toUpperCase(); // using uppercase with imagemosaic
                         if (dimInfo instanceof DimensionInfo && dimensions.hasDomain(axisName)) {
                             int valueCount = axis.getSingleValue().size();
                             if (valueCount > 0) {
@@ -413,7 +419,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                                             .getSingleValue().get(s)).getValue());
                                 }
                                 readParameters = CoverageUtils.mergeParameter(parameterDescriptors,
-                                        readParameters, dimValues, axisName.toUpperCase());
+                                        readParameters, dimValues, axisName);
                             }
                         }
                     }
@@ -432,12 +438,49 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             // Check we're not going to read too much data
             WCSUtils.checkInputLimits(wcs, meta, reader, requestedGridGeometry);
 
+
+            //
+            // Checking for supported Interpolation Methods
+            //
+            Interpolation interpolation = Interpolation.getInstance(Interpolation.INTERP_NEAREST);
+
+            String interpolationType = null;
+            if(request.getInterpolationMethod()!=null){
+                interpolationType = request.getInterpolationMethod().getLiteral();            
+                if (interpolationType != null) {
+                   
+                    if (interpolationType.equalsIgnoreCase("bilinear")) {
+                        interpolation = Interpolation.getInstance(Interpolation.INTERP_BILINEAR);
+                    } else if (interpolationType.equalsIgnoreCase("bicubic")) {
+                        interpolation = Interpolation.getInstance(Interpolation.INTERP_BICUBIC);
+                    } else if (interpolationType.equalsIgnoreCase("nearest neighbor")) {
+                        interpolation = Interpolation.getInstance(Interpolation.INTERP_NEAREST);
+                    }
+                    readParameters = CoverageUtils.mergeParameter(parameterDescriptors,readParameters, interpolation, "interpolation");
+                    if(meta.getStore().getFormat() instanceof ImageMosaicFormat){
+                        GeneralParameterValue[] temp = new GeneralParameterValue[readParameters.length+1];
+                        System.arraycopy(readParameters, 0, temp, 0, readParameters.length);
+                        temp[temp.length-1]=ImageMosaicFormat.INTERPOLATION.createValue();
+                        ((ParameterValue)temp[temp.length-1]).setValue(interpolation);
+                        readParameters=temp;
+                    }
+                }
+            }
+            //
+            // make sure we work in streaming mode
+            //
+            // work in streaming fashion when JAI is involved
+            readParameters = WCSUtils.replaceParameter(readParameters, Boolean.FALSE,
+                    AbstractGridFormat.USE_JAI_IMAGEREAD);
+            
             //
             // perform read
             //
             coverage = (GridCoverage2D) reader.read(readParameters);
             if ((coverage == null) || !(coverage instanceof GridCoverage2D)) {
-                throw new IOException("The requested coverage could not be found.");
+                throw new IOException("No raster data found in the request (it may be that " +
+                		"the request bbox is outside of the coverage area, or that the filters used " +
+                		"match no portions of it.");
             }
 
             // double check what we have loaded
@@ -448,13 +491,10 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             //
             GridCoverage2D bandSelectedCoverage = coverage;
             // ImageIOUtilities.visualize(coverage.getRenderedImage());
-            String interpolationType = null;
             if (request.getRangeSubset() != null) {
                 // if (request.getRangeSubset().getAxisSubset().size() > 1) {
                 // throw new WcsException("Multi field coverages are not supported yet");
                 // }
-
-                interpolationType = request.getInterpolationMethod().getLiteral();
 
                 // extract the band indexes
                 EList axisSubset = request.getRangeSubset().getAxisSubset();
@@ -495,20 +535,6 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                                     + e.getLocalizedMessage());
                         }
                     }
-                }
-            }
-
-            //
-            // Checking for supported Interpolation Methods
-            //
-            Interpolation interpolation = Interpolation.getInstance(Interpolation.INTERP_NEAREST);
-            if (interpolationType != null) {
-                if (interpolationType.equalsIgnoreCase("bilinear")) {
-                    interpolation = Interpolation.getInstance(Interpolation.INTERP_BILINEAR);
-                } else if (interpolationType.equalsIgnoreCase("bicubic")) {
-                    interpolation = Interpolation.getInstance(Interpolation.INTERP_BICUBIC);
-                } else if (interpolationType.equalsIgnoreCase("nearest neighbor")) {
-                    interpolation = Interpolation.getInstance(Interpolation.INTERP_NEAREST);
                 }
             }
 

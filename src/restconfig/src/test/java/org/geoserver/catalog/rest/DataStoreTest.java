@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2009 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog.rest;
@@ -18,6 +18,7 @@ import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.SystemTestData;
@@ -34,7 +35,15 @@ public class DataStoreTest extends CatalogRESTTestSupport {
 
     @Before
     public void addDataStores() throws IOException {
+        // the store configuration gets ruined by tests in more than one way, let's recreate it
+        DataStoreInfo sfStore = getCatalog().getDataStoreByName("sf");
+        if(sfStore != null) {
+            CascadeDeleteVisitor remover = new CascadeDeleteVisitor(getCatalog());
+            remover.visit(sfStore);
+        }
         getTestData().addVectorLayer(SystemTestData.PRIMITIVEGEOFEATURE, catalog);
+        getTestData().addVectorLayer(SystemTestData.AGGREGATEGEOFEATURE, catalog);
+        getTestData().addVectorLayer(SystemTestData.GENERICENTITY, catalog);
     }
 
     @Test

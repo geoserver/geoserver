@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -17,6 +17,8 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.LayerGroupInfo.Mode;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.WMSTestSupport;
 import org.junit.After;
@@ -27,7 +29,7 @@ import org.w3c.dom.Document;
 
 public class LayerGroupWorkspaceTest extends WMSTestSupport {
 
-    LayerGroupInfo global, sf, cite;
+    LayerGroupInfo global, global2, sf, cite, nested;
 
     @Before
     public void prepare() throws Exception {
@@ -37,6 +39,10 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         global = createLayerGroup(cat, "base", "base default",
             layer(cat, MockData.LAKES), layer(cat, MockData.FORESTS));
         cat.add(global);
+        
+        global2 = createLayerGroup(cat, "base2", "base default",
+                layer(cat, MockData.LAKES), layer(cat, MockData.FORESTS));
+        cat.add(global2);
 
         sf = createLayerGroup(cat, "base", "sf base", layer(cat, MockData.PRIMITIVEGEOFEATURE), 
             layer(cat, MockData.AGGREGATEGEOFEATURE));
@@ -55,7 +61,12 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         cat.remove(cite);
         cat.remove(sf);
         cat.remove(global);
+        cat.remove(global2);
+        if(nested != null) {
+            cat.remove(nested);
+        }
     }
+    
     protected void registerNamespaces(java.util.Map<String,String> namespaces) {
         namespaces.put("wms", "http://www.opengis.net/wms");
     };
@@ -64,7 +75,7 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         return cat.getLayerByName(getLayerId(name));
     }
 
-    LayerGroupInfo createLayerGroup(Catalog cat, String name, String title, LayerInfo... layers) throws Exception {
+    LayerGroupInfo createLayerGroup(Catalog cat, String name, String title, PublishedInfo... layers) throws Exception {
         LayerGroupInfo group = cat.getFactory().createLayerGroup();
         group.setName(name);
         group.setTitle("title for layer group " + title);
@@ -115,6 +126,84 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         assertXpathExists("//wms:Layer/wms:Abstract[text() = 'abstract for layer group cite base']", dom);
     }    
     
+    @Test
+    public void testSingleLayerGroupInCapabilities() throws Exception {
+        Document dom = getAsDOM("wms?request=getcapabilities&version=1.3.0");
+        
+        // check layer group is present
+        assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer/wms:Name[text() = 'base']", dom);
+
+        // check it doesn't have children Layers
+        assertXpathNotExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer/wms:Layer", dom);
+        
+        // check its layers are present at the same level
+        assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer/wms:Name[text() = 'cite:Lakes']", dom);
+        assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer/wms:Name[text() = 'cite:Forests']", dom);        
+    }
+    
+    @Test
+    public void testNamedLayerGroupInCapabilities() throws Exception {    
+        Catalog cat = getCatalog();
+        LayerGroupInfo layerGroup = cat.getLayerGroupByName("base");
+        layerGroup.setMode(LayerGroupInfo.Mode.NAMED);
+        cat.save(layerGroup);
+        Document dom = getAsDOM("wms?request=getcapabilities&version=1.3.0");
+
+        // check layer group is present
+        assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer/wms:Name[text() = 'base']", dom);
+
+        // check its layers are no more present at the same level
+        assertXpathNotExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer/wms:Name[text() = 'cite:Lakes']", dom);
+        assertXpathNotExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer/wms:Name[text() = 'cite:Forests']", dom);        
+        
+        // check its layers are present as its children
+        assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer[wms:Name[text() = 'base']]/wms:Layer/wms:Name[text() = 'cite:Lakes']", dom);
+        assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer[wms:Name[text() = 'base']]/wms:Layer/wms:Name[text() = 'cite:Forests']", dom);                
+    }
+    
+    @Test
+    public void testContainerLayerGroupInCapabilities() throws Exception {    
+        Catalog cat = getCatalog();
+        LayerGroupInfo layerGroup = cat.getLayerGroupByName("base");
+        layerGroup.setMode(LayerGroupInfo.Mode.CONTAINER);
+        cat.save(layerGroup);
+        Document dom = getAsDOM("wms?request=getcapabilities&version=1.3.0");
+        
+        // check layer group doesn't have a name but eventually a title
+        assertXpathNotExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer/wms:Name[text() = 'base']", dom);
+        assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer/wms:Title[text() = 'title for layer group base default']", dom);
+
+        // check its layers are no more present at the same level
+        assertXpathNotExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer/wms:Name[text() = 'cite:Lakes']", dom);
+        assertXpathNotExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer/wms:Name[text() = 'cite:Forests']", dom);        
+        
+        // check its layers are present as its children
+        assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer[wms:Title[text() = 'title for layer group base default']]/wms:Layer/wms:Name[text() = 'cite:Lakes']", dom);
+        assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer[wms:Title[text() = 'title for layer group base default']]/wms:Layer/wms:Name[text() = 'cite:Forests']", dom);                
+    }
+
+    @Test
+    public void testEoLayerGroupInCapabilities() throws Exception {    
+        Catalog cat = getCatalog();
+        LayerGroupInfo layerGroup = cat.getLayerGroupByName("base");
+        layerGroup.setMode(LayerGroupInfo.Mode.EO);
+        layerGroup.setRootLayer(layer(cat, MockData.BUILDINGS));
+        layerGroup.setRootLayerStyle(cat.getStyleByName("Buildings"));
+        cat.save(layerGroup);
+        Document dom = getAsDOM("wms?request=getcapabilities&version=1.3.0");
+        
+        // check layer group exists
+        assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer/wms:Name[text() = 'base']", dom);
+
+        // check its layers are no more present at the same level
+        assertXpathNotExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer/wms:Name[text() = 'cite:Lakes']", dom);
+        assertXpathNotExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer/wms:Name[text() = 'cite:Forests']", dom);        
+        
+        // check its layers are present as its children
+        assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer[wms:Name[text() = 'base']]/wms:Layer/wms:Name[text() = 'cite:Lakes']", dom);
+        assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer[wms:Name[text() = 'base']]/wms:Layer/wms:Name[text() = 'cite:Forests']", dom);                
+    }
+    
     @Test 
     public 
     void testWorkspaceCapabilities() throws Exception {
@@ -127,26 +216,147 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
 
     @Test
     public void testGlobalGetMap() throws Exception {
-        Document dom = getAsDOM("wms/reflect?layers=base&format=kml");
-        assertXpathExists("/kml:kml/kml:Document/kml:name[text() = 'cite:Lakes,cite:Forests']", dom);
+        Document dom = getAsDOM("wms/reflect?layers=base&format=rss");
+        assertXpathExists("rss/channel/title[text() = 'cite:Lakes,cite:Forests']", dom);
 
-        dom = getAsDOM("wms/reflect?layers=sf:base&format=kml");
-        assertXpathExists("/kml:kml/kml:Document/kml:name[text() = 'sf:PrimitiveGeoFeature,sf:AggregateGeoFeature']", dom);
+        dom = getAsDOM("wms/reflect?layers=sf:base&format=rss");
+        assertXpathExists("rss/channel/title[text() = 'sf:PrimitiveGeoFeature,sf:AggregateGeoFeature']", dom);
 
-        dom = getAsDOM("wms/reflect?layers=cite:base&format=kml");
-        assertXpathExists("/kml:kml/kml:Document/kml:name[text() = 'cite:Bridges,cite:Buildings']", dom);
+        dom = getAsDOM("wms/reflect?layers=cite:base&format=rss");
+        assertXpathExists("rss/channel/title[text() = 'cite:Bridges,cite:Buildings']", dom);
     }
 
     @Test 
     public void testWorkspaceGetMap() throws Exception {
-        Document dom = getAsDOM("sf/wms?request=reflect&layers=base&format=kml");
-        assertXpathExists("/kml:kml/kml:Document/kml:name[text() = 'sf:PrimitiveGeoFeature,sf:AggregateGeoFeature']", dom);
+        Document dom = getAsDOM("sf/wms?request=reflect&layers=base&format=rss");
+        assertXpathExists("rss/channel/title[text() = 'sf:PrimitiveGeoFeature,sf:AggregateGeoFeature']", dom);
 
-        dom = getAsDOM("cite/wms?request=reflect&layers=base&format=kml");
-        assertXpathExists("/kml:kml/kml:Document/kml:name[text() = 'cite:Bridges,cite:Buildings']", dom);
+        dom = getAsDOM("cite/wms?request=reflect&layers=base&format=rss");
+        assertXpathExists("rss/channel/title[text() = 'cite:Bridges,cite:Buildings']", dom);
 
-        dom = getAsDOM("sf/wms?request=reflect&layers=cite:base&format=kml");
-        assertXpathExists("/kml:kml/kml:Document/kml:name[text() = 'sf:PrimitiveGeoFeature,sf:AggregateGeoFeature']", dom);
+        dom = getAsDOM("sf/wms?request=reflect&layers=cite:base&format=rss");
+        assertXpathExists("rss/channel/title[text() = 'sf:PrimitiveGeoFeature,sf:AggregateGeoFeature']", dom);
+    }
+    
+    @Test
+    public void testSharedLayersInCapabilities() throws Exception {
+        Catalog cat = getCatalog();
+        LayerGroupInfo global = cat.getLayerGroupByName("base");
+        global.setMode(Mode.NAMED);
+        cat.save(global);
+        LayerGroupInfo global2 = cat.getLayerGroupByName("base2");
+        global2.setMode(Mode.NAMED);
+        cat.save(global2);
+
+        Document dom = getAsDOM("wms?request=getcapabilities&version=1.3.0");
+        // print(dom);
+        
+        // check top level layer group exists
+        assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer/wms:Name[text() = 'base']", dom);
+        assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer/wms:Name[text() = 'base2']", dom);
+
+        // check their layers are no more present at the same level
+        assertXpathNotExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer/wms:Name[text() = 'cite:Lakes']", dom);
+        assertXpathNotExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer/wms:Name[text() = 'cite:Forests']", dom);        
+        
+        // check its layers are present as their children (in both groups)
+        assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer[wms:Name = 'base']/wms:Layer[wms:Name = 'cite:Lakes']", dom);
+        assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer[wms:Name = 'base']/wms:Layer[wms:Name = 'cite:Forests']", dom);
+        assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer[wms:Name = 'base2']/wms:Layer[wms:Name = 'cite:Lakes']", dom);
+        assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer[wms:Name = 'base2']/wms:Layer[wms:Name = 'cite:Forests']", dom);
+    }
+    
+    @Test
+    public void testNestedSingleInCapabilities() throws Exception {
+        Catalog cat = getCatalog();
+        nested = createLayerGroup(cat, "nested", "nested", layer(cat, MockData.BRIDGES), global);
+        nested.setMode(Mode.NAMED);
+        cat.add(nested);
+
+        Document dom = getAsDOM("wms?request=getcapabilities&version=1.3.0");
+        // print(dom);
+        
+        // check top level layer group exists
+        assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer/wms:Name[text() = 'nested']", dom);
+
+        // check its layers, and nested layers, and nested groups, are no more present at the same level
+        assertXpathNotExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer/wms:Name[text() = 'cite:Bridges']", dom);
+        assertXpathNotExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer/wms:Name[text() = 'base']", dom);
+        
+        // check its layers are present as its children, as well as the nested group
+        assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer[wms:Name = 'nested']/wms:Layer[wms:Name = 'cite:Bridges']", dom);
+        assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer[wms:Name = 'nested']/wms:Layer[wms:Name = 'base']", dom);                
+        assertXpathNotExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer[wms:Name = 'nested']/wms:Layer[wms:Name = 'base']/wms:Layer[wms:Name = 'cite:Lakes']", dom);
+        assertXpathNotExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer[wms:Name = 'nested']/wms:Layer[wms:Name = 'base']/wms:Layer[wms:Name = 'cite:Forests']", dom);
+    }
+    
+    @Test
+    public void testNestedNamedInCapabilities() throws Exception {
+        Catalog cat = getCatalog();
+        nested = createLayerGroup(cat, "nested", "nested", layer(cat, MockData.BRIDGES), global);
+        nested.setMode(Mode.NAMED);
+        cat.add(nested);
+        LayerGroupInfo global = cat.getLayerGroupByName("base");
+        global.setMode(Mode.NAMED);
+        cat.save(global);
+
+        Document dom = getAsDOM("wms?request=getcapabilities&version=1.3.0");
+        // print(dom);
+        
+        // check top level layer group exists
+        assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer/wms:Name[text() = 'nested']", dom);
+
+        // check its layers, and nested layers, and nested groups, are no more present at the same level
+        assertXpathNotExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer/wms:Name[text() = 'cite:Bridges']", dom);
+        assertXpathNotExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer/wms:Name[text() = 'cite:Lakes']", dom);
+        assertXpathNotExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer/wms:Name[text() = 'cite:Forests']", dom);        
+        assertXpathNotExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer/wms:Name[text() = 'base']", dom);
+        
+        // check its layers are present as its children, as well as the nested group
+        assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer[wms:Name = 'nested']/wms:Layer[wms:Name = 'cite:Bridges']", dom);
+        assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer[wms:Name = 'nested']/wms:Layer[wms:Name = 'base']", dom);                
+        assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer[wms:Name = 'nested']/wms:Layer[wms:Name = 'base']/wms:Layer[wms:Name = 'cite:Lakes']", dom);
+        assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Layer[wms:Name = 'nested']/wms:Layer[wms:Name = 'base']/wms:Layer[wms:Name = 'cite:Forests']", dom);
+    }
+    
+    @Test
+    public void testNestedNamedGetMap() throws Exception {
+        Catalog cat = getCatalog();
+        nested = createLayerGroup(cat, "nested", "nested", layer(cat, MockData.BRIDGES), global);
+        nested.setMode(Mode.NAMED);
+        cat.add(nested);
+        LayerGroupInfo global = cat.getLayerGroupByName("base");
+        global.setMode(Mode.NAMED);
+        cat.save(global);
+        
+        Document dom = getAsDOM("wms?request=reflect&layers=nested&format=rss");
+        // print(dom);
+        
+        assertXpathExists("rss/channel/title[text() = 'cite:Bridges,cite:Lakes,cite:Forests']", dom);
+    }
+    
+    @Test
+    public void testNestedSharedGetMap() throws Exception {
+        Catalog cat = getCatalog();
+        nested = createLayerGroup(cat, "nested", "nested", global, global2);
+        nested.setMode(Mode.NAMED);
+        cat.add(nested);
+
+        Document dom = getAsDOM("wms?request=reflect&layers=nested&format=rss");
+        assertXpathExists("rss/channel/title[text() = 'cite:Lakes,cite:Forests,cite:Lakes,cite:Forests']", dom);
+    }
+    
+    @Test
+    public void testNestedSingleGetMap() throws Exception {
+        Catalog cat = getCatalog();
+        nested = createLayerGroup(cat, "nested", "nested", layer(cat, MockData.BRIDGES), global);
+        nested.setMode(Mode.NAMED);
+        cat.add(nested);
+        
+        Document dom = getAsDOM("wms?request=reflect&layers=nested&format=rss");
+        // print(dom);
+        
+        assertXpathExists("rss/channel/title[text() = 'cite:Bridges,cite:Lakes,cite:Forests']", dom);
     }
 
     void assertBounds(LayerGroupInfo lg, String name, Document dom) throws Exception {

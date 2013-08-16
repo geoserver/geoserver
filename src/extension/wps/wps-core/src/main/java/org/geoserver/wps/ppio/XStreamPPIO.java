@@ -1,10 +1,12 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wps.ppio;
 
 import java.io.InputStream;
+
+import javax.xml.namespace.QName;
 
 import org.xml.sax.ContentHandler;
 
@@ -21,8 +23,8 @@ import com.thoughtworks.xstream.mapper.MapperWrapper;
  */
 public class XStreamPPIO extends XMLPPIO {
 
-    protected XStreamPPIO(Class type) {
-        super(type, type, null);
+    protected XStreamPPIO(Class type, QName element) {
+        super(type, type, element);
     }
 
     @Override

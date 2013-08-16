@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -41,7 +41,7 @@ public class MetadataLinkEditor extends Panel {
      * WMS 1.1.1 GetCaps
      */
     private static final List<String> LINK_TYPES = Arrays.asList("ISO19115:2003", "FGDC",
-            "TC211", "other");
+            "TC211", "19139", "other");
     private ListView links;
     private Label noMetadata;
     private WebMarkupContainer table;

@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2009 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog.rest;
@@ -45,7 +45,8 @@ public class StoreFileFinder extends AbstractCatalogFinder {
             String coverageFormatName = formatToCoverageStoreFormat.get( format );
             
             if ( coverageFormatName == null ) {
-                throw new RestletException( "Unsupported format: " + format, Status.CLIENT_ERROR_BAD_REQUEST );
+                throw new RestletException( "Unsupported format: " + format + ", available formats are: " 
+                        + formatToCoverageStoreFormat.keySet().toString(), Status.CLIENT_ERROR_BAD_REQUEST);
             }
             
             Format coverageFormat = null;

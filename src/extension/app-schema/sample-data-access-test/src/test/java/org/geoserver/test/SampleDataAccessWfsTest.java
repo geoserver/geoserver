@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001 - 2008 TOPP - www.openplans.org. All rights reserved.
+ * Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -13,8 +13,12 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.xml.serialize.OutputFormat;
-import org.apache.xml.serialize.XMLSerializer;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -164,12 +168,9 @@ public class SampleDataAccessWfsTest extends SampleDataAccessTestSupport {
      * @throws Exception
      */
     public void prettyPrint(Document doc, OutputStream out) throws Exception {
-        OutputFormat format = new OutputFormat(doc);
-        format.setLineWidth(80);
-        format.setIndenting(true);
-        format.setIndent(4);
-        XMLSerializer serializer = new XMLSerializer(out, format);
-        serializer.serialize(doc);
+        Transformer tx = TransformerFactory.newInstance().newTransformer();
+        tx.setOutputProperty(OutputKeys.INDENT, "yes");
+        tx.transform(new DOMSource(doc), new StreamResult(out));
     }
 
     @Override

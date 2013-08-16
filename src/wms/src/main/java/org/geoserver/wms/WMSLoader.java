@@ -1,5 +1,5 @@
-/* Copyright (c) 2010 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms;
@@ -13,6 +13,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Wrapper;
@@ -114,7 +115,7 @@ public class WMSLoader extends LegacyServiceLoader<WMSInfo> {
                 List<String> styleNames = (List) baseMap.get("baseMapStyles");
                 if (styleNames.isEmpty()) {
                     // use defaults
-                    for (LayerInfo l : bm.getLayers()) {
+                    for (PublishedInfo l : bm.getLayers()) {
                         bm.getStyles().add(null);
                     }
                 } else {

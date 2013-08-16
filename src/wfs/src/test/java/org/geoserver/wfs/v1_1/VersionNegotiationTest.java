@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,12 +8,17 @@ import static org.junit.Assert.assertTrue;
 import net.opengis.ows10.Ows10Factory;
 import net.opengis.wfs.GetCapabilitiesType;
 import net.opengis.wfs.WfsFactory;
+
 import org.geoserver.wfs.CapabilitiesTransformer;
 import org.geoserver.wfs.GetCapabilities;
+import org.geoserver.wfs.WFSExtendedCapabilitiesProvider;
+import org.geoserver.wfs.WFSExtensions;
 import org.geoserver.wfs.WFSTestSupport;
 import org.geoserver.wfs.request.GetCapabilitiesRequest;
 import org.geotools.xml.transform.TransformerBase;
+import org.junit.Before;
 import org.junit.Test;
+import java.util.Collections;
 
 public class VersionNegotiationTest extends WFSTestSupport {
 
@@ -23,9 +28,9 @@ public class VersionNegotiationTest extends WFSTestSupport {
 
     static Ows10Factory owsFactory;
     
-    @Test
+    @Before
     public void initialise() {
-        getCaps = new GetCapabilities(getWFS(), getCatalog());
+        getCaps = new GetCapabilities(getWFS(), getCatalog(), Collections.<WFSExtendedCapabilitiesProvider>emptyList());
 
         factory = WfsFactory.eINSTANCE;
         owsFactory = Ows10Factory.eINSTANCE;

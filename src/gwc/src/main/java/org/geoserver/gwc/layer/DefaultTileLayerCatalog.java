@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -25,7 +25,10 @@ import java.util.logging.Logger;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.config.XMLConfiguration;
+import org.geowebcache.config.ContextualConfigurationProvider.Context;
 import org.geowebcache.storage.blobstore.file.FilePathGenerator;
+import org.geowebcache.storage.blobstore.file.FilePathUtils;
+import org.geowebcache.util.FileUtils;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
@@ -57,7 +60,8 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
 
     public DefaultTileLayerCatalog(GeoServerResourceLoader resourceLoader,
             XMLConfiguration xmlPersisterFactory) throws IOException {
-        this(resourceLoader, xmlPersisterFactory.getConfiguredXStream(new XStream()));
+        this(resourceLoader, xmlPersisterFactory.getConfiguredXStreamWithContext(new XStream(), 
+                Context.PERSIST));
     }
 
     DefaultTileLayerCatalog(GeoServerResourceLoader resourceLoader, XStream configuredXstream)
@@ -275,7 +279,7 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
     }
 
     private File getFile(final String tileLayerId, final boolean create) throws IOException {
-        final String fileName = FilePathGenerator.filteredLayerName(tileLayerId) + ".xml";
+        final String fileName = FilePathUtils.filteredLayerName(tileLayerId) + ".xml";
 
         final File base = resourceLoader.findOrCreateDirectory(baseDirectory);
 

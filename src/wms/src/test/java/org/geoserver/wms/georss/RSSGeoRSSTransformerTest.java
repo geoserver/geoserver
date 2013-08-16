@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.georss;
@@ -36,9 +36,27 @@ import org.xml.sax.SAXException;
 
 public class RSSGeoRSSTransformerTest extends WMSTestSupport {
     FilterFactory ff = CommonFactoryFinder.getFilterFactory(GeoTools.getDefaultHints());
-    
- 
-    @Test 
+
+    @Test
+    public void testChannelDescription() throws Exception {
+        WMSMapContent map = new WMSMapContent(createGetMapRequest(MockData.BASIC_POLYGONS));
+        map.addLayer(createMapLayer(MockData.BASIC_POLYGONS));
+        map.layers().get(0).getUserData().put("abstract", "Test Abstract");
+
+        Document document;
+        try {
+            document = getRSSResponse(map, AtomGeoRSSTransformer.GeometryEncoding.LATLONG);
+        } finally {
+            map.dispose();
+        }
+        Element element = document.getDocumentElement();
+        assertEquals("rss", element.getNodeName());
+
+        Element channel = (Element) element.getElementsByTagName("channel").item(0);
+        NodeList description = channel.getElementsByTagName("description");
+        assertEquals("Test Abstract", description.item(0).getChildNodes().item(0).getNodeValue());
+    }
+
     public void testLatLongInternal() throws Exception {
         WMSMapContent map = new WMSMapContent(createGetMapRequest(MockData.BASIC_POLYGONS));
         map.addLayer(createMapLayer(MockData.BASIC_POLYGONS));
@@ -165,7 +183,7 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
         WMSMapContent map = new WMSMapContent(createGetMapRequest(MockData.BUILDINGS));
         Document document;
         try {
-        	FeatureLayer layer = createMapLayer(MockData.BUILDINGS);
+            FeatureLayer layer = (FeatureLayer) createMapLayer(MockData.BUILDINGS);
             Filter f = ff.equals(ff.property("ADDRESS"), ff.literal("215 Main Street"));
             layer.setQuery(new Query(MockData.BUILDINGS.getLocalPart(), f));
             map.addLayer(layer);

@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2011 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -26,7 +26,7 @@ import org.jasig.cas.client.proxy.ProxyGrantingTicketStorage;
  */
 public class GeoServerCasAuthenticationProvider extends AbstractFilterProvider {
 
-    
+    static String PROXYRECEPTORCHAIN = "casproxy";
     static Logger LOGGER = Logging.getLogger("org.geoserver.security.cas");
 
     protected ProxyGrantingTicketCallbackFilter pgtCallback;
@@ -67,10 +67,15 @@ public class GeoServerCasAuthenticationProvider extends AbstractFilterProvider {
     
     @Override
     public void configureFilterChain(GeoServerSecurityFilterChain filterChain) {
+        
+        if ( filterChain.getRequestChainByName(PROXYRECEPTORCHAIN) != null)
+            return;
+        
         RequestFilterChain casChain = 
             new ConstantFilterChain(GeoServerCasConstants.CAS_PROXY_RECEPTOR_PATTERN,
                     GeoServerCasConstants.CAS_PROXY_RECEPTOR_PATTERN+"/");
         casChain.setFilterNames(pgtCallback.getName());
+        casChain.setName(PROXYRECEPTORCHAIN);
         filterChain.getRequestChains().add(0,casChain);
     }
 

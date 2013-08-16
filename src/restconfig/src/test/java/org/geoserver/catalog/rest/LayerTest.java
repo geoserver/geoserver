@@ -1,5 +1,5 @@
-/* Copyright (c) 2001 - 2009 TOPP - www.openplans.org.  All rights reserved.
- * This code is licensed under the GPL 2.0 license, availible at the root
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog.rest;
@@ -39,7 +39,7 @@ public class LayerTest extends CatalogRESTTestSupport {
         // check the layer name is actually the first child (GEOS-3336 risked modifying
         // the order)
         assertXpathEvaluatesTo("Buildings", "/layer/*[1]", dom );
-        assertXpathEvaluatesTo("http://localhost/geoserver/rest/styles/Buildings.xml",
+        assertXpathEvaluatesTo("http://localhost:8080/geoserver/rest/styles/Buildings.xml",
                 "/layer/defaultStyle/atom:link/attribute::href", dom);
     }
     
@@ -140,7 +140,7 @@ public class LayerTest extends CatalogRESTTestSupport {
 
         Document dom = getAsDOM("/rest/layers/cite:Buildings.xml");
         assertXpathExists("/layer/defaultStyle/name[text() = 'foo']", dom);
-        assertXpathEvaluatesTo("http://localhost/geoserver/rest/workspaces/cite/styles/foo.xml", 
+        assertXpathEvaluatesTo("http://localhost:8080/geoserver/rest/workspaces/cite/styles/foo.xml", 
             "//defaultStyle/atom:link/@href", dom );
     }
 }

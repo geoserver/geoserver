@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -232,19 +232,24 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         };
     }
     
-    private static String sldErrorWithLineNo(Exception e) {
+    private String sldErrorWithLineNo(Exception e) {
         if (e instanceof SAXParseException) {
             SAXParseException se = (SAXParseException) e;
             return "line " + se.getLineNumber() + ": " + e.getLocalizedMessage();
         }
-        return e.getLocalizedMessage();
+        String message = e.getLocalizedMessage();
+        if(message != null) {
+            return message;
+        } else {
+            return new ParamResourceModel("genericError", this).getString();
+        }
     }
     
     List<Exception> validateSLD() {
         try {
             final String sld = editor.getInput();            
             ByteArrayInputStream input = new ByteArrayInputStream(sld.getBytes());
-            List<Exception> validationErrors = Styles.validate(input);
+            List<Exception> validationErrors = Styles.validate(input, null);
             return validationErrors;
         } catch( Exception e ) {
             return Arrays.asList( e );

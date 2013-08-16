@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -66,6 +66,7 @@ public class CascadeDeleteVisitorTest extends GeoServerMockTestSupport {
         replay(lakes, forests, bridges, lg);
 
         expect(catalog.getLayerGroups()).andReturn(Arrays.asList(lg));
+        
         return lg;
     }
 
@@ -76,10 +77,10 @@ public class CascadeDeleteVisitorTest extends GeoServerMockTestSupport {
         catalog.save(lg);
         expectLastCall();
 
-        catalog.remove(lg.getLayers().get(0));
+        catalog.remove((LayerInfo) lg.getLayers().get(0));
         expectLastCall();
 
-        catalog.remove(lg.getLayers().get(0).getResource());
+        catalog.remove(((LayerInfo) lg.getLayers().get(0)).getResource());
         expectLastCall();
 
         replay(catalog);
@@ -162,14 +163,19 @@ public class CascadeDeleteVisitorTest extends GeoServerMockTestSupport {
         verify(catalog);
     }
 
+    private StyleInfo createMockStyle(Catalog catalog, String styleName) {
+        StyleInfo style = createMock(StyleInfo.class);
+        expect(style.getName()).andReturn(styleName).anyTimes();
+        expect(catalog.getStyleByName(styleName)).andReturn(style).anyTimes();
+        return style;
+    }
+    
     @Test
     public void testCascadeStyle() {
         Catalog catalog = createMock(Catalog.class);
 
-        String styleName = LAKES.getLocalPart();
-        StyleInfo style = createMock(StyleInfo.class);
-        expect(style.getName()).andReturn(styleName).anyTimes();
-        expect(catalog.getStyleByName(styleName)).andReturn(style).anyTimes();
+        createMockStyle(catalog, StyleInfo.DEFAULT_POINT);
+        StyleInfo style = createMockStyle(catalog, LAKES.getLocalPart());
         
         LayerInfo lakes = createMock(LayerInfo.class);
         expect(lakes.getDefaultStyle()).andReturn(style).anyTimes();

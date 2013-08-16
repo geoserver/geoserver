@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2012 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -27,6 +27,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MapInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.Predicates;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StoreInfo;
@@ -65,6 +66,7 @@ import org.springframework.util.Assert;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterators;
 
 /**
  * Wraps the catalog and applies the security directives provided by a {@link ResourceAccessManager}
@@ -607,12 +609,26 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             return null;
         }
 
-        // scan thru the layers
-        final List<LayerInfo> layers = group.getLayers();
-        ArrayList<LayerInfo> wrapped = new ArrayList<LayerInfo>(layers.size());
         boolean needsWrapping = false;
-        for (LayerInfo layer : layers) {
-            LayerInfo checked = checkAccess(user, layer);
+        
+        LayerInfo rootLayer = group.getRootLayer();
+        if (LayerGroupInfo.Mode.EO.equals(group.getMode())) {
+            LayerInfo checked = checkAccess(user, rootLayer);
+            if (checked != null) {
+                if (checked != rootLayer) {
+                    needsWrapping = true;
+                    rootLayer = checked;
+                }
+            } else {
+                return null;
+            }
+        }
+        
+        // scan thru the layers
+        final List<PublishedInfo> layers = group.getLayers();
+        ArrayList<PublishedInfo> wrapped = new ArrayList<PublishedInfo>(layers.size());        
+        for (PublishedInfo layer : layers) {
+            PublishedInfo checked = checkAccess(user, layer);
             if (checked != null) {
                 if (checked != layer) {
                     needsWrapping = true;
@@ -624,7 +640,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         }
         
         if(needsWrapping)
-            return new SecuredLayerGroupInfo(group, wrapped);
+            return new SecuredLayerGroupInfo(group, rootLayer, wrapped);
         else
             return group;            
     }
@@ -711,7 +727,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             // first HIDDEN one
             WrapperPolicy mostRestrictive = WrapperPolicy.readWrite(null);
 
-            for (LayerInfo layer : ((LayerGroupInfo) info).getLayers()) {
+            for (PublishedInfo layer : ((LayerGroupInfo) info).getLayers()) {
                 WrapperPolicy policy = buildWrapperPolicy(user, layer, layer.getName());
                 if (AccessLevel.HIDDEN.equals(policy.getAccessLevel())) {
                     return policy;
@@ -1373,7 +1389,13 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         final CloseableIterator<T> filteredWrapped;
         filteredWrapped = CloseableIteratorAdapter.transform(filtered, securityWrapper);
 
-        return filteredWrapped;
+        // wrap the iterator in a notNull filter to ensure any filtered
+        // layers (result is null) don't get passed on from the securityWrapper
+        // Function. When the AccessLevel is HIDDEN and a layer gets filtered 
+        // out via a CatalogFilter - for example, this can happen with a
+        // LocalWorkspaceCatalogFilter and a virtual service request
+        return new CloseableIteratorAdapter(Iterators.filter(filteredWrapped,
+                com.google.common.base.Predicates.notNull()));
     }
 
     /**
@@ -1449,17 +1471,13 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
     }
 
     /**
-     * Checks if the current user is authenticated and is the administrator
+     * Checks if the current user is authenticated and is the administrator.
+     * Protected to allow overriding in tests.
      */
-    private boolean isAdmin(Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated())
-            return false;
-
-        for (GrantedAuthority authority : authentication.getAuthorities()) {
-            if ("ROLE_ADMINISTRATOR".equals(authority.getAuthority()))
-                return true;
-        }
-        return false;
+    protected boolean isAdmin(Authentication authentication) {
+        
+        return GeoServerExtensions.bean(GeoServerSecurityManager.class).
+                checkAuthenticationForAdminRole(authentication);
     }
 
     public void removeListeners(Class listenerClass) {

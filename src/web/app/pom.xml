@@ -180,6 +180,7 @@
       <!-- Builds a valid data directory into the web app -->
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.7</version>
         <executions>
           <execution>
             <id>configPackage</id>
@@ -267,6 +268,7 @@
 		<inherited>true</inherited>
 		<groupId>org.apache.maven.plugins</groupId>
 		<artifactId>maven-war-plugin</artifactId>
+        <version>2.3</version>
 		<configuration>
 			<warName>geoserver</warName>
 			<webappDirectory>${project.build.directory}/geoserver</webappDirectory>

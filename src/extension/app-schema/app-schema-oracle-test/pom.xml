@@ -152,7 +152,7 @@
 			        <excludes>
 				        <exclude>**/onlineTest/*.java</exclude>
 				    </excludes>
-				    <argLine>-Xmx${test.maxHeapSize} -XX:MaxPermSize=${test.maxPermSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dapp-schema.joining=true -DtestDatabase=oracle -DSC4OUser=${SC4OUser}</argLine>
+				    <argLine>-Xmx${test.maxHeapSize} -XX:MaxPermSize=${test.maxPermSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dapp-schema.joining=true -DtestDatabase=oracle</argLine>
 				</configuration>
 	        </plugin>
 	   </plugins>

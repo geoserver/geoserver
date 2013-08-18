@@ -8,17 +8,16 @@ This guide details the process of performing a GeoServer release.
 Before you start
 ----------------
 
-GeoTools release
+SNAPSHOT release
 ^^^^^^^^^^^^^^^^
 
-For any non-beta release (including release candidates) a GeoServer release requires
-a corresponding GeoTools release, and GeoWebCache release. Therefore before you start
-you should coordinate with these two projects.
+For any non-beta release (including release candidates) a GeoServer release requires an
+corresponding GeoTools and GeoWebCache release. Therefore before you start you should
+coordinate a release with these projects. Either performing the release yourself or
+asking a volunteer to perform the release.
 
 * `GeoTools Release Guide <http://docs.geotools.org/latest/developer/procedures/release.html>`_
-
-Either performing the release yourself or asking on the GeoTools devel list for a
-volunteer to perform the release.
+* `GeoWebCache RELEASE_GUIDE.txt <https://github.com/GeoWebCache/geowebcache/blob/master/geowebcache/release/RELEASE_GUIDE.txt>`_
 
 Notify developer list
 ^^^^^^^^^^^^^^^^^^^^^
@@ -158,23 +157,32 @@ Create the download page
 
 Get the JIRA version for this release:
 
-* Go to `JIRA <http://jira.codehaus.org/display/GEOS/>`__
-* Select "Change log"
-* Open the release notes for the version being released
-* The version will be in the url, e.g. ``http://jira.codehaus.org/secure/ReleaseNote.jspa?projectId=10311&version=18700`` -> 18700
+#. Go to `JIRA <http://jira.codehaus.org/display/GEOS/>`__
+#. Select "Change log"
+#. Open the release notes for the version being released
+#. The version will be in the url, e.g. ``http://jira.codehaus.org/secure/ReleaseNote.jspa?projectId=10311&version=18700`` -> 18700
 
 Create the new download page:
 
-* Go to `GeoServer web site <http://geoserver.org/>`_ and make sure you are logged in.
-* Select the "New page" link in the menu
-* Click "select a page template to start from"
-* Choose the "Download" template
-* Fill in the version, release date (e.g., May 17th, 2012) and the jira version
-* Set the page title to the version being released (e.g. "GeoServer 2.2-RC3")
-* Save and check all the links are working
+#. Go to `GeoServer web site <http://geoserver.org/>`_ and make sure you are logged in.
+#. Select the "New page" link in the menu
+#. Click "select a page template to start from"
+#. Choose the "Download" template
+#. Fill in the version, release date (e.g., May 17th, 2012) and the jira version
+#. Set the page title to the version being released (e.g. "GeoServer 2.2-RC3")
+#. Save and check all the links are working
 
-If you are releasing a stable version, edit the `Stable version <http://geoserver.org/display/GEOS/Stable>`_ page and make it include the newly created release page.
-If you are instead releasing a beta/RC, edit the `Latest version <http://geoserver.org/display/GEOS/Latest>`_ page and make it include the newly created release page.
+Update the download short cuts:
+
+#. If you are instead releasing a beta/RC, edit the `Latest version <http://geoserver.org/display/GEOS/Latest>`_ page and make it include the newly created release page.::
+
+     {note}{*}Releases on this page are known to be unstable.* If you're looking for a stable release, you may want to be on the [Stable] download page.
+     {note}
+     {include:GeoServer 2.4-RC1}
+
+#. If you are releasing a stable version, edit the `Stable version <http://geoserver.org/display/GEOS/Stable>`_ page and make it include the newly created release page.::
+
+      {include:GeoServer 2.3.5}
 
 Post the Documentation
 ----------------------
@@ -268,6 +276,22 @@ SourceForge
 
 #. Repeat for the extension release.
 
+Update GeoServer Website
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+#. Navigate to http://geoserver.org.
+
+#. Click :guilabel:`Log In` in the top right corner.
+
+#. Enter your Confluence user name and password and click :guilabel:`Log In`.
+
+#. Navigate back to the home page http://geoserver.org and change the links at the top of
+   the page to include the new GeoServer download page and the blog post.  For example::
+
+    h6. 23 July 2013: [GeoServer 2.4-beta] released\!  [See what's new...|http://blog.geoserver.org/2013/07/22/geoserver-2-4-beta-released/]!
+
+#. Verify that the links work
+
 GeoServer Blog
 ^^^^^^^^^^^^^^
 
@@ -281,44 +305,72 @@ GeoServer Blog
 
 #. Create a new post. The post should be more "colorful" than the average
    announcement. It is meant to market and show off any and all new
-   features. Examples of previous posts:
+   features.
 
-   * http://blog.geoserver.org/2008/12/09/geoserver-171-released/
-   * http://blog.geoserver.org/2008/10/27/geoserver-170-released/
+   .. code-block:: html
+
+      The GeoServer team is pleased to announce the release of
+      <a href="http://geoserver.org/display/GEOS/GeoServer+2.3.3">GeoServer 2.3.3</a>:
+      <ul>
+         <li>Downloads (<a href="http://downloads.sourceforge.net/geoserver/geoserver-2.3.3-bin.zip">zip</a>,
+             <a href="http://downloads.sourceforge.net/geoserver/geoserver-2.3.3-war.zip">war</a>,
+             <a href="http://downloads.sourceforge.net/geoserver/geoserver-2.3.3.dmg">dmg</a> and
+             <a href="http://downloads.sourceforge.net/geoserver/geoserver-2.3.3.exe">exe</a>) are listed on the
+             <a href="http://geoserver.org/display/GEOS/GeoServer+2.3.3">GeoServer 2.3.3</a> page
+             along with documentation and extensions.
+            <ul>
+               <li>This release includes and is made in conjunction with
+                 <a href="http://geotoolsnews.blogspot.com.au/2013/06/geotools-93-released.html">GeoTools 9.3</a>.</li>
+            </ul>
+         </li>
+         <li>Thanks to <a href="http://www.warwickshire.gov.uk/">Warwickshire County Council</a>
+             for some great GeoWebCache integration work:
+            <ul>
+               <li>GeoWebCache tile layer HTTP cache headers are now taken from GeoServer layer configration</li>
+               <li>GeoWebCache settings are now correctly saved on Windows</li>
+            </ul>
+         </li>
+         <li>A wide range of improvements provided by the community
+            <ul>
+               <li>Scale hints now exposed in WMS GetCapabilities document</li>
+               <li>Fixed Symbology Encoding 1.1 encoding of relative external graphics</li>
+               <li>Addressed axis order issues cascading WMS 1.3.0 services through GeoServer</li>
+            </ul>
+         </li>
+      </ul>
+      More details can be found in the
+      <a href="http://jira.codehaus.org/secure/ReleaseNote.jspa?projectId=10311&amp;version=19231">GeoServer 2.3.3 Release Notes</a>.
+
+#. Examples of content:
+
+   * Link to the **Download Page** in the wiki created above, and possibly to the
+     installers for each platform.
+
+     Example: `GeoServer 2.3.4 Released <http://blog.geoserver.org/2013/07/28/geoserver-2-3-4-released/>`_
+
+   * Indicate which version of GeoTools is used, and thank your employer.
+
+   * Link to completed pull requests and Jira tickets, looking for new features or
+     important bug fixes to highlight. Make a point to thank new contributors
+     and sponsors.
+
+     Example: `GeoServer 2.3.1 released <http://blog.geoserver.org/2013/04/23/geoserver-2-3-1-released/>`_
+
+   * For the run up to a major release you can build up a list of the new features and
+     change requests.
+
+     Example: `GeoServer 2.4 Beta Released <http://blog.geoserver.org/2013/07/22/geoserver-2-4-beta-released/>`_
+
+   * For the major release you can spend a bit more time on the new features, linking
+     to blog posts if they are available.
+
+     Example: `GeoServer 2.3-beta released <http://blog.geoserver.org/2013/01/29/geoserver-2-3-beta-released/>`_
+
+
 
 #. Do not publish the post. Instead present it to the GeoServer outreach
    team for review, and they will publish it.
 
-.. note:: GeoServer wiki has to be updated as well.
-
-#. Go to http://geoserver.org/display/GEOS/Download :
-
-	* Click on Add Page on the right.
-	* Copy the wiki source from an existing page and update the reference link to your released artifact.
-	* Edit the page location to correctly reflect where the page should reside.
-
-#. Finally, update the wiki link on http://geoserver.org/display/GEOS/Latest to your new page.
-
-Update GeoServer homepage
-^^^^^^^^^^^^^^^^^^^^^^^^^
-
-#. Navigate to http://geoserver.org.
-
-#. Click :guilabel:`Log In` in the top right corner.
-
-#. Enter your Confluence user name and password and click :guilabel:`Log In`.
-
-#. Navigate back to http://geoserver.org.
-
-#. At the bottom of the page, click :guilabel:`Edit`.
-
-#. Change the links at the top of the page to include the new GeoServer download page and the blog post.  For example::
-
-      h6. December 32, 2086: [GeoServer 3.1.1] released\!  [See what's new...|http://blog.geoserver.org/2086/12/32/geoserver-3.1.1-released/]
-
-#. When finished, click :guilabel:`Save`.
-
-#. Verify that the links work on the homepage.
 
 SlashGeo
 ^^^^^^^^

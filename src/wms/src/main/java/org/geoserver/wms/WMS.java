@@ -121,6 +121,10 @@ public class WMS implements ApplicationContextAware {
 
     public static final Boolean LOOP_CONTINUOUSLY_DEFAULT = Boolean.FALSE;
     
+    public static final String SCALEHINT_MAPUNITS_PIXEL = "scalehintMapunitsPixel";
+    
+    public static final Boolean SCALEHINT_MAPUNITS_PIXEL_DEFAULT = Boolean.FALSE;
+    
     static final Logger LOGGER = Logging.getLogger(WMS.class);
 
     public static final String WEB_CONTAINER_KEY = "WMS";
@@ -486,6 +490,10 @@ public class WMS implements ApplicationContextAware {
     
     public Boolean getLoopContinuously() {
        return getMetadataValue(LOOP_CONTINUOUSLY, LOOP_CONTINUOUSLY_DEFAULT, Boolean.class);
+    }
+    
+    public Boolean getScalehintUnitPixel(){
+        return getMetadataValue(SCALEHINT_MAPUNITS_PIXEL, SCALEHINT_MAPUNITS_PIXEL_DEFAULT, Boolean.class);
     }
 
     int getMetadataPercentage(MetadataMap metadata, String key, int defaultValue) {

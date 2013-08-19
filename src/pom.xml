@@ -1212,7 +1212,8 @@
       <descriptor>release/ext-monitor-hibernate.xml</descriptor>
       <descriptor>release/ext-xslt.xml</descriptor>
       <descriptor>release/ext-inspire.xml</descriptor>
-      <descriptor>release/ext-css.xml</descriptor>
+      <descriptor>release/ext-css.xml</descriptor>      
+      <descriptor>release/ext-csw.xml</descriptor>
      </descriptors>
      <finalName>geoserver-2.4-SNAPSHOT</finalName>
      <outputDirectory>${project.build.directory}/release</outputDirectory>

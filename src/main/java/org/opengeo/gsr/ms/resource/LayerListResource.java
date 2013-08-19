@@ -215,7 +215,7 @@ public class LayerListResource extends Resource {
                     ReferencedEnvelope boundingBox = layer.getResource().getLatLonBoundingBox();
                     if (boundingBox != null) {
                         json.key("extent");
-                        CoordinateReferenceSystem WEB_MERCATOR = CRS.decode("EPSG:3785");
+                        CoordinateReferenceSystem WEB_MERCATOR = CRS.decode("EPSG:3857");
                         try {
                             double minx = Math.max(boundingBox.getMinX(),  -180);
                             double maxx = Math.min(boundingBox.getMaxX(),   180);
@@ -225,7 +225,7 @@ public class LayerListResource extends Resource {
                             sphericalMercatorBoundingBox = sphericalMercatorBoundingBox.transform(WEB_MERCATOR, true);
                             GeometryEncoder.referencedEnvelopeToJson(sphericalMercatorBoundingBox, SpatialReferences.fromCRS(WEB_MERCATOR), json);
                         } catch (TransformException e) {
-                            throw new RuntimeException("Couldn't translate to EPSG:3785: " + boundingBox, e);
+                            throw new RuntimeException("Couldn't translate to EPSG:3857: " + boundingBox, e);
                         }
                     }
                 } catch (FactoryException e) {

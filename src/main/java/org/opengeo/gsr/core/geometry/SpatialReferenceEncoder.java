@@ -13,9 +13,8 @@ public class SpatialReferenceEncoder {
     public static void toJson(SpatialReference sr, JSONBuilder json) {
         if (sr instanceof SpatialReferenceWKID) {
             final SpatialReferenceWKID wkid = (SpatialReferenceWKID) sr;
-            final int effectiveWkid = wkid.getWkid() == 3785 ? 102100 : wkid.getWkid(); 
             json.object()
-              .key("wkid").value(effectiveWkid)
+              .key("wkid").value(wkid.getWkid())
             .endObject();
         } else if (sr instanceof SpatialReferenceWKT) {
             SpatialReferenceWKT wkt = (SpatialReferenceWKT) sr;
@@ -72,9 +71,6 @@ public class SpatialReferenceEncoder {
         String withEPSGPrefix;
         try {
             Integer asInteger = Integer.valueOf(wkid);
-            if (asInteger == 102100) {
-                asInteger = 3785;
-            }
             withEPSGPrefix = "EPSG:" + asInteger;
         } catch (NumberFormatException e) {
             withEPSGPrefix = "EPSG:" + wkid;

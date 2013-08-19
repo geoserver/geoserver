@@ -148,11 +148,6 @@ public class FeatureEncoder {
     
     private final static Pattern featureIDPattern = Pattern.compile(".*\\.(\\p{Digit}+)");
     private static Object adaptId(String featureId) {
-        Matcher matcher = featureIDPattern.matcher(featureId);
-        if (matcher.matches()) {
-            return Long.valueOf(matcher.group(1));
-        } else {
-            return featureId;
-        }
+        return Long.valueOf(featureId.hashCode());
     }
 }

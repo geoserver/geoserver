@@ -965,11 +965,17 @@ public class GetCapabilitiesTransformer extends TransformerBase {
 				return; 
 			}
 			
-			// makes the scalehint computation taking into account the OGC standardized rendering pixel size" that is 0.28mm × 0.28mm (millimeters).
-			
-			Double minScaleHint =  CapabilityUtil.computeScaleHint(denominators.get(MIN_DENOMINATOR_ATTR));
-			Double maxScaleHint =  CapabilityUtil.computeScaleHint(denominators.get(MAX_DENOMINATOR_ATTR));
-			
+			Double minScaleHint;
+            Double maxScaleHint;
+            if(wmsConfig.getScalehintUnitPixel()!=null && wmsConfig.getScalehintUnitPixel()){                
+                // makes the scalehint computation taking into account the OGC standardized rendering pixel size" that is 0.28mm × 0.28mm (millimeters).
+                minScaleHint =  CapabilityUtil.computeScaleHint(denominators.get(MIN_DENOMINATOR_ATTR));
+                maxScaleHint =  CapabilityUtil.computeScaleHint(denominators.get(MAX_DENOMINATOR_ATTR));
+            }else{
+                minScaleHint=denominators.get(MIN_DENOMINATOR_ATTR);
+                maxScaleHint=denominators.get(MAX_DENOMINATOR_ATTR);
+            }			
+            
 			AttributesImpl attrs = new AttributesImpl();
 			attrs.addAttribute("", MIN_DENOMINATOR_ATTR, MIN_DENOMINATOR_ATTR, "", String.valueOf(minScaleHint));
 			attrs.addAttribute("", MAX_DENOMINATOR_ATTR, MAX_DENOMINATOR_ATTR, "", String.valueOf(maxScaleHint));

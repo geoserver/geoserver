@@ -299,5 +299,11 @@
         <module>geopkg</module>
       </modules>
     </profile>
+    <profile>
+      <id>png</id>
+      <modules>
+        <module>png</module>
+      </modules>
+    </profile>
   </profiles>
 </project>

@@ -22,10 +22,8 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wms.GetCapabilitiesRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
@@ -138,7 +136,7 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
      * Default values for ScaleHint should be set.
      * 
      * <pre>
-     * The computation of Min and Max values return: 
+     * Check the min and max values return:
      * 		Min: 0.0
      * 		Max: a value
      * 
@@ -170,7 +168,8 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
      * Default values for ScaleHint should be set.
      * 
      * <pre>
-     * The computation of Min and Max values return: 
+     * The computation of Min and Max values when the option 
+     * 'Scalehint in units per diagonal pixel' is set. Return: 
      * 		Min: 0.0
      * 		Max: a value
      * 
@@ -202,7 +201,7 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
      * Default values for ScaleHint should be set.
      * 
      * <pre>
-     * The computation of Min and Max values return: 
+     * Check the Min and Max values return: 
      * 		Min: a value
      * 		Max: Infinity
      * 
@@ -233,7 +232,8 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
      * Default values for ScaleHint should be set.
      * 
      * <pre>
-     * The computation of Min and Max values return: 
+     * The computation of Min and Max values when the option 
+     * 'Scalehint in units per diagonal pixel' is set. Return: 
      * 		Min: a value
      * 		Max: Infinity
      * 
@@ -287,6 +287,7 @@ public class GetCapabilitiesScaleHintTest extends WMSTestSupport {
      * <pre>
      * Max is the maximum value found in the set of rules 
      * Min is the minimum value found in the set of rules
+     * Both values are computed as units per diagonal pixel
      * </pre>
      * 
      * @throws Exception

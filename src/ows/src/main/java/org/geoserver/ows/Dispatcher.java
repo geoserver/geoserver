@@ -234,7 +234,7 @@ public class Dispatcher extends AbstractController {
 
         //set request / response
         request.setHttpRequest(httpRequest);
-        request.setHttpResponse(httpResponse);
+        request.setHttpResponse(new FlushSafeResponse(httpResponse));
 
         Service service = null;
 

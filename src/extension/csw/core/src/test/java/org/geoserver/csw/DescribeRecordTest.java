@@ -156,11 +156,14 @@ public class DescribeRecordTest extends CSWSimpleTestSupport {
         assertCswRecordSchema(dom, false);
     }
 
-    private void assertCswRecordSchema(Document dom, boolean canonicalSchema) throws XpathException {
+    private void assertCswRecordSchema(Document dom, boolean canonicalSchema) throws Exception {
+        // print(dom);
+        String root = canonicalSchema ? "http://schemas.opengis.net" : "http://localhost:8080/geoserver/schemas";
+        assertXpathEvaluatesTo("http://www.opengis.net/cat/csw/2.0.2 " + root + "/csw/2.0.2/CSW-discovery.xsd", 
+                "//csw:DescribeRecordResponse/@xsi:schemaLocation", dom);
         assertXpathEvaluatesTo("1", "count(//xsd:element[@name = 'BriefRecord'])", dom);
         assertXpathEvaluatesTo("1", "count(//xsd:element[@name = 'SummaryRecord'])", dom);
         assertXpathEvaluatesTo("1", "count(//xsd:element[@name = 'Record'])", dom);
-        String root = canonicalSchema ? "http://schemas.opengis.net" : "http://localhost:8080/geoserver/schemas";
         assertXpathEvaluatesTo(
                 root + "/csw/2.0.2/rec-dcterms.xsd",
                 "//xsd:import[@namespace = 'http://purl.org/dc/terms/']/@schemaLocation", dom);

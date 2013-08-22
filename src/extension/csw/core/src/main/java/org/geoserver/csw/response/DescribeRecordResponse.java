@@ -64,7 +64,7 @@ public class DescribeRecordResponse extends Response {
                 + "<csw:DescribeRecordResponse xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" "
                 + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
                 + "xsi:schemaLocation=\"http://www.opengis.net/cat/csw/2.0.2 " + schemaLocationRoot
-                + "CSW-discovery.xsd\">\n");
+                + "/CSW-discovery.xsd\">\n");
 
         List<SchemaComponentDelegate> delegates = GeoServerExtensions
                 .extensions(SchemaComponentDelegate.class);

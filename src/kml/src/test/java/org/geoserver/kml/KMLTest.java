@@ -66,6 +66,7 @@ public class KMLTest extends WMSTestSupport {
         Catalog catalog = getCatalog();
         testData.addStyle("notthere", "notthere.sld", getClass(), catalog);
         testData.addStyle("scaleRange", "scaleRange.sld", getClass(), catalog);
+        testData.addStyle("outputMode", "outputMode.sld", getClass(), catalog);
         testData.addVectorLayer(STORM_OBS, Collections.EMPTY_MAP, "storm_obs.properties",
                 getClass(), catalog);
     }
@@ -383,6 +384,26 @@ public class KMLTest extends WMSTestSupport {
         String pngOverlay = "http://localhost:8080/geoserver/wms?service=wms&request=GetMap&version=1.1.1&format=image%2Fpng&layers=cite%3ABasicPolygons&styles=BasicPolygons&height=512&width=1024&transparent=true&bbox=-180.0%2C-90.0%2C180.0%2C90.0&srs=EPSG%3A4326&format_options=AUTOFIT%3Atrue%3BKMSCORE%3A0%3B";
         assertXpathEvaluatesTo(pngOverlay, "//kml:GroundOverlay/kml:Icon/kml:href", dom);
     }
+    
+    @Test
+    public void testOutputModeVector() throws Exception {
+        Document dom = getAsDOM("wms?request=getmap&service=wms&version=1.1.1" + 
+                "&format=" + KMLMapOutputFormat.MIME_TYPE + 
+                "&layers=" + getLayerId(MockData.BASIC_POLYGONS) +
+                "&styles=outputMode" +
+                "&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326&format_options=kmscore:100&featureid=BasicPolygons.1107531493644");
+        print(dom);
+        
+        // we got a ground overlay
+        assertXpathEvaluatesTo("0", "count(//kml:GroundOverlay)", dom);
+        assertXpathEvaluatesTo("1", "count(//kml:Placemark)", dom);
+        // the point style got activated
+        assertXpathEvaluatesTo("http://localhost:8080/geoserver/styles/bridge.png", "//kml:Placemark/kml:Style/kml:IconStyle/kml:Icon/kml:href", dom);
+        // and we extracted the centroid
+        assertXpathEvaluatesTo("0.5,3.5", "//kml:Placemark/kml:MultiGeometry/kml:Point/kml:coordinates", dom);
+    }
+    
+    
     
     @Test
     public void testRasterLayer() throws Exception {

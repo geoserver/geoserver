@@ -211,6 +211,12 @@ public class ImportResourceTest extends ImporterTestSupport {
         json = (JSONObject) json(resp);
         imprt = json.getJSONObject("import");
         assertEquals(8675310, imprt.getInt("id"));
+
+        // now a normal request - make sure it continues the sequence
+        resp = postAsServletResponse("/rest/imports/", "");
+        assertEquals(201, resp.getStatusCode());
+        assertNotNull( resp.getHeader( "Location") );
+        assertTrue(resp.getHeader("Location").endsWith( "/imports/8675311"));
     }
 
     public void testPostWithTarget() throws Exception {

@@ -322,6 +322,7 @@
         <module>xslt</module>
         <module>inspire</module>
         <module>css</module>
+        <module>csw</module>
       </modules>
     </profile>
 

@@ -177,6 +177,18 @@ Expression
     name of column pointing to second double value
 Expression
     expression of gml:id (optional)
+    
+toLineString
+````````````
+
+This function converts double values to 1D LineString geometry type. This is needed to express 1D borehole intervals with custom (non EPSG) CRS.
+
+Literal
+    ``'SRS_NAME'`` (EPSG code or custom SRS)
+Expression
+    name of column pointing to first double value
+Expression
+    name of column pointing to second double value
 
 
 Reference

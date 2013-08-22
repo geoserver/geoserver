@@ -7,17 +7,12 @@ package org.geoserver.importer.rest;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -27,7 +22,6 @@ import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.io.FileUtils;
-import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geotools.data.Transaction;
@@ -44,7 +38,6 @@ import org.geoserver.importer.SpatialFile;
 import org.geoserver.importer.VFSWorker;
 import org.geoserver.importer.ImportContext.State;
 import org.geoserver.importer.ImporterTestSupport.JSONObjectBuilder;
-import org.geoserver.importer.transform.CreateIndexTransform;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
@@ -63,7 +56,6 @@ import org.geoserver.importer.transform.AttributesToPointGeometryTransform;
 import org.geoserver.importer.UpdateMode;
 
 /**
- * @todo extract postgis stuff to online test case
  * @author Ian Schneider <ischneider@opengeo.org>
  */
 public class TaskResourceTest extends ImporterTestSupport {
@@ -87,30 +79,6 @@ public class TaskResourceTest extends ImporterTestSupport {
         File dir = unpack("shape/archsites_epsg_prj.zip");
         unpack("geotiff/EmissiveCampania.tif.bz2", dir);
         importer.createContext(new Directory(dir));
-
-        DataStoreInfoImpl postgis = new DataStoreInfoImpl(getCatalog());
-        postgis.setName("postgis");
-        postgis.setType("PostGIS");
-        postgis.setEnabled(true);
-        postgis.setWorkspace(getCatalog().getDefaultWorkspace());
-        Map<String,Serializable> params = new HashMap<String, Serializable>();
-        params.put("port",5432);
-        params.put("passwd","geonode");
-        params.put("dbtype","postgis");
-        params.put("host","localhost");
-        params.put("database","geonode_imports");
-        params.put("namespace", "http://geonode.org");
-        params.put("schema", "public");
-        params.put("user", "geonode");
-        postgis.setConnectionParameters(params);
-        getCatalog().add(postgis);
-        try {
-            // force connection - will fail if we cannot connect
-            postgis.getDataStore(null).getNames();
-            jdbcStore = (JDBCDataStore) postgis.getDataStore(null);
-        } catch (IOException ioe) {
-            LOGGER.log(Level.WARNING,"Could not initialize postgis db",ioe);
-        }
     }
     
     private Integer putZip(String path) throws Exception {
@@ -198,85 +166,6 @@ public class TaskResourceTest extends ImporterTestSupport {
         }
     }
     
-    public void testUploadToPostGISViaFile() throws Exception {
-        if (jdbcStore == null) return;
-        
-        Integer id = upload("shape/archsites_epsg_prj.zip", true);
-        completeAndVerifyUpload(id, true, "archsites");
-    }
-
-
-    public void testUploadToPostGISViaZip() throws Exception {
-        if (jdbcStore == null) return;
-        
-        Integer id = upload("shape/archsites_epsg_prj.zip", false);
-        completeAndVerifyUpload(id, true, "archsites");
-    }
-    
-    public void testUploadToPostGISCSV() throws Exception {
-        if (jdbcStore == null) return;
-        Integer id = upload("shape/locations.zip", false);
-        setSRSRequest("/rest/imports/"+ id + "/tasks/0/items/0", "EPSG:4326");
-        ImportContext context = importer.getContext(id);
-        context.getTasks().get(0).getTransform().add(new AttributesToPointGeometryTransform("LAT","LON"));
-        completeAndVerifyUpload(id, false, "locations");
-        FeatureTypeInfo featureTypeByName = importer.getCatalog().getFeatureTypeByName("locations");
-        assertEquals("ReferencedEnvelope[-123.365556 : 151.211111, -33.925278 : 48.428611]",featureTypeByName.getNativeBoundingBox().toString());
-        assertEquals("ReferencedEnvelope[-123.365556 : 151.211111, -33.925278 : 48.428611]",featureTypeByName.getLatLonBoundingBox().toString());
-    }
-        
-    void completeAndVerifyUpload(Integer id, boolean addIndex, String expectedTypeName) throws Exception {
-        ImportContext context = importer.getContext(id);
-        ImportTask task = context.getTasks().get(0);
-        assertEquals(ImportTask.State.READY, task.getState());
-        
-        JSONObjectBuilder builder = new JSONObjectBuilder();
-        builder.object().key("task").object()
-          .key("target").object()
-            .key("dataStore").object()
-              .key("name").value("postgis")
-              .key("workspace").object()
-                .key("name").value(getCatalog().getDefaultWorkspace().getName())
-              .endObject()
-            .endObject()
-          .endObject()
-        .endObject().endObject();
-                
-        String payload = builder.buildObject().toString();
-        
-        MockHttpServletResponse resp = putAsServletResponse("/rest/imports/" + id + "/tasks/0", payload, "application/json");
-        assertEquals(204,resp.getStatusCode());
-        
-        // @todo formalize and extract this test
-        if (addIndex) {
-            context = importer.getContext(id);
-            context.getTasks().get(0).getTransform().add(new CreateIndexTransform("CAT_ID"));
-            importer.changed(context);
-        }
-        
-        resp = postAsServletResponse("/rest/imports/" + id,"","application/text");
-        assertEquals(204,resp.getStatusCode());
-        
-        // ensure item ran successfully
-        JSONObject json = (JSONObject) getAsJSON("/rest/imports/" + id + "/tasks/0/items/0");
-        json = json.getJSONObject("item");
-        assertEquals("COMPLETE",json.get("state"));
-        
-        json = (JSONObject) getAsJSON("/rest/workspaces/" + getCatalog().getDefaultWorkspace().getName() + "/datastores/postgis/featuretypes.json");
-        // make sure the new feature type exists
-        JSONObject featureTypes = (JSONObject) json.get("featureTypes");
-        JSONArray featureType = (JSONArray) featureTypes.get("featureType");
-        JSONObject type = (JSONObject) featureType.get(0);
-        // @todo why is generated type name possibly getting a '0' appended to it when we drop the table???
-        assertTrue(type.getString("name").startsWith(expectedTypeName));
-        
-        File archive = importer.getArchiveFile(context);
-        assertTrue(archive.exists());
-        
-        // @todo do it again and ensure feature type is created
-        // correctly w/ auto-generated name 
-    }
-
     public void testGetAllTasks() throws Exception {
         JSONObject json = (JSONObject) getAsJSON("/rest/imports/0/tasks");
 

@@ -87,7 +87,7 @@ public class GeoPackageOutputFormat extends AbstractMapOutputFormat {
 
     static final String JPEG_MIME_TYPE = "image/jpeg";
 
-    static final Set<String> NAMES = Sets.newHashSet("geopackage", "geopkg");
+    static final Set<String> NAMES = Sets.newHashSet("geopackage", "geopkg", "gpkg");
 
     static final int TILE_CLEANUP_INTERVAL;
     static {
@@ -180,11 +180,11 @@ public class GeoPackageOutputFormat extends AbstractMapOutputFormat {
             public void writeTo(OutputStream out) throws IOException {
                 String dbFilename = getAttachmentFileName();
                 if (dbFilename != null) {
-                    dbFilename = dbFilename.substring(0, dbFilename.length()-4) + ".geopackage";
+                    dbFilename = dbFilename.substring(0, dbFilename.length()-4) + ".gpkg";
                 }
                 else {
                     //this shouldn't really ever happen, but fallback anyways
-                    dbFilename = "geoserver.geopackage";
+                    dbFilename = "geoserver.gpkg";
                 }
 
                 IOUtils.copy(bin, out);
@@ -209,7 +209,7 @@ public class GeoPackageOutputFormat extends AbstractMapOutputFormat {
             }
         };
 
-        result.setContentDispositionHeader(map, ".geopackage", true);
+        result.setContentDispositionHeader(map, ".gpkg", true);
         return result;
     }
 

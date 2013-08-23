@@ -17,6 +17,7 @@ import net.opengis.cat.csw20.GetRecordByIdType;
 
 import org.eclipse.emf.common.util.EList;
 import org.geoserver.csw.records.RecordDescriptor;
+import org.geoserver.csw.records.SpatialFilterChecker;
 import org.geoserver.csw.response.CSWRecordsResult;
 import org.geoserver.csw.store.CatalogStore;
 import org.geoserver.feature.CompositeFeatureCollection;
@@ -131,7 +132,7 @@ public class GetRecordById {
         // the specification demands that we throw an error if a spatial operator
         // is used against a non spatial property
         if (q.getFilter() != null) {
-            q.getFilter().accept(new SpatialFilterChecker(rd.getFeatureType()), null);
+            rd.verifySpatialFilters(q.getFilter());
         }
         
         //smuggle base url

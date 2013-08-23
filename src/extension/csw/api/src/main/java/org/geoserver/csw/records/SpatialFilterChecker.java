@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.csw;
+package org.geoserver.csw.records;
 
 import org.geoserver.platform.ServiceException;
 import org.geotools.filter.visitor.DefaultFilterVisitor;
@@ -25,10 +25,10 @@ import org.opengis.filter.spatial.Within;
 
 /**
  * Checks if spatial filters are used against non spatial properties, if so, throws a ServiceException
- * (mandated for CSW cite compliance) 
+ * (mandated for CSW cite compliance). Works fine for simple data models, but you might need
+ * to use a custom one for more complex models (e.g., SpatialFilterChecker is known not to work with ebRIM)
  * 
  * @author Andrea Aime - GeoSolutions
- *
  */
 public class SpatialFilterChecker extends DefaultFilterVisitor {
     

@@ -1,8 +1,18 @@
 package org.opengeo.gsr.core.renderer;
 
 import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
+
+import javax.imageio.ImageIO;
 
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -21,6 +31,7 @@ import org.geotools.styling.Symbolizer;
 import org.opengeo.gsr.core.geometry.GeometryTypeEnum;
 import org.opengeo.gsr.core.symbol.MarkerSymbol;
 import org.opengeo.gsr.core.symbol.Outline;
+import org.opengeo.gsr.core.symbol.PictureMarkerSymbol;
 import org.opengeo.gsr.core.symbol.SimpleFillSymbol;
 import org.opengeo.gsr.core.symbol.SimpleFillSymbolEnum;
 import org.opengeo.gsr.core.symbol.SimpleLineSymbol;
@@ -31,6 +42,10 @@ import org.opengeo.gsr.core.symbol.Symbol;
 import org.opengis.filter.expression.Expression;
 import org.opengis.style.Fill;
 import org.opengis.style.GraphicalSymbol;
+
+import com.google.common.base.Throwables;
+import com.google.common.io.Closeables;
+import com.noelios.restlet.util.Base64;
 
 import net.sf.json.util.JSONBuilder;
 
@@ -273,8 +288,53 @@ public class StyleEncoder {
                 yoffset,
                 outline);
         } else if (symbol instanceof ExternalGraphic) {
-            // TODO implement this.
-            // ExternalGraphic exGraphic = (ExternalGraphic) symbol;
+            ExternalGraphic exGraphic = (ExternalGraphic) symbol;
+            String url = exGraphic.getOnlineResource().getLinkage().toString();
+            byte[] rawData = new byte[4096];
+            InputStream stream = null;
+            try {
+                stream = exGraphic.getOnlineResource().getLinkage().toURL().openStream();
+                int pos = 0;
+                int read = 0;
+                while ((read = stream.read(rawData, pos, rawData.length - pos)) >= 0) {
+                    pos += read;
+                    if (pos == rawData.length) {
+                        byte[] grown = new byte[rawData.length * 2];
+                        for (int i = 0; i < pos; i++) {
+                            grown[i] = rawData[i];
+                        }
+                        rawData = grown;
+                    }
+                }
+                rawData = Arrays.copyOfRange(rawData, 0, pos);
+            } catch (FileNotFoundException e) {
+                return null;
+            } catch (IOException e) {
+                Throwables.propagate(e);
+            } finally {
+                Closeables.closeQuietly(stream);
+            }
+
+            String contentType = exGraphic.getFormat();
+            Color color = Color.GRAY;
+            Double width = evaluateWithDefault(sym.getGraphic().getSize(), 0d);
+            Double height = width;
+            if (width == null) {
+                try {
+                    BufferedImage image = ImageIO.read(new ByteArrayInputStream(rawData));
+                    width = (double) image.getWidth();
+                    height = (double) image.getHeight();
+                } catch (IOException e) {
+                    width = 16d;
+                    height = width;
+                }
+            }
+            double angle = evaluateWithDefault(sym.getGraphic().getRotation(), 0d);
+            Displacement displacement = sym.getGraphic().getDisplacement();
+            int xoffset = displacement != null ? evaluateWithDefault(sym.getGraphic().getDisplacement().getDisplacementX(), 0) : 0;
+            int yoffset = displacement != null ? evaluateWithDefault(sym.getGraphic().getDisplacement().getDisplacementY(), 0) : 0;
+
+            return new PictureMarkerSymbol(rawData, url, contentType, components(color, 1), width, height, angle, xoffset, yoffset);
         }
         return null;
     }
@@ -332,6 +392,8 @@ public class StyleEncoder {
     public static void encodeSymbol(JSONBuilder json, Symbol symbol) {
         if (symbol instanceof SimpleMarkerSymbol) {
             encodeMarkerSymbol(json, (SimpleMarkerSymbol) symbol);
+        } else if (symbol instanceof PictureMarkerSymbol) {
+            encodePictureMarkerSymbol(json, (PictureMarkerSymbol) symbol);
         } else if (symbol instanceof SimpleFillSymbol) {
             encodeFillSymbol(json, (SimpleFillSymbol) symbol);
         } else if (symbol instanceof SimpleLineSymbol) {
@@ -415,6 +477,20 @@ public class StyleEncoder {
         json.key("xoffset").value(sms.getXoffset());
         json.key("yoffset").value(sms.getYoffset());
       json.endObject();
+    }
+    
+    private static void encodePictureMarkerSymbol(JSONBuilder json, PictureMarkerSymbol symbol) {
+        json.object()
+            .key("type").value("esriPMS")
+            .key("url").value(symbol.getUrl())
+            .key("imageData").value(symbol.getImageData())
+            .key("contentType").value(symbol.getContentType())
+            .key("width").value(symbol.getWidth())
+            .key("height").value(symbol.getHeight())
+            .key("angle").value(symbol.getAngle())
+            .key("xoffset").value(symbol.getXoffset())
+            .key("yoffset").value(symbol.getYoffset());
+        json.endObject();
     }
 
     private static void encodeLineStyle(JSONBuilder json, SimpleLineSymbol symbol) {

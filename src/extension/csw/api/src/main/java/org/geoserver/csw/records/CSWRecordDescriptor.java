@@ -10,6 +10,7 @@ import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
+
 import net.opengis.cat.csw20.ElementSetType;
 
 import org.geoserver.csw.util.NamespaceQualifier;
@@ -23,8 +24,8 @@ import org.geotools.data.complex.config.FeatureTypeRegistry;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.TypeBuilder;
-import org.geotools.feature.type.Types;
 import org.geotools.feature.type.FeatureTypeFactoryImpl;
+import org.geotools.feature.type.Types;
 import org.geotools.filter.SortByImpl;
 import org.geotools.filter.spatial.DefaultCRSFilterVisitor;
 import org.geotools.filter.spatial.ReprojectingFilterVisitor;
@@ -42,6 +43,7 @@ import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.sort.SortBy;
 import org.xml.sax.helpers.NamespaceSupport;
+
 import com.vividsolutions.jts.geom.MultiPolygon;
 
 /**
@@ -282,6 +284,10 @@ public class CSWRecordDescriptor extends AbstractRecordDescriptor {
     @Override
     public PropertyName translateProperty(Name name) {
         return new CSWPropertyPathExtender().extendProperty(buildPropertyName(NAMESPACES, name), FF, NAMESPACES);
+    }
+    
+    public void verifySpatialFilters(Filter filter) {
+        filter.accept(new SpatialFilterChecker(getFeatureType()), null);
     }
     
     //singleton

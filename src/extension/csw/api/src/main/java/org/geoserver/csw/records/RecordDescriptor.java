@@ -4,6 +4,7 @@
  */
 package org.geoserver.csw.records;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import net.opengis.cat.csw20.ElementSetType;
@@ -12,6 +13,7 @@ import org.geotools.data.Query;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
+import org.opengis.filter.Filter;
 import org.opengis.filter.expression.PropertyName;
 import org.xml.sax.helpers.NamespaceSupport;
 
@@ -92,5 +94,14 @@ public interface RecordDescriptor {
      * @return the property name
      */
     PropertyName translateProperty(Name name);
+    
+    /**
+     * Checks that the spatial filters are actually referring to a spatial property.
+     * The {@link SpatialFilterChecker} utility class can be used against simple records (like CSW),
+     * but more complex record types will need a more sophisticated approach
+     * 
+     * @param filter
+     */
+    void verifySpatialFilters(Filter filter);
             
 }

@@ -11,6 +11,7 @@ import net.opengis.cat.csw20.ElementSetType;
 import org.geoserver.csw.records.AbstractRecordDescriptor;
 import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geoserver.csw.records.RecordFeatureTypeRegistryHelper;
+import org.geoserver.csw.records.SpatialFilterChecker;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.csw.CSW;
 import org.geotools.data.Query;
@@ -221,6 +222,10 @@ public class MetaDataDescriptor extends AbstractRecordDescriptor {
     @Override
     public PropertyName translateProperty(Name name) {
         return QUERYABLE_MAPPING.get(name.getLocalPart());
+    }
+    
+    public void verifySpatialFilters(Filter filter) {
+        filter.accept(new SpatialFilterChecker(getFeatureType()), null);
     }
 
     //singleton

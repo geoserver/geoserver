@@ -7,8 +7,6 @@ package org.geoserver.csw.store;
 import java.io.IOException;
 import java.util.List;
 
-import net.opengis.cat.csw20.ElementSetType;
-
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geoserver.csw.records.RecordDescriptor;

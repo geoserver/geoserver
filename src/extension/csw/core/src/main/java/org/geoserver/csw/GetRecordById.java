@@ -72,14 +72,17 @@ public class GetRecordById {
             }
                 
             FeatureCollection records = null;
-
+            
             // time to run the queries if we are not in hits mode
-
+            
             List<FeatureCollection> results = new ArrayList<FeatureCollection>();
             for (int i = 0; i < queries.size(); i++) {
-                results.add(store.getRecords(queries.get(i), Transaction.AUTO_COMMIT));
+                FeatureCollection collection = store.getRecords(queries.get(i), Transaction.AUTO_COMMIT);
+                if(collection != null && collection.size() > 0) {
+                    results.add(collection);
+                }
             }
-
+            
             if (results.size() == 1) {
                 records = results.get(0);
             } else if (results.size() > 1) {

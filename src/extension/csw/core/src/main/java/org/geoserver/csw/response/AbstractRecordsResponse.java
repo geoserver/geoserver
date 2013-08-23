@@ -79,7 +79,7 @@ public abstract class AbstractRecordsResponse extends Response {
         // check the output schema is valid
         if (result.getRecords() != null) {
             FeatureType recordSchema = result.getRecords().getSchema();
-            if (!recordType.equals(recordSchema)) {
+            if (recordSchema != null && !recordType.equals(recordSchema)) {
                 throw new IllegalArgumentException("Cannot encode this kind of record "
                         + recordSchema.getName() + " into schema " + schema);
             }

@@ -695,7 +695,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
                + layer + "&query_layers=" + layer + "&width=2041&height=2041";
        
        BufferedImage image = getAsImage(getMap, "image/png");
-       ImageIO.write(image, "png", new File("/tmp/test.png"));
+       // ImageIO.write(image, "png", new File("/tmp/test.png"));
        assertPixel(image, 150, 150, Color.BLUE);
    }
    

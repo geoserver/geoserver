@@ -141,7 +141,7 @@
         </dependency>
         <dependency>
             <groupId>org.geotools.schemas</groupId>
-            <artifactId>geosciml-3.2-seegrid</artifactId>
+            <artifactId>geosciml-3.2</artifactId>
             <version>3.2.0-1</version>
             <scope>test</scope>
         </dependency>

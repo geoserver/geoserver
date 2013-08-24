@@ -10,6 +10,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.data.test.SystemTestData;
@@ -76,6 +77,27 @@ public class ServicePersisterTest extends GeoServerSystemTestSupport {
         ServiceInfo s = geoServer.getServiceByName(ws, "foo", ServiceInfo.class);
         geoServer.remove(s);
         assertFalse(f.exists());
+    }
+    
+    @Test
+    public void testReloadWithLocalServices() throws Exception {
+        // setup a non default workspace
+        WorkspaceInfo ws = getCatalog().getFactory().createWorkspace();
+        ws.setName("nonDefault");
+        NamespaceInfo ni = getCatalog().getFactory().createNamespace();
+        ni.setPrefix("nonDefault");
+        ni.setURI("http://www.geoserver.org/nonDefault");
+        getCatalog().add(ws);
+        getCatalog().add(ni);
+
+        // create a ws specific setting
+        SettingsInfo s = geoServer.getFactory().createSettings();
+        s.setWorkspace(ws);
+
+        geoServer.add(s);
+        
+        getGeoServer().reload();
+        
     }
 
     static class ServiceLoader extends XStreamServiceLoader {

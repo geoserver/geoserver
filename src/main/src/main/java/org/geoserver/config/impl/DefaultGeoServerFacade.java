@@ -199,6 +199,7 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
 
     public void dispose() {
         if ( global != null ) global.dispose();
+        if ( settings != null) settings.clear();
         if ( services != null ) services.clear();
     }
 

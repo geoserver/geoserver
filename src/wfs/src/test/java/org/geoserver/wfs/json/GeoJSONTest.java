@@ -199,6 +199,12 @@ public class GeoJSONTest extends WFSTestSupport {
         String out3 = getAsString("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat="+JSONType.json+"&featureid=PrimitiveGeoFeature.f001,PrimitiveGeoFeature.f002");
         JSONObject rootObject3 = JSONObject.fromObject( out3 );
         assertEquals(rootObject3.get("totalFeatures"),2);
+        
+        //request with multiple featureTypes and Filter
+        String out4 = getAsString("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature,sf:AggregateGeoFeature&outputformat="+JSONType.json + "&featureid=PrimitiveGeoFeature.f001,PrimitiveGeoFeature.f002,AggregateGeoFeature.f009");
+        JSONObject rootObject4 = JSONObject.fromObject( out4 );
+        assertEquals(rootObject4.get("totalFeatures"),3);
+        
     }
 
     @Test
@@ -217,6 +223,12 @@ public class GeoJSONTest extends WFSTestSupport {
         String out3 = getAsString("wfs?request=GetFeature&version=2.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat="+JSONType.json+"&featureid=PrimitiveGeoFeature.f001,PrimitiveGeoFeature.f002");
         JSONObject rootObject3 = JSONObject.fromObject( out3 );
         assertEquals(rootObject3.get("totalFeatures"),2);
+        
+        //request with multiple featureTypes and Filter
+        String out4 = getAsString("wfs?request=GetFeature&version=2.0.0&typename=sf:PrimitiveGeoFeature,sf:AggregateGeoFeature&outputformat="+JSONType.json + "&featureid=PrimitiveGeoFeature.f001,PrimitiveGeoFeature.f002,AggregateGeoFeature.f009");
+        JSONObject rootObject4 = JSONObject.fromObject( out4 );
+        assertEquals(rootObject4.get("totalFeatures"),3);
+        
     }
     
 }

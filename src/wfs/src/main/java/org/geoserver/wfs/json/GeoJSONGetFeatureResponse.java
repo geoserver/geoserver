@@ -19,6 +19,7 @@ import net.opengis.wfs.QueryType;
 import net.opengis.wfs.GetFeatureType;
 import net.sf.json.JSONException;
 
+import org.eclipse.emf.common.util.EList;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
@@ -305,34 +306,39 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
      * @return int featurecount 
      * @throws IOException
      */
+    @SuppressWarnings("unchecked")
     private int getFeatureCountFromWFS11Request(Operation describeFeatureType, WFSInfo wfs)
             throws IOException {
-        int count = 0;
+        int totalCount = 0;
         Catalog catalog = wfs.getGeoServer().getCatalog();
-
+        
         GetFeatureType request = (GetFeatureType) describeFeatureType.getParameters()[0];
-        QueryType query = (QueryType) request.getQuery().get(0);
-        QName typeName = (QName) query.getTypeName().get(0);
-        FeatureTypeInfo meta = catalog.getFeatureTypeByName(typeName.getNamespaceURI(),
-                typeName.getLocalPart());
+        
+        for (QueryType query :  (EList<QueryType>) request.getQuery()) {
+            QName typeName = (QName) query.getTypeName().get(0);
+            FeatureTypeInfo meta = catalog.getFeatureTypeByName(typeName.getNamespaceURI(),
+                    typeName.getLocalPart());
 
-        FeatureSource<? extends FeatureType, ? extends Feature> source = meta.getFeatureSource(
-                null, null);
-        Filter filter = query.getFilter();
-        if (filter == null) {
-            filter = Filter.INCLUDE;
+            FeatureSource<? extends FeatureType, ? extends Feature> source = meta.getFeatureSource(
+                    null, null);
+            Filter filter = query.getFilter();
+            if (filter == null) {
+                filter = Filter.INCLUDE;
+            }
+            Query countQuery = new Query(typeName.getLocalPart(), filter);
+            
+            int count = 0;
+            count = source.getCount(countQuery);
+            if (count == -1) {
+                // information was not available in the header!
+                org.geotools.data.Query gtQuery = new org.geotools.data.Query(countQuery);
+                FeatureCollection<? extends FeatureType, ? extends Feature> features = source
+                        .getFeatures(gtQuery);
+                count = features.size();
+            }
+            totalCount +=count;
         }
-        Query countQuery = new Query(typeName.getLocalPart(), filter);
 
-        count = source.getCount(countQuery);
-        if (count == -1) {
-            // information was not available in the header!
-            org.geotools.data.Query gtQuery = new org.geotools.data.Query(countQuery);
-            FeatureCollection<? extends FeatureType, ? extends Feature> features = source
-                    .getFeatures(gtQuery);
-            count = features.size();
-        }
-
-        return count;
+        return totalCount;
     }
 }

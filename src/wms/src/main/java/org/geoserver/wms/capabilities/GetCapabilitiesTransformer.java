@@ -937,56 +937,56 @@ public class GetCapabilitiesTransformer extends TransformerBase {
         
 
         
-    /**
-     * Inserts the ScaleHint element in the layer information. 
-     * <p>
-     * The process is consistent with the following criteria:
-     * </p>
-     * 
-     * <pre>
-     * a) min = 0.0, max= infinity => ScaleHint is not generated
-     * b) max=value => <ScaleHint min=0 max=value/>
-     * c) min=value => <ScaleHint min=value max=infinity/>
-     * </pre>
-     * 
-     * @param layer
-     */
-	private void handleScaleHint(LayerInfo layer) {
-		
-		try {
-			Map<String, Double>  denominators = CapabilityUtil.searchMinMaxScaleDenominator(MIN_DENOMINATOR_ATTR, MAX_DENOMINATOR_ATTR, layer);
-			
-			// makes the element taking into account that if the min and max denominators have got the default 
-			// values the ScaleHint element is not generated
-			
-			if( (denominators.get(MIN_DENOMINATOR_ATTR) == 0.0) && 
-				(denominators.get(MAX_DENOMINATOR_ATTR) == Double.POSITIVE_INFINITY) ){
-				
-				return; 
-			}
-			
-			Double minScaleHint;
-            Double maxScaleHint;
-            if(wmsConfig.getScalehintUnitPixel()!=null && wmsConfig.getScalehintUnitPixel()){                
-                // makes the scalehint computation taking into account the OGC standardized rendering pixel size" that is 0.28mm × 0.28mm (millimeters).
-                minScaleHint =  CapabilityUtil.computeScaleHint(denominators.get(MIN_DENOMINATOR_ATTR));
-                maxScaleHint =  CapabilityUtil.computeScaleHint(denominators.get(MAX_DENOMINATOR_ATTR));
-            }else{
-                minScaleHint=denominators.get(MIN_DENOMINATOR_ATTR);
-                maxScaleHint=denominators.get(MAX_DENOMINATOR_ATTR);
-            }			
-            
-			AttributesImpl attrs = new AttributesImpl();
-			attrs.addAttribute("", MIN_DENOMINATOR_ATTR, MIN_DENOMINATOR_ATTR, "", String.valueOf(minScaleHint));
-			attrs.addAttribute("", MAX_DENOMINATOR_ATTR, MAX_DENOMINATOR_ATTR, "", String.valueOf(maxScaleHint));
+        /**
+         * Inserts the ScaleHint element in the layer information. 
+         * <p>
+         * The process is consistent with the following criteria:
+         * </p>
+         * 
+         * <pre>
+         * a) min = 0.0, max= infinity => ScaleHint is not generated
+         * b) max=value => <ScaleHint min=0 max=value/>
+         * c) min=value => <ScaleHint min=value max=infinity/>
+         * </pre>
+         * 
+         * @param layer
+         */
+        private void handleScaleHint(LayerInfo layer) {
 
-	        element("ScaleHint", null, attrs);
-	        
-		} catch (IOException e) {
-            LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
-		}
-	}
-	
+            try {
+                Map<String, Double>  denominators = CapabilityUtil.searchMinMaxScaleDenominator(MIN_DENOMINATOR_ATTR, MAX_DENOMINATOR_ATTR, layer);
+
+                // makes the element taking into account that if the min and max denominators have got the default 
+                // values the ScaleHint element is not generated
+
+                if( (denominators.get(MIN_DENOMINATOR_ATTR) == 0.0) && 
+                        (denominators.get(MAX_DENOMINATOR_ATTR) == Double.POSITIVE_INFINITY) ){
+
+                    return; 
+                }
+
+                Double minScaleHint;
+                Double maxScaleHint;
+                if(wmsConfig.getScalehintUnitPixel()!=null && wmsConfig.getScalehintUnitPixel()){                
+                    // makes the scalehint computation taking into account the OGC standardized rendering pixel size" that is 0.28mm × 0.28mm (millimeters).
+                    minScaleHint =  CapabilityUtil.computeScaleHint(denominators.get(MIN_DENOMINATOR_ATTR));
+                    maxScaleHint =  CapabilityUtil.computeScaleHint(denominators.get(MAX_DENOMINATOR_ATTR));
+                }else{
+                    minScaleHint=denominators.get(MIN_DENOMINATOR_ATTR);
+                    maxScaleHint=denominators.get(MAX_DENOMINATOR_ATTR);
+                }			
+
+                AttributesImpl attrs = new AttributesImpl();
+                attrs.addAttribute("", MIN_DENOMINATOR_ATTR, MIN_DENOMINATOR_ATTR, "", String.valueOf(minScaleHint));
+                attrs.addAttribute("", MAX_DENOMINATOR_ATTR, MAX_DENOMINATOR_ATTR, "", String.valueOf(maxScaleHint));
+
+                element("ScaleHint", null, attrs);
+
+            } catch (IOException e) {
+                LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
+            }
+        }
+
 
 	private String qualifySRS(String srs) {
            if (srs.indexOf(':') == -1) {

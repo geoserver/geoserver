@@ -1,14 +1,20 @@
 package org.opengeo.gsr.core.renderer;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import net.sf.json.JSONObject;
 import net.sf.json.util.JSONBuilder;
 import net.sf.json.util.JSONStringer;
 
 import org.geoserver.catalog.StyleInfo;
+import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.styling.SLDParser;
+import org.geotools.styling.StyleFactory;
 import org.junit.Test;
 import org.opengeo.gsr.resource.ResourceTest;
 import org.opengis.style.Style;
-
-import static org.junit.Assert.*;
 
 public class RendererEncoderTest extends ResourceTest {
     @Test
@@ -47,5 +53,25 @@ public class RendererEncoderTest extends ResourceTest {
         JSONBuilder json = new JSONStringer();
         StyleEncoder.encodeRenderer(json, pointRenderer);
     }
-
+    
+    @Test
+    public void testIconRenderer() throws Exception {
+        StyleFactory factory = CommonFactoryFinder.getStyleFactory();
+        SLDParser parser = new SLDParser(factory, getClass().getResource("mark.sld"));
+        org.geotools.styling.Style sld = parser.readXML()[0];
+        JSONBuilder json = new JSONStringer();
+        Renderer renderer = StyleEncoder.styleToRenderer((org.geotools.styling.Style) sld);
+        assertNotNull(renderer);
+        StyleEncoder.encodeRenderer(json, renderer);
+        JSONObject object = JSONObject.fromObject(json.toString());
+        JSONObject symbol = object.getJSONObject("symbol");
+        String url = symbol.getString("url");
+        String contentType = symbol.getString("contentType");
+        int width = symbol.getInt("width");
+        int height = symbol.getInt("height");
+        assertTrue(url.endsWith("example.jpg"));
+        assertEquals("image/jpeg", contentType);
+        assertEquals(64, width);
+        assertEquals(64, height);
+    }
 }

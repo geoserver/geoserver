@@ -43,8 +43,6 @@ import org.opengis.filter.expression.Expression;
 import org.opengis.style.Fill;
 import org.opengis.style.GraphicalSymbol;
 
-import com.google.common.base.Throwables;
-import com.google.common.io.Closeables;
 import com.noelios.restlet.util.Base64;
 
 import net.sf.json.util.JSONBuilder;
@@ -310,9 +308,15 @@ public class StyleEncoder {
             } catch (FileNotFoundException e) {
                 return null;
             } catch (IOException e) {
-                Throwables.propagate(e);
+                throw new RuntimeException("IO Error while loading image icon.", e);
             } finally {
-                Closeables.closeQuietly(stream);
+                if (stream != null) {
+                    try {
+                        stream.close();
+                    } catch (IOException e) {
+                        // squelch
+                    }
+                }
             }
 
             String contentType = exGraphic.getFormat();

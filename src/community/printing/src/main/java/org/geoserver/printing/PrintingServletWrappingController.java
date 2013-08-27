@@ -39,7 +39,7 @@ ServletWrappingController {
     @Override
     public void setInitParameters(Properties initParameters) {
         // find the config parameter and update it so it points to
-        // $GEOSERVER_DATA_DIR/printing/$CONFIG 
+        // $GEOSERVER_DATA_DIR/printing/$CONFIG
         this.configPropOrig = initParameters.getProperty("config");
 
         initParameters = setConfig(initParameters, this.configPropOrig);
@@ -77,23 +77,25 @@ ServletWrappingController {
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-      final String additionalPath = request.getPathInfo();
-      if (additionalPath.equals(CREATE_URL) || additionalPath.equals(INFO_URL)) {
-          // just react at creation and info
-          String configProp = request.getParameter("config");
-          Properties initParameters = this.initParametersOrig;
-          if (configProp != null) {
-              LOG.info("Set config to '" + configProp + "'");
-          } else {
-              LOG.info("Use original config '" + this.configPropOrig + "'");
-              // use original configuration
-              configProp = this.configPropOrig;
-          }
-          // set initParameters
-          initParameters = setConfig(initParameters, configProp);
-          super.setInitParameters(initParameters);
-          super.afterPropertiesSet();
-      }
-      return super.handleRequestInternal(request, response);
+        final String additionalPath = request.getPathInfo();
+        synchronized (additionalPath) {
+            if (additionalPath.equals(CREATE_URL) || additionalPath.equals(INFO_URL)) {
+                // just react at creation and info
+                String configProp = request.getParameter("config");
+                Properties initParameters = this.initParametersOrig;
+                if (configProp != null) {
+                    LOG.info("Set config to '" + configProp + "'");
+                } else {
+                    LOG.info("Use original config '" + this.configPropOrig + "'");
+                    // use original configuration
+                    configProp = this.configPropOrig;
+                }
+                // set initParameters
+                initParameters = setConfig(initParameters, configProp);
+                super.setInitParameters(initParameters);
+                super.afterPropertiesSet();
+            }
+            return super.handleRequestInternal(request, response);
+        }
     }
 }

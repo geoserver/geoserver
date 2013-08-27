@@ -140,7 +140,7 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer implements Me
      */
     protected abstract void processEventQueue(Queue<Event> q) throws Exception;
 
-    ConfigChangeEvent<?> newChangeEvent(CatalogEvent evt, Type type) {
+    ConfigChangeEvent newChangeEvent(CatalogEvent evt, Type type) {
         return newChangeEvent(evt.getSource(), type);
     }
 

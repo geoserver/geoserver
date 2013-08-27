@@ -6,14 +6,23 @@ import static org.hamcrest.CoreMatchers.*;
 
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.wms.WMSInfo;
+import org.geoserver.wms.WMSInfoImpl;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
+import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.cluster.ConfigChangeEvent;
 import org.geoserver.cluster.ConfigChangeEvent.Type;
 import org.geoserver.cluster.Event;
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.LoggingInfo;
+import org.geoserver.config.ServiceInfo;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.GeoServerInfoImpl;
+import org.geoserver.config.impl.LoggingInfoImpl;
+import org.geoserver.config.impl.SettingsInfoImpl;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import com.hazelcast.core.Message;
@@ -300,7 +309,38 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         }
         verify(layerInfo);
     }
- 
+    
+    @Test
+    public void testWorkspaceAdd() throws Exception {
+        WorkspaceInfo info;
+        final String workspaceName = "testStore";
+        final String workspaceId = "Store-TEST";
+        
+        {
+            info = createMock(WorkspaceInfo.class);
+    
+            expect(info.getName()).andStubReturn(workspaceName);
+            expect(info.getId()).andStubReturn(workspaceId);
+            
+            expectationTestWorkspaceAdd(info, workspaceName, workspaceId);
+        }
+        replay(info);
+        {
+            HzSynchronizer sync = getSynchronizer();
+            sync.initialize(configWatcher);
+            ConfigChangeEvent evt = new ConfigChangeEvent(workspaceId, workspaceName, WorkspaceInfoImpl.class, Type.ADD);
+            
+            // Mock a message coming in from the cluster
+            
+            mockMessage(evt);
+        }
+        waitForSync();
+        verify(info);
+    }
+
+    protected abstract void expectationTestWorkspaceAdd(WorkspaceInfo info,
+            String workspaceName, String workspaceId) throws Exception;
+
     protected void mockMessage(ConfigChangeEvent evt) {
         evt.setSource(remoteAddress);
         Message<Event> msg = new Message<Event>(TOPIC_NAME, evt);
@@ -308,5 +348,104 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
             listener.onMessage(msg);
         }
     }
+
+    @Test
+    public void testChangeSettings() throws Exception {
+        SettingsInfo info;
+        WorkspaceInfo wsInfo;
+        final String settingsId = "Settings-TEST";
+        final String workspaceId = "Workspace-TEST";
+        
+        {
+            info = createMock(SettingsInfo.class);
+            wsInfo = createMock(WorkspaceInfo.class);
+            
+            expect(wsInfo.getId()).andStubReturn(workspaceId);
+            
+            expect(info.getWorkspace()).andStubReturn(wsInfo);
+            expect(getCatalog().getWorkspace(workspaceId)).andStubReturn(wsInfo);
+    
+            expect(info.getId()).andStubReturn(settingsId);
+            
+            expect(getGeoServer().getSettings(wsInfo)).andStubReturn(info);
+            
+            expectationTestChangeSettings(info, settingsId, wsInfo, workspaceId);
+        }
+        replay(info, wsInfo);
+        {
+            HzSynchronizer sync = getSynchronizer();
+            sync.initialize(configWatcher);
+            ConfigChangeEvent evt = new ConfigChangeEvent(settingsId, null, SettingsInfoImpl.class, Type.MODIFY);
+            evt.setWorkspaceId(workspaceId);
+            
+            // Mock a message coming in from the cluster
+            
+            mockMessage(evt);
+        }
+        waitForSync();
+        verify(info, wsInfo);
+    }
+
+    protected abstract void expectationTestChangeSettings(SettingsInfo info, String settingsId, WorkspaceInfo wsInfo, String workspaceId) throws Exception;
+
+    @Test
+    public void testChangeLogging() throws Exception {
+        LoggingInfo info;
+        final String settingsId = "Logging-TEST";
+        
+        {
+            info = createMock(LoggingInfo.class);
+            
+            expect(info.getId()).andStubReturn(settingsId);
+            
+            expect(getGeoServer().getLogging()).andStubReturn(info);
+            
+            expectationTestChangeLogging(info, settingsId);
+        }
+        replay(info);
+        {
+            HzSynchronizer sync = getSynchronizer();
+            sync.initialize(configWatcher);
+            ConfigChangeEvent evt = new ConfigChangeEvent(settingsId, null, LoggingInfoImpl.class, Type.MODIFY);
+            
+            // Mock a message coming in from the cluster
+            
+            mockMessage(evt);
+        }
+        waitForSync();
+        verify(info);
+    }
+    protected abstract void expectationTestChangeLogging(LoggingInfo info, String loggingId) throws Exception;
+
+    @Test
+    public void testChangeService() throws Exception {
+        WMSInfo info;
+        final String serviceId = "Service-TEST";
+        
+        {
+            info = createMock(WMSInfo.class);
+            
+            expect(info.getId()).andStubReturn(serviceId);
+            
+            expect(getGeoServer().getService(serviceId, WMSInfo.class)).andStubReturn(info);
+            expect(getGeoServer().getService(serviceId, ServiceInfo.class)).andStubReturn(info);
+                  
+            expectationTestChangeService(info, serviceId);
+        }
+        replay(info);
+        {
+            HzSynchronizer sync = getSynchronizer();
+            sync.initialize(configWatcher);
+            
+            ConfigChangeEvent evt = new ConfigChangeEvent(serviceId, null, WMSInfoImpl.class, Type.MODIFY);
+            
+            // Mock a message coming in from the cluster
+            
+            mockMessage(evt);
+        }
+        waitForSync();
+        verify(info);
+    }
+    protected abstract void expectationTestChangeService(ServiceInfo info, String serviceId) throws Exception;
 
 }

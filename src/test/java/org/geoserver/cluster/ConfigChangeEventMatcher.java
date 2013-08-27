@@ -30,7 +30,7 @@ public class ConfigChangeEventMatcher extends EventMatcher {
      */
     ConfigChangeEvent.Type type;
     
-    static public <T extends Info> ConfigChangeEvent<T> configChangeEvent(Object source, String id, String name,
+    static public <T extends Info> ConfigChangeEvent configChangeEvent(Object source, String id, String name,
             String workspaceId, Class<T> clazz, Type type){
         EasyMock.reportMatcher(new ConfigChangeEventMatcher(source, id, name, workspaceId, clazz, type));
         return null;

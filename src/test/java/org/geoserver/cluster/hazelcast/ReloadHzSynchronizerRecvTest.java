@@ -6,7 +6,11 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.LoggingInfo;
+import org.geoserver.config.ServiceInfo;
+import org.geoserver.config.SettingsInfo;
 
 public class ReloadHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
 
@@ -70,6 +74,30 @@ public class ReloadHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
     protected void expectationTestTwoLayerChangeWithPause(LayerInfo layerInfo,
             String layerId) throws Exception {
         getGeoServer().reload(); expectLastCall();
+        getGeoServer().reload(); expectLastCall();
+    }
+
+    @Override
+    protected void expectationTestWorkspaceAdd(WorkspaceInfo info,
+            String workspaceName, String workspaceId) throws Exception {
+        getGeoServer().reload(); expectLastCall();
+    }
+
+    @Override
+    protected void expectationTestChangeSettings(SettingsInfo info,
+            String settingsId, WorkspaceInfo wsInfo, String workspaceId) throws Exception {
+        getGeoServer().reload(); expectLastCall();
+    }
+
+    @Override
+    protected void expectationTestChangeLogging(LoggingInfo info,
+            String loggingId) throws Exception {
+        getGeoServer().reload(); expectLastCall();
+    }
+
+    @Override
+    protected void expectationTestChangeService(ServiceInfo info,
+            String ServiceId) throws Exception {
         getGeoServer().reload(); expectLastCall();
     }
 

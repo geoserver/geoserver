@@ -12,8 +12,12 @@ import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.ConfigurationListener;
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.LoggingInfo;
+import org.geoserver.config.ServiceInfo;
+import org.geoserver.config.SettingsInfo;
 import org.hamcrest.integration.EasyMock2Adapter;
 import org.junit.Before;
 
@@ -118,4 +122,43 @@ public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
         expect(getCatalog().getLayer(layerId) ).andReturn(layerInfo).anyTimes();
         getCatalog().firePostModified((CatalogInfo)info(layerId)); expectLastCall().times(2);
     }
+    
+    @Override
+    protected void expectationTestWorkspaceAdd(WorkspaceInfo info,
+            String workspaceName, String workspaceId) throws Exception {
+        expect(getCatalog().getWorkspace(workspaceId) ).andReturn(info);
+        getCatalog().fireAdded((CatalogInfo)info(workspaceId)); expectLastCall();
+    }
+
+    @Override
+    protected void expectationTestChangeSettings(SettingsInfo info,
+            String settingsId, WorkspaceInfo wsInfo, String workspaceId) throws Exception {
+        
+        // TODO: Expect this instead of mocking ConfigurationListener
+        //expect(getGeoServer().fireSettingsPostModified());
+        
+        configListener.handleSettingsPostModified((SettingsInfo)info(settingsId));expectLastCall();
+        expect(getGeoServer().getListeners()).andReturn(Arrays.asList(configListener));
+    }
+
+    @Override
+    protected void expectationTestChangeLogging(LoggingInfo info,
+            String loggingId) throws Exception {
+        // TODO: Expect this instead of mocking ConfigurationListener
+        //expect(getGeoServer().fireLoggingPostModified());
+        
+        configListener.handlePostLoggingChange((LoggingInfo)info(loggingId));expectLastCall();
+        expect(getGeoServer().getListeners()).andReturn(Arrays.asList(configListener));
+    }
+
+    @Override
+    protected void expectationTestChangeService(ServiceInfo info,
+            String serviceId) throws Exception {
+        // TODO: Expect this instead of mocking ConfigurationListener
+        //expect(getGeoServer().fireLoggingPostModified());
+        configListener.handlePostServiceChange((ServiceInfo)info(serviceId));expectLastCall();
+        expect(getGeoServer().getListeners()).andReturn(Arrays.asList(configListener));
+        
+    }
+
 }

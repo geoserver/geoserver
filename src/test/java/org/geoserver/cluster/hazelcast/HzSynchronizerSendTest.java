@@ -13,10 +13,12 @@ import org.geoserver.catalog.Info;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogListener;
+import org.geoserver.catalog.event.impl.CatalogAddEventImpl;
 import org.geoserver.catalog.event.impl.CatalogModifyEventImpl;
 import org.geoserver.catalog.event.impl.CatalogPostModifyEventImpl;
 import org.geoserver.catalog.event.impl.CatalogRemoveEventImpl;
 import org.geoserver.cluster.ConfigChangeEvent;
+import org.geoserver.cluster.ConfigChangeEvent.Type;
 import org.geoserver.config.ConfigurationListener;
 import org.geoserver.config.GeoServerInfo;
 import org.junit.Test;
@@ -47,7 +49,7 @@ public abstract class HzSynchronizerSendTest extends HzSynchronizerTest {
             expect(info.getName()).andStubReturn(layerName);
             expect(info.getId()).andStubReturn(layerId);
             
-            expectEvent(localAddress, layerName, layerWorkspace, layerId, LayerInfo.class, ConfigChangeEvent.Type.MODIFY);
+            expectEvent(localAddress, layerName, layerWorkspace, layerId, LayerInfo.class, Type.MODIFY);
         }
         replay(info);
         {
@@ -98,7 +100,7 @@ public abstract class HzSynchronizerSendTest extends HzSynchronizerTest {
             
             expect(wsInfo.getId()).andStubReturn(storeWorkspace);
             
-            expectEvent(localAddress, storeName, storeWorkspace, storeId, DataStoreInfo.class, ConfigChangeEvent.Type.REMOVE);
+            expectEvent(localAddress, storeName, storeWorkspace, storeId, DataStoreInfo.class, Type.REMOVE);
         }
         replay(info, wsInfo);
         {
@@ -131,7 +133,7 @@ public abstract class HzSynchronizerSendTest extends HzSynchronizerTest {
     
             expect(info.getId()).andStubReturn(globalId);
             
-            expectEvent(localAddress, globalName, globalWorkspace, globalId, GeoServerInfo.class, ConfigChangeEvent.Type.MODIFY);
+            expectEvent(localAddress, globalName, globalWorkspace, globalId, GeoServerInfo.class, Type.MODIFY);
         }
         replay(info);
         {
@@ -153,5 +155,40 @@ public abstract class HzSynchronizerSendTest extends HzSynchronizerTest {
         waitForSync();
         verify(info);
     }
-
+    
+    @Test
+    public void testWorkspaceAdded() throws Exception {
+        WorkspaceInfo info;
+        final String workspaceName = "testWorkspace";
+        final String workspaceId = "Workspace-TEST";
+        final String workspaceWorkspace = null; // LayerInfo doesn't have a workspace property
+        
+        {
+            info = createMock(WorkspaceInfo.class);
+    
+            expect(info.getName()).andStubReturn(workspaceName);
+            expect(info.getId()).andStubReturn(workspaceId);
+            
+            expectEvent(localAddress, workspaceName, workspaceWorkspace, workspaceId, WorkspaceInfo.class, Type.ADD);
+        }
+        replay(info);
+        {
+            HzSynchronizer sync = getSynchronizer();
+            
+            // Mock the result of doing this:
+            
+            // getCatalog().add(info);
+            
+            CatalogAddEventImpl preEvent = new CatalogAddEventImpl();
+    
+            preEvent.setSource(info);
+            
+            for(CatalogListener listener: catListenerCapture.getValues()) {
+                listener.handleAddEvent(preEvent);
+            }
+            
+        }
+        waitForSync();
+        verify(info);
+    }
 }

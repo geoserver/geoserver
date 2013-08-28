@@ -12,7 +12,7 @@
 	<parent>
 		<groupId>org.geoserver.extension</groupId>
 		<artifactId>app-schema</artifactId>
-		<version>2.4-SNAPSHOT</version>
+		<version>2.5-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.geoserver.extension</groupId>
@@ -141,8 +141,20 @@
         </dependency>
         <dependency>
             <groupId>org.geotools.schemas</groupId>
+            <artifactId>geosciml-3.2</artifactId>
+            <version>3.2.0-1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools.schemas</groupId>
             <artifactId>wfs-2.0</artifactId>
             <version>2.0.0-2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools.schemas</groupId>
+            <artifactId>samplingSpecimen-2.0</artifactId>
+            <version>2.0.0-1</version>
             <scope>test</scope>
         </dependency>
 	</dependencies>
@@ -152,6 +164,21 @@
         <!-- Include data ref set tests -->
             <id>app-schema-online-test</id>
             <build>
+                <plugins>
+			        <plugin>
+			            <groupId>org.apache.maven.plugins</groupId>
+			            <artifactId>maven-surefire-plugin</artifactId>
+			            <configuration>
+				            <excludes>
+                                <!-- To be run separately online in app-schema-oracle-test and app-schema-postgis-test -->				
+                                <exclude>**/SortByTest.java</exclude>
+                                <exclude>**/IdFunctionWfsWithJoiningTest.java</exclude>
+				 <exclude>**/XPathPredicateTest.java</exclude>
+                                <exclude>${test.exclude.pattern}</exclude>
+					        </excludes>
+				        </configuration>
+			        </plugin>
+		        </plugins>
 		        <testResources>
 			        <testResource>
 				        <directory>src/test/resources</directory>
@@ -164,7 +191,7 @@
 			   				<include>**/*.tiff</include>
 							<include>**/*.sql</include>
 							<include>**/*.tiff</include>
-					</includes>
+					    </includes>
 			        </testResource>
 		        </testResources>
 	        </build>
@@ -196,7 +223,10 @@
 						        <exclude>**/DataReferenceWmsOracleTest.java</exclude>
 						        <exclude>**/DataReferenceWmsPostgisTest.java</exclude>
                                 <exclude>**/DataReferenceWmsOracleWithJoiningTest.java</exclude>
-                                <exclude>**/DataReferenceWmsPostgisWithJoiningTest.java</exclude>
+                                <exclude>**/DataReferenceWmsPostgisWithJoiningTest.java</exclude>				
+                                <exclude>**/SortByTest.java</exclude>
+                                <exclude>**/IdFunctionWfsWithJoiningTest.java</exclude>
+				 <exclude>**/XPathPredicateTest.java</exclude>
                                 <exclude>${test.exclude.pattern}</exclude>
 					        </excludes>
 				        </configuration>

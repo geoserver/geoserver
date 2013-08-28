@@ -9,11 +9,9 @@ package org.geoserver.w3ds.responses;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Set;
 
 import javax.xml.transform.TransformerException;
 
-import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
 import org.geotools.xml.transform.TransformerBase;

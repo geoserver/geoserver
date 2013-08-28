@@ -81,9 +81,10 @@ public class TileLayerInfoUtilTest {
 
         GeoServerTileLayerInfo actual;
         actual = TileLayerInfoUtil.loadOrCreate(layer, defaults);
+        
+        TileLayerInfoUtil.checkAutomaticStyles(layer, info);
 
         TileLayerInfoUtil.setCachedStyles(info, "default", ImmutableSet.of("style1", "style2"));
-        assertEquals(info.cachedStyles(), actual.cachedStyles());
 
         layer.setDefaultStyle(null);
         TileLayerInfoUtil.setCachedStyles(info, "", ImmutableSet.of("style1", "style2"));
@@ -112,42 +113,62 @@ public class TileLayerInfoUtilTest {
     public void testUpdateAcceptAllRegExParameterFilter() {
         GeoServerTileLayerInfo info = defaultVectorInfo;
 
+        // If createParam is false and there isn't already a filter, don't create one
+        TileLayerInfoUtil.updateAcceptAllRegExParameterFilter(info, "ENV", false);
+        assertNull(TileLayerInfoUtil.findParameterFilter("ENV", info.getParameterFilters()));
+        
+        // If createParam is true and there isn't already a filter, create one
         TileLayerInfoUtil.updateAcceptAllRegExParameterFilter(info, "ENV", true);
-
         ParameterFilter filter = TileLayerInfoUtil.findParameterFilter("ENV",
                 info.getParameterFilters());
         assertTrue(filter instanceof RegexParameterFilter);
         assertEquals(".*", ((RegexParameterFilter) filter).getRegex());
 
+        // If createParam is true and there is already a filter, replace it with a new one
         TileLayerInfoUtil.updateAcceptAllRegExParameterFilter(info, "ENV", true);
         ParameterFilter filter2 = TileLayerInfoUtil.findParameterFilter("ENV",
                 info.getParameterFilters());
         assertNotSame(filter, filter2);
         assertEquals(filter, filter2);
-
+        
+        // If createParam is false and there is already a filter, replace it with a new one
         TileLayerInfoUtil.updateAcceptAllRegExParameterFilter(info, "ENV", false);
-        assertNull(TileLayerInfoUtil.findParameterFilter("ENV", info.getParameterFilters()));
+        ParameterFilter filter3 = TileLayerInfoUtil.findParameterFilter("ENV",
+                info.getParameterFilters());
+        assertNotSame(filter2, filter3);
+        assertEquals(filter, filter3);
     }
 
     @Test
     public void testUpdateAcceptAllFloatParameterFilter() {
         GeoServerTileLayerInfo info = defaultVectorInfo;
-
+        
+        // If createParam is false and there isn't already a filter, don't create one
+        TileLayerInfoUtil.updateAcceptAllFloatParameterFilter(info, "ELEVATION", false);
+        assertNull(TileLayerInfoUtil.findParameterFilter("ELEVATION", info.getParameterFilters()));
+        
+        
+        // If createParam is true and there isn't already a filter, create one
         TileLayerInfoUtil.updateAcceptAllFloatParameterFilter(info, "ELEVATION", true);
-
         ParameterFilter filter = TileLayerInfoUtil.findParameterFilter("ELEVATION",
                 info.getParameterFilters());
         assertTrue(filter instanceof FloatParameterFilter);
         assertEquals(0, ((FloatParameterFilter) filter).getValues().size());
 
+        // If createParam is true and there is already a filter, replace it with a new one
         TileLayerInfoUtil.updateAcceptAllFloatParameterFilter(info, "ELEVATION", true);
         ParameterFilter filter2 = TileLayerInfoUtil.findParameterFilter("ELEVATION",
                 info.getParameterFilters());
         assertNotSame(filter, filter2);
         assertEquals(filter, filter2);
 
+        // If createParam is false and there is already a filter, replace it with a new one
         TileLayerInfoUtil.updateAcceptAllFloatParameterFilter(info, "ELEVATION", false);
-        assertNull(TileLayerInfoUtil.findParameterFilter("ELEVATION", info.getParameterFilters()));
+        ParameterFilter filter3 = TileLayerInfoUtil.findParameterFilter("ELEVATION",
+                info.getParameterFilters());
+        assertNotSame(filter2, filter3);
+        assertEquals(filter, filter3);
+        
     }
 
 }

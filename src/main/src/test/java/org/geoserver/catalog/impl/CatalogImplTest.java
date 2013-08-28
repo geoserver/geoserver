@@ -39,6 +39,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.Predicates;
@@ -68,9 +69,19 @@ import com.google.common.collect.Sets;
 public class CatalogImplTest {
 
     protected Catalog catalog;
+
     protected WorkspaceInfo ws;
+    protected WorkspaceInfo wsA;
+    protected WorkspaceInfo wsB;
+
     protected NamespaceInfo ns;
+    protected NamespaceInfo nsA;
+    protected NamespaceInfo nsB;
+
     protected DataStoreInfo ds;
+    protected DataStoreInfo dsA;
+    protected DataStoreInfo dsB;
+
     protected CoverageStoreInfo cs;
     protected WMSStoreInfo wms;
     protected FeatureTypeInfo ft;
@@ -91,15 +102,45 @@ public class CatalogImplTest {
         //ns.setPrefix( "nsPrefix" );
         ns.setPrefix( "wsName" );
         ns.setURI( "nsURI" );
+
+        nsA = factory.createNamespace();
+        //ns prefix has to match workspace name, until we break that relationship
+        //nsA.setPrefix( "nsPrefix" );
+        nsA.setPrefix( "aaa" );
+        nsA.setURI( "nsURIaaa" );
+
+        nsB = factory.createNamespace();
+        //ns prefix has to match workspace name, until we break that relationship
+        //nsB.setPrefix( "nsPrefix" );
+        nsB.setPrefix( "bbb" );
+        nsB.setURI( "nsURIbbb" );
         
         ws = factory.createWorkspace();
         ws.setName( "wsName");
+        
+        wsA = factory.createWorkspace();
+        wsA.setName( "aaa");
+        
+        wsB = factory.createWorkspace();
+        wsB.setName( "bbb");
         
         ds = factory.createDataStore();
         ds.setEnabled(true);
         ds.setName( "dsName");
         ds.setDescription("dsDescription");
         ds.setWorkspace( ws );
+        
+        dsA = factory.createDataStore();
+        dsA.setEnabled(true);
+        dsA.setName( "dsNameA");
+        dsA.setDescription("dsDescription");
+        dsA.setWorkspace( wsA );
+        
+        dsB = factory.createDataStore();
+        dsB.setEnabled(true);
+        dsB.setName( "dsNameB");
+        dsB.setDescription("dsDescription");
+        dsB.setWorkspace( wsB );
         
         ft = factory.createFeatureType();
         ft.setEnabled(true);
@@ -970,6 +1011,36 @@ public class CatalogImplTest {
         assertEquals( 1, ft3.getKeywords().size() );
     }
     
+    @Test
+    public void testModifyMetadataLinks() {
+        addFeatureType();
+        
+        FeatureTypeInfo ft2 = catalog.getFeatureTypeByName(ft.getName());
+        MetadataLinkInfo ml = catalog.getFactory().createMetadataLink();
+        ml.setContent("http://www.geoserver.org/meta");
+        ml.setType("text/plain");
+        ml.setMetadataType("iso");
+        ft2.getMetadataLinks().clear();
+        ft2.getMetadataLinks().add(ml);
+        catalog.save(ft2);
+        
+        FeatureTypeInfo ft3 = catalog.getFeatureTypeByName(ft.getName());
+        MetadataLinkInfo ml3 = ft3.getMetadataLinks().get(0);
+        ml3.setType("application/json");
+        
+        // do not save and grab another, the metadata link must not have been modified
+        FeatureTypeInfo ft4 = catalog.getFeatureTypeByName(ft.getName());
+        MetadataLinkInfo ml4 = ft4.getMetadataLinks().get(0);
+        assertEquals("text/plain", ml4.getType());
+        
+        
+        // now save and grab yet another, the modification must have happened
+        catalog.save(ft3);
+        FeatureTypeInfo ft5 = catalog.getFeatureTypeByName(ft.getName());
+        MetadataLinkInfo ml5 = ft5.getMetadataLinks().get(0);
+        assertEquals("application/json", ml5.getType());
+    }
+    
     
     @Test
     public void testFeatureTypeEvents() {
@@ -1096,6 +1167,96 @@ public class CatalogImplTest {
         assertNotNull(l2);
         assertNotSame(l,l2);
         assertEquals( l, l2 );
+    }
+
+    @Test
+    public void testGetLayerByNameWithoutColon() {
+        // create two workspaces
+        catalog.add(nsA);
+        catalog.add(nsB);
+        
+        catalog.add(wsA);
+        catalog.add(wsB);
+        
+        catalog.setDefaultNamespace( nsB );
+        catalog.setDefaultWorkspace( wsB );
+        
+        catalog.add(dsA);
+        catalog.add(dsB); 
+        
+        // create three resources, aaa:bar, bbb:bar, aaa:bar2
+        FeatureTypeInfo ftA = catalog.getFactory().createFeatureType();
+        ftA.setEnabled(true);
+        ftA.setName( "bar" );
+        ftA.setAbstract( "ftAbstract" );
+        ftA.setDescription( "ftDescription" );
+        ftA.setStore( dsA );
+        ftA.setNamespace( nsA );
+        
+        FeatureTypeInfo ftB = catalog.getFactory().createFeatureType();
+        ftB.setName( "bar" );
+        ftB.setAbstract( "ftAbstract" );
+        ftB.setDescription( "ftDescription" );
+        ftB.setStore( dsB );
+        ftB.setNamespace( nsB );
+
+        FeatureTypeInfo ftC = catalog.getFactory().createFeatureType();
+        ftC.setName( "bar2" );
+        ftC.setAbstract( "ftAbstract" );
+        ftC.setDescription( "ftDescription" );
+        ftC.setStore( dsA );
+        ftC.setNamespace( nsA );
+        ftC.setEnabled(true);
+        ftB.setEnabled(true);
+
+        catalog.add(ftA);
+        catalog.add(ftB);
+        catalog.add(ftC);
+
+        addStyle();
+        
+        LayerInfo lA = catalog.getFactory().createLayer();
+        lA.setResource(ftA);
+        lA.setDefaultStyle( s );
+        lA.setEnabled(true);
+        
+        LayerInfo lB = catalog.getFactory().createLayer();
+        lB.setResource(ftB);
+        lB.setDefaultStyle( s );
+        lB.setEnabled(true);
+        
+        LayerInfo lC = catalog.getFactory().createLayer();
+        lC.setResource(ftC);
+        lC.setDefaultStyle( s );
+        lC.setEnabled(true);
+        
+        catalog.add(lA);
+        catalog.add(lB);
+        catalog.add(lC);
+
+        // this search should give us back the bar in the default worksapce
+        LayerInfo searchedResult = catalog.getLayerByName( "bar" );
+        assertNotNull( searchedResult );
+        assertEquals( lB, searchedResult );
+        
+        // this search should give us back the bar in the other workspace
+        searchedResult = catalog.getLayerByName( "aaa:bar" );
+        assertNotNull( searchedResult );
+        assertEquals( lA, searchedResult );
+        
+        // unqualified, it should give us the only bar2 available
+        searchedResult = catalog.getLayerByName( "bar2" );
+        assertNotNull( searchedResult );
+        assertEquals( lC, searchedResult );
+        
+        // qualified should work the same
+        searchedResult = catalog.getLayerByName( "aaa:bar2" );
+        assertNotNull( searchedResult );
+        assertEquals( lC, searchedResult );
+        
+        // with the wrong workspace, should give us nothing
+        searchedResult = catalog.getLayerByName( "bbb:bar2" );
+        assertNull( searchedResult );
     }
 
     @Test

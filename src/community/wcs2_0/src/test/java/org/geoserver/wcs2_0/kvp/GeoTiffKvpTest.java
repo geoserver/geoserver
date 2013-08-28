@@ -1,5 +1,6 @@
 package org.geoserver.wcs2_0.kvp;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -8,16 +9,12 @@ import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageMetadata;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReader;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReaderSpi;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
 
 import javax.imageio.IIOException;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.FileImageInputStream;
 import javax.mail.BodyPart;
@@ -319,8 +316,8 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         
         // tiling
         assertTrue(reader.isImageTiled(0));
-        assertEquals(512, reader.getTileHeight(0));
-        assertEquals(512, reader.getTileWidth(0));
+        assertEquals(368, reader.getTileHeight(0));
+        assertEquals(368, reader.getTileWidth(0));
         
         node =((TIFFImageMetadata) reader.getImageMetadata(0)).getStandardDataNode();
         assertNotNull(node);

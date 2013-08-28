@@ -6,6 +6,8 @@ package org.geoserver.gwc.dispatch;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -85,9 +87,10 @@ public class GwcServiceProxy {
         gwcDispatcher.handleRequest(rawRequest, responseWrapper);
 
         final String contentType = responseWrapper.getContentType();
+        final Map<String, String> headers = responseWrapper.getHeaders();
         final byte[] bytes = responseWrapper.out.getBytes();
 
-        return new GwcOperationProxy(contentType, bytes);
+        return new GwcOperationProxy(contentType, headers, bytes);
     }
 
     /**
@@ -97,6 +100,7 @@ public class GwcServiceProxy {
     private final class ResponseWrapper extends HttpServletResponseWrapper {
 
         final BufferedServletOutputStream out = new BufferedServletOutputStream();
+        Map<String, String> headers = new LinkedHashMap<String, String>();
 
         private ResponseWrapper(HttpServletResponse response) {
             super(response);
@@ -105,6 +109,15 @@ public class GwcServiceProxy {
         @Override
         public ServletOutputStream getOutputStream() throws IOException {
             return out;
+        }
+        
+        @Override
+        public void setHeader(String name, String value) {
+            headers.put(name, value);
+        }
+
+        public Map<String, String> getHeaders() {
+            return headers;
         }
     }
 

@@ -11,6 +11,10 @@
     <description>Puts a link to sitemap.xml in the home page</description>
   </bean>
   
+  <!-- GeoSearch KML decorators -->
+  <bean id="kmlRelativeLinksDecorator" class="org.geoserver.kml.decorator.FolderRelativeLinksDecoratorFactory"/>
+  <bean id="kmlSelfLinksDecorator" class="org.geoserver.kml.decorator.PlacemarkSelfLinkDecoratorFactory"/>
+  
   <!-- Add configuration section to Wicket UI -->
   <bean id="geosearchLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
     <property name="id" value="geosearchLayerConfig"/>
@@ -63,6 +67,7 @@
   
   <bean id="geosearchLayerfinder" class="org.geoserver.geosearch.rest.GeoSearchLayerFinder">
     <constructor-arg ref="geoServer"/>
+    <constructor-arg ref="KMLEncoder"/>
   </bean>
   
 </beans>

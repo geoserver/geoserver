@@ -85,7 +85,7 @@ public class WFSServiceExceptionTest extends WFSTestSupport {
         assertNotNull(exception.getString("locator"));
         String exceptionText = exception.getString("text");
         assertNotNull(exceptionText);
-        assertEquals(exceptionText, "Could not find type name foobar");
+        assertEquals(exceptionText, "Could not find type: {http://geoserver.org}foobar");
 
     }
 

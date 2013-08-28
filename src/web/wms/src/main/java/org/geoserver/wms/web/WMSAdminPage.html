@@ -89,6 +89,7 @@
           <li>
             <label><wicket:message key="watermarkUrl">Watermark URL</wicket:message></label>
             <input wicket:id="watermark.uRL" class="field text" type="text"></input>
+            <a href="#" wicket:id="chooser"><wicket:message key="browse">...</wicket:message></a>
           </li>
           <li>
             <label><wicket:message key="watermarkTransparency">Watermark Transparency (0 - 100)</wicket:message></label>
@@ -165,6 +166,7 @@
         </ul>
       </fieldset>
     </li>
+    <div wicket:id="modal"></div>
   </wicket:extend>
 </body>
 </html>

@@ -78,7 +78,6 @@ import org.springframework.util.Assert;
 import org.vfny.geoserver.util.ResponseUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
 import com.google.common.collect.Iterables;
@@ -665,13 +664,10 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             }            
             try {
                 layersAlreadyProcessed = handleLayerGroups(layerGroups);
-            } catch (FactoryException e) {
+            } catch (Exception e) {
                 throw new RuntimeException("Can't obtain Envelope of Layer-Groups: "
                         + e.getMessage(), e);
-            } catch (TransformException e) {
-                throw new RuntimeException("Can't obtain Envelope of Layer-Groups: "
-                        + e.getMessage(), e);
-            }finally{
+            } finally {
                 layerGroups.close();
             }            
             
@@ -877,8 +873,10 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         }
 
         /**
+         * @throws IOException 
+         * @throws RuntimeException 
          */
-        protected void handleLayer(final LayerInfo layer) {
+        protected void handleLayer(final LayerInfo layer) throws IOException {
             boolean queryable = wmsConfig.isQueryable(layer);
             AttributesImpl qatts = attributes("queryable", queryable ? "1" : "0");
             Integer cascadedHopCount = wmsConfig.getCascadedHopCount(layer);
@@ -937,12 +935,44 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             // TODO: DataURL
             // TODO: FeatureListURL
             handleStyles(layer);
+            
+            handleScaleDenominator(layer);
 
             end("Layer");
         }
 
-        
-        private void handleStyles(final LayerInfo layer) {
+        /**
+         * Inserts the scale denominator elements in the layer information.
+         * 
+         * <pre>
+         * <code>MinScaleDenominator</code>
+         * <code>MaxScaleDenominator</code>
+         * </pre>
+         * 
+         * @param layer
+         */
+		private void handleScaleDenominator(final LayerInfo layer) {
+
+			try {
+				final String minScaleDenominator = "MinScaleDenominator";
+				final String maxScaleDenominator = "MaxScaleDenominator";
+				Map<String, Double> denominators = CapabilityUtil.searchMinMaxScaleDenominator(
+														minScaleDenominator, maxScaleDenominator, layer);
+				
+				if(denominators.get(minScaleDenominator) != 0.0){
+					element(minScaleDenominator, String.valueOf(denominators.get(minScaleDenominator)) );
+				}
+				
+				if(denominators.get(maxScaleDenominator) != Double.POSITIVE_INFINITY){
+					element(maxScaleDenominator, String.valueOf(denominators.get(maxScaleDenominator)) );
+				}
+
+			} catch (IOException e) {
+				LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
+			}
+		}
+
+		private void handleStyles(final LayerInfo layer) {
             if (layer.getResource() instanceof WMSLayerInfo) {
                 // do nothing for the moment, we may want to list the set of cascaded named styles
                 // in the future (when we add support for that)
@@ -988,7 +1018,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         }
         
         protected Set<LayerInfo> handleLayerGroups(Iterator<LayerGroupInfo> layerGroups) throws FactoryException,
-                TransformException {
+                TransformException, IOException {
             Set<LayerInfo> layersAlreadyProcessed = new HashSet<LayerInfo>();
             
             if (layerGroups == null) {
@@ -998,7 +1028,20 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             List<LayerGroupInfo> topLevelGroups = filterNestedGroups(layerGroups);
 
             for (LayerGroupInfo group : topLevelGroups) {
-                handleLayerGroup(group, layersAlreadyProcessed);
+                try {
+                    mark();
+                    handleLayerGroup(group, layersAlreadyProcessed);
+                    commit();
+                } catch (Exception e) {
+                    // report what layer we failed on to help the admin locate and fix it
+                    if (skipping) {
+                        reset();
+                    } else { 
+                        throw new ServiceException(
+                            "Error occurred trying to write out metadata for layer group: " + 
+                            group.getName(), e);
+                    }
+                }
             }
             
             return layersAlreadyProcessed;
@@ -1030,7 +1073,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         
 
 
-        protected void handleLayerGroup(LayerGroupInfo layerGroup, Set<LayerInfo> layersAlreadyProcessed) throws TransformException, FactoryException {
+        protected void handleLayerGroup(LayerGroupInfo layerGroup, Set<LayerInfo> layersAlreadyProcessed) throws TransformException, FactoryException, IOException {
             String layerName = layerGroup.prefixedName();
 
             AttributesImpl qatts = new AttributesImpl();
@@ -1284,23 +1327,6 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             element("southBoundLatitude", miny);
             element("northBoundLatitude", maxy);
             end("EX_GeographicBoundingBox");
-        }
-
-        /**
-         * adds a comment to the output xml file. THIS IS A BIG HACK. TODO: do this in the correct
-         * manner!
-         * 
-         * @param comment
-         */
-        public void comment(String comment) {
-            if (contentHandler instanceof LexicalHandler) {
-                try {
-                    LexicalHandler ch = (LexicalHandler) contentHandler;
-                    ch.comment(comment.toCharArray(), 0, comment.length());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
         }
 
         /**

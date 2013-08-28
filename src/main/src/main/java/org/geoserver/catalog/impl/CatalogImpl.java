@@ -706,26 +706,40 @@ public class CatalogImpl implements Catalog {
     }
     
     public LayerInfo getLayerByName(String name) {
-        String prefix = null;
-        String resource = null;
-        
+        LayerInfo result = null;
         int colon = name.indexOf( ':' );
         if ( colon != -1 ) {
             //search by resource name
-            prefix = name.substring( 0, colon );
-            resource = name.substring( colon + 1 );
+            String prefix = name.substring( 0, colon );
+            String resource = name.substring( colon + 1 );
             
-            ResourceInfo r = getResourceByName(prefix, resource, ResourceInfo.class);
-            if (r != null) {
-                List<LayerInfo> layers = getLayers(r);
-                if (layers.size() == 1) {
-                    return layers.get(0);
-                }
+            result = getLayerByName(prefix, resource);
+        } else {
+            // search in default workspace first
+            WorkspaceInfo ws = getDefaultWorkspace();
+            if ( ws != null ) {
+                result = getLayerByName(ws.getName(), name);
             }
         }
 
-        return facade.getLayerByName(name);
+        if(result == null) {
+            result = facade.getLayerByName(name);
+        }
+        
+        return result;
+    }
 
+    private LayerInfo getLayerByName(String workspace, String resourceName) {
+        ResourceInfo r = getResourceByName(workspace, resourceName, ResourceInfo.class);
+        if (r == null) {
+            return null;
+        }
+        List<LayerInfo> layers = getLayers(r);
+        if (layers.size() == 1) {
+            return layers.get(0);
+        } else {
+            return null;
+        }
     }
 
     public List<LayerInfo> getLayers(ResourceInfo resource) {
@@ -843,12 +857,13 @@ public class CatalogImpl implements Catalog {
         
         checkLayerGroupResourceIsInWorkspace(layerGroup.getRootLayer(), ws);
         checkLayerGroupResourceIsInWorkspace(layerGroup.getRootLayerStyle(), ws);
-        
-        for (PublishedInfo p : layerGroup.getLayers()) {
-            if (p instanceof LayerGroupInfo) {
-                checkLayerGroupResourceIsInWorkspace((LayerGroupInfo) p, ws);
-            } else {
-                checkLayerGroupResourceIsInWorkspace((LayerInfo) p, ws);                
+        if(layerGroup.getLayers() != null) {
+            for (PublishedInfo p : layerGroup.getLayers()) {
+                if (p instanceof LayerGroupInfo) {
+                    checkLayerGroupResourceIsInWorkspace((LayerGroupInfo) p, ws);
+                } else {
+                    checkLayerGroupResourceIsInWorkspace((LayerInfo) p, ws);                
+                }
             }
         }
         

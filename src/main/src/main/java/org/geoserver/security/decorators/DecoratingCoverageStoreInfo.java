@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.decorators;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -14,6 +15,9 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.AbstractDecorator;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.factory.Hints;
+import org.opengis.coverage.grid.GridCoverageReader;
+import org.opengis.util.ProgressListener;
 
 /**
  * Delegates all methods to the provided delegate. Suclasses will override
@@ -113,6 +117,12 @@ public class DecoratingCoverageStoreInfo extends
     
     public <T> T getAdapter(Class<T> adapterClass, Map<?, ?> hints) {
         return delegate.getAdapter(adapterClass, hints);
+    }
+
+    @Override
+    public GridCoverageReader getGridCoverageReader(ProgressListener listener, Hints hints)
+            throws IOException {
+        return delegate.getGridCoverageReader(listener, hints);
     }
 
 }

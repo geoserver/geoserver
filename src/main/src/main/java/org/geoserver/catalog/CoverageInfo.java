@@ -137,4 +137,15 @@ public interface CoverageInfo extends ResourceInfo {
     
     GridCoverageReader getGridCoverageReader( ProgressListener listener, Hints hints ) 
         throws IOException;
+    
+    /**
+     * Returns the native coverage name (might be null for single coverage formats)
+     * @return
+     */
+    String getNativeCoverageName();
+    
+    /**
+     * Sets the native coverage name (used to pick up a specific coverage from withing a reader)
+     */
+    void setNativeCoverageName(String nativeCoverageName);
  }

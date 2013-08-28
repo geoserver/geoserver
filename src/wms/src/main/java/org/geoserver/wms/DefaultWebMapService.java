@@ -118,11 +118,6 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
     private static Boolean OPTIMIZE_LINE_WIDTH = null;
 
     /**
-     * Temporary field that handles the choice of renderer to be used
-     */
-    private static Boolean USE_SHAPEFILE_RENDERER = null;
-    
-    /**
      * This variable is used to bypass direct raster rendering.
      */
     private static boolean BYPASS_DIRECT = Boolean.getBoolean("org.geoserver.render.raster.direct.disable");
@@ -223,16 +218,6 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
         }
 
         // initialization of the renderer choice flag
-        if (USE_SHAPEFILE_RENDERER == null) {
-            String enabled = GeoServerExtensions.getProperty("USE_SHAPEFILE_RENDERER", context);
-            // default to true, but allow switching on
-            if (enabled == null)
-                USE_SHAPEFILE_RENDERER = false;
-            else
-                USE_SHAPEFILE_RENDERER = Boolean.valueOf(enabled);
-        }
-
-        // initialization of the renderer choice flag
         if (MAX_FILTER_RULES == null) {
             String rules = GeoServerExtensions.getProperty("MAX_FILTER_RULES", context);
             // default to true, but allow switching off
@@ -280,16 +265,6 @@ public class DefaultWebMapService implements WebMapService, ApplicationContextAw
      */
     public static boolean isContinuousMapWrappingEnabled() {
         return ENABLE_MAP_WRAPPING;
-    }
-
-    /**
-     * Checks wheter the shapefile renderer is enabled, or not (defaults to false unless the user
-     * sets the USE_STREAMING_RENDERER property to true)
-     * 
-     * @return
-     */
-    public static boolean useShapefileRenderer() {
-        return USE_SHAPEFILE_RENDERER;
     }
 
     /**

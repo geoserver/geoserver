@@ -50,6 +50,7 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -58,6 +59,7 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
+import org.geoserver.filters.GeoServerFilter;
 import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.auth.AuthenticationCache;
@@ -320,6 +322,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
             try {
                 boolean migratedFrom21 = migrateFrom21();
                 migrateFrom22(migratedFrom21);
+                migrateFrom23();
             } catch (Exception e1) {
                 throw new RuntimeException(e1);
             }
@@ -1195,7 +1198,11 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      * </p>
      */
     public boolean checkAuthenticationForAdminRole() {
-        return checkAuthenticationForAdminRole(SecurityContextHolder.getContext().getAuthentication());
+        if (SecurityContextHolder.getContext()==null)
+            return checkAuthenticationForAdminRole(null);
+        else
+            return checkAuthenticationForAdminRole(
+                    SecurityContextHolder.getContext().getAuthentication());
     }
 
     /**
@@ -1217,9 +1224,16 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
     /**
      * Checks if the specified authentication contains the specified role.
      * 
+     * If the current {@link HttpServletRequest} has security disabled,
+     * this method always returns <code>true</code>.
+     * 
      * @return <code>true</code> if the authenticated contains the role, otherwise <code>false</false>
      */
     public boolean checkAuthenticationForRole(Authentication auth, GeoServerRole role) {
+        
+        if (GeoServerSecurityFilterChainProxy.isSecurityEnabledForCurrentRequest()==false)
+            return true; // No security means any role is granted
+        
         if (auth == null || !auth.isAuthenticated()) {
             return false;
         }
@@ -1300,7 +1314,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
                     filterHelper.loadConfig(config.getName()));
             // remove all cached authentications for this filter
             getAuthenticationCache().removeAll(config.getName());
-            if (!securityConfig.getFilterChain().patternsForFilter(config.getName()).isEmpty()) {
+            if (!securityConfig.getFilterChain().patternsForFilter(config.getName(),true).isEmpty()) {
                 fireChanged=true;
             }
         }
@@ -2351,6 +2365,27 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         }
         
         return true;
+    }
+    
+    /**
+     * converts an 2.3.x security configuration to 2.4.x
+     * 
+     * @return <code>true</code> if migration has taken place  
+     * @throws Exception
+     */
+    boolean migrateFrom23() throws Exception{
+        SecurityManagerConfig config = loadSecurityConfig();
+        RequestFilterChain webChain =
+                config.getFilterChain().getRequestChainByName(GeoServerSecurityFilterChain.WEB_CHAIN_NAME);
+        
+        boolean migrated=false;
+        List<String>patterns =  webChain.getPatterns();
+        if (patterns.contains("/")==false) {
+            patterns.add("/");
+            saveSecurityConfig(config);
+            migrated |= true;
+        }
+        return migrated;
     }
 
 

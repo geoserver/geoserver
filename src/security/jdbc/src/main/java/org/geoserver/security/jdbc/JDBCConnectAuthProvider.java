@@ -76,6 +76,8 @@ public class JDBCConnectAuthProvider extends GeoServerAuthenticationProvider {
             } catch (IOException ex ) {
                 log(new AuthenticationServiceException(ex.getLocalizedMessage(),ex));
                 return null;
+            } catch (UsernameNotFoundException ex) {
+                log(ex);
             } catch (AuthenticationException ex) {
                 log(ex);
                 return null;

@@ -24,6 +24,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.spi.IIORegistry;
 import javax.imageio.spi.IIOServiceProvider;
 import javax.imageio.spi.ImageReaderSpi;
+import javax.imageio.spi.ImageWriterSpi;
 import javax.media.jai.JAI;
 import javax.media.jai.OperationRegistry;
 import javax.media.jai.RegistryElementDescriptor;
@@ -33,7 +34,6 @@ import javax.servlet.ServletContextListener;
 
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.LogManager;
-import org.geoserver.config.impl.CoverageAccessInfoImpl;
 import org.geoserver.config.impl.CoverageAccessInfoImpl;
 import org.geoserver.logging.LoggingUtils;
 import org.geoserver.platform.GeoServerExtensions;
@@ -46,7 +46,6 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.ReferencingFactoryFinder;
 import org.geotools.referencing.factory.AbstractAuthorityFactory;
 import org.geotools.referencing.factory.DeferredAuthorityFactory;
-import org.geotools.resources.image.ImageUtilities;
 import org.geotools.util.WeakCollectionCleaner;
 import org.geotools.util.logging.Logging;
 import org.opengis.referencing.AuthorityFactory;
@@ -102,6 +101,10 @@ public class GeoserverInitStartupListener implements ServletContextListener {
         // http://www.allaboutbalance.com/disableprefs. When the site comes
         // back up we should implement their better way of fixing the problem.
         System.setProperty("java.util.prefs.syncInterval", "5000000");
+        
+        // Fix issue with tomcat and JreMemoryLeakPreventionListener causing issues with 
+        // IIORegistry leading to imageio plugins not being properly initialized
+        ImageIO.scanForPlugins();
 
         // HACK: under JDK 1.4.2 the native java image i/o stuff is failing
         // in all containers besides Tomcat. If running under jdk 1.4.2 we
@@ -117,11 +120,8 @@ public class GeoserverInitStartupListener implements ServletContextListener {
             // in any case, the native png reader is worse than the pure java ones, so
             // let's disable it (the native png writer is on the other side faster)...
             ImageIOExt.allowNativeCodec("png", ImageReaderSpi.class, false);
+            ImageIOExt.allowNativeCodec("png", ImageWriterSpi.class, true);
         }
-
-        //Fix issue with tomcat and JreMemoryLeakPreventionListener causing issues with 
-        // IIORegistry leading to imageio plugins not being properly initialized
-        ImageIO.scanForPlugins();
 
         // initialize geotools factories so that we don't make a spi lookup every time a factory is needed
         Hints.putSystemDefault(Hints.FILTER_FACTORY, CommonFactoryFinder.getFilterFactory2(null));

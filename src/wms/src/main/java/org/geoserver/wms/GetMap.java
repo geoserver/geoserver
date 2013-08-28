@@ -29,7 +29,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.map.MetatileMapOutputFormat;
 import org.geoserver.wms.map.RenderedImageMap;
 import org.geoserver.wms.map.RenderedImageMapOutputFormat;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.data.QueryCapabilities;
@@ -384,7 +384,7 @@ public class GetMap {
                     throw new ServiceException("Internal error", exp);
                 }
                 FeatureLayer featureLayer = new FeatureLayer(source, layerStyle);
-                featureLayer.setTitle(mapLayerInfo.getFeature().getPrefixedName());
+                featureLayer.setTitle(mapLayerInfo.getFeature().prefixedName());
                 featureLayer.getUserData().put("abstract", mapLayerInfo.getDescription());
                 
                 // mix the dimension related filter with the layer filter
@@ -429,7 +429,7 @@ public class GetMap {
                 // Adding a coverage layer
                 //
                 // /////////////////////////////////////////////////////////
-                final AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) mapLayerInfo
+                final GridCoverage2DReader reader = (GridCoverage2DReader) mapLayerInfo
                         .getCoverageReader();
                 if (reader != null) {
 
@@ -444,7 +444,7 @@ public class GetMap {
                             throw new RuntimeException(e);
                         }
 
-                        layer.setTitle(mapLayerInfo.getCoverage().getPrefixedName());
+                        layer.setTitle(mapLayerInfo.getCoverage().prefixedName());
 
                         mapContent.addLayer(layer);
                     } catch (IllegalArgumentException e) {
@@ -484,7 +484,7 @@ public class GetMap {
                 }
                 if (!merged) {
                     WMSLayer Layer = new WMSLayer(wms, gt2Layer);
-                    Layer.setTitle(wmsLayer.getPrefixedName());
+                    Layer.setTitle(wmsLayer.prefixedName());
                     mapContent.addLayer(Layer);
                 }
             } else {

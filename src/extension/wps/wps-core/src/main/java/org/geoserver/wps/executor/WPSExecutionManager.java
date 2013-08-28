@@ -105,6 +105,9 @@ public class WPSExecutionManager implements ApplicationContextAware,
         final AsynchronousProcessContext context = new AsynchronousProcessContext(request,
                 executionId, inputs, processManager, applicationContext);
         contexts.put(executionId, context);
+        if(!synchronous) {
+            LOGGER.log(Level.INFO, "Submitting new asynch process " + processName.getURI() + " with execution id " + executionId);
+        }
         processManager.submit(executionId, processName, inputs, request.isAsynchronous());
         if (request.isAsynchronous()) {
             // ah, we need to store the output at the end, schedule a thread that will
@@ -332,7 +335,7 @@ public class WPSExecutionManager implements ApplicationContextAware,
                     Map<String, Object> outputs = processManager.getOutput(executionId, -1);
                     responseBuilder.setOutputs(outputs);
                 } catch (Exception exception) {
-                    LOGGER.log(Level.SEVERE, "Request failed during execution", exception);
+                    LOGGER.log(Level.SEVERE, "Request " + executionId + " failed during execution", exception);
                     responseBuilder.setException(exception);
                 }
 
@@ -374,6 +377,8 @@ public class WPSExecutionManager implements ApplicationContextAware,
                 fos.close();
                 if (!tmpOutput.renameTo(output)) {
                     LOGGER.log(Level.SEVERE, "Failed to rename " + tmpOutput + " to " + output);
+                } else {
+                    LOGGER.log(Level.FINE, "Asynch process final response written to " + output.getAbsolutePath());
                 }
             } finally {
                 IOUtils.closeQuietly(fos);

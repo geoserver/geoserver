@@ -14,13 +14,15 @@ see the :ref:`data_vector`, :ref:`data_raster`, and :ref:`data_database` section
    :maxdepth: 2
 
    controlflow/index
+   css/index
    excel
    geosearch
    imagemap
+   inspire/index
+   monitoring/index
    ogr
    querylayer/index
    styler
    wps/index
-   monitoring/index
-
-
+   xslt/index
+   csw/index

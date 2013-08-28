@@ -4,11 +4,11 @@
  */
 package org.geoserver.catalog.rest;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import junit.framework.Assert;
 
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
@@ -50,31 +50,31 @@ public class FreemarkerTemplateTest extends GeoServerSystemTestSupport {
         String jsonIndexToken = "{\"name\":\"" + name + "\"";
         
         // GET
-        Assert.assertEquals("File Not Found", getAsString(path).trim());
-        Assert.assertFalse(getIndexAsString(path, null).contains(htmlIndexToken));        
-        Assert.assertFalse(getIndexAsString(path, "html").contains(htmlIndexToken));
-        Assert.assertFalse(getIndexAsString(path, "xml").contains(xmlIndexToken));
-        Assert.assertFalse(getIndexAsString(path, "json").contains(jsonIndexToken));        
+        assertEquals("File Not Found", getAsString(path).trim());
+        assertFalse(getIndexAsString(path, null).contains(htmlIndexToken));        
+        assertFalse(getIndexAsString(path, "html").contains(htmlIndexToken));
+        assertFalse(getIndexAsString(path, "xml").contains(xmlIndexToken));
+        assertFalse(getIndexAsString(path, "json").contains(jsonIndexToken));        
                 
         // PUT
         put(path, content).close();
-        Assert.assertTrue(getIndexAsString(path, null).contains(htmlIndexToken));                
-        Assert.assertTrue(getIndexAsString(path, "html").contains(htmlIndexToken));
-        Assert.assertTrue(getIndexAsString(path, "xml").contains(xmlIndexToken));
-        Assert.assertTrue(getIndexAsString(path, "json").contains(jsonIndexToken));        
+        assertTrue(getIndexAsString(path, null).contains(htmlIndexToken));                
+        assertTrue(getIndexAsString(path, "html").contains(htmlIndexToken));
+        assertTrue(getIndexAsString(path, "xml").contains(xmlIndexToken));
+        assertTrue(getIndexAsString(path, "json").contains(jsonIndexToken));        
         
         // GET
-        Assert.assertEquals(content, getAsString(path).trim());
+        assertEquals(content, getAsString(path).trim());
         
         // DELETE
-        Assert.assertEquals(200, deleteAsServletResponse(path).getStatusCode());
+        assertEquals(200, deleteAsServletResponse(path).getStatusCode());
         
         // GET
-        Assert.assertEquals("File Not Found", getAsString(path).trim());
-        Assert.assertFalse(getIndexAsString(path, null).contains(htmlIndexToken));        
-        Assert.assertFalse(getIndexAsString(path, "html").contains(htmlIndexToken));
-        Assert.assertFalse(getIndexAsString(path, "xml").contains(xmlIndexToken));
-        Assert.assertFalse(getIndexAsString(path, "json").contains(jsonIndexToken));                
+        assertEquals("File Not Found", getAsString(path).trim());
+        assertFalse(getIndexAsString(path, null).contains(htmlIndexToken));        
+        assertFalse(getIndexAsString(path, "html").contains(htmlIndexToken));
+        assertFalse(getIndexAsString(path, "xml").contains(xmlIndexToken));
+        assertFalse(getIndexAsString(path, "json").contains(jsonIndexToken));                
     }
     
     @Test
@@ -122,7 +122,7 @@ public class FreemarkerTemplateTest extends GeoServerSystemTestSupport {
         
         for (String path : paths) {
             // GET
-            Assert.assertEquals("File Not Found", getAsString(path).trim());            
+            assertEquals("File Not Found", getAsString(path).trim());            
         }        
         
         for (String path : paths) {
@@ -132,17 +132,17 @@ public class FreemarkerTemplateTest extends GeoServerSystemTestSupport {
         
         for (String path : paths) {
             // GET
-            Assert.assertEquals(contentHeader + path, getAsString(path).trim());
+            assertEquals(contentHeader + path, getAsString(path).trim());
         }                        
         
         for (String path : paths) {
             // DELETE
-            Assert.assertEquals(200, deleteAsServletResponse(path).getStatusCode());
+            assertEquals(200, deleteAsServletResponse(path).getStatusCode());
         }                                
         
         for (String path : paths) {
             // GET
-            Assert.assertEquals("File Not Found", getAsString(path).trim());            
+            assertEquals("File Not Found", getAsString(path).trim());            
         }
     }
 }

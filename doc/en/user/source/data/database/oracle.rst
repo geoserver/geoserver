@@ -20,6 +20,15 @@ Installing the Oracle extension
 
 #. Extract the contents of the archive into the ``WEB-INF/lib`` directory of the GeoServer installation.
 
+Consider replacing the Oracle JDBC driver
+-----------------------------------------
+
+The Oracle data store zip file comes with ``ojdbc4.jar``, an old, Oracle 10 compatible JDBC driver that normally works fine with 11g as well.
+However, minor glitches have been observed with 11g (issues computing layer bounds when session initiation scripts are in use) and the driver
+has not been tested with 12i.
+
+If you encounter functionality or performance issues it is advices to remote this driver and download the latest version from the Oracle web site.
+
 Adding an Oracle datastore
 --------------------------
 

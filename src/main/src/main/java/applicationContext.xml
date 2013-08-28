@@ -211,4 +211,14 @@
   
   <!-- Automatically injects a env map into the env function -->
   <bean id="enviromentInjector" class="org.geoserver.ows.EnviromentInjectionCallback"/>
+  
+  <!-- Thread local transfers -->
+  <bean id="dispatcherRequestTransfer" class="org.geoserver.threadlocals.PublicThreadLocalTransfer">
+    <constructor-arg index="0" value="org.geoserver.ows.Dispatcher"/>
+    <constructor-arg index="1" value="REQUEST"/>
+  </bean>
+  <bean id="adminRequestTransfer" class="org.geoserver.threadlocals.AdminRequestThreadLocalTransfer"/>
+  <bean id="authenticationTransfer" class="org.geoserver.threadlocals.AuthenticationThreadLocalTransfer"/>
+  <bean id="localLayerTransfer" class="org.geoserver.threadlocals.LocalLayerThreadLocalTransfer"/>
+  <bean id="localWorkspaceTransfer" class="org.geoserver.threadlocals.LocalWorkspaceThreadLocalTransfer"/>
 </beans>

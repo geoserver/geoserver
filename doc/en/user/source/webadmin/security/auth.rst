@@ -106,8 +106,17 @@ The following illustration shows the configuration options for the LDAP authenti
      - Enables a STARTTLS connection. (See the section on :ref:`sec_auth_provider_ldap_secure`.)
    * - User DN pattern
      - Search pattern to use to match the DN of the user in the LDAP database. The pattern should contain the placeholder ``{0}`` which is injected with the ``uid`` of the user. Example: ``uid={0},ou=people``. The root DN specified as port of the *Server URL* is automatically appended.
+   * - User Filter
+     - LDAP Filter used to extract User data from LDAP database. Used alternatively to User DN pattern and combined with User Format to separate bind and user data extraction handling. Example: ``(userPrincipalName={0})``. Gets user data searching for a single record matching the filter. This may contain two placeholder values:
+       ``{0}``, the full DN of the user, for example ``uid=bob,ou=people,dc=acme,dc=com``
+       ``{1}``, the ``uid`` portion of the full DN, for example ``bob``.
+   * - User Format
+     - String formatter used to build username used for binding. Used alternatively to User DN pattern and combined with User Filter to separate bind and user data extraction handling. Example: ``{0}@domain``. Binds user with the username built applying the format.  This may contain one placeholder:
+       ``{0}``, the username, for example ``bob``
    * - Use LDAP groups for authorization
      - Specifies whether to use LDAP groups for role assignment
+   * - Bind before group search
+     - Specifies whether to bind to LDAP server with the user credentials before doing group search
    * - Group search base
      - Relative name of the node in the tree to use as the base for LDAP groups. Example: ``ou=groups``. The root DN specified as port of the *Server URL* is automatically appended. Only applicable when the *Use LDAP groups for authorization( parameter is **checked**.
    * - Group search filter
@@ -115,6 +124,10 @@ The following illustration shows the configuration options for the LDAP authenti
        ``{0}``, the full DN of the user, for example ``uid=bob,ou=people,dc=acme,dc=com``
        ``{1}``, the ``uid`` portion of the full DN, for example ``bob``.
        Only applicable when the *Use LDAP groups for authorization( parameter is **checked**.
+   * - Admin Group
+     - Name of the group to be mapped to Administrator role (defaults to ADMINISTRATOR). Example: ``ADMIN``. Adds the role ROLE_ADMINISTRATOR if the user belongs to a group named ADMIN (case insensitive)
+   * - Group Admin Group
+     - Name of the group to be mapped to Group Administrator role (defaults to GROUP_ADMIN). Example: ``GROUPADMIN``. Adds the role ROLE_GROUP_ADMIN if the user belongs to a group named GROUPADMIN (case insensitive)     
    * - User Group Service
      - The user/group service to use for role assignment. Only applicable when the *Use LDAP groups for authorization* parameter is **cleared**.
 

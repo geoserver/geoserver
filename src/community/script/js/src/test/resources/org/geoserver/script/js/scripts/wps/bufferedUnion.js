@@ -6,7 +6,7 @@
 var Process = require("geoscript/process").Process;
 
 // this is contrived to use the union process here, but this tests process composition
-var union = Process.get("JTS:union");
+var union = Process.get("geo:union");
 
 exports.process = new Process({
     title: "Union & Buffer Process",

@@ -192,10 +192,14 @@ public class LayerGroupHelper {
             l = layers.get(i);
 
             ReferencedEnvelope re;
+            ResourceInfo resource = l.getResource(); 
             if (latlon) {
-                re = l.getResource().getLatLonBoundingBox();
+                re = resource.getLatLonBoundingBox();
             } else {
-                re = l.getResource().boundingBox();
+                re = resource.boundingBox();
+                if(re == null) {
+                    re = resource.getLatLonBoundingBox();
+                }
             }
 
             re = transform(re, bounds.getCoordinateReferenceSystem());
@@ -242,15 +246,16 @@ public class LayerGroupHelper {
     
     private static boolean checkLoops(LayerGroupInfo group, Stack<LayerGroupInfo> path) {
         path.push(group);
-        
-        for (PublishedInfo child : group.getLayers()) {
-            if (child instanceof LayerGroupInfo) {
-                if (isGroupInStack((LayerGroupInfo) child, path)) {
-                    path.push((LayerGroupInfo) child);
-                    return true;
-                } else if (checkLoops((LayerGroupInfo) child, path)) {
-                    return true;
-                }                
+        if (group.getLayers() != null) {
+            for (PublishedInfo child : group.getLayers()) {
+                if (child instanceof LayerGroupInfo) {
+                    if (isGroupInStack((LayerGroupInfo) child, path)) {
+                        path.push((LayerGroupInfo) child);
+                        return true;
+                    } else if (checkLoops((LayerGroupInfo) child, path)) {
+                        return true;
+                    }                
+                }
             }
         }
         

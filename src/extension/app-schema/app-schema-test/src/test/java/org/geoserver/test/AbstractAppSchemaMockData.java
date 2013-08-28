@@ -20,8 +20,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.geoserver.data.CatalogWriter;
 import org.geoserver.data.test.MockData;
@@ -64,6 +62,11 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
     public static final String GSML_SCHEMA_LOCATION_URL = "http://www.geosciml.org/geosciml/2.0/xsd/geosciml.xsd";
 
     /**
+     * PRefix for spec namespace.
+     */
+    public static final String SPEC_PREFIX = "spec";
+
+    /**
      * Map of namespace prefix to namespace URI for GML 32 schema.
      */
     @SuppressWarnings("serial")
@@ -75,6 +78,8 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
                     put("gmd", "http://www.isotc211.org/2005/gmd");
                     put("gml", "http://www.opengis.net/gml/3.2");
                     put("gsml", "urn:cgi:xmlns:CGI:GeoSciML-Core:3.0.0");
+                    put("sa", "http://www.opengis.net/sampling/2.0");
+                    put("spec", "http://www.opengis.net/samplingSpecimen/2.0");
                     put("swe", "http://www.opengis.net/swe/1.0/gml32");
                     put("wfs", "http://www.opengis.net/wfs/2.0");
                     put("xlink", "http://www.w3.org/1999/xlink");
@@ -708,7 +713,6 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
         StringBuffer content = new StringBuffer();
         boolean parametersStartFound = false;
         boolean parametersEndFound = false;
-        String idColumn = "ROW_ID";
         boolean isOracle = onlineTestId.equals("oracle");
         for (String line = br.readLine(); line != null; line = br.readLine()) {
             if (!parametersStartFound || (parametersStartFound && parametersEndFound)) {
@@ -727,12 +731,8 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
                         // copy content
                         content.append(line);
                     }
-                } else if (isOracle && line.trim().startsWith("<sourceType>")) {
-                    // TODO: Nasty.. I will report this bug in OracleDialect and remove this when
-                    // fixed
-                    // oracle table names need to be in upper case because OracleDialect doesn't
-                    // wrap
-                    // them in quotes in encodeTableName
+                } else if (line.trim().startsWith("<sourceType>")) {
+                    // make everything upper case due to OracleDialect not wrapping them in quotes
                     line = line.trim();
                     String sourceTypeTag = "<sourceType>";
                     content.append(sourceTypeTag);
@@ -742,16 +742,6 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
                     content.append("</sourceType>");
                     content.append("\n");
                 } else {
-                    // replace getID() and "@id" with id column since joining doesn't support
-                    // functions
-                    String regex = "getI[dD]\\(\\)";
-                    Pattern pattern = Pattern.compile(regex);
-                    Matcher matcher = pattern.matcher(line);
-                    line = matcher.replaceAll(idColumn);
-
-                    regex = "\"@id\"";
-                    line = line.replaceAll(regex, idColumn);
-
                     content.append(line);
                 }
                 content.append("\n");

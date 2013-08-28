@@ -41,7 +41,7 @@
                         gsml:GeologicUnit
                     </targetAttribute>
                     <idExpression>
-                        <OCQL>getId()</OCQL>
+                        <OCQL>ID</OCQL>
                     </idExpression>
                 </AttributeMapping>  
                 

@@ -4,6 +4,7 @@
  */
 package org.geoserver.wcs2_0.response;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,7 +16,7 @@ import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.util.ISO8601Formatter;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.util.logging.Logging;
 import org.vfny.geoserver.wcs.WcsException;
 
@@ -53,7 +54,7 @@ class TimeDimensionHelper {
 
     String coverageId;
 
-    public TimeDimensionHelper(DimensionInfo timeDimension, AbstractGridCoverage2DReader reader, String coverageId) {
+    public TimeDimensionHelper(DimensionInfo timeDimension, GridCoverage2DReader reader, String coverageId) throws IOException {
         this.timeDimension = timeDimension;
         this.accessor = new ReaderDimensionsAccessor(reader);
         this.coverageId = coverageId;
@@ -82,22 +83,24 @@ class TimeDimensionHelper {
         return timeDimension;
     }
     
-    public TreeSet<Object> getTimeDomain() {
+    public TreeSet<Object> getTimeDomain() throws IOException {
         return accessor.getTimeDomain();
     }
 
     /**
      * Returns the minimum time, formatted according to ISO8601
+     * @throws IOException 
      */
-    public String getBeginPosition() {
+    public String getBeginPosition() throws IOException {
         Date minTime = accessor.getMinTime();
         return format(minTime);
     }
 
     /**
      * Returns the maximum time, formatted according to ISO8601
+     * @throws IOException 
      */
-    public String getEndPosition() {
+    public String getEndPosition() throws IOException {
         Date maxTime = accessor.getMaxTime();
         return format(maxTime);
     }
@@ -142,8 +145,6 @@ class TimeDimensionHelper {
     public long getResolutionValue() {
         return resolutionValue;
     }
-
-   
 
     /**
      * The coverage identifier

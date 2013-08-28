@@ -907,7 +907,7 @@ public class JDBCCatalogFacade implements CatalogFacade {
             throws IllegalArgumentException {
 
         final Integer count = Integer.valueOf(2);
-        CloseableIterator<T> it = list(type, filter, null, count, null);
+        CloseableIterator<T> it = list(type, filter, null, count, (SortBy[])null);
         T result = null;
         try {
             if (it.hasNext()) {
@@ -938,6 +938,12 @@ public class JDBCCatalogFacade implements CatalogFacade {
         return canSort;
     }
 
+    @Override
+    public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of,
+            Filter filter, Integer offset, Integer count, SortBy sortOrder) {
+        return list(of, filter, offset, count, sortOrder != null ? new SortBy[]{sortOrder}:null);
+    }
+
     /**
      * @see org.geoserver.catalog.CatalogFacade#list(java.lang.Class,
      *      org.geoserver.catalog.Predicate, java.lang.Integer, java.lang.Integer)
@@ -945,13 +951,16 @@ public class JDBCCatalogFacade implements CatalogFacade {
     @Override
     public <T extends CatalogInfo> CloseableIterator<T> list(final Class<T> of,
             final Filter filter, @Nullable final Integer offset, @Nullable final Integer count,
-            @Nullable final SortBy sortOrder) {
+            @Nullable final SortBy... sortBy) {
 
-        Preconditions.checkArgument(
-                null == sortOrder || canSort(of, sortOrder.getPropertyName().getPropertyName()),
-                "Can't sort objects of type %s by %s", of, sortOrder);
-
-        return db.query(of, filter, offset, count, sortOrder);
+        if(sortBy!=null) {
+            for(SortBy sortOrder: sortBy){
+                Preconditions.checkArgument(
+                        null == sortOrder || canSort(of, sortOrder.getPropertyName().getPropertyName()),
+                        "Can't sort objects of type %s by %s", of, sortOrder);
+            }
+        }
+        return db.query(of, filter, offset, count, sortBy);
 
     }
 

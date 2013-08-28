@@ -1,11 +1,10 @@
 package org.geoserver.wcs2_0.kvp;
 
-import static junit.framework.Assert.assertEquals;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import java.io.File;
-
-import junit.framework.Assert;
 
 import org.apache.commons.io.FileUtils;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -60,7 +59,7 @@ public class CRSExtentionKVPTest extends WCSKVPTestSupport {
         try {
             targetCoverage = readerTarget.read(null);
             final CoordinateReferenceSystem targetCRS=CRS.decode("EPSG:3857", true);
-            Assert.assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), targetCRS));            
+            assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), targetCRS));            
 
             // checks
             final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
@@ -109,7 +108,7 @@ public class CRSExtentionKVPTest extends WCSKVPTestSupport {
         try {
             targetCoverage = readerTarget.read(null);
             final CoordinateReferenceSystem targetCRS=CRS.decode("EPSG:3857", true);
-            Assert.assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), targetCRS));            
+            assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), targetCRS));            
 
             // checks
             final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
@@ -156,7 +155,7 @@ public class CRSExtentionKVPTest extends WCSKVPTestSupport {
         try {
             targetCoverage = readerTarget.read(null);
             final CoordinateReferenceSystem targetCRS=CRS.decode("EPSG:3857", true);
-            Assert.assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), targetCRS));            
+            assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), targetCRS));            
     
             // checks
             final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
@@ -204,7 +203,7 @@ public class CRSExtentionKVPTest extends WCSKVPTestSupport {
         try {
             targetCoverage = readerTarget.read(null);
             final CoordinateReferenceSystem targetCRS=CRS.decode("EPSG:3857", true);
-            Assert.assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), targetCRS));            
+            assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), targetCRS));            
     
             // checks
             final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();

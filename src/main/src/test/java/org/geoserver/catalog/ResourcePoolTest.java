@@ -6,35 +6,50 @@
 
 package org.geoserver.catalog;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URI;
 import java.util.List;
 
+import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.util.ReaderUtils;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.RunTestSetup;
 import org.geoserver.test.SystemTest;
+import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataAccess;
+import org.geotools.data.DataUtilities;
 import org.geotools.factory.GeoTools;
 import org.geotools.feature.NameImpl;
+import org.geotools.styling.PolygonSymbolizer;
+import org.geotools.styling.Style;
 import org.geotools.util.SoftValueHashMap;
+import org.geotools.util.Version;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.style.ExternalGraphic;
 import org.w3c.dom.Element;
 
 /**
@@ -44,6 +59,28 @@ import org.w3c.dom.Element;
  */
 @Category(SystemTest.class)
 public class ResourcePoolTest extends GeoServerSystemTestSupport {
+    
+    private static File rockFillSymbolFile;
+    
+    protected static QName TIMERANGES = new QName(MockData.SF_URI, "timeranges", MockData.SF_PREFIX);
+    
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        
+        testData.addStyle("relative", "se_relativepath.sld", ResourcePoolTest.class, getCatalog());
+        StyleInfo style = getCatalog().getStyleByName("relative");
+        style.setSLDVersion(new Version("1.1.0"));
+        getCatalog().save(style);
+        File images = new File(testData.getDataDirectoryRoot(), "styles/images");
+        assertTrue(images.mkdir());
+        File image = new File("./src/test/resources/org/geoserver/catalog/rockFillSymbol.png");
+        assertTrue(image.exists());
+        FileUtils.copyFileToDirectory(image, images);
+        rockFillSymbolFile = new File(images, image.getName()).getCanonicalFile();
+        
+        testData.addRasterLayer(TIMERANGES, "timeranges.zip", null, null, SystemTestData.class, getCatalog());
+    }
 
     /**
      * Test that the {@link FeatureType} cache returns the same instance every time. This is assumed
@@ -176,7 +213,9 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         gs.save(global);
 
         Catalog catalog = getCatalog();
-        assertEquals(200, ((SoftValueHashMap)catalog.getResourcePool().getFeatureTypeCache()).getHardReferencesCount());
+        // we actually keep two versions of the feature type in the cache, so we need it 
+        // twice as big
+        assertEquals(400, ((SoftValueHashMap)catalog.getResourcePool().getFeatureTypeCache()).getHardReferencesCount());
     }
     
     @Test public void testDropCoverageStore() throws Exception {
@@ -238,5 +277,32 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         lakes = cat.getFeatureTypeByName(MockData.LAKES.getNamespaceURI(),
                 MockData.LAKES.getLocalPart());
         assertEquals("foo", lakes.getTitle());
+    }
+    
+    @Test
+    public void testSEStyleWithRelativePath() throws IOException {
+        StyleInfo si = getCatalog().getStyleByName("relative");
+
+        assertNotNull(si);
+        Style style = si.getStyle();
+        PolygonSymbolizer ps = (PolygonSymbolizer) style.featureTypeStyles().get(0).rules().get(0).symbolizers().get(0);
+        ExternalGraphic eg = (ExternalGraphic) ps.getFill().getGraphicFill().graphicalSymbols().get(0);
+        URI uri = eg.getOnlineResource().getLinkage();
+        assertNotNull(uri);
+        File actual = DataUtilities.urlToFile(uri.toURL()).getCanonicalFile();
+        assertEquals(rockFillSymbolFile, actual);
+    }
+    
+    @Test
+    public void testPreserveStructuredReader() throws IOException {
+        // we have to make sure time ranges native name is set to trigger the bug in question
+        CoverageInfo ci = getCatalog().getCoverageByName(getLayerId(TIMERANGES));
+        assertTrue(ci.getGridCoverageReader(null, null) instanceof StructuredGridCoverage2DReader);
+        String name = ci.getGridCoverageReader(null, null).getGridCoverageNames()[0];
+        ci.setNativeCoverageName(name);
+        getCatalog().save(ci);
+        
+        ci = getCatalog().getCoverageByName(getLayerId(TIMERANGES));
+        assertTrue(ci.getGridCoverageReader(null, null) instanceof StructuredGridCoverage2DReader);
     }
 }

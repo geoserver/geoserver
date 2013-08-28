@@ -72,7 +72,6 @@ import org.springframework.util.Assert;
 import org.vfny.geoserver.util.ResponseUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
 import com.google.common.collect.Iterables;
@@ -191,10 +190,15 @@ public class GetCapabilitiesTransformer extends TransformerBase {
      */
     private static class CapabilitiesTranslator extends  TranslatorSupport {
 
-        private static final Logger LOGGER = org.geotools.util.logging.Logging
+
+		private static final Logger LOGGER = org.geotools.util.logging.Logging
                 .getLogger(CapabilitiesTranslator.class.getPackage().getName());
 
-        private static final String EPSG = "EPSG:";
+        private static final String MIN_DENOMINATOR_ATTR = "min";
+
+		private static final String MAX_DENOMINATOR_ATTR = "max";
+
+		private static final String EPSG = "EPSG:";
 
         private static AttributesImpl wmsVersion = new AttributesImpl();
 
@@ -650,13 +654,10 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             try {
                 List<LayerGroupInfo> layerGroups = wmsConfig.getLayerGroups();
                 layersAlreadyProcessed = handleLayerGroups(new ArrayList<LayerGroupInfo>(layerGroups));
-            } catch (FactoryException e) {
+            } catch (Exception e) {
                 throw new RuntimeException("Can't obtain Envelope of Layer-Groups: "
                         + e.getMessage(), e);
-            } catch (TransformException e) {
-                throw new RuntimeException("Can't obtain Envelope of Layer-Groups: "
-                        + e.getMessage(), e);
-            }
+            } 
             
             // now encode each layer individually
             LayerTree featuresLayerTree = new LayerTree(layers);
@@ -804,13 +805,14 @@ public class GetCapabilitiesTransformer extends TransformerBase {
          * Calls super.handleFeatureType to add common FeatureType content such as Name, Title and
          * LatLonBoundingBox, and then writes WMS specific layer properties as Styles, Scale Hint,
          * etc.
+         * @throws RuntimeException 
          * 
          * @throws IOException
          * 
          * @task TODO: write wms specific elements.
          */
         @SuppressWarnings("deprecation")
-        protected void handleLayer(final LayerInfo layer) {
+        protected void handleLayer(final LayerInfo layer) throws IOException {
             // HACK: by now all our layers are queryable, since they reference
             // only featuretypes managed by this server
             AttributesImpl qatts = new AttributesImpl();
@@ -925,18 +927,59 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                     end("Style");
                 }
             }
+            handleScaleHint(layer);
 
             end("Layer");
         }
+        
 
-       private String qualifySRS(String srs) {
+        
+    /**
+     * Inserts the ScaleHint element in the layer information. 
+     * <p>
+     * The process is consistent with the following criteria:
+     * </p>
+     * 
+     * <pre>
+     * a) min = 0.0, max= infinity => ScaleHint is not generated
+     * b) max=value => <ScaleHint min=0 max=value/>
+     * c) min=value => <ScaleHint min=value max=infinity/>
+     * </pre>
+     * 
+     * @param layer
+     */
+	private void handleScaleHint(LayerInfo layer) {
+		
+		try {
+			Map<String, Double>  denominators = CapabilityUtil.searchMinMaxScaleDenominator(MIN_DENOMINATOR_ATTR, MAX_DENOMINATOR_ATTR, layer);
+			
+			// makes the element taking into account that if the min and max denominators have got the default 
+			// values the ScaleHint element is not generated
+			if( (denominators.get(MIN_DENOMINATOR_ATTR) == 0.0) && 
+				(denominators.get(MAX_DENOMINATOR_ATTR) == Double.POSITIVE_INFINITY) ){
+				
+				return; 
+			}
+	        AttributesImpl attrs = new AttributesImpl();
+			attrs.addAttribute("", MIN_DENOMINATOR_ATTR, MIN_DENOMINATOR_ATTR, "", String.valueOf(denominators.get(MIN_DENOMINATOR_ATTR)));
+			attrs.addAttribute("", MAX_DENOMINATOR_ATTR, MAX_DENOMINATOR_ATTR, "", String.valueOf(denominators.get(MAX_DENOMINATOR_ATTR)));
+
+	        element("ScaleHint", null, attrs);
+	        
+		} catch (IOException e) {
+            LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
+		}
+	}
+	
+
+	private String qualifySRS(String srs) {
            if (srs.indexOf(':') == -1) {
                srs = EPSG + srs;
            }
            return srs;
         }
 
-       protected void handleLayerGroup(LayerGroupInfo layerGroup, Set<LayerInfo> layersAlreadyProcessed) throws TransformException, FactoryException {
+       protected void handleLayerGroup(LayerGroupInfo layerGroup, Set<LayerInfo> layersAlreadyProcessed) throws TransformException, FactoryException, IOException {
            //String layerName = layerGroup.getName();
            String layerName = layerGroup.prefixedName();
 
@@ -1027,7 +1070,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
        }
        
         protected Set<LayerInfo> handleLayerGroups(List<LayerGroupInfo> layerGroups) throws FactoryException,
-                TransformException {
+                TransformException, IOException {
             Set<LayerInfo> layersAlreadyProcessed = new HashSet<LayerInfo>();
             
             if (layerGroups == null || layerGroups.size() == 0) {
@@ -1037,7 +1080,20 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             List<LayerGroupInfo> topLevelGropus = filterNestedGroups(layerGroups);
 
             for (LayerGroupInfo layerGroup : topLevelGropus) {
-                handleLayerGroup(layerGroup, layersAlreadyProcessed);
+                try {
+                    mark();
+                    handleLayerGroup(layerGroup, layersAlreadyProcessed);
+                    commit();
+                } catch (Exception e) {
+                    // report what layer we failed on to help the admin locate and fix it
+                    if (skipping) {
+                        reset();
+                    } else { 
+                        throw new ServiceException(
+                            "Error occurred trying to write out metadata for layer group: " + 
+                                    layerGroup.getName(), e);
+                    }
+                }
             }
             
             return layersAlreadyProcessed;
@@ -1228,23 +1284,6 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             bboxAtts.addAttribute("", "maxy", "maxy", "", maxy);
 
             element("LatLonBoundingBox", null, bboxAtts);
-        }
-
-        /**
-         * adds a comment to the output xml file. THIS IS A BIG HACK. TODO: do this in the correct
-         * manner!
-         * 
-         * @param comment
-         */
-        public void comment(String comment) {
-            if (contentHandler instanceof LexicalHandler) {
-                try {
-                    LexicalHandler ch = (LexicalHandler) contentHandler;
-                    ch.comment(comment.toCharArray(), 0, comment.length());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
         }
 
         /**

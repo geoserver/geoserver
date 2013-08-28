@@ -11,15 +11,59 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
-import javax.measure.quantity.Length;
-import javax.measure.unit.Unit;
-
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
 import org.geotools.filter.ExpressionDOMParser;
 import org.geotools.resources.i18n.ErrorKeys;
 import org.geotools.resources.i18n.Errors;
-import org.geotools.styling.*;
+import org.geotools.styling.AnchorPoint;
+import org.geotools.styling.ChannelSelection;
+import org.geotools.styling.ColorMap;
+import org.geotools.styling.ColorMapEntry;
+import org.geotools.styling.ContrastEnhancement;
+import org.geotools.styling.ContrastEnhancementImpl;
+import org.geotools.styling.Displacement;
+import org.geotools.styling.Extent;
+import org.geotools.styling.ExternalGraphic;
+import org.geotools.styling.FeatureTypeConstraint;
+import org.geotools.styling.FeatureTypeConstraintImpl;
+import org.geotools.styling.FeatureTypeStyle;
+import org.geotools.styling.Fill;
+import org.geotools.styling.Font;
+import org.geotools.styling.Graphic;
+import org.geotools.styling.Halo;
+import org.geotools.styling.LabelPlacement;
+import org.geotools.styling.LinePlacement;
+import org.geotools.styling.LineSymbolizer;
+import org.geotools.styling.Mark;
+import org.geotools.styling.NamedLayer;
+import org.geotools.styling.NamedLayerImpl;
+import org.geotools.styling.NamedStyle;
+import org.geotools.styling.OtherText;
+import org.geotools.styling.OtherTextImpl;
+import org.geotools.styling.PointPlacement;
+import org.geotools.styling.PointSymbolizer;
+import org.geotools.styling.PolygonSymbolizer;
+import org.geotools.styling.RasterSymbolizer;
+import org.geotools.styling.RemoteOWS;
+import org.geotools.styling.RemoteOWSImpl;
+import org.geotools.styling.Rule;
+import org.geotools.styling.SLDInlineFeatureParser;
+import org.geotools.styling.SelectedChannelType;
+import org.geotools.styling.SelectedChannelTypeImpl;
+import org.geotools.styling.ShadedRelief;
+import org.geotools.styling.ShadedReliefImpl;
+import org.geotools.styling.Stroke;
+import org.geotools.styling.Style;
+import org.geotools.styling.StyleFactory;
+import org.geotools.styling.StyledLayer;
+import org.geotools.styling.StyledLayerDescriptor;
+import org.geotools.styling.Symbolizer;
+import org.geotools.styling.TextSymbolizer;
+import org.geotools.styling.TextSymbolizer2;
+import org.geotools.styling.UomOgcMapping;
+import org.geotools.styling.UserLayer;
+import org.geotools.styling.UserLayerImpl;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.FilterFactory2;
@@ -1530,6 +1574,13 @@ public class SLD3DParser {
 			LOGGER.finest("processing graphic " + root);
 		}
 
+		Node isModel = root.getAttributes().getNamedItem("model");
+		if (isModel != null) {
+			if (isModel.getTextContent().equalsIgnoreCase("true")) {
+				return parseModel(root);
+			}
+		}
+
 		Graphic graphic = factory.getDefaultGraphic();
 
 		NodeList children = root.getChildNodes();
@@ -1965,7 +2016,7 @@ public class SLD3DParser {
 			if ((child == null) || (child.getNodeType() != Node.ELEMENT_NODE)) {
 				continue;
 			}
-			((FillImpl3D)fill).setDiffuseColor(parseCssParameter(child));
+			((FillImpl3D) fill).setDiffuseColor(parseCssParameter(child));
 		}
 
 		list = findElements(((Element) root), "TextureUrl");
@@ -1975,7 +2026,7 @@ public class SLD3DParser {
 			if ((child == null) || (child.getNodeType() != Node.ELEMENT_NODE)) {
 				continue;
 			}
-			((FillImpl3D)fill).setTextureUrl(parseCssParameter(child));
+			((FillImpl3D) fill).setTextureUrl(parseCssParameter(child));
 		}
 
 		list = findElements(((Element) root), "EmissiveColor");
@@ -1985,7 +2036,7 @@ public class SLD3DParser {
 			if ((child == null) || (child.getNodeType() != Node.ELEMENT_NODE)) {
 				continue;
 			}
-			((FillImpl3D)fill).setEmissiveColor(parseCssParameter(child));
+			((FillImpl3D) fill).setEmissiveColor(parseCssParameter(child));
 		}
 
 		/*************************/
@@ -2441,6 +2492,38 @@ public class SLD3DParser {
 		}
 
 		return halo;
+	}
 
+	private Graphic parseModel(Node root) {
+		ModelImpl model = new ModelImpl();
+		NodeList children = root.getChildNodes();
+		final int length = children.getLength();
+		for (int i = 0; i < length; i++) {
+			Node child = children.item(i);
+			if ((child == null) || (child.getNodeType() != Node.ELEMENT_NODE)) {
+				continue;
+			}
+			String childName = child.getLocalName();
+			if (childName == null) {
+				childName = child.getNodeName();
+			}
+
+			if (childName.equalsIgnoreCase("ALTITUDEMODE")) {
+				model.setAltitudeModel(parseCssParameter(child));
+			} else if (childName.equalsIgnoreCase("ALTITUDE")) {
+				model.setAltitude(parseCssParameter(child));
+			} else if (childName.equalsIgnoreCase("HEADING")) {
+				model.setHeading(parseCssParameter(child));
+			} else if (childName.equalsIgnoreCase("TILT")) {
+				model.setTilt(parseCssParameter(child));
+			} else if (childName.equalsIgnoreCase("ROLL")) {
+				model.setRoll(parseCssParameter(child));
+			} else if (childName.equalsIgnoreCase("HREF")) {
+				model.setHref(parseCssParameter(child));
+			} else if (childName.equalsIgnoreCase("LABEL")) {
+				model.setLabel(parseCssParameter(child));
+			}
+		}
+		return (Graphic) model;
 	}
 }

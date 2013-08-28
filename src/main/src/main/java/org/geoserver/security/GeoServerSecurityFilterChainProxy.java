@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.filter.GeoServerAnonymousAuthenticationFilter;
+import org.geoserver.security.filter.GeoServerSecurityContextPersistenceFilter;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -40,6 +41,15 @@ public class GeoServerSecurityFilterChainProxy extends FilterChainProxy
     static Logger LOGGER = Logging.getLogger("org.geoserver.security");
 
     static ThreadLocal<HttpServletRequest> REQUEST = new ThreadLocal<HttpServletRequest>();
+    
+    /**
+     * Request header attribute indicating if the request was running through
+     * a Geoserver security filter chain. The default is <code>false</code>.
+     * 
+     * The mandatory {@link GeoServerSecurityContextPersistenceFilter} object
+     * sets this attribute to <code>true</code>
+     */
+    public final static String SECURITY_ENABLED_ATTRIBUTE="org.geoserver.security.enabled";
 
     private boolean chainsInitialized;
 
@@ -55,7 +65,7 @@ public class GeoServerSecurityFilterChainProxy extends FilterChainProxy
         chainsInitialized=false;
        
     }
-
+    
 /*    
     Map<String,List<String>> createDefaultFilterChain() {
         Map<String,List<String>> filterChain = new LinkedHashMap<String, List<String>>();
@@ -87,7 +97,25 @@ public class GeoServerSecurityFilterChainProxy extends FilterChainProxy
 
         return filterChain;
     }
-*/    
+*/   
+    
+    /**
+     * Returns <code>true</code> if the current {@link HttpServletRequest}
+     * has traveled through a security filter chain. 
+     * 
+     * @return
+     */
+    static public boolean isSecurityEnabledForCurrentRequest() {
+        
+        if (REQUEST.get()==null) {
+            return true;
+        }
+        
+        if (Boolean.TRUE.equals(REQUEST.get().getAttribute(SECURITY_ENABLED_ATTRIBUTE)))
+                return true;
+        
+        return false;
+    }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -97,6 +125,9 @@ public class GeoServerSecurityFilterChainProxy extends FilterChainProxy
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
+        
+        // assume security is disabled
+        request.setAttribute(SECURITY_ENABLED_ATTRIBUTE, Boolean.FALSE);
         //set the request thread local
         REQUEST.set((HttpServletRequest) request);
         try {

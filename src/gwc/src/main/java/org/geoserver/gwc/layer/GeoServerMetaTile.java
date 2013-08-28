@@ -77,7 +77,7 @@ public class GeoServerMetaTile extends MetaTile {
         RenderedImage tile = metaTileMap.getImage();
         WMSMapContent tileContext = metaTileMap.getMapContext();
 
-        if (this.tiles.length > 1) {
+        if (this.tiles.length > 1 || (this.tiles.length == 1 && metaHasGutter())) {
             final Rectangle tileDim = this.tiles[tileIdx];
             tile = createTile(tileDim.x, tileDim.y, tileDim.width, tileDim.height);
             disposeLater(tile);
@@ -113,6 +113,24 @@ public class GeoServerMetaTile extends MetaTile {
         } finally {
             outStream.close();
         }
+    }
+
+    /**
+     * Checks if this meta tile has a gutter, or not
+     * @return
+     */
+    private boolean metaHasGutter() {
+        if(this.gutter == null) {
+            return false;
+        }
+        
+        for (int element : gutter) {
+            if(element > 0) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     /**

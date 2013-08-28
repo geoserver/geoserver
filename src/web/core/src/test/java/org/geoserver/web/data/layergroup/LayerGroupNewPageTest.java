@@ -37,6 +37,31 @@ public class LayerGroupNewPageTest extends LayerGroupBaseTest {
     }
     
     @Test
+    public void testMissingCRS() {
+        LayerGroupNewPage page = new LayerGroupNewPage();
+        // print(page, false, false);
+        tester.startPage(page);
+        tester.assertRenderedPage(LayerGroupNewPage.class);
+        FormTester form = tester.newFormTester("form");
+        form.setValue("name", "lakes");
+        form.setValue("bounds:minX", "-180");
+        form.setValue("bounds:minY", "-90");
+        form.setValue("bounds:maxX", "180");
+        form.setValue("bounds:maxY", "90");
+
+        page.lgEntryPanel.getEntries().add(
+            new LayerGroupEntry(getCatalog().getLayerByName(getLayerId(MockData.LAKES)), null));
+        form.submit("save");
+
+        // should not work, duplicate provided, so we remain
+        // in the same page
+        tester.assertRenderedPage(LayerGroupNewPage.class);
+        assertEquals(1, tester.getMessages(FeedbackMessage.ERROR).size());
+        String message = tester.getMessages(FeedbackMessage.ERROR).get(0).toString();
+        assertTrue(message.contains("Bounds"));
+    }
+    
+    @Test
     public void testDuplicateName() {
         LayerGroupNewPage page = new LayerGroupNewPage();
         // print(page, false, false);
@@ -48,6 +73,7 @@ public class LayerGroupNewPageTest extends LayerGroupBaseTest {
         form.setValue("bounds:minY", "0");
         form.setValue("bounds:maxX", "0");
         form.setValue("bounds:maxY", "0");
+        form.setValue("bounds:crsContainer:crs:srs", "EPSG:4326");
 
         page.lgEntryPanel.getEntries().add(
             new LayerGroupEntry(getCatalog().getLayerByName(getLayerId(MockData.LAKES)), null));

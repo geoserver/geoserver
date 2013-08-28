@@ -4,9 +4,10 @@
  */
 package org.geoserver.gwc.layer;
 
-import static com.google.common.base.Preconditions.*;
-import static com.google.common.base.Throwables.*;
-import static org.geoserver.gwc.GWC.*;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.base.Throwables.propagate;
+import static org.geoserver.gwc.GWC.tileLayerName;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,10 +29,12 @@ import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WebMap;
@@ -60,7 +63,6 @@ import org.geowebcache.layer.TileLayerListener;
 import org.geowebcache.layer.meta.ContactInformation;
 import org.geowebcache.layer.meta.LayerMetaInformation;
 import org.geowebcache.layer.updatesource.UpdateSourceDefinition;
-import org.geowebcache.locks.LockProvider;
 import org.geowebcache.locks.LockProvider.Lock;
 import org.geowebcache.mime.FormatModifier;
 import org.geowebcache.mime.MimeException;
@@ -128,6 +130,7 @@ public class GeoServerTileLayer extends TileLayer {
         this.layerInfo = null;
         this.layerGroupInfo = layerGroup;
         this.info = state;
+        TileLayerInfoUtil.checkAutomaticStyles(layerGroup, state);
     }
 
     public GeoServerTileLayer(final LayerInfo layerInfo, final GridSetBroker gridsets,
@@ -964,7 +967,62 @@ public class GeoServerTileLayer extends TileLayer {
      */
     @Override
     public int getExpireClients(int zoomLevel) {
-        // TODO: make configurable
+        if(layerInfo != null) {
+            return getLayerMaxAge(layerInfo);
+        } else if(layerGroupInfo != null) {
+            return getGroupMaxAge(layerGroupInfo);
+        } else {
+            if(LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.log(Level.FINE, "Found a GeoServerTileLayer that is not base on either" +
+                		"LayerInfo or LayerGroupInfo, setting its max age to 0");
+            }
+            return 0;
+        }
+    }
+
+    /**
+     * Returns the max age of a layer group by looking for the minimum max age of its components
+     * 
+     * @param lg
+     * @return
+     */
+    private int getGroupMaxAge(LayerGroupInfo lg) {
+        int maxAge = Integer.MAX_VALUE;
+        for (PublishedInfo pi : lg.getLayers()) {
+            int piAge;
+            if(pi instanceof LayerInfo) {
+                piAge = getLayerMaxAge((LayerInfo) pi);
+            } else if(pi instanceof LayerGroupInfo) {
+                piAge = getGroupMaxAge((LayerGroupInfo) pi);
+            } else {
+                if(LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.log(Level.FINE, "Found a PublishedInfo that is nor LayerInfo nor " +
+                    		"LayerGroupInfo, setting its max age to 0: " + pi);
+                }
+                piAge = 0;
+            }
+            maxAge = Math.min(piAge, maxAge);
+        }
+        
+        return maxAge;
+    }
+
+    /**
+     * Returns the max age for the specified layer
+     * @return
+     */
+    private int getLayerMaxAge(LayerInfo li) {
+        MetadataMap metadata = li.getResource().getMetadata();
+        Object enabled = metadata.get(ResourceInfo.CACHING_ENABLED);
+        if (enabled != null && enabled.toString().equalsIgnoreCase("true")) {
+            Integer maxAge = metadata.get(ResourceInfo.CACHE_AGE_MAX, Integer.class);
+            if(maxAge != null) {
+                return maxAge;
+            } else {
+                return 0;
+            }
+        }
+        
         return 0;
     }
 
@@ -1000,5 +1058,22 @@ public class GeoServerTileLayer extends TileLayer {
     public String toString() {
         return new StringBuilder(getClass().getSimpleName()).append("[").append(info).append("]")
                 .toString();
+    }
+
+    @Override
+    public List<MimeType> getInfoMimeTypes() {
+        // Get the formats WMS supports for GetFeatureInfo
+        List<String> typeStrings = ((WMS) GeoServerExtensions.bean("wms")).getAvailableFeatureInfoFormats();
+        List<MimeType> types = new ArrayList<MimeType>(typeStrings.size());
+        for(String typeString: typeStrings) {
+            try {
+                types.add(MimeType.createFromFormat(typeString));
+            } catch (MimeException e) {
+                if (LOGGER.isLoggable(Level.WARNING)){
+                    LOGGER.log(Level.WARNING, e.getMessage(), e);
+                }
+            }
+        }
+        return types;
     }
 }

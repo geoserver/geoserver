@@ -272,7 +272,7 @@ public final class MapLayerInfo {
             return false;
         }
         ResourceInfo resource = layerInfo.getResource();
-        Boolean cachingEnabled = resource.getMetadata().get("cachingEnabled", Boolean.class);
+        Boolean cachingEnabled = resource.getMetadata().get(ResourceInfo.CACHING_ENABLED, Boolean.class);
         return cachingEnabled == null ? false : cachingEnabled.booleanValue();
     }
 
@@ -289,7 +289,7 @@ public final class MapLayerInfo {
             return 0;
         }
         ResourceInfo resource = layerInfo.getResource();
-        Integer val = resource.getMetadata().get("cacheAgeMax", Integer.class);
+        Integer val = resource.getMetadata().get(ResourceInfo.CACHE_AGE_MAX, Integer.class);
         return val == null ? 0 : val;
     }
 

@@ -25,7 +25,7 @@ import org.geotools.util.logging.Logging;
  * 
  * @author Davide Savazzi - geo-solutions.it
  */
-public class DeleteEoGroupLink extends AjaxLink {
+class DeleteEoGroupLink extends AjaxLink {
 
     private LayerGroupTablePanel groupTable;
     private GeoServerDialog dialog;    
@@ -52,11 +52,13 @@ public class DeleteEoGroupLink extends AjaxLink {
         // if there is something to cancel, let's warn the user about what
         // could go wrong, and if the user accepts, let's delete what's needed
         dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
+            @Override
             protected Component getContents(String id) {
                 // show a confirmation panel for all the objects we have to remove
                 return new ConfirmRemovalPanel(id, selection);
             }
             
+            @Override
             protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
                 // cascade delete the whole selection
                 EoCatalogBuilder builder = new EoCatalogBuilder(GeoServerApplication.get().getCatalog());

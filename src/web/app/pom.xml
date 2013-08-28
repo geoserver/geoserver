@@ -10,12 +10,12 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>web</artifactId>
-    <version>2.4-SNAPSHOT</version>
+    <version>2.5-SNAPSHOT</version>
   </parent>
   <groupId>org.geoserver.web</groupId>
   <artifactId>web-app</artifactId>
   <packaging>jar</packaging>
-  <version>2.4-SNAPSHOT</version>
+  <version>2.5-SNAPSHOT</version>
   <name>GeoServer Web Application</name>
   <dependencies>
     <dependency>
@@ -86,6 +86,11 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>wms</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>kml</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -175,6 +180,7 @@
       <!-- Builds a valid data directory into the web app -->
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.7</version>
         <executions>
           <execution>
             <id>configPackage</id>
@@ -262,9 +268,11 @@
 		<inherited>true</inherited>
 		<groupId>org.apache.maven.plugins</groupId>
 		<artifactId>maven-war-plugin</artifactId>
+        <version>2.3</version>
 		<configuration>
 			<warName>geoserver</warName>
 			<webappDirectory>${project.build.directory}/geoserver</webappDirectory>
+			<packagingExcludes>WEB-INF/lib/servlet-api*.jar</packagingExcludes>
 			<archive>
 				<manifest>
 					<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
@@ -316,7 +324,7 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>arcsde</artifactId> 
-          <version>2.4-SNAPSHOT</version>
+          <version>2.5-SNAPSHOT</version>
         </dependency>
       </dependencies>
     </profile>
@@ -345,7 +353,7 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>sqlserver</artifactId> 
-          <version>2.4-SNAPSHOT</version>
+          <version>2.5-SNAPSHOT</version>
         </dependency>
       </dependencies>
     </profile>
@@ -355,7 +363,7 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>oracle</artifactId> 
-          <version>2.4-SNAPSHOT</version>
+          <version>2.5-SNAPSHOT</version>
         </dependency>
       </dependencies>
     </profile>
@@ -365,7 +373,7 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>mysql</artifactId> 
-          <version>2.4-SNAPSHOT</version>
+          <version>2.5-SNAPSHOT</version>
         </dependency>
       </dependencies>
     </profile>
@@ -563,7 +571,7 @@
       <id>css</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>css</artifactId>
           <version>${project.version}</version>
         </dependency>
@@ -659,7 +667,7 @@
       <id>inspire</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>inspire</artifactId>
           <version>${project.version}</version>
         </dependency>
@@ -867,7 +875,7 @@
       </activation> 
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver</groupId>
           <artifactId>xslt</artifactId>
           <version>${project.version}</version>
         </dependency>
@@ -900,6 +908,25 @@
       </dependencies>
     </profile>
     <profile>
+      <id>wcs20-eo</id>
+      <activation>
+        <property><name>wcs20</name></property>
+      </activation> 
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>wcs2_0-eo</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>web-wcs2_0-eo</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+
+    <profile>
       <id>w3ds</id>
       <dependencies>
         <dependency>
@@ -910,30 +937,7 @@
       </dependencies>
     </profile>
     <profile>
-       <id>kml</id>
-       <activation>
-         <activeByDefault>true</activeByDefault>
-       </activation>
-       <dependencies>  
-         <dependency>
-           <groupId>org.geoserver</groupId>
-           <artifactId>kml</artifactId>
-           <version>${project.version}</version>
-         </dependency>
-       </dependencies>
-    </profile>
-    <profile>
-       <id>kml2</id>
-       <dependencies>  
-         <dependency>
-           <groupId>org.geoserver.community</groupId>
-           <artifactId>kml2</artifactId>
-           <version>${project.version}</version>
-         </dependency>
-      </dependencies>
-    </profile>
-		<profile>
-			<id>libjpeg-turbo</id>
+      <id>libjpeg-turbo</id>
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>
@@ -941,7 +945,53 @@
           <version>${project.version}</version>
         </dependency>
       </dependencies>
-		</profile>    
+		</profile>
+    <profile>
+			<id>netcdf</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geotools</groupId>
+          <artifactId>gt-netcdf</artifactId>
+          <version>${gt.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+          </exclusion>
+
+
+        </exclusions>
+        </dependency>
+      </dependencies>
+		</profile>        
+    <profile>
+      <id>importer</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.importer</groupId>
+          <artifactId>importer-web</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.importer</groupId>
+          <artifactId>importer-rest</artifactId>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>geopkg</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>geopkg</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
  </profiles>
 
 </project>

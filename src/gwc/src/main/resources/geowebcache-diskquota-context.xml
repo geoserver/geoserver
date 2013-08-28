@@ -12,6 +12,7 @@
   <bean id="DiskQuotaStoreProvider" class="org.geoserver.gwc.ConfigurableQuotaStoreProvider">
       <constructor-arg ref="DiskQuotaConfigLoader" />
       <constructor-arg ref="gwcTilePageCalculator" />
+      <constructor-arg ref="gwcJdbcConfigurationStorage" />
   </bean>
 
   <bean id="DiskQuotaMonitor" class="org.geowebcache.diskquota.DiskQuotaMonitor">

@@ -25,17 +25,22 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Disposabl
     Context jndiCtx;
     DataSource dataSource;
     
-    private static Context getJNDI() {
-        try {
-            return GeoTools.getInitialContext(GeoTools.getDefaultHints());
-        } catch (NamingException ex) {
-            LOGGER.log(Level.WARNING, "Could not get JNDI Context, will not use JNDI to locate DataSource", ex);
+    private static Context getJNDI(JDBCConfigProperties config) {
+        if(config.isEnabled() && config.getJndiName().isPresent()) {
+            try {
+                return GeoTools.getInitialContext(GeoTools.getDefaultHints());
+            } catch (NamingException ex) {
+                LOGGER.log(Level.WARNING, "Could not get JNDI Context, will not use JNDI to locate DataSource", ex);
+                return null;
+            }
+        } else {
+            // Don't bother trying to get a JNDI context if JNDI lookup isn't needed.
             return null;
         }
     }
     
     public DataSourceFactoryBean(JDBCConfigProperties config) {
-        this(config, getJNDI());
+        this(config, getJNDI(config));
     }
 
     
@@ -58,7 +63,10 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Disposabl
      * @throws Exception
      */
     protected DataSource getDataSource() throws Exception {
-        DataSource ds = getJNDIDataSource(get(config, "jndiName", String.class, false)).orNull();
+        DataSource ds = null;
+        
+        ds = getJNDIDataSource(config.getJndiName()).orNull();
+        
         if(ds==null) {
             ds = createDataSource();
         }
@@ -110,7 +118,7 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Disposabl
     protected DataSource createDataSource() throws Exception {
         BasicDataSource dataSource = createBasicDataSource();
 
-        dataSource.setUrl(config.getJdbcUrl());
+        dataSource.setUrl(config.getJdbcUrl().get());
 
         Optional<String> driverClassName = get(config, "driverClassName", String.class, true);
         try {

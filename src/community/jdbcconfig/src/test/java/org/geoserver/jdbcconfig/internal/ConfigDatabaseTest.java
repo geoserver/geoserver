@@ -26,7 +26,10 @@ import org.geoserver.catalog.Info;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
+import org.geoserver.config.ServiceInfo;
 import org.geoserver.jdbcconfig.JDBCConfigTestSupport;
+import org.geoserver.wms.WMSInfo;
+import org.geoserver.wms.WMSInfoImpl;
 
 /**
  * @author groldan
@@ -114,4 +117,22 @@ public class ConfigDatabaseTest extends TestCase {
         }
         assertEquals(info, saved);
     }
+    
+    public void testModifyService(){
+        
+        // Create a service to modify
+        WMSInfo service = new WMSInfoImpl();
+        ((WMSInfoImpl) service).setId("WMS-TEST");
+        service.setName("WMS");
+        service.setMaintainer("Foo");
+
+
+        service = database.add(service);
+        
+        assertEquals(service.getMaintainer(), "Foo");
+        
+        service.setMaintainer("Bar");
+        testSaved(service);
+    }
+    
 }

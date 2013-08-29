@@ -11,11 +11,14 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geotools.data.DataUtilities;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.util.logging.Logging;
 
 import freemarker.ext.beans.BeansWrapper;
+import freemarker.ext.beans.CollectionModel;
 import freemarker.template.TemplateCollectionModel;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
@@ -55,9 +58,21 @@ public class DirectTemplateFeatureCollectionFactory implements FeatureWrapper.Te
             ITERATORS.remove();
         }
     }
+    
+    /**
+     * Still make a copy (which supports TemplateSequenceModel) if it is a simple feature collection
+     */
+    protected boolean copyIfSimple;
+    
+    public DirectTemplateFeatureCollectionFactory(boolean copyIfSimple) {
+        this.copyIfSimple = copyIfSimple;
+    }
 
     public TemplateCollectionModel createTemplateFeatureCollection(FeatureCollection collection,
             BeansWrapper wrapper) {
+        if (copyIfSimple && collection instanceof SimpleFeatureCollection){
+            return new CollectionModel(DataUtilities.list(collection), wrapper);
+        }
         return new TemplateFeatureCollection(collection, wrapper);
     }
 

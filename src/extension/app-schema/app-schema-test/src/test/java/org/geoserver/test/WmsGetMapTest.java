@@ -50,11 +50,11 @@ public class WmsGetMapTest extends AbstractAppSchemaTestSupport {
     @Test
     public void testGetMapOutcropCharacterReprojection() throws Exception
     {
-        InputStream is = getBinary("wms?request=GetMap&SRS=EPSG:4283&layers=gsml:MappedFeature&styles=outcropcharacter&BBOX=-2,52,0,54&X=0&Y=0&width=20&height=20&FORMAT=image/jpeg");
+        InputStream is = getBinary("wms?request=GetMap&SRS=EPSG:3857&layers=gsml:MappedFeature&styles=outcropcharacter&BBOX=-222638.981586547,6800125.45439731,0,7170156.29399995&X=0&Y=0&width=20&height=20&FORMAT=image/jpeg");
         BufferedImage imageBuffer = ImageIO.read(is);
                 
-        assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);   
-        ImageAssert.assertEquals(DataUtilities.urlToFile(getClass().getResource("/test-data/img/outcrop.tiff")), imageBuffer, 250);
+        assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);  
+        ImageAssert.assertEquals(DataUtilities.urlToFile(getClass().getResource("/test-data/img/outcrop_3857.tiff")), imageBuffer, 250);
 
     }
     

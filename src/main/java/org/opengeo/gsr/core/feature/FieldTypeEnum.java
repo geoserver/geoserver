@@ -45,7 +45,7 @@ public enum FieldTypeEnum {
             return SINGLE;
         } else if (Double.class.equals(binding) || BigDecimal.class.equals(binding)) {
             return DOUBLE;
-        } else if (Byte.class.equals(binding) || Short.class.equals(binding)) {
+        } else if (Boolean.class.equals(binding) || Byte.class.equals(binding) || Short.class.equals(binding)) {
             return SHORT_INTEGER;
         } else if (Integer.class.equals(binding) || Long.class.equals(binding) || BigInteger.class.equals(binding)) {
             return INTEGER;

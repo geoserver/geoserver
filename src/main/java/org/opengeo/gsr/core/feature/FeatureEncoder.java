@@ -99,6 +99,8 @@ public class FeatureEncoder {
                 final Object value;
                 if (prop.getValue() instanceof java.util.Date) {
                     value = ((java.util.Date) prop.getValue()).getTime();
+                } else if (prop.getValue() instanceof java.lang.Boolean) {
+                    value = ((Boolean) prop.getValue()) ? Integer.valueOf(1) : Integer.valueOf(0);
                 } else {
                     value = prop.getValue();
                 }

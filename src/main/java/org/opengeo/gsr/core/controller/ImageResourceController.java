@@ -24,7 +24,9 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @author tkunicki
  */
 public class ImageResourceController extends AbstractController {
-
+    
+    public static final String PROPERTY_IMAGE_RESOURCE_DIR = "GSR_IMAGE_RESOURCE_DIR";
+    
     private static final String HTTP_HEADER_CONTENT_LENGTH = "Content-Length";
     private static final String HTTP_HEADER_LAST_MODIFIED = "Last-Modified";
     private static final String HTTP_HEADER_ETAG = "ETag";
@@ -42,7 +44,7 @@ public class ImageResourceController extends AbstractController {
     private final File imageBaseDirectory;
 
     public ImageResourceController(GeoServer geoserver) {
-        this.imageBaseDirectory = new File(geoserver.getCatalog().getResourceLoader().getBaseDirectory(), "images");
+        this.imageBaseDirectory = findImageResourceDirectory(geoserver);
     }
 
     @Override
@@ -127,5 +129,23 @@ public class ImageResourceController extends AbstractController {
             IOUtils.closeQuietly(is);
             IOUtils.closeQuietly(os);
         }
+    }
+    
+    private File findImageResourceDirectory(GeoServer geoserver) {
+        File candidate;
+        String propertyPath = System.getProperty(PROPERTY_IMAGE_RESOURCE_DIR);
+        if (propertyPath != null) {
+            candidate = new File(propertyPath);
+            if (candidate.isDirectory()) {
+                logger.info("Using " + propertyPath + " for GeoServices REST API image resource directory");
+                return candidate;
+            } else {
+                logger.warn("Property " + PROPERTY_IMAGE_RESOURCE_DIR + " is set to " + propertyPath +
+                        " but it does not appear to be a directory");
+            }
+        }
+        candidate = new File(geoserver.getCatalog().getResourceLoader().getBaseDirectory(), "images");
+        logger.info("Using default location of  " + candidate.getPath() + " for GeoServices REST API image resource directory");
+        return candidate;
     }
 }

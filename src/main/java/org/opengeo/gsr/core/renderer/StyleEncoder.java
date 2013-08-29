@@ -44,6 +44,7 @@ import org.opengis.style.Fill;
 import org.opengis.style.GraphicalSymbol;
 
 import com.noelios.restlet.util.Base64;
+import java.net.URI;
 
 import net.sf.json.util.JSONBuilder;
 
@@ -287,11 +288,11 @@ public class StyleEncoder {
                 outline);
         } else if (symbol instanceof ExternalGraphic) {
             ExternalGraphic exGraphic = (ExternalGraphic) symbol;
-            String url = exGraphic.getOnlineResource().getLinkage().toString();
+            URI resourceURI = exGraphic.getOnlineResource().getLinkage();
             byte[] rawData = new byte[4096];
             InputStream stream = null;
             try {
-                stream = exGraphic.getOnlineResource().getLinkage().toURL().openStream();
+                stream = resourceURI.toURL().openStream();
                 int pos = 0;
                 int read = 0;
                 while ((read = stream.read(rawData, pos, rawData.length - pos)) >= 0) {
@@ -338,6 +339,7 @@ public class StyleEncoder {
             int xoffset = displacement != null ? evaluateWithDefault(sym.getGraphic().getDisplacement().getDisplacementX(), 0) : 0;
             int yoffset = displacement != null ? evaluateWithDefault(sym.getGraphic().getDisplacement().getDisplacementY(), 0) : 0;
 
+            String url = relativizeExternalGraphicImageResourceURI(resourceURI);
             return new PictureMarkerSymbol(rawData, url, contentType, components(color, 1), width, height, angle, xoffset, yoffset);
         }
         return null;
@@ -569,5 +571,11 @@ public class StyleEncoder {
           json.key("label").value(renderer.getLabel())
           .key("description").value(renderer.getDescription())
         .endObject();
+    }
+	
+    static String relativizeExternalGraphicImageResourceURI(URI resourceURI) {
+        String path = resourceURI.getPath();
+        int index = path.lastIndexOf('/');
+        return "images/" + (index < 0 ? path : path.substring(index + 1));
     }
 }

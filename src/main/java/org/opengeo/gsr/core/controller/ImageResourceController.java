@@ -1,0 +1,131 @@
+/* Copyright (c) 2001 - 2013 TOPP - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+package org.opengeo.gsr.core.controller;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Map;
+import java.util.TreeMap;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.io.IOUtils;
+import org.geoserver.config.GeoServer;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.AbstractController;
+
+/**
+ *
+ * @author tkunicki
+ */
+public class ImageResourceController extends AbstractController {
+
+    private static final String HTTP_HEADER_CONTENT_LENGTH = "Content-Length";
+    private static final String HTTP_HEADER_LAST_MODIFIED = "Last-Modified";
+    private static final String HTTP_HEADER_ETAG = "ETag";
+    private static final String HTTP_HEADER_CACHE_CONTROL = "Cache-Control";
+
+    private static final Map<String, String> defaultMimeTypes = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);
+
+    {
+        defaultMimeTypes.put(".gif", "image/gif");
+        defaultMimeTypes.put(".jpeg", "image/jpeg");
+        defaultMimeTypes.put(".jpg", "image/jpeg");
+        defaultMimeTypes.put(".png", "image/png");
+    }
+
+    private final File imageBaseDirectory;
+
+    public ImageResourceController(GeoServer geoserver) {
+        this.imageBaseDirectory = new File(geoserver.getCatalog().getResourceLoader().getBaseDirectory(), "images");
+    }
+
+    @Override
+    public ModelAndView handleRequestInternal(final HttpServletRequest request, final HttpServletResponse response)
+            throws Exception {
+
+        final String path = (String) request.getRequestURI();
+
+        int index = path.lastIndexOf('/');
+        String fileName = index < 0 ? path : path.substring(index + 1);
+
+        dispatchImageResource(fileName, request, response);
+
+        return null;
+    }
+
+    public boolean dispatchImageResource(final String fileName, HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        final boolean debug = logger.isDebugEnabled();
+        if (debug) {
+            logger.debug("Attemping to dispatch image resource: " + fileName);
+        }
+
+        boolean resolved = false;
+        File imageFile = new File(imageBaseDirectory, fileName);
+        if (imageFile.canRead()) {
+            try {
+                commitResponse(imageFile, response);
+                resolved = true;
+            } catch (IOException e) {
+                logger.info(e.getMessage());
+                if (debug) {
+                    logger.debug("Error dispatching image resource response", e);
+                }
+            }
+        }
+        return resolved;
+    }
+
+    public void commitResponse(File imageFile, HttpServletResponse response)
+            throws IOException {
+        writeHeaders(imageFile, response);
+        writeImageData(imageFile, response);
+
+    }
+
+    protected void writeHeaders(File imageFile, HttpServletResponse response) {
+
+        // determine mimetype
+        String imagePath = imageFile.getPath();
+        String mimetype = getServletContext().getMimeType(imagePath);
+        if (mimetype == null) {
+            final int extIndex = imagePath.lastIndexOf('.');
+            if (extIndex != -1) {
+                String extension = imagePath.substring(extIndex);
+                mimetype = (String) defaultMimeTypes.get(extension.toLowerCase());
+            }
+        }
+
+        long length = imageFile.length();
+        long lastModified = imageFile.lastModified();
+
+        response.setContentType(mimetype);
+        response.setHeader(HTTP_HEADER_CONTENT_LENGTH, Long.toString(length));
+        if (lastModified != 0) {
+            response.setHeader(HTTP_HEADER_ETAG, '"' + Long.toString(lastModified) + '"');
+            response.setDateHeader(HTTP_HEADER_LAST_MODIFIED, lastModified);
+        }
+        if (!response.containsHeader(HTTP_HEADER_CACHE_CONTROL)) {
+            response.setHeader(HTTP_HEADER_CACHE_CONTROL, "max-age=86400");
+        }
+    }
+
+    protected void writeImageData(File imageFile, HttpServletResponse response) throws IOException {
+        InputStream is = null;
+        OutputStream os = null;
+        try {
+            is = new FileInputStream(imageFile);
+            os = response.getOutputStream();
+            IOUtils.copy(is, os);
+        } finally {
+            IOUtils.closeQuietly(is);
+            IOUtils.closeQuietly(os);
+        }
+    }
+}

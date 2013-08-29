@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx" xmlns:mvc="http://www.springframework.org/schema/mvc"
     xsi:schemaLocation="http://www.springframework.org/schema/beans
     http://www.springframework.org/schema/beans/spring-beans.xsd
     http://www.springframework.org/schema/tx
-    http://www.springframework.org/schema/tx/spring-tx.xsd"
+    http://www.springframework.org/schema/tx/spring-tx.xsd
+	http://www.springframework.org/schema/mvc
+    http://www.springframework.org/schema/mvc/spring-mvc.xsd"
     default-autowire="byName">
 
     <bean id="serviceFinder" class="org.opengeo.gsr.service.ServiceFinder">
@@ -16,6 +18,19 @@
 
     <bean id="jsonpFilter" class="org.opengeo.gsr.service.JsonpFilter">
         <property name="next" ref="serviceFinder"></property>
+    </bean>
+
+	<bean id="imageResourceController" class="org.opengeo.gsr.core.controller.ImageResourceController">
+		<constructor-arg ref="geoServer" />
+	</bean>
+
+    <bean id="gsrImageResourceDispatcherMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="alwaysUseFullPath" value="true"/>
+        <property name="mappings">
+          <props>
+		      <prop key="/gsr/**/images/**">imageResourceController</prop>
+          </props>
+        </property>
     </bean>
 
     <bean id="gsrDispatcherMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
@@ -70,5 +85,5 @@
             </map>
     </property>
     </bean>
-
+	
 </beans>

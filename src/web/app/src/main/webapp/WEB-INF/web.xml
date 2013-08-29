@@ -61,6 +61,11 @@
     </context-param>
     
     <filter>
+     <filter-name>FlushSafeFilter</filter-name>
+     <filter-class>org.geoserver.filters.FlushSafeFilter</filter-class>
+    </filter>
+
+    <filter>
      <filter-name>SessionDebugger</filter-name>
      <filter-class>org.geoserver.filters.SessionDebugFilter</filter-class>
     </filter>
@@ -153,6 +158,11 @@
      reasons 
      -->
    </filter>
+   
+    <filter-mapping>
+      <filter-name>FlushSafeFilter</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
     <filter-mapping>
       <filter-name>SessionDebugger</filter-name>

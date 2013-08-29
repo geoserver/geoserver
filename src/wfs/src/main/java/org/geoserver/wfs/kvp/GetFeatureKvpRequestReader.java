@@ -393,14 +393,8 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
     }
     
     BBOX bboxFilter(QName typeName, Envelope bbox) throws Exception {
-        FeatureTypeInfo featureTypeInfo = 
-            catalog.getFeatureTypeByName(typeName.getNamespaceURI(), typeName.getLocalPart());
-        
-        //JD: should this be applied to all geometries?
-        //String name = featureType.getDefaultGeometry().getLocalName();
-        //JD: changing to "" so it is
+        //JD: use "" so that it applies to all geometries
         String name = "";
-        
 
         if ( bbox instanceof ReferencedEnvelope3D ) {
         	return filterFactory.bbox(name, (ReferencedEnvelope3D) bbox);        
@@ -409,10 +403,13 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
         //get the epsg code
         String epsgCode = null;
         
-        if ( bbox instanceof ReferencedEnvelope ) {
+        if(bbox instanceof SRSEnvelope) {
+            SRSEnvelope se = (SRSEnvelope) bbox;
+            epsgCode = se.getSrs();
+        } else if ( bbox instanceof ReferencedEnvelope ) {
             CoordinateReferenceSystem crs = ((ReferencedEnvelope)bbox).getCoordinateReferenceSystem();
             if ( crs != null ) {
-                epsgCode = GML2EncodingUtils.crs(crs);
+                epsgCode = GML2EncodingUtils.toURI(crs);
             }
         }
             

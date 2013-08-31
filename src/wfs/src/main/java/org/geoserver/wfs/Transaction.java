@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -525,8 +526,18 @@ public class Transaction {
 
     /**
      * Creates a gt2 transaction used to execute the transaction call
-     *
-     * @return
+     * <p>
+     * request's {@link TransactionRequest#getExtendedProperties() extended properties} are set as
+     * {@link org.geotools.data.Transaction#putProperty(Object, Object) transaction properties} so
+     * that they're available to the lower level API.
+     * <p>
+     * These properties can be provided for example by
+     * {@link TransactionPlugin#beforeTransaction(TransactionType)} implementations. A typical
+     * example is a custom authentication module providing extra user information that upon
+     * transaction commit can be used by versioning geotools datastore to complete the information
+     * required for its records (such as committer full name, email, etc)
+     * 
+     * @return a new geotools transaction
      */
     protected DefaultTransaction getDatastoreTransaction(TransactionRequest request)
     throws IOException {
@@ -545,7 +556,19 @@ public class Transaction {
         // and that we can the following properties won't hurt transactio processing anyways...
         transaction.putProperty("VersioningCommitAuthor", username);
         transaction.putProperty("VersioningCommitMessage", request.getHandle());
-    
+        
+        // transfer any tx extended property down to the geotools transaction.
+        // TransactionPlugins can contribute such info in their beforeTransaction()
+        // implementation
+        Map<?, ?> extendedProperties = request.getExtendedProperties();
+        if (extendedProperties != null) {
+            for (Entry<?, ?> e : extendedProperties.entrySet()) {
+                Object propKey = e.getKey();
+                Object propValue = e.getValue();
+                transaction.putProperty(propKey, propValue);
+            }
+        }
+        
         return transaction;
     }
 

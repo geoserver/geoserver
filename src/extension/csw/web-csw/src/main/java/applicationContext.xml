@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  <bean id="cswServicePage" class="org.geoserver.web.services.ServiceMenuPageInfo">
+    <property name="id" value="csw"/>
+    <property name="titleKey" value="csw.title"/>
+    <property name="descriptionKey" value="csw.description"/>
+    <property name="componentClass" value="org.geoserver.csw.web.CSWAdminPage"/>
+    <property name="icon" value="server_csw.png"/>
+    <property name="category" ref="servicesCategory"/>
+    <property name="serviceClass" value="org.geoserver.csw.CSWInfo"/>
+  </bean>
+    
+
+</beans>

@@ -206,4 +206,6 @@
       	<constructor-arg ref="geoServer"/>
     </bean>
       
+    <!--  factory extension  -->  
+	<bean id="cswFactoryExtension" class="org.geoserver.csw.CSWFactoryExtension"/>
 </beans>

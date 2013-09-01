@@ -23,6 +23,8 @@ public class MessageResponse extends Response {
         throws IOException {
         Message message = (Message) value;
         output.write(message.message.getBytes());
+        output.close();
+        output.flush();
     }
 
     public void abort(Object value, OutputStream output, Operation operation)

@@ -1191,7 +1191,6 @@
       <descriptor>release/ext-jp2k.xml</descriptor>
       <descriptor>release/ext-mysql.xml</descriptor>
       <descriptor>release/ext-oracle.xml</descriptor>
-      <descriptor>release/ext-vpf.xml</descriptor>
       <descriptor>release/ext-arcsde.xml</descriptor>
       <descriptor>release/ext-pyramid.xml</descriptor>
       <descriptor>release/ext-gdal.xml</descriptor>

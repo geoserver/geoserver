@@ -30,6 +30,9 @@ public class GetRecordsTest extends MDTestSupport {
                 .decode("EPSG:4326")));
         forestInfo.getKeywords().add(new Keyword ("CustomKeyWord-1"));
         forestInfo.getKeywords().add(new Keyword ("CustomKeyWord-2"));
+        forestInfo.setDescription("Land with lots of trees on.");
+        forestInfo.getAlias().add("Bush");
+        forestInfo.getAlias().add("Woods");
         getCatalog().save(forestInfo);
     }
 
@@ -90,7 +93,15 @@ public class GetRecordsTest extends MDTestSupport {
         assertXpathEvaluatesTo("-180.0",
                 "//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:northBoundLatitude", d);
         
-       
+        //check the multi-valued field alternate title
+        assertXpathEvaluatesTo("Land with lots of trees on.",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:alternateTitle[1]/gco:CharacterString", d);
+        assertXpathEvaluatesTo("Bush",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:alternateTitle[2]/gco:CharacterString", d);
+        assertXpathEvaluatesTo("Woods",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:alternateTitle[3]/gco:CharacterString", d);
+        assertXpathEvaluatesTo("##Forests",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:alternateTitle[4]/gco:CharacterString", d);
     }
     
     @Test

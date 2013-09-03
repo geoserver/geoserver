@@ -64,6 +64,7 @@ import org.restlet.data.Status;
 
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import org.geoserver.catalog.AttributeTypeInfo;
 
 /**
  * Utility class for reading/writing import/tasks/etc... to/from JSON.
@@ -277,6 +278,9 @@ public class ImportJSONWriter {
                     bbox(json, r.getNativeBoundingBox());
                 }
             }
+            if (r instanceof FeatureTypeInfo) {
+                featureType((FeatureTypeInfo) r);
+            }
             StyleInfo s = layer.getDefaultStyle();
             if (s != null) {
                 style(s, task, false, expand-1);
@@ -288,6 +292,19 @@ public class ImportJSONWriter {
             json.endObject();
         }
         json.flush();
+    }
+
+    void featureType(FeatureTypeInfo featureTypeInfo) throws IOException {
+        json.key("attributes").array();
+        List<AttributeTypeInfo> attributes = featureTypeInfo.attributes();
+        for (int i = 0; i < attributes.size(); i++) {
+            AttributeTypeInfo att = attributes.get(i);
+            json.object();
+            json.key("name").value(att.getName());
+            json.key("binding").value(att.getBinding());
+            json.endObject();
+        }
+        json.endArray();
     }
 
     void style(StyleInfo style, ImportTask task, boolean top, int expand) throws IOException {

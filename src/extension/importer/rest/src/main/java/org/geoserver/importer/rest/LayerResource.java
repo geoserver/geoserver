@@ -12,18 +12,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
-import net.sf.json.JSONObject;
-
 import org.geoserver.catalog.CatalogBuilder;
-import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.rest.RestletException;
 import org.geoserver.rest.format.DataFormat;
 import org.geoserver.rest.format.StreamDataFormat;
-import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.geoserver.importer.ImportTask;
@@ -119,31 +114,9 @@ public class LayerResource extends BaseResource {
             if (resource.getNativeCRS() == null) {
                 resource.setNativeCRS(newRefSystem);
             }
+            resource.setSRS(srs);
         }
 
-        //update the resource
-        if (r != null) {
-            if (r instanceof FeatureTypeInfo) {
-                cb.updateFeatureType((FeatureTypeInfo) resource, (FeatureTypeInfo) r);
-            }
-            else if (r instanceof CoverageInfo) {
-                cb.updateCoverage((CoverageInfo) resource, (CoverageInfo) r);
-            }
-        }
-        
-        // have to do this after updating the original
-        //JD: not actually sure this should be here... it doesn't work in the indirect case since
-        // we don't have the physical feature type yet... i think it might be better to just to 
-        // null and let the importer recalculate on the fly
-        if (newRefSystem != null && orig.isDirect()) {
-            try {
-                ReferencedEnvelope nativeBounds = cb.getNativeBounds(resource);
-                resource.setLatLonBoundingBox(cb.getLatLonBounds(nativeBounds, newRefSystem));
-            } catch (IOException ex) {
-                throw new RestletException("Error with bounds computation",Status.SERVER_ERROR_INTERNAL,ex);
-            }
-        }
-        
     }
 
     class ItemLayerJSONFormat extends StreamDataFormat {

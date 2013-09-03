@@ -60,6 +60,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.importer.transform.AttributesToPointGeometryTransform;
+import org.geoserver.importer.UpdateMode;
 
 /**
  * @todo extract postgis stuff to online test case
@@ -486,6 +487,25 @@ public class TaskResourceTest extends ImporterTestSupport {
         JSONObject json = (JSONObject) getAsJSON("/rest/imports/0/tasks/0/target");
         assertEquals("foo", json.getJSONObject("dataStore").getString("name"));
         assertEquals("H2", json.getJSONObject("dataStore").getString("type"));
+    }
+
+    public void testUpdateMode() throws Exception {
+        createH2DataStore(getCatalog().getDefaultWorkspace().getName(), "foo");
+
+        ImportContext session = importer.getContext(0);
+        assertEquals(UpdateMode.CREATE, session.getTasks().get(0).getUpdateMode());
+
+        // change to append mode
+        String update = "{\"task\": { \"updateMode\" : \"APPEND\" }}";
+        put("/rest/imports/0/tasks/0", update, MediaType.APPLICATION_JSON.toString());
+        session = importer.getContext(0);
+        assertEquals(UpdateMode.APPEND, session.getTasks().get(0).getUpdateMode());
+
+        // put a dumby and verify the modified updateMode remains
+        update = "{\"task\": {}}";
+        put("/rest/imports/0/tasks/0", update, MediaType.APPLICATION_JSON.toString());
+        session = importer.getContext(0);
+        assertEquals(UpdateMode.APPEND, session.getTasks().get(0).getUpdateMode());
     }
 
     public void testPutItemSRS() throws Exception {

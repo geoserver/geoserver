@@ -172,9 +172,7 @@ public class ImportJSONWriter {
         json.key("state").value(task.getState());
 
         if (expand > 0) {
-            if (task.getUpdateMode() != null) {
-                json.key("updateMode").value(task.getUpdateMode().name());
-            }
+            json.key("updateMode").value(task.getUpdateMode().name());
     
             //data (used to be source)
             ImportData data = task.getData();

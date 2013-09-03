@@ -185,6 +185,10 @@ public class ImportJSONReader {
         }
         if (json.has("updateMode")) {
             task.setUpdateMode(UpdateMode.valueOf(json.getString("updateMode").toUpperCase()));
+        } else {
+            // if it hasn't been specified by the request, set this to null
+            // or else it's possible to overwrite an existing setting
+            task.setUpdateMode(null);
         }
 
         JSONObject data = null;

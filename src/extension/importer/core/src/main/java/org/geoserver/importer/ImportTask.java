@@ -71,7 +71,7 @@ public class ImportTask implements Serializable {
     boolean direct;
 
     /**
-     * how data should be applied to the target, during ingest/indirecet import
+     * how data should be applied to the target, during ingest/indirect import
      */
     UpdateMode updateMode;
 
@@ -112,9 +112,11 @@ public class ImportTask implements Serializable {
     transient volatile int numberProcessed;
 
     public ImportTask() {
+        updateMode = UpdateMode.CREATE;
     }
 
     public ImportTask(ImportData data) {
+        this();
         this.data = data;
     }
 

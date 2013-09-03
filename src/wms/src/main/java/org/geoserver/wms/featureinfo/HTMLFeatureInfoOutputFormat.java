@@ -53,7 +53,7 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
 
     private static Configuration templateConfig;
     
-    private static DirectTemplateFeatureCollectionFactory tfcFactory = new DirectTemplateFeatureCollectionFactory();
+    private static DirectTemplateFeatureCollectionFactory tfcFactory = new DirectTemplateFeatureCollectionFactory(true);
 
     static {
         // initialize the template engine, this is static to maintain a cache

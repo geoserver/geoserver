@@ -31,7 +31,8 @@
   <modules>
     <module>api</module>
     <module>core</module>
-    <module>simple-store</module>
+    <module>simple-store</module>    
+    <module>web-csw</module>
   </modules>
 
 </project>

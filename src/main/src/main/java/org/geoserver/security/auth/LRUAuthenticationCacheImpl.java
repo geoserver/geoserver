@@ -7,9 +7,7 @@
 package org.geoserver.security.auth;
 
 import java.util.HashSet;
-import java.util.Map.Entry;
 import java.util.Set;
-import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -40,41 +38,14 @@ public class LRUAuthenticationCacheImpl implements AuthenticationCache {
     protected final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock(true);
     protected final Lock readLock = readWriteLock.readLock();
     protected final Lock writeLock = readWriteLock.writeLock();
-    protected final Timer timer = new Timer(true);
 
     
-    /**
-     * Clean up task is run every 60 seconds
-     */
-    private static final int DEFAULT_MILLIS_BETWEEN_REMOVE_EXPIRED = 60 * 1000;
     static Logger LOGGER = Logging.getLogger("org.geoserver.security");
     
     /**
      * Timer task to remove unused entries
      * 
      */
-    TimerTask removeExpiredTask = new TimerTask() {
-        @Override
-        public void run() {
-            LOGGER.fine("Start searching for expired authentication tokens");
-            writeLock.lock();
-            try {
-                Set<AuthenticationCacheKey> toBeRemoved = new HashSet<AuthenticationCacheKey>();
-                long currentTime=System.currentTimeMillis();
-                for (Entry<AuthenticationCacheKey, AuthenticationCacheEntry> e: cache.entrySet()) {
-                    if (e.getValue().hasExpired(currentTime))
-                        toBeRemoved.add(e.getKey());
-                }
-                LOGGER.fine("Number of expired authentication tokens found: " + toBeRemoved.size());
-                for (AuthenticationCacheKey key: toBeRemoved)
-                    cache.remove(key);                
-            } finally {
-                writeLock.unlock();
-            }
-            LOGGER.fine("End searching for expired authentication tokens");
-        }
-        
-    };
 
     public LRUAuthenticationCacheImpl(int maxEntries) {
         this(DEFAULT_IDLE_TIME, DEFAULT_LIVE_TIME, maxEntries);
@@ -86,7 +57,6 @@ public class LRUAuthenticationCacheImpl implements AuthenticationCache {
         this.timeToLiveSeconds = timeToLiveSeconds;
         this.maxEntries = maxEntries;
         cache = new LRUCache<AuthenticationCacheKey, AuthenticationCacheEntry>(maxEntries);
-        timer.schedule(removeExpiredTask,DEFAULT_MILLIS_BETWEEN_REMOVE_EXPIRED,DEFAULT_MILLIS_BETWEEN_REMOVE_EXPIRED );
     }
 
     public int getTimeToIdleSeconds() {
@@ -190,7 +160,4 @@ public class LRUAuthenticationCacheImpl implements AuthenticationCache {
         put(filterName,cacheKey,auth,timeToIdleSeconds,timeToLiveSeconds);
     }
 
-    public void runRemoveExpiredTaskSynchron() {
-        removeExpiredTask.run();
-    }
 }

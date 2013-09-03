@@ -21,6 +21,10 @@ public class CSWInfoImpl extends ServiceInfoImpl implements CSWInfo {
     private static final long serialVersionUID = -986573241436434750L;
     
     boolean canonicalSchemaLocation;
+    
+    public CSWInfoImpl(){
+        
+    }
 
     @Override
     public boolean isCanonicalSchemaLocation() {

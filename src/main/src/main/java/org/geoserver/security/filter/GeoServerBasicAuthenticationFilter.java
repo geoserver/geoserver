@@ -121,10 +121,13 @@ public class GeoServerBasicAuthenticationFilter extends GeoServerCompositeFilter
             buff.append(getName());
             String digestString = null;
             try {
-                digestString = new String(Hex.encode(digest.digest(buff.toString().getBytes("utf-8"))));
+                MessageDigest md = (MessageDigest) digest.clone();
+                digestString = new String(Hex.encode(md.digest(buff.toString().getBytes("utf-8"))));
             } catch (UnsupportedEncodingException e) {
                 throw new RuntimeException(e);
-            }        
+            } catch (CloneNotSupportedException e) {
+                throw new RuntimeException(e);
+            }
             buff = new StringBuffer(username);
             buff.append(":");
             buff.append(digestString);

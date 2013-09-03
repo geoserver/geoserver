@@ -9,27 +9,8 @@
             <directory>release/target/dependency</directory>
             <outputDirectory></outputDirectory>
             <includes>
-                <include>csw-*.jar</include>
-                <include>gt-app-schema-resolver-*.jar</include>
-                <include>gt-complex-*.jar</include>
-                <include>gt-xsd-csw-*.jar</include>
-                <include>net.opengis.csw-*.jar</include>
-                <include>iso-19139-2007-1.0.0-1.jar</include>
-                <include>ows-1.0-1.0.0-2.jar</include>
-                <include>xlink-1.0-1.0.0-3.jar</include>
-                <include>filter-1.1-1.1.1-2.jar</include>
-                <include>gml-3.1-3.1.1-4.jar</include>
-                <include>gml-3.2-3.2.1-1.jar</include>
-            </includes>
-            <excludes>
-                <exclude>*-tests.jar</exclude>
-            </excludes>
-        </fileSet>
-        <fileSet>
-            <directory>release/target/dependency</directory>
-            <outputDirectory></outputDirectory>
-            <includes>
-                <include>csw-*.jar</include>
+                <include>csw-*.jar</include>		
+                <include>web-csw-*.jar</include>
                 <include>gt-app-schema-resolver-*.jar</include>
                 <include>gt-complex-*.jar</include>
                 <include>gt-xsd-csw-*.jar</include>

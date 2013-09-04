@@ -967,6 +967,10 @@ public class GeoServerTileLayer extends TileLayer {
      */
     @Override
     public int getExpireClients(int zoomLevel) {
+    	if (info.getExpireClients()>0) {
+    		return info.getExpireClients();
+    	}
+    	
         if(layerInfo != null) {
             return getLayerMaxAge(layerInfo);
         } else if(layerGroupInfo != null) {

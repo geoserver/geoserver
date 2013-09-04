@@ -29,6 +29,10 @@ public interface GeoServerTileLayerInfo extends Serializable, Cloneable {
     public abstract void setMetaTilingY(int metaTilingY);
 
     public abstract void setMetaTilingX(int metaTilingX);
+    
+    public abstract int getExpireClients();
+    
+    public abstract void setExpireClients(int seconds);
 
     /**
      * Derived property from {@link #getParameterFilters()}, returns the configured allowable values

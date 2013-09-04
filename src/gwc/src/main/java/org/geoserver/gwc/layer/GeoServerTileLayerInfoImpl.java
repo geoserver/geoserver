@@ -85,8 +85,7 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
     @SuppressWarnings("unused")
     transient private List<ExpirationRule> expireCacheList;
 
-    @SuppressWarnings("unused")
-    transient private int expireClients;
+    private int expireClients;
 
     @SuppressWarnings("unused")
     transient private List<ExpirationRule> expireClientsList;
@@ -250,6 +249,16 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
     public void setMetaTilingX(int metaTilingX) {
         checkArgument(metaTilingX > 0);
         metaWidthHeight[0] = metaTilingX;
+    }
+    
+    @Override
+    public int getExpireClients() {
+    	return expireClients;
+    }
+    
+    @Override
+    public void setExpireClients(int seconds) {
+    	expireClients = seconds;
     }
 
     /**

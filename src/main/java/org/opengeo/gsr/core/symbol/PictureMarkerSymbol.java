@@ -79,7 +79,7 @@ public class PictureMarkerSymbol extends MarkerSymbol {
         this.url = url;
         this.contentType = contentType;
         this.color = color;
-        this.imageData = Base64.encodeBytes(rawData);
+        this.imageData = Base64.encodeBytes(rawData, Base64.DONT_BREAK_LINES);
         this.width = width;
         this.height = height;
     }

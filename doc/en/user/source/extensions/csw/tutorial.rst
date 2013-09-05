@@ -14,7 +14,7 @@ In the :file:`<data_dir>/csw` directory, create a new file named :file:`MD_Metad
   identificationInfo.AbstractMD_Identification.citation.CI_Citation.title.CharacterString=title
   identificationInfo.AbstractMD_Identification.descriptiveKeywords.MD_Keywords.keyword.CharacterString=keywords	
   identificationInfo.AbstractMD_Identification.abstract.CharacterString=abstract
-  $dateStamp.Date= if_then_else ( isNull("metadata.csw.date") , 'Unknown', "metadata.csw.date")
+  $dateStamp.Date= if_then_else ( isNull("metadata.date") , 'Unknown', "metadata.date")
   hierarchyLevel.MD_ScopeCode.@codeListValue='http://purl.org/dc/dcmitype/Dataset'
   $contact.CI_ResponsibleParty.individualName.CharacterString='John Smith'
 

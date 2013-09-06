@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+    <bean id="eventHelper" class="com.fsi.geoserver.wfs.StaticJMSEventHelper" init-method="init" destroy-method="destroy">
+        <property name="propertiesFileName" value="amqp.properties" />        
+        <property name="geoServer" ref="geoServer" />
+    </bean>
+    
+    <bean id="publishCallback" class="com.fsi.geoserver.wfs.PublishCallback" init-method="init" destroy-method="destroy">
+        <constructor-arg ref="catalog" />
+        <constructor-arg ref="xmlConfiguration-1.1" />
+        <constructor-arg ref="eventHelper" />
+        <property name="objectName" value="mil.navy.spawar.c2rpc:service=GeoServer,plugin=WfsNotify,component=PublishCallback" />
+    </bean>
+
+    <bean id="triggerFileWatcherFactory" class="com.fsi.geoserver.wfs.TriggerFileWatcherFactory">
+        <constructor-arg ref="catalog" />
+    </bean>
+
+    <bean id="triggerFileWatcher" class="com.fsi.geoserver.wfs.TriggerFileWatcher" factory-bean="triggerFileWatcherFactory"
+        factory-method="createTriggerFileWatcher" />
+
+    <bean id="triggerManager" class="com.fsi.geoserver.wfs.TriggerManager">
+        <constructor-arg ref="catalog" />
+        <constructor-arg ref="triggerFileWatcher" />
+    </bean>
+
+    <bean id="wfsNotify" class="com.fsi.geoserver.wfs.WFSNotify" init-method="init">
+        <property name="catalog" ref="catalog" />
+        <property name="triggerManager" ref="triggerManager" />
+        <property name="callback" ref="publishCallback" />
+        <property name="eventHelper" ref="eventHelper" />
+    </bean>
+
+</beans>

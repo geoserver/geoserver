@@ -1,0 +1,10 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.geoserver.community</groupId>
+    <artifactId>wfs-notification-api</artifactId>
+    <name>WFS Notification plugin (extension API)</name>
+    <version>2.4-SNAPSHOT</version>
+
+</project>

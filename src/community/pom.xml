@@ -277,5 +277,11 @@
         <module>geopkg</module>
       </modules>
     </profile>
+    <profile>
+      <id>wfs-notification</id>
+      <modules>
+        <module>wfs-notification</module>
+      </modules>
+    </profile>
   </profiles>
 </project>

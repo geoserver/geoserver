@@ -1,0 +1,26 @@
+<triggers xmlns="http://www.forwardslope.com/c2rpc/triggers" xmlns:track="http://www.example.com/track"
+    xmlns:foo="http://www.example.com/foo">
+    <feature type="track:Track">
+        <trigger silent="true">
+            <!-- default foreign is same as key -->
+            <link key="localKey" dest="foo:OtherType" propagateDelete="false" />
+            <link key="localKey2" foreign="foreignKey" dest="foo:ThirdType">
+                <trigger> <!-- testing nested triggers -->
+                    <link key="localKey" dest="foo:OtherType" />
+                    <link key="localKey2" foreign="foreignKey" dest="foo:ThirdType" />
+                </trigger>
+            </link>
+        </trigger>
+    </feature>
+    <feature type="foo:bishop">
+        <trigger>
+            <link key="joinId" foreign="boardId" dest="foo:board" propagateDelete="false">
+                <trigger />
+            </link>
+            <link key="boardId" foreign="joinId" dest="foo:knight" />
+        </trigger>
+        <trigger>
+            <link key="joinId" dest="foo:knight" />
+        </trigger>
+    </feature>
+</triggers>

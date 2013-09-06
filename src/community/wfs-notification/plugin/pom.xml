@@ -51,6 +51,11 @@
     </build>
     <dependencies>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>wfs-notification-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.geoserver</groupId>
             <artifactId>main</artifactId>
         </dependency>
@@ -82,7 +87,7 @@
         <dependency>
             <groupId>org.geoserver</groupId>
             <artifactId>wfs</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${project.version}</version>
             <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>

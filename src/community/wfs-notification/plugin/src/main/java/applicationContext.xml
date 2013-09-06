@@ -8,11 +8,10 @@
         <property name="geoServer" ref="geoServer" />
     </bean>
     
-    <bean id="publishCallback" class="com.fsi.geoserver.wfs.PublishCallback" init-method="init" destroy-method="destroy">
+    <bean id="publishCallback" class="com.fsi.geoserver.wfs.GMLNotificationSerializer" init-method="init" destroy-method="destroy">
         <constructor-arg ref="catalog" />
         <constructor-arg ref="xmlConfiguration-1.1" />
-        <constructor-arg ref="eventHelper" />
-        <property name="objectName" value="mil.navy.spawar.c2rpc:service=GeoServer,plugin=WfsNotify,component=PublishCallback" />
+        <property name="objectName" value="mil.navy.spawar.c2rpc:service=GeoServer,plugin=WfsNotify,component=NotificationSerializer" />
     </bean>
 
     <bean id="triggerFileWatcherFactory" class="com.fsi.geoserver.wfs.TriggerFileWatcherFactory">
@@ -30,8 +29,6 @@
     <bean id="wfsNotify" class="com.fsi.geoserver.wfs.WFSNotify" init-method="init">
         <property name="catalog" ref="catalog" />
         <property name="triggerManager" ref="triggerManager" />
-        <property name="callback" ref="publishCallback" />
-        <property name="eventHelper" ref="eventHelper" />
     </bean>
 
 </beans>

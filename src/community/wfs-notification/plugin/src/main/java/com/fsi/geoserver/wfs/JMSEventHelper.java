@@ -16,8 +16,9 @@ import javax.jms.Session;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.geoserver.wfs.notification.NotificationPublisher;
 
-public abstract class JMSEventHelper implements EventHelper {
+public abstract class JMSEventHelper implements NotificationPublisher {
     private static final Log LOG = LogFactory.getLog(JMSEventHelper.class);
     private static final long DROPPED_WARN_MS = 20000;
     private static final long SESSION_FAIL_MS = 5000;
@@ -130,7 +131,7 @@ public abstract class JMSEventHelper implements EventHelper {
     protected abstract JMSInfo getJMSInfo();
     
     @Override
-    public void fireNotification(String byteString) {
+    public void publish(String byteString) {
         JMSInfo info; // Guard against reference changing without synchronizing
         
         // Request JMS sessions until we find one that isn't closed 

@@ -7,4 +7,11 @@
     <name>WFS Notification plugin (extension API)</name>
     <version>2.4-SNAPSHOT</version>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-opengis</artifactId>
+            <version>10-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 </project>

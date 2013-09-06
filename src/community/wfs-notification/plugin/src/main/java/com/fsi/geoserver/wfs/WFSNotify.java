@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
@@ -21,11 +22,14 @@ import org.apache.commons.logging.LogFactory;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wfs.TransactionEvent;
 import org.geoserver.wfs.TransactionEventType;
 import org.geoserver.wfs.TransactionListener;
 import org.geoserver.wfs.TransactionPlugin;
 import org.geoserver.wfs.WFSException;
+import org.geoserver.wfs.notification.NotificationPublisher;
+import org.geoserver.wfs.notification.NotificationSerializer;
 import org.geotools.data.FeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
@@ -136,8 +140,9 @@ public class WFSNotify implements TransactionPlugin, TransactionListener, Dispos
 
     protected Catalog catalog;
     protected TriggerManager tm;
-    protected PublishCallback cb;
-    protected EventHelper eh;
+    protected GMLNotificationSerializer cb;
+    protected NotificationSerializer serializer;
+    protected Collection<NotificationPublisher> publishers;
     protected final boolean publishDebug = Boolean.parseBoolean(System
         .getProperty("com.fsi.c2rpc.geoserver.wsn.PublishCallback.debug"));
 
@@ -152,25 +157,55 @@ public class WFSNotify implements TransactionPlugin, TransactionListener, Dispos
         this.tm = tm;
     }
 
-    public void setCallback(PublishCallback cb) {
+    public void setCallback(GMLNotificationSerializer cb) {
         this.cb = cb;
-    }
-
-    public void setEventHelper(EventHelper eh) {
-        this.eh = eh;
     }
 
     public void init() {
         if(tm == null) {
             throw new IllegalStateException("TriggerManager was not set, which is required.");
         }
+        List<NotificationSerializer> serializers = GeoServerExtensions.extensions(NotificationSerializer.class);
+        if(serializers.isEmpty()) {
+            LOG.warn("No WFS notification serializers found.");
+        } else {
+            if(serializers.size() > 1) {
+                StringBuilder msg = new StringBuilder("Multiple WFS notification serializers found:\n");
+                for(NotificationSerializer serializer : serializers) {
+                    msg.append('\t').append(serializer.getClass().getName()).append('\n');
+                }
+                msg.append("Using first.");
+                LOG.warn(msg);
+            }
+            serializer = serializers.get(0);
+        }
+        
+        publishers = GeoServerExtensions.extensions(NotificationPublisher.class);
+        
+        if(publishers.isEmpty()) {
+            LOG.info("No notification publishers found.");
+        } else {
+            StringBuilder msg = new StringBuilder("Using the following WFS notification publisher(s):\n");
+            for(NotificationPublisher publisher : publishers) {
+                msg.append('\t').append(publisher.getClass().getName()).append('\n');
+            }
+            LOG.info(msg);
+        }
     }
 
     public void dataStoreChange(TransactionEvent event) throws WFSException {
         try {
             // don't notify if we don't have to.
-            if(!(eh.isReady() || publishDebug)) {
-                LOG.debug("Broker Not Configured, Skip Notify.");
+            boolean ready = false;
+            for(NotificationPublisher publisher : publishers) {
+                ready |= publisher.isReady();
+            }
+            if(!(ready || publishDebug)) {
+                LOG.debug("No publishers ready, skipping notification.");
+                return;
+            }
+            
+            if(serializer == null) {
                 return;
             }
 
@@ -346,7 +381,7 @@ public class WFSNotify implements TransactionPlugin, TransactionListener, Dispos
                     @Override
                     public void triggerEvent(Feature f) {
                         if(ts.checkFeature(f)) {
-                            cb.triggerEvent(f);
+                            WFSNotify.this.triggerEvent(f);
                         }
                     }
                 }, ts.getTransactionCache());
@@ -378,7 +413,7 @@ public class WFSNotify implements TransactionPlugin, TransactionListener, Dispos
                     while(i.hasNext()) {
                         Feature f = i.next();
                         if(ts.checkFeature(f)) {
-                            cb.triggerEvent(f);
+                            triggerEvent(f);
                         }
                     }
                 } finally {
@@ -392,10 +427,30 @@ public class WFSNotify implements TransactionPlugin, TransactionListener, Dispos
         for(Entry<Name, Set<Identifier>> ent : ts.getPotentiallyModified().entrySet()) {
             Name typeName = ent.getKey();
             for(Identifier id : ent.getValue()) {
-                cb.triggerDeleteEvent(typeName, id);
+                triggerDeleteEvent(typeName, id);
             }
         }
 
+    }
+
+    private void triggerEvent(Feature f) {
+        if(serializer != null) {
+            publishEvent(serializer.serializeInsertOrUpdate(f));
+        }
+    }
+
+    private void triggerDeleteEvent(Name typeName, Identifier id) {
+        if(serializer != null) {
+            publishEvent(serializer.serializeDelete(typeName, id));
+        }
+    }
+    
+    private void publishEvent(String msg) {
+        for(NotificationPublisher publisher : publishers) {
+            if(publisher.isReady()) {
+                publisher.publish(msg);
+            }
+        }
     }
 
     public int getPriority() {

@@ -35,6 +35,8 @@ import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.wfs.WFSException;
+import org.geoserver.wfs.notification.NotificationPublisher;
+import org.geoserver.wfs.notification.NotificationSerializer;
 import org.geotools.gml3.GML;
 import org.geotools.math.Statistics;
 import org.geotools.xml.Configuration;
@@ -45,14 +47,13 @@ import org.opengis.filter.identity.Identifier;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.NamespaceSupport;
 
-public class PublishCallback implements PublishCallbackMBean, CatalogListener {
-    private static final Log LOG = LogFactory.getLog(PublishCallback.class);
+public class GMLNotificationSerializer implements PublishCallbackMBean, CatalogListener, NotificationSerializer {
+    private static final Log LOG = LogFactory.getLog(GMLNotificationSerializer.class);
     private static final SAXTransformerFactory STF = (SAXTransformerFactory) TransformerFactory.newInstance();
     private static final boolean isDebug = Boolean.parseBoolean(System.getProperty("com.fsi.c2rpc.geoserver.wsn.PublishCallback.debug"));
 
     private final Catalog catalog;
     private final Configuration xmlConfig;
-    private final EventHelper eh;
     private AtomicLong catalogModCount = new AtomicLong(0);
     
     private final ThreadLocal<Long> catalogModCountLocal = new ThreadLocal<Long>() {
@@ -97,10 +98,9 @@ public class PublishCallback implements PublishCallbackMBean, CatalogListener {
     private Throwable lastFailure;
     private ObjectName name;
 
-    public PublishCallback(Catalog catalog, Configuration xmlConfig, EventHelper eh) {
+    public GMLNotificationSerializer(Catalog catalog, Configuration xmlConfig) {
         this.catalog = catalog;
         this.xmlConfig = xmlConfig;
-        this.eh = eh;
         resetStats();
     }
     
@@ -147,7 +147,7 @@ public class PublishCallback implements PublishCallbackMBean, CatalogListener {
         }
     }
 
-    String getDeleteRawMessage(Identifier id, QName typeName) {
+    public String getDeleteRawMessage(QName typeName, Identifier id) {
         StringBuilder builder = new StringBuilder(1024);
         builder.append(
             "<wfs:Delete xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:")
@@ -225,19 +225,22 @@ public class PublishCallback implements PublishCallbackMBean, CatalogListener {
         }
     }
 
-    public void triggerEvent(Feature f) {
+    /* (non-Javadoc)
+     * @see com.fsi.geoserver.wfs.NotificationSerializer#serializeInsertOrUpdate(org.opengis.feature.Feature)
+     */
+    public String serializeInsertOrUpdate(Feature f) {
         try {
             String rawMessage;
-    
             rawMessage = getInsertUpdateRawMessage(f);
-    
             debugMessage(rawMessage);
-            eh.fireNotification(rawMessage);
+            
+            return rawMessage;
         } catch(Throwable t) {
             onFailure(t);
         } finally {
             updates.incrementAndGet();
         }
+        return null;
     }
 
     public void debugMessage(String rawMessage) throws TransformerFactoryConfigurationError {
@@ -252,17 +255,21 @@ public class PublishCallback implements PublishCallbackMBean, CatalogListener {
         }
     }
 
-    public void triggerDeleteEvent(Name typeName, Identifier id) {
+    /* (non-Javadoc)
+     * @see com.fsi.geoserver.wfs.NotificationSerializer#serializeDelete(org.opengis.feature.type.Name, org.opengis.filter.identity.Identifier)
+     */
+    public String serializeDelete(Name typeName, Identifier id) {
         try {
             QName qname = nameToQName(typeName);
-            String rawMessage = getDeleteRawMessage(id, qname);
+            String rawMessage = getDeleteRawMessage(qname, id);
             debugMessage(rawMessage);
-            eh.fireNotification(rawMessage);
+            return rawMessage;
         } catch(Throwable t) {
             onFailure(t);
         } finally {
             deletes.incrementAndGet();
         }
+        return null;
     }
 
     protected void onFailure(Throwable t) {

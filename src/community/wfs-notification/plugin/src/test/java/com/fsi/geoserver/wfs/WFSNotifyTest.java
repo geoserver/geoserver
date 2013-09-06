@@ -36,7 +36,7 @@ public class WFSNotifyTest extends WFSTestSupport implements TestConstants {
 
     @Test
     public void testDelete() throws Exception {
-        PublishCallback cb = (PublishCallback) applicationContext.getBean("publishCallback", PublishCallback.class);
+        GMLNotificationSerializer cb = (GMLNotificationSerializer) applicationContext.getBean("publishCallback", GMLNotificationSerializer.class);
 
         FeatureType sft =
             DataUtilities.createType("urn:c2rpc:test", "TestType", "");
@@ -58,7 +58,7 @@ public class WFSNotifyTest extends WFSTestSupport implements TestConstants {
             new QName(sft.getName().getNamespaceURI(), sft.getName()
                 .getLocalPart(), "c2rpc");
 
-        String xml = cb.getDeleteRawMessage(feature.getIdentifier(), typeName);
+        String xml = cb.getDeleteRawMessage(typeName, feature.getIdentifier());
         TransformerFactory tf = TransformerFactory.newInstance();
         DOMResult result = new DOMResult();
         tf.newTransformer().transform(new StreamSource(new StringReader(xml)),
@@ -75,6 +75,6 @@ public class WFSNotifyTest extends WFSTestSupport implements TestConstants {
         assertEquals(Node.TEXT_NODE, text.getNodeType());
         assertEquals(feature.getIdentifier().getID(), text.getTextContent()
             .trim());
-        cb.triggerDeleteEvent(feature.getType().getName(), feature.getIdentifier());
+        cb.serializeDelete(feature.getType().getName(), feature.getIdentifier());
     }
 }

@@ -12,7 +12,7 @@ public class JMSTester {
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
             String line;
             while((line = br.readLine()) != null) {
-                eh.fireNotification(line);
+                eh.publish(line);
             }
         } finally {
             eh.destroy();

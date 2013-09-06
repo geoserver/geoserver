@@ -20,6 +20,10 @@ import com.forwardslope.c2rpc.triggers.Trigger;
 
 public class TriggerFileWatcherTest extends TestCase implements TestConstants {
 
+    private static final QName FOREIGN_KEY = new QName(NS_FOO, "foreignKey");
+    private static final QName LOCAL_KEY2 = new QName(NS_TRACK, "localKey2");
+    private static final QName LOCAL_KEY = new QName(NS_TRACK, "localKey");
+
     public void testLoadTriggers() throws IOException, SAXException {
         TriggerFileWatcher triggers = new TriggerFileWatcher(10000, WFSNotifyTest.class.getResource("triggers.xml"));
         Map<QName, List<Trigger>> map =
@@ -35,14 +39,14 @@ public class TriggerFileWatcherTest extends TestCase implements TestConstants {
 
         Link fl = t.getLink().get(0);
         assertEquals(0, fl.getTrigger().size());
-        assertEquals("localKey", fl.getKey());
-        assertEquals("localKey", fl.getForeign());
+        assertEquals(LOCAL_KEY, fl.getKey());
+        assertEquals(LOCAL_KEY, fl.getForeign());
         assertEquals(QN_OTHERTYPE, fl.getDest());
 
         fl = t.getLink().get(1);
         assertEquals(1, fl.getTrigger().size());
-        assertEquals("localKey2", fl.getKey());
-        assertEquals("foreignKey", fl.getForeign());
+        assertEquals(LOCAL_KEY2, fl.getKey());
+        assertEquals(FOREIGN_KEY, fl.getForeign());
         assertEquals(QN_THIRDTYPE, fl.getDest());
 
         Trigger t2 = fl.getTrigger().get(0);
@@ -51,14 +55,14 @@ public class TriggerFileWatcherTest extends TestCase implements TestConstants {
 
         fl = t2.getLink().get(0);
         assertEquals(0, fl.getTrigger().size());
-        assertEquals("localKey", fl.getKey());
-        assertEquals("localKey", fl.getForeign());
+        assertEquals(LOCAL_KEY, fl.getKey());
+        assertEquals(LOCAL_KEY, fl.getForeign());
         assertEquals(QN_OTHERTYPE, fl.getDest());
 
         fl = t2.getLink().get(1);
         assertEquals(0, fl.getTrigger().size());
-        assertEquals("localKey2", fl.getKey());
-        assertEquals("foreignKey", fl.getForeign());
+        assertEquals(LOCAL_KEY2, fl.getKey());
+        assertEquals(FOREIGN_KEY, fl.getForeign());
         assertEquals(QN_THIRDTYPE, fl.getDest());
     }
 

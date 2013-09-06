@@ -14,6 +14,8 @@ import org.geotools.data.FeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.feature.NameImpl;
+import org.geotools.filter.AttributeExpressionImpl;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
 import org.opengis.feature.type.FeatureType;
@@ -37,10 +39,10 @@ public class TriggerManager {
         }
         
         public void addFeature(Feature f, Link l) {
-            Property property = f.getProperty(l.getKey());
+            Property property = f.getProperty(new NameImpl(l.getKey()));
             if (property == null || property.getValue() == null)
                 return;
-            branches.add(FF.equals(FF.property(l.getForeign()), FF.literal(property.getValue())));
+            branches.add(FF.equals(new AttributeExpressionImpl(new NameImpl(l.getForeign())), FF.literal(property.getValue())));
         }
         
         public Filter build() {

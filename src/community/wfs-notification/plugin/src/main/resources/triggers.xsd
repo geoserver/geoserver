@@ -32,8 +32,8 @@
             <sequence>
                 <element ref="tns:trigger" minOccurs="0" maxOccurs="unbounded" />
             </sequence>
-            <attribute name="key" type="string" />
-            <attribute name="foreign" type="string" />
+            <attribute name="key" type="QName" />
+            <attribute name="foreign" type="QName" />
             <attribute name="dest" type="QName" />
             <attribute name="propagateDelete" type="boolean" default="true" />
         </complexType>

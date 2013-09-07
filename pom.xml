@@ -17,12 +17,12 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>main</artifactId>
-      <version>${project.version}</version>
+      <version>${gs.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>web-core</artifactId>
-      <version>${project.version}</version>
+      <version>${gs.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opengeo.geoserver</groupId>
@@ -82,7 +82,7 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>main</artifactId>
-      <version>${project.version}</version>
+      <version>${gs.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
@@ -96,7 +96,7 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>wms</artifactId>
-      <version>${project.version}</version>
+      <version>${gs.version}</version>
       <scope>test</scope>
     </dependency>
     

@@ -63,7 +63,6 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
                             + " supported mymetype are: "
                             + Arrays.toString(JSONType.getSupportedTypes()));
         }
-
     }
 
     /**
@@ -77,7 +76,11 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
      * Returns the mime type
      */
     public String getMimeType(Object value, Operation operation) throws ServiceException {
-        return getOutputFormat();
+        if(jsonp) {
+            return JSONType.JSONP.getMimeType();
+        } else {
+            return JSONType.JSON.getMimeType();
+        }
     }
 
     @Override

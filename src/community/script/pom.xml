@@ -87,11 +87,54 @@
 
  <modules>
   <module>core</module>
-  <module>bsh</module>
-  <module>groovy</module>
-  <module>js</module>
-  <module>py</module>
-  <module>rb</module>
  </modules>
+
+ <profiles>
+   <profile>
+     <id>script-bsh</id>
+     <activation>
+       <activeByDefault>true</activeByDefault>
+     </activation>
+     <modules>
+       <module>bsh</module>
+     </modules>
+   </profile>
+   <profile>
+     <id>script-groovy</id>
+     <activation>
+       <activeByDefault>true</activeByDefault>
+     </activation>
+     <modules>
+       <module>groovy</module>
+     </modules>
+   </profile>
+   <profile>
+     <id>script-py</id>
+     <activation>
+       <activeByDefault>true</activeByDefault>
+     </activation>
+     <modules>
+       <module>py</module>
+     </modules>
+   </profile>
+   <profile>
+     <id>script-js</id>
+     <activation>
+       <activeByDefault>true</activeByDefault>
+     </activation>
+     <modules>
+       <module>js</module>
+     </modules>
+   </profile>
+   <profile>
+     <id>script-rb</id>
+     <activation>
+       <activeByDefault>true</activeByDefault>
+     </activation>
+     <modules>
+       <module>rb</module>
+     </modules>
+   </profile>
+ </profiles>
 
 </project>

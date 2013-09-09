@@ -453,7 +453,7 @@ public class GetFeatureInfo {
             if(dataCRS.getCoordinateSystem().getDimension() == 3 && requestedCRS.getCoordinateSystem().getDimension() == 2) {
                 queryEnvelope = JTS.transformTo3D(queryEnvelope, dataCRS, true, 10);
             } else {
-                queryEnvelope.transform(dataCRS, true);
+                queryEnvelope = queryEnvelope.transform(dataCRS, true);
             }
         }
 

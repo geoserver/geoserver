@@ -45,6 +45,7 @@ import freemarker.template.SimpleHash;
 import freemarker.template.TemplateCollectionModel;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
+import freemarker.template.TemplateSequenceModel;
 
 /**
  * Wraps a {@link Feature} in the freemarker {@link BeansWrapper} interface
@@ -512,7 +513,7 @@ public class FeatureWrapper extends BeansWrapper {
      * @author Niels Charlier, Curtin University of Technology
      *
      */
-    public static interface TemplateFeatureCollectionFactory {
+    public static interface TemplateFeatureCollectionFactory<T extends TemplateCollectionModel & TemplateSequenceModel> {
         public TemplateCollectionModel createTemplateFeatureCollection(FeatureCollection collection, BeansWrapper wrapper) ;            
     }
     
@@ -523,10 +524,10 @@ public class FeatureWrapper extends BeansWrapper {
      * @author Niels Charlier, Curtin University of Technology
      *
      */
-    protected static class CopyTemplateFeatureCollectionFactory implements TemplateFeatureCollectionFactory {
+    protected static class CopyTemplateFeatureCollectionFactory implements TemplateFeatureCollectionFactory<CollectionModel> {
                 
         @SuppressWarnings("unchecked")
-        public TemplateCollectionModel createTemplateFeatureCollection(FeatureCollection collection, BeansWrapper wrapper) {
+        public CollectionModel createTemplateFeatureCollection(FeatureCollection collection, BeansWrapper wrapper) {
             return new CollectionModel(DataUtilities.list(collection), wrapper);
         }
     }

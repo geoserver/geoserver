@@ -8,10 +8,7 @@ import static org.junit.Assert.*;
 
 import java.io.StringWriter;
 
-import junit.framework.TestCase;
-
 import org.geotools.data.DataUtilities;
-import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.junit.Before;
@@ -55,7 +52,11 @@ public class FeatureWrapperTest {
         );
         cfg = new Configuration();
         cfg.setClassForTemplateLoading(getClass(), "");
-        cfg.setObjectWrapper(new FeatureWrapper());
+        cfg.setObjectWrapper(createWrapper());
+    }
+    
+    public FeatureWrapper createWrapper() {
+        return new FeatureWrapper();
     }
 
     @Test
@@ -89,5 +90,15 @@ public class FeatureWrapperTest {
         //replace ',' with '.' for locales which use a comma for decimal point
         assertEquals("string=one\nint=1\ndouble=1.1\ngeom=POINT (1 1)\n",
             out.toString().replace(',', '.').replaceAll("\r\n", "\n").replaceAll("\r", "\n"));
+    }
+    
+    @Test
+    public void testFeatureSequence() throws Exception {
+        Template template = cfg.getTemplate("FeatureSequence.ftl");
+
+        StringWriter out = new StringWriter();
+        template.process(features, out);
+        
+        assertEquals("three\none\n3", out.toString().replaceAll("\r\n", "\n").replaceAll("\r", "\n"));
     }
 }

@@ -21,6 +21,7 @@ import org.springframework.ldap.test.LdapTestUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * 
@@ -71,6 +72,9 @@ public class LDAPAuthenticationProviderTest {
         LdapTestUtils
                 .destroyApacheDirectoryServer(LdapTestUtils.DEFAULT_PRINCIPAL,
                         LdapTestUtils.DEFAULT_PASSWORD);
+        if(SecurityContextHolder.getContext() != null) {
+            SecurityContextHolder.getContext().setAuthentication(null);
+        }
     }
 
     /**
@@ -138,6 +142,37 @@ public class LDAPAuthenticationProviderTest {
         createAuthenticationProvider();
 
         Authentication result = authProvider.authenticate(authentication);
+        assertEquals(2, result.getAuthorities().size());
+    }
+    
+    /**
+     * Test that authentication can be done using the couple userFilter and
+     * userFormat instead of userDnPattern, using placemarks in userFilter.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testUserFilterPlacemarks() throws Exception {
+        Assume.assumeTrue(LDAPTestUtils.initLdapServer(true, ldapServerUrl,
+                basePath));
+        // filter to extract user data
+        config.setUserFilter("(givenName={1})");
+        // username to bind to
+        config.setUserFormat("uid={0},ou=People,dc=example,dc=com");
+    
+        createAuthenticationProvider();
+    
+        Authentication result = authProvider.authenticate(authentication);
+        assertEquals(2, result.getAuthorities().size());
+    
+        // filter to extract user data
+        config.setUserFilter("(cn={0})");
+        // username to bind to
+        config.setUserFormat("uid={0},ou=People,dc=example,dc=com");
+    
+        createAuthenticationProvider();
+    
+        result = authProvider.authenticate(authentication);
         assertEquals(2, result.getAuthorities().size());
     }
 

@@ -4,10 +4,16 @@
  */
 package org.geoserver.catalog.rest;
 
-import static junit.framework.Assert.*;
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 
 import java.io.IOException;
+
+import net.sf.json.JSON;
+import net.sf.json.JSONObject;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
@@ -76,6 +82,25 @@ public class LayerTest extends CatalogRESTTestSupport {
         
         l = catalog.getLayerByName("cite:Buildings");
         assertEquals( "Forests", l.getDefaultStyle().getName() );
+    }
+    
+    @Test
+    public void testUpdateStyleJSON() throws Exception {
+        LayerInfo l = catalog.getLayerByName( "cite:Buildings" );
+        assertEquals( "Buildings", l.getDefaultStyle().getName() );
+        JSONObject json = (JSONObject) getAsJSON("/rest/layers/cite:Buildings.json");
+        // print(json);
+        JSONObject layer = (JSONObject) json.get("layer");
+        JSONObject style = (JSONObject) layer.get("defaultStyle");
+        style.put("name", "polygon");
+        style.put("href", "http://localhost:8080/geoserver/rest/styles/polygon.json");
+        String updatedJson = json.toString();
+        MockHttpServletResponse response = 
+                putAsServletResponse("/rest/layers/cite:Buildings", updatedJson, "application/json");
+        assertEquals( 200, response.getStatusCode() );
+
+        l = catalog.getLayerByName("cite:Buildings");
+        assertEquals( "polygon", l.getDefaultStyle().getName() );
     }
     
     @Test

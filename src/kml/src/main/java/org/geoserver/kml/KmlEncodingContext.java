@@ -15,6 +15,7 @@ import org.geoserver.kml.decorator.KmlDecoratorFactory;
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
 import org.geoserver.kml.sequence.CompositeList;
 import org.geoserver.kml.utils.LookAtOptions;
+import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
@@ -86,6 +87,8 @@ public class KmlEncodingContext {
     protected ServiceInfo service;
 
     protected int layerIndex;
+    
+    protected String mode;
 
     public final static ReferencedEnvelope WORLD_BOUNDS_WGS84 = new ReferencedEnvelope(-180, 180, -90, 90, DefaultGeographicCRS.WGS84);
     protected boolean liveIcons;
@@ -95,6 +98,7 @@ public class KmlEncodingContext {
         this.mapContent = fixViewport(mapContent);
         this.request = mapContent.getRequest();
         this.wms = wms;
+        this.mode = computeModeOption(request.getFormatOptions());
         this.descriptionEnabled = computeKMAttr();
         this.lookAtOptions = new LookAtOptions(request.getFormatOptions());
         this.placemarkForced = computeKmplacemark();
@@ -133,6 +137,11 @@ public class KmlEncodingContext {
         }
     }
     
+    private String computeModeOption(Map<String, String> rawKvp) {
+        String mode = KvpUtils.caseInsensitiveParam(rawKvp, "mode", null);
+        return mode;
+    }
+
     /**
      * Force the output to be in WGS84
      * @param mc
@@ -482,6 +491,10 @@ public class KmlEncodingContext {
 
     public Map<String, Style> getIconStyles() {
         return iconStyles;
+    }
+
+    public String getMode() {
+        return mode;
     }
 
 }

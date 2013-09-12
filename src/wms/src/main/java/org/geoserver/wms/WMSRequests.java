@@ -509,7 +509,9 @@ public class WMSRequests {
             sb.append(";");
         }
 
-        sb.setLength(sb.length());
+        if(sb.length() > 0) {
+            sb.setLength(sb.length() - 1);
+        }
     }
 
     /**

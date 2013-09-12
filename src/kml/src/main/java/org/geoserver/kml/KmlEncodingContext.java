@@ -24,6 +24,8 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
+import org.geotools.map.MapViewport;
+import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
@@ -90,7 +92,7 @@ public class KmlEncodingContext {
     protected Map<String, Style> iconStyles;
 
     public KmlEncodingContext(WMSMapContent mapContent, WMS wms, boolean kmz) {
-        this.mapContent = mapContent;
+        this.mapContent = fixViewport(mapContent);
         this.request = mapContent.getRequest();
         this.wms = wms;
         this.descriptionEnabled = computeKMAttr();
@@ -131,6 +133,23 @@ public class KmlEncodingContext {
         }
     }
     
+    /**
+     * Force the output to be in WGS84
+     * @param mc
+     * @return
+     */
+    private WMSMapContent fixViewport(WMSMapContent mc) {
+        MapViewport viewport = mc.getViewport();
+        if(!CRS.equalsIgnoreMetadata(viewport.getCoordinateReferenceSystem(), DefaultGeographicCRS.WGS84)) {
+            viewport.setCoordinateReferenceSystem(DefaultGeographicCRS.WGS84);
+            GetMapRequest req = mc.getRequest();
+            req.setSRS("EPSG:4326");
+            req.setBbox(viewport.getBounds());
+        }
+        
+        return mc;
+    }
+
     /**
      * Protected constructor used by WFS output format to create a fake kml encoding context
      */

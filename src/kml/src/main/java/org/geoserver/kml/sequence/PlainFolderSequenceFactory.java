@@ -161,7 +161,7 @@ public class PlainFolderSequenceFactory extends AbstractFolderSequenceFactory {
          * @return true: use just kml vectors, false: use raster result
          */
         boolean useVectorOutput(KmlEncodingContext context) {
-            // calculate kmscore to determine if we shoud write as vectors
+            // calculate kmscore to determine if we should write as vectors
             // or pre-render
             int kmscore = context.getKmScore();
 

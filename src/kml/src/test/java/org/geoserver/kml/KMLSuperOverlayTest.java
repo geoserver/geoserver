@@ -5,6 +5,7 @@
 package org.geoserver.kml;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -85,9 +86,9 @@ public class KMLSuperOverlayTest extends WMSTestSupport {
         // two folders, one per layer
         assertEquals("2", xpath.evaluate("count(//kml:Folder)", document));
         // regions 
-        assertEquals(5, document.getElementsByTagName("Region").getLength());
+        assertEquals(9, document.getElementsByTagName("Region").getLength());
         // links 
-        assertEquals("4", xpath.evaluate("count(//kml:NetworkLink)", document));
+        assertEquals("8", xpath.evaluate("count(//kml:NetworkLink)", document));
         // no ground overlays, direct links to contents instead
         assertEquals("0", xpath.evaluate("count(//kml:GroundOverlay)", document));
         
@@ -96,6 +97,10 @@ public class KMLSuperOverlayTest extends WMSTestSupport {
         assertXpathEvaluatesTo("-90.0", "//kml:Region/kml:LatLonAltBox/kml:south", document);
         assertXpathEvaluatesTo("180.0", "//kml:Region/kml:LatLonAltBox/kml:east", document);
         assertXpathEvaluatesTo("-180.0", "//kml:Region/kml:LatLonAltBox/kml:west", document);
+        
+        // check we have contents starting from the top
+        assertXpathExists("//kml:NetworkLink[kml:name='contents-0']", document);
+        assertXpathExists("//kml:NetworkLink[kml:name='contents-1']", document);
     }
     
     /**
@@ -135,9 +140,9 @@ public class KMLSuperOverlayTest extends WMSTestSupport {
         // two folders, one per layer
         assertEquals("1", xpath.evaluate("count(//kml:Folder)", document));
         // regions
-        assertEquals(3, document.getElementsByTagName("Region").getLength());
+        assertEquals(5, document.getElementsByTagName("Region").getLength());
         // links 
-        assertEquals("2", xpath.evaluate("count(//kml:NetworkLink)", document));
+        assertEquals("4", xpath.evaluate("count(//kml:NetworkLink)", document));
         // no ground overlays, direct links to contents instead
         assertEquals("0", xpath.evaluate("count(//kml:GroundOverlay)", document));
         

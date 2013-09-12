@@ -85,8 +85,8 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
             normalizedEnvelope = KmlEncodingContext.WORLD_BOUNDS_WGS84;
         }
         int zoomLevel = (int) tile.getZ();
-        // encode top level region
-        addRegion(container, normalizedEnvelope, 256, -1);
+        // encode top level region, which is always visible
+        addRegion(container, normalizedEnvelope, Integer.MAX_VALUE, -1);
 
         List<MapLayerInfo> layers = request.getLayers();
         for (int i = 0; i < layers.size(); i++) {
@@ -176,12 +176,12 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
 
         // encode the ground overlay(s)
         if (top == KmlEncodingContext.WORLD_BOUNDS_WGS84) {
-//            // special case for top since it does not line up as a proper
-//            // tile -> split it in two
-//            encodeTileContents(folder, layer, "contents-0", zoomLevel, new Envelope(-180, 0, -90,
-//                    90));
-//            encodeTileContents(folder, layer, "contents-1", zoomLevel,
-//                    new Envelope(0, 180, -90, 90));
+            // special case for top since it does not line up as a proper
+            // tile -> split it in two
+            encodeTileContents(folder, layer, "contents-0", zoomLevel, new Envelope(-180, 0, -90,
+                    90));
+            encodeTileContents(folder, layer, "contents-1", zoomLevel,
+                    new Envelope(0, 180, -90, 90));
         } else {
             // encode straight up
             encodeTileContents(folder, layer, "contents", zoomLevel, top);

@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
@@ -17,18 +18,24 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.geometry.jts.ReferencedEnvelope3D;
+import org.geotools.referencing.CRS;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class KMLSuperOverlayTest extends WMSTestSupport {
 
-    public static QName DISPERSED_FEATURES = new QName(MockData.SF_URI, "Dispersed",
-            MockData.SF_PREFIX);
+    public static QName DISPERSED_FEATURES = new QName(MockData.SF_URI, "Dispersed", MockData.SF_PREFIX);
+    public static QName BOULDER = new QName(MockData.SF_URI, "boulder", MockData.SF_PREFIX);
     private XpathEngine xpath;
 
     @Before
@@ -52,6 +59,12 @@ public class KMLSuperOverlayTest extends WMSTestSupport {
         testData.copyTo(getClass().getResourceAsStream("bridge.png"), "styles/bridge.png");
         testData.addVectorLayer(DISPERSED_FEATURES, Collections.EMPTY_MAP, "Dispersed.properties",
                 getClass(), catalog);
+        Map<SystemTestData.LayerProperty, Object> properties = new HashMap<SystemTestData.LayerProperty, Object>();
+        properties.put(LayerProperty.LATLON_ENVELOPE, new ReferencedEnvelope(-105.336,
+                -105.112, 39.9, 40.116, CRS.decode("EPSG:4326")));
+        properties.put(LayerProperty.ENVELOPE, new ReferencedEnvelope(3045967, 3108482, 1206627, 1285209, CRS.decode("EPSG:2876")));
+        properties.put(LayerProperty.SRS, 2876);
+        testData.addVectorLayer(BOULDER, properties, "boulder.properties", getClass(), catalog);
         
         // set a low regionation limit so that superoverlays actually have something to do
         FeatureTypeInfo ft = getCatalog().getFeatureTypeByName(getLayerId(MockData.BASIC_POLYGONS));
@@ -83,6 +96,30 @@ public class KMLSuperOverlayTest extends WMSTestSupport {
         assertXpathEvaluatesTo("-90.0", "//kml:Region/kml:LatLonAltBox/kml:south", document);
         assertXpathEvaluatesTo("180.0", "//kml:Region/kml:LatLonAltBox/kml:east", document);
         assertXpathEvaluatesTo("-180.0", "//kml:Region/kml:LatLonAltBox/kml:west", document);
+    }
+    
+    /**
+     * Checks what happens when the data bbox is at the crossing of a parent tile
+     * that is two levels above the bbox itself
+     * @throws Exception
+     */
+    @Test
+    public void testCrossingSuperoverlay() throws Exception {
+        Document document = getAsDOM("wms/kml?layers=" + getLayerId(BOULDER) + "&mode=superoverlay");
+        // print(document);
+        
+        // check the overall bbox (the top-most tile that contains all data)
+        assertXpathEvaluatesTo("40.78125", "//kml:Region/kml:LatLonAltBox/kml:north", document);
+        assertXpathEvaluatesTo("39.375", "//kml:Region/kml:LatLonAltBox/kml:south", document);
+        assertXpathEvaluatesTo("-104.0625", "//kml:Region/kml:LatLonAltBox/kml:east", document);
+        assertXpathEvaluatesTo("-105.46875", "//kml:Region/kml:LatLonAltBox/kml:west", document);
+        
+        // however the lookats are pointing to the center of the data set
+        assertXpathEvaluatesTo("-105.22419118401743", "//kml:Document/kml:LookAt/kml:longitude", document);
+        assertXpathEvaluatesTo("40.008056082289826", "//kml:Document/kml:LookAt/kml:latitude", document);
+
+        assertXpathEvaluatesTo("-105.22433780246726", "//kml:Document/kml:Folder/kml:LookAt/kml:longitude", document);
+        assertXpathEvaluatesTo("40.008106270709035", "//kml:Document/kml:Folder/kml:LookAt/kml:latitude", document);
     }
     
     /**

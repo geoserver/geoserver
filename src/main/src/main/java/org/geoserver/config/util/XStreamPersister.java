@@ -976,7 +976,8 @@ public class XStreamPersister {
             if ( reader.hasMoreChildren() ) {
                 while(reader.hasMoreChildren()) {
                     reader.moveDown();
-                    if ("workspace".equals(reader.getNodeName())) {
+                    String nodeName = reader.getNodeName();
+                    if ("workspace".equals(nodeName)) {
                         if (reader.hasMoreChildren()) {
                             //specified as <workspace><name>[name]</name></workspace>
                             reader.moveDown();
@@ -988,10 +989,10 @@ public class XStreamPersister {
                             pre = reader.getValue();
                         }
                     }
-                    else {
+                    else if("name".equals(nodeName) || "id".equals(nodeName) || "prefix".equals(nodeName)) {
                         ref = reader.getValue();
                     }
-
+                    
                     reader.moveUp();
                 }
             }

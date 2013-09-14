@@ -152,7 +152,7 @@ public class ControlFlowCallback extends AbstractDispatcherCallback implements
             }
             timeout = configurator.getTimeout();
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error occurerd during flow controllers reconfiguration");
+            LOGGER.log(Level.SEVERE, "Error occurred during flow controllers reconfiguration: " + e.getMessage());
         }
     }
 

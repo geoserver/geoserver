@@ -7,7 +7,6 @@ package org.geoserver.csw.feature.sort;
 import java.util.Comparator;
 import java.util.List;
 
-import org.opengis.feature.Feature;
 
 /**
  * A composite comparator that applies the provided comparators as a hierarchical list, the first
@@ -16,16 +15,16 @@ import org.opengis.feature.Feature;
  * @author Andrea Aime - GeoSolutions
  * 
  */
-class CompositeComparator implements Comparator<Feature> {
+class CompositeComparator<T> implements Comparator<T> {
 
-    List<Comparator<Feature>> comparators;
+    List<Comparator<T>> comparators;
 
-    public CompositeComparator(List<Comparator<Feature>> comparators) {
+    public CompositeComparator(List<Comparator<T>> comparators) {
         this.comparators = comparators;
     }
 
-    public int compare(Feature f1, Feature f2) {
-        for (Comparator<Feature> comp : comparators) {
+    public int compare(T f1, T f2) {
+        for (Comparator<T> comp : comparators) {
             int result = comp.compare(f1, f2);
             if (result != 0) {
                 return result;

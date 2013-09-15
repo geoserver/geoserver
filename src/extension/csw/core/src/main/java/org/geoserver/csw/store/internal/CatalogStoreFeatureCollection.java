@@ -53,6 +53,7 @@ class CatalogStoreFeatureCollection extends AbstractFeatureCollection<FeatureTyp
         this.filter = filter;
         this.catalog = catalog;
         this.mapping = mapping;
+        this.sortOrder = sortOrder;
         this.rd = rd;
     }
 

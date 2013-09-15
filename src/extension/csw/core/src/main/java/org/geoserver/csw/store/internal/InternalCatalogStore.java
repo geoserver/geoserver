@@ -72,9 +72,10 @@ public class InternalCatalogStore extends AbstractCatalogStore {
     }
 
     @Override
-    public FeatureCollection getRecordsInternal(RecordDescriptor rd, Query q, Transaction t) throws IOException {
+    public FeatureCollection getRecordsInternal(RecordDescriptor rd, RecordDescriptor rdOutput, Query q, Transaction t) throws IOException {
 
         CatalogStoreMapping mapping = getMapping(q.getTypeName());
+        CatalogStoreMapping outputMapping = getMapping(rdOutput.getFeatureDescriptor().getName().getLocalPart());
 
         int startIndex = 0;
         if (q.getStartIndex() != null) {
@@ -88,10 +89,6 @@ public class InternalCatalogStore extends AbstractCatalogStore {
         if (q.getFilter() != null && q.getFilter() != Filter.INCLUDE) {
             Filter filter = q.getFilter();
             unmapped = (Filter) filter.accept(unmapper, null);
-        }
-               
-        if (q.getProperties() != null && q.getProperties().size() > 0) {
-            mapping = mapping.subMapping(q.getProperties(), rd);
         }
         
         //unmap sortby
@@ -110,9 +107,13 @@ public class InternalCatalogStore extends AbstractCatalogStore {
             	
             }
         } 
+        
+        if (q.getProperties() != null && q.getProperties().size() > 0) {
+        	outputMapping = outputMapping.subMapping(q.getProperties(), rd);
+        }
 
         return new CatalogStoreFeatureCollection(startIndex,
-                q.getMaxFeatures(), unmappedSortBy, unmapped, catalog, mapping, rd);
+                q.getMaxFeatures(), unmappedSortBy, unmapped, catalog, outputMapping, rdOutput);
     }
 
     @Override

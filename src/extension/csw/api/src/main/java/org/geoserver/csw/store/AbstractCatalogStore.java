@@ -20,6 +20,7 @@ import net.opengis.cat.csw20.ElementSetType;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.csw.records.AbstractRecordDescriptor;
+import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geoserver.csw.records.RecordDescriptor;
 import org.geotools.data.Query;
 import org.geotools.data.Transaction;
@@ -42,9 +43,11 @@ import org.opengis.filter.identity.FeatureId;
 public abstract class AbstractCatalogStore implements CatalogStore {
 
     protected Map<String, RecordDescriptor> descriptorByType = new HashMap<String, RecordDescriptor>();
+    protected Map<String, RecordDescriptor> descriptorByOutputSchema = new HashMap<String, RecordDescriptor>();
 
     protected void support(RecordDescriptor descriptor) {
         descriptorByType.put(descriptor.getFeatureDescriptor().getName().getLocalPart(), descriptor);
+        descriptorByOutputSchema.put(descriptor.getOutputSchema(), descriptor);
     }
 
     @Override
@@ -76,7 +79,7 @@ public abstract class AbstractCatalogStore implements CatalogStore {
         
         // collect the values without duplicates
         final Set<String> values = new HashSet<String>();
-        getRecords(q, Transaction.AUTO_COMMIT).accepts(new FeatureVisitor() {
+        getRecords(q, Transaction.AUTO_COMMIT, rd.getOutputSchema()).accepts(new FeatureVisitor() {
             
             @Override
             public void visit(Feature feature) {
@@ -97,22 +100,33 @@ public abstract class AbstractCatalogStore implements CatalogStore {
     }
     
     @Override
-    public FeatureCollection getRecords(Query q, Transaction t) throws IOException {
+    public FeatureCollection getRecords(Query q, Transaction t, String outputSchema) throws IOException {
         RecordDescriptor rd;
         if (q.getTypeName() == null) {
             rd = descriptorByType.get("Record");
         } else {
             rd = descriptorByType.get(q.getTypeName());
         }
+        
+        RecordDescriptor rdOutput;
+        if (outputSchema == null || "".equals(outputSchema)) {
+        	rdOutput = descriptorByOutputSchema.get(CSWRecordDescriptor.getInstance().getOutputSchema());
+        } else {
+        	rdOutput = descriptorByOutputSchema.get(outputSchema);
+        }
                 
         if (rd==null) {
             throw new IOException(q.getTypeName() + " is not a supported type");
         }
         
-        return getRecordsInternal(rd, q, t);
+        if (rdOutput==null) {
+            throw new IOException(outputSchema + " is not a supported output schema");
+        }
+        
+        return getRecordsInternal(rd, rdOutput, q, t);
     }
     
-    public abstract FeatureCollection getRecordsInternal(RecordDescriptor rd, Query q, Transaction t) throws IOException;
+    public abstract FeatureCollection getRecordsInternal(RecordDescriptor rd, RecordDescriptor rdOutput, Query q, Transaction t) throws IOException;
     
     @Override
     public RepositoryItem getRepositoryItem(String recordId) throws IOException {
@@ -125,7 +139,7 @@ public abstract class AbstractCatalogStore implements CatalogStore {
         // simply delegate to the feature collection, we have no optimizations 
         // available for the time being (even counting the files in case of no filtering
         // would be wrong as we have to 
-        return getRecords(q, t).size();
+        return getRecords(q, t, null).size();
     }
 
     @Override

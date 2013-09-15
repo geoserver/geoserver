@@ -202,6 +202,20 @@ public class GetRecordsTest extends MDTestSupport {
 
         assertXpathExists("//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']", d);
     }
+    
+    @Test
+    public void testTitleFilterCSWRecord() throws Exception {
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&elementSetName=brief&outputSchema=http://www.isotc211.org/2005/gmd&constraint=dc:title like 'S%25'";
+        Document d = getAsDOM(request);
+        //print(d);
+        //validateSchema(d.getElementsByTagName("//gmd:MD_MetaData"));
+
+        assertXpathEvaluatesTo("2", "//csw:SearchResults/@numberOfRecordsMatched", d);
+        assertXpathEvaluatesTo("2", "//csw:SearchResults/@numberOfRecordsReturned", d);
+        assertXpathEvaluatesTo("2", "count(//csw:SearchResults/*)", d);
+        assertXpathExists("//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Streams']", d);
+        assertXpathExists("//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Seven']", d);
+    }
 
 
 

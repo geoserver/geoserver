@@ -21,11 +21,14 @@ import org.geotools.data.Query;
 import org.geotools.data.Transaction;
 import org.geotools.data.store.MaxFeaturesFeatureCollection;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.filter.SortByImpl;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
+import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.PropertyName;
+import org.opengis.filter.sort.SortBy;
 
 /**
  * Internal Catalog Store
@@ -77,42 +80,39 @@ public class InternalCatalogStore extends AbstractCatalogStore {
         if (q.getStartIndex() != null) {
             startIndex = q.getStartIndex();
         }
+        
+        CSWUnmappingFilterVisitor unmapper = new CSWUnmappingFilterVisitor(mapping, rd);
 
         Filter unmapped = Filter.INCLUDE;
         // unmap filter
         if (q.getFilter() != null && q.getFilter() != Filter.INCLUDE) {
             Filter filter = q.getFilter();
-            CSWUnmappingFilterVisitor unmapper = new CSWUnmappingFilterVisitor(mapping, rd);
             unmapped = (Filter) filter.accept(unmapper, null);
         }
                
         if (q.getProperties() != null && q.getProperties().size() > 0) {
             mapping = mapping.subMapping(q.getProperties(), rd);
         }
-
-        FeatureCollection records;
         
+        //unmap sortby
+        SortBy[] unmappedSortBy = null;
         if (q.getSortBy() != null && q.getSortBy().length > 0) {
-            records = new CatalogStoreFeatureCollection(startIndex,
-                    Integer.MAX_VALUE, null, unmapped, catalog, mapping, rd);
-            
-            Feature[] features = (Feature[]) records.toArray(new Feature[records.size()]);
-            Comparator<Feature> comparator = ComplexComparatorFactory.buildComparator(q.getSortBy());
-            Arrays.sort(features, comparator);
-            
-            records = new MemoryFeatureCollection(records.getSchema(), Arrays.asList(features));
-            
-            if (q.getMaxFeatures() < Query.DEFAULT_MAX) {
-                records = new MaxFeaturesFeatureCollection<FeatureType, Feature>(records,
-                        q.getMaxFeatures());
+        	unmappedSortBy = new SortBy[q.getSortBy().length];
+        	for (int i=0; i<q.getSortBy().length; i++) {
+        		SortBy sortby = q.getSortBy()[i];
+        		Expression expr = (Expression) sortby.getPropertyName().accept(unmapper, null);
+        		
+        		if (!(expr instanceof PropertyName)) {
+        			throw new IOException("Sorting on " + sortby.getPropertyName() + " is not supported.");
+        		}
+        		
+        		unmappedSortBy[i] = new SortByImpl((PropertyName) expr, sortby.getSortOrder());
+            	
             }
-            
-        } else {
-            records = new CatalogStoreFeatureCollection(startIndex,
-                q.getMaxFeatures(), null, unmapped, catalog, mapping, rd);
-        }
+        } 
 
-        return records;
+        return new CatalogStoreFeatureCollection(startIndex,
+                q.getMaxFeatures(), unmappedSortBy, unmapped, catalog, mapping, rd);
     }
 
     @Override

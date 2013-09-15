@@ -302,6 +302,17 @@ public class MonitorCallbackTest {
     }
     
     @Test
+    public void testWMSReflect() throws Exception {
+        GetMapRequest gm = new GetMapRequest();
+        
+        gm.setLayers(Arrays.asList(createMapLayer("foo", "acme")));
+        
+        callback.operationDispatched(new Request(), op("reflect", "WMS", "1.1.1", gm));
+        
+        assertEquals("acme:foo", data.getResources().get(0));
+    }
+    
+    @Test
     public void testWMSGetFeatureInfo() throws Exception {
         GetFeatureInfoRequest gfi = new GetFeatureInfoRequest();
         

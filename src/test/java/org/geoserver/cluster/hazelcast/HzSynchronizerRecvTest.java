@@ -32,7 +32,9 @@ import com.hazelcast.core.MessageListener;
 public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
 
     protected abstract void expectationTestDisableLayer(LayerInfo info, String layerName, String layerId) throws Exception;
-
+    
+    HzSynchronizer sync;
+    
     @Test
     public void testDisableLayer() throws Exception {
         LayerInfo info;
@@ -50,7 +52,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         }
         replay(info);
         {
-            HzSynchronizer sync = getSynchronizer();
+            sync = getSynchronizer();
             sync.initialize(configWatcher);
             ConfigChangeEvent evt = new ConfigChangeEvent(layerId, layerName, LayerInfoImpl.class, Type.MODIFY);
             
@@ -86,7 +88,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         }
         replay(info, wsInfo);
         {
-            HzSynchronizer sync = getSynchronizer();
+            sync = getSynchronizer();
             sync.initialize(configWatcher);
             ConfigChangeEvent evt = new ConfigChangeEvent(storeId, storeName, DataStoreInfoImpl.class, Type.REMOVE);
             evt.setWorkspaceId(storeWorkspace);
@@ -117,7 +119,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         }
         replay(info);
         {
-            HzSynchronizer sync = getSynchronizer();
+            sync = getSynchronizer();
             sync.initialize(configWatcher);
             ConfigChangeEvent evt = new ConfigChangeEvent(globalId, null, GeoServerInfoImpl.class, Type.MODIFY);
             
@@ -154,7 +156,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         }
         replay(gsInfo, layerInfo);
         {
-            HzSynchronizer sync = getSynchronizer();
+            sync = getSynchronizer();
             sync.initialize(configWatcher);
             ConfigChangeEvent evtGs = new ConfigChangeEvent(globalId, null, GeoServerInfoImpl.class, Type.MODIFY);
             ConfigChangeEvent evtLayer = new ConfigChangeEvent(layerId, layerName, LayerInfoImpl.class, Type.MODIFY);
@@ -195,7 +197,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         }
         replay(gsInfo);
         {
-            HzSynchronizer sync = getSynchronizer();
+            sync = getSynchronizer();
             sync.initialize(configWatcher);
             ConfigChangeEvent evtGs = new ConfigChangeEvent(globalId, null, GeoServerInfoImpl.class, Type.MODIFY);
             
@@ -226,7 +228,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         }
         replay(gsInfo);
         {
-            HzSynchronizer sync = getSynchronizer();
+            sync = getSynchronizer();
             sync.initialize(configWatcher);
             ConfigChangeEvent evtGs = new ConfigChangeEvent(globalId, null, GeoServerInfoImpl.class, Type.MODIFY);
             
@@ -262,7 +264,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         }
         replay(layerInfo);
         {
-            HzSynchronizer sync = getSynchronizer();
+            sync = getSynchronizer();
             sync.initialize(configWatcher);
             ConfigChangeEvent evtLayer = new ConfigChangeEvent(layerId, layerName, LayerInfoImpl.class, Type.MODIFY);
             
@@ -295,7 +297,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         }
         replay(layerInfo);
         {
-            HzSynchronizer sync = getSynchronizer();
+            sync = getSynchronizer();
             sync.initialize(configWatcher);
             ConfigChangeEvent evtLayer = new ConfigChangeEvent(layerId, layerName, LayerInfoImpl.class, Type.MODIFY);
             
@@ -326,7 +328,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         }
         replay(info);
         {
-            HzSynchronizer sync = getSynchronizer();
+            sync = getSynchronizer();
             sync.initialize(configWatcher);
             ConfigChangeEvent evt = new ConfigChangeEvent(workspaceId, workspaceName, WorkspaceInfoImpl.class, Type.ADD);
             
@@ -373,7 +375,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         }
         replay(info, wsInfo);
         {
-            HzSynchronizer sync = getSynchronizer();
+            sync = getSynchronizer();
             sync.initialize(configWatcher);
             ConfigChangeEvent evt = new ConfigChangeEvent(settingsId, null, SettingsInfoImpl.class, Type.MODIFY);
             evt.setWorkspaceId(workspaceId);
@@ -404,7 +406,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         }
         replay(info);
         {
-            HzSynchronizer sync = getSynchronizer();
+            sync = getSynchronizer();
             sync.initialize(configWatcher);
             ConfigChangeEvent evt = new ConfigChangeEvent(settingsId, null, LoggingInfoImpl.class, Type.MODIFY);
             
@@ -434,7 +436,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         }
         replay(info);
         {
-            HzSynchronizer sync = getSynchronizer();
+            sync = getSynchronizer();
             sync.initialize(configWatcher);
             
             ConfigChangeEvent evt = new ConfigChangeEvent(serviceId, null, WMSInfoImpl.class, Type.MODIFY);

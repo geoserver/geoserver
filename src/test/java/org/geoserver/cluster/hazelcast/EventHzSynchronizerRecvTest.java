@@ -2,17 +2,26 @@ package org.geoserver.cluster.hazelcast;
 
 import static org.easymock.EasyMock.*;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 
+import org.easymock.IAnswer;
+import org.easymock.IExpectationSetters;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.event.impl.CatalogAddEventImpl;
+import org.geoserver.catalog.event.impl.CatalogPostModifyEventImpl;
+import org.geoserver.catalog.event.impl.CatalogRemoveEventImpl;
+import org.geoserver.cluster.ConfigChangeEvent;
+import org.geoserver.cluster.ConfigChangeEvent.Type;
 import org.geoserver.config.ConfigurationListener;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.LoggingInfo;
@@ -43,22 +52,20 @@ public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
             ScheduledExecutorService getNewExecutor() {
                 return getMockExecutor();
             }
-            
         };
     }
     
     @Override
     protected void expectationTestDisableLayer(LayerInfo info, String layerName, String id) throws Exception {
         expect(getCatalog().getLayer(id) ).andReturn(info);
-        getCatalog().firePostModified((CatalogInfo)info(id)); expectLastCall();
-        
+        expectCatalogFire(info, id, Type.MODIFY);
     }
 
     @Override
     protected void expectationTestStoreDelete(DataStoreInfo info, String storeName, String storeId, Class clazz)
             throws Exception {
         expect(getCatalog().getStore(storeId, clazz) ).andReturn(info);
-        getCatalog().fireRemoved((CatalogInfo)info(storeId)); expectLastCall();
+        expectCatalogFire(info, storeId, Type.REMOVE);
     }
 
     @Override
@@ -109,25 +116,26 @@ public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
         expectationTestContactChange(gsInfo, globalId);
     }
 
+   
     @Override
-    protected void expectationTestTwoLayerChangeNoPause(LayerInfo layerInfo,
+    protected void expectationTestTwoLayerChangeNoPause(final LayerInfo layerInfo,
             String layerId) throws Exception {
         expect(getCatalog().getLayer(layerId) ).andReturn(layerInfo).anyTimes();
-        getCatalog().firePostModified((CatalogInfo)info(layerId)); expectLastCall().times(2);
+        expectCatalogFire(layerInfo, layerId, Type.MODIFY).times(2);
     }
 
     @Override
-    protected void expectationTestTwoLayerChangeWithPause(LayerInfo layerInfo,
+    protected void expectationTestTwoLayerChangeWithPause(final LayerInfo layerInfo,
             String layerId) throws Exception {
         expect(getCatalog().getLayer(layerId) ).andReturn(layerInfo).anyTimes();
-        getCatalog().firePostModified((CatalogInfo)info(layerId)); expectLastCall().times(2);
+        expectCatalogFire(layerInfo, layerId, Type.MODIFY).times(2);
     }
     
     @Override
-    protected void expectationTestWorkspaceAdd(WorkspaceInfo info,
+    protected void expectationTestWorkspaceAdd(final WorkspaceInfo info,
             String workspaceName, String workspaceId) throws Exception {
         expect(getCatalog().getWorkspace(workspaceId) ).andReturn(info);
-        getCatalog().fireAdded((CatalogInfo)info(workspaceId)); expectLastCall();
+        expectCatalogFire(info, workspaceId, Type.ADD);
     }
 
     @Override
@@ -138,7 +146,7 @@ public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
         //expect(getGeoServer().fireSettingsPostModified());
         
         configListener.handleSettingsPostModified((SettingsInfo)info(settingsId));expectLastCall();
-        expect(getGeoServer().getListeners()).andReturn(Arrays.asList(configListener));
+        expectConfigGetListeners();
     }
 
     @Override
@@ -148,7 +156,7 @@ public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
         //expect(getGeoServer().fireLoggingPostModified());
         
         configListener.handlePostLoggingChange((LoggingInfo)info(loggingId));expectLastCall();
-        expect(getGeoServer().getListeners()).andReturn(Arrays.asList(configListener));
+        expectConfigGetListeners();
     }
 
     @Override
@@ -157,8 +165,48 @@ public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
         // TODO: Expect this instead of mocking ConfigurationListener
         //expect(getGeoServer().fireLoggingPostModified());
         configListener.handlePostServiceChange((ServiceInfo)info(serviceId));expectLastCall();
-        expect(getGeoServer().getListeners()).andReturn(Arrays.asList(configListener));
+        expectConfigGetListeners();
         
     }
-
+    
+    protected IExpectationSetters<Collection<ConfigurationListener>> expectConfigGetListeners(){
+        return expect(getGeoServer().getListeners()).andReturn(Arrays.asList(sync, configListener));
+    }
+    
+    protected IExpectationSetters<Object> expectCatalogFire(final CatalogInfo info, final String id, final ConfigChangeEvent.Type type){
+        switch(type) {
+        case ADD:
+            getCatalog().fireAdded((CatalogInfo)info(id));
+            break;
+        case MODIFY:
+            getCatalog().firePostModified((CatalogInfo)info(id));
+            break;
+        case REMOVE:
+            getCatalog().fireRemoved((CatalogInfo)info(id));
+            break;
+        }
+        return expectLastCall().andAnswer(new IAnswer<Object>() {
+            @Override
+            public Object answer() throws Throwable {
+                switch(type) {
+                case ADD:
+                    CatalogAddEventImpl addEvt = new CatalogAddEventImpl();
+                    addEvt.setSource(info);
+                    sync.handleAddEvent(addEvt);
+                    break;
+                case MODIFY:
+                    CatalogPostModifyEventImpl modEvt = new CatalogPostModifyEventImpl();
+                    modEvt.setSource(info);
+                    sync.handlePostModifyEvent(modEvt);
+                    break;
+                case REMOVE:
+                    CatalogRemoveEventImpl remEvt = new CatalogRemoveEventImpl();
+                    remEvt.setSource(info);
+                    sync.handleRemoveEvent(remEvt);
+                    break;
+                }
+                return null;
+            }});
+    }
+ 
 }

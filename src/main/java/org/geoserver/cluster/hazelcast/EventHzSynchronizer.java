@@ -1,5 +1,6 @@
 package org.geoserver.cluster.hazelcast;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Iterator;
 import java.util.Queue;
@@ -15,6 +16,15 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.event.CatalogAddEvent;
+import org.geoserver.catalog.event.CatalogEvent;
+import org.geoserver.catalog.event.CatalogListener;
+import org.geoserver.catalog.event.CatalogPostModifyEvent;
+import org.geoserver.catalog.event.CatalogRemoveEvent;
+import org.geoserver.catalog.event.impl.CatalogAddEventImpl;
+import org.geoserver.catalog.event.impl.CatalogEventImpl;
+import org.geoserver.catalog.event.impl.CatalogPostModifyEventImpl;
+import org.geoserver.catalog.event.impl.CatalogRemoveEventImpl;
 import org.geoserver.cluster.ConfigChangeEvent;
 import org.geoserver.cluster.ConfigChangeEvent.Type;
 import org.geoserver.cluster.Event;
@@ -77,89 +87,78 @@ public class EventHzSynchronizer extends HzSynchronizer {
                     else if (LayerGroupInfo.class.isAssignableFrom(clazz)) {
                         subj = cat.getLayerGroup(id);
                     }
-
+                    Method notifyMethod;
+                    CatalogEventImpl evt;
                     switch(t) {
                     case ADD:
+                        notifyMethod = CatalogListener.class.getMethod("handleAddEvent", CatalogAddEvent.class);
+                        evt = new CatalogAddEventImpl();
+                        break;
                     case MODIFY:
-                        if (subj == null) {
-                            //this could be latency in the catalog itself, abort processing since
-                            // events need to processed in order and further events might depend 
-                            // on this event
-                            LOGGER.warning(String.format("Received %s event for (%s, %s) but could" 
-                                + " not find in catalog", t.name(), id, clazz.getSimpleName()));
-                            return;
-                        }
+                        notifyMethod = CatalogListener.class.getMethod("handlePostModifyEvent", CatalogPostModifyEvent.class);
+                        evt = new CatalogPostModifyEventImpl();
+                        break;
+                    case REMOVE:
+                        notifyMethod = CatalogListener.class.getMethod("handleRemoveEvent", CatalogRemoveEvent.class);
+                        evt = new CatalogRemoveEventImpl();
+                        subj = (CatalogInfo) Proxy.newProxyInstance(getClass().getClassLoader(), 
+                                new Class[]{clazz}, new RemovedObjectProxy(id, name));
+                        break;
+                    default:
+                        throw new IllegalStateException("Should not happen");
+                    }
+                    
+                    if (subj == null) {
+                        //this could be latency in the catalog itself, abort processing since
+                        // events need to processed in order and further events might depend 
+                        // on this event
+                        LOGGER.warning(String.format("Received %s event for (%s, %s) but could" 
+                            + " not find in catalog", t.name(), id, clazz.getSimpleName()));
+                        return;
+                    }
+                    
+                    evt.setSource(subj);
 
+                    try {
+                        for (CatalogListener l:cat.getListeners()){
+                            // Don't notify self otherwise the event bounces back out into the
+                            // cluster.
+                            if(l!=this) notifyMethod.invoke(l, evt);
+                        }
+                    }
+                    catch(Exception ex) {
+                        LOGGER.log(Level.WARNING, "Event dispatch failed", ex);
+                    }
+
+                }
+                else {
+                    Info subj;
+                    Method notifyMethod;
+                    
+                    if(GeoServerInfo.class.isAssignableFrom(clazz)){
+                        subj = gs.getGlobal();
+                        notifyMethod = ConfigurationListener.class.getMethod("handlePostGlobalChange", GeoServerInfo.class);
+                    } else if (SettingsInfo.class.isAssignableFrom(clazz)) {
+                        WorkspaceInfo ws = ce.getWorkspaceId() != null ? 
+                                cat.getWorkspace(ce.getWorkspaceId()) : null;
+                        subj = ws != null ? gs.getSettings(ws) : gs.getSettings();
+                        notifyMethod = ConfigurationListener.class.getMethod("handleSettingsPostModified", SettingsInfo.class);
+                    } else if (LoggingInfo.class.isAssignableFrom(clazz)) {
+                        subj = gs.getLogging();
+                        notifyMethod = ConfigurationListener.class.getMethod("handlePostLoggingChange", LoggingInfo.class);
+                    } else if (ServiceInfo.class.isAssignableFrom(clazz)) {
+                        subj = gs.getService(id, (Class<ServiceInfo>) clazz);
+                        notifyMethod = ConfigurationListener.class.getMethod("handlePostServiceChange", ServiceInfo.class);
+                    } else {
+                        throw new IllegalStateException("Unknown event type "+clazz);
+                    }
+
+                    for (ConfigurationListener l : gs.getListeners()) {
                         try {
-                            if (t == Type.ADD) {
-                                cat.fireAdded(subj);
-                            }
-                            else {
-                                cat.firePostModified(subj);
-                            }
-                            
+                            if(l!=this) notifyMethod.invoke(l, subj);
                         }
                         catch(Exception ex) {
                             LOGGER.log(Level.WARNING, "Event dispatch failed", ex);
-                        }
-                        break;
-
-                    case REMOVE:
-                        //since we don't have a subject to dispatch in this case we proxy for it
-                        subj = (CatalogInfo) Proxy.newProxyInstance(getClass().getClassLoader(), 
-                            new Class[]{clazz}, new RemovedObjectProxy(id, name));
-                        cat.fireRemoved(subj);
-                    }
-                }
-                else {
-                    //geoserver event
-                    //JD: GEoServer doesn't expose the firePostModified() event triggers to 
-                    // we do it manually, TODO: add this to the public interface
-                    if (GeoServerInfo.class.isAssignableFrom(clazz)) {
-                        GeoServerInfo subj = gs.getGlobal();
-                        for (ConfigurationListener l : gs.getListeners()) {
-                            try {
-                                l.handlePostGlobalChange(subj);
-                            }
-                            catch(Exception ex) {
-                                LOGGER.log(Level.WARNING, "Event dispatch failed", ex);
-                            }
-                        }
-                    }
-                    else if (SettingsInfo.class.isAssignableFrom(clazz)) {
-                        
-                        WorkspaceInfo ws = ce.getWorkspaceId() != null ? 
-                            cat.getWorkspace(ce.getWorkspaceId()) : null;
-                        SettingsInfo subj = ws != null ? gs.getSettings(ws) : gs.getSettings();
-                        for (ConfigurationListener l : gs.getListeners()) {
-                            try {
-                                l.handleSettingsPostModified(subj);
-                            }
-                            catch(Exception ex) {
-                                LOGGER.log(Level.WARNING, "Event dispatch failed", ex);
-                            }
-                        }
-                    }
-                    else if (LoggingInfo.class.isAssignableFrom(clazz)) {
-                        LoggingInfo subj = gs.getLogging();
-                        for (ConfigurationListener l : gs.getListeners()) {
-                            try {
-                                l.handlePostLoggingChange(subj);
-                            }
-                            catch(Exception ex) {
-                                LOGGER.log(Level.WARNING, "Event dispatch failed", ex);
-                            }
-                        }
-                    }
-                    else if (ServiceInfo.class.isAssignableFrom(clazz)) {
-                        ServiceInfo subj = gs.getService(id, (Class<ServiceInfo>) clazz);
-                        for (ConfigurationListener l : gs.getListeners()) {
-                            try {
-                                l.handlePostServiceChange(subj);
-                            }
-                            catch(Exception ex) {
-                                LOGGER.log(Level.WARNING, "Event dispatch failed", ex);
-                            }
                         }
                     }
                 }
@@ -168,5 +167,4 @@ public class EventHzSynchronizer extends HzSynchronizer {
             it.remove();
         }
     }
-
 }

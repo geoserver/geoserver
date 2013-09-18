@@ -17,6 +17,11 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.event.CatalogAddEvent;
+import org.geoserver.catalog.event.CatalogEvent;
+import org.geoserver.catalog.event.CatalogListener;
+import org.geoserver.catalog.event.CatalogPostModifyEvent;
+import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.catalog.event.impl.CatalogAddEventImpl;
 import org.geoserver.catalog.event.impl.CatalogPostModifyEventImpl;
 import org.geoserver.catalog.event.impl.CatalogRemoveEventImpl;
@@ -33,10 +38,12 @@ import org.junit.Before;
 public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
 
     ConfigurationListener configListener;
+    CatalogListener catListener;
     
     @Before
-    public void setUpConfigListener(){
+    public void setUpListeners(){
         configListener = createMock(ConfigurationListener.class);
+        catListener = createMock(CatalogListener.class);
     }
 
     Info info(String id) {
@@ -77,7 +84,7 @@ public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
         //expect(getGeoServer().fireGlobalPostModified());
         
         configListener.handlePostGlobalChange((GeoServerInfo)info(globalId));expectLastCall();
-        expect(getGeoServer().getListeners()).andReturn(Arrays.asList(configListener));
+        expectConfigGetListeners();
     }
 
     @Override
@@ -85,6 +92,7 @@ public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
         List<Object> mocks = new ArrayList<Object>();
         mocks.addAll(super.myMocks());
         mocks.add(configListener);
+        mocks.add(catListener);
         return mocks;
     }
 
@@ -169,11 +177,50 @@ public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
         
     }
     
-    protected IExpectationSetters<Collection<ConfigurationListener>> expectConfigGetListeners(){
-        return expect(getGeoServer().getListeners()).andReturn(Arrays.asList(sync, configListener));
+    protected void expectConfigGetListeners(){
+        expect(getGeoServer().getListeners()).andStubAnswer(new IAnswer<Collection<ConfigurationListener>>() {
+
+            @Override
+            public Collection<ConfigurationListener> answer() throws Throwable {
+                return Arrays.asList(sync, configListener);
+            }});
+    }
+    
+    protected void expectCatalogGetListeners(){
+        expect(getCatalog().getListeners()).andStubAnswer(new IAnswer<Collection<CatalogListener>>() {
+
+            @Override
+            public Collection<CatalogListener> answer() throws Throwable {
+                return Arrays.asList(sync, catListener);
+            }});
+    }
+    
+    CatalogEvent catEvent(final CatalogInfo info) {
+        EasyMock2Adapter.adapt(hasProperty("source", is(info)));
+        return null;
+    }
+    CatalogEvent catEvent(final String id) {
+        EasyMock2Adapter.adapt(hasProperty("source", hasProperty("id", is(id))));
+        return null;
     }
     
     protected IExpectationSetters<Object> expectCatalogFire(final CatalogInfo info, final String id, final ConfigChangeEvent.Type type){
+        expectCatalogGetListeners();
+        switch(type) {
+        case ADD:
+            catListener.handleAddEvent((CatalogAddEvent)catEvent(info));
+            break;
+        case MODIFY:
+            catListener.handlePostModifyEvent((CatalogPostModifyEvent)catEvent(info));
+            break;
+        case REMOVE:
+            catListener.handleRemoveEvent((CatalogRemoveEvent)catEvent(id));
+            break;
+        }
+        return expectLastCall();
+    }
+    
+/*    protected IExpectationSetters<Object> expectCatalogFire(final CatalogInfo info, final String id, final ConfigChangeEvent.Type type){
         switch(type) {
         case ADD:
             getCatalog().fireAdded((CatalogInfo)info(id));
@@ -208,5 +255,5 @@ public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
                 return null;
             }});
     }
- 
+ */
 }

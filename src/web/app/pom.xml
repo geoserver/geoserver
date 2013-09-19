@@ -311,6 +311,16 @@
 
   <profiles>
     <profile>
+		<id>geoserver-sync</id>
+		<dependencies>
+			<dependency>
+				<groupId>org.geoserver</groupId>
+				<artifactId>geoserver-sync</artifactId>
+				<version>1.0-SNAPSHOT</version>
+			</dependency>
+		</dependencies>
+	</profile>
+	<profile>
       <id>release</id>
       <properties>
         <configDirectory>${basedir}/../../../data</configDirectory>

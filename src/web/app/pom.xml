@@ -781,6 +781,11 @@
           <artifactId>csw-core</artifactId>
           <version>${project.version}</version>
         </dependency>
+	<dependency>
+          <groupId>org.geoserver.csw</groupId>
+          <artifactId>web-csw</artifactId>
+          <version>${project.version}</version>
+        </dependency>
       </dependencies>
     </profile>
     <profile>

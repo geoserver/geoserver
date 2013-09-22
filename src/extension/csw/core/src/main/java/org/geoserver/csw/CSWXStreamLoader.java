@@ -37,6 +37,7 @@ public class CSWXStreamLoader extends XStreamServiceLoader<CSWInfo> {
 
     protected CSWInfo createServiceFromScratch(GeoServer gs) {
         CSWInfoImpl csw = new CSWInfoImpl();
+        csw.setName("CSW");
         csw.setId(getServiceId());
         csw.setGeoServer(gs);
         return csw;

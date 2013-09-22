@@ -5,6 +5,7 @@
 package org.geoserver.csw.store.internal;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
@@ -65,6 +66,7 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
 
             if (value != null) {
                 if (value instanceof Collection) {
+                    ((Collection)value).removeAll(Collections.singleton(null));
                     if (((Collection)value).size() > 0) {
                         String[] elements = new String[((Collection) value).size()];
                         int i = 0;

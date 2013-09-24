@@ -1510,14 +1510,6 @@
  <profiles>
   <!-- uml graphing -->
   <profile>
-	<id>geoserver-sync</id>
-	<modules>
-		<module>geoserver-sync</module>
-	</modules>
-  </profile>
-  
-  
-  <profile>
    <id>uml</id>
    <activation>
     <property>

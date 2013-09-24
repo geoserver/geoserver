@@ -5,8 +5,11 @@
 package org.geoserver.csw.store.internal;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.csw.feature.AbstractFeatureCollection;
 import org.geoserver.csw.feature.MemoryFeatureCollection;
@@ -34,6 +37,7 @@ class CatalogStoreFeatureCollection extends AbstractFeatureCollection<FeatureTyp
     protected Catalog catalog;
     protected CatalogStoreMapping mapping;
     protected RecordDescriptor rd;
+    protected Map<String, String> interpolationProperties = new HashMap<String, String>();
 
     /**
      * Create new CatalogStoreFeatureCollection
@@ -46,7 +50,7 @@ class CatalogStoreFeatureCollection extends AbstractFeatureCollection<FeatureTyp
      * @param mapping The Mapping
      * @param rd Record Descriptor
      */
-    public CatalogStoreFeatureCollection(int offset, int count, SortBy[] sortOrder, Filter filter, Catalog catalog, CatalogStoreMapping mapping, RecordDescriptor rd) {
+    public CatalogStoreFeatureCollection(int offset, int count, SortBy[] sortOrder, Filter filter, Catalog catalog, CatalogStoreMapping mapping, RecordDescriptor rd,  Map<String, String> interpolationProperties) {
         super(CSWRecordDescriptor.RECORD_TYPE);
         this.offset = offset;
         this.count = count;
@@ -54,12 +58,13 @@ class CatalogStoreFeatureCollection extends AbstractFeatureCollection<FeatureTyp
         this.catalog = catalog;
         this.mapping = mapping;
         this.sortOrder = sortOrder;
+        this.interpolationProperties = interpolationProperties;
         this.rd = rd;
     }
 
     @Override
     protected Iterator<Feature> openIterator() {
-        return new CatalogStoreFeatureIterator(offset, count, sortOrder, filter, catalog, mapping, rd);
+        return new CatalogStoreFeatureIterator(offset, count, sortOrder, filter, catalog, mapping, rd, interpolationProperties);
     }
 
     @Override

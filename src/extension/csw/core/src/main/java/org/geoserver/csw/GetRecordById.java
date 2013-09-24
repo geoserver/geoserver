@@ -59,7 +59,7 @@ public class GetRecordById {
         try {
             // build the queries
             RecordDescriptor rd = getRecordDescriptor(request);            
-            List<Query> queries = toGtQueries(rd, request.getId());
+            List<Query> queries = toGtQueries(rd, request.getId(), request);
                         
             
             // compute the number of records matched (in validate mode this is also a quick way
@@ -76,7 +76,7 @@ public class GetRecordById {
             // time to run the queries if we are not in hits mode
             
             List<FeatureCollection> results = new ArrayList<FeatureCollection>();
-            for (int i = 0; i < queries.size(); i++) {
+            for (int i = 0; i < queries.size(); i++) {                
                 FeatureCollection collection = store.getRecords(queries.get(i), Transaction.AUTO_COMMIT, request.getOutputSchema());
                 if(collection != null && collection.size() > 0) {
                     results.add(collection);
@@ -109,7 +109,7 @@ public class GetRecordById {
         return elementSet;
     }
    
-    private List<Query> toGtQueries(RecordDescriptor rd, EList<URI> ids) throws IOException {
+    private List<Query> toGtQueries(RecordDescriptor rd, EList<URI> ids, GetRecordByIdType request) throws IOException {
         // prepare to build the queries
         
         Set<FeatureId> fids = new HashSet<FeatureId>();
@@ -133,6 +133,9 @@ public class GetRecordById {
         if (q.getFilter() != null) {
             q.getFilter().accept(new SpatialFilterChecker(rd.getFeatureType()), null);
         }
+        
+        //smuggle base url
+        adapted.getHints().put(GetRecords.KEY_BASEURL, request.getBaseUrl());
     
         List<Query> result = new ArrayList<Query>();
         result.add(adapted);

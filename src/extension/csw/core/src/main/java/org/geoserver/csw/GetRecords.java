@@ -16,7 +16,6 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 
 import net.opengis.cat.csw20.ElementSetType;
-import net.opengis.cat.csw20.GetRecordByIdType;
 import net.opengis.cat.csw20.GetRecordsType;
 import net.opengis.cat.csw20.QueryType;
 import net.opengis.cat.csw20.ResultType;
@@ -31,6 +30,7 @@ import org.geotools.csw.CSW;
 import org.geotools.data.Query;
 import org.geotools.data.Transaction;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.factory.Hints;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.type.Types;
@@ -47,6 +47,8 @@ import org.opengis.filter.expression.PropertyName;
 public class GetRecords {
     
     static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    
+    static final public Hints.Key KEY_BASEURL = new Hints.Key(String.class);
 
     CSWInfo csw;
 
@@ -63,12 +65,12 @@ public class GetRecords {
     public CSWRecordsResult run(GetRecordsType request) {
         // mark the time the request started
         Date timestamp = new Date();
-        
+
         try {
             // build the queries            
         	RecordDescriptor outputRd = getRecordDescriptor(request);
             QueryType cswQuery = (QueryType) request.getQuery();
-            List<Query> queries = toGtQueries(outputRd, cswQuery);
+            List<Query> queries = toGtQueries(outputRd, cswQuery, request);
             
             // see how many records we have to return
             int maxRecords;
@@ -166,7 +168,7 @@ public class GetRecords {
         }
     }
 
-    private List<Query> toGtQueries(RecordDescriptor outputRd, QueryType query) throws IOException {
+    private List<Query> toGtQueries(RecordDescriptor outputRd, QueryType query, GetRecordsType request) throws IOException {
         // prepare to build the queries
         Filter filter = query.getConstraint() != null ? query.getConstraint().getFilter() : null;
         Set<Name> supportedTypes = getSupportedTypes();
@@ -205,6 +207,9 @@ public class GetRecords {
                 q.getFilter().accept(new SpatialFilterChecker(rd.getFeatureType()), null);
             }
             
+            //smuggle base url
+            adapted.getHints().put(KEY_BASEURL, request.getBaseUrl());
+                        
             result.add(adapted);
         }
         

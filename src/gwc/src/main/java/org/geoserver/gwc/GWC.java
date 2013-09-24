@@ -1478,11 +1478,15 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
 
         List<GeoServerTileLayer> affected = new ArrayList<GeoServerTileLayer>();
         for (GeoServerTileLayer tl : tileLayers) {
-            GeoServerTileLayerInfo info = tl.getInfo();
-            String defaultStyle = tl.getStyles();// may be null if backed by a LayerGroupInfo
-            Set<String> cachedStyles = info.cachedStyles();
-            if (styleName.equals(defaultStyle) || cachedStyles.contains(styleName)) {
-                affected.add(tl);
+            try {
+                GeoServerTileLayerInfo info = tl.getInfo();
+                String defaultStyle = tl.getStyles();// may be null if backed by a LayerGroupInfo
+                Set<String> cachedStyles = info.cachedStyles();
+                if (styleName.equals(defaultStyle) || cachedStyles.contains(styleName)) {
+                    affected.add(tl);
+                }
+            } catch (Exception e) {
+                log.log(Level.SEVERE, "Failed to retrieve style info for layer" + tl.getName(), e);
             }
         }
         return affected;
@@ -1497,17 +1501,21 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         List<LayerInfo> result = new ArrayList<LayerInfo>();
         {
             for (LayerInfo layer : getLayerInfos()) {
-                String name = layer.getDefaultStyle().getName();
-                if (styleName.equals(name)) {
-                    result.add(layer);
-                    continue;
-                }
-                for (StyleInfo alternateStyle : layer.getStyles()) {
-                    name = alternateStyle.getName();
+                try {
+                    String name = layer.getDefaultStyle().getName();
                     if (styleName.equals(name)) {
                         result.add(layer);
-                        break;
+                        continue;
                     }
+                    for (StyleInfo alternateStyle : layer.getStyles()) {
+                        name = alternateStyle.getName();
+                        if (styleName.equals(name)) {
+                            result.add(layer);
+                            break;
+                        }
+                    }
+                } catch (Exception e) {
+                    log.log(Level.SEVERE, "Failed to retrieve style info for layer" + layer.getName(), e);
                 }
             }
         }

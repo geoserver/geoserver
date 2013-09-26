@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+
+     #%L
+     geoserver-sync-core
+     $Id:$
+     $HeadURL:$
+     %%
+     Copyright (C) 2013 Moebius Solutions Inc.
+     %%
+     This program is free software: you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as
+     published by the Free Software Foundation, either version 2 of the
+     License, or (at your option) any later version.
+
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public
+     License along with this program.  If not, see
+     <http://www.gnu.org/licenses/gpl-2.0.html>.
+     #L%
+
+
+-->
+<!--
+
+    Testing testing 1 2 3
+
+-->
+<wfs:FeatureCollection numberOfFeatures="8444"
+	timeStamp="2011-06-17T13:22:21.117-07:00"
+	xsi:schemaLocation="http://www.forwardslope.com/c2rpc https://onrri04.forwardslope.com:443/geoserver/wfs?service=WFS&amp;version=1.1.0&amp;request=DescribeFeatureType&amp;typeName=c2rpc%3AOrphanTrack http://www.opengis.net/wfs https://onrri04.forwardslope.com:443/geoserver/schemas/wfs/1.1.0/wfs.xsd"
+	xmlns:ogc="http://www.opengis.net/ogc" xmlns:c2rpc-i3="http://www.forwardslope.com/c2rpc/i3"
+	xmlns:c2rpc-rd="http://www.forwardslope.com/c2rpc/readiness" xmlns:wfs="http://www.opengis.net/wfs"
+	xmlns:ogr="http://ogr.maptools.org/" xmlns:Marbound="geo.vliz.be/Marbound"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:c2rpc-cx="http://www.forwardslope.com/c2rpc/complex"
+	xmlns:c2rpc="http://www.forwardslope.com/c2rpc" xmlns:ows="http://www.opengis.net/ows"
+	xmlns:c2rpc-cx-i3="http://www.forwardslope.com/c2rpc/complex/i3"
+	xmlns:gml="http://www.opengis.net/gml" xmlns:c2rpc-pt="http://www.forwardslope.com/c2rpc/pt"
+	xmlns:xlink="http://www.w3.org/1999/xlink">
+	<gml:featureMembers>
+		<c2rpc:OrphanTrack gml:id="OrphanTrack.19830">
+			<c2rpc:otmGuid>19830</c2rpc:otmGuid>
+			<c2rpc:maritimeName>DEN DUVEL</c2rpc:maritimeName>
+			<c2rpc:category>SURFACE</c2rpc:category>
+			<c2rpc:threat>NEUTRAL</c2rpc:threat>
+			<c2rpc:code2525>snsp           </c2rpc:code2525>
+			<c2rpc:shortName>
+			</c2rpc:shortName>
+			<c2rpc:position>
+				<gml:Point srsName="urn:x-ogc:def:crs:EPSG:4326">
+					<gml:pos>51.237252 4.406082</gml:pos>
+				</gml:Point>
+			</c2rpc:position>
+		</c2rpc:OrphanTrack>
+		<c2rpc:OrphanTrack gml:id="OrphanTrack.258188000">
+			<c2rpc:otmGuid>258188000</c2rpc:otmGuid>
+			<c2rpc:lastChanged>2011-06-28T00:00:00Z</c2rpc:lastChanged>
+			<c2rpc:maritimeName>PAX</c2rpc:maritimeName>
+			<c2rpc:category>SURFACE</c2rpc:category>
+			<c2rpc:threat>NEUTRAL</c2rpc:threat>
+			<c2rpc:code2525>snsp           </c2rpc:code2525>
+			<c2rpc:nationality>NO</c2rpc:nationality>
+			<c2rpc:shortName>JWPM</c2rpc:shortName>
+			<c2rpc:position>
+				<gml:Point srsName="urn:x-ogc:def:crs:EPSG:4326">
+					<gml:pos>59.271 5.498</gml:pos>
+				</gml:Point>
+			</c2rpc:position>
+		</c2rpc:OrphanTrack>
+	</gml:featureMembers>
+</wfs:FeatureCollection>

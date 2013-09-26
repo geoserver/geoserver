@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+
+     #%L
+     geoserver-sync-core
+     $Id:$
+     $HeadURL:$
+     %%
+     Copyright (C) 2013 Moebius Solutions Inc.
+     %%
+     This program is free software: you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as
+     published by the Free Software Foundation, either version 2 of the
+     License, or (at your option) any later version.
+
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public
+     License along with this program.  If not, see
+     <http://www.gnu.org/licenses/gpl-2.0.html>.
+     #L%
+
+
+-->
+<!--
+
+    Testing testing 1 2 3
+
+-->
+<wfs:FeatureCollection numberOfFeatures="2"
+	timeStamp="2011-06-22T15:49:32.125-07:00"
+	xsi:schemaLocation="http://www.opengis.net/cite http://localhost:80/geoserver/wfs?service=WFS&amp;version=1.1.0&amp;request=DescribeFeatureType&amp;typeName=cite%3ABuildings http://www.opengis.net/wfs http://localhost:80/geoserver/schemas/wfs/1.1.0/wfs.xsd"
+	xmlns:ogc="http://www.opengis.net/ogc" xmlns:gs="http://geoserver.org"
+	xmlns:wfs="http://www.opengis.net/wfs" xmlns:cite="http://www.opengis.net/cite"
+	xmlns:cgf="http://www.opengis.net/cite/geometry" xmlns:sf="http://cite.opengeospatial.org/gmlsf"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ows="http://www.opengis.net/ows"
+	xmlns:gml="http://www.opengis.net/gml" xmlns:cdf="http://www.opengis.net/cite/data"
+	xmlns:xlink="http://www.w3.org/1999/xlink">
+	<gml:featureMembers>
+		<cite:Buildings gml:id="Buildings.1107531701010">
+			<cite:the_geom>
+				<gml:MultiSurface srsDimension="2"
+					srsName="urn:x-ogc:def:crs:EPSG:4326">
+					<gml:surfaceMember>
+						<gml:Polygon>
+							<gml:exterior>
+								<gml:LinearRing>
+									<gml:posList>5.0E-4 8.0E-4 7.0E-4 8.0E-4 7.0E-4 0.0012 5.0E-4
+										0.0012 5.0E-4 8.0E-4</gml:posList>
+								</gml:LinearRing>
+							</gml:exterior>
+						</gml:Polygon>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cite:the_geom>
+			<cite:FID>113</cite:FID>
+			<cite:ADDRESS>123 Main Street</cite:ADDRESS>
+		</cite:Buildings>
+		<cite:Buildings gml:id="Buildings.1107531701011">
+			<cite:the_geom>
+				<gml:MultiSurface srsDimension="2"
+					srsName="urn:x-ogc:def:crs:EPSG:4326">
+					<gml:surfaceMember>
+						<gml:Polygon>
+							<gml:exterior>
+								<gml:LinearRing>
+									<gml:posList>8.0E-4 0.0020 0.0010 0.0020 0.0010 0.0024 8.0E-4
+										0.0024 8.0E-4 0.0020</gml:posList>
+								</gml:LinearRing>
+							</gml:exterior>
+						</gml:Polygon>
+					</gml:surfaceMember>
+				</gml:MultiSurface>
+			</cite:the_geom>
+			<cite:FID>114</cite:FID>
+			<cite:ADDRESS>215 Main Street</cite:ADDRESS>
+		</cite:Buildings>
+	</gml:featureMembers>
+</wfs:FeatureCollection>

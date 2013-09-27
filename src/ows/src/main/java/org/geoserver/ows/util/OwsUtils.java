@@ -283,6 +283,7 @@ public class OwsUtils {
                 if(ex instanceof ServiceException) {
                     for ( Iterator t = ((ServiceException) ex).getExceptionText().iterator(); t.hasNext(); ) {
                         s.append("\n");
+                        // Thijs Brentjens: escape for XML, to avoid XSS
                         String msg = Encode.forXml((String) t.next());
                         if(!lastMessage.equals(msg)) {
                             if(xmlEscape)

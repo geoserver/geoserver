@@ -30,6 +30,8 @@ import org.geotools.xml.EMFUtils;
 import org.opengis.feature.type.Name;
 import org.opengis.util.InternationalString;
 
+import org.owasp.encoder.*;
+
 public class Ows11Util {
 
     static Ows11Factory f = Ows11Factory.eINSTANCE;
@@ -126,7 +128,7 @@ public class Ows11Util {
             e.setExceptionCode("NoApplicableCode");
         }
 
-        e.setLocator(exception.getLocator());
+        e.setLocator(Encode.forXml(exception.getLocator()));
 
         //add the message
         StringBuffer sb = new StringBuffer();

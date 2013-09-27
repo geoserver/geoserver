@@ -17,6 +17,9 @@ import java.util.Set;
 import org.geoserver.platform.ServiceException;
 import org.geotools.util.SoftValueHashMap;
 
+// Thijs Brentjens: for fixing XSS vulnerability
+import org.owasp.encoder.*;
+
 
 /**
  * Utility class for performing reflective operations and other ows utility functions.
@@ -269,7 +272,8 @@ public class OwsUtils {
         Throwable ex = e;
         do {
             Throwable cause = ex.getCause();
-            final String message = ex.getMessage();
+            // Thijs Brentjens: escape for XML, to avoid XSS
+            final String message = Encode.forXml(ex.getMessage());
             String lastMessage = message;
             if(!"".equals(message)) {
                 if(xmlEscape)
@@ -279,7 +283,7 @@ public class OwsUtils {
                 if(ex instanceof ServiceException) {
                     for ( Iterator t = ((ServiceException) ex).getExceptionText().iterator(); t.hasNext(); ) {
                         s.append("\n");
-                        String msg = (String) t.next();
+                        String msg = Encode.forXml((String) t.next());
                         if(!lastMessage.equals(msg)) {
                             if(xmlEscape)
                                 s.append(ResponseUtils.encodeXML(msg));

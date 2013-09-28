@@ -1484,7 +1484,7 @@
   <gs.version>2.4-SNAPSHOT</gs.version>
   <gt.version>10-SNAPSHOT</gt.version>
   <gwc.version>1.5.0-beta</gwc.version>
-  <spring.version>3.1.1.RELEASE</spring.version>
+  <spring.version>3.1.4.RELEASE</spring.version>
   <spring.security.version>3.1.0.RELEASE</spring.security.version> 
   <poi.version>3.8</poi.version>
   <wicket.version>1.4.12</wicket.version>

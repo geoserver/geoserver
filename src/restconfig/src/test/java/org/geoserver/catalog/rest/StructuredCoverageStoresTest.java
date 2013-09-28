@@ -71,6 +71,9 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
         for (File file : FileUtils.listFiles(mosaic, new RegexFileFilter("NCOM_.*100_.*tiff"), null)) {
             File target = new File(file.getParentFile().getParentFile(), file.getName());
             movedFiles.add(target);
+            if(target.exists()) {
+                assertTrue(target.delete());
+            }
             assertTrue(file.renameTo(target));
         };
         for (File file : FileUtils.listFiles(mosaic, new RegexFileFilter("watertemp.*"), null)) {

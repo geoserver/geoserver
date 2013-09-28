@@ -5,4 +5,7 @@ jdk:
 before_script:
   - cd src
 script:
-  - mvn clean test -Prelease
+  - mvn clean test -Prelease -T2
+notifications:
+  email: false
+

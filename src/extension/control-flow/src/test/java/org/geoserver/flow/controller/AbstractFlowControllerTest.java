@@ -57,30 +57,6 @@ public abstract class AbstractFlowControllerTest {
         }
     }
 
-    /**
-     * Waits until the thread is waitRunnable
-     * 
-     * @param t
-     *            the thread
-     * @param maxWait
-     *            max amount of time we'll wait
-     */
-    void waitRunnable(Thread t, long maxWait) {
-        try {
-            long start = System.currentTimeMillis();
-            while (t.getState() != State.RUNNABLE) {
-                if(t.getState() == State.TERMINATED) {
-                    throw new RuntimeException("The thread got terminated while we were waiting for it to get into runnable state: " + t);
-                }
-                if (System.currentTimeMillis() > (start + maxWait))
-                    fail("Waited for the thread to be terminated more than maxWait: " + maxWait);
-                Thread.currentThread().sleep(20);
-            }
-        } catch (Exception e) {
-            System.out.println("Failure while waiting thread to resume processing" + t);
-        }
-    }
-
     
     /**
      * Waits maxWait for the thread to finish by itself, then forcefully kills it

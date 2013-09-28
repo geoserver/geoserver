@@ -55,7 +55,8 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
             waitTerminated(t1, MAX_WAIT);
 
             assertEquals(ThreadState.COMPLETE, t1.state);
-            waitRunnable(t2, MAX_WAIT);
+            // Give some time to the t2 to restart
+            Thread.sleep(100);
             assertEquals(ThreadState.PROCESSING, t2.state);
 
             t2.interrupt();
@@ -107,6 +108,8 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
             waitTerminated(t1, MAX_WAIT);
 
             assertEquals(ThreadState.COMPLETE, t1.state);
+            // Give some time to the t2 to restart
+            Thread.sleep(100);
             assertEquals(ThreadState.PROCESSING, t2.state);
 
             t2.interrupt();
@@ -154,6 +157,8 @@ public class IpFlowControllerTest extends AbstractFlowControllerTest {
             waitTerminated(t1, MAX_WAIT);
 
             assertEquals(ThreadState.COMPLETE, t1.state);
+            // Give some time to the t2 to restart
+            Thread.sleep(100);
             assertEquals(ThreadState.PROCESSING, t2.state);
 
             t2.interrupt();

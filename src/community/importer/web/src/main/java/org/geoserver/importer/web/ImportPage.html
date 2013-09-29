@@ -11,7 +11,7 @@
    <h1><wicket:message key="import"></wicket:message> <span wicket:id="id"></span></h1>
 
    <span class="rightwise">
-     <a href="#" wicket:id="raw">Raw...</a>
+     <a href="#" wicket:id="raw"><wicket:message key="Raw">Raw</wicket:message>...</a>
    </span>
    <div wicket:id="header">
    </div>
@@ -22,9 +22,9 @@
        <span style="float: right; margin-top:-1.5em;">
          <ul class="plain horizontal" wicket:id="select">
            <li>Select:</li>
-           <li style="border-left: none;"><a href="" wicket:id="select-all">All</a></li>
-           <li><a href="" wicket:id="select-none">None</a></li>
-           <li><a href="" wicket:id="select-ready">Ready</a></li>
+           <li style="border-left: none;"><a href="" wicket:id="select-all"><wicket:message key="all">All</wicket:message></a></li>
+           <li><a href="" wicket:id="select-none"><wicket:message key="none">None</wicket:message></a></li>
+           <li><a href="" wicket:id="select-ready"><wicket:message key="ready">Ready</wicket:message></a></li>
          </ul>
        </span>
        <legend>
@@ -55,9 +55,9 @@
        <span style="float: right; margin-top:-1.5em;">
          <ul class="plain horizontal">
            <li>Select:</li>
-           <li style="border-left: none;"><a href="" wicket:id="select-all">All</a></li>
-           <li><a href="" wicket:id="select-none">None</a></li>
-           <li><a href="" wicket:id="select-ready">Ready</a></li>
+           <li style="border-left: none;"><a href="" wicket:id="select-all"><wicket:message key="all">All</wicket:message></a></li>
+           <li><a href="" wicket:id="select-none"><wicket:message key="none">None</wicket:message></a></li>
+           <li><a href="" wicket:id="select-ready"><wicket:message key="ready">Ready</wicket:message></a></li>
          </ul>
        </span>
        <legend>
@@ -90,7 +90,7 @@
      <li>
         <fieldset>
         <legend>
-           <span class="no-border">The following files will be ignored:</span>
+           <span class="no-border"><wicket:message key="filesIgnored">filesIgnored</wicket:message>:</span>
         </legend>
         <ul wicket:id="emptyTasks" >
           <li><span wicket:id="title"></span></li>

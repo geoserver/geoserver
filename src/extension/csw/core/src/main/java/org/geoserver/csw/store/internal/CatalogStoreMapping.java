@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang.StringUtils;
 import org.geoserver.csw.records.RecordDescriptor;
 import org.geotools.data.complex.filter.XPathUtil;
 import org.geotools.factory.CommonFactoryFinder;
@@ -42,6 +43,8 @@ public class CatalogStoreMapping {
         protected Expression content = null;
         
         protected boolean required = false;
+        
+        protected int splitIndex = -1;
 
         /**
          * Create new Mapping Element
@@ -77,6 +80,15 @@ public class CatalogStoreMapping {
          */
         public boolean isRequired() {
             return required;
+        }
+        
+        /**
+         * Getter for splitIndex property
+         * 
+         * @return splitIndex
+         */
+        public int getSplitIndex() {
+            return splitIndex;
         }
     }
 
@@ -179,6 +191,7 @@ public class CatalogStoreMapping {
             String key = mappingEntry.getKey();
             boolean required = false;
             boolean id = false;
+            int splitIndex = -1;
             if("$".equals(key.substring(0,1))) {
                 key = key.substring(1);
                 required = true;
@@ -186,6 +199,10 @@ public class CatalogStoreMapping {
             if("@".equals(key.substring(0,1))) {
                 key = key.substring(1);
                 id = true;
+            }
+            if(key.contains("%.")) {
+                splitIndex = StringUtils.countMatches(key.substring(0 , key.indexOf("%.")), ".") ;
+                key = key.replace("%.", ".");
             }
             
             CatalogStoreMappingElement element = mapping.mappingElements.get(key);
@@ -196,6 +213,7 @@ public class CatalogStoreMapping {
 
             element.content = parseOgcCqlExpression(mappingEntry.getValue());
             element.required = required;
+            element.splitIndex = splitIndex;
             if (id) {
                 mapping.identifier = element;
             }

@@ -6,11 +6,16 @@ package org.geoserver.csw.store.internal;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFacade;
 import org.geoserver.catalog.CatalogInfo;
@@ -50,6 +55,8 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
     
     protected CatalogFacade catalogFacade;
     
+    protected Map<String, String> interpolationProperties = new HashMap<String, String>();
+    
     protected int offset;
     
     protected int count;
@@ -62,7 +69,8 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
     
     protected Comparator<Info> comparator;
     
-    public CatalogStoreFeatureIterator(int offset, int count, SortBy[] sortOrder, Filter filter, Catalog catalog, CatalogStoreMapping mapping, RecordDescriptor recordDescriptor) {
+    public CatalogStoreFeatureIterator(int offset, int count, SortBy[] sortOrder, Filter filter, Catalog catalog, CatalogStoreMapping mapping, RecordDescriptor recordDescriptor, Map<String, String> interpolationProperties) {
+        this.interpolationProperties = interpolationProperties;
         this.offset = offset;
         this.count = count;
         this.sortOrder = sortOrder;
@@ -163,16 +171,16 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
                         String[] elements = new String[((Collection) value).size()];
                         int i = 0;
                         for (Object element : (Collection) value) {
-                            elements[i++] = element.toString();
+                            elements[i++] = interpolate(interpolationProperties, element.toString());
                         }
-                        builder.addElement(mappingElement.getKey(), elements);
+                        builder.addElement(mappingElement.getKey(), mappingElement.getSplitIndex(), elements);
                     }
                 } else {
-                    builder.addElement(mappingElement.getKey(), value.toString());
+                    builder.addElement(mappingElement.getKey(), interpolate(interpolationProperties, value.toString()));
                 }
 
                 if (mappingElement == mapping.getIdentifierElement()) {
-                    id = value.toString();
+                    id = interpolate(interpolationProperties, value.toString());
                 }
             }
         }
@@ -219,6 +227,30 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
     @Override
     public void remove() {
         throw new UnsupportedOperationException("This iterator is read only");
+    }
+    
+
+    
+    /**
+     * Pattern to match a property to be substituted. Note the reluctant quantifier.
+     */
+    protected static final Pattern PROPERTY_INTERPOLATION_PATTERN = Pattern.compile("\\$\\{(.+?)\\}");
+
+    protected static String interpolate(Map<String, String> properties, String input) {
+        String result = input;
+        Matcher matcher = PROPERTY_INTERPOLATION_PATTERN.matcher(result);
+        while (matcher.find()) {
+            String propertyName = matcher.group(1);
+            String propertyValue = (String) properties.get(propertyName);
+            if (propertyValue == null) {
+                throw new RuntimeException("Interpolation failed for missing property "
+                        + propertyName);
+            } else {
+                result = result.replace(matcher.group(), propertyValue).trim();
+                matcher.reset(result);
+            }
+        }
+        return result;
     }
 
 }

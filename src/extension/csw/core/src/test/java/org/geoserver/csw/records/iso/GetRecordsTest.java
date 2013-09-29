@@ -4,8 +4,6 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 
-import java.util.HashMap;
-
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.SystemTestData;
@@ -102,6 +100,22 @@ public class GetRecordsTest extends MDTestSupport {
                 "//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:alternateTitle[3]/gco:CharacterString", d);
         assertXpathEvaluatesTo("##Forests",
                 "//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:alternateTitle[4]/gco:CharacterString", d);
+    
+        //check the service information
+        assertXpathEvaluatesTo("OGC:WFS",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource[1]/gmd:protocol/gco:CharacterString", d);
+        assertXpathEvaluatesTo("Forests",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource[1]/gmd:name/gco:CharacterString", d);
+        assertXpathEvaluatesTo("http://localhost:8080/geoserver/wfs",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource[1]/gmd:linkage/gmd:URL", d);
+        assertXpathEvaluatesTo("OGC:WMS",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource[2]/gmd:protocol/gco:CharacterString", d);
+        assertXpathEvaluatesTo("Forests",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource[2]/gmd:name/gco:CharacterString", d);
+        assertXpathEvaluatesTo("http://localhost:8080/geoserver/wms",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource[2]/gmd:linkage/gmd:URL", d);
+        
+       
     }
     
     @Test
@@ -189,7 +203,7 @@ public class GetRecordsTest extends MDTestSupport {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&outputSchema=http://www.isotc211.org/2005/gmd&typeNames=gmd:MD_Metadata&resultType=results"
                 + "&constraint=BBOX(BoundingBox, -250, -250, -190, -100)&maxRecords=100";
         Document d = getAsDOM(request);        
-        print(d);
+        //print(d);
         //validateSchema(d.getElementsByTagName("//gmd:MD_MetaData"));
 
         // basic checks

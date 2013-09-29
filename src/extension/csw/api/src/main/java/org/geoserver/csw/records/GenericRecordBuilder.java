@@ -74,7 +74,7 @@ public class GenericRecordBuilder implements RecordBuilder {
         public ComplexTreeLeaf clone(){
             ComplexTreeLeaf leaf = new ComplexTreeLeaf();        
             leaf.value.putAll(value);
-            leaf.userData.putAll(userData);
+            leaf.userData = userData;
             leaf.descriptor = descriptor;
             return leaf;
         }

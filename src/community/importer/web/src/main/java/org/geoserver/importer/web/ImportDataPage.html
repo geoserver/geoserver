@@ -25,12 +25,12 @@
 <wicket:extend>
   <form wicket:id="form">
     <fieldset>
-      <legend><span class="no-border">1. Choose a data source to import from</span></legend>
+      <legend><span class="no-border">1. <wicket:message key="chooseDataSource">chooseDataSource</wicket:message></span></legend>
       <div wicket:id="sources" id="sources">
       </div>
     </fieldset>
     <fieldset>
-      <legend><span class="no-border">2. Configure the data source</span></legend>
+      <legend><span class="no-border">2. <wicket:message key="configureDataSource">configureDataSource</wicket:message></span></legend>
       <ul>
       <li>
         <div wicket:id="panel">
@@ -40,18 +40,18 @@
       </ul>
     </fieldset>
     <fieldset>
-      <legend><span class="no-border">3. Specify the target for the import</span></legend>
+      <legend><span class="no-border">3. <wicket:message key="specifyTarget">specifyTarget</wicket:message></span></legend>
       <ul>
         <div>
         <li>
-          <label for="workspace">Workspace</label>
+          <label for="workspace"><wicket:message key="workspace">Workspace</wicket:message></label>
           <select id="workspace" wicket:id="workspace"></select>
           <span wicket:id="workspaceNameContainer"><input type="text" class="text" wicket:id="workspaceName" style="width:10em;"></input></span>
         </li>
         <li>
-          <label for="store">Store</label>
+          <label for="store"><wicket:message key="store">Store</wicket:message></label>
           <select id="store" wicket:id="store"></select>
-          <!--label for="storeName">Name</label>
+          <!--label for="storeName"><wicket:message key="storeName">Name</wicket:message></label>
           <input type="text" id="storeName" wicket:id="storeName"></input-->
         </li>
         </div>
@@ -75,7 +75,7 @@
         </ul>
       </span>
       <legend>
-        <span class="no-border">Recent Imports</span>
+        <span class="no-border"><wicket:message key="recentImports">recentImports</wicket:message></span>
       </legend>
 
       <ul>

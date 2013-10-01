@@ -21,6 +21,8 @@ public interface RecordBuilder {
      * @param values value(s) to be attached to property
      */
     public void addElement(String name, String... values);
+    
+    public void addElement(String name, int splitIndex, String... values);
 
     /**
      * Adds a bounding box to the record. The envelope must be in WGS84
@@ -36,5 +38,5 @@ public interface RecordBuilder {
      * @return the feature
      */
     public Feature build(String id) ;
-
+    
 }

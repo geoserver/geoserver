@@ -61,7 +61,7 @@ function upload_installer() {
 # start_installer_job <hudson_url> <tag>
 # starts a hudson installer job
 function start_installer_job() {
-  curl -k --connect-timeout 10 "$1/job/geoserver-installer/buildWithParameters?TAG=$2"
+  curl -k --connect-timeout 10 "$1/job/geoserver-installer/buildWithParameters?TAG=$2&token=buildme"
 }
 
 function is_primary_branch_num() {

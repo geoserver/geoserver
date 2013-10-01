@@ -30,14 +30,14 @@ import org.vfny.geoserver.global.GeoserverDataDirectory;
  */
 public class DefaultControlFlowConfigurator implements ControlFlowConfigurator {
     static final Logger LOGGER = Logging.getLogger(DefaultControlFlowConfigurator.class);
-
+    static final String PROPERTYFILENAME="controlflow.properties";
     PropertyFileWatcher configFile;
 
     long timeout = -1;
 
     public DefaultControlFlowConfigurator() {
         configFile = new PropertyFileWatcher(new File(
-                GeoserverDataDirectory.getGeoserverDataDirectory(), "controlflow.properties"));
+                GeoserverDataDirectory.getGeoserverDataDirectory(), PROPERTYFILENAME));
     }
 
     /**
@@ -59,15 +59,20 @@ public class DefaultControlFlowConfigurator implements ControlFlowConfigurator {
             String value = (String) p.get(okey);
             LOGGER.info("Loading control-flow configuration: " + key + "=" + value);
 
-            String[] keys = key.trim().split("\\s*\\.\\s*");
+            String[] keys = key.split("\\s*\\.\\s*");
 
             int queueSize = 0;
             StringTokenizer tokenizer = new StringTokenizer(value, ",");
             try {
-                if (tokenizer.countTokens() == 1) {
-                    queueSize = Integer.parseInt(value);
-                } else {
-                    queueSize = Integer.parseInt(tokenizer.nextToken());
+            	//ip.blacklist and ip.whitelist properties aren't integer values
+            	if(!"ip.blacklist".equals(key) && !"ip.whitelist".equals(key)){
+                    if (tokenizer.countTokens() == 1) {
+                        queueSize = Integer.parseInt(value);
+                    } else {
+                        queueSize = Integer.parseInt(tokenizer.nextToken());
+                    }
+                }else{
+                	continue;
                 }
             } catch (NumberFormatException e) {
                 LOGGER.severe("Rules should be assigned just a queue size, instead " + okey
@@ -97,8 +102,10 @@ public class DefaultControlFlowConfigurator implements ControlFlowConfigurator {
                 if (keys.length == 1) {
                     controller = new IpFlowController(queueSize);
                 } else if (keys.length > 1) {
-                    String ip = key.substring("ip.".length());
-                    controller = new SingleIpFlowController(queueSize, ip);
+                	if(!"blacklist".equals(keys[1]) && !"whitelist".equals(keys[1])){
+                		String ip = key.substring("ip.".length());
+                		controller = new SingleIpFlowController(queueSize, ip);
+                	}
                 }
             }
             if (controller == null) {

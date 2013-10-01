@@ -290,10 +290,32 @@
 		</configuration>
 		<executions>
 			<execution>
-				<phase>install</phase>
+				<phase>package</phase>
 				<goals>
 					<goal>war</goal>
 				</goals>
+			</execution>
+		</executions>
+	</plugin>
+	<plugin>
+		<groupId>org.codehaus.mojo</groupId>
+		<artifactId>build-helper-maven-plugin</artifactId>
+		<version>1.8</version>
+		<executions>
+			<execution>
+				<id>attach-war</id>
+				<phase>package</phase>
+				<goals>
+					<goal>attach-artifact</goal>
+				</goals>
+				<configuration>
+					<artifacts>
+						<artifact>
+							<file>${project.build.directory}/geoserver.war</file>
+							<type>war</type>
+						</artifact>
+					</artifacts>
+				</configuration>
 			</execution>
 		</executions>
 	</plugin>

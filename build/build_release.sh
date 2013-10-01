@@ -360,8 +360,8 @@ done
 # fire off mac and windows build machines
 if [ -z $SKIP_INSTALLERS ]; then
   echo "starting installer jobs"
-  start_installer_job $WIN_HUDSON $tag
-  start_installer_job $MAC_HUDSON $tag
+  start_installer_job $WIN_JENKINS $tag
+  start_installer_job $MAC_JENKINS $tag
 fi
 
 # git commit changes on the release branch

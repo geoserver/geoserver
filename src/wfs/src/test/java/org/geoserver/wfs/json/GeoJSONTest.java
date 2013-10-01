@@ -73,7 +73,10 @@ public class GeoJSONTest extends WFSTestSupport {
     
     @Test
     public void testGet() throws Exception {	
-    	String out = getAsString("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat="+JSONType.json);
+        MockHttpServletResponse response = getAsServletResponse("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat="+JSONType.json);
+        assertEquals("application/json", response.getContentType());
+        String out = response.getOutputStreamContent();
+
     	
     	JSONObject rootObject = JSONObject.fromObject( out );
     	assertEquals(rootObject.get("type"),"FeatureCollection");
@@ -84,7 +87,9 @@ public class GeoJSONTest extends WFSTestSupport {
     
     @Test
     public void testGetSimpleJson() throws Exception {    
-        String out = getAsString("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat="+JSONType.simple_json);
+        MockHttpServletResponse response = getAsServletResponse("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat="+JSONType.simple_json);
+        assertEquals("application/json", response.getContentType());
+        String out = response.getOutputStreamContent();
         
         JSONObject rootObject = JSONObject.fromObject( out );
         assertEquals(rootObject.get("type"),"FeatureCollection");

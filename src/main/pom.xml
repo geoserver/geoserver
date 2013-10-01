@@ -187,6 +187,11 @@
    <scope>test</scope>
   </dependency>
   <dependency>
+  <groupId>org.geotools.jdbc</groupId>
+   <artifactId>gt-jdbc-postgis</artifactId>
+   <scope>test</scope>
+  </dependency>
+  <dependency>
     <groupId>org.geoserver</groupId>
     <artifactId>platform</artifactId>
   </dependency>

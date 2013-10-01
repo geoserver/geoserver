@@ -3,7 +3,6 @@ package org.geoserver.csw.store.internal;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 
-import java.util.HashMap;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geotools.csw.CSWConfiguration;

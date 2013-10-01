@@ -76,6 +76,7 @@ public class GeoserverLdapBindAuthenticator extends BindAuthenticator {
                 "Can only process UsernamePasswordAuthenticationToken objects");
 
         String username = authentication.getName();
+        String originalUser = username;
         String password = (String) authentication.getCredentials();
         // format given username if required
         if (userFormat != null && !userFormat.equals("")) {
@@ -101,7 +102,7 @@ public class GeoserverLdapBindAuthenticator extends BindAuthenticator {
             searchCtls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
             user = SpringSecurityLdapTemplate.searchForSingleEntryInternal(ctx,
-                    searchCtls, "", userFilter, new Object[] { username });
+                    searchCtls, "", userFilter, new Object[] { username, originalUser });
             userDnStr = user.getDn().toString();
             if (ppolicy != null) {
                 user.setAttributeValue(ppolicy.getID(), ppolicy);

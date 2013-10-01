@@ -13,6 +13,7 @@ import net.opengis.wcs20.GetCoverageType;
 
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
+import org.geoserver.wcs2_0.GetCoverage;
 import org.geoserver.wcs2_0.GridCoverageRequest;
 import org.geotools.coverage.grid.io.DimensionDescriptor;
 import org.geotools.coverage.grid.io.GranuleSource;
@@ -61,6 +62,8 @@ public class WCSDefaultValuesHelper {
 
     private ReaderDimensionsAccessor accessor;
 
+    private final static WCSDimensionsValueParser PARSER = new WCSDimensionsValueParser();
+
     public WCSDefaultValuesHelper(GridCoverage2DReader reader, ReaderDimensionsAccessor accessor, GetCoverageType request, String coverageName) throws IOException {
         super();
         this.accessor = accessor == null ? new ReaderDimensionsAccessor(reader) : accessor; // Force the creation of an accessor
@@ -81,9 +84,9 @@ public class WCSDefaultValuesHelper {
     public void setDefaults(GridCoverageRequest subsettingRequest) throws IOException {
         // Deal with default values
         final String format = request.getFormat();
-        if (format != null && !format.equalsIgnoreCase("NETCDFOutputFormat")) {
+        if (format != null && !GetCoverage.formatSupportMDOutput(format)) {
             // TODO: Revisit this code and change that Format String. 
-            // NetCDFOutputFormat should support multidimensional output format
+            // Formats supporting multidimensional output format don't neede to setup default values
             // Therefore, no need to set default values
 
             // For 2D output format, we can setup default values to reduce the number of results
@@ -551,7 +554,7 @@ public class WCSDefaultValuesHelper {
                 String defaultValue = accessor.getCustomDomainDefaultValue(customDomain);
                 String dataType = reader.getMetadataValue(customDomain + "_DOMAIN_DATATYPE");
                 if (dataType != null) {
-                    WCSDimensionsSubsetHelper.setValues(defaultValue, dimensionValue, dataType);
+                    PARSER.setValues(defaultValue, dimensionValue, dataType);
                 } else {
                     dimensionValue.add(defaultValue);
                 }

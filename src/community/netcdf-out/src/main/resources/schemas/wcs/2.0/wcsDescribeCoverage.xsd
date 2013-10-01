@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/wcs/2.0" 
+    xmlns:wcs="http://www.opengis.net/wcs/2.0"
+    xmlns:gmlcov="http://www.opengis.net/gmlcov/1.0"
+    xmlns:gml="http://www.opengis.net/gml/3.2"
+    xmlns="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified" version="2.0.1" xml:lang="en">
+    <annotation>
+        <appinfo>wcsDescribeCoverage.xsd</appinfo>
+        <appinfo>
+            <GMLProfileSchema>http://schemas.opengis.net/gmlcov/1.0/gmlcovAll.xsd</GMLProfileSchema>
+        </appinfo>
+        <documentation>This XML Schema Document defines the DescribeCoverage operation request and response XML elements and types, used by the OGC Web Coverage Service (WCS).
+            Last updated: 2012-feb-06
+            Copyright (c) 2012 Open Geospatial Consortium.
+            To obtain additional rights of use, visit http://www.opengeospatial.org/legal/.
+        </documentation>
+    </annotation>
+
+    <!-- ============================================================== -->
+    <!-- includes and imports                                           -->
+    <!-- ============================================================== -->
+    <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+    <import namespace="http://www.opengis.net/gmlcov/1.0" schemaLocation="http://schemas.opengis.net/gmlcov/1.0/gmlcovAll.xsd"/>
+    <include schemaLocation="wcsCommon.xsd"/>
+
+    <!-- ============================================================== -->
+    <!-- elements and types                                             -->
+    <!-- ============================================================== -->
+    <element name="DescribeCoverage" type="wcs:DescribeCoverageType">
+        <annotation>
+            <documentation>Request to a WCS to perform the DescribeCoverage operation. This operation allows a client to retrieve descriptions of one or more coverages. In this XML encoding, no "request" parameter is included, since the element name specifies the specific operation. </documentation>
+        </annotation>
+    </element>
+    <complexType name="DescribeCoverageType">
+        <complexContent>
+            <extension base="wcs:RequestBaseType">
+                <sequence>
+                    <element ref="wcs:CoverageId" maxOccurs="unbounded">
+                        <annotation>
+                            <documentation>Unordered list of identifiers of desired coverages. A client can obtain identifiers by a prior GetCapabilities request, or from a third-party source. </documentation>
+                        </annotation>
+                    </element>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <!-- =========================================================== -->
+    <element name="CoverageDescriptions" type="wcs:CoverageDescriptionsType">
+        <annotation>
+            <documentation>Response from a WCS DescribeCoverage operation, containing one or more coverage descriptions. </documentation>
+        </annotation>
+    </element>
+    <complexType name="CoverageDescriptionsType">
+        <sequence>
+            <element ref="wcs:CoverageDescription" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+    </complexType>
+    <!-- =========================================================== -->
+    <element name="CoverageDescription" type="wcs:CoverageDescriptionType" substitutionGroup="gml:AbstractFeature">
+        <annotation>
+            <documentation>Description of a coverage available from a WCS server. This description shall include sufficient information to allow all valid GetCoverage operation requests to be prepared by a WCS client. </documentation>
+        </annotation>
+    </element>
+    <complexType name="CoverageDescriptionType">
+        <complexContent>
+            <extension base="gml:AbstractFeatureType">
+                <sequence>
+                    <element ref="wcs:CoverageId"/>
+                    <element ref="gml:coverageFunction" minOccurs="0"/>
+                    <element ref="gmlcov:metadata" minOccurs="0" maxOccurs="unbounded"/>
+                    <element ref="gml:domainSet"/>
+                    <element ref="gmlcov:rangeType"/>
+                    <element ref="wcs:ServiceParameters"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+</schema>

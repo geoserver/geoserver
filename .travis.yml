@@ -8,4 +8,8 @@ script:
   - mvn clean test -Prelease -T2
 notifications:
   email: false
+  on_failure: never
+branches:
+  only:
+    - master
 

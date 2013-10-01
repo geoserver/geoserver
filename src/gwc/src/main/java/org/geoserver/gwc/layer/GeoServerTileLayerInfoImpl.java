@@ -251,6 +251,22 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
         metaWidthHeight[0] = metaTilingX;
     }
     
+    public int getExpireCache() {
+        return expireCache;
+    }
+    
+    public void setExpireCache(int expireCache) {
+        this.expireCache = expireCache;
+    }
+    
+    public List<ExpirationRule> getExpireCacheList() {
+        return expireCacheList;
+    }
+    
+    public void setExpireCacheList(List<ExpirationRule> expireCacheList) {
+        this.expireCacheList = expireCacheList;
+    }
+    
     @Override
     public int getExpireClients() {
     	return expireClients;

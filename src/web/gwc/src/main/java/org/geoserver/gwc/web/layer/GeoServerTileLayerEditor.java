@@ -110,7 +110,9 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
 
     private final CheckGroup<String> cacheFormats;
     
-    private final TextField<Integer> expireClients;
+    private final FormComponent<Integer> expireCache;
+    
+    private final FormComponent<Integer> expireClients;
 
     private final GridSubsetsEditor gridSubsets;
     private final ParameterFilterEditor parameterFilters;
@@ -236,6 +238,10 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
                                              // submits
         cacheFormats.add(cacheFormatsList);
 
+        IModel<Integer> expireCacheModel = new PropertyModel<Integer>(getModel(), "expireCache");
+        expireCache = new TextField<Integer>("expireCache", expireCacheModel);
+        configs.add(expireCache);
+        
         IModel<Integer> expireClientsModel = new PropertyModel<Integer>(getModel(), "expireClients");
         expireClients = new TextField<Integer>("expireClients", expireClientsModel);
         configs.add(expireClients);
@@ -388,6 +394,8 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
 
         if (createTileLayer) {
             enabled.processInput();
+            expireCache.processInput();
+            expireClients.processInput();
             metaTilingX.processInput();
             metaTilingY.processInput();
             gutter.processInput();

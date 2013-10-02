@@ -7,7 +7,6 @@ package org.geoserver.wms.web.data;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.logging.Level;
-
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.behavior.AbstractBehavior;
@@ -86,6 +85,13 @@ public class StyleEditPage extends AbstractStylePage {
             Version version = Styles.findVersion(new ByteArrayInputStream(rawSLD.getBytes()));
             style.setSLDVersion(version);
             
+            // make sure the legend is null if there is no URL
+            if (null == style.getLegend()
+                    || null == style.getLegend().getOnlineResource()
+                    || style.getLegend().getOnlineResource().isEmpty()) {
+                style.setLegend(null);
+            }
+
             // write out the SLD
             try {
                 getCatalog().getResourcePool().writeStyle(style,

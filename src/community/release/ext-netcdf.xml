@@ -1,0 +1,25 @@
+<assembly>
+  <id>netcdf</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>netcdf*.jar</include>
+        <include>udunits*.jar</include>
+        <include>joda-time*.jar</include>
+        <include>jcip-annotations*.jar</include>
+        <include>jdom-1.1*.jar</include>
+        <include>commons-httpclient*.jar</include>
+        <include>ehcache*.jar</include>
+        <include>gt-netcdf*.jar</include>
+        <include>gt-coverage-api*.jar</include>
+        <include>gt-unidata*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

@@ -121,6 +121,12 @@
 			<version>${gt.version}</version>				
 			<scope>test</scope>
 		</dependency>
+ 		<dependency>
+			<groupId>org.geotools.jdbc</groupId>
+			<artifactId>gt-jdbc-postgis</artifactId>
+			<version>${gt.version}</version>
+			<scope>test</scope>
+		</dependency>
         <dependency>
             <groupId>org.geotools.schemas</groupId>
             <artifactId>geosciml-3.0-seegrid</artifactId>

@@ -1,5 +1,7 @@
 package org.geoserver.jdbcconfig.internal;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,6 +14,7 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.geotools.factory.GeoTools;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 
@@ -25,17 +28,22 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Disposabl
     Context jndiCtx;
     DataSource dataSource;
     
-    private static Context getJNDI() {
-        try {
-            return GeoTools.getInitialContext(GeoTools.getDefaultHints());
-        } catch (NamingException ex) {
-            LOGGER.log(Level.WARNING, "Could not get JNDI Context, will not use JNDI to locate DataSource", ex);
+    private static Context getJNDI(JDBCConfigProperties config) {
+        if(config.isEnabled() && config.getJndiName().isPresent()) {
+            try {
+                return GeoTools.getInitialContext(GeoTools.getDefaultHints());
+            } catch (NamingException ex) {
+                LOGGER.log(Level.WARNING, "Could not get JNDI Context, will not use JNDI to locate DataSource", ex);
+                return null;
+            }
+        } else {
+            // Don't bother trying to get a JNDI context if JNDI lookup isn't needed.
             return null;
         }
     }
     
     public DataSourceFactoryBean(JDBCConfigProperties config) {
-        this(config, getJNDI());
+        this(config, getJNDI(config));
     }
 
     
@@ -58,10 +66,29 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Disposabl
      * @throws Exception
      */
     protected DataSource getDataSource() throws Exception {
-        DataSource ds = getJNDIDataSource(get(config, "jndiName", String.class, false)).orNull();
+        DataSource ds = null;
+        
+        boolean jndi = true;
+        ds = getJNDIDataSource(config.getJndiName()).orNull();
+        
         if(ds==null) {
+            jndi=false;
             ds = createDataSource();
         }
+        
+        // Open and close a connection to verify the datasource works.
+        try {
+            ds.getConnection().close();
+        } catch (Exception ex) {
+            // Provide a useful error message that won't get lost in the stack trace.
+            if(jndi) {
+                LOGGER.severe("Error connecting to JDBCConfig database. Verify the settings of your JNDI data source and that the database is available.");
+            } else {
+                LOGGER.severe("Error connecting to JDBCConfig database. Verify the settings in jdbcconfig/jdbcconfig.properties and that the database is available.");
+            }
+            throw ex;
+        }
+        
         return ds;
     }
     
@@ -110,7 +137,7 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Disposabl
     protected DataSource createDataSource() throws Exception {
         BasicDataSource dataSource = createBasicDataSource();
 
-        dataSource.setUrl(config.getJdbcUrl());
+        dataSource.setUrl(config.getJdbcUrl().get());
 
         Optional<String> driverClassName = get(config, "driverClassName", String.class, true);
         try {

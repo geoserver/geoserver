@@ -11,14 +11,14 @@
 
   <parent>
     <groupId>org.geoserver</groupId>    
-    <artifactId>extension</artifactId>
-    <version>2.5-SNAPSHOT</version>
+    <artifactId>csw</artifactId>
+    <version>2.4-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.csw</groupId>
   <artifactId>web-csw</artifactId>
   <packaging>jar</packaging>
-  <version>2.5-SNAPSHOT</version>
+  <version>2.4-SNAPSHOT</version>
   <name>CSW UI Module</name>
   
   <dependencies>

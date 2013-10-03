@@ -11,7 +11,8 @@ public class HazelcastUtil {
     }
 
     public static String localIPAsString(HazelcastInstance hz) {
-        return localAddress(hz).getAddress().getHostAddress();
+        InetSocketAddress addr = localAddress(hz);
+        return addr.getAddress().getHostAddress()+":"+addr.getPort();
     }
 
 }

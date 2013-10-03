@@ -4,6 +4,7 @@ import static org.geoserver.cluster.hazelcast.HazelcastUtil.localIPAsString;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.geoserver.web.wicket.GeoServerDialog;
@@ -37,7 +38,9 @@ public class NodeLinkPanel extends Panel {
                 });
             }
         });
-
+        
+        add(new Label("cluster", cluster.getHz().getConfig().getGroupConfig().getName()));
+        
         add(dialog = new GeoServerDialog("dialog"));
         dialog.setInitialHeight(255);
         dialog.setInitialWidth(300);

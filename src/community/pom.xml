@@ -47,6 +47,7 @@
           <descriptor>release/ext-wms-eo.xml</descriptor>
           <descriptor>release/ext-libjpeg-turbo.xml</descriptor>
           <descriptor>release/ext-netcdf.xml</descriptor>
+          <descriptor>release/ext-netcdf-out.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -161,6 +162,7 @@
         <module>wms-eo</module>
         <module>libjpeg-turbo</module>
         <module>netcdf</module>
+        <module>netcdf-out</module>
       </modules>
     </profile>
     <profile>
@@ -229,6 +231,15 @@
         <module>wcs2_0</module>
         <module>wcs2_0-eo</module>
         <module>web-wcs2_0-eo</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>netcdf-out</id>
+      <activation>
+        <property><name>netcdf-out</name></property>
+      </activation> 
+      <modules>
+        <module>netcdf-out</module>
       </modules>
     </profile>
     <profile>

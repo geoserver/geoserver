@@ -342,20 +342,20 @@ class GMLTransformer extends TransformerBase {
             // list case
             int i = 0;
             for (String item : domain) {
-                Date date = WCSDimensionsSubsetHelper.parseAsDate(item);
+                Date date = WCSDimensionsValueParser.parseAsDate(item);
                 if (date != null) {
                     final String dimensionId = helper.getCoverageId() + "_dd_" + i;
                     encodeDate(date, helper, dimensionId); 
                     continue;
                 }
 
-                Double number = WCSDimensionsSubsetHelper.parseAsDouble(item);
+                Double number = WCSDimensionsValueParser.parseAsDouble(item);
                 if (number != null ) {
                     element(TAG.SINGLE_VALUE, item.toString());
                     continue;
                 }
 
-                NumberRange<Double> range = WCSDimensionsSubsetHelper.parseAsDoubleRange(item);
+                NumberRange<Double> range = WCSDimensionsValueParser.parseAsDoubleRange(item);
                 if (range != null ) {
                     encodeInterval(range.getMinValue().toString(), range.getMaxValue()
                           .toString(), null, null);

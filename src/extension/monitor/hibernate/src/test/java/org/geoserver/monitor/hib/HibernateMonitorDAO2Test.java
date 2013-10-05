@@ -4,7 +4,7 @@
  */
 package org.geoserver.monitor.hib;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.geoserver.monitor.MonitorTestData.assertCovered;
 
 import java.io.File;
@@ -49,6 +49,9 @@ public class HibernateMonitorDAO2Test extends MonitorDAOTestSupport {
 	    File file = new File("./target/monitoring/db.properties");
 	    FileOutputStream fos = null;
 	    try {
+	        if(!file.getParentFile().exists()) {
+	            assertTrue(file.getParentFile().mkdirs());
+	        }
 	        fos = new FileOutputStream(file);
 	        p.store(fos, null);
 	    } finally {

@@ -879,6 +879,8 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         protected void handleLayer(final LayerInfo layer) throws IOException {
             boolean queryable = wmsConfig.isQueryable(layer);
             AttributesImpl qatts = attributes("queryable", queryable ? "1" : "0");
+            boolean opaque = wmsConfig.isOpaque(layer);
+            qatts.addAttribute("", "opaque", "opaque", "", opaque ? "1" : "0");
             Integer cascadedHopCount = wmsConfig.getCascadedHopCount(layer);
             if (cascadedHopCount != null) {
                 qatts.addAttribute("", "cascaded", "cascaded", "", String.valueOf(cascadedHopCount));

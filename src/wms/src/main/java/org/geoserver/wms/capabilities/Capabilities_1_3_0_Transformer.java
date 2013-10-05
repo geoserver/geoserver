@@ -954,17 +954,17 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 		private void handleScaleDenominator(final LayerInfo layer) {
 
 			try {
-				final String minScaleDenominator = "MinScaleDenominator";
-				final String maxScaleDenominator = "MaxScaleDenominator";
+				final String MIN_SCALE_DENOMINATOR = "MinScaleDenominator";
+				final String MAX_SCALE_DENOMINATOR = "MaxScaleDenominator";
 				Map<String, Double> denominators = CapabilityUtil.searchMinMaxScaleDenominator(
-														minScaleDenominator, maxScaleDenominator, layer);
-				
-				if(denominators.get(minScaleDenominator) != 0.0){
-					element(minScaleDenominator, String.valueOf(denominators.get(minScaleDenominator)) );
+														MIN_SCALE_DENOMINATOR, MAX_SCALE_DENOMINATOR, layer);
+
+				if(denominators.get(MIN_SCALE_DENOMINATOR) != 0.0){
+					element(MIN_SCALE_DENOMINATOR, String.valueOf(denominators.get(MIN_SCALE_DENOMINATOR)) ); 					
 				}
 				
-				if(denominators.get(maxScaleDenominator) != Double.POSITIVE_INFINITY){
-					element(maxScaleDenominator, String.valueOf(denominators.get(maxScaleDenominator)) );
+				if(denominators.get(MAX_SCALE_DENOMINATOR) != Double.POSITIVE_INFINITY){
+                    element(MAX_SCALE_DENOMINATOR, String.valueOf(denominators.get(MAX_SCALE_DENOMINATOR)) ); 					
 				}
 
 			} catch (IOException e) {

@@ -54,7 +54,7 @@ public class BufferedImageChildTest {
         BufferedImage subimage = bi.getSubimage(x, y, w, h);
         // ImageAssert.showImage("Subimage", 2000, subimage);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        new PNGJMapResponse(null).writePNG(subimage, bos);
+        new PNGJMapResponse(null).writePNG(subimage, bos, 4);
         ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
         BufferedImage readBack = ImageIO.read(bis);
         // ImageAssert.showImage("ReadBack", 2000, readBack);

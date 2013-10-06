@@ -92,7 +92,7 @@ public class PngSuiteImagesTest {
         // write the PNG
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         PNGJMapResponse response = new PNGJMapResponse(null);
-        response.writePNG(original, bos);
+        response.writePNG(original, bos, 4);
 
         // write the output to file for eventual visual comparison
         byte[] bytes = bos.toByteArray();

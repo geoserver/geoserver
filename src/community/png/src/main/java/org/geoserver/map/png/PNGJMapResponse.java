@@ -104,10 +104,14 @@ public class PNGJMapResponse extends RenderedImageMapResponse {
         // check to see if we have to see a translucent or bitmask quantizer
         image = applyPalette(image, mapContent, "image/png8", true);
 
-        writePNG(image, outStream);
+        // compute the compression level similarly to what the Clib code does
+        float quality = (100 - wms.getPngCompression()) / 100.0f;
+        int level = Math.round(9 * (1f - quality));
+        
+        writePNG(image, outStream, level);
     }
 
-    public void writePNG(RenderedImage image, OutputStream outStream) {
+    public void writePNG(RenderedImage image, OutputStream outStream, int level) {
         ScanlineProvider scanlines = ScanlineProviderFactory.getProvider(image);
         
         // encode using the PNGJ library and the GeoServer own scaline providers
@@ -122,8 +126,7 @@ public class PNGJMapResponse extends RenderedImageMapResponse {
         PngWriter pw = new PngWriter(outStream, ii);
         pw.setShouldCloseStream(false);
         try {
-            // TODO: set the compression level
-            pw.setCompLevel(4);
+            pw.setCompLevel(level);
             // TODO: optimize based on the image type, raster or vector
             pw.setFilterType(ar.com.hjg.pngj.FilterType.FILTER_NONE);
 

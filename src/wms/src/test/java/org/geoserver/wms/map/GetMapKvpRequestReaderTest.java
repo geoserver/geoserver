@@ -26,6 +26,7 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.GeoServerLoader;
 import org.geoserver.data.test.MockData;
 import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.kvp.URLKvpParser;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.test.ows.KvpRequestReaderTestSupport;
@@ -275,7 +276,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         request = (GetMapRequest) reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
 
         assertNotNull(request.getSld());
-        assertEquals(decoded, request.getSld().toExternalForm());
+        assertEquals(URLKvpParser.fixURL(decoded), request.getSld().toExternalForm());
         final Style style = (Style) request.getStyles().get(0);
         assertNotNull(style);
         assertEquals("BasicPolygons", style.getName());
@@ -294,7 +295,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         request = (GetMapRequest) reader.read(request, parseKvp(kvp), kvp);
 
         assertNotNull(request.getSld());
-        assertEquals(decoded, request.getSld().toExternalForm());
+        assertEquals(URLKvpParser.fixURL(decoded), request.getSld().toExternalForm());
         final Style style = (Style) request.getStyles().get(0);
         assertNotNull(style);
         assertEquals("TheLibraryModeStyle", style.getName());
@@ -314,7 +315,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         request = (GetMapRequest) reader.read(request, parseKvp(kvp), kvp);
 
         assertNotNull(request.getSld());
-        assertEquals(decoded, request.getSld().toExternalForm());
+        assertEquals(URLKvpParser.fixURL(decoded), request.getSld().toExternalForm());
         final Style style = (Style) request.getStyles().get(0);
         assertNotNull(style);
         assertEquals("TheLibraryModeStyle", style.getName());
@@ -350,7 +351,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         request = (GetMapRequest) reader.read(request, parseKvp(kvp), kvp);
 
         assertNotNull(request.getSld());
-        assertEquals(decoded, request.getSld().toExternalForm());
+        assertEquals(URLKvpParser.fixURL(decoded), request.getSld().toExternalForm());
         // check the style
         final Style style = (Style) request.getStyles().get(0);
         assertNotNull(style);
@@ -380,7 +381,7 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         request = (GetMapRequest) reader.read(request, parseKvp(kvp), kvp);
 
         assertNotNull(request.getSld());
-        assertEquals(decoded, request.getSld().toExternalForm());
+        assertEquals(URLKvpParser.fixURL(decoded), request.getSld().toExternalForm());
         // check the style
         final Style style = (Style) request.getStyles().get(0);
         assertNotNull(style);

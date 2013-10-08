@@ -20,6 +20,8 @@ public class JDBCConfigProperties extends Properties {
 
     //factory
     JDBCConfigPropertiesFactoryBean factory;
+    
+    String datasourceId = null;
 
     public JDBCConfigProperties(JDBCConfigPropertiesFactoryBean factory) {
         this.factory = factory;
@@ -91,5 +93,13 @@ public class JDBCConfigProperties extends Properties {
 
     public void setJndiName(String name) {
         setProperty("jndiName", name);
+    }
+
+    public String getDatasourceId() {
+        return datasourceId;
+    }
+
+    public void setDatasourceId(String datasourceId) {
+        this.datasourceId = datasourceId;
     }
 }

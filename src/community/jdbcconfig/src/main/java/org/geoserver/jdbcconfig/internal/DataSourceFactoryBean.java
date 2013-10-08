@@ -114,7 +114,7 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Disposabl
                 if(LOGGER.isLoggable(Level.INFO)) {
                     LOGGER.log(Level.INFO, "JDBCConfig using JNDI DataSource {0}", name.get());
                 }
-                config.datasourceId=name.get();
+                config.setDatasourceId(name.get());
                 return ds;
             } catch (NamingException ex) {
                 if(LOGGER.isLoggable(Level.WARNING)) {

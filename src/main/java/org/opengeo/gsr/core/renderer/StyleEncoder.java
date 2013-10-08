@@ -532,8 +532,6 @@ public class StyleEncoder {
         if (ftStyle.rules().size() != 1) return null;
         Rule rule = ftStyle.rules().get(0);
         if (rule.getFilter() != null) return null;
-        if (rule.getMinScaleDenominator() > 0) return null;
-        if (rule.getMaxScaleDenominator() < Double.MAX_VALUE) return null;
         if (rule.symbolizers().size() != 1) return null;
         return rule.symbolizers().get(0);
     }

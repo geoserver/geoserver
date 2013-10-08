@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.config.J2eeAuthenticationFilterConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
+import org.geoserver.security.config.J2eeAuthenticationFilterConfig.RolesTakenFrom;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.security.impl.RoleCalculator;
 
@@ -27,12 +28,24 @@ public class GeoServerJ2eeAuthenticationFilter extends GeoServerPreAuthenticatio
     
     private  String roleServiceName;
     
+    private RolesTakenFrom rolesTakenFrom = RolesTakenFrom.J2EE;
+    
+    
+    
     public String getRoleServiceName() {
         return roleServiceName;
     }
 
     public void setRoleServiceName(String roleServiceName) {
         this.roleServiceName = roleServiceName;
+    }
+    
+    public RolesTakenFrom getRolesTakenFrom() {
+        return rolesTakenFrom;
+    }
+
+    public void setRolesTakenFrom(RolesTakenFrom rolesTakenFrom) {
+        this.rolesTakenFrom = rolesTakenFrom;
     }
 
     @Override
@@ -43,8 +56,7 @@ public class GeoServerJ2eeAuthenticationFilter extends GeoServerPreAuthenticatio
                 (J2eeAuthenticationFilterConfig) config;
         
         roleServiceName=authConfig.getRoleServiceName();
-        
-        
+        rolesTakenFrom = authConfig.getRolesTakenFrom();
     }
 
     @Override
@@ -61,10 +73,19 @@ public class GeoServerJ2eeAuthenticationFilter extends GeoServerPreAuthenticatio
         GeoServerRoleService service = useActiveService ?
               getSecurityManager().getActiveRoleService() :
               getSecurityManager().loadRoleService(getRoleServiceName());
-                                
-        for (GeoServerRole role: service.getRoles())
-          if (request.isUserInRole(role.getAuthority()))
-              roles.add(role);
+        
+        if(rolesTakenFrom == RolesTakenFrom.J2EE || rolesTakenFrom == RolesTakenFrom.Both) {
+            for (GeoServerRole role: service.getRoles())
+              if (request.isUserInRole(role.getAuthority()))
+                  roles.add(role);
+        }
+        
+        if((rolesTakenFrom == RolesTakenFrom.RoleService || rolesTakenFrom == RolesTakenFrom.Both) && service != null) {
+            String username = getPreAuthenticatedPrincipal(request);
+            if(username != null) {
+                roles.addAll(service.getRolesForUser(username));
+            }
+        }
       
         RoleCalculator calc = new RoleCalculator(service);
         calc.addInheritedRoles(roles);

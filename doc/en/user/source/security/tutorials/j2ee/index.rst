@@ -38,6 +38,7 @@ configured to recognize the container authentication.
    as follows:
    
    * Set the ``Role service`` to "default"
+   * Set the ``Roles Taken From`` to "J2EE"
 
    .. figure:: images/j2ee2.jpg
       :align: center

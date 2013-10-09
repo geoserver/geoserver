@@ -76,7 +76,6 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 
@@ -566,6 +565,40 @@ public class Importer implements DisposableBean, ApplicationListener {
         r.setStore(task.getStore());
         r.setNamespace(
             catalog.getNamespaceByPrefix(task.getStore().getWorkspace().getName()));
+
+        //style
+        //assign a default style to the layer if not already done
+        if (l.getDefaultStyle() == null) {
+            try {
+                StyleInfo style = null;
+                if (r instanceof FeatureTypeInfo) {
+                    //since this resource is still detached from the catalog we can't call
+                    // through to get it's underlying resource, so we depend on the "native"
+                    // type provided from the format
+                    FeatureType featureType =
+                        (FeatureType) task.getMetadata().get(FeatureType.class);
+                    if (featureType != null) {
+                        style = styleGen.createStyle((FeatureTypeInfo) r, featureType);
+                    } else {
+                        throw new RuntimeException("Unable to compute style");
+                    }
+
+                }
+                else if (r instanceof CoverageInfo) {
+                    style = styleGen.createStyle((CoverageInfo) r);
+                }
+                else {
+                    throw new RuntimeException("Unknown resource type :"
+                            + r.getClass());
+                }
+                l.setDefaultStyle(style);
+            }
+            catch(Exception e) {
+                task.setError(e);
+                task.setState(ImportTask.State.ERROR);
+                return false;
+            }
+        }
         
         //srs
         if (r.getSRS() == null) {
@@ -594,37 +627,6 @@ public class Importer implements DisposableBean, ApplicationListener {
             return false;
         }
         
-        //style
-        //assign a default style to the layer if not already done 
-        if (l.getDefaultStyle() == null) {
-            try {
-                StyleInfo style = null;
-                if (r instanceof FeatureTypeInfo) {
-                    //since this resource is still detached from the catalog we can't call
-                    // through to get it's underlying resource, so we depend on the "native"
-                    // type provided from the format
-                    FeatureType featureType = 
-                        (FeatureType) task.getMetadata().get(FeatureType.class);
-                    if (featureType != null) {
-                        style = styleGen.createStyle((FeatureTypeInfo) r, featureType);
-                    }
-    
-                }
-                else if (r instanceof CoverageInfo) {
-                    style = styleGen.createStyle((CoverageInfo) r);
-                }
-                else {
-                    //hmmm....
-                }
-                l.setDefaultStyle(style);
-            }
-            catch(Exception e) {
-                task.setError(e);
-                task.setState(ImportTask.State.ERROR);
-                return false;
-            }
-        }
-
         task.setState(ImportTask.State.READY);
         return true;
     }

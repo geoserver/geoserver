@@ -27,8 +27,6 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * REST resource for /contexts[/<id>]
@@ -142,10 +140,23 @@ public class ImportResource extends BaseResource {
                 StoreInfo targetStore = newContext.getTargetStore();
 
                 if (targetWorkspace != null) {
-                    context.setTargetWorkspace(targetWorkspace);
+                    // resolve to the 'real' workspace
+                    WorkspaceInfo ws = importer.getCatalog().getWorkspaceByName(
+                            newContext.getTargetWorkspace().getName());
+                    if (ws == null) {
+                        throw new RestletException("Target workspace does not exist : "
+                                + newContext.getTargetStore().getName(), Status.CLIENT_ERROR_BAD_REQUEST);
+
+                    }
+                    context.setTargetWorkspace(ws);
                 }
                 if (targetStore != null) {
-                    context.setTargetStore(targetStore);
+                    StoreInfo ts = importer.getCatalog().getStoreByName(newContext.getTargetStore().getName(), StoreInfo.class);
+                    if (ts == null) {
+                        throw new RestletException("Target storye does not exist : "
+                                + newContext.getTargetStore().getName(), Status.CLIENT_ERROR_BAD_REQUEST);
+                    }
+                    context.setTargetStore(ts);
                 }
                 if (targetStore != null && targetWorkspace == null) {
                     //take it from the store 

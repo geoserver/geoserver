@@ -4,11 +4,9 @@
  */
 package org.geoserver.importer.rest;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -24,7 +22,6 @@ import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 import net.sf.json.util.JSONBuilder;
 
-import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -299,7 +296,7 @@ public class ImportJSONWriter {
             AttributeTypeInfo att = attributes.get(i);
             json.object();
             json.key("name").value(att.getName());
-            json.key("binding").value(att.getBinding());
+            json.key("binding").value(att.getBinding().getName());
             json.endObject();
         }
         json.endArray();

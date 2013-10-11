@@ -149,8 +149,7 @@ public class DescribeLayerTransformer extends TransformerBase {
                 String owsUrl;
                 String owsType;
                 if (MapLayerInfo.TYPE_VECTOR == layer.getType()) {
-                    // REVISIT: not sure why we need WfsDispatcher, "wfs?" should suffice imho
-                    owsUrl = buildURL(baseURL, "wfs/WfsDispatcher", null, URLType.SERVICE);
+                    owsUrl = buildURL(baseURL, "wfs", null, URLType.SERVICE);
                     owsUrl = appendQueryString(owsUrl, "");
                     owsType = "WFS";
                     layerAtts.addAttribute("", "wfs", "wfs", "", owsUrl);

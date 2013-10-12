@@ -24,5 +24,6 @@ public class WPSConfiguration extends org.geotools.wps.WPSConfiguration {
         super.configureContext(container);
 
         container.registerComponentInstance(new WCSParserDelegate());
+        container.registerComponentInstance(new org.geoserver.wcs.xml.v1_0_0.WCSParserDelegate());
     }
 }

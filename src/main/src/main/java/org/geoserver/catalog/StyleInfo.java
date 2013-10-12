@@ -87,5 +87,15 @@ public interface StyleInfo extends CatalogInfo {
      * The style object.
      */
     Style getStyle() throws IOException;
+
+    /**
+     * The Legend for the style.
+     */
+    LegendInfo getLegend();
+
+    /**
+     * Sets the Legend for the style.
+     */
+    void setLegend(LegendInfo legend);
     
 }

@@ -48,6 +48,7 @@
           <descriptor>release/ext-libjpeg-turbo.xml</descriptor>
           <descriptor>release/ext-netcdf.xml</descriptor>
           <descriptor>release/ext-netcdf-out.xml</descriptor>
+          <descriptor>release/ext-png.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -163,6 +164,7 @@
         <module>libjpeg-turbo</module>
         <module>netcdf</module>
         <module>netcdf-out</module>
+        <module>png</module>
       </modules>
     </profile>
     <profile>

@@ -87,6 +87,7 @@ public class GeoServerSecurityFilterChain implements Serializable {
     static {
         WEB_LOGIN.setName(WEB_LOGIN_CHAIN_NAME);
         WEB_LOGIN.setFilterNames(FORM_LOGIN_FILTER);
+        WEB_LOGIN.setAllowSessionCreation(true);
     }
 
     private static LogoutFilterChain WEB_LOGOUT = new LogoutFilterChain(FORM_LOGOUT_CHAIN);

@@ -74,6 +74,7 @@ import org.geoserver.security.config.AnonymousAuthenticationFilterConfig;
 import org.geoserver.security.config.BasicAuthenticationFilterConfig;
 import org.geoserver.security.config.ExceptionTranslationFilterConfig;
 import org.geoserver.security.config.FileBasedSecurityServiceConfig;
+import org.geoserver.security.config.J2eeAuthenticationFilterConfig;
 import org.geoserver.security.config.RoleFilterConfig;
 import org.geoserver.security.config.LogoutFilterConfig;
 import org.geoserver.security.config.PasswordPolicyConfig;
@@ -90,6 +91,7 @@ import org.geoserver.security.config.SecurityRoleServiceConfig;
 import org.geoserver.security.config.SecurityUserGroupServiceConfig;
 import org.geoserver.security.config.UsernamePasswordAuthenticationFilterConfig;
 import org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig;
+import org.geoserver.security.config.J2eeAuthenticationFilterConfig.RolesTakenFrom;
 import org.geoserver.security.file.FileWatcher;
 import org.geoserver.security.file.RoleFileWatcher;
 import org.geoserver.security.file.UserGroupFileWatcher;
@@ -323,6 +325,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
                 boolean migratedFrom21 = migrateFrom21();
                 migrateFrom22(migratedFrom21);
                 migrateFrom23();
+                migrateFrom24();
             } catch (Exception e1) {
                 throw new RuntimeException(e1);
             }
@@ -356,6 +359,19 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
                 destroy();
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "Error destroying security manager", e);
+            }
+        }
+    }
+
+    private void migrateFrom24() throws IOException, SecurityConfigException {
+        for(String filter : listFilters()) {
+            SecurityFilterConfig fConfig = loadFilterConfig(filter);
+            if(fConfig != null && fConfig instanceof J2eeAuthenticationFilterConfig) {
+                J2eeAuthenticationFilterConfig j2eeConfig = (J2eeAuthenticationFilterConfig)fConfig;
+                if(j2eeConfig.getRolesTakenFrom() == null) {
+                    j2eeConfig.setRolesTakenFrom(RolesTakenFrom.J2EE);
+                    saveFilter(fConfig);
+                }
             }
         }
     }

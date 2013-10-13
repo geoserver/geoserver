@@ -21,6 +21,8 @@ import javax.servlet.http.HttpSession;
 
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.security.ConstantFilterChain;
+import org.geoserver.security.GeoServerRoleService;
+import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.RequestFilterChain;
@@ -28,6 +30,7 @@ import org.geoserver.security.config.BasicAuthenticationFilterConfig;
 import org.geoserver.security.config.DigestAuthenticationFilterConfig;
 import org.geoserver.security.config.J2eeAuthenticationFilterConfig;
 import org.geoserver.security.config.LogoutFilterConfig;
+import org.geoserver.security.config.J2eeAuthenticationFilterConfig.RolesTakenFrom;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.RoleSource;
 import org.geoserver.security.config.RequestHeaderAuthenticationFilterConfig;
 import org.geoserver.security.config.SecurityFilterConfig;
@@ -72,10 +75,25 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
     public final static String testFilterName7 = "formLoginTestFilterWithRememberMe";
     public final static String testFilterName8 = "x509TestFilter";
     public final static String testFilterName9 = "logoutTestFilter";
+    public final static String testFilterName10 = "j2eeRequestAuthTestFilter";
+    public final static String testFilterName11 = "j2eeRoleServiceAuthTestFilter";
+    public final static String testFilterName12 = "j2eeBothAuthTestFilter";
+    
+    public final static String simpleRole = "SimpleRole";
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
+        
+        GeoServerRoleService rservice = createRoleService("rs2");
+        GeoServerRoleStore rstore = rservice.createStore();
+        GeoServerRole simple, root, derived;
+        rstore.addRole(simple=rstore.createRoleObject(simpleRole));                
+        rstore.addRole(root=rstore.createRoleObject(rootRole));
+        rstore.addRole(derived=rstore.createRoleObject(derivedRole));
+        rstore.setParentRole(derived, root);
+        rstore.associateRoleToUser(simple, testUserName);        
+        rstore.store();
         
         LogoutFilterConfig loConfig = new LogoutFilterConfig();
         loConfig.setClassName(GeoServerLogoutFilter.class.getName());
@@ -268,6 +286,136 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         // Anonymous context is not stored in http session, no further testing
         removeAnonymousFilter();
 
+    }
+    
+    @Test
+    public void testJ2eeWithRolesFromJ2ee()  throws Exception{
+        J2eeAuthenticationFilterConfig config = new J2eeAuthenticationFilterConfig();        
+        config.setClassName(GeoServerJ2eeAuthenticationFilter.class.getName());
+        config.setRolesTakenFrom(RolesTakenFrom.J2EE);
+        config.setName(testFilterName10);
+        config.setRoleServiceName("rs1");        
+        getSecurityManager().saveFilter(config);
+        
+        prepareFilterChain(pattern,                
+                testFilterName10);
+        
+        modifyChain(pattern, false, true,null);
+        
+        SecurityContextHolder.getContext().setAuthentication(null);
+        
+        // Test entry point                
+        MockHttpServletRequest request= createRequest("/foo/bar");
+        MockHttpServletResponse response= new MockHttpServletResponse();
+        MockFilterChain chain = new MockFilterChain();                
+        request.setUserPrincipal(new Principal() {            
+            @Override
+            public String getName() {
+                return testUserName;
+            }
+        });
+        request.setUserInRole(derivedRole,true);
+        request.setUserInRole(rootRole,false);
+        getProxy().doFilter(request, response, chain);
+        
+        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+        SecurityContext ctx = (SecurityContext)request.getSession(true).getAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);        
+        assertNotNull(ctx);
+        Authentication auth = ctx.getAuthentication();
+        assertNotNull(auth);
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+        checkForAuthenticatedRole(auth);
+        assertEquals(testUserName, auth.getPrincipal());
+        assertTrue(auth.getAuthorities().contains(new GeoServerRole(rootRole)));
+        assertTrue(auth.getAuthorities().contains(new GeoServerRole(derivedRole)));
+    }
+    
+    @Test
+    public void testJ2eeWithRolesFromRoleService()  throws Exception{
+        J2eeAuthenticationFilterConfig config = new J2eeAuthenticationFilterConfig();        
+        config.setClassName(GeoServerJ2eeAuthenticationFilter.class.getName());
+        config.setRolesTakenFrom(RolesTakenFrom.RoleService);
+        config.setName(testFilterName11);
+        config.setRoleServiceName("rs2");
+        getSecurityManager().saveFilter(config);
+        
+        prepareFilterChain(pattern,                
+                testFilterName11);
+        
+        modifyChain(pattern, false, true,null);
+        
+        SecurityContextHolder.getContext().setAuthentication(null);
+        
+        // Test entry point                
+        MockHttpServletRequest request= createRequest("/foo/bar");
+        MockHttpServletResponse response= new MockHttpServletResponse();
+        MockFilterChain chain = new MockFilterChain();                
+        request.setUserPrincipal(new Principal() {            
+            @Override
+            public String getName() {
+                return testUserName;
+            }
+        });
+        
+        getProxy().doFilter(request, response, chain);
+        
+        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+        SecurityContext ctx = (SecurityContext)request.getSession(true).getAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);        
+        assertNotNull(ctx);
+        Authentication auth = ctx.getAuthentication();
+        assertNotNull(auth);
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+        checkForAuthenticatedRole(auth);
+        assertEquals(testUserName, auth.getPrincipal());
+        assertTrue(auth.getAuthorities().contains(new GeoServerRole(simpleRole)));
+    }
+    
+    @Test
+    public void testJ2eeWithRolesFromBothJ2eeAndRoleService()  throws Exception{
+        J2eeAuthenticationFilterConfig config = new J2eeAuthenticationFilterConfig();        
+        config.setClassName(GeoServerJ2eeAuthenticationFilter.class.getName());
+        config.setRolesTakenFrom(RolesTakenFrom.Both);
+        config.setName(testFilterName12);
+        config.setRoleServiceName("rs2");
+        getSecurityManager().saveFilter(config);
+        
+        prepareFilterChain(pattern,                
+                testFilterName12);
+        
+        modifyChain(pattern, false, true,null);
+        
+        SecurityContextHolder.getContext().setAuthentication(null);
+        
+        // Test entry point                
+        MockHttpServletRequest request= createRequest("/foo/bar");
+        MockHttpServletResponse response= new MockHttpServletResponse();
+        MockFilterChain chain = new MockFilterChain();                
+        request.setUserPrincipal(new Principal() {            
+            @Override
+            public String getName() {
+                return testUserName;
+            }
+        });
+        request.setUserInRole(derivedRole,true);
+        request.setUserInRole(rootRole,false);
+        request.setUserInRole(simpleRole,false);
+        
+        getProxy().doFilter(request, response, chain);
+        
+        assertEquals(HttpServletResponse.SC_OK, response.getErrorCode());
+        SecurityContext ctx = (SecurityContext)request.getSession(true).getAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);        
+        assertNotNull(ctx);
+        Authentication auth = ctx.getAuthentication();
+        assertNotNull(auth);
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+        checkForAuthenticatedRole(auth);
+        assertEquals(testUserName, auth.getPrincipal());
+        assertTrue(auth.getAuthorities().contains(new GeoServerRole(simpleRole)));
+        assertTrue(auth.getAuthorities().contains(new GeoServerRole(rootRole)));
+        assertTrue(auth.getAuthorities().contains(new GeoServerRole(derivedRole)));
     }
     
     @Test

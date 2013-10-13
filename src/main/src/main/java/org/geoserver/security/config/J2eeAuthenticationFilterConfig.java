@@ -22,6 +22,12 @@ public class J2eeAuthenticationFilterConfig extends SecurityFilterConfig
 
     private String roleServiceName;
 
+    public static enum RolesTakenFrom {
+        J2EE, RoleService, Both;
+    };
+    
+    private RolesTakenFrom rolesTakenFrom = RolesTakenFrom.J2EE;
+
     public String getRoleServiceName() {
         return roleServiceName;
     }
@@ -34,4 +40,14 @@ public class J2eeAuthenticationFilterConfig extends SecurityFilterConfig
     public  boolean providesAuthenticationEntryPoint() {
         return true;
     }
+
+    public RolesTakenFrom getRolesTakenFrom() {
+        return rolesTakenFrom;
+    }
+
+    public void setRolesTakenFrom(RolesTakenFrom rolesTakenFrom) {
+        this.rolesTakenFrom = rolesTakenFrom;
+    }
+    
+    
 }

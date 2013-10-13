@@ -8,24 +8,24 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import org.opengis.feature.Feature;
+import org.geoserver.catalog.Info;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
 
 /**
- * Builds comparators against complex features based on {@link SortBy} definitions
+ * Builds comparators against catalog info objects based on {@link SortBy} definitions
  * 
- * @author Andrea Aime - GeoSolutions
+ * @author Niels Charlier
  * 
  */
-public class ComplexComparatorFactory {
+public class CatalogComparatorFactory {
 
     /**
      * Builds a composite comparator matching the specified sortBy array
      * @param sortBy
      * @return
      */
-    public static Comparator<Feature> buildComparator(SortBy... sortBy) {
+    public static Comparator<Info> buildComparator(SortBy... sortBy) {
         if (sortBy.length == 0) {
             throw new IllegalArgumentException(
                     "No way to build comparators out of an empty comparator set");
@@ -34,13 +34,13 @@ public class ComplexComparatorFactory {
         if (sortBy.length == 1) {
             return buildComparator(sortBy[0]);
         } else {
-            List<Comparator<Feature>> comparators = new ArrayList<Comparator<Feature>>();
+            List<Comparator<Info>> comparators = new ArrayList<Comparator<Info>>();
             for (SortBy curr : sortBy) {
-                Comparator<Feature> comparator = buildComparator(curr);
+                Comparator<Info> comparator = buildComparator(curr);
                 comparators.add(comparator);
             }
 
-            return new CompositeComparator<Feature>(comparators);
+            return new CompositeComparator<Info>(comparators);
         }
     }
 
@@ -49,17 +49,17 @@ public class ComplexComparatorFactory {
      * @param sortBy
      * @return
      */
-    public static Comparator<Feature> buildComparator(SortBy sortBy) {
+    public static Comparator<Info> buildComparator(SortBy sortBy) {
         if (sortBy == null) {
             throw new NullPointerException("The sortBy argument must be not null");
         }
 
         if (sortBy == SortBy.NATURAL_ORDER) {
-            return new FidComparator(true);
+            return new InfoComparator(true);
         } else if (sortBy == SortBy.REVERSE_ORDER) {
-            return new FidComparator(false);
+            return new InfoComparator(false);
         } else {
-            return new PropertyComparator<Feature>(sortBy.getPropertyName(),
+            return new PropertyComparator<Info>(sortBy.getPropertyName(),
                     sortBy.getSortOrder() == SortOrder.ASCENDING);
         }
     }

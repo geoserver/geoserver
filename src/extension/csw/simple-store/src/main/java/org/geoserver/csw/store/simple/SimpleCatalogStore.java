@@ -57,9 +57,13 @@ public class SimpleCatalogStore extends AbstractCatalogStore {
                             + root.getPath());
         }
     }
+    
+    public FeatureCollection getRecords(Query q, Transaction t) throws IOException {
+    	return getRecords(q,t,null);
+    }
 
     @Override
-    public FeatureCollection getRecordsInternal(RecordDescriptor rd, Query q, Transaction t) throws IOException {
+    public FeatureCollection getRecordsInternal(RecordDescriptor rd, RecordDescriptor outputRd, Query q, Transaction t) throws IOException {
        
         int startIndex = 0;
         if (q.getStartIndex() != null) {

@@ -1,3 +1,7 @@
+/* Copyright (c) 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.map.png;
 
 import java.awt.image.ColorModel;
@@ -27,6 +31,13 @@ import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.chunks.PngChunkPLTE;
 import ar.com.hjg.pngj.chunks.PngChunkTRNS;
 
+/**
+ * A PNG encoder based on PNGJ (https://code.google.com/p/pngj), a low level PNG library, coupled
+ * with highly optimized data extractors meant to provide the least amount of data copies between
+ * the input image and the output PNG stream
+ *   
+ * @author Andrea Aime - GeoSolutions
+ */
 public class PNGJMapResponse extends RenderedImageMapResponse {
     /** Logger */
     private static final Logger LOGGER = Logging.getLogger(PNGMapResponse.class);

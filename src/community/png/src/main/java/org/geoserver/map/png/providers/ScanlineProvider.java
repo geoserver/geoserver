@@ -1,9 +1,18 @@
+/* Copyright (c) 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.map.png.providers;
 
 import java.awt.image.IndexColorModel;
 
 import ar.com.hjg.pngj.IImageLine;
 
+/**
+ * The bridge between images and PNG scanlines 
+ * 
+ * @author Andrea Aime - GeoSolutions
+ */
 public interface ScanlineProvider extends IImageLine {
 
     /**

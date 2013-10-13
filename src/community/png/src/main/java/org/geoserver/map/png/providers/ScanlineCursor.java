@@ -1,8 +1,17 @@
+/* Copyright (c) 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.map.png.providers;
 
 import java.awt.image.ComponentSampleModel;
 import java.awt.image.Raster;
 
+/**
+ * A helper class that supports the scanline provider in navigating the structure of a Java image
+ * 
+ * @author Andrea Aime - GeoSolutions
+ */
 final class ScanlineCursor {
 
     final int scanlineStride;

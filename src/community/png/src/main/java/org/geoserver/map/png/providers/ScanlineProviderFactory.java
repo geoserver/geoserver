@@ -1,3 +1,7 @@
+/* Copyright (c) 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.map.png.providers;
 
 import java.awt.Rectangle;
@@ -12,6 +16,12 @@ import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.awt.image.SampleModel;
 
+/**
+ * Wraps a {@link RenderedImage} into a scaline provider optimized to turn its pixels into PNG
+ * scanlines at the best performance
+ * 
+ * @author Andrea Aime - GeoSolutions
+ */
 public class ScanlineProviderFactory {
 
     public static ScanlineProvider getProvider(RenderedImage image) {
@@ -23,7 +33,7 @@ public class ScanlineProviderFactory {
             raster = ((BufferedImage) image).getRaster();
             // in case the raster has a parent, this is likely a subimage, we have to force
             // a copy of the raster to get a data buffer we can scroll over without issues
-            if(raster.getParent() != null) {
+            if (raster.getParent() != null) {
                 raster = image.getData(new Rectangle(0, 0, raster.getWidth(), raster.getHeight()));
             }
         } else {
@@ -57,16 +67,13 @@ public class ScanlineProviderFactory {
                             return new RasterByteSingleBandProvider(raster, 8, raster.getWidth());
                         } else if (cm.getPixelSize() == 4) {
                             int scanlineLength = (raster.getWidth() + 1) / 2;
-                            return new RasterByteRepackSingleBandProvider(raster, 4,
-                                    scanlineLength);
+                            return new RasterByteRepackSingleBandProvider(raster, 4, scanlineLength);
                         } else if (cm.getPixelSize() == 2) {
                             int scanlineLength = (raster.getWidth() + 2) / 4;
-                            return new RasterByteRepackSingleBandProvider(raster, 2,
-                                    scanlineLength);
+                            return new RasterByteRepackSingleBandProvider(raster, 2, scanlineLength);
                         } else if (cm.getPixelSize() == 1) {
                             int scanlineLength = (raster.getWidth() + 4) / 8;
-                            return new RasterByteRepackSingleBandProvider(raster, 1,
-                                    scanlineLength);
+                            return new RasterByteRepackSingleBandProvider(raster, 1, scanlineLength);
                         }
                     }
                 }
@@ -116,7 +123,7 @@ public class ScanlineProviderFactory {
                                 icm);
                     }
                 }
-            } 
+            }
         } else if (sm.getDataType() == DataBuffer.TYPE_USHORT) {
             return new RasterShortSingleBandProvider(raster, (IndexColorModel) cm);
         }

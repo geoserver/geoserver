@@ -1,3 +1,7 @@
+/* Copyright (c) 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.map.png.providers;
 
 import java.awt.image.DataBufferByte;
@@ -5,8 +9,7 @@ import java.awt.image.IndexColorModel;
 import java.awt.image.Raster;
 
 /**
- * A scanline provider that can copy 1-1 data from the buffered image into the scanline without
- * performing any kind of transformation
+ * A scanline provider that packs more than one pixel per output byte  
  * 
  * @author Andrea Aime - GeoSolutions
  */

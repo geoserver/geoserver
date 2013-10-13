@@ -7,7 +7,6 @@ package org.geoserver.csw.feature.sort;
 import java.util.Comparator;
 
 import org.opengis.feature.Attribute;
-import org.opengis.feature.Feature;
 import org.opengis.filter.expression.PropertyName;
 
 /**
@@ -15,7 +14,7 @@ import org.opengis.filter.expression.PropertyName;
  * 
  * @author Andrea Aime - GeoSolutions
  */
-class PropertyComparator implements Comparator<Feature> {
+class PropertyComparator<T> implements Comparator<T> {
 
     PropertyName propertyName;
 
@@ -32,7 +31,7 @@ class PropertyComparator implements Comparator<Feature> {
         this.ascending = ascending;
     }
 
-    public int compare(Feature f1, Feature f2) {
+    public int compare(T f1, T f2) {
         int result = compareAscending(f1, f2);
         if (ascending) {
             return result;
@@ -41,11 +40,21 @@ class PropertyComparator implements Comparator<Feature> {
         }
     }
 
-    private int compareAscending(Feature f1, Feature f2) {
-        Attribute a1 = (Attribute) propertyName.evaluate(f1);
-        Comparable o1 = a1 != null ? (Comparable) a1.getValue() : null;
-        Attribute a2 = (Attribute) propertyName.evaluate(f2);
-        Comparable o2 = a2 != null ? (Comparable) a2.getValue() : null;
+    private int compareAscending(T f1, T f2) {
+    	Object a1 = propertyName.evaluate(f1);  
+    	Comparable o1, o2;
+    	if (a1 instanceof Attribute) {
+    		o1 = (Comparable) ((Attribute)a1).getValue();
+    	} else {
+    		o1 = a1 != null ? (Comparable) a1 : null;
+    	}
+
+    	Object a2 = propertyName.evaluate(f2); 
+    	if (a2 instanceof Attribute) {
+    		o2 = (Comparable) ((Attribute)a2).getValue();
+    	} else {
+    		o2 = a2 != null ? (Comparable) a2 : null;
+    	}
 
         if (o1 == null) {
             if (o2 == null) {

@@ -6,13 +6,22 @@ package org.geoserver.csw.store.internal;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFacade;
+import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.Info;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.csw.feature.sort.CatalogComparatorFactory;
 import org.geoserver.csw.records.GenericRecordBuilder;
 import org.geoserver.csw.records.RecordBuilder;
 import org.geoserver.csw.records.RecordDescriptor;
@@ -35,34 +44,123 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
 
     protected Iterator<ResourceInfo> layerIt;
     
+    protected ResourceInfo nextResource;
+    
+    protected Iterator<LayerGroupInfo> layerGroupIt;
+    
+    protected LayerGroupInfo nextLayerGroup;
+    
     protected CatalogStoreMapping mapping;
     
-    public CatalogStoreFeatureIterator(int offset, int count, SortBy[] sortOrder, Filter filter, Catalog catalog, CatalogStoreMapping mapping, RecordDescriptor recordDescriptor) {
-        CatalogFacade catalogFacade = catalog.getFacade();
-        layerIt = catalogFacade.list(ResourceInfo.class, filter, offset, count, sortOrder);
+    protected CatalogFacade catalogFacade;
+    protected Map<String, String> interpolationProperties;
+    
+    protected int offset;
+    
+    protected int count;
+    
+    protected SortBy[] sortOrder;
+    
+    protected Filter filter;
+    
+    protected int index;
+    
+    protected Comparator<Info> comparator;
+    
+    public CatalogStoreFeatureIterator(int offset, int count, SortBy[] sortOrder, Filter filter, Catalog catalog, CatalogStoreMapping mapping, RecordDescriptor recordDescriptor,  Map<String, String> interpolationProperties) {
+        this.offset = offset;
+        this.count = count;
+        this.sortOrder = sortOrder;
+        this.filter = filter;
+        catalogFacade = catalog.getFacade();        
         this.mapping = mapping;
-        builder = new GenericRecordBuilder(recordDescriptor);
-    }
-
-    @Override
-    public boolean hasNext() {
-        return layerIt.hasNext();
-    }
-
-    @Override
-    public Feature next() {
-        if (!hasNext()) {
-            throw new NoSuchElementException("No more records to retrieve");
+        this.interpolationProperties = interpolationProperties;
+        
+        layerIt = catalogFacade.list(ResourceInfo.class, filter, null, null, sortOrder);
+        nextLayer();
+        layerGroupIt = catalogFacade.list(LayerGroupInfo.class, filter, null, null, sortOrder);
+        nextLayerGroup();
+                
+        comparator = sortOrder==null || sortOrder.length==0 ? null : CatalogComparatorFactory.buildComparator(sortOrder);
+        index = 0;        
+        while (index < offset && hasNext()) {
+        	nextInternal();
         }
-
-        return convertToFeature(layerIt.next());
+        
+        builder = new GenericRecordBuilder(recordDescriptor);        
     }
     
-    private Feature convertToFeature(ResourceInfo resource) {
+    @Override
+    public boolean hasNext() {        
+        return index < offset+count && (nextResource != null || nextLayerGroup != null );
+    }
+    
+    public ResourceInfo nextLayer() {
+    	ResourceInfo result = nextResource;
+    	
+    	if (layerIt.hasNext()) {
+        	nextResource = layerIt.next();
+        } else {
+        	nextResource = null;
+        }
+    	
+    	return result;
+    }
+    
+    public LayerGroupInfo nextLayerGroup() {
+    	LayerGroupInfo result = nextLayerGroup;
+    	
+    	if (layerGroupIt.hasNext()) {
+    		nextLayerGroup = layerGroupIt.next();
+        } else {
+        	nextLayerGroup = null;
+        }
+    	
+    	return result;
+    }
+    
+    public CatalogInfo nextInternal() {
+    	if (!hasNext()) {
+            throw new NoSuchElementException("No more records to retrieve");
+        }        
+        index++;
+        
+        if (nextResource == null) {
+        	return nextLayerGroup();
+        }
+        
+        if (nextLayerGroup == null) {
+        	return nextLayer();
+        }
+        
+        if (comparator == null) {
+        	return nextLayer();
+        }
+                
+        int c = comparator.compare(nextResource, nextLayerGroup);
+        if (c <= 0) {
+        	return nextLayer();
+        } else {
+        	return nextLayerGroup();
+        }        
+    }
+    
+    @Override
+    public Feature next() {
+        CatalogInfo info = nextInternal();
+        
+        if (info instanceof ResourceInfo) {
+        	return convertToFeature( (ResourceInfo) info );
+        } else {
+        	return convertToFeature( (LayerGroupInfo) info );
+        }
+    }
+    
+    private String mapProperties(CatalogInfo resource) {
         String id = null;
         
         for (CatalogStoreMapping.CatalogStoreMappingElement mappingElement: mapping.elements()) {
-        	Object value = mappingElement.getContent().evaluate(resource);
+                Object value = mappingElement.getContent().evaluate(resource);
 
             if (value != null) {
                 if (value instanceof Collection) {
@@ -71,28 +169,51 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
                         String[] elements = new String[((Collection) value).size()];
                         int i = 0;
                         for (Object element : (Collection) value) {
-                            elements[i++] = element.toString();
+                            elements[i++] = interpolate(interpolationProperties, element.toString());
                         }
-                        builder.addElement(mappingElement.getKey(), elements);
+                        builder.addElement(mappingElement.getKey(), mappingElement.getSplitIndex(), elements);
                     }
                 } else {
-                    builder.addElement(mappingElement.getKey(), value.toString());
+                    builder.addElement(mappingElement.getKey(), interpolate(interpolationProperties, value.toString()));
                 }
 
                 if (mappingElement == mapping.getIdentifierElement()) {
-                    id = value.toString();
+                    id = interpolate(interpolationProperties, value.toString());
                 }
             }
         }
-        // move on to the bounding boxes
-      
+        
+        return id;
+    }
+    
+    private Feature convertToFeature(ResourceInfo resource) {
+        
+        String id = mapProperties(resource);
+        
+        // move on to the bounding boxes      
         if (mapping.isIncludeEnvelope()) {
             ReferencedEnvelope bbox = null;
             try {
-            	bbox = resource.boundingBox();
+                bbox = resource.boundingBox();
             } catch (Exception e) {
-            	LOGGER.log(Level.INFO, "Failed to parse original record bbox");
+                LOGGER.log(Level.INFO, "Failed to parse original record bbox");
             }
+            if (bbox != null) {
+                builder.addBoundingBox(bbox);
+            }          
+        }
+
+        return builder.build(id);
+    }
+    
+    private Feature convertToFeature(LayerGroupInfo resource) {
+       
+        String id = mapProperties(resource);        
+       
+        // move on to the bounding boxes      
+        if (mapping.isIncludeEnvelope()) {
+            ReferencedEnvelope bbox = null;
+            bbox = resource.getBounds();            
             if (bbox != null) {
                 builder.addBoundingBox(bbox);
             }          
@@ -104,6 +225,30 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
     @Override
     public void remove() {
         throw new UnsupportedOperationException("This iterator is read only");
+    }
+    
+
+    
+    /**
+     * Pattern to match a property to be substituted. Note the reluctant quantifier.
+     */
+    protected static final Pattern PROPERTY_INTERPOLATION_PATTERN = Pattern.compile("\\$\\{(.+?)\\}");
+
+    protected static String interpolate(Map<String, String> properties, String input) {
+        String result = input;
+        Matcher matcher = PROPERTY_INTERPOLATION_PATTERN.matcher(result);
+        while (matcher.find()) {
+            String propertyName = matcher.group(1);
+            String propertyValue = (String) properties.get(propertyName);
+            if (propertyValue == null) {
+                throw new RuntimeException("Interpolation failed for missing property "
+                        + propertyName);
+            } else {
+                result = result.replace(matcher.group(), propertyValue).trim();
+                matcher.reset(result);
+            }
+        }
+        return result;
     }
 
 }

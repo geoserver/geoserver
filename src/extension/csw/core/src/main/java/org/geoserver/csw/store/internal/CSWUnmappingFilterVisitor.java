@@ -4,10 +4,7 @@
  */
 package org.geoserver.csw.store.internal;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-
 import org.geoserver.csw.records.RecordDescriptor;
 import org.geoserver.csw.store.internal.CatalogStoreMapping.CatalogStoreMappingElement;
 import org.geoserver.csw.util.QNameResolver;

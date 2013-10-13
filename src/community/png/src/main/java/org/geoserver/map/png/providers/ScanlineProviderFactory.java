@@ -93,31 +93,36 @@ public class ScanlineProviderFactory {
         } else if (cm instanceof IndexColorModel) {
             IndexColorModel icm = (IndexColorModel) cm;
             if (sm.getDataType() == DataBuffer.TYPE_BYTE) {
+                int pixelSize = icm.getPixelSize();
+                // the RGBA quantizer can generate odd pixel sizes
+                if(pixelSize > 1 && pixelSize % 2 == 1) {
+                    pixelSize++;
+                }
                 if (sm instanceof MultiPixelPackedSampleModel) {
-                    if (icm.getPixelSize() == 8) {
+                    if (pixelSize == 8) {
                         return new RasterByteSingleBandProvider(raster, 8, raster.getWidth(), icm);
-                    } else if (icm.getPixelSize() == 4) {
+                    } else if (pixelSize == 4) {
                         int scanlineLength = (raster.getWidth() + 1) / 2;
                         return new RasterByteSingleBandProvider(raster, 4, scanlineLength, icm);
-                    } else if (icm.getPixelSize() == 2) {
+                    } else if (pixelSize == 2) {
                         int scanlineLength = (raster.getWidth() + 2) / 4;
                         return new RasterByteSingleBandProvider(raster, 2, scanlineLength, icm);
-                    } else if (icm.getPixelSize() == 1) {
+                    } else if (pixelSize == 1) {
                         int scanlineLength = (raster.getWidth() + 4) / 8;
                         return new RasterByteSingleBandProvider(raster, 1, scanlineLength, icm);
                     }
                 } else {
-                    if (icm.getPixelSize() == 8) {
+                    if (pixelSize == 8) {
                         return new RasterByteSingleBandProvider(raster, 8, raster.getWidth(), icm);
-                    } else if (icm.getPixelSize() == 4) {
+                    } else if (pixelSize == 4) {
                         int scanlineLength = (raster.getWidth() + 1) / 2;
                         return new RasterByteRepackSingleBandProvider(raster, 4, scanlineLength,
                                 icm);
-                    } else if (icm.getPixelSize() == 2) {
+                    } else if (pixelSize == 2) {
                         int scanlineLength = (raster.getWidth() + 2) / 4;
                         return new RasterByteRepackSingleBandProvider(raster, 2, scanlineLength,
                                 icm);
-                    } else if (icm.getPixelSize() == 1) {
+                    } else if (pixelSize == 1) {
                         int scanlineLength = (raster.getWidth() + 4) / 8;
                         return new RasterByteRepackSingleBandProvider(raster, 1, scanlineLength,
                                 icm);

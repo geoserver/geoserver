@@ -1,7 +1,8 @@
 package org.geoserver.map.png;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics;
@@ -31,9 +32,17 @@ public class ImageAssert {
             for (int y = 0; y < original.getHeight(); y++) {
                 int rgbOriginal = original.getRGB(x, y);
                 int rgbActual = image.getRGB(x, y);
-                assertEquals("Comparison failed at " + x + "," + y, rgbOriginal, rgbActual);
+                if(rgbOriginal != rgbActual) {
+                    fail("Comparison failed at x:" + x + ", y: " + y + ", expected " + colorToString(rgbOriginal) + ", got " 
+                        + colorToString(rgbActual));
+                }
             }
         }
+    }
+
+    private static String colorToString(int rgb) {
+        Color c = new Color(rgb);
+        return "RGBA[" + c.getRed() + ", " + c.getGreen() + ", " + c.getBlue() + ", " + c.getAlpha() + "]"; 
     }
 
     static boolean isClibAvailable() {

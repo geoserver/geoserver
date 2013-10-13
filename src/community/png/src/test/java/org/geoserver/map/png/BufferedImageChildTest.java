@@ -11,6 +11,8 @@ import javax.imageio.ImageIO;
 
 import org.junit.Test;
 
+import ar.com.hjg.pngj.FilterType;
+
 public class BufferedImageChildTest {
 
     BufferedImage getSample() {
@@ -54,7 +56,7 @@ public class BufferedImageChildTest {
         BufferedImage subimage = bi.getSubimage(x, y, w, h);
         // ImageAssert.showImage("Subimage", 2000, subimage);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        new PNGJMapResponse(null).writePNG(subimage, bos, 4);
+        new PNGJMapResponse(null).writePNG(subimage, bos, 4, FilterType.FILTER_NONE);
         ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
         BufferedImage readBack = ImageIO.read(bis);
         // ImageAssert.showImage("ReadBack", 2000, readBack);

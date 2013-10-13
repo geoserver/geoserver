@@ -35,7 +35,8 @@ public final class RasterByteSingleBandProvider extends AbstractScanlineProvider
             throw new IllegalStateException("All scanlines have been read already");
         }
 
-        System.arraycopy(bytes, cursor.next(), scanline, offset, length);
+        final int next = cursor.next();
+        System.arraycopy(bytes, next, scanline, offset, length);
         currentRow++;
     }
 

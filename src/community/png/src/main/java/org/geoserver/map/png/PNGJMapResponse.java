@@ -24,8 +24,11 @@ import org.geoserver.wms.map.PNGMapResponse;
 import org.geoserver.wms.map.RenderedImageMapResponse;
 import org.geoserver.wms.map.quantize.ColorIndexerDescriptor;
 import org.geotools.image.ImageWorker;
+import org.geotools.map.Layer;
+import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
 
+import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.chunks.PngChunkPLTE;
@@ -72,6 +75,7 @@ public class PNGJMapResponse extends RenderedImageMapResponse {
      */
     public PNGJMapResponse(WMS wms) {
         super(OUTPUT_FORMATS, wms);
+        LOGGER.log(Level.INFO, "Activating PNGJ based PNG encoder");
     }
 
     @Override
@@ -119,27 +123,53 @@ public class PNGJMapResponse extends RenderedImageMapResponse {
         float quality = (100 - wms.getPngCompression()) / 100.0f;
         int level = Math.round(9 * (1f - quality));
         
-        writePNG(image, outStream, level);
+        FilterType filterType = getFilterType(mapContent);
+        writePNG(image, outStream, level, filterType);
     }
 
-    public void writePNG(RenderedImage image, OutputStream outStream, int level) {
+    /**
+     * SUB filtering is useful for raster images with "high" variation, otherwise we go for NONE,
+     * empirically it provides better compression at lower effort
+     * 
+     * @param mapContent
+     * @return
+     */
+    private FilterType getFilterType(WMSMapContent mapContent) {
+       RasterSymbolizerVisitor visitor = new RasterSymbolizerVisitor();
+       for (Layer layer : mapContent.layers()) {
+           // check if the style has a raster symbolizer, don't trust the layer type as
+           // we don't know in advance if there is a rendering transformation
+           // WMS cascading is a ugly case, we might be cascading a map that is vector, but 
+           // we don't get to know
+           Style style = layer.getStyle();
+           if(style != null) {
+               style.accept(visitor);
+               if(visitor.highChangeRasterSymbolizer) {
+                   return FilterType.FILTER_SUB;
+               }
+           }
+       }
+       
+       return FilterType.FILTER_NONE;
+    }
+
+    public void writePNG(RenderedImage image, OutputStream outStream, int level, FilterType filterType) {
         ScanlineProvider scanlines = ScanlineProviderFactory.getProvider(image);
         
         // encode using the PNGJ library and the GeoServer own scaline providers
         ColorModel colorModel = image.getColorModel();
         boolean indexed = colorModel instanceof IndexColorModel;
-        boolean hasAlpha = colorModel.hasAlpha();
         int numColorComponents = colorModel.getNumColorComponents();
         boolean grayscale = !indexed && numColorComponents < 3;
         byte bitDepth = scanlines.getBitDepth();
+        boolean hasAlpha = !indexed && colorModel.hasAlpha();
         ImageInfo ii = new ImageInfo(image.getWidth(), image.getHeight(), bitDepth, hasAlpha,
                 grayscale, indexed);
         PngWriter pw = new PngWriter(outStream, ii);
         pw.setShouldCloseStream(false);
         try {
             pw.setCompLevel(level);
-            // TODO: optimize based on the image type, raster or vector
-            pw.setFilterType(ar.com.hjg.pngj.FilterType.FILTER_NONE);
+            pw.setFilterType(filterType);
 
             if (indexed) {
                 IndexColorModel icm = (IndexColorModel) colorModel;

@@ -22,13 +22,14 @@ public final class RasterIntABGRProvider extends AbstractScanlineProvider {
     final boolean hasAlpha;
 
     public RasterIntABGRProvider(Raster raster, boolean hasAlpha) {
-        super(raster, 32, raster.getWidth() * (hasAlpha ? 4 : 3));
+        super(raster, 8, raster.getWidth() * (hasAlpha ? 4 : 3));
         this.pixels = ((DataBufferInt) raster.getDataBuffer()).getData();
         this.hasAlpha = hasAlpha;
         if (hasAlpha) {
             bgrOrder = false;
         } else {
-            bgrOrder = ((SinglePixelPackedSampleModel) raster.getSampleModel()).getBitOffsets()[0] != 0;
+            int[] offsets = ((SinglePixelPackedSampleModel) raster.getSampleModel()).getBitOffsets();
+            bgrOrder = offsets[0] != 0;
         }
     }
 
@@ -50,17 +51,17 @@ public final class RasterIntABGRProvider extends AbstractScanlineProvider {
             while (i < max) {
                 final int color = pixels[pxIdx++];
 
-                row[i++] = (byte) ((color) & 0xff);
-                row[i++] = (byte) ((color >> 8) & 0xff);
                 row[i++] = (byte) ((color >> 16) & 0xff);
+                row[i++] = (byte) ((color >> 8) & 0xff);
+                row[i++] = (byte) ((color) & 0xff);
             }
         } else {
             while (i < max) {
                 final int color = pixels[pxIdx++];
 
-                row[i++] = (byte) ((color >> 16) & 0xff);
-                row[i++] = (byte) ((color >> 8) & 0xff);
                 row[i++] = (byte) ((color) & 0xff);
+                row[i++] = (byte) ((color >> 8) & 0xff);
+                row[i++] = (byte) ((color >> 16) & 0xff);
             }
         }
     }

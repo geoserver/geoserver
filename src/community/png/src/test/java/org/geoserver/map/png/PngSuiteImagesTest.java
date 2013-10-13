@@ -29,6 +29,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import ar.com.hjg.pngj.FilterType;
+
 @RunWith(Parameterized.class)
 public class PngSuiteImagesTest {
 
@@ -92,7 +94,7 @@ public class PngSuiteImagesTest {
         // write the PNG
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         PNGJMapResponse response = new PNGJMapResponse(null);
-        response.writePNG(original, bos, 4);
+        response.writePNG(original, bos, 4, FilterType.FILTER_NONE);
 
         // write the output to file for eventual visual comparison
         byte[] bytes = bos.toByteArray();

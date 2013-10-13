@@ -5,6 +5,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.ServiceException;
 import org.geotools.csw.CSWConfiguration;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
@@ -211,6 +212,19 @@ public class GetRecordsTest extends CSWInternalTestSupport {
         assertXpathEvaluatesTo("1", "//csw:SearchResults/@numberOfRecordsReturned", d);
         assertXpathEvaluatesTo("1", "count(//csw:SearchResults/*)", d);
         assertXpathEvaluatesTo("Forests", "//csw:BriefRecord/dc:title", d);
+    }
+    
+
+    /**
+     * From CITE compliance, throw an error the output format is not supported
+     * @throws Exception
+     */
+    @Test 
+    public void testUnsupportedOutputFormat() throws Exception {
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&outputFormat=application/xhtml+xml";
+        Document d = getAsDOM(request);
+        print(d);
+        checkOws10Exception(d, ServiceException.INVALID_PARAMETER_VALUE, "outputFormat");
     }
 
 }

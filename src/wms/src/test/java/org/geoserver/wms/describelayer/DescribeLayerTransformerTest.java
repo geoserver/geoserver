@@ -198,7 +198,7 @@ public class DescribeLayerTransformerTest {
         assertXpathExists(layerDescPath, dom);
         assertXpathEvaluatesTo("fakeWs:states", layerDescPath + "/@name", dom);
 
-        final String expectedWfsAtt = serverBaseUrl + "/wfs/WfsDispatcher?";
+        final String expectedWfsAtt = serverBaseUrl + "/wfs?";
         assertXpathExists(layerDescPath + "/@wfs", dom);
         assertXpathEvaluatesTo(expectedWfsAtt, layerDescPath + "/@wfs", dom);
 

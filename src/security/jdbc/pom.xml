@@ -44,6 +44,23 @@
       <version>5.1.17</version>
     </dependency>
   </dependencies>
+
+  <build>
+   <plugins>
+    <plugin>
+     <artifactId>maven-jar-plugin</artifactId>
+     <executions>
+       <execution>
+         <phase>package</phase>
+         <goals>
+            <goal>test-jar</goal>
+         </goals>
+       </execution>
+     </executions>
+    </plugin>
+   </plugins>
+  </build>
+
   <profiles>
     <profile>
       <!-- placing this in a profile since it interfers with running from the

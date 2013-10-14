@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.List;
 
@@ -25,7 +26,6 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.data.test.MockData;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -245,6 +245,50 @@ public class CoverageStoreTest extends CatalogRESTTestSupport {
         assertXpathEvaluatesTo("false", "/coverageStore/enabled", dom );
         
         assertFalse( catalog.getCoverageStoreByName( "wcs", "BlueMarble").isEnabled() );
+    }
+
+    @Test
+    public void testPutEmptyAndHarvest() throws Exception {
+        File dir = new File( "./target/empty" );
+        dir.mkdir();
+        dir.deleteOnExit();
+
+        // Creating the coverageStore
+        File f = new File( dir, "empty.zip");
+        f.deleteOnExit();
+        FileOutputStream fout = new FileOutputStream( f );
+        IOUtils.copy( getClass().getResourceAsStream("test-data/empty.zip"), fout );
+        fout.flush();
+        fout.close();
+
+        final int length = (int) f.length();
+        byte[] zipData = new byte[length];
+        FileInputStream fis = new FileInputStream(f);
+        fis.read(zipData);
+
+        MockHttpServletResponse response = 
+            putAsServletResponse( "/rest/workspaces/wcs/coveragestores/empty/file.imagemosaic?configure=none", zipData, "application/zip");
+        // Store is created
+        assertEquals( 201, response.getStatusCode() );
+
+        Document dom = getAsDOM( "/rest/workspaces/wcs/coveragestores/empty.xml");
+        assertXpathEvaluatesTo("true", "/coverageStore/enabled", dom );
+
+        // Harvesting
+        f = new File( dir, "NCOM_wattemp_020_20081031T0000000_12.tiff");
+        f.deleteOnExit();
+        fout = new FileOutputStream( f );
+        IOUtils.copy( getClass().getResourceAsStream("test-data/NCOM_wattemp_020_20081031T0000000_12.tiff"), fout );
+        fout.flush();
+        fout.close();
+        
+        final String path = "file://"+ f.getCanonicalPath();
+        response =  postAsServletResponse( "/rest/workspaces/wcs/coveragestores/empty/external.imagemosaic", path, "text/plain");
+        assertEquals(202, response.getStatusCode() );
+
+        // Getting the list of available coverages
+        dom = getAsDOM( "/rest/workspaces/wcs/coveragestores/empty/coverages.xml?list=all");
+        assertXpathEvaluatesTo("index", "/list/coverageName", dom );
     }
 
     @Test

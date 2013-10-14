@@ -42,12 +42,4 @@
     <constructor-arg ref="ldapAuthProvider"/>
   </bean-->
   
-  <!-- ui auth provider panel info-->
-  <bean id="ldapAuthPanelInfo" class="org.geoserver.web.security.ldap.LDAPAuthProviderPanelInfo">
-        <property name="id" value="security.ldapAuthProvider" />
-        <property name="shortTitleKey" value="LDAPAuthProviderPanel.short"/>
-        <property name="titleKey" value="LDAPAuthProviderPanel.title"/>
-        <property name="descriptionKey" value="LDAPAuthProviderPanel.description"/>
-    </bean>
-  
 </beans>

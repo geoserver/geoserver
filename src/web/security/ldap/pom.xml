@@ -10,59 +10,48 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.geoserver</groupId>
-		<artifactId>web</artifactId>
+		<groupId>org.geoserver.web</groupId>
+		<artifactId>web-sec</artifactId>
 		<version>2.5-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.geoserver.web</groupId>
-	<artifactId>web-sec</artifactId>
-	<packaging>pom</packaging>
+	<artifactId>web-sec-ldap</artifactId>
+	<packaging>jar</packaging>
 	<version>2.5-SNAPSHOT</version>
-	<name>Security UI Modules</name>
+	<name>Security UI LDAP Module</name>
 
   <dependencies>
-    
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-    
     <dependency>
       <groupId>org.geoserver.web</groupId>
-      <artifactId>web-core</artifactId>
+      <artifactId>web-sec-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.security</groupId>
+      <artifactId>sec-ldap</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.web</groupId>
+      <artifactId>web-sec-core</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.mockrunner</groupId>
-      <artifactId>mockrunner</artifactId>
+      <groupId>org.geoserver.security</groupId>
+      <artifactId>sec-ldap</artifactId>
+      <version>${project.version}</version>
+      <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.easymock</groupId>
-      <artifactId>easymock</artifactId>
+      <groupId>org.springframework.ldap</groupId>
+      <artifactId>spring-ldap-test</artifactId>
       <scope>test</scope>
     </dependency>
-        <dependency>
-      <groupId>org.easymock</groupId>
-      <artifactId>easymockclassextension</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>xmlunit</groupId>
-      <artifactId>xmlunit</artifactId>
-      <scope>test</scope>
-    </dependency>
+    
   </dependencies>
 
-  <modules>
-    <module>core</module>
-    <module>jdbc</module>
-    <module>ldap</module>
-  </modules>
 </project>

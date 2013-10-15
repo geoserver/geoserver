@@ -255,7 +255,7 @@ public class WFSNotify implements TransactionPlugin, TransactionListener, Dispos
                 public void triggerEvent(Feature f) {
                     ts.modified(f);
                 }
-            }, event.getTransaction());
+            }, ts.getTransaction());
             
         } finally {
             affected.close();
@@ -282,7 +282,7 @@ public class WFSNotify implements TransactionPlugin, TransactionListener, Dispos
                 public void triggerEvent(Feature f) {
                     ts.modified(f);
                 }
-            }, event.getTransaction());
+            }, ts.getTransaction());
         } finally {
             affected.close();
         }

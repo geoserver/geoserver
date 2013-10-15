@@ -475,17 +475,17 @@ abstract class DimensionHelper {
      * @return
      */
     String getCustomDomainRepresentation(DimensionInfo dimension, List<String> values) {
-        String timeMetadata = null;
+        String metadata = null;
 
         final StringBuilder buff = new StringBuilder();
 
         if (DimensionPresentation.LIST == dimension.getPresentation()) {
             for (String value : values) {
-                buff.append(value);
+                buff.append(value.trim());
                 buff.append(",");
             }
-            timeMetadata = buff.substring(0, buff.length() - 1).toString().replaceAll("\\[", "")
-                    .replaceAll("\\]", "").replaceAll(" ", "");
+            metadata = buff.substring(0, buff.length() - 1);
+
         } else if (DimensionPresentation.DISCRETE_INTERVAL == dimension.getPresentation()) {
             buff.append(values.get(0));
             buff.append("/");
@@ -498,10 +498,10 @@ abstract class DimensionHelper {
                 buff.append(resolution);
             }
 
-            timeMetadata = buff.toString();
+            metadata = buff.toString();
         }
 
-        return timeMetadata;
+        return metadata;
     }
 
     /**

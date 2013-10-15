@@ -4,7 +4,7 @@
 <beans>
 
     <bean id="eventHelper" class="org.geoserver.wfs.notification.StaticJMSEventHelper" init-method="init" destroy-method="destroy">
-        <property name="propertiesFileName" value="amqp.properties" />        
+        <property name="propertiesFileName" value="jms-notification.properties" />        
         <property name="geoServer" ref="geoServer" />
     </bean>
     

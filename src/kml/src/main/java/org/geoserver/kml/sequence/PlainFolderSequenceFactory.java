@@ -161,32 +161,39 @@ public class PlainFolderSequenceFactory extends AbstractFolderSequenceFactory {
          * @return true: use just kml vectors, false: use raster result
          */
         boolean useVectorOutput(KmlEncodingContext context) {
-            // calculate kmscore to determine if we shoud write as vectors
-            // or pre-render
-            int kmscore = context.getKmScore();
-
-            if (kmscore == 100) {
-                return true; // vector KML
-            }
-
-            if (kmscore == 0) {
-                return false; // raster KMZ
-            }
-
-            // For numbers in between, determine exponentionally based on kmscore value:
-            // 10^(kmscore/15)
-            // This results in exponential growth.
-            // The lowest bound is 1 feature and the highest bound is 3.98 million features
-            // The most useful kmscore values are between 20 and 70 (21 and 46000 features
-            // respectively)
-            // A good default kmscore value is around 40 (464 features)
-            double magic = Math.pow(10, kmscore / 15);
-
-            int currentSize = context.getCurrentFeatureCollection().size();
-            if (currentSize > magic) {
-                return false; // return raster
+            // are we in download mode?
+            String mode = context.getMode();
+            if("refresh".equalsIgnoreCase(mode)) {
+                // calculate kmscore to determine if we should write as vectors
+                // or pre-render
+                int kmscore = context.getKmScore();
+    
+                if (kmscore == 100) {
+                    return true; // vector KML
+                }
+    
+                if (kmscore == 0) {
+                    return false; // raster KMZ
+                }
+    
+                // For numbers in between, determine exponentionally based on kmscore value:
+                // 10^(kmscore/15)
+                // This results in exponential growth.
+                // The lowest bound is 1 feature and the highest bound is 3.98 million features
+                // The most useful kmscore values are between 20 and 70 (21 and 46000 features
+                // respectively)
+                // A good default kmscore value is around 40 (464 features)
+                double magic = Math.pow(10, kmscore / 15);
+    
+                int currentSize = context.getCurrentFeatureCollection().size();
+                if (currentSize > magic) {
+                    return false; // return raster
+                } else {
+                    return true; // return vector
+                }
             } else {
-                return true; // return vector
+                // download or superoverlay
+                return true;
             }
         }
 

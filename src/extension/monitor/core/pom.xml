@@ -55,6 +55,11 @@
    <groupId>org.apache.poi</groupId>
    <artifactId>poi</artifactId>
   </dependency>
+  <dependency>
+   <groupId>xmlunit</groupId>
+   <artifactId>xmlunit</artifactId>
+   <scope>test</scope>
+  </dependency>
  </dependencies>
 
  <build>

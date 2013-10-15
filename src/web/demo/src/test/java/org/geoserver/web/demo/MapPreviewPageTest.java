@@ -4,9 +4,12 @@
  */
 package org.geoserver.web.demo;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
+
+import javax.xml.namespace.QName;
 
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -15,13 +18,24 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.web.GeoServerWicketTestSupport;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class MapPreviewPageTest extends GeoServerWicketTestSupport {
+    
+    @Override
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        // setup few layers so that we don't have to mess with paging
+        for (QName name: CiteTestData.TYPENAMES) {
+            if("cite".equals(name.getPrefix())) {
+                testData.setUpVectorLayer(name);
+            }
+        }
+    }
+    
     @Test
     public void testValues() throws Exception {
         tester.startPage(MapPreviewPage.class);
@@ -34,17 +48,14 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
 
         LayerGroupInfo lg = cat.getFactory().createLayerGroup();
         lg.setName("foo");
-        lg.setWorkspace(cat.getWorkspaceByName("sf"));
-        lg.getLayers().add(cat.getLayerByName(getLayerId(MockData.PRIMITIVEGEOFEATURE)));
+        lg.setWorkspace(cat.getWorkspaceByName("cite"));
+        lg.getLayers().add(cat.getLayerByName(getLayerId(MockData.STREAMS)));
         new CatalogBuilder(cat).calculateLayerGroupBounds(lg);
 
         cat.add(lg);
 
         tester.startPage(MapPreviewPage.class);
         tester.assertRenderedPage(MapPreviewPage.class);
-
-        //move to next page
-        tester.clickLink("table:navigatorBottom:navigator:next", true);
 
         DataView data = 
                 (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
@@ -53,7 +64,9 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
         for (Iterator it = data.iterator(); it.hasNext(); ) {
             MarkupContainer c = (MarkupContainer) it.next();
             Label l = (Label) c.get("itemProperties:1:component");
-            if ("sf:foo".equals(l.getDefaultModelObjectAsString())) {
+            String name = l.getDefaultModelObjectAsString();
+            System.out.println(name);
+            if ("cite:foo".equals(name)) {
                 exists = true;
             }
         }
@@ -62,7 +75,6 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
     }
     
     @Test
-    @Ignore
     public void testLayerNamesPrefixed() throws Exception {
         Catalog cat = getCatalog();
 
@@ -72,10 +84,7 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
 
         tester.startPage(MapPreviewPage.class);
         tester.assertRenderedPage(MapPreviewPage.class);
-
-        //move to next page
-        tester.clickLink("table:navigatorBottom:navigator:next", true);
-
+        
         DataView data = 
                 (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
 
@@ -83,11 +92,27 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
         for (Iterator it = data.iterator(); it.hasNext(); ) {
             MarkupContainer c = (MarkupContainer) it.next();
             Label l = (Label) c.get("itemProperties:1:component");
-            if (getLayerId(MockData.STREAMS).equals(l.getDefaultModelObjectAsString())) {
+            String name = l.getDefaultModelObjectAsString();
+            if (getLayerId(MockData.STREAMS).equals(name)) {
                 exists = true;
             }
         }
-
+        
         assertTrue(exists);
+    }
+    
+    @Test
+    public void testGML32Link() throws Exception {
+        Catalog cat = getCatalog();
+
+        LayerInfo ly = cat.getLayerByName(getLayerId(MockData.STREAMS));
+        
+        assertNotNull(ly);
+
+        tester.startPage(MapPreviewPage.class);
+        tester.assertRenderedPage(MapPreviewPage.class);
+
+        // check the GML 3.2 links have been escaped
+        tester.assertContains("application%2Fgml%2Bxml%3B\\+version%3D3\\.2");
     }
 }

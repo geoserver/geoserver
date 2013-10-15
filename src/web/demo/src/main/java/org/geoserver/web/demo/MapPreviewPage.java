@@ -204,7 +204,7 @@ public class MapPreviewPage extends GeoServerBasePage {
                 String label = translateFormat("format.wfs.", wfsOutputFormat);
                 // build option with text and value
                 Label format = new Label(i + "", label);
-                format.add(new AttributeModifier("value", true, new Model(wfsOutputFormat)));
+                format.add(new AttributeModifier("value", true, new Model(ResponseUtils.urlEncode(wfsOutputFormat))));
                 wfsFormats.add(format);
             }
         }

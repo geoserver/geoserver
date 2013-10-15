@@ -24,7 +24,7 @@
   <dependencies>
     <dependency>
       <groupId>org.geoserver.web</groupId>
-      <artifactId>web-security</artifactId>
+      <artifactId>web-sec-core</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -50,7 +50,7 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>
-      <artifactId>web-security</artifactId>
+      <artifactId>web-sec-core</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
@@ -91,4 +91,7 @@
 
   </profiles>
 
+  <modules>
+    <module>web</module>
+  </modules>
 </project>

@@ -34,7 +34,7 @@
 
     <dependency>
       <groupId>org.geoserver.web</groupId>
-      <artifactId>web-security</artifactId>
+      <artifactId>web-sec-core</artifactId>
       <version>${project.version}</version>
     </dependency>
 

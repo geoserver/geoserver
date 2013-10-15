@@ -4,13 +4,13 @@
  */
 package org.geoserver.monitor.ows;
 
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.easymock.EasyMock.*;
 
-import java.net.URI;
 import java.util.Arrays;
-import java.util.List;
 
 import javax.xml.namespace.QName;
 
@@ -19,9 +19,7 @@ import net.opengis.ows11.Ows11Factory;
 import net.opengis.wcs10.DescribeCoverageType;
 import net.opengis.wcs10.GetCoverageType;
 import net.opengis.wcs10.Wcs10Factory;
-import net.opengis.wcs10.Wcs10Package;
 import net.opengis.wcs11.Wcs11Factory;
-import net.opengis.wcs11.impl.DomainSubsetTypeImpl;
 import net.opengis.wfs.DeleteElementType;
 import net.opengis.wfs.DescribeFeatureTypeType;
 import net.opengis.wfs.GetFeatureType;
@@ -34,20 +32,17 @@ import net.opengis.wfs.UpdateElementType;
 import net.opengis.wfs.WfsFactory;
 
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.monitor.BBoxAsserts;
 import org.geoserver.monitor.MemoryMonitorDAO;
 import org.geoserver.monitor.Monitor;
 import org.geoserver.monitor.MonitorConfig;
-import org.geoserver.monitor.MonitorConfig.BboxMode;
 import org.geoserver.monitor.MonitorDAO;
 import org.geoserver.monitor.MonitorTestData;
 import org.geoserver.monitor.RequestData;
@@ -59,10 +54,7 @@ import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
-import org.geotools.data.ows.CRSEnvelope;
-import org.geotools.factory.FactoryFinder;
 import org.geotools.feature.NameImpl;
-import org.geotools.filter.spatial.BBOXImpl;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.geometry.GeneralEnvelope;
@@ -72,7 +64,6 @@ import org.geotools.util.Version;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
@@ -299,6 +290,17 @@ public class MonitorCallbackTest {
         
         assertEquals("acme:foo", data.getResources().get(0));
         BBoxAsserts.assertEqualsBbox(new ReferencedEnvelope(env,crs).toBounds(logCrs), data.getBbox(), 0.1);
+    }
+    
+    @Test
+    public void testWMSReflect() throws Exception {
+        GetMapRequest gm = new GetMapRequest();
+        
+        gm.setLayers(Arrays.asList(createMapLayer("foo", "acme")));
+        
+        callback.operationDispatched(new Request(), op("reflect", "WMS", "1.1.1", gm));
+        
+        assertEquals("acme:foo", data.getResources().get(0));
     }
     
     @Test

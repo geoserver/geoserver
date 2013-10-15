@@ -4,8 +4,6 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 
-import java.util.HashMap;
-
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.SystemTestData;
@@ -30,6 +28,9 @@ public class GetRecordsTest extends MDTestSupport {
                 .decode("EPSG:4326")));
         forestInfo.getKeywords().add(new Keyword ("CustomKeyWord-1"));
         forestInfo.getKeywords().add(new Keyword ("CustomKeyWord-2"));
+        forestInfo.setDescription("Land with lots of trees on.");
+        forestInfo.getAlias().add("Bush");
+        forestInfo.getAlias().add("Woods");
         getCatalog().save(forestInfo);
     }
 
@@ -89,6 +90,30 @@ public class GetRecordsTest extends MDTestSupport {
                 "//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:eastBoundLongitude", d);
         assertXpathEvaluatesTo("-180.0",
                 "//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:northBoundLatitude", d);
+        
+        //check the multi-valued field alternate title
+        assertXpathEvaluatesTo("Land with lots of trees on.",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:alternateTitle[1]/gco:CharacterString", d);
+        assertXpathEvaluatesTo("Bush",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:alternateTitle[2]/gco:CharacterString", d);
+        assertXpathEvaluatesTo("Woods",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:alternateTitle[3]/gco:CharacterString", d);
+        assertXpathEvaluatesTo("##Forests",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:alternateTitle[4]/gco:CharacterString", d);
+    
+        //check the service information
+        assertXpathEvaluatesTo("OGC:WFS",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource[1]/gmd:protocol/gco:CharacterString", d);
+        assertXpathEvaluatesTo("Forests",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource[1]/gmd:name/gco:CharacterString", d);
+        assertXpathEvaluatesTo("http://localhost:8080/geoserver/wfs",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource[1]/gmd:linkage/gmd:URL", d);
+        assertXpathEvaluatesTo("OGC:WMS",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource[2]/gmd:protocol/gco:CharacterString", d);
+        assertXpathEvaluatesTo("Forests",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource[2]/gmd:name/gco:CharacterString", d);
+        assertXpathEvaluatesTo("http://localhost:8080/geoserver/wms",
+                "//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource[2]/gmd:linkage/gmd:URL", d);
         
        
     }
@@ -178,7 +203,7 @@ public class GetRecordsTest extends MDTestSupport {
         String request = "csw?service=CSW&version=2.0.2&request=GetRecords&outputSchema=http://www.isotc211.org/2005/gmd&typeNames=gmd:MD_Metadata&resultType=results"
                 + "&constraint=BBOX(BoundingBox, -250, -250, -190, -100)&maxRecords=100";
         Document d = getAsDOM(request);        
-        print(d);
+        //print(d);
         //validateSchema(d.getElementsByTagName("//gmd:MD_MetaData"));
 
         // basic checks
@@ -190,6 +215,20 @@ public class GetRecordsTest extends MDTestSupport {
         // verify we got the expected records
 
         assertXpathExists("//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Forests']", d);
+    }
+    
+    @Test
+    public void testTitleFilterCSWRecord() throws Exception {
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&elementSetName=brief&outputSchema=http://www.isotc211.org/2005/gmd&constraint=dc:title like 'S%25'";
+        Document d = getAsDOM(request);
+        //print(d);
+        //validateSchema(d.getElementsByTagName("//gmd:MD_MetaData"));
+
+        assertXpathEvaluatesTo("2", "//csw:SearchResults/@numberOfRecordsMatched", d);
+        assertXpathEvaluatesTo("2", "//csw:SearchResults/@numberOfRecordsReturned", d);
+        assertXpathEvaluatesTo("2", "count(//csw:SearchResults/*)", d);
+        assertXpathExists("//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Streams']", d);
+        assertXpathExists("//gmd:MD_Metadata[gmd:identificationInfo/gmd:AbstractMD_Identification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString='Seven']", d);
     }
 
 

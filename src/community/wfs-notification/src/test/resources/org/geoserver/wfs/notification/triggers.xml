@@ -1,4 +1,4 @@
-<triggers xmlns="http://www.forwardslope.com/c2rpc/triggers" xmlns:track="http://www.example.com/track"
+<triggers xmlns="http://www.geoserver.org/wfs/notification" xmlns:track="http://www.example.com/track"
     xmlns:foo="http://www.example.com/foo">
     <feature type="track:Track">
         <trigger silent="true">

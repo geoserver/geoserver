@@ -1,4 +1,4 @@
-package com.fsi.geoserver.wfs;
+package org.geoserver.wfs.notification;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,9 +21,6 @@ import org.opengis.feature.Property;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
-
-import com.forwardslope.c2rpc.triggers.Link;
-import com.forwardslope.c2rpc.triggers.Trigger;
 
 public class TriggerManager {
     private static final Log logger = LogFactory.getLog(WFSNotify.class);

@@ -1,4 +1,4 @@
-package com.fsi.geoserver.wfs;
+package org.geoserver.wfs.notification;
 
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.Name;

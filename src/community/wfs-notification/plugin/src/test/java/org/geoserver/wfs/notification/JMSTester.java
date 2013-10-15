@@ -1,7 +1,9 @@
-package com.fsi.geoserver.wfs;
+package org.geoserver.wfs.notification;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+
+import org.geoserver.wfs.notification.StaticJMSEventHelper;
 
 public class JMSTester {
     public static void main(String[] args) throws Throwable {

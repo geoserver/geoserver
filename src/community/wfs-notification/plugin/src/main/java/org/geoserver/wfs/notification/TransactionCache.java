@@ -1,4 +1,4 @@
-package com.fsi.geoserver.wfs;
+package org.geoserver.wfs.notification;
 
 import java.lang.reflect.Field;
 import java.util.IdentityHashMap;

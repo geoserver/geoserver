@@ -1,4 +1,4 @@
-package com.forwardslope.c2rpc.triggers;
+package org.geoserver.wfs.notification;
 
 import javax.xml.namespace.QName;
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.forwardslope.com/c2rpc/triggers"
-    targetNamespace="http://www.forwardslope.com/c2rpc/triggers">
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.geoserver.org/wfs/notification"
+    targetNamespace="http://www.geoserver.org/wfs/notification">
     <element name="triggers">
         <complexType>
             <sequence>

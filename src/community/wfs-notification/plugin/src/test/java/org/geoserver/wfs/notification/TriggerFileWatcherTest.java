@@ -1,4 +1,4 @@
-package com.fsi.geoserver.wfs;
+package org.geoserver.wfs.notification;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -14,9 +14,6 @@ import junit.framework.TestCase;
 
 import org.apache.commons.io.IOUtils;
 import org.xml.sax.SAXException;
-
-import com.forwardslope.c2rpc.triggers.Link;
-import com.forwardslope.c2rpc.triggers.Trigger;
 
 public class TriggerFileWatcherTest extends TestCase implements TestConstants {
 

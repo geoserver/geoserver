@@ -1,4 +1,5 @@
-package com.forwardslope.c2rpc.triggers;
+package org.geoserver.wfs.notification;
+
 
 public class ObjectFactoryEx extends ObjectFactory {
     @Override

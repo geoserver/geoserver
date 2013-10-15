@@ -1,6 +1,6 @@
-package com.fsi.geoserver.wfs;
+package org.geoserver.wfs.notification;
 
-import static com.fsi.geoserver.wfs.Util.coalesce;
+import static org.geoserver.wfs.notification.Util.coalesce;
 
 import java.io.File;
 import java.io.IOException;

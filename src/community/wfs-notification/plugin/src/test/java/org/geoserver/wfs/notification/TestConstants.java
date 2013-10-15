@@ -1,4 +1,4 @@
-package com.fsi.geoserver.wfs;
+package org.geoserver.wfs.notification;
 
 import javax.xml.namespace.QName;
 

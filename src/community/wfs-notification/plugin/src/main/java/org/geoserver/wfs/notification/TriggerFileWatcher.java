@@ -1,4 +1,4 @@
-package com.fsi.geoserver.wfs;
+package org.geoserver.wfs.notification;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,11 +17,6 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.IOUtils;
-
-import com.forwardslope.c2rpc.triggers.Feature;
-import com.forwardslope.c2rpc.triggers.ObjectFactoryEx;
-import com.forwardslope.c2rpc.triggers.Trigger;
-import com.forwardslope.c2rpc.triggers.Triggers;
 
 class TriggerFileWatcher extends AbstractFileWatcher<Map<QName, List<Trigger>>> {
     private static final JAXBContext CTX;

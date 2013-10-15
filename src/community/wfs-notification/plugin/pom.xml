@@ -43,7 +43,6 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <schemaDirectory>${basedir}/src/main/resources</schemaDirectory>
                     <extension>true</extension>
                 </configuration>
             </plugin>

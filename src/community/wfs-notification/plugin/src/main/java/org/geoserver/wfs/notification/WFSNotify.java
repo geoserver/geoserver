@@ -1,4 +1,4 @@
-package com.fsi.geoserver.wfs;
+package org.geoserver.wfs.notification;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,6 +28,7 @@ import org.geoserver.wfs.TransactionEventType;
 import org.geoserver.wfs.TransactionListener;
 import org.geoserver.wfs.TransactionPlugin;
 import org.geoserver.wfs.WFSException;
+import org.geoserver.wfs.notification.TriggerManager.TriggerCallback;
 import org.geotools.data.FeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
@@ -41,8 +42,6 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.identity.Identifier;
 import org.springframework.beans.factory.DisposableBean;
-
-import com.fsi.geoserver.wfs.TriggerManager.TriggerCallback;
 
 /**
  * <p>

@@ -11,11 +11,15 @@ import org.apache.commons.logging.LogFactory;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geotools.data.FeatureSource;
+import org.geotools.data.FeatureStore;
+import org.geotools.data.Transaction;
+import org.geotools.data.store.ContentFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.NameImpl;
 import org.geotools.filter.AttributeExpressionImpl;
+import org.geotools.jdbc.JDBCFeatureSource;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
 import org.opengis.feature.type.FeatureType;
@@ -66,7 +70,7 @@ public class TriggerManager {
         tfw = t;
     }
 
-    void triggerEvent(FeatureIterator<? extends Feature> affected, QName name, TriggerCallback cb, TransactionCache tc)
+    void triggerEvent(FeatureIterator<? extends Feature> affected, QName name, TriggerCallback cb, Transaction transaction)
         throws IOException {
 
         if(logger.isTraceEnabled()) {
@@ -88,12 +92,12 @@ public class TriggerManager {
         }
         
         for(int i = 0; i < subFilters.length; ++i) {
-            triggerEvent(triggers.get(i), subFilters[i].build(), cb, tc);
+            triggerEvent(triggers.get(i), subFilters[i].build(), cb, transaction);
         }
     }
 
     @SuppressWarnings("unchecked")
-    void triggerEvent(Trigger t, Filter current, TriggerCallback cb, TransactionCache tc)
+    void triggerEvent(Trigger t, Filter current, TriggerCallback cb, Transaction transaction)
         throws IOException {
 
         for(int i = 0; i < t.getLink().size(); ++i) {
@@ -124,7 +128,11 @@ public class TriggerManager {
             }
 
             FeatureSource<? extends FeatureType, ? extends Feature> featureSource = info.getFeatureSource(null, null);
-            tc.apply(featureSource);
+            if(featureSource instanceof ContentFeatureSource) {
+                ((JDBCFeatureSource) featureSource).setTransaction(transaction);
+            } else if(featureSource instanceof FeatureStore) {
+                ((FeatureStore) featureSource).setTransaction(transaction);
+            }
             FeatureCollection<? extends FeatureType, ? extends Feature> features = featureSource.getFeatures(current);
             FeatureIterator<? extends Feature> it = features.features();
 
@@ -150,7 +158,7 @@ public class TriggerManager {
             }
 
             for(int j = 0; j < l.getTrigger().size(); ++j) {
-                triggerEvent(l.getTrigger().get(j), subFilters[j].build(), cb, tc);
+                triggerEvent(l.getTrigger().get(j), subFilters[j].build(), cb, transaction);
             }
 
             if(next != null) {

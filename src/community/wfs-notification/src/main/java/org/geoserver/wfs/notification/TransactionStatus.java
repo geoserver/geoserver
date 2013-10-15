@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.geotools.data.Transaction;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.identity.FeatureId;
@@ -14,7 +15,7 @@ import org.opengis.filter.identity.Identifier;
  * An object that lives during the course of a transaction.
  */
 class TransactionStatus {
-    private final TransactionCache tc = new TransactionCache();
+    private Transaction transaction;
 
     /**
      * Incoming sets of features to check on right before commit.
@@ -36,7 +37,7 @@ class TransactionStatus {
      * Features relevant to the above, mapped by FID. (Feature don't fit very well into {@link Set}s.
      */
     private final Map<Identifier, Feature> fidMap = new HashMap<Identifier, Feature>();
-
+    
     private static <T, U> Set<U> getSet(T key, Map<T, Set<U>> multiMap) {
         Set<U> s = multiMap.get(key);
         if(s == null) multiMap.put(key, s = new HashSet<U>());
@@ -54,8 +55,13 @@ class TransactionStatus {
     public Map<Name, Set<Identifier>> getPotentiallyModified() {
         return potentiallyModified;
     }
-    public TransactionCache getTransactionCache() {
-        return tc;
+    
+    public Transaction getTransaction() {
+        return transaction;
+    }
+    
+    public void setTransaction(Transaction transaction) {
+        this.transaction = transaction;
     }
 
     public void affected(Feature f) {

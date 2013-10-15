@@ -210,9 +210,9 @@ public class WFSNotify implements TransactionPlugin, TransactionListener, Dispos
             
             if(ts == null)
                 return;
-            
-            ts.getTransactionCache().cache(event.getAffectedFeatures());
 
+            ts.setTransaction(event.getTransaction());
+            
             if(event.getType() == TransactionEventType.PRE_INSERT) {
                 preInsert(event, ts);
             } else if(event.getType() == TransactionEventType.PRE_DELETE) {
@@ -255,7 +255,7 @@ public class WFSNotify implements TransactionPlugin, TransactionListener, Dispos
                 public void triggerEvent(Feature f) {
                     ts.modified(f);
                 }
-            }, ts.getTransactionCache());
+            }, event.getTransaction());
             
         } finally {
             affected.close();
@@ -282,7 +282,7 @@ public class WFSNotify implements TransactionPlugin, TransactionListener, Dispos
                 public void triggerEvent(Feature f) {
                     ts.modified(f);
                 }
-            }, ts.getTransactionCache());
+            }, event.getTransaction());
         } finally {
             affected.close();
         }
@@ -313,10 +313,6 @@ public class WFSNotify implements TransactionPlugin, TransactionListener, Dispos
 
     public void destroy() throws Exception {
         LOG.info("GeoServer WSN producer is being destroyed.");
-    }
-
-    public Object createUserData() {
-        return new TransactionStatus();
     }
 
     @Override
@@ -364,8 +360,7 @@ public class WFSNotify implements TransactionPlugin, TransactionListener, Dispos
         }
     }
     
-    public void tryBeforeCommit(TransactionType request, Object userData) throws WFSException {
-        final TransactionStatus ts = (TransactionStatus) userData;
+    public void tryBeforeCommit(TransactionType request, final TransactionStatus ts) throws WFSException {
 
         // Rerun each query to be checked
         for(Entry<Name, Set<Identifier>> ent : ts.getAffected().entrySet()) {
@@ -381,7 +376,7 @@ public class WFSNotify implements TransactionPlugin, TransactionListener, Dispos
                             WFSNotify.this.triggerEvent(f);
                         }
                     }
-                }, ts.getTransactionCache());
+                }, ts.getTransaction());
             } catch(IOException e) {
                 LOG.debug("Error checking modified features, notifications will be inaccurate:", e);
             }

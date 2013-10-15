@@ -35,8 +35,6 @@ import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.wfs.WFSException;
-import org.geoserver.wfs.notification.NotificationPublisher;
-import org.geoserver.wfs.notification.NotificationSerializer;
 import org.geotools.gml3.GML;
 import org.geotools.math.Statistics;
 import org.geotools.xml.Configuration;

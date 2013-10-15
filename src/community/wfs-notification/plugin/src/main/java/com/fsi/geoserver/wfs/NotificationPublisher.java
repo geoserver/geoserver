@@ -1,4 +1,4 @@
-package org.geoserver.wfs.notification;
+package com.fsi.geoserver.wfs;
 
 public interface NotificationPublisher {
     /**

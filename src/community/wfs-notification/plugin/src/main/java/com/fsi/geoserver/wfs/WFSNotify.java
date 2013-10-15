@@ -28,8 +28,6 @@ import org.geoserver.wfs.TransactionEventType;
 import org.geoserver.wfs.TransactionListener;
 import org.geoserver.wfs.TransactionPlugin;
 import org.geoserver.wfs.WFSException;
-import org.geoserver.wfs.notification.NotificationPublisher;
-import org.geoserver.wfs.notification.NotificationSerializer;
 import org.geotools.data.FeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;

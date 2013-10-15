@@ -16,7 +16,6 @@ import javax.jms.Session;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.geoserver.wfs.notification.NotificationPublisher;
 
 public abstract class JMSEventHelper implements NotificationPublisher {
     private static final Log LOG = LogFactory.getLog(JMSEventHelper.class);

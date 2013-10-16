@@ -7,7 +7,7 @@ This plugin brings in the ability to encode WCS 2.0.1 Multidimensional output as
 Installing the GeoServer NetCDF Output format extension
 -------------------------------------------------------
 
- #. Download the extension from the `nightly GeoServer community module builds <http://gridlock.opengeo.org/geoserver/trunk/community-latest/>`_.
+ #. Download the extension from the `nightly GeoServer community module builds <http://ares.opengeo.org/geoserver/master/community-latest/>`_.
 
     .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance!
 
@@ -17,7 +17,7 @@ Getting a NetCDF output file
 ----------------------------
 Make sure to specify NetCDF as value of the format parameter within the getCoverage request.
 As an instance: 
-http://localhost:8080/geoserver/wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=it.geosolutions__V&Format=NetCDF...
+http://localhost:8080/geoserver/wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=it.geosolutions__V&Format=application/x-netcdf...
 
 Current limitations
 -------------------

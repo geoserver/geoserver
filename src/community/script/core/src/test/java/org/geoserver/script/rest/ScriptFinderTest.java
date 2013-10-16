@@ -37,6 +37,17 @@ public class ScriptFinderTest extends GeoServerTestSupport {
         assertEquals("print 'foo'", resp.getOutputStreamContent());
     }
 
+    public void testPut() throws Exception {
+        assertNull(scriptMgr.findScriptFile("wps/bar.py"));
+
+        String body = "print 'hello';";
+        MockHttpServletResponse resp = 
+            putAsServletResponse("/script/scripts/wps/bar.py", body, "text/plain");
+        assertEquals(201, resp.getStatusCode());
+
+        assertNotNull(scriptMgr.findScriptFile("wps/bar.py"));
+    }
+
     public void testGetAll() throws Exception {
         JSON json = getAsJSON("/script/scripts/wps");
         JSONArray files = (JSONArray) json;

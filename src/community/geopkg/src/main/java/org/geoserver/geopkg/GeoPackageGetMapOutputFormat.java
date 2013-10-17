@@ -16,8 +16,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.ResourceInfo;
@@ -43,13 +41,11 @@ import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geopkg.Entry;
-import org.geotools.geopkg.FeatureEntry;
 import org.geotools.geopkg.GeoPackage;
 import org.geotools.geopkg.RasterEntry;
 import org.geotools.geopkg.Tile;
 import org.geotools.geopkg.TileEntry;
 import org.geotools.geopkg.TileMatrix;
-import org.geotools.map.FeatureLayer;
 import org.geotools.map.GridCoverageLayer;
 import org.geotools.map.Layer;
 import org.geotools.referencing.CRS;
@@ -63,17 +59,14 @@ import org.geowebcache.grid.GridSubset;
 import org.geowebcache.grid.GridSubsetFactory;
 import org.geowebcache.grid.SRS;
 import org.geowebcache.layer.TileLayer;
-import org.opengis.feature.type.GeometryDescriptor;
-import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
-import org.opengis.filter.spatial.BBOX;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import com.vividsolutions.jts.geom.Envelope;
 
-public class GeoPackageOutputFormat extends AbstractMapOutputFormat {
+public class GeoPackageGetMapOutputFormat extends AbstractMapOutputFormat {
 
     static enum Mode {
         VECTOR, HYBRID,TILED;
@@ -102,7 +95,7 @@ public class GeoPackageOutputFormat extends AbstractMapOutputFormat {
     WMS wms;
     GWC gwc;
 
-    public GeoPackageOutputFormat(WebMapService webMapService, WMS wms, GWC gwc) {
+    public GeoPackageGetMapOutputFormat(WebMapService webMapService, WMS wms, GWC gwc) {
         super(MIME_TYPE, NAMES);
         this.webMapService = webMapService;
         this.wms = wms;
@@ -151,10 +144,7 @@ public class GeoPackageOutputFormat extends AbstractMapOutputFormat {
                 Layer layer = layers.get(i);
                 MapLayerInfo mapLayer = mapLayers.get(i);
     
-                if (layer instanceof FeatureLayer) {
-                    addFeatureLayer(geopkg, (FeatureLayer)layer, mapLayer, map);
-                }
-                else if (layer instanceof GridCoverageLayer) {
+                if (layer instanceof GridCoverageLayer) {
                     if (mode == Mode.HYBRID) {
                         addCoverageLayer(geopkg, (GridCoverageLayer)layer, mapLayer, map);    
                     }
@@ -212,29 +202,7 @@ public class GeoPackageOutputFormat extends AbstractMapOutputFormat {
         result.setContentDispositionHeader(map, ".gpkg", true);
         return result;
     }
-
-    /*
-     * Adds a feature layer to the geopackage.
-     */
-    void addFeatureLayer(GeoPackage geopkg, FeatureLayer layer, MapLayerInfo mapLayer, 
-        WMSMapContent map) throws IOException {
-
-        FeatureEntry e = new FeatureEntry();
-        initEntry(e, layer, mapLayer, map);
-
-        Filter filter = layer.getQuery().getFilter();
-        GeometryDescriptor gd = mapLayer.getFeature().getFeatureType().getGeometryDescriptor();
-        if (gd != null) {
-            Envelope bnds = bounds(map);
-            BBOX bboxFilter = filterFactory.bbox(gd.getLocalName(), bnds.getMinX(), bnds.getMinY(), 
-                bnds.getMaxX(), bnds.getMaxY(), map.getRequest().getSRS());
-            filter = filterFactory.and(filter, bboxFilter);
-        }
-
-        LOGGER.fine("Creating feature entry" + e.getTableName());
-        geopkg.add(e, layer.getSimpleFeatureSource(), filter);
-    }
-
+    
     void addCoverageLayer(GeoPackage geopkg, GridCoverageLayer layer, MapLayerInfo mapLayer, WMSMapContent map) 
         throws IOException {
 

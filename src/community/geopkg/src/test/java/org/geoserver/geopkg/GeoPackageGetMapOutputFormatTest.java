@@ -4,71 +4,41 @@ import static org.junit.Assert.*;
 import static org.geoserver.data.test.MockData.*;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
 
 import javax.xml.namespace.QName;
 
 import org.apache.commons.io.FileUtils;
-import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.data.util.IOUtils;
 import org.geoserver.gwc.GWC;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.RawMap;
-import org.geotools.data.simple.SimpleFeatureReader;
-import org.geotools.geopkg.FeatureEntry;
 import org.geotools.geopkg.GeoPackage;
 import org.geotools.geopkg.Tile;
 import org.geotools.geopkg.TileEntry;
 import org.geotools.geopkg.TileReader;
-import org.geotools.map.MapContent;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.vividsolutions.jts.geom.Envelope;
 
-public class GeoPackageOutputFormatTest extends WMSTestSupport {
+public class GeoPackageGetMapOutputFormatTest extends WMSTestSupport {
 
-    GeoPackageOutputFormat format;
+    GeoPackageGetMapOutputFormat format;
 
     @Before
     public void setUpFormat() {
-        format = new GeoPackageOutputFormat(getWebMapService(), getWMS(), GWC.get());
+        format = new GeoPackageGetMapOutputFormat(getWebMapService(), getWMS(), GWC.get());
     }
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
         testData.setUpDefaultRasterLayers();
-    }
-
-    @Test
-    public void testFeatureEntries() throws Exception {
-
-        WebMap map = format.produceMap(createMapContent(FORESTS, LAKES));
-        assertNotNull(map);
-
-        GeoPackage geopkg = createGeoPackage(map);
-        List<FeatureEntry> entries = geopkg.features();
-
-        assertEquals(2, entries.size());
-
-        FeatureEntry e = geopkg.feature(FORESTS.getLocalPart());
-        assertNotNull(e);
-
-        SimpleFeatureReader r = geopkg.reader(e, null, null);
-        assertTrue(r.hasNext());
-        assertNotNull(r.next());
-
-        geopkg.close();
-        geopkg.getFile().delete();
     }
 
     @Test

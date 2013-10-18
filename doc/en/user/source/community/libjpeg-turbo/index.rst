@@ -34,7 +34,7 @@ Installing the GeoServer libjpeg-turbo extension
   .. warning:: Before moving on make sure you installed the libjpeg-turbo binaries as per the section above.
 
 
- #. Download the extension from the `nightly GeoServer community module builds <http://ares.opengeo.org/geoserver/2.4.x/community-latest/>`_.
+ #. Download the extension from the `nightly GeoServer community module builds <http://gridlock.opengeo.org/geoserver/trunk/community-latest/>`_.
 
     .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance!
 

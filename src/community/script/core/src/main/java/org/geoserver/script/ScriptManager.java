@@ -129,14 +129,6 @@ public class ScriptManager implements InitializingBean {
     }
 
     /**
-     * Finds a script file at the specified path, creating it if necessary.
-     */
-    public File findOrCreateScriptFile(String path) throws IOException {
-        File f = new File(getScriptRoot(), path);
-        return f;
-    }
-
-    /**
      * The root "apps" directory, located directly under {@link #getScriptRoot()}.
      */
     public File getAppRoot() throws IOException {

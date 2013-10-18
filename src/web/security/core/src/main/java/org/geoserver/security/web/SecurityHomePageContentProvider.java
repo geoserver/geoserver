@@ -6,7 +6,6 @@ package org.geoserver.security.web;
 
 import static org.geoserver.security.impl.GeoServerUser.ADMIN_USERNAME;
 import static org.geoserver.security.impl.GeoServerUser.DEFAULT_ADMIN_PASSWD;
-import static org.geoserver.security.impl.GeoServerUser.ROOT_USERNAME;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +22,6 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
-import org.geoserver.security.config.SecurityUserGroupServiceConfig;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.password.GeoServerPasswordEncoder;
 import org.geoserver.security.web.passwd.MasterPasswordChangePage;
@@ -32,8 +30,6 @@ import org.geoserver.security.xml.XMLUserGroupService;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerHomePageContentProvider;
 import org.geotools.util.logging.Logging;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 
 public class SecurityHomePageContentProvider implements
         GeoServerHomePageContentProvider {
@@ -50,16 +46,6 @@ public class SecurityHomePageContentProvider implements
         return null;
     }
    
-    static  boolean  testAuthentication(String user, String passwd, GeoServerSecurityManager secMgr) {
-        Authentication token = new UsernamePasswordAuthenticationToken(user, passwd);
-        try {
-            token = secMgr.authenticate(token);
-        }
-        catch(Exception e) {
-            //ok
-        }
-        return token.isAuthenticated();
-    }
     // PasswordChangeWarningPanel
     static class SecurityWarningsPanel extends Panel {
 
@@ -117,7 +103,7 @@ public class SecurityHomePageContentProvider implements
                         
             
             // check for default admin password
-            visibility= testAuthentication(ADMIN_USERNAME, DEFAULT_ADMIN_PASSWD, manager);
+            visibility= manager.checkForDefaultAdminPassword();
             Page changeItPage = null;
             String passwordEncoderName=null;
             try {

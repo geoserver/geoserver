@@ -150,6 +150,7 @@ import org.springframework.security.authentication.AnonymousAuthenticationProvid
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.RememberMeAuthenticationProvider;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -1243,6 +1244,24 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
             }
         }
         return false;
+    }
+
+    /**
+     * Returns true if the default password for the {@Link GeoServerUser#ADMIN_USERNAME} has not
+     * been changed.
+     */
+    public boolean checkForDefaultAdminPassword() {
+        Authentication token = new UsernamePasswordAuthenticationToken(GeoServerUser.ADMIN_USERNAME, 
+            GeoServerUser.DEFAULT_ADMIN_PASSWD);
+
+        try {
+            token = authenticate(token);
+        }
+        catch(Exception e) {
+            //ok
+        }
+
+        return token.isAuthenticated();
     }
 
     /**

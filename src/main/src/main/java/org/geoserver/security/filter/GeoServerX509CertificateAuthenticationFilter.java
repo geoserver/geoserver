@@ -20,7 +20,7 @@ import org.springframework.security.web.authentication.preauth.x509.X509Principa
  * @author mcr
  *
  */
-public class GeoServerX509CertificateAuthenticationFilter extends GeoServerPreAuthenticatedUserNameFilter {
+public class GeoServerX509CertificateAuthenticationFilter extends GeoServerJ2eeBaseAuthenticationFilter {
     
     private X509PrincipalExtractor principalExtractor;
 

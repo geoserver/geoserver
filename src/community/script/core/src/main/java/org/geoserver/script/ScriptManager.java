@@ -24,6 +24,7 @@ import org.geoserver.script.app.AppHook;
 import org.geoserver.script.function.FunctionHook;
 import org.geoserver.script.wfs.WfsTxHook;
 import org.geoserver.script.wps.WpsHook;
+import org.geoserver.security.GeoServerSecurityManager;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -43,6 +44,7 @@ public class ScriptManager implements InitializingBean {
 
     GeoServerDataDirectory dataDir;
     ScriptEngineManager engineMgr;
+    GeoServerSecurityManager secMgr;
 
     volatile List<ScriptPlugin> plugins;
     Cache<Long, ScriptSession> sessions;
@@ -56,6 +58,14 @@ public class ScriptManager implements InitializingBean {
 
     public GeoServerDataDirectory getDataDirectory() {
         return dataDir;
+    }
+
+    public GeoServerSecurityManager getSecurityManager() {
+        return secMgr != null ? secMgr :GeoServerExtensions.bean(GeoServerSecurityManager.class);
+    }
+
+    public void setSecurityManager(GeoServerSecurityManager secMgr) {
+        this.secMgr = secMgr;
     }
 
     /**

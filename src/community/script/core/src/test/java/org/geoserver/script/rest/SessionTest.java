@@ -7,11 +7,12 @@ package org.geoserver.script.rest;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+import org.geoserver.script.ScriptIntTestSupport;
 import org.geoserver.test.GeoServerTestSupport;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-public class SessionTest extends GeoServerTestSupport {
+public class SessionTest extends ScriptIntTestSupport {
 
     public void testPost() throws Exception {
         MockHttpServletResponse response = postAsServletResponse("/script/sessions/js", "");

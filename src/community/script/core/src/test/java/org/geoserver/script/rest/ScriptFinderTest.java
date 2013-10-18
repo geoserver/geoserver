@@ -10,20 +10,13 @@ import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 
 import org.apache.commons.io.FileUtils;
+import org.geoserver.script.ScriptIntTestSupport;
 import org.geoserver.script.ScriptManager;
 import org.geoserver.test.GeoServerTestSupport;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-public class ScriptFinderTest extends GeoServerTestSupport {
-
-    ScriptManager scriptMgr;
-    
-    @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
-        scriptMgr = new ScriptManager(getDataDirectory());
-    }
+public class ScriptFinderTest extends ScriptIntTestSupport {
 
     public void testGet() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("/script/scripts/wps/foo.py");

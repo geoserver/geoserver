@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -993,7 +992,7 @@ public class WCSDimensionsSubsetHelper {
         // ---------------------------------
         // Updating custom dimensions subset
         // ---------------------------------
-        List<String> customDomains = (List<String>) (accessor != null ? accessor.getCustomDomains() : Collections.emptyList());
+        List<String> customDomains = accessor.getCustomDomains();
         Map<String, List<Object>> dimensionsSubset = new HashMap<String, List<Object>>();
         for (String customDomain: customDomains) {
             String startAttribute = null;
@@ -1238,21 +1237,15 @@ public class WCSDimensionsSubsetHelper {
             throw new UnsupportedOperationException("Only structuredGridCoverage2DReaders are currently supported");
         }
         List<DimensionBean> dimensions = new ArrayList<DimensionBean>();
-        List<String> customDimensions = (List<String>) (accessor != null ? accessor.getCustomDomains() : Collections.emptyList());
+        List<String> customDimensions = accessor.getCustomDomains();
         
         // Put custom dimensions as first
         for (String customDimension: customDimensions) {
             dimensions.add(setupDimensionBean(structuredReader, customDimension));
         }
         // Put known dimensions afterwards similarly to what COARDS convention suggest: 1) Time -> 2) Elevation
-        DimensionBean timeD = setupDimensionBean(structuredReader, "TIME"); 
-        if (timeD != null) {
-            dimensions.add(timeD);
-        }
-        DimensionBean elevationD = setupDimensionBean(structuredReader, "ELEVATION");
-        if (elevationD != null) {
-            dimensions.add(elevationD);
-        }
+        dimensions.add(setupDimensionBean(structuredReader, "TIME"));
+        dimensions.add(setupDimensionBean(structuredReader, "ELEVATION"));
 
         return dimensions;
     }
@@ -1270,11 +1263,8 @@ public class WCSDimensionsSubsetHelper {
         final String coverageName = coverageInfo.getName();
         final DimensionDescriptor descriptor = WCSDimensionsHelper.getDimensionDescriptor(structuredReader, coverageName, dimensionID);
         if (descriptor == null) {
-           if (LOGGER.isLoggable(Level.FINE)) {
-               LOGGER.fine("Unable to find a valid descriptor for the specified dimension ID: " + dimensionID + 
-                    " for the specified coverage " + coverageName + "\n Returning no DimensionBean");
-           }
-           return null;
+            throw new IllegalArgumentException("Unable to find a valid descriptor for the specified dimension ID: " + dimensionID + 
+                    " for the specified coverage " + coverageName);
         }
         final String dimensionName = descriptor.getName();
         final DimensionType dimensionType = dimensionID.equalsIgnoreCase("TIME") ? DimensionType.TIME : dimensionID.equalsIgnoreCase("ELEVATION") ? DimensionType.ELEVATION : DimensionType.CUSTOM;
@@ -1315,10 +1305,7 @@ public class WCSDimensionsSubsetHelper {
             break;
         case CUSTOM:
             Map<String, List<Object>> dimensionsSubset = coverageRequest.getDimensionsSubset();
-            List<Object> elements = dimensionsSubset == null ? null : dimensionsSubset.get(coverageDimension.getName().toUpperCase());
-            if (elements == null) {
-                throw new IllegalArgumentException("No dimension subset has been found");
-            }
+            List<Object> elements = dimensionsSubset.get(coverageDimension.getName().toUpperCase());
             if (elements.size() > 1) {
                 throw new UnsupportedOperationException("Multiple elements in additional dimensions are not supported on splitted requests");
             }

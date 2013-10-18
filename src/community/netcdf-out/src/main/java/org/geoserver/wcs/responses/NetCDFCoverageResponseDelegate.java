@@ -31,25 +31,22 @@ import ucar.ma2.InvalidRangeException;
 public class NetCDFCoverageResponseDelegate extends BaseCoverageResponseDelegate implements
         CoverageResponseDelegate {
 
-    private final static String MIME_TYPE = "application/x-netcdf";
-
     public static final Logger LOGGER = Logging.getLogger("org.geoserver.wcs.responses.NetCDFCoverageResponseDelegate");
-
+    
     @SuppressWarnings("serial")
     public NetCDFCoverageResponseDelegate(GeoServer geoserver) {
         super(geoserver, Arrays.asList("NetCDF"/* ,"netcdf-GZIP" */), // output formats
                 new HashMap<String, String>() { // file extensions
                     {
                         put("NetCDF", "nc");
-                        put("netcdf", "nc");
-                        put("NETCDF", "nc");
-                        put(MIME_TYPE, "nc");
+                        // put("NetCDF-GZIP", "nc.gz");
+                        put("text/plain", "nc");
+                        // put("application/x-gzip", "netcdf-GZIP");
                     }
                 }, new HashMap<String, String>() { // mime types
                     {
-                        put("NetCDF", MIME_TYPE);
-                        put("netcdf", MIME_TYPE);
-                        put("NETCDF", MIME_TYPE);
+                        put("NetCDF", "text/plain");
+                        // put("NetCDF-GZIP", "application/x-gzip");
                     }
                 });
     }

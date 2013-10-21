@@ -2999,13 +2999,25 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
     }
     
     /**
-     * Interface that can be used to implement migration logic on the XStreamPersister
-     * during migration phases.
+     * Interface that can be used to assist migration phases, adding XStream behaviours to be used
+     * only during migration of configurations from previous versions.
+     * A specific implementation can be passed to {@link FilterHelper.loadConfig} and/or 
+     * {@link FilterHelper.saveConfig} to change XStream mappings and conversions to allow loading
+     * of old (incompatible) configuration files that need to be updated to a new format.
+     * The implementation should implement the migrationPersister method to add
+     * aliases, converters or other XStream behaviours needed only when migrating old
+     * configurations. 
      *  
      * @author Mauro Bartolomeoli (mauro.bartolomeoli@geo-solutions.it)
      *
      */
     interface MigrationHelper {
+        /**
+         * Implement here XStream mappings and conversion behaviours needed to read incompatible
+         * configurations during migration.
+         * 
+         * @param xp
+         */
         public void migrationPersister(XStreamPersister xp);
     }
     

@@ -40,6 +40,14 @@
     <param-value>50</param-value>
   </context-param>
   
+  <!--Can be true or false (defaults to: false). -->
+  <!--When true the JSONP (text/javascript) output format is enabled -->
+  <!--
+  <context-param>
+    <param-name>ENABLE_JSONP</param-name>
+    <param-value>true</param-value>
+  </context-param>
+  -->
     <!-- 
     <context-param>
       <param-name>PROXY_BASE_URL</param-name>

@@ -4,10 +4,8 @@
  */
 package org.geoserver.security.web.auth;
 
-import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
-import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.RoleSource;
 import org.geoserver.security.config.RequestHeaderAuthenticationFilterConfig;
 import org.geoserver.security.filter.GeoServerRequestHeaderAuthenticationFilter;
 
@@ -19,7 +17,6 @@ import org.geoserver.security.filter.GeoServerRequestHeaderAuthenticationFilter;
 public class HeaderAuthFilterPanel 
     extends PreAuthenticatedUserNameFilterPanel<RequestHeaderAuthenticationFilterConfig> {
 
-    DropDownChoice<RoleSource> roleSourceChoice;
 
     public HeaderAuthFilterPanel(String id, IModel<RequestHeaderAuthenticationFilterConfig> model) {
         super(id, model);

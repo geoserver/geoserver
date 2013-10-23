@@ -74,10 +74,16 @@ import org.geoserver.security.config.AnonymousAuthenticationFilterConfig;
 import org.geoserver.security.config.BasicAuthenticationFilterConfig;
 import org.geoserver.security.config.ExceptionTranslationFilterConfig;
 import org.geoserver.security.config.FileBasedSecurityServiceConfig;
+import org.geoserver.security.config.J2eeAuthenticationBaseFilterConfig;
+import org.geoserver.security.config.J2eeAuthenticationBaseFilterConfig.J2EERoleSource;
+import org.geoserver.security.config.J2eeAuthenticationFilterConfig;
+import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
+import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource;
 import org.geoserver.security.config.RoleFilterConfig;
 import org.geoserver.security.config.LogoutFilterConfig;
 import org.geoserver.security.config.PasswordPolicyConfig;
 import org.geoserver.security.config.RememberMeAuthenticationFilterConfig;
+import org.geoserver.security.config.RoleSource;
 import org.geoserver.security.config.SSLFilterConfig;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
 import org.geoserver.security.config.SecurityConfig;
@@ -93,6 +99,7 @@ import org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfi
 import org.geoserver.security.file.FileWatcher;
 import org.geoserver.security.file.RoleFileWatcher;
 import org.geoserver.security.file.UserGroupFileWatcher;
+import org.geoserver.security.filter.GeoServerJ2eeAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerPreAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerAnonymousAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerBasicAuthenticationFilter;
@@ -162,6 +169,7 @@ import org.springframework.security.web.context.SecurityContextPersistenceFilter
 import org.springframework.util.StringUtils;
 import org.vfny.geoserver.crs.GeoserverGridShiftLocator;
 
+import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.converters.collections.AbstractCollectionConverter;
@@ -324,6 +332,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
                 boolean migratedFrom21 = migrateFrom21();
                 migrateFrom22(migratedFrom21);
                 migrateFrom23();
+                migrateFrom24();
             } catch (Exception e1) {
                 throw new RuntimeException(e1);
             }
@@ -357,6 +366,65 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
                 destroy();
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "Error destroying security manager", e);
+            }
+        }
+    }
+
+    void migrateFrom24() throws SecurityConfigException, IOException {
+        // allows migration of RoleSource from PreAuthenticatedUserNameFilterConfig
+        MigrationHelper mh = new MigrationHelper() {
+            @Override
+            public void migrationPersister(XStreamPersister xp) {
+                xp.getXStream().registerConverter(new Converter() {
+    
+                    @Override
+                    public boolean canConvert(Class cls) {
+                        return cls.isAssignableFrom(RoleSource.class);
+                    }
+    
+                    @Override
+                    public void marshal(Object rs, HierarchicalStreamWriter writer,
+                            MarshallingContext ctx) {
+                        if (rs != null) {
+                            writer.setValue(rs.toString());
+                        }
+    
+                    }
+    
+                    @Override
+                    public Object unmarshal(HierarchicalStreamReader reader,
+                            UnmarshallingContext ctx) {
+                        if (reader.getValue() != null) {
+                            return J2EERoleSource.valueOf(reader.getValue());
+                        }
+                        return null;
+                    }
+    
+                });
+            }
+    
+        };
+        for (String fName : listFilters()) {
+            SecurityFilterConfig fConfig = loadFilterConfig(fName, mh);
+            if (fConfig != null) {
+                if (fConfig instanceof J2eeAuthenticationBaseFilterConfig) {
+                    J2eeAuthenticationBaseFilterConfig j2eeConfig = (J2eeAuthenticationBaseFilterConfig) fConfig;
+                    // add default J2EE RoleSource that was the only one possible
+                    // before 2.5
+                    if (j2eeConfig.getRoleSource() == null) {
+                        j2eeConfig.setRoleSource(J2EERoleSource.J2EE);
+                    }
+                } else if (fConfig instanceof PreAuthenticatedUserNameFilterConfig) {
+                    PreAuthenticatedUserNameFilterConfig userNameConfig = (PreAuthenticatedUserNameFilterConfig) fConfig;
+                    RoleSource rs = userNameConfig.getRoleSource();
+                    if (rs != null) {
+                        // use the right RoleSource enum
+                        userNameConfig
+                                .setRoleSource(PreAuthenticatedUserNameRoleSource
+                                        .valueOf(rs.toString()));
+                    }
+                }
+                saveFilter(fConfig, mh);
             }
         }
     }
@@ -1309,13 +1377,29 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      * <code>null</a> if not found
      * 
      * @param name The name of the authentication provider service configuration.
+     * @param migrationHelper Optional helper used for migration purposes
+     */
+    public SecurityFilterConfig loadFilterConfig(String name, MigrationHelper migrationHelper) throws IOException {
+        return filterHelper.loadConfig(name, migrationHelper);
+    }
+    
+    /**
+     * Loads an authentication provider config from a named configuration.
+     * <code>null</a> if not found
+     * 
+     * @param name The name of the authentication provider service configuration.
      */
     public SecurityFilterConfig loadFilterConfig(String name) throws IOException {
         return filterHelper.loadConfig(name);
     }
 
     
-    public void saveFilter(SecurityNamedServiceConfig config) 
+    public void saveFilter(SecurityNamedServiceConfig config)
+            throws IOException,SecurityConfigException {
+        saveFilter(config, null);
+    }
+    
+    public void saveFilter(SecurityNamedServiceConfig config, MigrationHelper migrationHelper) 
             throws IOException,SecurityConfigException {
         
         SecurityConfigValidator validator = 
@@ -1330,7 +1414,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         }
         else { 
             validator.validateModifiedFilter(config,
-                    filterHelper.loadConfig(config.getName()));
+                    filterHelper.loadConfig(config.getName(), migrationHelper));
             // remove all cached authentications for this filter
             getAuthenticationCache().removeAll(config.getName());
             if (!securityConfig.getFilterChain().patternsForFilter(config.getName(),true).isEmpty()) {
@@ -2539,15 +2623,26 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         /**
          * loads the named entity config from persistence
          */
-        public C loadConfig(String name) throws IOException {
+        public C loadConfig(String name, MigrationHelper migrationHelper) throws IOException {
             File dir = new File(getRoot(), name);
             if (!dir.exists()) {
                 return null;
             }
 
             XStreamPersister xp = persister();
+            if(migrationHelper != null) {
+                migrationHelper.migrationPersister(xp);
+            }
             return (C) loadConfigFile(dir, xp);
         }
+        
+        /**
+         * loads the named entity config from persistence
+         */
+        public C loadConfig(String name) throws IOException {
+            return loadConfig(name, null);
+        }
+
 
         /**
          * saves the user group service config to persistence
@@ -2921,7 +3016,30 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         }
         LOGGER.info("End encrypting configuration passwords");
     }
- 
+    
+    /**
+     * Interface that can be used to assist migration phases, adding XStream behaviours to be used
+     * only during migration of configurations from previous versions.
+     * A specific implementation can be passed to {@link FilterHelper.loadConfig} and/or 
+     * {@link FilterHelper.saveConfig} to change XStream mappings and conversions to allow loading
+     * of old (incompatible) configuration files that need to be updated to a new format.
+     * The implementation should implement the migrationPersister method to add
+     * aliases, converters or other XStream behaviours needed only when migrating old
+     * configurations. 
+     *  
+     * @author Mauro Bartolomeoli (mauro.bartolomeoli@geo-solutions.it)
+     *
+     */
+    interface MigrationHelper {
+        /**
+         * Implement here XStream mappings and conversion behaviours needed to read incompatible
+         * configurations during migration.
+         * 
+         * @param xp
+         */
+        public void migrationPersister(XStreamPersister xp);
+    }
+    
     class AuthProviderHelper extends HelperBase<GeoServerAuthenticationProvider, SecurityAuthProviderConfig>{
 
         /**

@@ -10,17 +10,17 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
-import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.RoleSource;
+import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource;
+import org.geoserver.security.config.RoleSource;
 import org.geoserver.security.filter.GeoServerPreAuthenticatedUserNameFilter;
 import org.geoserver.security.web.role.RoleServiceChoice;
 import org.geoserver.security.web.usergroup.UserGroupServiceChoice;
-import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.HelpLink;
 
 /**
@@ -38,27 +38,15 @@ public abstract class PreAuthenticatedUserNameFilterPanel<T extends PreAuthentic
                                         
         add(new HelpLink("roleSourceHelp",this).setDialog(dialog));
         
-        add(roleSourceChoice = 
-            new DropDownChoice<RoleSource>("roleSource", Arrays.asList(RoleSource.values()),
-            new EnumChoiceRenderer<RoleSource>()));
+        createRoleSourceDropDown();
 
         roleSourceChoice.setNullValid(false);
         
         roleSourceChoice.add(new OnChangeAjaxBehavior() {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                Panel p;
-                switch(roleSourceChoice.getModelObject()) {
-                case UserGroupService:
-                    p = new UserGroupServicePanel("panel");
-                    break;
-                case RoleService:
-                    p = new RoleServicePanel("panel");
-                    break;
-                default:
-                    p = new HeaderPanel("panel");
-                }
-
+                Panel p = getRoleSourcePanel(roleSourceChoice.getModelObject());
+                
                 WebMarkupContainer c = (WebMarkupContainer)get("container"); 
                 c.addOrReplace(p);
                 target.addComponent(c);
@@ -71,14 +59,29 @@ public abstract class PreAuthenticatedUserNameFilterPanel<T extends PreAuthentic
 
         // show correct panel for existing configuration
         RoleSource rs = model.getObject().getRoleSource();
-        if (RoleSource.Header.equals(rs))
-            container.addOrReplace(new HeaderPanel("panel"));
-        if (RoleSource.UserGroupService.equals(rs))
-            container.addOrReplace(new UserGroupServicePanel("panel"));
-        if (RoleSource.RoleService.equals(rs))
-            container.addOrReplace(new RoleServicePanel("panel"));
-        if (rs==null)
-            container.add(new UserGroupServicePanel("panel"));
+        addRoleSourceDropDown(container, rs);
+    }
+
+    protected Panel getRoleSourcePanel(RoleSource model) {
+        if(PreAuthenticatedUserNameRoleSource.UserGroupService.equals(model)) {
+            return new UserGroupServicePanel("panel");
+        } else if(PreAuthenticatedUserNameRoleSource.RoleService.equals(model)) {
+            return new RoleServicePanel("panel");
+        } else if(PreAuthenticatedUserNameRoleSource.Header.equals(model)) {
+            return new HeaderPanel("panel");
+        }
+        return new EmptyPanel("panel");
+    }
+
+    protected void createRoleSourceDropDown() {
+        add(roleSourceChoice = new DropDownChoice<RoleSource>("roleSource",
+                Arrays.asList(PreAuthenticatedUserNameRoleSource.values()),
+                new RoleSourceChoiceRenderer()));
+    }
+
+    protected void addRoleSourceDropDown(WebMarkupContainer container,
+            RoleSource rs) {
+        container.addOrReplace(getRoleSourcePanel(rs));
     }
 
     static class HeaderPanel extends Panel {

@@ -56,6 +56,7 @@ import org.geowebcache.grid.GridSubset;
 import org.geowebcache.grid.OutsideCoverageException;
 import org.geowebcache.grid.SRS;
 import org.geowebcache.io.Resource;
+import org.geowebcache.layer.ExpirationRule;
 import org.geowebcache.layer.LayerListenerList;
 import org.geowebcache.layer.MetaTile;
 import org.geowebcache.layer.TileLayer;
@@ -967,6 +968,10 @@ public class GeoServerTileLayer extends TileLayer {
      */
     @Override
     public int getExpireClients(int zoomLevel) {
+    	if (info.getExpireClients()>0) {
+    		return info.getExpireClients();
+    	}
+    	
         if(layerInfo != null) {
             return getLayerMaxAge(layerInfo);
         } else if(layerGroupInfo != null) {
@@ -1031,8 +1036,21 @@ public class GeoServerTileLayer extends TileLayer {
      */
     @Override
     public int getExpireCache(int zoomLevel) {
-        // TODO: make configurable
-        return 0;
+    	if (info.getExpireCacheList() != null) {
+            ExpirationRule matchedRule = null;
+            for (ExpirationRule rule : info.getExpireCacheList()) {
+                if (zoomLevel >= rule.getMinZoom()) {
+                    matchedRule = rule;
+               } else {
+                    //ExpirationRules should be zoomlevel ascending
+                    break;
+                }
+            }
+            if (matchedRule!=null) {
+                return matchedRule.getExpiration();
+            }
+        }
+        return info.getExpireCache();
     }
 
     /**

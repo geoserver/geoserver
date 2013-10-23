@@ -6,11 +6,11 @@ JDBCConfig configuration
 The JDBCConfig module is configured in the file ``jdbcconfig/jdbcconfig.properties`` inside the :ref:`data_directory`.
 The following properties may be set:
 
-- ``import`` : The import configuration option tells GeoServer whether to import the current catalog from the file system to the database or not. If set to true, it will be imported and the config option will be set the value 'false' for the next start up to avoid trying to re-import the catalog  configuration.
-
 - ``enabled``: Use JDBCConfig.  Turn off to use the data directory for all configuration instead.
 
 - ``initdb``: Initialize an empty database if this is set on true. 
+
+- ``import`` : The import configuration option tells GeoServer whether to import the current catalog from the file system to the database or not. If set to true, it will be imported and the config option will be set the value 'false' for the next start up to avoid trying to re-import the catalog  configuration.
 
 - ``initScript``: Path to initialisation script .sql file. Only used if initdb = true.
 

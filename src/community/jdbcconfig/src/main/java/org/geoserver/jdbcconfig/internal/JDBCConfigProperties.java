@@ -39,7 +39,7 @@ public class JDBCConfigProperties extends Properties {
     }
 
     public boolean isEnabled() {
-        return Boolean.valueOf(getProperty("enabled", "true"));
+        return Boolean.valueOf(getProperty("enabled", "false"));
     }
 
     public Optional<String> getJdbcUrl() {

@@ -79,11 +79,9 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
      * @see GWCVars#CACHE_USE_WMS_BACKEND_VALUE
      * @see GWCVars#CACHE_VALUE_UNSET
      */
-    @SuppressWarnings("unused")
-    transient private int expireCache;
+    private int expireCache;
 
-    @SuppressWarnings("unused")
-    transient private List<ExpirationRule> expireCacheList;
+    private List<ExpirationRule> expireCacheList;
 
     private int expireClients;
 

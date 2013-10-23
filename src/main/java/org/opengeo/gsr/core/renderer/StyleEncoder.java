@@ -6,8 +6,6 @@ import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -43,10 +41,16 @@ import org.opengis.filter.expression.Expression;
 import org.opengis.style.Fill;
 import org.opengis.style.GraphicalSymbol;
 
-import com.noelios.restlet.util.Base64;
 import java.net.URI;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 import net.sf.json.util.JSONBuilder;
+import org.opengis.filter.Filter;
+import org.opengis.filter.PropertyIsEqualTo;
+import org.opengis.filter.expression.Literal;
+import org.opengis.filter.expression.PropertyName;
 
 public class StyleEncoder {
 //    public static void defaultFillStyle(JSONBuilder json) {
@@ -125,6 +129,19 @@ public class StyleEncoder {
 //    }
     
     public static Renderer styleToRenderer(Style style) {
+                
+        List<FeatureTypeStyle> featureTypeStyles = style.featureTypeStyles();
+        if (featureTypeStyles == null || featureTypeStyles.size() != 1) return null;
+        
+        FeatureTypeStyle featureTypeStyle = featureTypeStyles.get(0);
+        if (featureTypeStyle == null) return null; 
+        
+        List<Rule> rules = featureTypeStyle.rules();
+        if (rules == null || rules.size() == 0) return null;
+        
+        Renderer render = rulesToUniqueValueRenderer(rules);
+        if (render != null) return render;
+
         final Symbolizer symbolizer = getSingleSymbolizer(style);
         if (symbolizer != null) {
             final Symbol symbol = symbolizerToSymbol(symbolizer);
@@ -136,6 +153,81 @@ public class StyleEncoder {
         } else {
             return null;
         }
+    }
+    
+    private static Renderer rulesToUniqueValueRenderer(List<Rule> rules) {
+        List<Rule> rulesOther = new LinkedList<Rule>();
+        Map<String, UniqueValueRenderer> map = new LinkedHashMap<String, UniqueValueRenderer>();
+        for (Rule rule : rules) {
+            UniqueValueInfoMeta meta = ruleToUniqueValueInfoMeta(rule);
+            if (meta != null) {
+                UniqueValueRenderer renderer = map.get(meta.propertyName);
+                if (renderer == null) {
+                    renderer = new UniqueValueRenderer(
+                            meta.propertyName,
+                            null, // field 2
+                            null, // field 3
+                            null, // delimiter
+                            null, // default symbol (set later)
+                            null, // default label (set later)
+                            new LinkedList<UniqueValueInfo>());
+                    map.put(meta.propertyName, renderer);
+                }
+                renderer.getUniqueValueInfos().add(meta.uniqueValueInfo);
+            } else {
+                rulesOther.add(rule);
+            }
+        }
+        if (map.size() == 1 && rulesOther.size() <= 1) {
+            UniqueValueRenderer uniqueValueRenderer = map.values().iterator().next();
+            if (rulesOther.size() == 1) {
+                // an assumption here: if there's one rule left over after
+                // a bunch of PropertyEqualTo let's assume it's the default.
+                // Robust programatic parsing of typical defaults written in SLD
+                // will be a PITA, let's defer.
+                Rule rule = rulesOther.get(0);
+                uniqueValueRenderer.setDefaultLabel(rule.getTitle());
+                uniqueValueRenderer.setDefaultSymbol(symbolizerToSymbol(rule.symbolizers().get(0)));
+            }
+            return uniqueValueRenderer;
+        }
+        return null;
+    }
+    
+    private static class UniqueValueInfoMeta {
+        final String propertyName;
+        final UniqueValueInfo uniqueValueInfo;
+        public UniqueValueInfoMeta(String propertyName, UniqueValueInfo uniqueValueInfo) {
+            this.propertyName = propertyName;
+            this.uniqueValueInfo = uniqueValueInfo;
+        }
+    }
+    
+    private static UniqueValueInfoMeta ruleToUniqueValueInfoMeta(Rule rule) {
+        List<Symbolizer> symbolizers = rule.symbolizers();
+        if (symbolizers == null || symbolizers.size() != 1) return null;
+        
+        Symbolizer symbolizer = symbolizers.get(0);
+        if (symbolizer == null) return null;
+        
+        Filter filter = rule.getFilter();
+        if (!(filter instanceof PropertyIsEqualTo)) return null;
+        
+        PropertyIsEqualTo uniqueValueFilter = (PropertyIsEqualTo)filter;
+        
+        Expression expression1 = uniqueValueFilter.getExpression1();
+        String propertyName = expression1 instanceof PropertyName ?
+                ((PropertyName)expression1).getPropertyName() : null;
+        if (propertyName == null) return null;
+        
+        Expression expression2 = uniqueValueFilter.getExpression2();
+        String valueAsString = expression2 instanceof Literal ?
+                ((Literal)expression2).getValue().toString() : null;
+        if (valueAsString == null) return null;
+        
+        return new UniqueValueInfoMeta(propertyName,
+                new UniqueValueInfo(valueAsString, rule.getTitle(),
+                    rule.getAbstract(), symbolizerToSymbol(symbolizer)));    
     }
     
     private static Renderer defaultPolyRenderer() {
@@ -404,6 +496,8 @@ public class StyleEncoder {
             encodeFillSymbol(json, (SimpleFillSymbol) symbol);
         } else if (symbol instanceof SimpleLineSymbol) {
             encodeLineStyle(json, (SimpleLineSymbol) symbol);
+        } else {
+            json.value(null);
         }
     }
     
@@ -560,6 +654,8 @@ public class StyleEncoder {
             json.value(null);
         } else if (renderer instanceof SimpleRenderer) {
             encodeSimpleRenderer(json, (SimpleRenderer) renderer);
+        } else if (renderer instanceof UniqueValueRenderer) {
+            encodeUniqueValueRenderer(json, (UniqueValueRenderer) renderer);
         }
     }
     
@@ -570,6 +666,31 @@ public class StyleEncoder {
           encodeSymbol(json, renderer.getSymbol());
           json.key("label").value(renderer.getLabel())
           .key("description").value(renderer.getDescription())
+        .endObject();
+    }
+    
+    private static void encodeUniqueValueRenderer(JSONBuilder json, UniqueValueRenderer renderer) {
+        json.object()
+          .key("type").value("uniqueValue")
+          .key("field1").value(renderer.getField1())
+          .key("field2").value(renderer.getField2())
+          .key("field3").value(renderer.getField3())
+          .key("fieldDelimiter").value(renderer.getFieldDelimiter())
+          .key("defaultSymbol");
+          encodeSymbol(json, renderer.getDefaultSymbol());
+          json.key("defaultLabel").value(renderer.getDefaultLabel())
+          .key("uniqueValueInfos");
+          json.array();
+          for (UniqueValueInfo info : renderer.getUniqueValueInfos()){
+            json.object()
+            .key("value").value(info.getValue())
+            .key("label").value(info.getLabel())
+            .key("description").value(info.getDescription())
+            .key("symbol");
+            encodeSymbol(json, info.getSymbol());
+            json.endObject();
+          }
+          json.endArray()
         .endObject();
     }
 	

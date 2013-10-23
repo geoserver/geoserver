@@ -50,7 +50,12 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>
-      <artifactId>web-security</artifactId>
+      <artifactId>web-sec-jdbc</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.web</groupId>
+      <artifactId>web-sec-ldap</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -753,6 +758,11 @@
           <artifactId>sec-cas</artifactId>
           <version>${project.version}</version>
         </dependency>
+        <dependency>
+          <groupId>org.geoserver.web</groupId>
+          <artifactId>web-sec-cas</artifactId>
+          <version>${project.version}</version>
+        </dependency>
       </dependencies>
     </profile>
     <profile>
@@ -1010,11 +1020,31 @@
       </dependencies>
     </profile>
     <profile>
+      <id>netcdf-out</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>netcdf-out</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>geopkg</id>
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>geopkg</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>png</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>png</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

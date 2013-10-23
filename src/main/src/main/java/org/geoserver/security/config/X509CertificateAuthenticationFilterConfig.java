@@ -13,7 +13,7 @@ import org.geoserver.security.filter.GeoServerX509CertificateAuthenticationFilte
  * @author christian
  *
  */
-public class X509CertificateAuthenticationFilterConfig extends PreAuthenticatedUserNameFilterConfig 
+public class X509CertificateAuthenticationFilterConfig extends J2eeAuthenticationBaseFilterConfig 
     implements SecurityAuthFilterConfig {
 
     private static final long serialVersionUID = 1L;

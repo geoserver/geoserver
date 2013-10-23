@@ -11,4 +11,8 @@ To install the JDBCConfig module:
 
 #. Perform any configuration required by your servlet container, and then restart. Warning: you are now starting JDBCConfig with a default configuration, which uses a H2 database to store the catalog. If you want to use another type of database, please refer to the :ref:`community_csw_config` and configure this before you start the server.
 
-#. Verify that the module was installed correctly: after you have started GeoServer for the first time with the jdbcconfig module, a directory jdbcconfig should be present in the :ref:`data_directory`. During this first start-up, your old catalog will have been automatically copied into the relational database. 
+#. Verify that the module was installed correctly:  The following message should appear on the GeoServer home page when logged in as an administrator.
+
+.. image:: h2message.png
+
+Also, after you have started GeoServer for the first time with the jdbcconfig module, a directory ``jdbcconfig`` should be present in the :ref:`data_directory`. During this first start-up, your old catalog will have been automatically copied into the relational database.  Subsequently, the catalog information in the :ref:`data_directory` will be ignored.

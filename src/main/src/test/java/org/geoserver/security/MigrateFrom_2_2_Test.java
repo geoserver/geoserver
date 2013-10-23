@@ -94,4 +94,15 @@ public class MigrateFrom_2_2_Test extends GeoServerSystemTestSupport {
         }
         
     }
+
+    @Test
+    public void testWebLoginChainSessionCreation() throws Exception {
+        //GEOS-6077
+        GeoServerSecurityManager secMgr = getSecurityManager();
+        SecurityManagerConfig config = secMgr.loadSecurityConfig();
+
+        RequestFilterChain chain = 
+            config.getFilterChain().getRequestChainByName(GeoServerSecurityFilterChain.WEB_LOGIN_CHAIN_NAME);
+        assertTrue(chain.isAllowSessionCreation());
+    }
 }

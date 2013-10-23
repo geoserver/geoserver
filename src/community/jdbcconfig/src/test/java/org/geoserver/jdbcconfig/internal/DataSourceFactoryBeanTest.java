@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 import static org.easymock.classextension.EasyMock.*;
 import static org.hamcrest.CoreMatchers.*;
 
+import java.sql.Connection;
+
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -11,6 +13,8 @@ import javax.sql.DataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.easymock.classextension.EasyMock;
 import org.junit.Test;
+
+import com.google.common.base.Optional;
 
 /**
  * 
@@ -25,9 +29,9 @@ public class DataSourceFactoryBeanTest {
          JDBCConfigProperties config = EasyMock.createMock(JDBCConfigProperties.class);
          Context jndi = EasyMock.createMock(Context.class);
          
-         expect(config.getProperty("jndiName")).andStubReturn(null);
+         expectJndi(config, null);
          
-         expect(config.getJdbcUrl()).andStubReturn("jdbc:test");
+         expect(config.getJdbcUrl()).andStubReturn(Optional.of("jdbc:test"));
          ds.setUrl("jdbc:test"); expectLastCall();
          expect(config.getProperty("driverClassName")).andStubReturn("org.geoserver.jdbcconfig.internal.MockJDBCDriver");
          ds.setDriverClassName("org.geoserver.jdbcconfig.internal.MockJDBCDriver"); expectLastCall();
@@ -42,11 +46,14 @@ public class DataSourceFactoryBeanTest {
          expect(config.getProperty("pool.maxOpenPreparedStatements")).andStubReturn(null);
          expect(config.getProperty("pool.testOnBorrow")).andStubReturn(null);
 
+         config.setDatasourceId("jdbc:test"); expectLastCall();
+
          ds.setMinIdle(1); expectLastCall();
          ds.setMaxActive(10); expectLastCall();
          ds.setPoolPreparedStatements(true); expectLastCall();
          ds.setMaxOpenPreparedStatements(50); expectLastCall();
 
+         expectVerifyConnect(ds);
          replay(ds, config, jndi);
 
          DataSourceFactoryBean fact = new DataSourceFactoryBean(config, jndi) {
@@ -82,9 +89,11 @@ public class DataSourceFactoryBeanTest {
          JDBCConfigProperties config = EasyMock.createMock(JDBCConfigProperties.class);
          Context jndi = EasyMock.createMock(Context.class);
          
-         expect(config.getProperty("jndiName")).andStubReturn("java:comp/env/jdbc/test");
+         expectJndi(config, "java:comp/env/jdbc/test");
          expect(jndi.lookup("java:comp/env/jdbc/test")).andStubReturn(ds);
+         config.setDatasourceId("java:comp/env/jdbc/test"); expectLastCall();
 
+         expectVerifyConnect(ds);
          replay(ds, config, jndi);
 
          DataSourceFactoryBean fact = new DataSourceFactoryBean(config, jndi);
@@ -117,10 +126,10 @@ public class DataSourceFactoryBeanTest {
          JDBCConfigProperties config = EasyMock.createMock(JDBCConfigProperties.class);
          Context jndi = EasyMock.createMock(Context.class);
          
-         expect(config.getProperty("jndiName")).andStubReturn("java:comp/env/jdbc/test");
+         expectJndi(config, "java:comp/env/jdbc/test");
          expect(jndi.lookup("java:comp/env/jdbc/test")).andStubThrow(new NamingException());
          
-         expect(config.getJdbcUrl()).andStubReturn("jdbc:test");
+         expect(config.getJdbcUrl()).andStubReturn(Optional.of("jdbc:test"));
          ds.setUrl("jdbc:test"); expectLastCall();
          expect(config.getProperty("driverClassName")).andStubReturn("org.geoserver.jdbcconfig.internal.MockJDBCDriver");
          ds.setDriverClassName("org.geoserver.jdbcconfig.internal.MockJDBCDriver"); expectLastCall();
@@ -134,11 +143,15 @@ public class DataSourceFactoryBeanTest {
          expect(config.getProperty("pool.poolPreparedStatements")).andStubReturn(null);
          expect(config.getProperty("pool.maxOpenPreparedStatements")).andStubReturn(null);
          expect(config.getProperty("pool.testOnBorrow")).andStubReturn(null);
+         
+         config.setDatasourceId("jdbc:test"); expectLastCall();
 
          ds.setMinIdle(1); expectLastCall();
          ds.setMaxActive(10); expectLastCall();
          ds.setPoolPreparedStatements(true); expectLastCall();
          ds.setMaxOpenPreparedStatements(50); expectLastCall();
+         
+         expectVerifyConnect(ds);
 
          replay(ds, config, jndi);
 
@@ -169,4 +182,15 @@ public class DataSourceFactoryBeanTest {
          verify(ds);
     }
 
+    private void expectJndi(JDBCConfigProperties config, String name) {
+        expect(config.getProperty("jndiName")).andStubReturn(name);
+        expect(config.getJndiName()).andStubReturn(Optional.fromNullable(name));
+    }
+    
+    private void expectVerifyConnect(DataSource ds) throws Exception {
+        Connection conn = createMock(Connection.class);
+        conn.close();expectLastCall();
+        replay(conn);
+        expect(ds.getConnection()).andReturn(conn);
+    }
 }

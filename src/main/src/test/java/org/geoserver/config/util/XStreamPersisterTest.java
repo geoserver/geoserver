@@ -701,8 +701,7 @@ public class XStreamPersisterTest {
         catalog.add( ft );
         
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        persister.save(ft, out);
-        
+        persister.save(ft, out);        
         // System.out.println(out.toString());
         
         persister.setCatalog( catalog );
@@ -710,6 +709,37 @@ public class XStreamPersisterTest {
         VirtualTable vt2 = (VirtualTable) ft.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE);
         assertNotNull(vt2);
         assertEquals(vt, vt2);
+    }
+    
+    /**
+     * Test for GEOS-6052
+     * @throws Exception
+     */
+    @Test
+    public void testVirtualTableMissingEscapeSql() throws Exception {
+        Catalog catalog = new CatalogImpl();
+        CatalogFactory cFactory = catalog.getFactory();
+        
+        WorkspaceInfo ws = cFactory.createWorkspace();
+        ws.setName( "foo" );
+        catalog.add( ws );
+        
+        NamespaceInfo ns = cFactory.createNamespace();
+        ns.setPrefix( "acme" );
+        ns.setURI( "http://acme.org" );
+        catalog.add( ns );
+        
+        DataStoreInfo ds = cFactory.createDataStore();
+        ds.setWorkspace( ws );
+        ds.setName( "foo" );
+        catalog.add( ds );
+        
+        persister.setCatalog( catalog );
+        FeatureTypeInfo ft = persister.load( getClass().getResourceAsStream("/org/geoserver/config/virtualtable_error.xml") , FeatureTypeInfo.class );
+        VirtualTable vt2 = (VirtualTable) ft.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE);
+        assertNotNull(vt2);
+        assertEquals(1,ft.getMetadata().size());
+        
     }
 
     @Test

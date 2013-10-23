@@ -85,24 +85,31 @@ public class PreviewLayer {
     }
     
     public String getTitle() {
-        if(layerInfo != null)
+        if(layerInfo != null) {
             return layerInfo.getResource().getTitle();
-        else
+        } else if(groupInfo != null) {
+            return groupInfo.getTitle();
+        } else {
             return "";
+        }
     }
     
     public String getAbstract() {
-        if(layerInfo != null)
+        if(layerInfo != null) {
             return layerInfo.getResource().getAbstract();
-        else
+        } else if(groupInfo != null) {
+            return groupInfo.getAbstract();
+        } else {
             return "";
+        }
     }
     
     public String getKeywords() {
-        if(layerInfo != null)
+        if(layerInfo != null) {
             return layerInfo.getResource().getKeywords().toString();
-        else
+        } else {
             return "";
+        }
     }
 
     public PreviewLayer.PreviewLayerType getType() {

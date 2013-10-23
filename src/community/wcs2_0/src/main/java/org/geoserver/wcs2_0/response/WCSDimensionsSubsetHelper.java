@@ -6,10 +6,14 @@ package org.geoserver.wcs2_0.response;
 
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,22 +31,46 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
+
+import org.geoserver.wcs2_0.GetCoverage;
 import org.geoserver.wcs2_0.GridCoverageRequest;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
+import org.geoserver.wcs2_0.response.DimensionBean.DimensionType;
 import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
 import org.geoserver.wcs2_0.util.RequestUtils;
+import org.geotools.coverage.grid.io.DimensionDescriptor;
+import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
+import org.geotools.data.Query;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.jts.JTS;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
+import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
-import org.geotools.xml.impl.DatatypeConverterImpl;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.expression.Literal;
+import org.opengis.filter.expression.PropertyName;
+import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
+import org.vfny.geoserver.util.WCSUtils;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * Provides support to deal with dimensions slicing, trimming, values conversions and default values computations
@@ -58,11 +86,9 @@ public class WCSDimensionsSubsetHelper {
 
     private final static Logger LOGGER = Logging.getLogger(WCSDimensionsHelper.class);
 
-    private final static DatatypeConverterImpl XML_CONVERTER = DatatypeConverterImpl.getInstance();
-
     private GetCoverageType request;
 
-    private Map<String, DimensionInfo> dimensions;
+    private Map<String, DimensionInfo> enabledDimensions;
 
     private ReaderDimensionsAccessor accessor;
 
@@ -76,7 +102,29 @@ public class WCSDimensionsSubsetHelper {
 
     private EnvelopeAxesLabelsMapper envelopeDimensionsMapper;
 
-    private CoverageInfo ci;
+    private CoverageInfo coverageInfo;
+
+    private GridCoverageRequest gridCoverageRequest;
+    
+    private FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+    
+    private final static WCSDimensionsValueParser PARSER = new WCSDimensionsValueParser();
+
+    public void setGridCoverageRequest(GridCoverageRequest gridCoverageRequest) {
+        this.gridCoverageRequest = gridCoverageRequest;
+    }
+
+    public GridCoverageRequest getGridCoverageRequest() {
+        return gridCoverageRequest;
+    }
+
+    public CoverageInfo getCoverageInfo() {
+        return coverageInfo;
+    }
+
+    public void setCoverageInfo(CoverageInfo coverageInfo) {
+        this.coverageInfo = coverageInfo;
+    }
 
     static {
         TIME_NAMES.add("t");
@@ -89,39 +137,21 @@ public class WCSDimensionsSubsetHelper {
     public WCSDimensionsSubsetHelper(GridCoverage2DReader reader, GetCoverageType request, CoverageInfo ci, 
             CoordinateReferenceSystem subsettingCRS, EnvelopeAxesLabelsMapper envelopeDimensionsMapper) throws IOException {
         this.request = request;
-        this.ci = ci;
+        this.coverageInfo = ci;
 
         // Note that dimensions will be returned if existing and enabled too
-        this.dimensions = WCSDimensionsHelper.getDimensionsFromMetadata(ci.getMetadata());
+        this.enabledDimensions = WCSDimensionsHelper.getDimensionsFromMetadata(ci.getMetadata());
         this.subsettingCRS = subsettingCRS;
         this.reader = reader;
         this.envelopeDimensionsMapper = envelopeDimensionsMapper;
-        timeDimension = dimensions.get(ResourceInfo.TIME);
-        elevationDimension = dimensions.get(ResourceInfo.ELEVATION);
+        timeDimension = enabledDimensions.get(ResourceInfo.TIME);
+        elevationDimension = enabledDimensions.get(ResourceInfo.ELEVATION);
 
-        if (timeDimension != null || elevationDimension != null || !dimensions.isEmpty()) {
+        if (timeDimension != null || elevationDimension != null || !enabledDimensions.isEmpty()) {
             accessor = new ReaderDimensionsAccessor(reader);
         }
     }
 
-    /**
-     * Parse a String as a Date or return null if impossible.
-     * @param text
-     * @return
-     */
-    public static Date parseAsDate(String text) {
-        try {
-            final Date slicePoint = XML_CONVERTER.parseDateTime(text).getTime();
-            if (slicePoint != null) {
-                return slicePoint;
-            }
-        } catch (IllegalArgumentException iae) {
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine(text + " can't be parsed as a time");
-            }
-        }
-        return null;
-    }
     
     /**
      * Extracts the simplified dimension name, throws exception if the dimension name is empty
@@ -188,7 +218,7 @@ public class WCSDimensionsSubsetHelper {
             return sourceEnvelopeInSubsettingCRS;
         }
 
-        int maxDimensions = 2 + dimensions.size();
+        int maxDimensions = 2 + enabledDimensions.size();
         if(requestedDimensions.size() > maxDimensions){
             throw new WCS20Exception(
                     "Invalid number of dimensions", 
@@ -204,7 +234,7 @@ public class WCSDimensionsSubsetHelper {
         GeneralEnvelope subsettingEnvelope = new GeneralEnvelope(sourceEnvelopeInSubsettingCRS);  
         subsettingEnvelope.setCoordinateReferenceSystem(subsettingCRS);
 
-        Set<String> dimensionKeys = dimensions.keySet();
+        Set<String> dimensionKeys = enabledDimensions.keySet();
         for (DimensionSubsetType dim : requestedDimensions){
             String dimension = WCSDimensionsSubsetHelper.getDimensionName(dim);
             // skip time support
@@ -249,7 +279,7 @@ public class WCSDimensionsSubsetHelper {
                 throw new WCS20Exception("Axis label already used during subsetting",WCS20Exception.WCS20ExceptionCode.InvalidAxisLabel,dimension);
             }
             foundDimensions.add(dimension);
-            
+
             // now decide what to do
 //            final String CRS= dim.getCRS();// TODO HOW DO WE USE THIS???
             if(dim instanceof DimensionTrimType){
@@ -375,12 +405,12 @@ public class WCSDimensionsSubsetHelper {
         if (timeDimension != null) {
             for (DimensionSubsetType dim : request.getDimensionSubset()) {
                 String dimension = WCSDimensionsSubsetHelper.getDimensionName(dim);
-                
+
                 // only care for time dimensions
                 if (!TIME_NAMES.contains(dimension.toLowerCase())) {
                     continue;
                 }
-                
+
                 // did we parse the range already?
                 if(timeSubset != null) {
                     throw new WCS20Exception("Time dimension trimming/slicing specified twice in the request",
@@ -392,8 +422,8 @@ public class WCSDimensionsSubsetHelper {
 
                     // TRIMMING
                     final DimensionTrimType trim = (DimensionTrimType) dim;
-                    final Date low = XML_CONVERTER.parseDateTime(trim.getTrimLow()).getTime();
-                    final Date high = XML_CONVERTER.parseDateTime(trim.getTrimHigh()).getTime();
+                    final Date low = PARSER.parseDateTime(trim.getTrimLow());
+                    final Date high = PARSER.parseDateTime(trim.getTrimHigh());
 
                     // low > high???
                     if (low.compareTo(high) > 0) {
@@ -408,7 +438,7 @@ public class WCSDimensionsSubsetHelper {
                     // SLICING
                     final DimensionSliceType slicing = (DimensionSliceType) dim;
                     final String slicePointS = slicing.getSlicePoint();
-                    final Date slicePoint = XML_CONVERTER.parseDateTime(slicePointS).getTime();
+                    final Date slicePoint = PARSER.parseDateTime(slicePointS);
                     timeSubset = new DateRange(slicePoint, slicePoint);
                 } else {
                     throw new WCS20Exception(
@@ -419,12 +449,12 @@ public class WCSDimensionsSubsetHelper {
 
             // right now we don't support trimming
             // TODO: revisit when we have some multidimensional output support
-            if(timeSubset != null && !timeSubset.getMinValue().equals(timeSubset.getMaxValue())) {
-                throw new WCS20Exception("Trimming on time is not supported at the moment, only slicing is");
+            if(!(reader instanceof StructuredGridCoverage2DReader) && timeSubset != null && !timeSubset.getMinValue().equals(timeSubset.getMaxValue())) {
+                throw new WCS20Exception("Trimming on time is not supported at the moment on not StructuredGridCoverage2DReaders, only slicing is");
             }
 
             // apply nearest neighbor matching on time
-            if (timeSubset != null) {
+            if (timeSubset != null && timeSubset.getMinValue().equals(timeSubset.getMaxValue())) {
                timeSubset = interpolateTime(timeSubset, accessor);
             }
         }
@@ -573,7 +603,7 @@ public class WCSDimensionsSubsetHelper {
                 if (!WCSDimensionsSubsetHelper.ELEVATION_NAMES.contains(dimension.toLowerCase())) {
                     continue;
                 }
-                
+
                 // did we parse the range already?
                 if (elevationSubset != null) {
                     throw new WCS20Exception("Elevation dimension trimming/slicing specified twice in the request",
@@ -585,8 +615,8 @@ public class WCSDimensionsSubsetHelper {
 
                     // TRIMMING
                     final DimensionTrimType trim = (DimensionTrimType) dim;
-                    final Double low = XML_CONVERTER.parseDouble(trim.getTrimLow());
-                    final Double high = XML_CONVERTER.parseDouble(trim.getTrimHigh());
+                    final Double low = PARSER.parseDouble(trim.getTrimLow());
+                    final Double high = PARSER.parseDouble(trim.getTrimHigh());
 
                     // low > high???
                     if (low > high) {
@@ -601,7 +631,7 @@ public class WCSDimensionsSubsetHelper {
                     // SLICING
                     final DimensionSliceType slicing = (DimensionSliceType) dim;
                     final String slicePointS = slicing.getSlicePoint();
-                    final Double slicePoint = XML_CONVERTER.parseDouble(slicePointS);
+                    final Double slicePoint = PARSER.parseDouble(slicePointS);
 
                     elevationSubset = new NumberRange<Double>(Double.class, slicePoint, slicePoint);
                 } else {
@@ -613,12 +643,12 @@ public class WCSDimensionsSubsetHelper {
 
             // right now we don't support trimming
             // TODO: revisit when we have some multidimensional output support
-            if (elevationSubset != null && !elevationSubset.getMinValue().equals(elevationSubset.getMaxValue())) {
-                throw new WCS20Exception("Trimming on elevation is not supported at the moment, only slicing is");
+            if (!(reader instanceof StructuredGridCoverage2DReader) && elevationSubset != null && !elevationSubset.getMinValue().equals(elevationSubset.getMaxValue())) {
+                throw new WCS20Exception("Trimming on elevation is not supported at the moment on not StructuredGridCoverage2DReaders, only slicing is");
             }
-            
+
             // apply nearest neighbor matching on elevation
-            if (elevationSubset != null) {
+            if (elevationSubset != null && elevationSubset.getMinValue().equals(elevationSubset.getMaxValue())) {
                 interpolateElevation (elevationSubset, accessor);
             }
         }
@@ -640,7 +670,7 @@ public class WCSDimensionsSubsetHelper {
             Double previous = null;
             Double newSlicePoint = null;
             // for NN matching we don't need the range, NN against their extrema will be fine
-            TreeSet<Double> domainDates = getDomainNumber(domain);
+            TreeSet<Double> domainDates = PARSER.getDomainNumber(domain);
             for (Double curr : domainDates) {
                 if (curr.compareTo(slicePoint) > 0) {
                     if (previous == null) {
@@ -669,33 +699,12 @@ public class WCSDimensionsSubsetHelper {
         return elevationSubset;
     }
 
-    
-    /**
-     * Get the domain set as a set of number.
-     * @param domain
-     * @return
-     */
-    private TreeSet<Double> getDomainNumber(TreeSet<Object> domain) {
-        TreeSet<Double> results = new TreeSet<Double>();
-        for (Object item : domain) {
-            if(item instanceof Number) {
-                Double number = (Double) item;
-                results.add(number);
-            } else if(item instanceof NumberRange) {
-                NumberRange range = (NumberRange) item;
-                results.add(range.getMinimum());
-                results.add(range.getMaximum());
-            }
-        }
-        return results;
-    }
-
     /**
      * Extract custom dimension subset from the current helper 
      * 
      * @param accessor 
      * @param request
-     * @param dimensions 
+     * @param enabledDimensions 
      * @param timeDimension
      * @return
      * @throws IOException 
@@ -703,8 +712,8 @@ public class WCSDimensionsSubsetHelper {
     private Map<String, List<Object>> extractDimensionsSubset() throws IOException {
         Map<String, List<Object>> dimensionSubset = new HashMap<String, List<Object>>();
 
-        if (dimensions != null && !dimensions.isEmpty()) {
-            Set<String> dimensionKeys = dimensions.keySet();
+        if (enabledDimensions != null && !enabledDimensions.isEmpty()) {
+            Set<String> dimensionKeys = enabledDimensions.keySet();
             for (DimensionSubsetType dim : request.getDimensionSubset()) {
                 String dimension = getDimensionName(dim);
 
@@ -715,29 +724,20 @@ public class WCSDimensionsSubsetHelper {
                 // only care for custom dimensions
                 if (dimensionKeys.contains(dimension)) {
                     List<Object> selectedValues = new ArrayList<Object>();
-                    //
-                    // // now decide what to do
-                    // if (dim instanceof DimensionTrimType) {
-                    //
-                    // // TRIMMING
-                    // final DimensionTrimType trim = (DimensionTrimType) dim;
-                    // final Date low = xmlConverter.parseDateTime(trim.getTrimLow()).getTime();
-                    // final Date high = xmlConverter.parseDateTime(trim.getTrimHigh()).getTime();
-                    //
-                    // // low > high???
-                    // if (low.compareTo(high) > 0) {
-                    // throw new WCS20Exception("Low greater than High: " + trim.getTrimLow()
-                    // + ", " + trim.getTrimHigh(),
-                    // WCS20Exception.WCS20ExceptionCode.InvalidSubsetting, "subset");
-                    // }
-                    //
-                    // timeSubset = new DateRange(low, high);
-                    // } else
+                    
+                     // now decide what to do
+                     if (dim instanceof DimensionTrimType) {
+                    
+                     // TRIMMING
+                         final DimensionTrimType trim = (DimensionTrimType) dim;
+                         setSubsetRangeValue(dimension, trim.getTrimLow(), trim.getTrimHigh(), selectedValues);
+
+                     } else
                     if (dim instanceof DimensionSliceType) {
 
                         // SLICING
                         final DimensionSliceType slicing = (DimensionSliceType) dim;
-                        setSubsetValue(dimension, slicing, selectedValues);
+                        setSubsetValue(dimension, slicing.getSlicePoint(), selectedValues);
 
                     } else {
                         throw new WCS20Exception(
@@ -746,15 +746,52 @@ public class WCSDimensionsSubsetHelper {
                                 WCS20Exception.WCS20ExceptionCode.InvalidSubsetting, "subset");
                     }
 
-                    // // right now we don't support trimming
-                    // TODO: revisit when we have some multidimensional output support
-                    // TODO: need to deal with interpolation?
                     // TODO: Deal with default values
                     dimensionSubset.put(dimension, selectedValues);
                 }
             }
         }
         return dimensionSubset;
+    }
+
+    /**
+     * Set the trim value as proper object (by checking whether the domainDatatype metadata exists or by try multiple parsing until one is
+     * successfull)
+     * 
+     * @param dimensionName the name of the dimension to be set
+     * @param slicing
+     * @param selectedValues
+     * @throws IOException
+     */
+    private void setSubsetRangeValue(String dimensionName, String low, String high, List<Object> selectedValues) throws IOException {
+        boolean sliceSet = false;
+
+        String domainDatatype = accessor.getDomainDatatype(dimensionName);
+        if (domainDatatype != null) {
+            PARSER.setRangeValues(low, high, selectedValues, domainDatatype);
+        } else {
+            // Try with recursive settings
+
+            // Try setting the value as a time
+            if (!sliceSet) {
+                sliceSet = PARSER.setAsDateRange(low, high, selectedValues);
+            }
+
+            // Try setting the value as an integer
+            if (!sliceSet) {
+                sliceSet = PARSER.setAsIntegerRange(low, high, selectedValues);
+            }
+
+            // Try setting the value as a double
+            if (!sliceSet) {
+                sliceSet = PARSER.setAsDoubleRange(low, high, selectedValues);
+            }
+
+            if (!sliceSet) {
+                // Setting it as a String
+                selectedValues.add(low + "/" + high); //Check That
+            }
+        }
     }
 
     /**
@@ -766,159 +803,35 @@ public class WCSDimensionsSubsetHelper {
      * @param selectedValues
      * @throws IOException
      */
-    private void setSubsetValue(String dimensionName, DimensionSliceType slicing, List<Object> selectedValues) throws IOException {
-        final String slicePointS = slicing.getSlicePoint();
+    private void setSubsetValue(String dimensionName, String slicePoint, List<Object> selectedValues) throws IOException {
         boolean sliceSet = false;
 
         String domainDatatype = accessor.getDomainDatatype(dimensionName);
         if (domainDatatype != null) {
-            setValues(slicePointS, selectedValues, domainDatatype);
+            PARSER.setValues(slicePoint, selectedValues, domainDatatype);
         } else {
             // Try with recursive settings
 
             // Try setting the value as a time
             if (!sliceSet) {
-                sliceSet = setAsDate(slicePointS, selectedValues);
+                sliceSet = PARSER.setAsDate(slicePoint, selectedValues);
             }
 
             // Try setting the value as an integer
             if (!sliceSet) {
-                sliceSet = setAsInteger(slicePointS, selectedValues);
+                sliceSet = PARSER.setAsInteger(slicePoint, selectedValues);
             }
 
             // Try setting the value as a double
             if (!sliceSet) {
-                sliceSet = setAsDouble(slicePointS, selectedValues);
+                sliceSet = PARSER.setAsDouble(slicePoint, selectedValues);
             }
 
             if (!sliceSet) {
                 // Setting it as a String
-                selectedValues.add(slicePointS);
+                selectedValues.add(slicePoint);
             }
         }
-    }
-
-    /**
-     * Set the slice value as proper object depending on the datatype
-     * @param slicePointS
-     * @param selectedValues
-     * @param domainDatatype
-     */
-    public static void setValues(String slicePointS, List<Object> selectedValues, String domainDatatype) {
-        if (domainDatatype.endsWith("Timestamp") || domainDatatype.endsWith("Date")) {
-            setAsDate(slicePointS, selectedValues);
-        } else if (domainDatatype.endsWith("Integer")) {
-            setAsInteger(slicePointS, selectedValues);
-        } else if (domainDatatype.endsWith("Double")) {
-            setAsDouble(slicePointS, selectedValues);
-        } else if (domainDatatype.endsWith("String")) {
-            selectedValues.add(slicePointS);
-        }
-        // TODO: Add support for more datatype management 
-    }
-
-    /**
-     * Set the slicePoint string as an {@link Integer}. Return true in case of success
-     * @param slicePointS
-     * @param selectedValues
-     * @return
-     */
-    private static boolean setAsInteger(String slicePointS, List<Object> selectedValues) {
-        final Integer slicePoint = parseAsInteger(slicePointS);
-        if (slicePoint != null) {
-            selectedValues.add(slicePoint);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Set the slicePoint string as an {@link Double}. Return true in case of success
-     * @param slicePointS
-     * @param selectedValues
-     * @return
-     */
-    private static boolean setAsDouble(String slicePointS, List<Object> selectedValues) {
-        final Double slicePoint = parseAsDouble(slicePointS);
-        if (slicePoint != null) {
-            selectedValues.add(slicePoint);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Set the slicePoint string as an {@link Date}. Return true in case of success
-     * @param slicePointS
-     * @param selectedValues
-     * @return
-     */
-    private static boolean setAsDate(String slicePointS, List<Object> selectedValues) {
-        final Date slicePoint = parseAsDate(slicePointS);
-        if (slicePoint != null) {
-            selectedValues.add(slicePoint);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Parse a String as a Double or return null if impossible.
-     * @param text
-     * @return
-     */
-    public static Double parseAsDouble(String text) {
-        try {
-            final Double slicePoint = XML_CONVERTER.parseDouble(text);
-            return slicePoint;
-        } catch (NumberFormatException nfe) {
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine(text + " can't be parsed as an Double.");
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Parse a String as a Range of Double or return null if impossible.
-     * @param text
-     * @return
-     */
-    public static NumberRange<Double> parseAsDoubleRange(String text) {
-        try {
-            if (text.contains("/")) {
-                String[] range = text.split("/");
-                if (range.length == 2) {
-                    String min = range[0];
-                    String max = range[1];
-                    final Double minValue = XML_CONVERTER.parseDouble(min);
-                    final Double maxValue = XML_CONVERTER.parseDouble(max);
-                    return new NumberRange<Double>(Double.class, minValue, maxValue);
-                }
-            }
-        } catch (NumberFormatException nfe) {
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine(text + " can't be parsed as an Double.");
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Parse a String as an Integer or return null if impossible.
-     * @param text
-     * @return
-     */
-    public static Integer parseAsInteger(String text) {
-        try {
-            final Integer slicePoint = XML_CONVERTER.parseInt(text);
-            return slicePoint;
-        } catch (NumberFormatException nfe) {
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine(text + " can't be parsed as an Integer.");
-            }
-        }
-        return null;
     }
 
     /**
@@ -927,7 +840,7 @@ public class WCSDimensionsSubsetHelper {
      * @return
      * @throws IOException
      */
-    public GridCoverageRequest getGridCoverageRequestSubset() throws IOException {
+    public GridCoverageRequest createGridCoverageRequestSubset() throws IOException {
         final GeneralEnvelope spatialSubset = extractSubsettingEnvelope();
         assert spatialSubset != null && !spatialSubset.isEmpty();
         
@@ -936,7 +849,7 @@ public class WCSDimensionsSubsetHelper {
         NumberRange elevationSubset = null;
 
         // Parse specified subset values (if any)
-        if (dimensions != null && !dimensions.isEmpty()) {
+        if (enabledDimensions != null && !enabledDimensions.isEmpty()) {
             // extract temporal subsetting
             temporalSubset = extractTemporalSubset();
 
@@ -956,11 +869,463 @@ public class WCSDimensionsSubsetHelper {
         subsettingRequest.setFilter(request.getFilter());
 
         // Handle default values and update subsetting values if needed
-        String coverageName =  ci.getNativeCoverageName() != null ? ci.getNativeCoverageName() : reader.getGridCoverageNames()[0];
-        WCSDefaultValuesHelper defaultValuesHelper = new WCSDefaultValuesHelper(reader, accessor, request, coverageName);
-        defaultValuesHelper.setDefaults(subsettingRequest);
+        String coverageName =  coverageInfo.getNativeCoverageName() != null ? coverageInfo.getNativeCoverageName() : reader.getGridCoverageNames()[0];
+        //TODO consider dealing with the Format instance instead of a String parsing or check against WCSUtils.isSupportedMDOutputFormat(String).
+        if (!GetCoverage.formatSupportMDOutput(request.getFormat())) {
+
+            // Right now, only a few formats support multidimensional output. 
+            // Let's use default values for the others.
+            WCSDefaultValuesHelper defaultValuesHelper = new WCSDefaultValuesHelper(reader, accessor, request, coverageName);
+            defaultValuesHelper.setDefaults(subsettingRequest);
+        }
 
         return subsettingRequest;
     }
+    
+    /**
+     * Split the current GridCoverageRequest by creating a list of new GridCoverageRequests: A query will be performed
+     * with the current specified subsets, returnin N granules (if any).
+     * Then new N GridCoverageRequests will be created (one for each granule) having subsets setup on top
+     * of the specific values of the dimensions for that N-th granule.
+     * 
+     * This method only works for StructuredGridCoverage2DReaders
+     * @param cinfo the CoverageInfo associated to the coverage
+     * @param gcr the main {@link GridCoverageRequest} to be split
+     * @param reader the {@link StructuredGridCoverage2DReader} instance to be used for query, and dimensions management
+     * @return a List of new {@link GridCoverageRequest}s 
+     * @throws UnsupportedOperationException
+     * @throws IOException
+     * @throws MismatchedDimensionException
+     * @throws TransformException
+     * @throws FactoryException
+     */
+    public List<GridCoverageRequest> splitRequest() 
+            throws UnsupportedOperationException, IOException, MismatchedDimensionException, TransformException, FactoryException {
+        StructuredGridCoverage2DReader structuredReader = null;
+        if (reader instanceof StructuredGridCoverage2DReader) {
+            structuredReader = (StructuredGridCoverage2DReader) reader;
+        } else {
+            throw new IllegalArgumentException("The method is only supported for StructuredGridCoverage2DReaders");
+        }
 
+        // Getting the granule source
+        final String coverageName = coverageInfo.getName();
+        
+        final GranuleSource source = structuredReader.getGranules(coverageName, true);
+        if (source == null) {
+            throw new IllegalArgumentException("No granule source available for that coverageName");
+        }
+
+        // Preparing a query containing all the specified dimensions. 
+        // This will allow to get back only the granules respecting the specified request
+        final Query query = prepareDimensionsQuery(structuredReader, coverageName, gridCoverageRequest, source);
+
+        // Getting the granules for that query; Loop over the granules to create subRequest with single elements dimensions sets
+        final SimpleFeatureCollection collection = source.getGranules(query);
+        final SimpleFeatureIterator iterator = collection.features();
+        final List<GridCoverageRequest> requests = new ArrayList<GridCoverageRequest>();
+        while (iterator.hasNext()) {
+
+            final SimpleFeature feature = iterator.next();
+
+            // Prepare subRequest setting up dimensions matching the values of the current granule
+            final GridCoverageRequest subRequest = new GridCoverageRequest();
+
+            // Setting up constant elements (outputCRS, spatial subset, interpolation
+            subRequest.setOutputCRS(gridCoverageRequest.getOutputCRS());
+            subRequest.setSpatialInterpolation(gridCoverageRequest.getSpatialInterpolation());
+            subRequest.setSpatialSubset(gridCoverageRequest.getSpatialSubset());
+            subRequest.setTemporalInterpolation(gridCoverageRequest.getTemporalInterpolation());
+
+            //Setting up specific dimensions subset
+            updateDimensions(subRequest, feature, structuredReader, coverageName);
+            requests.add(subRequest);
+
+        }
+        return requests;
+    }
+
+    /**
+     * Update the subset (temporal, vertical, custom) of the request by inspecting the reader DimensionsDescriptor and
+     * collecting proper values from the current feature.
+     * @param subRequest the subRequest to be updated with subsets
+     * @param feature the current feature containing dimensions value to be used for the subsetting
+     * @param reader the reader to be used for the inspection.
+     * @param coverageName the name of the coverage.
+     */
+    private void updateDimensions(
+            final GridCoverageRequest subRequest, 
+            final SimpleFeature feature,
+            final StructuredGridCoverage2DReader reader, 
+            final String coverageName) {
+
+        // ----------------------------------
+        // Updating temporal dimension subset
+        // ----------------------------------
+        String startTimeAttribute = null;
+        String endTimeAttribute = null;
+        DimensionDescriptor timeDescriptor = WCSDimensionsHelper.getDimensionDescriptor(reader, coverageName, "TIME");
+
+        if (timeDescriptor != null) {
+            startTimeAttribute = timeDescriptor.getStartAttribute();
+            endTimeAttribute = timeDescriptor.getEndAttribute();
+            Date startDate = (Date) feature.getAttribute(startTimeAttribute);
+            Date endDate = (endTimeAttribute != null) ? (Date) feature.getAttribute(endTimeAttribute) : startDate;
+            DateRange range = new DateRange(startDate, endDate);
+            subRequest.setTemporalSubset(range);
+        }
+
+        // ----------------------------------
+        // Updating vertical dimension subset
+        // ----------------------------------
+        String startElevationAttribute = null;
+        String endElevationAttribute = null;
+        DimensionDescriptor elevationDescriptor = WCSDimensionsHelper.getDimensionDescriptor(reader, coverageName, "ELEVATION");
+        if (elevationDescriptor != null) {
+            startElevationAttribute = elevationDescriptor.getStartAttribute();
+            endElevationAttribute = elevationDescriptor.getEndAttribute();
+            Number startValue = (Number) feature.getAttribute(startElevationAttribute);
+            Number endValue = (endElevationAttribute != null) ? (Number) feature.getAttribute(endElevationAttribute) : startValue;
+            NumberRange range = new NumberRange(startValue.getClass(), startValue, endValue);
+            subRequest.setElevationSubset(range);
+        }
+
+        // ---------------------------------
+        // Updating custom dimensions subset
+        // ---------------------------------
+        List<String> customDomains = (List<String>) (accessor != null ? accessor.getCustomDomains() : Collections.emptyList());
+        Map<String, List<Object>> dimensionsSubset = new HashMap<String, List<Object>>();
+        for (String customDomain: customDomains) {
+            String startAttribute = null;
+            String endAttribute = null;
+            DimensionDescriptor descriptor = WCSDimensionsHelper.getDimensionDescriptor(reader, coverageName, customDomain);
+            if (descriptor != null) {
+                startAttribute = descriptor.getStartAttribute();
+                endAttribute = descriptor.getEndAttribute();
+
+                Object value = feature.getAttribute(startAttribute);
+                if (endAttribute != null) {
+                    Object endValue = feature.getAttribute(endAttribute);
+                    Class objectClass = endValue.getClass();
+                    String classDataType = objectClass.toString();
+                    if (classDataType.endsWith("Timestamp")) {
+                        value = new DateRange(new Date(((Timestamp) value).getTime()), new Date(
+                                ((Timestamp) endValue).getTime()));
+                    } else if (classDataType.endsWith("Date")) {
+                        value = new DateRange((Date) value, (Date) endValue);
+                    } else {
+                        value = new NumberRange(objectClass, (Number) value, (Number) endValue);
+                    }
+                }
+                List<Object> dimensionValues = new ArrayList<Object>();
+                dimensionValues.add(value);
+                dimensionsSubset.put(descriptor.getName().toUpperCase(), dimensionValues);
+            }
+        }
+        subRequest.setDimensionsSubset(dimensionsSubset);
+    }
+
+    /** 
+     * Prepare a query by inspecting the specified dimensions and setting the proper attribute values 
+     */
+    private Query prepareDimensionsQuery(
+            final StructuredGridCoverage2DReader reader, 
+            final String coverageName, 
+            final GridCoverageRequest gcr,
+            final GranuleSource source) throws UnsupportedOperationException, IOException, MismatchedDimensionException, TransformException, FactoryException {
+
+        // spatial subset
+        Filter filter = filterSpatial(gcr, reader, source);;
+
+        // temporal subset
+        filter = filterTime(filter, gcr, coverageName, reader);
+
+        // elevation subset
+        filter = filterElevation(filter, gcr, coverageName, reader);
+
+        //TODO: parse dimensionsSubset
+        filter = filterDimensions(filter, gcr, coverageName, reader);
+
+        Query query = new Query(null, filter);
+        return query;
+    }
+
+    private Filter filterSpatial(GridCoverageRequest gcr,
+            StructuredGridCoverage2DReader reader, GranuleSource source) throws IOException, MismatchedDimensionException, TransformException, FactoryException {
+        GeneralEnvelope envelope = gcr.getSpatialSubset();
+        Polygon llPolygon = JTS.toGeometry(new ReferencedEnvelope(envelope));
+        GeometryDescriptor geom = source.getSchema().getGeometryDescriptor();
+        PropertyName geometryProperty = ff.property(geom.getLocalName());
+        Geometry nativeCRSPolygon = JTS.transform(llPolygon, CRS.findMathTransform(DefaultGeographicCRS.WGS84, reader.getCoordinateReferenceSystem()));
+        Literal polygonLiteral = ff.literal(nativeCRSPolygon);
+//                    if(overlaps) {
+        return ff.intersects(geometryProperty, polygonLiteral);
+//                    } else {
+//                        filter = ff.within(geometryProperty, polygonLiteral);
+//                    }
+    }
+
+    /**
+     * Update the filter with a vertical Filter in case the current {@link GridCoverageRequest} has an elevation subset. 
+     * @param ff
+     * @param filter
+     * @param gcr
+     * @param coverageName
+     * @param reader
+     * @return
+     */
+    private Filter filterElevation(Filter filter, GridCoverageRequest gcr,
+            String coverageName, StructuredGridCoverage2DReader reader) {
+        NumberRange elevationRange = gcr.getElevationSubset();
+        String startElevation = null;
+        String endElevation = null;
+        DimensionDescriptor elevationDescriptor = null;
+        Filter elevationFilter = filter;
+        if (elevationRange != null && filter != Filter.EXCLUDE) {
+            elevationDescriptor = WCSDimensionsHelper.getDimensionDescriptor(reader, coverageName, "ELEVATION");
+            startElevation = elevationDescriptor.getStartAttribute();
+            endElevation = elevationDescriptor.getEndAttribute();
+            elevationFilter = filter(startElevation, endElevation, elevationRange.getMinValue(), elevationRange.getMaxValue(), filter);
+        }
+        return elevationFilter;
+    }
+
+    /**
+     * Update the filter with a temporal Filter in case the current {@link GridCoverageRequest} has a temporal subset.
+     * @param ff
+     * @param filter
+     * @param gcr
+     * @param coverageName
+     * @param reader
+     * @return
+     */
+    private Filter filterTime(Filter filter, GridCoverageRequest gcr, String coverageName, StructuredGridCoverage2DReader reader) {
+        DateRange timeRange = gcr.getTemporalSubset();
+        DimensionDescriptor timeDescriptor = null;
+        String startTime = null;
+        String endTime = null;
+        Filter timeFilter = filter;
+        if (timeRange != null && filter != Filter.EXCLUDE) {
+            timeDescriptor = WCSDimensionsHelper.getDimensionDescriptor(reader, coverageName, "TIME");
+            startTime = timeDescriptor.getStartAttribute();
+            endTime = timeDescriptor.getEndAttribute();
+            timeFilter = filter(startTime, endTime, timeRange.getMinValue(), timeRange.getMaxValue(), filter);
+        }
+        return timeFilter;
+    }
+
+    private Filter filterDimensions(Filter filter, GridCoverageRequest gcr, String coverageName,
+            StructuredGridCoverage2DReader reader) {
+        Map<String, List<Object>> subset = gcr.getDimensionsSubset();
+        Filter dimensionsFilter = filter;
+        if (subset != null && !subset.isEmpty()) {
+            Set<String> dimensions = subset.keySet();
+            Iterator<String> dimensionsIt = dimensions.iterator();
+            // Filtering over the dimensions
+            while (dimensionsIt.hasNext()) {
+                final String dimensionName = dimensionsIt.next();
+                List<Object> dimensionValues = subset.get(dimensionName);
+                if (dimensionValues == null || dimensionValues.isEmpty()) {
+                    continue;
+                }
+                DimensionDescriptor dimensionDescriptor = WCSDimensionsHelper.getDimensionDescriptor(reader, coverageName, dimensionName);
+                if (dimensionDescriptor != null) {
+                    final String startAttrib = dimensionDescriptor.getStartAttribute();
+                    final String endAttrib = dimensionDescriptor.getEndAttribute();
+                    dimensionsFilter = filterDimension(startAttrib, endAttrib, dimensionValues, filter);
+                    
+                } else {
+                    if (LOGGER.isLoggable(Level.WARNING)) {
+                        LOGGER.warning("The specified dimension " + dimensionName + "has no descriptors in the reader. Skipping it");
+                        continue;
+                    }
+                }
+            }
+        }
+        return dimensionsFilter;
+    }
+
+    /**
+     * @param startAttribute
+     * @param endAttribute
+     * @param dimensionValues
+     * @param filter
+     * @return
+     */
+    private Filter filterDimension(String startAttribute, String endAttribute,
+            List<Object> dimensionValues, Filter filter) {
+        Filter localFilter = null;
+        
+        if (dimensionValues != null && !dimensionValues.isEmpty()) {
+            // Note that currently, dimensionValues only contain one element (slicing specifies a single value for a dimension)
+            Object element = (Object) dimensionValues.get(0);
+            Object min = null;
+            Object max = null;
+            if (element instanceof DateRange) { 
+                DateRange dateRange = (DateRange) element;
+                min = dateRange.getMinValue();
+                max = dateRange.getMaxValue();
+            } else if (element instanceof NumberRange) {
+                NumberRange numberRange = (NumberRange) element;
+                min = numberRange.getMinValue();
+                max = numberRange.getMaxValue();
+            } else if (element instanceof Date || element instanceof Number || element instanceof String) {
+                min = element;
+                max = element;
+            } else {
+                throw new IllegalArgumentException("Unsupported object type");
+            }
+            if (endAttribute == null) {
+                // single value time
+                localFilter = ff.between(ff.property(startAttribute), ff.literal(min), ff.literal(max));
+            } else {
+                // range value, we need to account for containment then
+                    Filter f1 = ff.lessOrEqual(ff.property(startAttribute), ff.literal(max));
+                    Filter f2 = ff.greaterOrEqual(ff.property(endAttribute), ff.literal(min));
+                    localFilter = ff.and(Arrays.asList(f1, f2));
+            }
+            if (filter == null) {
+                filter = localFilter;
+            } else {
+                filter = ff.and(filter, localFilter);
+            }
+        }
+        return filter;
+
+    }
+
+    /**
+     * Setup an intersection filter
+     * @param startAttribute
+     * @param endAttribute
+     * @param minValue
+     * @param maxValue
+     * @param filter
+     * @return
+     */
+    private Filter filter(String startAttribute, String endAttribute, Comparable minValue,
+            Comparable maxValue, Filter filter) {
+        Filter localFilter = null;
+        if(endAttribute == null) {
+            // single value time
+            localFilter = ff.between(ff.property(startAttribute), ff.literal(minValue), ff.literal(maxValue));
+        } else {
+            // range value, we need to account for containment then
+                Filter f1 = ff.lessOrEqual(ff.property(startAttribute), ff.literal(maxValue));
+                Filter f2 = ff.greaterOrEqual(ff.property(endAttribute), ff.literal(minValue));
+                localFilter = ff.and(Arrays.asList(f1, f2));
+        }
+        if (filter == null) {
+            filter = localFilter;
+        } else {
+            filter = ff.and(filter, localFilter);
+        }
+
+        return filter;
+    }
+
+    /**
+     * Prepare the DimensionBean list for this reader
+     * @return
+     * @throws IOException
+     */
+    public List<DimensionBean> setupDimensions() throws IOException {
+        StructuredGridCoverage2DReader structuredReader = null;
+        if (reader instanceof StructuredGridCoverage2DReader) {
+            structuredReader = (StructuredGridCoverage2DReader) reader;
+        } else { 
+            // TODO: only structuredGridCoverage2DReaders are currently supported.
+            throw new UnsupportedOperationException("Only structuredGridCoverage2DReaders are currently supported");
+        }
+        List<DimensionBean> dimensions = new ArrayList<DimensionBean>();
+        List<String> customDimensions = (List<String>) (accessor != null ? accessor.getCustomDomains() : Collections.emptyList());
+        
+        // Put custom dimensions as first
+        for (String customDimension: customDimensions) {
+            dimensions.add(setupDimensionBean(structuredReader, customDimension));
+        }
+        // Put known dimensions afterwards similarly to what COARDS convention suggest: 1) Time -> 2) Elevation
+        DimensionBean timeD = setupDimensionBean(structuredReader, "TIME"); 
+        if (timeD != null) {
+            dimensions.add(timeD);
+        }
+        DimensionBean elevationD = setupDimensionBean(structuredReader, "ELEVATION");
+        if (elevationD != null) {
+            dimensions.add(elevationD);
+        }
+
+        return dimensions;
+    }
+
+    /**
+     * Setup a {@link DimensionBean} instance for the specified dimensionID, extracting it from the provided {@link StructuredGridCoverage2DReader} 
+     * 
+     * @param structuredReader the reader used to retrieve dimensionDescriptor and metadata
+     * @param dimensionID the ID of the dimension to be setup
+     * @throws IOException
+     */
+    private DimensionBean setupDimensionBean(StructuredGridCoverage2DReader structuredReader, String dimensionID) throws IOException {
+        Utilities.ensureNonNull("structuredReader", structuredReader);
+        // Retrieve the proper dimension descriptor
+        final String coverageName = coverageInfo.getName();
+        final DimensionDescriptor descriptor = WCSDimensionsHelper.getDimensionDescriptor(structuredReader, coverageName, dimensionID);
+        if (descriptor == null) {
+           if (LOGGER.isLoggable(Level.FINE)) {
+               LOGGER.fine("Unable to find a valid descriptor for the specified dimension ID: " + dimensionID + 
+                    " for the specified coverage " + coverageName + "\n Returning no DimensionBean");
+           }
+           return null;
+        }
+        final String dimensionName = descriptor.getName();
+        final DimensionType dimensionType = dimensionID.equalsIgnoreCase("TIME") ? DimensionType.TIME : dimensionID.equalsIgnoreCase("ELEVATION") ? DimensionType.ELEVATION : DimensionType.CUSTOM;
+        final DimensionInfo info = enabledDimensions.get(dimensionID);
+        String units = null;
+        String symbol = null;
+        if (info != null) {
+            units = info.getUnits();
+            symbol = info.getUnitSymbol();
+        } 
+        // Fallback... set units and symbol from descriptor in case dimensions are not available.
+        if (units == null) {
+            units = descriptor.getUnits();
+        }
+        if (symbol == null) {
+            symbol = descriptor.getUnitSymbol();
+        }
+        return new DimensionBean(dimensionName, units, symbol, accessor.getDomainDatatype(dimensionName), dimensionType, descriptor.getEndAttribute() != null);
+    }
+
+    /** 
+     * Add an entry in the coverage properties map, containing the value of the specified coverageDimension
+     * @param properties
+     * @param coverageRequest a {@link GridCoverageRequest} containing single subsettings for the current coverage 
+     * @param coverageDimension
+     */
+    public void setCoverageDimensionProperty(Map properties, GridCoverageRequest coverageRequest, DimensionBean coverageDimension) {
+        Utilities.ensureNonNull("properties", properties);
+        Utilities.ensureNonNull("coverageDimension", coverageDimension);
+        final DimensionType dimensionType = coverageDimension.getDimensionType();
+        Object value = null;
+        switch (dimensionType) {
+        case TIME:
+            value = coverageRequest.getTemporalSubset();
+            break;
+        case ELEVATION:
+            value = coverageRequest.getElevationSubset();
+            break;
+        case CUSTOM:
+            Map<String, List<Object>> dimensionsSubset = coverageRequest.getDimensionsSubset();
+            List<Object> elements = dimensionsSubset == null ? null : dimensionsSubset.get(coverageDimension.getName().toUpperCase());
+            if (elements == null) {
+                throw new IllegalArgumentException("No dimension subset has been found");
+            }
+            if (elements.size() > 1) {
+                throw new UnsupportedOperationException("Multiple elements in additional dimensions are not supported on splitted requests");
+            }
+            value = elements.get(0);
+            break;
+        }
+        properties.put(coverageDimension.getName(), value);
+        
+    }
 }

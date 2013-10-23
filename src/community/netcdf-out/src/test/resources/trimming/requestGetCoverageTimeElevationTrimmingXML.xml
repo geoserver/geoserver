@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wcs:GetCoverage xmlns:wcs="http://www.opengis.net/wcs/2.0"
+  xmlns:wcsgeotiff="http://www.opengis.net/wcs/geotiff/1.0" xmlns:crs="http://www.opengis.net/wcs/crs/1.0"
+  xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wcs/2.0 
+                  http://schemas.opengis.net/wcs/2.0/wcsAll.xsd 
+                  http://www.opengis.net/wcs/geotiff/1.0 
+                  http://schemas.opengis.net/wcs/geotiff/1.0/wcsGeotiff.xsd"
+  service="WCS" version="2.0.1">
+  <wcs:CoverageId>${coverageId}</wcs:CoverageId>
+  <wcs:DimensionTrim>
+    <wcs:Dimension>Time</wcs:Dimension>
+      <wcs:TrimLow>${startTime}</wcs:TrimLow>
+      <wcs:TrimHigh>${endTime}</wcs:TrimHigh>
+  </wcs:DimensionTrim>
+  <wcs:DimensionTrim>
+    <wcs:Dimension>Elevation</wcs:Dimension>
+      <wcs:TrimLow>${startElevation}</wcs:TrimLow>
+      <wcs:TrimHigh>${endElevation}</wcs:TrimHigh>
+  </wcs:DimensionTrim>
+  <wcs:DimensionTrim>
+    <wcs:Dimension>WAVELENGTH</wcs:Dimension>
+      <wcs:TrimLow>${startWavelength}</wcs:TrimLow>
+      <wcs:TrimHigh>${endWavelength}</wcs:TrimHigh>
+  </wcs:DimensionTrim>
+  <wcs:format>NetCDF</wcs:format>
+</wcs:GetCoverage>

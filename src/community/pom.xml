@@ -302,6 +302,12 @@
       </modules>
     </profile>
     <profile>
+      <id>wfs-notification</id>
+      <modules>
+        <module>wfs-notification</module>
+      </modules>
+    </profile>
+    <profile>
       <id>png</id>
       <modules>
         <module>png</module>

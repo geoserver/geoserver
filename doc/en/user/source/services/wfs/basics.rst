@@ -39,7 +39,7 @@ WFS 1.0.0 servers return geographic coordinates in longitude/latitude (x/y) orde
 However, the traditional axis order for geographic and cartographic systems is the opposite—latitude/longitude (y/x)—and the later WFS specifications respect this. The default axis ordering support is: 
 
 * Latitude/longitude—WFS 1.1.0 and WFS 2.0.0
-* Longitude/latitude—WMS 1.0.0 
+* Longitude/latitude—WFS 1.0.0 
 
 This may cause difficulties when switching between servers with different WFS versions, or when upgrading your WFS. To minimize confusion and increase interoperability, GeoServer has adopted the following assumptions when specifying projections in the following formats: 
 

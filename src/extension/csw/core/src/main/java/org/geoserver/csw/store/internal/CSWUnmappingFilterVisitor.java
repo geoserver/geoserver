@@ -4,14 +4,12 @@
  */
 package org.geoserver.csw.store.internal;
 
-import java.util.Iterator;
 import org.geoserver.csw.records.RecordDescriptor;
 import org.geoserver.csw.store.internal.CatalogStoreMapping.CatalogStoreMappingElement;
 import org.geoserver.csw.util.QNameResolver;
 import org.geotools.data.complex.filter.XPathUtil;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
-import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.Id;
 import org.opengis.filter.expression.Expression;
@@ -76,20 +74,7 @@ public class CSWUnmappingFilterVisitor extends DuplicatingFilterVisitor {
     }
     
     @Override
-    public Object visit(Id filter, Object extraData) {
-        
-        Iterator<Object> it = filter.getIDs().iterator();
-        
-        if (!it.hasNext()) {
-            return Filter.EXCLUDE;
-        }
-        
-        Filter newFilter = getFactory(extraData).equal(mapping.getIdentifierElement().getContent(), getFactory(extraData).literal(it.next()), true);
-               
-        while (it.hasNext()) {
-            newFilter = getFactory(extraData).or(newFilter, getFactory(extraData).equal(mapping.getIdentifierElement().getContent(), getFactory(extraData).literal(it.next()), true));
-        }
-        
-        return newFilter;
+    public Object visit(Id filter, Object extraData) {        
+        return getFactory(extraData).equal(mapping.getIdentifierElement().getContent(), getFactory(extraData).literal(filter.getIDs()), true);
     }
 }

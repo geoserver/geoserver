@@ -13,6 +13,7 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.Capabilities;
 import org.geotools.filter.visitor.CapabilitiesFilterSplitter;
 import org.geotools.filter.visitor.ClientTransactionAccessor;
+import org.geotools.filter.visitor.LiteralDemultiplyingFilterVisitor;
 import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
@@ -217,7 +218,8 @@ class QueryBuilder<T extends Info> {
 
         Filter supported = filterSplitter.getFilterPre();
         Filter unsupported = filterSplitter.getFilterPost();
-        this.supportedFilter = (Filter) supported.accept(filterSimplifier, null);
+        Filter demultipliedFilter = (Filter) supported.accept(new LiteralDemultiplyingFilterVisitor(), null);
+        this.supportedFilter = (Filter) demultipliedFilter.accept(filterSimplifier, null);
         this.unsupportedFilter = (Filter) unsupported.accept(filterSimplifier, null);
         
         StringBuilder whereClause = new StringBuilder();

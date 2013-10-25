@@ -101,7 +101,7 @@ public class JDBCConfigPropertiesTest {
             JDBCConfigPropertiesFactoryBean factory = new JDBCConfigPropertiesFactoryBean(loader);
             JDBCConfigProperties props = (JDBCConfigProperties) factory.createProperties();
     
-            assertEquals("jdbc:h2:nofile", props.getJdbcUrl());
+            assertEquals("jdbc:h2:nofile", props.getJdbcUrl().get());
             assertFalse(props.isInitDb());
             assertFalse(props.isImport());
         }
@@ -116,8 +116,8 @@ public class JDBCConfigPropertiesTest {
     public void testDataDirPlaceholder() throws Exception {
         JDBCConfigPropertiesFactoryBean factory = new JDBCConfigPropertiesFactoryBean(loader);
         JDBCConfigProperties props = (JDBCConfigProperties) factory.createProperties();
-
+        props.setJdbcUrl("jdbc:h2:file:${GEOSERVER_DATA_DIR}/jdbcconfig/catalog;AUTO_SERVER=TRUE");
         
-        assertTrue(props.getJdbcUrl().contains(loader.getBaseDirectory().getAbsolutePath()));
+        assertTrue(props.getJdbcUrl().get().contains(loader.getBaseDirectory().getAbsolutePath()));
     }
 }

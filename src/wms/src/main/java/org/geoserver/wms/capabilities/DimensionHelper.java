@@ -216,8 +216,7 @@ abstract class DimensionHelper {
         TreeSet<Object> elevations = dimensions.getElevationDomain();
         String elevationMetadata = getZDomainRepresentation(elevInfo, elevations);
 
-        writeElevationDimension(elevations, elevationMetadata, 
-                elevInfo.getUnits(), elevInfo.getUnitSymbol());
+        writeElevationDimension(elevations, elevationMetadata, elevInfo);
     }
 
     private void handleTimeDimensionRaster(DimensionInfo timeInfo, ReaderDimensionsAccessor dimension) throws IOException {
@@ -529,15 +528,13 @@ abstract class DimensionHelper {
         String elevationMetadata;
         DimensionInfo di = typeInfo.getMetadata().get(ResourceInfo.ELEVATION,
                 DimensionInfo.class);
-        String units = di.getUnits();
-        String unitSymbol = di.getUnitSymbol();
         if (elevations != null && !elevations.isEmpty()) {
             elevationMetadata = getZDomainRepresentation(di, elevations);
         } else {
             elevationMetadata = "";
         }
 
-        writeElevationDimension(elevations, elevationMetadata, units, unitSymbol);
+        writeElevationDimension(elevations, elevationMetadata, di);
     }
 
     private void writeTimeDimension(String timeMetadata) {
@@ -555,30 +552,33 @@ abstract class DimensionHelper {
     }
 
     private void writeElevationDimension(TreeSet<? extends Object> elevations, final String elevationMetadata, 
-            final String units, final String unitSymbol) {
-        double defaultValue;
-        if(elevations == null || elevations.isEmpty()) {
-            defaultValue = 0;
-        } else {
-            Object first = elevations.first();
-            if(first instanceof Double) {
-                defaultValue = (Double) first;
+            final DimensionInfo elevationDimensionInfo) {
+        // accept the default value from provided DimensionInfo.  if not available, use previously existing GS default value logic.
+        Object defaultValue = elevationDimensionInfo.getDefaultValue();
+        if (defaultValue == null) {
+            if(elevations == null || elevations.isEmpty()) {
+                defaultValue = 0d;
             } else {
-                defaultValue = ((NumberRange<Double>) first).getMinimum();
+                Object first = elevations.first();
+                if(first instanceof Double) {
+                    defaultValue = (Double) first;
+                } else {
+                    defaultValue = ((NumberRange<Double>) first).getMinimum();
+                }
             }
         }
         if (mode == Mode.WMS11) {
             AttributesImpl elevDim = new AttributesImpl();
             elevDim.addAttribute("", "name", "name", "", "elevation");
-            elevDim.addAttribute("", "default", "default", "", Double.toString(defaultValue));
+            elevDim.addAttribute("", "default", "default", "", defaultValue.toString());
             element("Extent", elevationMetadata, elevDim);
         } else {
-            writeElevationDimensionElement(elevationMetadata, defaultValue, 
-                    units, unitSymbol);
+            writeElevationDimensionElement(elevationMetadata, 
+                    defaultValue, elevationDimensionInfo.getUnits(), elevationDimensionInfo.getUnitSymbol());
         }
     }
     
-    private void writeElevationDimensionElement(final String elevationMetadata, final Double defaultValue, 
+    private void writeElevationDimensionElement(final String elevationMetadata, final Object defaultValue, 
             final String units, final String unitSymbol) {
         AttributesImpl elevDim = new AttributesImpl();
         String unitsNotNull = units;
@@ -589,7 +589,7 @@ abstract class DimensionHelper {
         }
         elevDim.addAttribute("", "name", "name", "", "elevation");
         if (defaultValue != null) {
-            elevDim.addAttribute("", "default", "default", "", Double.toString(defaultValue));
+            elevDim.addAttribute("", "default", "default", "", defaultValue.toString());
         }
         elevDim.addAttribute("", "units", "units", "", unitsNotNull);
         if (!"".equals(unitsNotNull) && !"".equals(unitSymNotNull)) {

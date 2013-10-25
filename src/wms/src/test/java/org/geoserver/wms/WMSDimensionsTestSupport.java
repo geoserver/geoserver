@@ -34,6 +34,16 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
     
     protected static final String UNITS = "foot";
     protected static final String UNIT_SYMBOL = "ft";
+    
+    /**
+     * based on the test water temp raster layer data.
+     */
+    protected static final String WATERTEMP_LAYER_MIN_ELEVATION_VALUE = "0.0";
+    
+    /**
+     * based on the test water temp raster layer data.
+     */
+    protected static final String WATERTEMP_LAYER_MAX_ELEVATION_VALUE = "100.0";
 
     CoverageInfo wattemp;
     FeatureTypeInfo te,teEmpty;
@@ -130,7 +140,7 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
     }
     
     protected void setupRasterDimension(QName layer, String metadata, 
-            DimensionPresentation presentation, Double resolution, String units, String unitSymbol) {
+            DimensionPresentation presentation, Double resolution, String units, String unitSymbol, String defaultValue) {
         CoverageInfo info = getCatalog().getCoverageByName(layer.getLocalPart());
         DimensionInfo di = new DimensionInfoImpl();
         di.setEnabled(true);
@@ -140,8 +150,8 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
         }
         di.setUnits(units);
         di.setUnitSymbol(unitSymbol);
+        di.setDefaultValue(defaultValue);
         info.getMetadata().put(metadata, di);
         getCatalog().save(info);
     }
-
 }

@@ -55,7 +55,9 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
     private TextField<String> units;
     
     private TextField<String> unitSymbol;
-    
+
+    private DropDownChoice<String> defaultValue;
+
     private PeriodEditor resTime;
 
     private TextField<BigDecimal> resElevation;
@@ -157,6 +159,22 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
             usModel.setObject(DimensionInfo.ELEVATION_UNIT_SYMBOL);
         }
 
+        // defaultValue
+        final WebMarkupContainer defaultValueContainer = new WebMarkupContainer("defaultValueContainer");
+        configs.add(defaultValueContainer);
+        defaultValueContainer.setVisible(false);
+        if (resource instanceof CoverageInfo && "elevation".equals(id)) {
+            List<String>elevations = getElevations(resource);
+            if (!elevations.isEmpty()) {
+                defaultValueContainer.setVisible(true);
+                defaultValue = new DropDownChoice<String>("defaultValue", new PropertyModel<String>(model,
+                    "defaultValue"), elevations);
+                defaultValue.setOutputMarkupId(true);
+                defaultValue.setRequired(true);
+                defaultValueContainer.add(defaultValue);
+            }
+        }
+
         // presentation/resolution block
         final WebMarkupContainer resContainer = new WebMarkupContainer("resolutionContainer");
         resContainer.setOutputMarkupId(true);
@@ -255,6 +273,10 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
             info.setUnits(unitsValue);
             unitSymbol.processInput();
             info.setUnitSymbol(unitSymbol.getModelObject());
+            if (defaultValue != null) {
+                defaultValue.processInput();
+                info.setDefaultValue(defaultValue.getModelObject());
+            }
             info.setPresentation(presentation.getModelObject());
             if (info.getPresentation() == DimensionPresentation.DISCRETE_INTERVAL) {
                 if(time) {
@@ -293,6 +315,37 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
             }
         }
 
+        return result;
+    }
+
+    /**
+     * returns List of elevations for a CoverageInfo resource. 
+     * 
+     * @param resource
+     * @return
+     */
+    private List<String> getElevations(ResourceInfo resource) {
+        List<String> result = new ArrayList<String>();
+        
+        if (resource instanceof CoverageInfo) {
+            try {
+                GridCoverageReader reader = ((CoverageInfo) resource).getGridCoverageReader(null, null);
+                String hasElevationAsString = reader.getMetadataValue(GridCoverage2DReader.HAS_ELEVATION_DOMAIN);
+                boolean hasElevation = Boolean.parseBoolean(hasElevationAsString); 
+                if (hasElevation) {
+                    String elevationDomain = reader.getMetadataValue(GridCoverage2DReader.ELEVATION_DOMAIN);
+                    if (elevationDomain != null && !"".equals(elevationDomain)) {
+                        String[] elevations = elevationDomain.split(",");
+                        for (String elevation : elevations) {
+                            result.add(elevation);
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                throw new WicketRuntimeException(e);
+            }
+        }
+        
         return result;
     }
 

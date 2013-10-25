@@ -857,7 +857,7 @@ public class WMS implements ApplicationContextAware {
                 }
             }
             readParameters = CoverageUtils.mergeParameter(parameterDescriptors, readParameters,
-                    fixedElevations, "ELEVATION", "Elevation");
+                    fixedElevations, elevationInfo, "ELEVATION", "Elevation");
         }
 
         if (layerFilter != null && readParameters != null) {
@@ -1108,9 +1108,10 @@ public class WMS implements ApplicationContextAware {
     }
 
     /**
-     * Returns the default elevation (the minimum one)
+     * For raster based, returns the coverage's default elevation (if provided) or if not, returns the minimum one.  
      * 
-     * @param typeInfo
+     * @param coverage
+     * @param dimensions
      * @return
      */
     Double getDefaultElevation(CoverageInfo coverage, ReaderDimensionsAccessor dimensions)
@@ -1123,8 +1124,15 @@ public class WMS implements ApplicationContextAware {
                     + " does not have time support enabled");
         }
 
-        // get and parse the lowest elevation
-        return dimensions.getMinElevation();
+        if (elevation.getDefaultValue() != null) {
+            try {
+                return Double.parseDouble(elevation.getDefaultValue());
+            } catch (NumberFormatException e) {
+                return dimensions.getMinElevation();
+            }
+        } else {
+            return dimensions.getMinElevation();
+        }   
     }
 
     /**

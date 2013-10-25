@@ -91,4 +91,10 @@ public interface DimensionInfo extends Serializable {
     
     public void setUnitSymbol(String unitSymbol);
     
+    /**
+     * The value for the dimension's 'default' attribute.
+     */
+    public String getDefaultValue();
+    
+    public void setDefaultValue(String defaultValue);
 }

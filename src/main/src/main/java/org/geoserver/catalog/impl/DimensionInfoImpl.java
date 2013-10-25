@@ -34,7 +34,9 @@ public class DimensionInfoImpl implements DimensionInfo {
     String units;
     
     String unitSymbol;
-    
+
+    String defaultValue;
+
     public boolean isEnabled() {
         return enabled;
     }
@@ -90,7 +92,15 @@ public class DimensionInfoImpl implements DimensionInfo {
     public void setUnitSymbol(String unitSymbol) {
         this.unitSymbol = unitSymbol;
     }
-    
+
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -99,6 +109,7 @@ public class DimensionInfoImpl implements DimensionInfo {
         sb.append(", enabled=").append(enabled);
         sb.append(", units=").append(units);
         sb.append(", unitSymbol=").append(unitSymbol);
+        sb.append(", defaultValue=").append(defaultValue);
         sb.append(", presentation=").append(presentation);
         sb.append(", resolution=").append(resolution).append("]");
         return sb.toString();
@@ -113,6 +124,7 @@ public class DimensionInfoImpl implements DimensionInfo {
         result = prime * result + (enabled ? 1231 : 1237);
         result = prime * result + ((units == null) ? 0 : units.hashCode());
         result = prime * result + ((unitSymbol == null) ? 0 : unitSymbol.hashCode());
+        result = prime * result + ((defaultValue == null) ? 0 : defaultValue.hashCode());
         result = prime * result + ((presentation == null) ? 0 : presentation.hashCode());
         result = prime * result + ((resolution == null) ? 0 : resolution.hashCode());
         return result;
@@ -141,6 +153,11 @@ public class DimensionInfoImpl implements DimensionInfo {
             if (other.unitSymbol != null)
                 return false;
         } else if (!unitSymbol.equals(other.unitSymbol))
+            return false;
+        if (defaultValue == null) {
+            if (other.defaultValue != null)
+                return false;
+        } else if (!defaultValue.equals(other.defaultValue))
             return false;
         if (enabled != other.enabled)
             return false;

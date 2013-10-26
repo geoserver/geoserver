@@ -605,6 +605,8 @@
       <value>wms</value>
     </constructor-arg>
   </bean>
+ 		
+	<bean id="animateFilter" class="org.geoserver.wms.animate.AnimatorFilter"/>
  	
 	<bean id="animateURLMapping" 
 		class="org.geoserver.ows.OWSHandlerMapping">

@@ -48,6 +48,7 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.kvp.FormatOptionsKvpParser;
+import org.geoserver.ows.kvp.URLKvpParser;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMSMapContent;
@@ -399,9 +400,10 @@ public class KMLReflectorTest extends WMSTestSupport {
     @Test
     public void testRasterTransformerSLD() throws Exception {
         URL url = getClass().getResource("allsymbolizers.sld");
+        String urlExternal = URLDecoder.decode(url.toExternalForm(), "UTF-8");
         final String requestUrl = "wms/reflect?layers=" + getLayerId(MockData.BASIC_POLYGONS)
                 + "&format_options=KMSCORE:0;mode:refresh&format= " + KMLMapOutputFormat.MIME_TYPE 
-                + "&sld=" + url.toExternalForm();
+                + "&sld=" + urlExternal;
 
         Document dom = getAsDOM(requestUrl);
         // print(dom);
@@ -413,7 +415,7 @@ public class KMLReflectorTest extends WMSTestSupport {
         assertTrue(href.startsWith("http://localhost:8080/geoserver/wms"));
         assertTrue(href.contains("request=GetMap"));
         assertTrue(href.contains("format=image/png"));
-        assertTrue(href.contains("&sld=" + url.toExternalForm()));
+        assertTrue(href.contains("&sld=" + urlExternal));
     }
 
     @Test

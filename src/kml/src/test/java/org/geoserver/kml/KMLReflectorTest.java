@@ -48,6 +48,7 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.kvp.FormatOptionsKvpParser;
+import org.geoserver.ows.kvp.URLKvpParser;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMSMapContent;
@@ -404,12 +405,13 @@ public class KMLReflectorTest extends WMSTestSupport {
                 + "&sld=" + url.toExternalForm();
 
         Document dom = getAsDOM(requestUrl);
-        print(dom);
+        // print(dom);
 
         assertXpathEvaluatesTo("1", "count(//kml:Folder/kml:GroundOverlay)", dom);
         String href = XMLUnit.newXpathEngine().evaluate(
                 "//kml:Folder/kml:GroundOverlay/kml:Icon/kml:href", dom);
-        href = URLDecoder.decode(href, "UTF-8");
+        href = URLKvpParser.fixURL(URLDecoder.decode(href, "UTF-8"));
+        System.out.println(href);
         assertTrue(href.startsWith("http://localhost:8080/geoserver/wms"));
         assertTrue(href.contains("request=GetMap"));
         assertTrue(href.contains("format=image/png"));

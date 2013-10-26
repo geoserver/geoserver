@@ -31,7 +31,6 @@ import org.geoserver.web.FormTestPage;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geowebcache.layer.TileLayer;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
@@ -42,7 +41,7 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
 
     @Before
     public void setUpInternal() throws Exception {
-        LayerInfo layerInfo = getCatalog().getLayers().get(0);
+        LayerInfo layerInfo = getCatalog().getLayerByName(getLayerId(MockData.BUILDINGS));
         assertTrue(CatalogConfiguration.isLayerExposable(layerInfo));
         GeoServerTileLayer tileLayer = GWC.get().getTileLayer(layerInfo);
         assertNotNull(tileLayer);

@@ -404,7 +404,7 @@ public class KMLReflectorTest extends WMSTestSupport {
                 + "&sld=" + url.toExternalForm();
 
         Document dom = getAsDOM(requestUrl);
-        // print(dom);
+        print(dom);
 
         assertXpathEvaluatesTo("1", "count(//kml:Folder/kml:GroundOverlay)", dom);
         String href = XMLUnit.newXpathEngine().evaluate(

@@ -400,7 +400,7 @@ public class KMLReflectorTest extends WMSTestSupport {
     @Test
     public void testRasterTransformerSLD() throws Exception {
         URL url = getClass().getResource("allsymbolizers.sld");
-        String urlExternal = url.toExternalForm();
+        String urlExternal = URLDecoder.decode(url.toExternalForm(), "UTF-8");
         final String requestUrl = "wms/reflect?layers=" + getLayerId(MockData.BASIC_POLYGONS)
                 + "&format_options=KMSCORE:0;mode:refresh&format= " + KMLMapOutputFormat.MIME_TYPE 
                 + "&sld=" + urlExternal;
@@ -411,6 +411,7 @@ public class KMLReflectorTest extends WMSTestSupport {
         assertXpathEvaluatesTo("1", "count(//kml:Folder/kml:GroundOverlay)", dom);
         String href = XMLUnit.newXpathEngine().evaluate(
                 "//kml:Folder/kml:GroundOverlay/kml:Icon/kml:href", dom);
+        href = URLDecoder.decode(href, "UTF-8");
         assertTrue(href.startsWith("http://localhost:8080/geoserver/wms"));
         assertTrue(href.contains("request=GetMap"));
         assertTrue(href.contains("format=image/png"));

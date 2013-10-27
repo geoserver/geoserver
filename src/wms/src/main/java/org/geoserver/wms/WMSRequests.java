@@ -4,15 +4,19 @@
  */
 package org.geoserver.wms;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.management.RuntimeErrorException;
 
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.KvpParser;
@@ -389,7 +393,15 @@ public class WMSRequests {
         }
         
         if (req.getSld() != null) {
-            params.put("sld", req.getSld().toString());
+            // the request encoder will url-encode the url, if it has already url encoded
+            // chars, the will be encoded twice
+            try {
+                String sld = URLDecoder.decode(req.getSld().toExternalForm(), "UTF-8");
+                params.put("sld", sld);
+            } catch (UnsupportedEncodingException e) {
+                // this should really never happen
+                throw new RuntimeException(e);
+            }
         }
         
         if (req.getSldBody() != null) {

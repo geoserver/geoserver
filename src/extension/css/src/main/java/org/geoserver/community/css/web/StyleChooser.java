@@ -6,6 +6,7 @@ package org.geoserver.community.css.web;
 
 import java.util.Arrays;
 import java.util.List;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -13,12 +14,12 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.wicket.GeoServerDataProvider;
-import static org.geoserver.web.wicket.GeoServerDataProvider.Property;
+import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 
 public class StyleChooser extends Panel {
@@ -65,7 +66,7 @@ public class StyleChooser extends Panel {
                                 PageParameters params = new PageParameters();
                                 params.put(
                                     "layer",
-                                    demo.getLayer().getPrefixedName()
+                                    demo.getLayer().prefixedName()
                                 );
                                 WorkspaceInfo workspace = style.getWorkspace();
                                 if (workspace == null) {

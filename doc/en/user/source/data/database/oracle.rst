@@ -84,6 +84,18 @@ while a Service connection descriptor has the format ``host:port/database``.
 GeoServer uses the SID form by default. To connect via a Service,
 prefix the ``database`` name configuration entry with a ``/``.
 
+Connecting to database through LDAP
+`````````````````````````````````````
+
+For instance if you want to establish a connection with the jdbc thin driver through LDAP, you can use following connect string for the input field ``database`` 
+``ldap://[host]:[Port]/[db],cn=OracleContext,dc=[oracle_ldap_context]``.
+
+If you are using referrals, enable it by placing a jndi.properties file in geoserver's CLASSPATH, which is in geoserver/WEB-INF/classes.
+This property file contains:
+
+   java.naming.referral=follow
+
+
 .. _oracle_loose_bbox:
 
 Using loose bounding box

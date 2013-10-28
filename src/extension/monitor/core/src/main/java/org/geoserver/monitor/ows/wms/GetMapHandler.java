@@ -48,9 +48,12 @@ public class GetMapHandler extends RequestObjectHandler {
     protected BoundingBox getBBox(Object request) {
         CoordinateReferenceSystem crs = (CoordinateReferenceSystem) OwsUtils.get(request, "crs");
         Envelope env = (Envelope) OwsUtils.get(request, "bbox");
+        if(env == null) {
+            return null;
+        }
         BoundingBox bbox = new ReferencedEnvelope(env, crs);
         
-        try{
+        try {
             return bbox.toBounds(monitorConfig.getBboxCrs());
         } catch (TransformException e) {
             LOGGER.log(Level.WARNING, "Could not transform bounding box to logging CRS", e);

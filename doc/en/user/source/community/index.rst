@@ -23,4 +23,6 @@ officially part of the GeoServer releases. They are however built along with the
    scripting/index
    spatialite/index
    libjpeg-turbo/index
-   csw/index
+   netcdf/index
+   netcdf-out/index
+   jdbcconfig/index

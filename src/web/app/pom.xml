@@ -10,12 +10,12 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>web</artifactId>
-    <version>2.4-SNAPSHOT</version>
+    <version>2.5-SNAPSHOT</version>
   </parent>
   <groupId>org.geoserver.web</groupId>
   <artifactId>web-app</artifactId>
   <packaging>jar</packaging>
-  <version>2.4-SNAPSHOT</version>
+  <version>2.5-SNAPSHOT</version>
   <name>GeoServer Web Application</name>
   <dependencies>
     <dependency>
@@ -50,7 +50,12 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>
-      <artifactId>web-security</artifactId>
+      <artifactId>web-sec-jdbc</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.web</groupId>
+      <artifactId>web-sec-ldap</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -180,6 +185,7 @@
       <!-- Builds a valid data directory into the web app -->
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.7</version>
         <executions>
           <execution>
             <id>configPackage</id>
@@ -267,6 +273,7 @@
 		<inherited>true</inherited>
 		<groupId>org.apache.maven.plugins</groupId>
 		<artifactId>maven-war-plugin</artifactId>
+        <version>2.3</version>
 		<configuration>
 			<warName>geoserver</warName>
 			<webappDirectory>${project.build.directory}/geoserver</webappDirectory>
@@ -288,10 +295,32 @@
 		</configuration>
 		<executions>
 			<execution>
-				<phase>install</phase>
+				<phase>package</phase>
 				<goals>
 					<goal>war</goal>
 				</goals>
+			</execution>
+		</executions>
+	</plugin>
+	<plugin>
+		<groupId>org.codehaus.mojo</groupId>
+		<artifactId>build-helper-maven-plugin</artifactId>
+		<version>1.8</version>
+		<executions>
+			<execution>
+				<id>attach-war</id>
+				<phase>package</phase>
+				<goals>
+					<goal>attach-artifact</goal>
+				</goals>
+				<configuration>
+					<artifacts>
+						<artifact>
+							<file>${project.build.directory}/geoserver.war</file>
+							<type>war</type>
+						</artifact>
+					</artifacts>
+				</configuration>
 			</execution>
 		</executions>
 	</plugin>
@@ -322,7 +351,7 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>arcsde</artifactId> 
-          <version>2.4-SNAPSHOT</version>
+          <version>2.5-SNAPSHOT</version>
         </dependency>
       </dependencies>
     </profile>
@@ -351,7 +380,7 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>sqlserver</artifactId> 
-          <version>2.4-SNAPSHOT</version>
+          <version>2.5-SNAPSHOT</version>
         </dependency>
       </dependencies>
     </profile>
@@ -361,7 +390,7 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>oracle</artifactId> 
-          <version>2.4-SNAPSHOT</version>
+          <version>2.5-SNAPSHOT</version>
         </dependency>
       </dependencies>
     </profile>
@@ -371,7 +400,7 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>mysql</artifactId> 
-          <version>2.4-SNAPSHOT</version>
+          <version>2.5-SNAPSHOT</version>
         </dependency>
       </dependencies>
     </profile>
@@ -729,6 +758,11 @@
           <artifactId>sec-cas</artifactId>
           <version>${project.version}</version>
         </dependency>
+        <dependency>
+          <groupId>org.geoserver.web</groupId>
+          <artifactId>web-sec-cas</artifactId>
+          <version>${project.version}</version>
+        </dependency>
       </dependencies>
     </profile>
     <profile>
@@ -777,6 +811,11 @@
         <dependency>
           <groupId>org.geoserver.csw</groupId>
           <artifactId>csw-core</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+	<dependency>
+          <groupId>org.geoserver.csw</groupId>
+          <artifactId>web-csw</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>
@@ -967,11 +1006,55 @@
       </dependencies>
 		</profile>        
     <profile>
+      <id>importer</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.importer</groupId>
+          <artifactId>importer-web</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.importer</groupId>
+          <artifactId>importer-rest</artifactId>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>netcdf-out</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>netcdf-out</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>geopkg</id>
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>geopkg</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>png</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>png</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>wfs-notification</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>wfs-notification-plugin</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

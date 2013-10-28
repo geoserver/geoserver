@@ -14,7 +14,7 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
         tester.startPage(CssDemoPage.class);
         tester.assertRenderedPage(CssDemoPage.class);
         tester.assertComponent("main-content:context", AjaxTabbedPanel.class);
-        tester.assertComponent("main-content:context:panel", EmptyPanel.class);
+        tester.assertComponent("main-content:context:panel", SLDPreviewPanel.class);
         tester.assertComponent("main-content:change.style", AjaxLink.class);
         tester.assertComponent("main-content:change.layer", AjaxLink.class);
         tester.assertComponent("main-content:create.style", AjaxLink.class);
@@ -34,7 +34,7 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
     public void testSLDPreviewPanel() {
         login();
         tester.startPage(CssDemoPage.class);
-        tester.clickLink("main-content:context:tabs-container:tabs:3:link");
+        tester.clickLink("main-content:context:tabs-container:tabs:0:link");
         tester.assertComponent("main-content:context:panel", SLDPreviewPanel.class);
     }
 
@@ -59,7 +59,7 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
     public void testDocsPanel() {
         login();
         tester.startPage(CssDemoPage.class);
-        tester.clickLink("main-content:context:tabs-container:tabs:4:link");
+        tester.clickLink("main-content:context:tabs-container:tabs:3:link");
         tester.assertComponent("main-content:context:panel", DocsPanel.class);
     }
 }

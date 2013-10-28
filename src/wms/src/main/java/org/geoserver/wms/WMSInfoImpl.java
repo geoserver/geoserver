@@ -19,7 +19,7 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
     WatermarkInfo watermark = new WatermarkInfoImpl();
 
-    WMSInterpolation interpolation;
+    WMSInterpolation interpolation = WMSInterpolation.Nearest;
     
 
     /**

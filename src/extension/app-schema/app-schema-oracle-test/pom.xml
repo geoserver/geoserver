@@ -12,7 +12,7 @@
 	<parent>
 		<groupId>org.geoserver.extension</groupId>
 		<artifactId>app-schema</artifactId>
-		<version>2.4-SNAPSHOT</version>
+		<version>2.5-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.geoserver.extension</groupId>
@@ -121,10 +121,22 @@
 			<version>${gt.version}</version>				
 			<scope>test</scope>
 		</dependency>
+ 		<dependency>
+			<groupId>org.geotools.jdbc</groupId>
+			<artifactId>gt-jdbc-postgis</artifactId>
+			<version>${gt.version}</version>
+			<scope>test</scope>
+		</dependency>
         <dependency>
             <groupId>org.geotools.schemas</groupId>
             <artifactId>geosciml-3.0-seegrid</artifactId>
             <version>3.0.0-1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools.schemas</groupId>
+            <artifactId>geosciml-3.2</artifactId>
+            <version>3.2.0-1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -159,7 +171,7 @@
 				        <exclude>**/onlineTest/*.java</exclude>
 				        <exclude>${test.exclude.pattern}</exclude>
 				    </excludes>
-				    <argLine>-Xmx${test.maxHeapSize} -XX:MaxPermSize=${test.maxPermSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dapp-schema.joining=true -DtestDatabase=oracle -DSC4OUser=${SC4OUser}</argLine>
+				    <argLine>-Xmx${test.maxHeapSize} -XX:MaxPermSize=${test.maxPermSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dapp-schema.joining=true -DtestDatabase=oracle -Dorg.geotools.image.test.enabled=true</argLine>
 				</configuration>
 	        </plugin>
 	   </plugins>

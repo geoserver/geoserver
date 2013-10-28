@@ -4,26 +4,26 @@
  */
 package org.geoserver.community.css.web;
 
-import java.io.ByteArrayInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.ajax.markup.html.tabs.AjaxTabbedPanel;
 import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
 import org.apache.wicket.extensions.markup.html.tabs.ITab;
 import org.apache.wicket.extensions.markup.html.tabs.PanelCachingTab;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
@@ -34,18 +34,18 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-
 import org.geoscript.geocss.CssParser;
 import org.geoscript.geocss.Translator;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.geotools.styling.Style;
 import org.geotools.styling.SLDTransformer;
+import org.geotools.styling.Style;
 
 public class CssDemoPage extends GeoServerSecuredPage {
     /*
@@ -55,7 +55,7 @@ public class CssDemoPage extends GeoServerSecuredPage {
 
     public OpenLayersMapPanel map = null;
     public Label sldPreview = null;
-    private FeatureTypeInfo layer = null;
+    private LayerInfo layer = null;
     private StyleInfo style = null;
 
     public CssDemoPage() {
@@ -72,20 +72,19 @@ public class CssDemoPage extends GeoServerSecuredPage {
         }
     }
 
-    private static FeatureTypeInfo extractLayer(PageParameters params, Catalog catalog) {
+    private static LayerInfo extractLayer(PageParameters params, Catalog catalog) {
         if (params.containsKey("layer")) {
-            String[] name = params.getString("layer").split(":", 2);
-            return catalog.getResourceByName(name[0], name[1], FeatureTypeInfo.class);
+            String name = params.getString("layer");
+            return catalog.getLayerByName(name);
         } else {
             // TODO: Revisit this behavior
             // give some slight preference to the topp:states layer to make
             // demoing a bit more consistent.
-            FeatureTypeInfo states =
-                catalog.getResourceByName("topp", "states", FeatureTypeInfo.class);
+            LayerInfo states = catalog.getLayerByName("topp:states");
             if (states != null) {
                 return states;
             } else {
-                List<FeatureTypeInfo> layers = catalog.getResources(FeatureTypeInfo.class);
+                List<LayerInfo> layers = catalog.getLayers();
                 if (layers.size() > 0) {
                     return layers.get(0);
                 } else {
@@ -95,7 +94,7 @@ public class CssDemoPage extends GeoServerSecuredPage {
         }
     }
 
-    private static StyleInfo extractStyle(PageParameters params, Catalog catalog, FeatureTypeInfo layer) {
+    private static StyleInfo extractStyle(PageParameters params, Catalog catalog, LayerInfo layer) {
         if (params.containsKey("style")) {
             String style = params.getString("style");
             String[] parts = style.split(":", 2);
@@ -107,9 +106,8 @@ public class CssDemoPage extends GeoServerSecuredPage {
                 throw new IllegalStateException("After splitting, there should be only 1 or 2 parts.  Got: " + Arrays.toString(parts));
             }
         } else {
-            List<LayerInfo> styles = catalog.getLayers(layer);
-            if (styles.size() > 0) {
-                return styles.get(0).getDefaultStyle();
+            if (layer != null) {
+                return layer.getDefaultStyle();
             } else {
                 return null;
             }
@@ -131,7 +129,7 @@ public class CssDemoPage extends GeoServerSecuredPage {
 
     public StyleInfo getStyleInfo() { return this.style; } 
 
-    public FeatureTypeInfo getLayer() { return this.layer; } 
+    public LayerInfo getLayer() { return this.layer; } 
     
     public String cssText2sldText(String css) {
         try {
@@ -265,21 +263,6 @@ public class CssDemoPage extends GeoServerSecuredPage {
 
         final CompoundPropertyModel model = new CompoundPropertyModel<CssDemoPage>(CssDemoPage.this);
         List<ITab> tabs = new ArrayList<ITab>();
-        tabs.add(new AbstractTab(new Model("Collapse")) {
-            public Panel getPanel(String id) { return new EmptyPanel(id); }
-        });
-        tabs.add(new PanelCachingTab(new AbstractTab(new Model("Map")) {
-            public Panel getPanel(String id) { return map = new OpenLayersMapPanel(id, layer, style); }
-        }));
-        tabs.add(new PanelCachingTab(new AbstractTab(new Model("Data")) {
-            public Panel getPanel(String id) { 
-                try {
-                    return new DataPanel(id, model, layer);
-                } catch (IOException e) {
-                    throw new WicketRuntimeException(e);
-                }
-            };
-        }));
         tabs.add(new PanelCachingTab(new AbstractTab(new Model("Generated SLD")) {
             public Panel getPanel(String id) { 
                 SLDPreviewPanel panel = new SLDPreviewPanel(id, sldModel);
@@ -287,6 +270,26 @@ public class CssDemoPage extends GeoServerSecuredPage {
                 return panel;
             }
         }));
+        tabs.add(new PanelCachingTab(new AbstractTab(new Model("Map")) {
+            public Panel getPanel(String id) { return map = new OpenLayersMapPanel(id, layer, style); }
+        }));
+        if(layer.getResource() instanceof FeatureTypeInfo) {
+            tabs.add(new PanelCachingTab(new AbstractTab(new Model("Data")) {
+                public Panel getPanel(String id) { 
+                    try {
+                        return new DataPanel(id, model, (FeatureTypeInfo) layer.getResource());
+                    } catch (IOException e) {
+                        throw new WicketRuntimeException(e);
+                    }
+                };
+            }));
+        } else if(layer.getResource() instanceof CoverageInfo) {
+            tabs.add(new PanelCachingTab(new AbstractTab(new Model("Data")) {
+                public Panel getPanel(String id) { 
+                    return new BandsPanel(id, (CoverageInfo) layer.getResource());
+                };
+            }));
+        }
         tabs.add(new AbstractTab(new Model("CSS Reference")) {
             public Panel getPanel(String id) { 
                 return new DocsPanel(id);

@@ -25,11 +25,11 @@ import org.geoserver.wms.WMSRequests;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
+import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.resources.coverage.FeatureUtilities;
 import org.geotools.styling.Style;
-import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -75,7 +75,7 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
 
         // normalize the requested bounds to match a WGS84 hierarchy tile
         Tile tile = new Tile(new ReferencedEnvelope(request.getBbox(), Tile.WGS84));
-        if(!tile.getEnvelope().contains(request.getBbox()) && tile.getZ() > 0) {
+        while(tile.getZ() > 0 && !tile.getEnvelope().contains(request.getBbox())) {
             tile = tile.getParent();
         }
         Envelope normalizedEnvelope = null;
@@ -85,8 +85,8 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
             normalizedEnvelope = KmlEncodingContext.WORLD_BOUNDS_WGS84;
         }
         int zoomLevel = (int) tile.getZ();
-        // encode top level region
-        addRegion(container, normalizedEnvelope, 256, -1);
+        // encode top level region, which is always visible
+        addRegion(container, normalizedEnvelope, Integer.MAX_VALUE, -1);
 
         List<MapLayerInfo> layers = request.getLayers();
         for (int i = 0; i < layers.size(); i++) {
@@ -120,8 +120,18 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
         LookAtOptions lookAtOptions = new LookAtOptions(request.getFormatOptions());
         if (bounds != null) {
             LookAtDecoratorFactory lookAtFactory = new LookAtDecoratorFactory();
-            LookAt la = lookAtFactory.buildLookAt(bounds, lookAtOptions, false);
-            container.setAbstractView(la);
+            ReferencedEnvelope layerBounds = layer.getBounds();
+            CoordinateReferenceSystem layerCRS = layerBounds.getCoordinateReferenceSystem();
+            if(layerCRS != null && !CRS.equalsIgnoreMetadata(layerCRS, DefaultGeographicCRS.WGS84)) {
+                try {
+                    layerBounds = layerBounds.transform(DefaultGeographicCRS.WGS84, true);
+                } catch(Exception e) {
+                    throw new ServiceException("Failed to transform the layer bounds for " 
+                            + layer.getTitle() + " to WGS84", e);
+                }
+            }
+            LookAt la = lookAtFactory.buildLookAt(layerBounds, lookAtOptions, false);
+            folder.setAbstractView(la);
         }
 
         encodeNetworkLinks(folder, layer, bounds, zoomLevel);
@@ -166,12 +176,12 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
 
         // encode the ground overlay(s)
         if (top == KmlEncodingContext.WORLD_BOUNDS_WGS84) {
-//            // special case for top since it does not line up as a proper
-//            // tile -> split it in two
-//            encodeTileContents(folder, layer, "contents-0", zoomLevel, new Envelope(-180, 0, -90,
-//                    90));
-//            encodeTileContents(folder, layer, "contents-1", zoomLevel,
-//                    new Envelope(0, 180, -90, 90));
+            // special case for top since it does not line up as a proper
+            // tile -> split it in two
+            encodeTileContents(folder, layer, "contents-0", zoomLevel, new Envelope(-180, 0, -90,
+                    90));
+            encodeTileContents(folder, layer, "contents-1", zoomLevel,
+                    new Envelope(0, 180, -90, 90));
         } else {
             // encode straight up
             encodeTileContents(folder, layer, "contents", zoomLevel, top);

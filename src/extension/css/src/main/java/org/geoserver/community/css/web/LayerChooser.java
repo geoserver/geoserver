@@ -16,50 +16,49 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-
-import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.wicket.GeoServerDataProvider;
-import static org.geoserver.web.wicket.GeoServerDataProvider.Property;
+import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 
 public class LayerChooser extends Panel {
 
-    private static class LayerProvider extends GeoServerDataProvider<FeatureTypeInfo> {
+    private static class LayerProvider extends GeoServerDataProvider<LayerInfo> {
         private CssDemoPage demo;
 
         public LayerProvider(CssDemoPage demo) {
             this.demo = demo;
         }
 
-        public static Property<FeatureTypeInfo> workspace =
-            new AbstractProperty<FeatureTypeInfo>("Workspace") {
-                public Object getPropertyValue(FeatureTypeInfo x) {
-                    return x.getStore().getWorkspace().getName();
+        public static Property<LayerInfo> workspace =
+            new AbstractProperty<LayerInfo>("Workspace") {
+                public Object getPropertyValue(LayerInfo x) {
+                    return x.getResource().getStore().getWorkspace().getName();
                 }
             };
 
-        public static Property<FeatureTypeInfo> store =
-            new AbstractProperty<FeatureTypeInfo>("Store") {
-                public Object getPropertyValue(FeatureTypeInfo x) {
-                    return x.getStore().getName();
+        public static Property<LayerInfo> store =
+            new AbstractProperty<LayerInfo>("Store") {
+                public Object getPropertyValue(LayerInfo x) {
+                    return x.getResource().getStore().getName();
                 }
             };
 
-        public static Property<FeatureTypeInfo> name =
-            new AbstractProperty<FeatureTypeInfo>("Layer") {
-                public Object getPropertyValue(FeatureTypeInfo x) {
+        public static Property<LayerInfo> name =
+            new AbstractProperty<LayerInfo>("Layer") {
+                public Object getPropertyValue(LayerInfo x) {
                     return x.getName();
                 }
             };
 
         @Override
-        public List<FeatureTypeInfo> getItems() {
-            return demo.catalog().getFeatureTypes();
+        public List<LayerInfo> getItems() {
+            return demo.catalog().getLayers();
         }
 
         @Override
-        public List<Property<FeatureTypeInfo>> getProperties() {
+        public List<Property<LayerInfo>> getProperties() {
             return Arrays.asList(workspace, store, name);
         }
     }
@@ -67,13 +66,13 @@ public class LayerChooser extends Panel {
     public LayerChooser(final String id, final CssDemoPage demo) {
         super(id);
         LayerProvider provider = new LayerProvider(demo);
-        GeoServerTablePanel<FeatureTypeInfo> table =
-            new GeoServerTablePanel<FeatureTypeInfo>("layer.table", provider) {
+        GeoServerTablePanel<LayerInfo> table =
+            new GeoServerTablePanel<LayerInfo>("layer.table", provider) {
                 @Override
                 public Component getComponentForProperty(
-                    String id, IModel value, Property<FeatureTypeInfo> property
+                    String id, IModel value, Property<LayerInfo> property
                 ) {
-                    final FeatureTypeInfo layer = (FeatureTypeInfo) value.getObject();
+                    final LayerInfo layer = (LayerInfo) value.getObject();
                     final String text = property.getPropertyValue(layer).toString();
 
                     if (property == LayerProvider.name) {
@@ -86,7 +85,7 @@ public class LayerChooser extends Panel {
                                     @Override
                                     public void onClick(AjaxRequestTarget target) {
                                         PageParameters params = new PageParameters();
-                                        params.put("layer", layer.getPrefixedName());
+                                        params.put("layer", layer.prefixedName());
                                         WorkspaceInfo workspace= demo.getStyleInfo().getWorkspace();
                                         if (workspace == null) {
                                             params.put("style", demo.getStyleInfo().getName());

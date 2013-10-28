@@ -45,6 +45,6 @@ public class PropertyDataStoreRelativeUrlTest extends GeoServerSystemTestSupport
         
         DataAccess store = getGeoServer().getCatalog().getResourcePool().getDataStore(info);
                 
-        assertEquals( testDS.toURI().toString(), store.getInfo().getSource().toString().replace("/./", "/"));
+        assertEquals( testDS.toURI().toString().toLowerCase(), store.getInfo().getSource().toString().replace("/./", "/").toLowerCase());
     }
 }

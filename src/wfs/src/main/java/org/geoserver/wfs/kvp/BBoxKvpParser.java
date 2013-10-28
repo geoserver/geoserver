@@ -6,11 +6,9 @@ package org.geoserver.wfs.kvp;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.geoserver.ows.KvpParser;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
-import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope3D;
 import org.geotools.referencing.CRS;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -82,9 +80,8 @@ public class BBoxKvpParser extends KvpParser {
                 + "greater than maxZ: " + maxz);
         }  
 
-        //check for crs
-        CoordinateReferenceSystem crs = null;
-
+        // check for srs
+        String srs = null;
         if (unparsed.size() > countco) {
         	// merge back the CRS definition, in case it is an AUTO one
             StringBuilder sb = new StringBuilder();
@@ -94,15 +91,14 @@ public class BBoxKvpParser extends KvpParser {
                     sb.append(",");
                 }
             }
-            crs = CRS.decode(sb.toString());
-        } else {
-            //TODO: use the default crs of the system
+            srs = sb.toString();
         }
         
         if (countco == 6) {
-        	return new ReferencedEnvelope3D(minx,maxx,miny,maxy,minz,maxz,crs);
+            CoordinateReferenceSystem crs = srs != null ? CRS.decode(srs) : null;
+            return new ReferencedEnvelope3D(minx, maxx, miny, maxy, minz, maxz, crs);
         } else {
-        	return new ReferencedEnvelope(minx,maxx,miny,maxy,crs);
+            return new SRSEnvelope(minx, maxx, miny, maxy, srs);
         }
     }
 }

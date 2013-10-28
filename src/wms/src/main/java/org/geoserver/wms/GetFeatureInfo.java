@@ -34,8 +34,8 @@ import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
@@ -85,17 +85,13 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.Or;
 import org.opengis.geometry.DirectPosition;
-import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.parameter.GeneralParameterValue;
-import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
 
 /**
@@ -108,6 +104,8 @@ public class GetFeatureInfo {
     private static final Logger LOGGER = Logging.getLogger(GetFeatureInfo.class);
     
     static final int MIN_BUFFER_SIZE = Integer.getInteger("org.geoserver.wms.featureinfo.minBuffer", 5); 
+    
+    private static final double TOLERANCE = 1e-6;
 
     private WMS wms;
 
@@ -413,7 +411,7 @@ public class GetFeatureInfo {
             final ReferencedEnvelope bbox, final FilterFactory2 ff,
             List<FeatureCollection> results, int i, final MapLayerInfo layer, final List<Rule> rules,
             final int maxFeatures, List<Object> times, List<Object> elevations, final String[] propertyNames)
-            throws IOException {
+            throws Exception {
 
         CoordinateReferenceSystem dataCRS = layer.getCoordinateReferenceSystem();
 
@@ -450,17 +448,12 @@ public class GetFeatureInfo {
         if (maxRadius > 0 && radius > maxRadius)
             radius = maxRadius;
 
-        Polygon pixelRect = getEnvelopeFilter(x, y, width, height, bbox, radius);
+        ReferencedEnvelope queryEnvelope = getEnvelopeFilter(x, y, width, height, bbox, radius);
         if ((requestedCRS != null) && !CRS.equalsIgnoreMetadata(dataCRS, requestedCRS)) {
-            try {
-                MathTransform transform = CRS.findMathTransform(requestedCRS, dataCRS, true);
-                pixelRect = (Polygon) JTS.transform(pixelRect, transform); // reprojected
-            } catch (MismatchedDimensionException e) {
-                LOGGER.severe(e.getLocalizedMessage());
-            } catch (TransformException e) {
-                LOGGER.severe(e.getLocalizedMessage());
-            } catch (FactoryException e) {
-                LOGGER.severe(e.getLocalizedMessage());
+            if(dataCRS.getCoordinateSystem().getDimension() == 3 && requestedCRS.getCoordinateSystem().getDimension() == 2) {
+                queryEnvelope = JTS.transformTo3D(queryEnvelope, dataCRS, true, 10);
+            } else {
+                queryEnvelope = queryEnvelope.transform(dataCRS, true);
             }
         }
 
@@ -472,7 +465,8 @@ public class GetFeatureInfo {
         try {
             GeometryDescriptor geometryDescriptor = schema.getGeometryDescriptor();
             String localName = geometryDescriptor.getLocalName();
-            getFInfoFilter = ff.intersects(ff.property(localName), ff.literal(pixelRect));
+            Polygon queryPolygon = JTS.toGeometry(queryEnvelope);
+            getFInfoFilter = ff.intersects(ff.property(localName), ff.literal(queryPolygon));
         } catch (IllegalFilterException e) {
             e.printStackTrace();
             throw new ServiceException("Internal error : " + e.getMessage(), e);
@@ -635,8 +629,8 @@ public class GetFeatureInfo {
 
         for (FeatureTypeStyle fts : style.getFeatureTypeStyles()) {
             for (Rule r : fts.rules()) {
-                if ((r.getMinScaleDenominator() <= scaleDenominator)
-                        && (r.getMaxScaleDenominator() > scaleDenominator)) {
+                if ((r.getMinScaleDenominator() - TOLERANCE <= scaleDenominator)
+                        && (r.getMaxScaleDenominator() + TOLERANCE > scaleDenominator)) {
                     result.add(r);
                 }
             }
@@ -644,23 +638,12 @@ public class GetFeatureInfo {
         return result;
     }
 
-    private Polygon getEnvelopeFilter(int x, int y, int width, int height, ReferencedEnvelope bbox,
+    private ReferencedEnvelope getEnvelopeFilter(int x, int y, int width, int height, ReferencedEnvelope bbox,
             double radius) {
         Coordinate upperLeft = WMS.pixelToWorld(x - radius, y - radius, bbox, width, height);
         Coordinate lowerRight = WMS.pixelToWorld(x + radius, y + radius, bbox, width, height);
-
-        Coordinate[] coords = new Coordinate[5];
-        coords[0] = upperLeft;
-        coords[1] = new Coordinate(lowerRight.x, upperLeft.y);
-        coords[2] = lowerRight;
-        coords[3] = new Coordinate(upperLeft.x, lowerRight.y);
-        coords[4] = coords[0];
-
-        GeometryFactory geomFac = new GeometryFactory();
-        LinearRing boundary = geomFac.createLinearRing(coords); // this needs to be done with each
-                                                                // FT so it can be reprojected
-        Polygon pixelRect = geomFac.createPolygon(boundary, null);
-        return pixelRect;
+        
+        return new ReferencedEnvelope(upperLeft.x, lowerRight.x, lowerRight.y, upperLeft.y, bbox.getCoordinateReferenceSystem());
     }
 
     private SimpleFeatureCollection wrapPixelInFeatureCollection(GridCoverage2D coverage,

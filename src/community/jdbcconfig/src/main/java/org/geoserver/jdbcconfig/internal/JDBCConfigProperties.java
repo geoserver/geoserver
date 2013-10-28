@@ -10,6 +10,7 @@ import java.util.Properties;
 
 import org.geotools.data.DataUtilities;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 
 public class JDBCConfigProperties extends Properties {
@@ -19,6 +20,8 @@ public class JDBCConfigProperties extends Properties {
 
     //factory
     JDBCConfigPropertiesFactoryBean factory;
+    
+    String datasourceId = null;
 
     public JDBCConfigProperties(JDBCConfigPropertiesFactoryBean factory) {
         this.factory = factory;
@@ -36,11 +39,11 @@ public class JDBCConfigProperties extends Properties {
     }
 
     public boolean isEnabled() {
-        return Boolean.valueOf(getProperty("enabled", "true"));
+        return Boolean.valueOf(getProperty("enabled", "false"));
     }
 
-    public String getJdbcUrl() {
-        return fillInPlaceholders(getProperty("jdbcUrl"));
+    public Optional<String> getJdbcUrl() {
+        return Optional.fromNullable(fillInPlaceholders(getProperty("jdbcUrl")));
     }
 
     public void setJdbcUrl(String jdbcUrl) {
@@ -82,5 +85,21 @@ public class JDBCConfigProperties extends Properties {
     String fillInPlaceholders(String value) {
         return value != null ? 
             value.replace("${GEOSERVER_DATA_DIR}", factory.getDataDir().getAbsolutePath()) : value;
+    }
+    
+    public Optional<String> getJndiName() {
+        return Optional.fromNullable(getProperty("jndiName"));
+    }
+
+    public void setJndiName(String name) {
+        setProperty("jndiName", name);
+    }
+
+    public String getDatasourceId() {
+        return datasourceId;
+    }
+
+    public void setDatasourceId(String datasourceId) {
+        this.datasourceId = datasourceId;
     }
 }

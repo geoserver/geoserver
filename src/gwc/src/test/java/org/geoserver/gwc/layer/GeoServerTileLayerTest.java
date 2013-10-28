@@ -23,6 +23,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -65,6 +66,7 @@ import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.grid.OutsideCoverageException;
 import org.geowebcache.io.Resource;
+import org.geowebcache.layer.ExpirationRule;
 import org.geowebcache.layer.meta.LayerMetaInformation;
 import org.geowebcache.locks.MemoryLockProvider;
 import org.geowebcache.mime.MimeType;
@@ -555,6 +557,33 @@ public class GeoServerTileLayerTest {
         mimeTypes = layerInfoTileLayer.getMimeTypes();
         assertEquals(1, mimeTypes.size());
         assertEquals(MimeType.createFromFormat("image/gif"), mimeTypes.get(0));
+    }
+    
+    @Test
+    public void testTileExpirationList() {
+        layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
+        
+        List<ExpirationRule> list = new ArrayList<ExpirationRule>();
+        list.add(new ExpirationRule(0, 10));
+        list.add(new ExpirationRule(10,20));
+        
+        layerInfoTileLayer.getInfo().setExpireCacheList(list);
+        
+     
+        assertEquals(10, layerInfoTileLayer.getExpireCache(0));
+        assertEquals(10, layerInfoTileLayer.getExpireCache(9));
+        assertEquals(20, layerInfoTileLayer.getExpireCache(10));
+        assertEquals(20, layerInfoTileLayer.getExpireCache(15));
+        
+        assertEquals(0, layerInfoTileLayer.getExpireCache(-1));
+    }
+    
+    @Test
+    public void testCacheExpiration() {
+        layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
+        assertEquals(0, layerInfoTileLayer.getInfo().getExpireCache());
+        layerInfoTileLayer.getInfo().setExpireCache(40);
+        assertEquals(40, layerInfoTileLayer.getInfo().getExpireCache());
     }
 
 }

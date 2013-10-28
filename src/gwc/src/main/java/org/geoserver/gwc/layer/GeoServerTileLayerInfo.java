@@ -5,10 +5,12 @@
 package org.geoserver.gwc.layer;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 import org.geowebcache.config.XMLGridSubset;
 import org.geowebcache.filter.parameters.ParameterFilter;
+import org.geowebcache.layer.ExpirationRule;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -29,6 +31,18 @@ public interface GeoServerTileLayerInfo extends Serializable, Cloneable {
     public abstract void setMetaTilingY(int metaTilingY);
 
     public abstract void setMetaTilingX(int metaTilingX);
+    
+    public abstract int getExpireCache();
+    
+    public abstract void setExpireCache(int expireCache);
+    
+    public abstract List<ExpirationRule> getExpireCacheList();
+    
+    public abstract void setExpireCacheList(List<ExpirationRule> expireCacheList);
+    
+    public abstract int getExpireClients();
+    
+    public abstract void setExpireClients(int seconds);
 
     /**
      * Derived property from {@link #getParameterFilters()}, returns the configured allowable values

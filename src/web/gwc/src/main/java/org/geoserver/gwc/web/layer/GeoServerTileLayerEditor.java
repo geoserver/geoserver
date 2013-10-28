@@ -23,6 +23,7 @@ import org.apache.wicket.markup.html.form.CheckGroup;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
@@ -108,6 +109,10 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
     private final FormComponent<Integer> gutter;
 
     private final CheckGroup<String> cacheFormats;
+    
+    private final FormComponent<Integer> expireCache;
+    
+    private final FormComponent<Integer> expireClients;
 
     private final GridSubsetsEditor gridSubsets;
     private final ParameterFilterEditor parameterFilters;
@@ -233,6 +238,14 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
                                              // submits
         cacheFormats.add(cacheFormatsList);
 
+        IModel<Integer> expireCacheModel = new PropertyModel<Integer>(getModel(), "expireCache");
+        expireCache = new TextField<Integer>("expireCache", expireCacheModel);
+        configs.add(expireCache);
+        
+        IModel<Integer> expireClientsModel = new PropertyModel<Integer>(getModel(), "expireClients");
+        expireClients = new TextField<Integer>("expireClients", expireClientsModel);
+        configs.add(expireClients);
+        
         IModel<Set<XMLGridSubset>> gridSubsetsModel;
         gridSubsetsModel = new PropertyModel<Set<XMLGridSubset>>(getModel(), "gridSubsets");
         gridSubsets = new GridSubsetsEditor("cachedGridsets", gridSubsetsModel);
@@ -381,6 +394,8 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
 
         if (createTileLayer) {
             enabled.processInput();
+            expireCache.processInput();
+            expireClients.processInput();
             metaTilingX.processInput();
             metaTilingY.processInput();
             gutter.processInput();

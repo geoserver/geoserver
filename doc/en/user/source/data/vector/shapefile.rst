@@ -43,7 +43,8 @@ To begin, navigate to :menuselection:`Stores --> Add a new store --> Shapefile`.
    * - :guilabel:`charset`
      - Character set used to decode strings from the ``.dbf`` file.
    * - :guilabel:`memory mapped buffer`
-     - Enables the use of memory mapped I/O.
+       :guilabel:`Cache and reuse memory maps`
+     - Enables the use of memory mapped I/O, improving caching of the file in memory. **Turn off on Windows servers**.
 
 When finished, click :guilabel:`Save`.
 

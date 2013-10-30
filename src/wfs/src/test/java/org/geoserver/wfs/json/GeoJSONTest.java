@@ -10,15 +10,21 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.Collections;
+
+import javax.xml.namespace.QName;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
+
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSTestSupport;
 import org.junit.Test;
+
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 /**
@@ -28,12 +34,15 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
  */
 public class GeoJSONTest extends WFSTestSupport {
        
+    public static QName LINE3D = new QName(SystemTestData.CITE_URI, "Line3D", SystemTestData.CITE_PREFIX);
+    
     @Override
     protected void setUpInternal(SystemTestData data) throws Exception {
         File security = new File(getTestData().getDataDirectoryRoot(), "security");
         security.mkdir();
         File layers = new File(security, "layers.properties");
         IOUtils.copy(GeoJSONTest.class.getResourceAsStream("layers_ro.properties"), layers);
+        data.addVectorLayer (LINE3D, Collections.EMPTY_MAP, getClass(), getCatalog());
     }
 	
     @Test
@@ -182,4 +191,27 @@ public class GeoJSONTest extends WFSTestSupport {
         JSONObject aFeature = featureCol.getJSONObject(0);
         assertEquals(aFeature.getString("geometry_name"), "surfaceProperty");
     }
+ 
+    @Test
+    public void testGetFeatureLine3D() throws Exception {
+        JSONObject collection = (JSONObject) getAsJSON("wfs?request=GetFeature&version=1.0.0&typename=" + getLayerId(LINE3D)
+                + "&outputformat=" + JSONType.json);
+        // print(collection);
+        assertEquals("4327", collection.getJSONObject("crs").getJSONObject("properties").getString("code"));
+        JSONArray features = collection.getJSONArray("features");
+        assertEquals(1, features.size());
+        JSONObject feature = features.getJSONObject(0);
+        JSONObject geometry = feature.getJSONObject("geometry");
+        assertEquals("LineString", geometry.getString("type"));
+        JSONArray coords = geometry.getJSONArray("coordinates");
+        JSONArray c1 = coords.getJSONArray(0);
+        assertEquals(0, c1.getInt(0));
+        assertEquals(0, c1.getInt(1));
+        assertEquals(50, c1.getInt(2));
+        JSONArray c2 = coords.getJSONArray(1);
+        assertEquals(120, c2.getInt(0));
+        assertEquals(0, c2.getInt(1));
+        assertEquals(100, c2.getInt(2));
+    }
+
 }

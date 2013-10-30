@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ogc:GetMap xmlns:ogc="http://www.opengis.net/ows"
+            xmlns:gml="http://www.opengis.net/gml"
+   version="1.1.1" service="WMS">
+   <StyledLayerDescriptor version="1.0.0">
+      <NamedLayer>
+        <Name>topp:states</Name>
+        <NamedStyle><Name>population</Name></NamedStyle> 
+      </NamedLayer> 
+   </StyledLayerDescriptor>
+   <BoundingBox srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">
+      <gml:coord><gml:X>-130</gml:X><gml:Y>24</gml:Y></gml:coord>
+      <gml:coord><gml:X>-55</gml:X><gml:Y>50</gml:Y></gml:coord>
+   </BoundingBox>
+   <Output>
+      <Format>image/png</Format>
+      <Size><Width>550</Width><Height>250</Height></Size>
+   </Output>
+</ogc:GetMap>

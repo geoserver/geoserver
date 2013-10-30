@@ -711,6 +711,16 @@
       </dependencies>
     </profile>
     <profile>
+      <id>jp2k</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>jp2k</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>    
+    <profile>
       <id>gdal</id>
       <dependencies>
         <dependency>

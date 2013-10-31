@@ -80,7 +80,7 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
         
         casLogoutURL=GeoServerCasConstants.createCasURl(authConfig.getCasServerUrlPrefix(), GeoServerCasConstants.LOGOUT_URI);
         if (StringUtils.hasLength(authConfig.getUrlInCasLogoutPage()))
-                casLogoutURL+=GeoServerCasConstants.LOGOUT_URL_PARAM+"="+URLEncoder.encode(authConfig.getUrlInCasLogoutPage(),"utf-8");
+                casLogoutURL+="?"+GeoServerCasConstants.LOGOUT_URL_PARAM+"="+URLEncoder.encode(authConfig.getUrlInCasLogoutPage(),"utf-8");
                 
         singleSignOut=authConfig.isSingleSignOut();
         aep = new GeoServerCasAuthenticationEntryPoint(authConfig);

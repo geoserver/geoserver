@@ -23,7 +23,7 @@ public class GeoServerCasConstants {
     public final static String ARTIFACT_PARAMETER = "ticket";
     public final static String LOGIN_URI = "/login";
     public final static String LOGOUT_URI = "/logout";
-    public final static String LOGOUT_URL_PARAM = "url";
+    public final static String LOGOUT_URL_PARAM = "service";
     
     public final static String PROXY_TICKET_PREFIX = "PT-";
     public final static String SERVICE_TICKET_PREFIX = "ST-";

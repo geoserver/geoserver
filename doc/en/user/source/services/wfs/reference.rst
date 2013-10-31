@@ -233,11 +233,18 @@ Executing this command will return the geometries for all features in given a fe
      typeName=namespace:featuretype&
      featureID=feature
 
-If the ID of the feature is unknown but you still want to limit the amount of features returned, use the ``maxFeatures`` parameter. In the example below, ``N`` represents the number of features to return::
+If the ID of the feature is unknown but you still want to limit the amount of features returned, use the ``count`` parameter for WFS 2.0.0 or the ``maxFeatures`` parameter for earlier WFS versions. In the examples below, ``N`` represents the number of features to return::
 
    http://example.com/geoserver/wfs?
      service=wfs&
      version=2.0.0&
+     request=GetFeature&
+     typeName=namespace:featuretype&
+     count=N
+
+   http://example.com/geoserver/wfs?
+     service=wfs&
+     version=1.1.0&
      request=GetFeature&
      typeName=namespace:featuretype&
      maxFeatures=N
@@ -249,7 +256,7 @@ Exactly which N features will be returned depends in the internal structure of t
       version=2.0.0&
       request=GetFeature&
       typeName=namespace:featuretype&
-      maxFeatures=N&
+      count=N&
       sortBy=attribute
 
 The default sort operation is to sort in ascending order. Some WFS servers require the sort order to be specified, even if an ascending order sort if required. In this case, append a ``+A`` to the request. Conversely, add a ``+D`` to the request to sort in descending order as follows::
@@ -259,10 +266,10 @@ The default sort operation is to sort in ascending order. Some WFS servers requi
      version=2.0.0&
      request=GetFeature&
      typeName=namespace:featuretype&
-     maxFeatures=N&
+     count=N&
      sortBy=attribute+D
 
-There is no obligation to use ``sortBy`` with ``maxFeatures`` in a GetFeature request, but they can be used together to manage the returned selection of features more effectively.
+There is no obligation to use ``sortBy`` with ``count`` in a GetFeature request, but they can be used together to manage the returned selection of features more effectively.
 
 To restrict a GetFeature request by attribute rather than feature, use the ``propertyName`` key in the form ``propertyName=attribute``. You can specify a single attribute, or multiple attributes separated by commas. To search for a single attribute in all features, the following request would be required::
 

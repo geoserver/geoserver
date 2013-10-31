@@ -22,7 +22,9 @@ The major differences between the WFS versions are:
 
 * WFS 2.0.0 supports joins via a GetFeature request.
 
-* WFS 2.0.0 adds the ability to page results of a GetFeature request via the ``startIndex`` and ``maxFeatures`` parameters. GeoServer now supports this functionality in WFS 1.0.0 and 1.1.0. 
+* WFS 2.0.0 adds the ability to page results of a GetFeature request via the ``startIndex`` and ``count`` parameters. GeoServer now supports this functionality in WFS 1.0.0 and 1.1.0. 
+
+.. note:: Confusingly WFS 2.0.0 uses the ``count`` parameter to limit the number of features returned rather than the ``maxFeatures`` parameter used in previous versions.
 
 * WFS 2.0.0 supports stored queries, which are regular WFS queries stored on the server such that they may be invoked by passing the appropriate identifier with a WFS request.
 

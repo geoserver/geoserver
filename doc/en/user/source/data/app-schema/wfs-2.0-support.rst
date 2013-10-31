@@ -38,4 +38,4 @@ The GetPropertyValue request is now fully supported. Resolving is also possible 
 Paging
 ------
 
-Paging is currently not supported in App-Schema yet. The parameter 'maxFeatures' is however supported (identical to the WFS 1.0 and 1.1 'count' parameter).
+Paging is currently not supported in App-Schema yet. The parameter ``count`` is however supported (identical to the WFS 1.0 and 1.1 ``maxFeatures`` parameter).

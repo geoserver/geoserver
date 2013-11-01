@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
@@ -16,6 +15,7 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.wicket.GeoServerDataProvider;
@@ -64,15 +64,15 @@ public class StyleChooser extends Panel {
 
                             public void onClick(AjaxRequestTarget target) {
                                 PageParameters params = new PageParameters();
-                                params.put(
+                                params.add(
                                     "layer",
                                     demo.getLayer().prefixedName()
                                 );
                                 WorkspaceInfo workspace = style.getWorkspace();
                                 if (workspace == null) {
-                                    params.put("style", style.getName());
+                                    params.add("style", style.getName());
                                 } else {
-                                    params.put("style", workspace.getName() + ":" + style.getName());
+                                    params.add("style", workspace.getName() + ":" + style.getName());
                                 }
                                 setResponsePage(CssDemoPage.class, params);
                             }

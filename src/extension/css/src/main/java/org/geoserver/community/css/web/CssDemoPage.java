@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -25,7 +24,6 @@ import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
 import org.apache.wicket.extensions.markup.html.tabs.ITab;
 import org.apache.wicket.extensions.markup.html.tabs.PanelCachingTab;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -34,6 +32,8 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.util.string.StringValue;
 import org.geoscript.geocss.CssParser;
 import org.geoscript.geocss.Translator;
 import org.geoserver.catalog.Catalog;
@@ -73,8 +73,9 @@ public class CssDemoPage extends GeoServerSecuredPage {
     }
 
     private static LayerInfo extractLayer(PageParameters params, Catalog catalog) {
-        if (params.containsKey("layer")) {
-            String name = params.getString("layer");
+        StringValue layerParam = params.get("layer");
+        if (layerParam != null && !layerParam.isEmpty()) {
+            String name = layerParam.toString();
             return catalog.getLayerByName(name);
         } else {
             // TODO: Revisit this behavior
@@ -95,8 +96,9 @@ public class CssDemoPage extends GeoServerSecuredPage {
     }
 
     private static StyleInfo extractStyle(PageParameters params, Catalog catalog, LayerInfo layer) {
-        if (params.containsKey("style")) {
-            String style = params.getString("style");
+        StringValue styleParam = params.get("style");
+        if (styleParam != null && !styleParam.isEmpty()) {
+            String style = styleParam.toString();
             String[] parts = style.split(":", 2);
             if (parts.length == 1) {
                 return catalog.getStyleByName(parts[0]);
@@ -194,7 +196,7 @@ public class CssDemoPage extends GeoServerSecuredPage {
         mainContent.add(new Label("layer.name", new PropertyModel(layer, "name")));
         mainContent.add(new AjaxLink("change.style", new ParamResourceModel("CssDemoPage.changeStyle", this)) {
             public void onClick(AjaxRequestTarget target) {
-                target.appendJavascript("Wicket.Window.unloadConfirmation = false;");
+                target.appendJavaScript("Wicket.Window.unloadConfirmation = false;");
                 popup.setInitialHeight(400);
                 popup.setInitialWidth(600);
                 popup.setTitle(new Model("Choose style to edit"));
@@ -204,7 +206,7 @@ public class CssDemoPage extends GeoServerSecuredPage {
         });
         mainContent.add(new AjaxLink("change.layer", new ParamResourceModel("CssDemoPage.changeLayer", this)) {
             public void onClick(AjaxRequestTarget target) {
-                target.appendJavascript("Wicket.Window.unloadConfirmation = false;");
+                target.appendJavaScript("Wicket.Window.unloadConfirmation = false;");
                 popup.setInitialHeight(400);
                 popup.setInitialWidth(600);
                 popup.setTitle(new Model("Choose layer to edit"));
@@ -214,7 +216,7 @@ public class CssDemoPage extends GeoServerSecuredPage {
         });
         mainContent.add(new AjaxLink("create.style", new ParamResourceModel("CssDemoPage.createStyle", this)) {
             public void onClick(AjaxRequestTarget target) {
-                target.appendJavascript("Wicket.Window.unloadConfirmation = false;");
+                target.appendJavaScript("Wicket.Window.unloadConfirmation = false;");
                 popup.setInitialHeight(200);
                 popup.setInitialWidth(300);
                 popup.setTitle(new Model("Choose name for new style"));
@@ -224,7 +226,7 @@ public class CssDemoPage extends GeoServerSecuredPage {
         });
         mainContent.add(new AjaxLink("associate.styles", new ParamResourceModel("CssDemoPage.associateStyles", this)) {
             public void onClick(AjaxRequestTarget target) {
-                target.appendJavascript("Wicket.Window.unloadConfirmation = false;");
+                target.appendJavaScript("Wicket.Window.unloadConfirmation = false;");
                 popup.setInitialHeight(400);
                 popup.setInitialWidth(600);
                 popup.setTitle(new Model("Choose layers to associate"));

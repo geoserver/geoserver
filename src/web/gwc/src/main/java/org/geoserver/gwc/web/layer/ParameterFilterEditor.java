@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.MissingResourceException;
 import java.util.Set;
@@ -25,21 +24,23 @@ import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.repeater.RepeatingView;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.gwc.GWC;
@@ -356,15 +357,14 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
     
     @Override
     protected void convertInput() {
-        filters.visitChildren(new Component.IVisitor<Component>() {
+        filters.visitChildren(new IVisitor<Component, IVisit<Void>>() {
 
             @Override
-            public Object component(Component component) {
+            public void component(Component component, IVisit<IVisit<Void>> visit) {
                 if (component instanceof FormComponent) {
                     FormComponent<?> formComponent = (FormComponent<?>) component;
                     formComponent.processInput();
                 }
-                return Component.IVisitor.CONTINUE_TRAVERSAL;
             }
         });
         List<ParameterFilter> info = filters.getModelObject();

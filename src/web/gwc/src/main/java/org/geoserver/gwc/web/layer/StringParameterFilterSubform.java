@@ -78,7 +78,7 @@ public class StringParameterFilterSubform extends
             private static final long serialVersionUID = 1L;
 
             @Override
-            public IConverter getConverter(Class<?> type) {
+            public <C> IConverter<C> getConverter(Class<C> type) {
                 return CONVERT;
             }
         };

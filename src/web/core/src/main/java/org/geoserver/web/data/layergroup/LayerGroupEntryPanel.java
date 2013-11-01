@@ -138,7 +138,8 @@ public class LayerGroupEntryPanel extends Panel {
     
     Component layerLink(String id, IModel itemModel) {
         LayerGroupEntry entry = (LayerGroupEntry) itemModel.getObject();
-        return new Label( id, entry.getLayer().prefixedName());
+        PublishedInfo layer = entry.getLayer();
+        return new Label( id, layer.prefixedName());
     }
     
     Component defaultStyleCheckbox(String id, IModel itemModel) {

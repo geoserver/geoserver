@@ -9,6 +9,8 @@ import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.geowebcache.filter.parameters.ParameterFilter;
 
 /**
@@ -33,15 +35,16 @@ public abstract class AbstractParameterFilterSubform<T extends ParameterFilter> 
     
     @Override
     protected void convertInput() {
-        visitChildren(new Component.IVisitor<Component>() {
+        visitChildren(new IVisitor<Component, IVisit<Void>>() {
 
             @Override
-            public Object component(Component component) {
-                if (component instanceof FormComponent) {
-                    FormComponent<?> formComponent = (FormComponent<?>) component;
-                    formComponent.processInput();
+            public void component(Component c, IVisit<IVisit<Void>> visit) {
+                if(c instanceof FormComponent<?>) {
+                    FormComponent<?> fc = (FormComponent<?>) c;
+                    fc.processInput();
                 }
-                return Component.IVisitor.CONTINUE_TRAVERSAL;
+                
+                
             }
         });
         T filter = getModelObject();

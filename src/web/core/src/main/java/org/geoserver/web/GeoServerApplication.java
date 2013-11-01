@@ -4,7 +4,8 @@
  */
 package org.geoserver.web;
 
-import static org.apache.wicket.RuntimeConfigurationType.*;
+import static org.apache.wicket.RuntimeConfigurationType.DEPLOYMENT;
+import static org.apache.wicket.RuntimeConfigurationType.DEVELOPMENT;
 
 import java.io.File;
 import java.net.URI;
@@ -20,6 +21,8 @@ import org.apache.wicket.IConverterLocator;
 import org.apache.wicket.Page;
 import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.Session;
+import org.apache.wicket.markup.html.IPackageResourceGuard;
+import org.apache.wicket.markup.html.SecurePackageResourceGuard;
 import org.apache.wicket.protocol.http.PageExpiredException;
 import org.apache.wicket.request.IRequestHandler;
 import org.apache.wicket.request.IRequestMapper;

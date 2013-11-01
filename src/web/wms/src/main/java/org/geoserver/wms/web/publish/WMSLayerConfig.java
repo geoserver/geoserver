@@ -13,8 +13,9 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.image.Image;
+import org.apache.wicket.markup.html.image.ContextImage;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.validation.validator.MinimumValidator;
@@ -53,7 +54,7 @@ public class WMSLayerConfig extends LayerConfigurationPanel {
         defaultStyle.setRequired(true);
         styleContainer.add(defaultStyle);
 
-        final Image defStyleImg = new Image("defaultStyleLegendGraphic", ".");
+        final ContextImage defStyleImg = new ContextImage("defaultStyleLegendGraphic", new Model<String>("."));
         defStyleImg.setVisible(false);
         defStyleImg.setOutputMarkupId(true);
         styleContainer.add(defStyleImg);

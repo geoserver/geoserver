@@ -108,9 +108,10 @@ public class FloatParameterFilterSubform extends AbstractParameterFilterSubform<
             private static final long serialVersionUID = 1L;
 
             @Override
-            public IConverter getConverter(Class<?> type) {
+            public <C> IConverter<C> getConverter(Class<C> type) {
                 return CONVERT;
             }
+            
         };
         add(values);
         
@@ -121,7 +122,7 @@ public class FloatParameterFilterSubform extends AbstractParameterFilterSubform<
 
             // Want to use non-localized float parsing so we can handle exponential notation
             @Override
-            public IConverter getConverter(Class<?> type) {
+            public <C> IConverter<C> getConverter(Class<C> type) {
                 return FLOAT;
             }
         };

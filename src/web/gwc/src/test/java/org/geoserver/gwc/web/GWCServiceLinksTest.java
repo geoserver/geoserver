@@ -1,14 +1,16 @@
 package org.geoserver.gwc.web;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.wicket.Component.IVisitor;
 import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.link.ExternalLink;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerWicketTestSupport;
@@ -26,10 +28,10 @@ public class GWCServiceLinksTest extends GeoServerWicketTestSupport {
 
         Page lastPage = tester.getLastRenderedPage();
         final List<String> services = new ArrayList<String>();
-        lastPage.visitChildren(ExternalLink.class, new IVisitor<ExternalLink>() {
+        lastPage.visitChildren(ExternalLink.class, new IVisitor<ExternalLink, Void>() {
 
             @Override
-            public Object component(ExternalLink component) {
+            public void component(ExternalLink component, IVisit<Void> visit) {
                 String url = (String) component.getDefaultModelObject();
                 if(url != null) {
                     if(url.startsWith("../gwc/service/")) {
@@ -51,9 +53,9 @@ public class GWCServiceLinksTest extends GeoServerWicketTestSupport {
                         }
                     }
                 }
-                
-                return IVisitor.CONTINUE_TRAVERSAL;
             }
+
+            
             
         });
         

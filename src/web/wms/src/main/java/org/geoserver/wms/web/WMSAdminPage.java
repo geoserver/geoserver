@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
@@ -188,6 +187,11 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
             @Override
             public boolean getDefaultFormProcessing() {
                 return false;
+            }
+            
+            @Override
+            protected void onError(AjaxRequestTarget arg0, Form<?> arg1) {
+                // do nothing
             }
             
             @Override

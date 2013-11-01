@@ -8,14 +8,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
+import org.geoserver.security.GeoServerSecurityFilterChainProxy;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.web.PortResolverImpl;
 import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 import org.springframework.security.web.savedrequest.SavedRequest;
-import org.apache.wicket.protocol.http.WebRequest;
-import org.geoserver.security.GeoServerSecurityFilterChainProxy;
 
 
 /**

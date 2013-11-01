@@ -43,8 +43,8 @@ class CssSubmitButton extends AjaxButton {
             page.catalog().getResourcePool().writeStyle(
               page.getStyleInfo(), new ByteArrayInputStream(sld.getBytes()));
             page.catalog().save(page.getStyleInfo());
-            if (page.sldPreview != null) target.addComponent(page.sldPreview);
-            if (page.map != null) target.appendJavascript(page.map.getUpdateCommand());
+            if (page.sldPreview != null) target.add(page.sldPreview);
+            if (page.map != null) target.appendJavaScript(page.map.getUpdateCommand());
         } catch (Exception e) {
             throw new WicketRuntimeException(e);
         }

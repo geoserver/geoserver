@@ -69,14 +69,14 @@ public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
         WPSInfo wpsInfo = (WPSInfo) info.getObject();
         processFactories = cloneFactoryInfos(wpsInfo.getProcessGroups());
         ProcessFactoryInfoProvider provider = new ProcessFactoryInfoProvider(processFactories, getLocale());
-        GeoServerTablePanel<ProcessGroupInfo> processFilterEditor = new GeoServerTablePanel<ProcessGroupInfo>("processFilterTable", provider) {
+        final GeoServerTablePanel<ProcessGroupInfo> processFilterEditor = new GeoServerTablePanel<ProcessGroupInfo>("processFilterTable", provider) {
 
             @Override
             protected Component getComponentForProperty(String id, final IModel itemModel,
                     Property<ProcessGroupInfo> property) {
                 
                 if(property.getName().equals("enabled")) {
-                    Fragment fragment = new Fragment(id, "enabledFragment", WPSAdminPage.this);
+                    Fragment fragment = new Fragment(id, "enabledFragment", form);
                     CheckBox enabled = new CheckBox("enabled", property.getModel(itemModel));
                     enabled.setOutputMarkupId(true);
                     fragment.add(enabled);
@@ -88,7 +88,7 @@ public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
                 } else if(property.getName().equals("summary")) {
                     return new Label(id, property.getModel(itemModel));
                 } else if(property.getName().equals("edit")) {
-                    Fragment fragment = new Fragment(id, "linkFragment", WPSAdminPage.this);
+                    Fragment fragment = new Fragment(id, "linkFragment", form);
                     // we use a submit link to avoid losing the other edits in the form
                     SubmitLink link = new SubmitLink("link") {
 

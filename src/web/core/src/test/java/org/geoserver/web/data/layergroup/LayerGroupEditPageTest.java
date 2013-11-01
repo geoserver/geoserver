@@ -5,10 +5,16 @@
 package org.geoserver.web.data.layergroup;
 
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.junit.Before;
 import org.junit.Test;
 
 
 public class LayerGroupEditPageTest extends LayerGroupBaseTest {
+    
+    @Before
+    public void doLogin() {
+        login();
+    }
     
     @Test
     public void testComputeBounds() {

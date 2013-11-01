@@ -150,7 +150,7 @@ public class WPSRequestBuilderPanel extends Panel {
                     item.add(input);
                 } else {
                     Fragment f = new Fragment("paramValue", "literal", WPSRequestBuilderPanel.this);
-                    FormComponent literal = new TextField("literalValue", property);
+                    FormComponent literal = new TextField("literalValue", property, String.class);
                     literal.setRequired(p.minOccurs > 0);
                     literal.setLabel(new Model<String>(p.key));
                     f.add(literal);

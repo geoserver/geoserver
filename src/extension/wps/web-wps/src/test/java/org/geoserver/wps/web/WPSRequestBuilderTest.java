@@ -72,10 +72,10 @@ public class WPSRequestBuilderTest extends GeoServerWicketTestSupport {
         form.submit();
         tester.clickLink("form:execute", true);
 
-        // print(tester.getLastRenderedPage(), true, true);
+        print(tester.getLastRenderedPage(), true, true);
 
-        assertTrue(tester.getComponentFromLastRenderedPage("responseWindow")
-                .getDefaultModelObjectAsString().contains("wps:Execute"));
+        String ms = tester.getComponentFromLastRenderedPage("responseWindow").getDefaultModelObjectAsString();
+        assertTrue(ms.contains("wps:Execute"));
 
         // unfortunately the wicket tester does not allow us to get work with the popup window
         // contents,

@@ -4,9 +4,9 @@
  */
 package org.geoserver.csw.web;
 
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.csw.CSWInfo;
 import org.geoserver.web.services.BaseServiceAdminPage;
 

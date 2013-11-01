@@ -4,7 +4,9 @@
  */
 package org.geoserver.community.css.web;
 
-import org.apache.wicket.PageParameters;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
@@ -14,14 +16,11 @@ import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
-
 import org.geoserver.catalog.WorkspaceInfo;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class LayerNameInput extends Panel {
     String workspace = null;
@@ -85,11 +84,11 @@ public class LayerNameInput extends Panel {
                      demo.createCssTemplate(name);
 
                      PageParameters params = new PageParameters();
-                     params.put("layer", demo.getLayer().prefixedName());
+                     params.add("layer", demo.getLayer().prefixedName());
                      if (workspace == null) {
-                         params.put("style", name);
+                         params.add("style", name);
                      } else {
-                         params.put("style", workspace + ":" + name);
+                         params.add("style", workspace + ":" + name);
                      }
                      setResponsePage(CssDemoPage.class, params);
                  }

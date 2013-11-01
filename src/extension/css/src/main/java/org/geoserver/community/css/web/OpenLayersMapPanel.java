@@ -114,8 +114,8 @@ class OpenLayersMapPanel extends Panel implements IHeaderContributor {
         Template template = templates.getTemplate("ol-load.ftl");
         StringWriter script = new java.io.StringWriter();
         template.process(context, script);
-        header.renderJavascriptReference("../openlayers/OpenLayers.js");
-        header.renderOnLoadJavascript(script.toString());
+        header.renderJavaScriptReference("../openlayers/OpenLayers.js");
+        header.renderOnLoadJavaScript(script.toString());
     }
 
     public String getUpdateCommand() throws IOException, TemplateException {

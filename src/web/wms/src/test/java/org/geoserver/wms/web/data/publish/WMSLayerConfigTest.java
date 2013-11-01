@@ -4,7 +4,10 @@
  */
 package org.geoserver.wms.web.data.publish;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -12,7 +15,7 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.image.Image;
+import org.apache.wicket.markup.html.image.ContextImage;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.LayerInfo;
@@ -96,14 +99,14 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(FormTestPage.class);
         tester.debugComponentTrees();
 
-        Image img = (Image) 
+        ContextImage img = (ContextImage) 
             tester.getComponentFromLastRenderedPage("form:panel:styles:defaultStyleLegendGraphic");
         assertNotNull(img);
-        assertEquals(1, img.getBehaviors().size());
-        assertTrue(img.getBehaviors().get(0) instanceof AttributeModifier);
+//        assertEquals(1, img.getBehaviors().size());
+//        assertTrue(img.getBehaviors().get(0) instanceof AttributeModifier);
 
-        AttributeModifier mod = (AttributeModifier) img.getBehaviors().get(0);
-        assertTrue(mod.toString().contains("../cite/wms?REQUEST=GetLegendGraphic"));
+        // AttributeModifier mod = (AttributeModifier) img.getBehaviors().get(0);
+        assertTrue(img.getDefaultModelObject().toString().contains("cite/wms?REQUEST=GetLegendGraphic"));
 
     }
 }

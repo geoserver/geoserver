@@ -106,11 +106,13 @@ public class ComplexInputPanel extends Panel {
 
             // data as plain text
             Fragment f = new Fragment("editor", "text", this);
-            DropDownChoice mimeChoice = new DropDownChoice("mime", new PropertyModel(
+            DropDownChoice<String> mimeChoice = new DropDownChoice<String>("mime", new PropertyModel(
                     getDefaultModel(), "mime"), mimeTypes);
             f.add(mimeChoice);
 
-            f.add(new TextArea("textarea", valueModel));
+            TextArea<String> ta = new TextArea<String>("textarea", valueModel);
+            ta.setType(String.class); // work around for https://issues.apache.org/jira/browse/WICKET-4755
+            f.add(ta);
             add(f);
         } else if (pt == ParameterType.VECTOR_LAYER) {
             // an internal vector layer

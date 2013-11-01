@@ -2,7 +2,6 @@ package org.geoserver.community.css.web;
 
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.tabs.AjaxTabbedPanel;
-import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.junit.Test;

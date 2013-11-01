@@ -20,8 +20,8 @@ import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.IAjaxCallDecorator;
-import org.apache.wicket.ajax.calldecorator.AjaxCallDecorator;
+import org.apache.wicket.ajax.attributes.AjaxCallListener;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
@@ -232,18 +232,18 @@ public class DemoRequestsPage extends GeoServerBasePage {
         });
 
         demoRequestsForm.add(new AjaxSubmitLink("submit", demoRequestsForm) {
+            
             @Override
-            protected IAjaxCallDecorator getAjaxCallDecorator() {
-                // we need to force EditArea to update the textarea contents (which it hides)
-                // before submitting the form, otherwise the contents won't be the ones the user
-                // edited
-                return new AjaxCallDecorator() {
-                	@Override
-                	public CharSequence decorateScript(Component c, CharSequence script) {
-                		return "document.getElementById('requestBody').value = document.gsEditors.requestBody.getCode();"
-                				+ script;
-                	}
-                };
+            protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                super.updateAjaxAttributes(attributes); 
+                attributes.getAjaxCallListeners().add(new AjaxCallListener(){
+
+                    @Override
+                    public CharSequence getBeforeHandler(Component component) {
+                        return "document.getElementById('requestBody').value = document.gsEditors.requestBody.getCode();";
+                    }
+
+                });
             }
 
 			@Override

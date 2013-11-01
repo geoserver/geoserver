@@ -7,6 +7,7 @@ package org.geoserver.web.demo;
 import static org.junit.Assert.*;
 
 import java.io.Serializable;
+import java.util.List;
 
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.ValidationErrorFeedback;
@@ -52,8 +53,9 @@ public class ReprojectPageTest extends GeoServerWicketTestSupport {
         tester.clickLink("form:forward", true);
         
         assertEquals(ReprojectPage.class, tester.getLastRenderedPage().getClass());
-        assertEquals(1, tester.getMessages(FeedbackMessage.ERROR).size());
-        String message = ((ValidationErrorFeedback) tester.getMessages(FeedbackMessage.ERROR).get(0)).getMessage();
+        List<Serializable> errors = tester.getMessages(FeedbackMessage.ERROR);
+        assertEquals(1, errors.size());
+        String message = ((ValidationErrorFeedback) errors.get(0)).getMessage().toString();
         String expected = new ParamResourceModel("GeometryTextArea.parseError", null).getString();
         assertEquals(expected, message);
     }
@@ -86,7 +88,7 @@ public class ReprojectPageTest extends GeoServerWicketTestSupport {
         
         assertEquals(ReprojectPage.class, tester.getLastRenderedPage().getClass());
         assertEquals(1, tester.getMessages(FeedbackMessage.ERROR).size());
-        String message = ((ValidationErrorFeedback) tester.getMessages(FeedbackMessage.ERROR).get(0)).getMessage();
+        String message = ((ValidationErrorFeedback) tester.getMessages(FeedbackMessage.ERROR).get(0)).getMessage().toString();
         String expected = new ParamResourceModel("GeometryTextArea.parseError", null).getString();
         assertEquals(expected, message);
     }
@@ -96,7 +98,7 @@ public class ReprojectPageTest extends GeoServerWicketTestSupport {
     	PageParameters params = new PageParameters();
     	params.add("fromSRS", "EPSG:4326");
     	params.add("toSRS", "EPSG:32632");
-        tester.startPage(ReprojectPage.class, new PageParameters("fromSRS=EPSG:4326,toSRS=EPSG:32632"));
+        tester.startPage(ReprojectPage.class, params);
         String source = tester.getComponentFromLastRenderedPage("form:sourceCRS:srs").getDefaultModelObjectAsString();
         String target = tester.getComponentFromLastRenderedPage("form:targetCRS:srs").getDefaultModelObjectAsString();
         assertEquals("EPSG:4326", source);

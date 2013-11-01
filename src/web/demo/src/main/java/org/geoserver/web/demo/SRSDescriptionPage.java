@@ -7,11 +7,14 @@ package org.geoserver.web.demo;
 import java.util.Collection;
 import java.util.Locale;
 
-import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.markup.head.CssReferenceHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptReferenceHeaderItem;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.IHeaderContributor;
-import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.crs.DynamicCrsMapResource;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -41,9 +44,9 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
      */
     public void renderHead(IHeaderResponse headerResponse) {
         String onLoadJsCall = "initMap('" + jsSrs + "', " + jsBbox + ", " + jsMaxResolution + ")";
-        headerResponse.renderOnDomReadyJavaScript(onLoadJsCall);
-        headerResponse.renderCSSReference("openlayers/theme/default/style.css");
-        headerResponse.renderJavaScriptReference("openlayers/OpenLayers.js");
+        headerResponse.render(OnDomReadyHeaderItem.forScript(onLoadJsCall));
+        headerResponse.render(CssReferenceHeaderItem.forCSS("openlayers/theme/default/style.css", "css1"));
+        headerResponse.render(JavaScriptReferenceHeaderItem.forUrl("openlayers/OpenLayers.js"));
     }
 
     public SRSDescriptionPage(PageParameters params) {

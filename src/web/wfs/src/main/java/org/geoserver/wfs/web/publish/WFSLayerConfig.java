@@ -9,7 +9,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.validation.validator.MinimumValidator;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.web.publish.LayerConfigurationPanel;
 
 @SuppressWarnings("serial")
@@ -19,12 +19,12 @@ public class WFSLayerConfig extends LayerConfigurationPanel {
         super(id, model);
 
         TextField maxFeatures = new TextField("perReqFeatureLimit", new PropertyModel(model, "resource.maxFeatures"));
-        maxFeatures.add(new MinimumValidator<Integer>(0));
+        maxFeatures.add(RangeValidator.minimum(0));
         Border mfb = new FormComponentFeedbackBorder("perReqFeaturesBorder");
         mfb.add(maxFeatures);
         add(mfb);
         TextField maxDecimals = new TextField("maxDecimals", new PropertyModel(model, "resource.numDecimals"));
-        maxFeatures.add(new MinimumValidator<Integer>(0));
+        maxFeatures.add(RangeValidator.minimum(0));
         Border mdb = new FormComponentFeedbackBorder("maxDecimalsBorder");
         mdb.add(maxDecimals);
         add(mdb);

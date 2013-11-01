@@ -4,27 +4,26 @@
  */
 package org.geoserver.security.web;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
-import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.AjaxRequestHandler;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
-import org.apache.wicket.extensions.ajax.markup.html.tabs.AjaxTabbedPanel;
 import org.apache.wicket.markup.html.form.CheckBox;
-import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.util.tester.FormTester;
-import org.apache.wicket.util.tester.WicketTester;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
-import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.junit.Before;
 
@@ -103,7 +102,7 @@ public abstract class AbstractSecurityNamedServicePanelTest extends AbstractSecu
             basePage.get(basePanelId + ":table:listContainer:items");
     }
     
-    protected int countItmes() {
+    protected long countItmes() {
         tester.debugComponentTrees();
         return  getDataView().getItemCount();
     }
@@ -206,7 +205,7 @@ public abstract class AbstractSecurityNamedServicePanelTest extends AbstractSecu
         tester.clickLink(basePanelId + ":remove", true);
         assertTrue(w.isShown());
         
-        ((GeoServerDialog)w.getParent()).submit(new AjaxRequestTarget(tester.getLastRenderedPage()));
+        ((GeoServerDialog)w.getParent()).submit(new AjaxRequestHandler(tester.getLastRenderedPage()));
         //simulateDeleteSubmit();        
         //executeModalWindowCloseButtonCallback(w);
     }

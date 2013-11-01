@@ -27,8 +27,8 @@ public class MasterPasswordChangePanelTest extends AbstractSecurityWicketTestSup
     @Test
     public void testRequiredFields() throws Exception {
         ft.submit();
-        tester.assertErrorMessages(new String[]{"Field 'Current password' is required.", 
-            "Field 'New password' is required.", "Field 'Confirmation' is required." });
+        tester.assertErrorMessages(new String[]{"'Current password' is required.", 
+            "'New password' is required.", "'Confirmation' is required." });
     }
     
     @Test

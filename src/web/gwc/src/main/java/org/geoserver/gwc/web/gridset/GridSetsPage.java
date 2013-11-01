@@ -64,7 +64,7 @@ public class GridSetsPage extends GeoServerSecuredPage {
         @Override
         protected void onSelectionUpdate(AjaxRequestTarget target) {
             removal.setEnabled(table.getSelection().size() > 0);
-            target.addComponent(removal);
+            target.add(removal);
         }
 
         @Override
@@ -219,8 +219,8 @@ public class GridSetsPage extends GeoServerSecuredPage {
                     // occurred, so refresh the table
                     if (gridsets.getSelection().size() == 0) {
                         setEnabled(false);
-                        target.addComponent(SelectionRemovalLink.this);
-                        target.addComponent(gridsets);
+                        target.add(SelectionRemovalLink.this);
+                        target.add(gridsets);
                     }
                 }
 

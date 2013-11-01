@@ -78,8 +78,8 @@ public class SelectionServiceRemovalLink extends AjaxLink {
                 // occurred, so refresh the table
                 if (services.getSelection().size() == 0) {
                     setEnabled(false);
-                    target.addComponent(SelectionServiceRemovalLink.this);
-                    target.addComponent(services);
+                    target.add(SelectionServiceRemovalLink.this);
+                    target.add(services);
                 }
             }
 

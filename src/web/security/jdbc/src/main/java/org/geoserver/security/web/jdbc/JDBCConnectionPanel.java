@@ -59,7 +59,7 @@ public class JDBCConnectionPanel<T extends JDBCSecurityServiceConfig> extends Fo
                 //replace old panel
                 c.addOrReplace(createCxPanel("cxPanel", getModelObject()));
 
-                target.addComponent(c);
+                target.add(c);
             }
         });
 
@@ -79,7 +79,7 @@ public class JDBCConnectionPanel<T extends JDBCSecurityServiceConfig> extends Fo
                     LOGGER.log(Level.WARNING, "Connection error", e);
                 }
                 finally {
-                    target.addComponent(feedbackPanel);
+                    target.add(feedbackPanel);
                 }
             }
 

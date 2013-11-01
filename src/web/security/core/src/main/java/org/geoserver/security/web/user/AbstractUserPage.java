@@ -232,13 +232,13 @@ public abstract class AbstractUserPage extends AbstractSecurityPage {
 
     void updateCalculatedRoles(AjaxRequestTarget target) {
         calculatedRoles.modelChanged();
-        target.addComponent(calculatedRoles.getParent());
+        target.add(calculatedRoles.getParent());
     }
 
     void updateGroupAdminList(AjaxRequestTarget target) {
         adminGroupChoice.setEnabled(
             rolePalette.getSelectedRoles().contains(GeoServerRole.GROUP_ADMIN_ROLE));
-        target.addComponent(adminGroupChoice);
+        target.add(adminGroupChoice);
     }
 
     void handleSubmitError(Exception e) {

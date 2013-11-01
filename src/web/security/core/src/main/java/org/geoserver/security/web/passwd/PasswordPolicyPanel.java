@@ -45,7 +45,7 @@ public class PasswordPolicyPanel extends SecurityNamedServicePanel<PasswordPolic
                 if (value) {
                     maxLengthPanel.setUnlimited();
                 }
-                target.addComponent(maxLengthPanel.getParent());
+                target.add(maxLengthPanel.getParent());
             }
         });
         add(maxLengthPanel = 

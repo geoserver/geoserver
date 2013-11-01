@@ -4,15 +4,16 @@
  */
 package org.geoserver.wms.web.data.publish;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
+import org.apache.wicket.feedback.ErrorLevelFeedbackMessageFilter;
+import org.apache.wicket.feedback.FeedbackMessage;
+import org.apache.wicket.feedback.IFeedbackMessageFilter;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.image.ContextImage;
@@ -65,7 +66,7 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
             }
         }
         );
-        Component layerConfig = page.get("form:panel:styles:defaultStyle");
+        final Component layerConfig = page.get("form:panel:styles:defaultStyle");
         
         tester.startPage(page);
         tester.assertRenderedPage(FormTestPage.class);
@@ -75,14 +76,14 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         // check submitting like this will create errors, there is no selection
         tester.submitForm("form");
         
-        assertTrue(page.getSession().getFeedbackMessages().hasErrorMessageFor(layerConfig));
+        assertTrue(layerConfig.getFeedbackMessages().hasMessage(new ErrorLevelFeedbackMessageFilter(FeedbackMessage.ERROR)));
         
         // now set something and check there are no messages this time
         page.getSession().getFeedbackMessages().clear();
         FormTester ft = tester.newFormTester("form");
         ft.select("panel:styles:defaultStyle", 0);
         ft.submit();
-        assertFalse(page.getSession().getFeedbackMessages().hasErrorMessageFor(layerConfig));
+        assertFalse(layerConfig.getFeedbackMessages().hasMessage(new ErrorLevelFeedbackMessageFilter(FeedbackMessage.ERROR)));
     }
 
     @Test

@@ -50,7 +50,7 @@ public abstract class AbstractServiceAccessRulePage extends AbstractSecurityPage
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 methodChoice.updateModel();
-                target.addComponent(methodChoice);
+                target.add(methodChoice);
             }
         });
         serviceChoice.setRequired(true);

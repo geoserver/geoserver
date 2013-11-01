@@ -138,7 +138,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
         demoRequestsForm.add(demoRequestsList);
 
         /*
-         * Wanted to use a simpler OnChangeAjaxBehavior but target.addComponent(body) does not make
+         * Wanted to use a simpler OnChangeAjaxBehavior but target.add(body) does not make
          * the EditAreaBehavior to update the body contents inside it, but instead puts the plain
          * TextArea contents above the empty xml editor
          */
@@ -176,8 +176,8 @@ public class DemoRequestsPage extends GeoServerBasePage {
                     body.setModelObject(contents);
                 }
 
-                // target.addComponent(urlTextField);
-                // target.addComponent(body);
+                // target.add(urlTextField);
+                // target.add(body);
                 /*
                  * Need to setResponsePage, addComponent causes the EditAreaBehavior to sometimes
                  * not updating properly

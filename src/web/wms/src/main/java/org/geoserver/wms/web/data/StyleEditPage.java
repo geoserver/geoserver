@@ -13,7 +13,8 @@ import org.apache.wicket.Session;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.behavior.Behavior;
-import org.apache.wicket.markup.html.IHeaderResponse;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
@@ -60,10 +61,10 @@ public class StyleEditPage extends AbstractStylePage {
                 add(new Behavior() {
                     @Override
                     public void renderHead(Component comp, IHeaderResponse response) {
-                    	response.renderOnDomReadyJavaScript(
-                    			"document.getElementById('mainFormSubmit').style.display = 'none';");
-                        response.renderOnDomReadyJavaScript(
-                            "document.getElementById('uploadFormSubmit').style.display = 'none';");
+                    	response.render(OnDomReadyHeaderItem.forScript(
+                    			"document.getElementById('mainFormSubmit').style.display = 'none';"));
+                        response.render(OnDomReadyHeaderItem.forScript(
+                            "document.getElementById('uploadFormSubmit').style.display = 'none';"));
                     }
                 });
 

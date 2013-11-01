@@ -97,8 +97,8 @@ public class SelectionRoleRemovalLink extends AjaxLink<Object> {
                 // occurred, so refresh the table
                 if (roles.getSelection().size() == 0) {
                     setEnabled(false);
-                    target.addComponent(SelectionRoleRemovalLink.this);
-                    target.addComponent(roles);
+                    target.add(SelectionRoleRemovalLink.this);
+                    target.add(roles);
                 }
             }
         });

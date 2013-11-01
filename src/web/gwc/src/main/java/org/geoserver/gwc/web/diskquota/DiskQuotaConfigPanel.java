@@ -164,7 +164,7 @@ public class DiskQuotaConfigPanel extends Panel {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 jdbcContainer.setVisible("JDBC".equals(quotaStoreChooser.getModelObject()));
-                target.addComponent(quotaStoreContainer);
+                target.add(quotaStoreContainer);
             }
         });
         
@@ -197,7 +197,7 @@ public class DiskQuotaConfigPanel extends Panel {
                 boolean jndiVisible = "JNDI".equals(connectionTypeChooser.getModelObject());
                 jndiContainer.setVisible(jndiVisible);
                 privatePoolPanel.setVisible(!jndiVisible);
-                target.addComponent(connectionTypeContainer);
+                target.add(connectionTypeContainer);
             }
         });
         

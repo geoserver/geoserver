@@ -264,7 +264,7 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
                             int index = ((Integer) getDefaultModelObject()).intValue();
                             list.remove(index);
                             grids.setModelObject(list);
-                            target.addComponent(container);
+                            target.add(container);
                         }
                     };
                     removeLink.setDefaultModel(new Model<Integer>(Integer.valueOf(index)));
@@ -294,9 +294,9 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
                             }
                         }
                         scale.setModelObject(scaleDenominator);
-                        target.addComponent(resolution);
-                        target.addComponent(scale);
-                        target.addComponent(tiles);
+                        target.add(resolution);
+                        target.add(scale);
+                        target.add(tiles);
                     }
                 });
 
@@ -317,9 +317,9 @@ public class TileMatrixSetEditor extends FormComponentPanel<List<Grid>> {
                             }
                         }
                         resolution.setModelObject(res);
-                        target.addComponent(resolution);
-                        target.addComponent(scale);
-                        target.addComponent(tiles);
+                        target.add(resolution);
+                        target.add(scale);
+                        target.add(tiles);
                     }
                 });
             }

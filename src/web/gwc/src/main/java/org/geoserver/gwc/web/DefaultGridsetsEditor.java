@@ -83,8 +83,8 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
                     choices.add(gridsetName);
                     Collections.sort(choices);
                     availableGridSets.setChoices(choices);
-                    target.addComponent(defaultGridsetsTable);
-                    target.addComponent(availableGridSets);
+                    target.add(defaultGridsetsTable);
+                    target.add(availableGridSets);
                 }
             };
             removeLink.setDefaultModel(new Model<String>(gridSetName));
@@ -159,8 +159,8 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
                 List<String> selectedIds = selection.getObject();
                 selectedIds.add(selectedGridset);
 
-                target.addComponent(defaultGridsetsTable);
-                target.addComponent(availableGridSets);
+                target.add(defaultGridsetsTable);
+                target.add(availableGridSets);
             }
         };
         addGridsubsetLink.add(new Icon("addIcon", GWCIconFactory.ADD_ICON));

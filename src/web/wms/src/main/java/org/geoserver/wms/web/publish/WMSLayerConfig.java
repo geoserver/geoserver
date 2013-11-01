@@ -18,7 +18,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.validation.validator.MinimumValidator;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -107,7 +107,7 @@ public class WMSLayerConfig extends LayerConfigurationPanel {
         styleContainer.add(extraStyles);
         
         TextField renderingBuffer = new TextField("renderingBuffer", new MapModel(new PropertyModel(layerModel, "metadata"), LayerInfo.BUFFER), Integer.class);
-        renderingBuffer.add(new MinimumValidator<Integer>(0));
+        renderingBuffer.add(RangeValidator.minimum(0));
         styleContainer.add(renderingBuffer);
         
         add(new TextField("wmsPath", new PropertyModel(layerModel, "path")));

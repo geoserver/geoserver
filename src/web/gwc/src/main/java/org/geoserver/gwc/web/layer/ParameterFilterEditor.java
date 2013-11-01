@@ -203,7 +203,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                         filters.setModelObject(list);
                         item.remove();
 
-                        target.addComponent(container);
+                        target.add(container);
                     }
                 };
                 removeLink.setDefaultModel(item.getModel());
@@ -234,7 +234,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                 
                 addFilter(newFilter);
 
-                target.addComponent(container);
+                target.add(container);
             }
         };
         addStyleFilterLink.add(new Icon("addIcon", GWCIconFactory.ADD_ICON));
@@ -324,7 +324,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                     LOGGER.log(Level.WARNING, "Could not execute default Constructor for "+type ,ex);
                 }
 
-                target.addComponent(container);
+                target.add(container);
                 
             }
         };

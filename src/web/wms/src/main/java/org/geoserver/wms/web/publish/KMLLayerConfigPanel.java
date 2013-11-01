@@ -15,7 +15,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.validation.validator.MinimumValidator;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.web.publish.LayerConfigurationPanel;
 import org.geoserver.web.util.MapModel;
@@ -44,7 +44,7 @@ public class KMLLayerConfigPanel extends LayerConfigurationPanel {
            );
         TextField<Integer> maxFeatures = new TextField<Integer>("kml.regionateFeatureLimit",
                     new MapModel(metadata, "kml.regionateFeatureLimit"), Integer.class);
-        maxFeatures.add(new MinimumValidator<Integer>(1));
+        maxFeatures.add(RangeValidator.minimum(1));
         add(maxFeatures);
     }
     

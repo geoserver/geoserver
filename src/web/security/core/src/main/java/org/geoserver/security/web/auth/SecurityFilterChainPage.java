@@ -114,7 +114,7 @@ public  class SecurityFilterChainPage
                 protected void onUpdate(AjaxRequestTarget target) {
                     for (CheckBox cb : methodList) {
                         cb.setEnabled(chainWrapper.isMatchHTTPMethod());
-                        target.addComponent(cb);
+                        target.add(cb);
                     }
                 }                        
             }));              

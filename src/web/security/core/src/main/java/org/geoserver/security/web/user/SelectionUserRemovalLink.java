@@ -126,8 +126,8 @@ public class SelectionUserRemovalLink extends AjaxLink<Object> {
                 // occurred, so refresh the table
                 if (users.getSelection().size() == 0) {
                     setEnabled(false);
-                    target.addComponent(SelectionUserRemovalLink.this);
-                    target.addComponent(users);
+                    target.add(SelectionUserRemovalLink.this);
+                    target.add(users);
                 }
             }
 

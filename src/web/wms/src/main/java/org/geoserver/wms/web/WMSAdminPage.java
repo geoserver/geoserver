@@ -24,13 +24,8 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.util.convert.IConverter;
-import org.apache.wicket.util.value.AttributeMap;
-import org.apache.wicket.util.value.IValueMap;
-import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.validator.AbstractValidator;
-import org.apache.wicket.validation.validator.MinimumValidator;
 import org.apache.wicket.validation.validator.RangeValidator;
+import org.geoserver.web.data.store.panel.FileModel;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.FileExistsValidator;
@@ -43,7 +38,6 @@ import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSInfo.WMSInterpolation;
 import org.geoserver.wms.WatermarkInfo.Position;
 import org.geoserver.wms.web.publish.LayerAuthoritiesAndIdentifiersPanel;
-import org.geoserver.web.data.store.panel.FileModel;
 
 /**
  * Edits the WMS service details 
@@ -104,13 +98,13 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         form.add(new DropDownChoice("interpolation", Arrays.asList(WMSInfo.WMSInterpolation.values()), new InterpolationRenderer()));
         // resource limits
         TextField<Integer> maxMemory = new TextField<Integer>("maxRequestMemory");
-        maxMemory.add(new MinimumValidator<Integer>(0));
+        maxMemory.add(RangeValidator.minimum(0));
         form.add(maxMemory);
         TextField<Integer> maxTime = new TextField<Integer>("maxRenderingTime");
-        maxTime.add(new MinimumValidator<Integer>(0));
+        maxTime.add(RangeValidator.minimum(0));
         form.add(maxTime);
         TextField<Integer> maxErrors = new TextField<Integer>("maxRenderingErrors");
-        maxErrors.add(new MinimumValidator<Integer>(0));
+        maxErrors.add(RangeValidator.minimum(0));
         form.add(maxErrors);
     	// watermark
     	form.add(new CheckBox("watermark.enabled"));
@@ -209,7 +203,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                       textField.clearInput();
                       textField.setModelObject(file.getAbsolutePath());
 
-                      target.addComponent(textField);
+                      target.add(textField);
                       dialog.close(target);
                     };
                 };

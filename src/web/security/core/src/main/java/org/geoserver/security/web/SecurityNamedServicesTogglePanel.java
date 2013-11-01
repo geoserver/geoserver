@@ -56,7 +56,7 @@ public abstract class SecurityNamedServicesTogglePanel<T extends SecurityNamedSe
                             item.get("toggle")
                                 .add(new AttributeModifier("class", new Model("expanded")));
                         }
-                        target.addComponent(item);
+                        target.add(item);
                     }
                 };
                 toggle.add(new Label("name", new PropertyModel(model, "name")));

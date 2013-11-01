@@ -103,13 +103,13 @@ public class WCSRequestBuilder extends GeoServerBasePage {
                     xmlWindow.show(target);
                 } catch (Exception e) {
                     error(e.getMessage());
-                    target.addComponent(getFeedbackPanel());
+                    target.add(getFeedbackPanel());
                 }
             }
 
             @Override
             protected void onError(AjaxRequestTarget target, Form form) {
-                target.addComponent(getFeedbackPanel());
+                target.add(getFeedbackPanel());
             }
         });
     }

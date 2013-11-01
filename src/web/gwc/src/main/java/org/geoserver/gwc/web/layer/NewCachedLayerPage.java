@@ -92,7 +92,7 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
             @Override
             protected void onSelectionUpdate(AjaxRequestTarget target) {
                 updateBulkConfigLink();
-                target.addComponent(bulkConfig);
+                target.add(bulkConfig);
             }
         };
         table.setOutputMarkupId(true);
@@ -207,8 +207,8 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
                     List<TileLayer> selection = table.getSelection();
                     if (selection.isEmpty()) {
                         updateBulkConfigLink();
-                        target.addComponent(BulkCachedLayerConfigurationLink.this);
-                        target.addComponent(table);
+                        target.add(BulkCachedLayerConfigurationLink.this);
+                        target.add(table);
                     }
                 }
             });

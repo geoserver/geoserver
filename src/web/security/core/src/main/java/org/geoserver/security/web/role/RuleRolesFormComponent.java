@@ -36,7 +36,7 @@ public class RuleRolesFormComponent extends RolePaletteFormComponent {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 palette.setEnabled(!getModelObject());
-                target.addComponent(palette);
+                target.add(palette);
             }
         });
     }

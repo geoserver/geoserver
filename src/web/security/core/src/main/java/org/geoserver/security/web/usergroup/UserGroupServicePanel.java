@@ -47,7 +47,7 @@ public class UserGroupServicePanel<T extends SecurityUserGroupServiceConfig>
             protected void onUpdate(AjaxRequestTarget target) {
                 if (recodeCheckBox.isVisible()) {
                     recodeCheckBox.setEnabled(true);
-                    target.addComponent(recodeCheckBox);
+                    target.add(recodeCheckBox);
                 }
             }
         }));

@@ -121,8 +121,8 @@ public class SelectionGroupRemovalLink extends AjaxLink<Object> {
                 // occurred, so refresh the table
                 if (groups.getSelection().size() == 0) {
                     setEnabled(false);
-                    target.addComponent(SelectionGroupRemovalLink.this);
-                    target.addComponent(groups);
+                    target.add(SelectionGroupRemovalLink.this);
+                    target.add(groups);
                 }
             }
 

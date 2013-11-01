@@ -89,7 +89,7 @@ public class SecurityFilterChainsPanel
 //            @Override
 //            protected void onSelectionUpdate(AjaxRequestTarget target) {
 //                if (isAdmin) {
-//                    target.addComponent(removeLink.setEnabled(!getSelection().isEmpty()));
+//                    target.add(removeLink.setEnabled(!getSelection().isEmpty()));
 //                }
 //            }
         });
@@ -217,7 +217,7 @@ public class SecurityFilterChainsPanel
             @Override
             protected void onClick(AjaxRequestTarget target) {                
                 secMgrConfig.getFilterChain().getRequestChains().remove( chain );
-                target.addComponent( tablePanel );
+                target.add( tablePanel );
             }
         };
         link.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("AbstractLayerGroupPage.th.remove", link)));

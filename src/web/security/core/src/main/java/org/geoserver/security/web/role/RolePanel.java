@@ -65,7 +65,7 @@ public class RolePanel extends Panel {
             @Override
             protected void onSelectionUpdate(AjaxRequestTarget target) {
                 removal.setEnabled(roles.getSelection().size() > 0);               
-                target.addComponent(removal);
+                target.add(removal);
             }
 
         });

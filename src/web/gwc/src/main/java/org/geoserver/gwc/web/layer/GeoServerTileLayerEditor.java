@@ -331,7 +331,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         final boolean createTileLayer = createLayer.getModelObject().booleanValue();
         setValidating(createTileLayer);
         configs.setVisible(createTileLayer);
-        target.addComponent(container);
+        target.add(container);
     }
 
     private void confirmRemovalOfExistingTileLayer(final AjaxRequestTarget origTarget) {
@@ -363,7 +363,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
 
             @Override
             public void onClose(final AjaxRequestTarget target) {
-                target.addComponent(createLayer);
+                target.add(createLayer);
                 updateConfigsVisibility(target);
             }
 

@@ -101,14 +101,14 @@ public abstract class SecurityNamedServicesPanel<T extends SecurityNamedServiceC
 
                         @Override
                         public void onClose(AjaxRequestTarget target) {
-                            target.addComponent(tablePanel);
-                            target.addComponent(feedbackPanel);
+                            target.add(tablePanel);
+                            target.add(feedbackPanel);
                         }
                     });
                 }
                 
                 //render any feedback
-                target.addComponent(feedbackPanel);
+                target.add(feedbackPanel);
             }
         });
         removeLink.setEnabled(false);
@@ -117,7 +117,7 @@ public abstract class SecurityNamedServicesPanel<T extends SecurityNamedServiceC
             @Override
             protected void onSelectionUpdate(AjaxRequestTarget target) {
                 if (isAdmin) {
-                    target.addComponent(removeLink.setEnabled(!getSelection().isEmpty()));
+                    target.add(removeLink.setEnabled(!getSelection().isEmpty()));
                 }
             }
         });

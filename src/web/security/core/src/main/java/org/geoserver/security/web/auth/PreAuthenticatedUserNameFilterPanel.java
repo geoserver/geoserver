@@ -49,7 +49,7 @@ public abstract class PreAuthenticatedUserNameFilterPanel<T extends PreAuthentic
                 
                 WebMarkupContainer c = (WebMarkupContainer)get("container"); 
                 c.addOrReplace(p);
-                target.addComponent(c);
+                target.add(c);
             }
         });
         

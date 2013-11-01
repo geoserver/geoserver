@@ -71,7 +71,7 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
                 //add the new panel
                 c.add(createAuthorizationPanel("authorizationPanel", getModelObject()));
                 
-                target.addComponent(c);
+                target.add(c);
             }
         });
         add(new WebMarkupContainer("authorizationPanelContainer")
@@ -158,7 +158,7 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
                     LDAPSecurityServiceConfig ldapConfig = (LDAPSecurityServiceConfig) getForm().getModelObject();
                     doTest(ldapConfig, username, password);
 
-                    target.addComponent(getPage().get("feedback"));
+                    target.add(getPage().get("feedback"));
                 }
 
                 void doTest(LDAPSecurityServiceConfig ldapConfig, String username,

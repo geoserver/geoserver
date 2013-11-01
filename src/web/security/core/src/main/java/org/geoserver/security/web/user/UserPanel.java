@@ -56,9 +56,9 @@ public class UserPanel extends Panel {
             @Override
             protected void onSelectionUpdate(AjaxRequestTarget target) {
                 removal.setEnabled(users.getSelection().size() > 0);
-                target.addComponent(removal);
+                target.add(removal);
                 removalWithRoles.setEnabled(users.getSelection().size() > 0);
-                target.addComponent(removalWithRoles);
+                target.add(removalWithRoles);
             }
         });
         users.setOutputMarkupId(true);

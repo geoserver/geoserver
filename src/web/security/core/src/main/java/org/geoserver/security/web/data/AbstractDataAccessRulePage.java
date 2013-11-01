@@ -56,7 +56,7 @@ public abstract class AbstractDataAccessRulePage extends AbstractSecurityPage {
                 layerChoice.setChoices(new Model<ArrayList<String>>(
                     getLayerNames(workspaceChoice.getConvertedInput())));
                 layerChoice.modelChanged();
-                target.addComponent(layerChoice);
+                target.add(layerChoice);
             }
         });
 

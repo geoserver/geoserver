@@ -68,7 +68,7 @@ public class CachingOptionsPanel extends Panel {
             protected void onUpdate(AjaxRequestTarget target) {
                 final boolean visibleConfigs = autoCacheLayers.getModelObject().booleanValue();
                 configs.setVisible(visibleConfigs);
-                target.addComponent(container);
+                target.add(container);
             }
         });
         

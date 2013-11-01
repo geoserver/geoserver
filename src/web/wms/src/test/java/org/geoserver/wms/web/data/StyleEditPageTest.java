@@ -77,7 +77,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         form.submit();
         
         tester.assertRenderedPage(StyleEditPage.class);
-        tester.assertErrorMessages(new String[] {"Field 'Name' is required."});
+        tester.assertErrorMessages(new String[] {"'Name' is required."});
     }
 
     @Test

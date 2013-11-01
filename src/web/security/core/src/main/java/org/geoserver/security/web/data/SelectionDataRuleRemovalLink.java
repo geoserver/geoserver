@@ -81,8 +81,8 @@ public class SelectionDataRuleRemovalLink extends AjaxLink {
                 // occurred, so refresh the table
                 if(rules.getSelection().size() == 0) {
                     setEnabled(false);
-                    target.addComponent(SelectionDataRuleRemovalLink.this);
-                    target.addComponent(rules);
+                    target.add(SelectionDataRuleRemovalLink.this);
+                    target.add(rules);
                 }
             }
             

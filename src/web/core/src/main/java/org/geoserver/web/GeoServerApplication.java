@@ -67,7 +67,7 @@ public class GeoServerApplication extends WebApplication implements ApplicationC
     public static Logger LOGGER = Logging.getLogger("org.geoserver.web");
     ApplicationContext applicationContext;
     
-    ApplicationContext getApplicationContext() {
+    public ApplicationContext getApplicationContext() {
         return applicationContext;
     }
 

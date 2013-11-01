@@ -5,8 +5,9 @@
 package org.geoserver.gwc.web.diskquota;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.markup.head.CssReferenceHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.IHeaderContributor;
-import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -21,7 +22,7 @@ public class StatusBar extends Panel implements IHeaderContributor {
     @Override
     public void renderHead(IHeaderResponse response) {
     	super.renderHead(response);
-    	response.renderCSSReference(new SharedResourceReference(StatusBar.class, "statusbar.css"));
+    	response.render(CssReferenceHeaderItem.forReference(new SharedResourceReference(StatusBar.class, "statusbar.css")));
     }
 
     @SuppressWarnings("deprecation")

@@ -186,7 +186,7 @@ The parameters for DescribeFeatureType are:
      - Operation name—Value is ``DescribeFeatureType``
    * - ``typeNames``
      - Yes
-     - Name of the feature type to describe
+     - Name of the feature type to describe (``typeName`` for WFS 1.1.0 and earlier)
    * - ``exceptions``
      - No
      - Format for reporting exceptions—default value is ``application/vnd.ogc.se_xml``
@@ -207,7 +207,7 @@ To list information about a specific feature type called ``namespace:featuretype
      service=wfs&
      version=2.0.0&
      request=DescribeFeatureType&
-     typeName=namespace:featuretype
+     typeNames=namespace:featuretype
 
 .. _wfs_getfeature:
 
@@ -222,7 +222,7 @@ This request will execute a GetFeature request for a given layer ``namespace:fea
      service=wfs&
      version=2.0.0&
      request=GetFeature&
-     typeName=namespace:featuretype
+     typeNames=namespace:featuretype
 
 Executing this command will return the geometries for all features in given a feature type, potentially a large amount of data. To limit the output you can restrict the GetFeature request to a single feature by including an additional parameter, ``featureID`` and providing the ID of a specific feature. In this case, the GET request would be::
 
@@ -230,7 +230,7 @@ Executing this command will return the geometries for all features in given a fe
      service=wfs&
      version=2.0.0&
      request=GetFeature&
-     typeName=namespace:featuretype&
+     typeNames=namespace:featuretype&
      featureID=feature
 
 If the ID of the feature is unknown but you still want to limit the amount of features returned, use the ``count`` parameter for WFS 2.0.0 or the ``maxFeatures`` parameter for earlier WFS versions. In the examples below, ``N`` represents the number of features to return::
@@ -239,8 +239,10 @@ If the ID of the feature is unknown but you still want to limit the amount of fe
      service=wfs&
      version=2.0.0&
      request=GetFeature&
-     typeName=namespace:featuretype&
+     typeNames=namespace:featuretype&
      count=N
+
+:: 
 
    http://example.com/geoserver/wfs?
      service=wfs&
@@ -255,7 +257,7 @@ Exactly which N features will be returned depends in the internal structure of t
       service=wfs&
       version=2.0.0&
       request=GetFeature&
-      typeName=namespace:featuretype&
+      typeNames=namespace:featuretype&
       count=N&
       sortBy=attribute
 
@@ -265,7 +267,7 @@ The default sort operation is to sort in ascending order. Some WFS servers requi
      service=wfs&
      version=2.0.0&
      request=GetFeature&
-     typeName=namespace:featuretype&
+     typeNames=namespace:featuretype&
      count=N&
      sortBy=attribute+D
 
@@ -277,7 +279,7 @@ To restrict a GetFeature request by attribute rather than feature, use the ``pro
      service=wfs&
      version=2.0.0&
      request=GetFeature&
-     typeName=namespace:featuretype&
+     typeNames=namespace:featuretype&
      propertyName=attribute
 
 For a single property from just one feature, use both ``featureID`` and ``propertyName``::
@@ -286,7 +288,7 @@ For a single property from just one feature, use both ``featureID`` and ``proper
      service=wfs&
      version=2.0.0&
      request=GetFeature&
-     typeName=namespace:featuretype&
+     typeNames=namespace:featuretype&
      featureID=feature&
      propertyName=attribute
 
@@ -296,7 +298,7 @@ For more than one property from a single feature, use a comma-seaprated list of 
      service=wfs&
      version=2.0.0&
      request=GetFeature&
-     typeName=namespace:featuretype&
+     typeNames=namespace:featuretype&
      featureID=feature&
      propertyName=attribute1,attribute2
 
@@ -312,7 +314,7 @@ An example request involving returning features based on bounding box would be i
      service=wfs&
      version=2.0.0&
      request=GetFeature&
-     typeName=namespace:featuretype&
+     typeNames=namespace:featuretype&
      srsName=CRS
      bbox=a1,b1,a2,b2
 

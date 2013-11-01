@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.Session;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.behavior.Behavior;
@@ -38,7 +39,7 @@ public class StyleEditPage extends AbstractStylePage {
             getCatalog().getStyleByName(name);
         
         if(si == null) {
-            error(new ParamResourceModel("StyleEditPage.notFound", this, name).getString());
+            Session.get().error(new ParamResourceModel("StyleEditPage.notFound", this, name).getString());
             doReturn(StylePage.class);
             return;
         }

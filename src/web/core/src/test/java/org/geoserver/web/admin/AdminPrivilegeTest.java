@@ -4,20 +4,17 @@
  */
 package org.geoserver.web.admin;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.Properties;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
-import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -47,10 +44,6 @@ import org.geotools.data.property.PropertyDataStoreFactory;
 import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextImpl;
 
 public class AdminPrivilegeTest extends GeoServerWicketTestSupport {
 
@@ -148,7 +141,9 @@ public class AdminPrivilegeTest extends GeoServerWicketTestSupport {
     public void testWorkspaceEditPage() throws Exception {
         loginAsCite();
 
-        tester.startPage(WorkspaceEditPage.class,new PageParameters("name=cite"));
+        PageParameters pp = new PageParameters();
+        pp.set("name", "cite");
+        tester.startPage(WorkspaceEditPage.class, pp);
         tester.assertRenderedPage(WorkspaceEditPage.class);
         tester.assertNoErrorMessage();
     }
@@ -156,7 +151,10 @@ public class AdminPrivilegeTest extends GeoServerWicketTestSupport {
     @Test
     public void testWorkspaceEditPageUnauthorized() throws Exception {
         loginAsCite();
-        tester.startPage(WorkspaceEditPage.class,new PageParameters("name=cdf"));
+        PageParameters pp = new PageParameters();
+        pp.set("name", "cdf");
+        tester.startPage(WorkspaceEditPage.class, pp);
+        print(tester.getLastRenderedPage(), true, true);
         tester.assertErrorMessages(new String[]{"Could not find workspace \"cdf\""});
     }
 
@@ -206,20 +204,22 @@ public class AdminPrivilegeTest extends GeoServerWicketTestSupport {
     public void testStoreEditPage() throws Exception {
         loginAsCite();
         
-        tester.startPage(DataAccessEditPage.class, new PageParameters("wsName=cite,storeName=cite"));
+        PageParameters pp = new PageParameters();
+        pp.set("wsName", "cite");
+        pp.set("storeName", "cite");
+        tester.startPage(DataAccessEditPage.class, pp);
         tester.assertRenderedPage(DataAccessEditPage.class);
         tester.assertNoErrorMessage();
     }
 
-    /*
-     * Disabled due to https://issues.apache.org/jira/browse/WICKET-4636, 
-     * please enable back when we upgrade to 1.5.8 or 6.0-beta3
-     */
-    @Ignore
+    @Test
     public void testStoreEditPageUnauthorized() throws Exception {
         loginAsCite();
         
-        tester.startPage(DataAccessEditPage.class, new PageParameters("wsName=cdf,storeName=cdf"));
+        PageParameters pp = new PageParameters();
+        pp.set("wsName", "cdf");
+        pp.set("storeName", "cdf");
+        tester.startPage(DataAccessEditPage.class, pp);
         tester.assertRenderedPage(StorePage.class);
         tester.assertErrorMessages(new String[]{"Could not find data store \"cdf\" in workspace \"cdf\""});
     }
@@ -293,7 +293,9 @@ public class AdminPrivilegeTest extends GeoServerWicketTestSupport {
     public void testLayerGroupEditPageGlobal() throws Exception {
         loginAsCite();
 
-        tester.startPage(LayerGroupEditPage.class, new PageParameters(LayerGroupEditPage.GROUP+"=cite_global"));
+        PageParameters pp = new PageParameters();
+        pp.set(LayerGroupEditPage.GROUP, "cite_global");
+        tester.startPage(LayerGroupEditPage.class, pp);
         tester.assertRenderedPage(LayerGroupEditPage.class);
 
         //assert all form components disabled except for cancel

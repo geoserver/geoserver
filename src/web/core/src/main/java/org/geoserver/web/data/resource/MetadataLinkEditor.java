@@ -7,10 +7,10 @@ package org.geoserver.web.data.resource;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -68,7 +68,7 @@ public class MetadataLinkEditor extends Panel {
             protected void populateItem(ListItem item) {
                 
                 // odd/even style
-                item.add(new SimpleAttributeModifier("class",
+                item.add(AttributeModifier.replace("class",
                         item.getIndex() % 2 == 0 ? "even" : "odd"));
 
                 // link info
@@ -94,7 +94,7 @@ public class MetadataLinkEditor extends Panel {
                         ResourceInfo ri = (ResourceInfo) resourceModel.getObject();
                         ri.getMetadataLinks().remove(getModelObject());
                         updateLinksVisibility();
-                        target.addComponent(container);
+                        target.add(container);
                     }
                     
                 };
@@ -123,7 +123,7 @@ public class MetadataLinkEditor extends Panel {
                 ri.getMetadataLinks().add(link);
                 updateLinksVisibility();
                 
-                target.addComponent(container);
+                target.add(container);
             }
 
             @Override

@@ -101,7 +101,7 @@ public class LayerGroupEntryPanel extends Panel {
                             new LayerGroupEntry( layer, layer.getDefaultStyle() ) );
                         
                         //getCatalog().save( lg );
-                        target.addComponent( layerTable );
+                        target.add( layerTable );
                     }
                 });
                 
@@ -123,7 +123,7 @@ public class LayerGroupEntryPanel extends Panel {
                         entryProvider.getItems().add(
                             new LayerGroupEntry( layerGroup, null ) );
                         
-                        target.addComponent( layerTable );
+                        target.add( layerTable );
                     }
                 });
                 
@@ -152,7 +152,7 @@ public class LayerGroupEntryPanel extends Panel {
             protected void onUpdate(AjaxRequestTarget target) {
                 Boolean useDefault = (Boolean) getComponent().getDefaultModelObject();
                 entry.setDefaultStyle(useDefault);
-                target.addComponent(layerTable);
+                target.add(layerTable);
                 
             }
         });
@@ -192,7 +192,7 @@ public class LayerGroupEntryPanel extends Panel {
                         entry.setStyle( style );
                         
                         //redraw
-                        target.addComponent( layerTable );
+                        target.add( layerTable );
                     }
                 });
                 popupWindow.show(target);
@@ -210,7 +210,7 @@ public class LayerGroupEntryPanel extends Panel {
             protected void onClick(AjaxRequestTarget target) {
                 
                 items.remove( entry );
-                target.addComponent( layerTable );
+                target.add( layerTable );
             }
         };
         link.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("AbstractLayerGroupPage.th.remove", link)));

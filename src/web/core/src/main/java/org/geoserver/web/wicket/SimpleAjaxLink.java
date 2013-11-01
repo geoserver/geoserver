@@ -5,7 +5,9 @@
 package org.geoserver.web.wicket;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.IAjaxCallDecorator;
+import org.apache.wicket.ajax.attributes.AjaxCallListener;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
+import org.apache.wicket.ajax.attributes.IAjaxCallListener;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -45,15 +47,20 @@ public abstract class SimpleAjaxLink<T> extends Panel {
                 SimpleAjaxLink.this.onClick(target);
             }
             
-            @Override
-            protected IAjaxCallDecorator getAjaxCallDecorator() {
-                return SimpleAjaxLink.this.getAjaxCallDecorator();
+            protected void updateAjaxAttributes(AjaxRequestAttributes attributes)
+            {
+                super.updateAjaxAttributes(attributes);
+             
+                IAjaxCallListener myAjaxCallListener = SimpleAjaxLink.this.getAjaxCallListener();
+                if(myAjaxCallListener != null) {
+                    attributes.getAjaxCallListeners().add(myAjaxCallListener);
+                }
             }
             
         };
     }
     
-    protected IAjaxCallDecorator getAjaxCallDecorator() {
+    protected IAjaxCallListener getAjaxCallListener() {
         return null;
     }
 

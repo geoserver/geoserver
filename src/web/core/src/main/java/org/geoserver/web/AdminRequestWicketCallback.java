@@ -6,8 +6,8 @@ package org.geoserver.web;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.core.request.handler.IPageClassRequestHandler;
 import org.apache.wicket.request.IRequestHandler;
-import org.apache.wicket.request.handler.IPageClassRequestHandler;
 import org.geoserver.security.AdminRequest;
 
 /**

@@ -84,7 +84,7 @@ public class DataAccessEditPageTest extends GeoServerWicketTestSupport {
                     return input.toString();
                 }
         });
-        assertTrue(l.contains("Field 'Data Source Name' is required."));
+        assertTrue(l.contains("'Data Source Name' is required."));
         //tester.assertErrorMessages(new String[] { "Field 'Data Source Name' is required." });
     }
 

@@ -1,10 +1,10 @@
 package org.geoserver.web;
 
+import org.apache.wicket.core.request.mapper.CryptoMapper;
 import org.apache.wicket.request.IRequestHandler;
 import org.apache.wicket.request.IRequestMapper;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Url;
-import org.apache.wicket.request.mapper.CryptoMapper;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.GeoServerSecurityManager;
 

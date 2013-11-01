@@ -67,14 +67,14 @@ public class DirectoryParamPanel extends FileParamPanel {
                         textField.clearInput();
                         textField.setModelValue(new String[] { path });
 
-                        target.addComponent(textField);
+                        target.add(textField);
                         return true;
                     }
 
                     @Override
                     public void onClose(AjaxRequestTarget target) {
                         // update the field with the user chosen value
-                        target.addComponent(textField);
+                        target.add(textField);
                     }
 
                     @Override

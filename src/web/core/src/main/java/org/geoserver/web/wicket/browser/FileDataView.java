@@ -10,9 +10,9 @@ import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxFallbackLink;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.OrderByBorder;
 import org.apache.wicket.markup.ComponentTag;
@@ -112,7 +112,7 @@ public abstract class FileDataView extends Panel {
                 File file = (File) item.getModelObject();
                 
                 // odd/even alternate style
-                item.add(new SimpleAttributeModifier("class",
+                item.add(AttributeModifier.replace("class",
                         item.getIndex() % 2 == 0 ? "even" : "odd"));
                 
                 // navigation/selection links

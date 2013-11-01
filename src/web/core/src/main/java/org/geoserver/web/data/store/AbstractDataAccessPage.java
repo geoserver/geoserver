@@ -255,7 +255,7 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
                 } else if(namespaceModel != null) {
                     // update the model directly
                     namespaceModel.setObject(namespaceInfo);
-                    // target.addComponent(AbstractDataAccessPage.this);
+                    // target.add(AbstractDataAccessPage.this);
                 }
             }
         });

@@ -103,7 +103,7 @@ public class FileParamPanel extends Panel implements ParamPanel {
                       textField.clearInput();
                       textField.setModelObject(file.getAbsolutePath());
 
-                      target.addComponent(textField);
+                      target.add(textField);
                       dialog.close(target);
                     };
                 };

@@ -5,7 +5,7 @@
 package org.geoserver.web.wicket;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.IAjaxCallDecorator;
+import org.apache.wicket.ajax.attributes.IAjaxCallListener;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
@@ -41,8 +41,8 @@ public abstract class ImageAjaxLink extends Panel {
                 ImageAjaxLink.this.onClick(target);
             }
             
-            protected IAjaxCallDecorator getAjaxCallDecorator() {
-                return ImageAjaxLink.this.getAjaxCallDecorator();
+            protected IAjaxCallListener getAjaxCallDecorator() {
+                return ImageAjaxLink.this.getAjaxCallListener();
             };
         };
         add(link);
@@ -51,7 +51,7 @@ public abstract class ImageAjaxLink extends Panel {
     }
     
     
-    protected IAjaxCallDecorator getAjaxCallDecorator() {
+    protected IAjaxCallListener getAjaxCallListener() {
         return null;
     }
 

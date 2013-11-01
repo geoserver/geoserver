@@ -37,7 +37,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
-import org.apache.wicket.validation.validator.MinimumValidator;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.apache.wicket.validation.validator.UrlValidator;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
@@ -89,7 +89,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         WorkspaceInfo wsi = getCatalog().getWorkspaceByName(wsName);
         
         if(wsi == null) {
-            error(new ParamResourceModel("WorkspaceEditPage.notFound", this, wsName).getString());
+            getSession().error(new ParamResourceModel("notFound", this, wsName).getString());
             doReturn(WorkspacePage.class);
             return;
         }
@@ -299,7 +299,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                     protected void onUpdate(AjaxRequestTarget target) {
                         contactPanel.setVisible(set.enabled);
                         otherSettingsPanel.setVisible(set.enabled);
-                        target.addComponent(settingsContainer);
+                        target.add(settingsContainer);
                     }
                 }));
 
@@ -321,7 +321,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
             otherSettingsPanel.add(new CheckBox("verbose"));
             otherSettingsPanel.add(new CheckBox("verboseExceptions"));
             otherSettingsPanel.add(new CheckBox("localWorkspaceIncludesPrefix"));
-            otherSettingsPanel.add(new TextField<Integer>("numDecimals").add(new MinimumValidator<Integer>(0)));
+            otherSettingsPanel.add(new TextField<Integer>("numDecimals").add(RangeValidator.minimum(0)));
             otherSettingsPanel.add(new DropDownChoice("charset", GlobalSettingsPage.AVAILABLE_CHARSETS));
             otherSettingsPanel.add(new TextField("proxyBaseUrl").add(new UrlValidator()));
             settingsContainer.add(otherSettingsPanel);
@@ -419,8 +419,8 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
                             if (s.model instanceof ExistingServiceModel) {
                                 //service that has already been added, 
-                                PageParameters pp = 
-                                        new PageParameters("workspace=" + wsModel.getObject().getName());
+                                PageParameters pp = new PageParameters();
+                                pp.set("workspace", wsModel.getObject().getName());
                                 try {
                                     page = s.adminPage.getComponentClass()
                                         .getConstructor(PageParameters.class).newInstance(pp);
@@ -451,7 +451,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                         @Override
                         protected void onUpdate(AjaxRequestTarget target) {
                             link.setEnabled(getModelObject());
-                            target.addComponent(link);
+                            target.add(link);
                         }
                     };
                     item.add(enabled);

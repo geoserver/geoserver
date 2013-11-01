@@ -21,21 +21,20 @@ import org.apache.wicket.IConverterLocator;
 import org.apache.wicket.Page;
 import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.Session;
-import org.apache.wicket.markup.html.IPackageResourceGuard;
-import org.apache.wicket.markup.html.SecurePackageResourceGuard;
+import org.apache.wicket.core.request.handler.IPageRequestHandler;
+import org.apache.wicket.core.request.handler.PageProvider;
+import org.apache.wicket.core.request.handler.RenderPageRequestHandler;
 import org.apache.wicket.protocol.http.PageExpiredException;
+import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.IRequestHandler;
 import org.apache.wicket.request.IRequestMapper;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.cycle.AbstractRequestCycleListener;
 import org.apache.wicket.request.cycle.RequestCycle;
-import org.apache.wicket.request.handler.IPageRequestHandler;
-import org.apache.wicket.request.handler.PageProvider;
-import org.apache.wicket.request.handler.RenderPageRequestHandler;
 import org.apache.wicket.request.http.WebRequest;
+import org.apache.wicket.resource.loader.ComponentStringResourceLoader;
 import org.apache.wicket.resource.loader.IStringResourceLoader;
-import org.apache.wicket.spring.SpringWebApplication;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
@@ -47,7 +46,9 @@ import org.geoserver.web.util.GeoToolsConverterAdapter;
 import org.geoserver.web.util.converters.StringBBoxConverter;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 /**
  * The GeoServer application, the main entry point for any Wicket application. In particular, this
@@ -58,12 +59,17 @@ import org.springframework.context.ApplicationContext;
  * @author Andrea Aaime, The Open Planning Project
  * @author Justin Deoliveira, The Open Planning Project
  */
-public class GeoServerApplication extends SpringWebApplication {
+public class GeoServerApplication extends WebApplication implements ApplicationContextAware {
 
     /**
      * logger for web application
      */
     public static Logger LOGGER = Logging.getLogger("org.geoserver.web");
+    ApplicationContext applicationContext;
+    
+    ApplicationContext getApplicationContext() {
+        return applicationContext;
+    }
 
     /**
      * The {@link GeoServerHomePage}.
@@ -74,13 +80,6 @@ public class GeoServerApplication extends SpringWebApplication {
 
     public static GeoServerApplication get() {
         return (GeoServerApplication) Application.get();
-    }
-
-    /**
-     * Returns the spring application context.
-     */
-    public ApplicationContext getApplicationContext() {
-        return internalGetApplicationContext();
     }
 
     /**
@@ -173,7 +172,7 @@ public class GeoServerApplication extends SpringWebApplication {
         }
 
         getResourceSettings().getStringResourceLoaders().add(0, new GeoServerStringResourceLoader());
-        // getResourceSettings().addStringResourceLoader(new ComponentStringResourceLoader());
+         getResourceSettings().getStringResourceLoaders().add(new ComponentStringResourceLoader());
         // getResourceSettings().addStringResourceLoader(new
         // ClassStringResourceLoader(this.getClass()));
 
@@ -233,7 +232,7 @@ public class GeoServerApplication extends SpringWebApplication {
         return locator;
     }
     
-   
+    
 //    static class RequestCycleProcessor extends WebRequestCycleProcessor {
 //        
 //        public IRequestTarget resolve(RequestCycle requestCycle,
@@ -321,6 +320,11 @@ public class GeoServerApplication extends SpringWebApplication {
     
     public String getSessionAttributePrefix(WebRequest request, String filterName) {
         return "";
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
     
     

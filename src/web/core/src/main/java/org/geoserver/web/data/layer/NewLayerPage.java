@@ -162,7 +162,9 @@ public class NewLayerPage extends GeoServerSecuredPage {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 DataStoreInfo ds = getCatalog().getStore(storeId, DataStoreInfo.class);
-                PageParameters pp = new PageParameters("wsName=" + ds.getWorkspace().getName() + ",storeName=" + ds.getName());
+                PageParameters pp = new PageParameters();
+                pp.set("wsName", ds.getWorkspace().getName());
+                pp.set("storeName", ds.getName());
                 setResponsePage(NewFeatureTypePage.class, pp);                
             }
         };
@@ -174,7 +176,9 @@ public class NewLayerPage extends GeoServerSecuredPage {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 DataStoreInfo ds = getCatalog().getStore(storeId, DataStoreInfo.class);
-                PageParameters pp = new PageParameters("wsName=" + ds.getWorkspace().getName() + ",storeName=" + ds.getName());
+                PageParameters pp = new PageParameters();
+                pp.set("wsName", ds.getWorkspace().getName());
+                pp.set("storeName", ds.getName());
                 setResponsePage(SQLViewNewPage.class, pp);
             }
         };
@@ -186,7 +190,8 @@ public class NewLayerPage extends GeoServerSecuredPage {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 WMSStoreInfo wms = getCatalog().getStore(storeId, WMSStoreInfo.class);
-                PageParameters pp = new PageParameters("storeId=" + storeId);
+                PageParameters pp = new PageParameters();
+                pp.set("storeId", storeId);
                 setResponsePage(WMSLayerImporterPage.class, pp);
             }
         };
@@ -224,8 +229,8 @@ public class NewLayerPage extends GeoServerSecuredPage {
                     selectLayers.setVisible(false);
                     createTypeContainer.setVisible(false);
                 }
-                target.addComponent(selectLayersContainer);
-                target.addComponent(feedbackPanel);
+                target.add(selectLayersContainer);
+                target.add(feedbackPanel);
 
             }
 

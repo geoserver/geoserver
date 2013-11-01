@@ -5,6 +5,7 @@
 package org.geoserver.web;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
@@ -13,6 +14,7 @@ import org.apache.wicket.Application;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Page;
+import org.apache.wicket.core.util.resource.locator.ResourceNameIterator;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
@@ -20,7 +22,6 @@ import org.apache.wicket.resource.IPropertiesFactory;
 import org.apache.wicket.resource.Properties;
 import org.apache.wicket.resource.loader.ComponentStringResourceLoader;
 import org.apache.wicket.resource.loader.IStringResourceLoader;
-import org.apache.wicket.util.resource.locator.ResourceNameIterator;
 import org.geotools.util.logging.Logging;
 
 
@@ -73,7 +74,7 @@ public class GeoServerStringResourceLoader implements IStringResourceLoader
         {
             // Iterator over all the combinations
             ResourceNameIterator iter = new ResourceNameIterator(path, style, variation, locale,
-                ",properties,xml", false);
+                null, false);
             while (iter.hasNext())
             {
                 String newPath = (String)iter.next();

@@ -38,7 +38,7 @@ public class WorkspaceNewPageTest extends GeoServerWicketTestSupport {
         form.submit();
         
         tester.assertRenderedPage(WorkspaceNewPage.class);
-        tester.assertErrorMessages(new String[] {"Field 'Name' is required."});
+        tester.assertErrorMessages(new String[] {"'Name' is required."});
     }
     
     @Test
@@ -48,7 +48,7 @@ public class WorkspaceNewPageTest extends GeoServerWicketTestSupport {
         form.submit();
         
         tester.assertRenderedPage(WorkspaceNewPage.class);
-        tester.assertErrorMessages(new String[] {"Field 'uri' is required."});
+        tester.assertErrorMessages(new String[] {"'uri' is required."});
     }
     
     @Test

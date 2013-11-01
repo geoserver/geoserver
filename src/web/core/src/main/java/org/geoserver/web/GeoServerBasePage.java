@@ -12,12 +12,14 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.wicket.Application;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.ajax.IAjaxIndicatorAware;
+import org.apache.wicket.markup.head.CssReferenceHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
@@ -27,11 +29,9 @@ import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
-import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.cycle.RequestCycle;
-import org.apache.wicket.request.http.WebResponse;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
 import org.geoserver.catalog.Catalog;
@@ -204,7 +204,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         return null;
     }
 
-    public void renderHead(org.apache.wicket.markup.html.IHeaderResponse response) {
+    public void renderHead(IHeaderResponse response) {
 	    List<HeaderContribution> cssContribs = 
 	            getGeoServerApplication().getBeansOfType(HeaderContribution.class);
 	        for (HeaderContribution csscontrib : cssContribs) {
@@ -212,12 +212,12 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
 	                if (csscontrib.appliesTo(this)) {
 	                    ResourceReference ref = csscontrib.getCSS();
 	                    if (ref != null) {
-	                        response.renderCSSReference(ref);
+	                        response.render(CssReferenceHeaderItem.forReference(ref));
 	                    }
 	                    
 	                    ref = csscontrib.getJavaScript();
 	                    if (ref != null) {
-	                        response.renderJavaScriptReference(ref);
+	                        response.render(JavaScriptHeaderItem.forReference(ref));
 	                    }
 	                }
 	            }

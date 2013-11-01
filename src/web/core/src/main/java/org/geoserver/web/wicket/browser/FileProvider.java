@@ -84,7 +84,7 @@ public class FileProvider extends SortableDataProvider {
         this.directory = directory;
     }
 
-    public Iterator iterator(int first, int count) {
+    public Iterator iterator(long first, long count) {
         List<File> files = getFilteredFiles();
 
         // sorting
@@ -93,10 +93,10 @@ public class FileProvider extends SortableDataProvider {
             Collections.sort(files, comparator);
 
         // paging
-        int last = first + count;
+        long last = first + count;
         if (last > files.size())
             last = files.size();
-        return files.subList(first, last).iterator();
+        return files.subList((int) first, (int) last).iterator();
     }
 
     List<File> getFilteredFiles() {
@@ -122,7 +122,7 @@ public class FileProvider extends SortableDataProvider {
         return new Model((File) object);
     }
 
-    public int size() {
+    public long size() {
         return getFilteredFiles().size();
     }
 

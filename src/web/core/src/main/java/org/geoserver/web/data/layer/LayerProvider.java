@@ -136,22 +136,22 @@ public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
     }
 
     @Override
-    public int size() {
+    public long size() {
         Filter filter = getFilter();
         int count = getCatalog().count(LayerInfo.class, filter);
         return count;
     }
 
     @Override
-    public int fullSize() {
+    public long fullSize() {
         Filter filter = Predicates.acceptAll();
         int count = getCatalog().count(LayerInfo.class, filter);
         return count;
     }
     
     @Override
-    public Iterator<LayerInfo> iterator(final int first, final int count) {
-        Iterator<LayerInfo> iterator = filteredItems(first, count);
+    public Iterator<LayerInfo> iterator(final long first, final long count) {
+        Iterator<LayerInfo> iterator = filteredItems((int) first, (int) count);
         if (iterator instanceof CloseableIterator) {
             // don't know how to force wicket to close the iterator, lets return
             // a copy. Shouldn't be much overhead as we're paging

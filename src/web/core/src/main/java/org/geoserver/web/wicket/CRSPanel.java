@@ -132,7 +132,7 @@ public class CRSPanel extends FormComponentPanel {
                     wktLabel.setDefaultModelObject(null);
                     wktLink.setEnabled(false);
                 }
-                target.addComponent(wktLink);
+                target.add(wktLink);
                 
                 onSRSUpdated(toSRS(crs), target);
             }
@@ -278,12 +278,12 @@ public class CRSPanel extends FormComponentPanel {
                 
                 String srs =  "EPSG:" + epsgCode ;
                 srsTextField.setModelObject( srs );
-                target.addComponent( srsTextField );
+                target.add( srsTextField );
                 
                 CoordinateReferenceSystem crs = fromSRS( srs );
                 wktLabel.setDefaultModelObject( crs.getName().toString() );
                 wktLink.setEnabled(true);
-                target.addComponent( wktLink );
+                target.add( wktLink );
                 
                 onSRSUpdated(srs, target);
             }

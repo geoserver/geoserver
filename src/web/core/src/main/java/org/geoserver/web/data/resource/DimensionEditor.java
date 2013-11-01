@@ -85,7 +85,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
                 Boolean visile = enabled.getModelObject();
 
                 configs.setVisible(visile);
-                target.addComponent(configsContainer);
+                target.add(configsContainer);
             }
 
         });
@@ -179,7 +179,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
             protected void onUpdate(AjaxRequestTarget target) {
                 boolean visible = presentation.getModelObject() == DimensionPresentation.DISCRETE_INTERVAL;
                 resolutions.setVisible(visible);
-                target.addComponent(resContainer);
+                target.add(resContainer);
             }
 
         });

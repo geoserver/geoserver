@@ -88,7 +88,7 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                     CoverageInfo rebuilt = cb.buildCoverage();
                     ci.getDimensions().clear();
                     ci.getDimensions().addAll(rebuilt.getDimensions());
-                    target.addComponent(bands);
+                    target.add(bands);
                 } catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "Failure updating the bands list", e);
                     error(e.toString());

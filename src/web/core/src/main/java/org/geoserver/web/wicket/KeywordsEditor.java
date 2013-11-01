@@ -143,7 +143,7 @@ public class KeywordsEditor extends FormComponentPanel {
                 }
                 choices.setChoices(keywords);
                 choices.modelChanged();
-                target.addComponent(choices);
+                target.add(choices);
             }
             
             @Override

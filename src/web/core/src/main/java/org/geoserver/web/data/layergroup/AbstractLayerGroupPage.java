@@ -108,7 +108,7 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
             protected void onUpdate(AjaxRequestTarget target) {
                 LayerGroupInfo.Mode mode = modeChoice.getModelObject();
                 updateRootLayerPanel(mode);
-                target.addComponent(rootLayerPanelContainer);
+                target.add(rootLayerPanelContainer);
             }
         });
         
@@ -158,7 +158,7 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
                     }
                     
                     envelopePanel.setModelObject( lg.getBounds() );
-                    target.addComponent( envelopePanel );
+                    target.add( envelopePanel );
                     
                 } 
                 catch (Exception e) {

@@ -122,7 +122,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                     LOGGER.log(Level.SEVERE, "Error computing the native BBOX", e);
                     error("Error computing the native BBOX:" + e.getMessage());
                 }
-                target.addComponent(nativeBBox);
+                target.add(nativeBBox);
             }
             
             public boolean getDefaultFormProcessing() {
@@ -158,7 +158,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                         nativeBounds = cb.getNativeBounds(resource);
                         resource.setNativeBoundingBox(nativeBounds);
                         nativeBBox.setModelObject(nativeBounds);
-                        target.addComponent(nativeBBox);
+                        target.add(nativeBBox);
                     }
                 
                     CatalogBuilder cb = new CatalogBuilder(GeoServerApplication.get().getCatalog());
@@ -167,7 +167,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                     LOGGER.log(Level.SEVERE, "Error computing the geographic BBOX", e);
                     error("Error computing the geographic bounds:" + e.getMessage());
                 }
-                target.addComponent(latLonPanel);
+                target.add(latLonPanel);
             }
         };
     }

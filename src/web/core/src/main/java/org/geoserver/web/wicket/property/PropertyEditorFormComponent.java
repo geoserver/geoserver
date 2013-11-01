@@ -72,7 +72,7 @@ public class PropertyEditorFormComponent extends FormComponentPanel<Properties> 
                     public void onClick(AjaxRequestTarget target) {
                         List l = ((List)listView.getDefaultModelObject());
                         l.remove(getModelObject());
-                        target.addComponent(container);
+                        target.add(container);
                     }
                 });
             }
@@ -84,7 +84,7 @@ public class PropertyEditorFormComponent extends FormComponentPanel<Properties> 
             @Override
             public void onClick(AjaxRequestTarget target) {
                 ((List)listView.getDefaultModelObject()).add(new Tuple());
-                target.addComponent(container);
+                target.add(container);
             }
         });
     }

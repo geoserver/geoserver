@@ -111,7 +111,7 @@ abstract class AbstractWMSStorePage extends GeoServerSecuredPage {
             protected void onUpdate(AjaxRequestTarget target) {
                 boolean enabled = useHttpConnectionPoolModel.getObject();
                 maxConnections.setEnabled(enabled);
-                target.addComponent(maxConnections);
+                target.add(maxConnections);
             }
         });
         

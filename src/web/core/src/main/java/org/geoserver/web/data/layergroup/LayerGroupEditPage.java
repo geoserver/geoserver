@@ -5,6 +5,7 @@
 package org.geoserver.web.data.layergroup;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.Session;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.model.StringResourceModel;
@@ -29,7 +30,7 @@ public class LayerGroupEditPage extends AbstractLayerGroupPage {
             getCatalog().getLayerGroupByName(groupName);
         
         if(lg == null) {
-            error(new ParamResourceModel("LayerGroupEditPage.notFound", this, groupName).getString());
+            Session.get().error(new ParamResourceModel("LayerGroupEditPage.notFound", this, groupName).getString());
             doReturn(LayerGroupPage.class);
             return;
         }

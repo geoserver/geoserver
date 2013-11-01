@@ -195,8 +195,8 @@ public class GeoServerFileChooser extends Panel {
         fileTable.getProvider().setDirectory(new Model(file));
         breadcrumbs.setSelection(file);
         
-        target.addComponent(fileTable);
-        target.addComponent(breadcrumbs);
+        target.add(fileTable);
+        target.add(breadcrumbs);
     }
 
     private boolean isSubfile(File root, File selection) {

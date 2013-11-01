@@ -21,13 +21,13 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import org.apache.wicket.Application;
+import org.apache.wicket.core.util.resource.locator.ResourceStreamLocator;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.util.lang.Bytes;
 import org.apache.wicket.util.resource.AbstractResourceStream;
 import org.apache.wicket.util.resource.IFixedLocationResourceStream;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
-import org.apache.wicket.util.resource.locator.ResourceStreamLocator;
 import org.apache.wicket.util.time.Time;
 import org.geotools.util.logging.Logging;
 
@@ -51,10 +51,12 @@ public class GeoServerResourceStreamLocator extends ResourceStreamLocator {
                 try {
                     // process the classpath for property files
                     Enumeration<URL> urls = getClass().getClassLoader().getResources(p);
+                    if(!urls.hasMoreElements()) {
+                        return null;
+                    }
 
                     // build up a single properties file
                     Properties properties = new Properties();
-
                     while (urls.hasMoreElements()) {
                         URL url = urls.nextElement();
 

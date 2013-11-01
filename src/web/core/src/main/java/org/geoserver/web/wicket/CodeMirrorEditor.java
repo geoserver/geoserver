@@ -13,15 +13,16 @@ import java.io.StringWriter;
 import java.io.Writer;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.ajax.IAjaxCallDecorator;
-import org.apache.wicket.ajax.calldecorator.AjaxCallDecorator;
+import org.apache.wicket.ajax.attributes.AjaxCallListener;
+import org.apache.wicket.ajax.attributes.IAjaxCallListener;
 import org.apache.wicket.behavior.Behavior;
-import org.apache.wicket.markup.html.IHeaderResponse;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
 
@@ -77,17 +78,17 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         editor.clearInput();
     }
     
-    public IAjaxCallDecorator getSaveDecorator() {
+    public IAjaxCallListener getSaveDecorator() {
         // we need to force CodeMirror to update the textarea contents (which it hid)
         // before submitting the form, otherwise the validation will use the old contents
-        return new AjaxCallDecorator() {
+        return new AjaxCallListener() {
             
             @Override
-            public CharSequence decorateScript(Component c, CharSequence script) {
-                // textarea.value = codemirrorinstance.getCode()
+            public CharSequence getBeforeHandler(Component component) {
                 String id = getTextAreaMarkupId();
-                return "document.getElementById('" + id + "').value = document.gsEditors." + id + ".getCode();" + script;
+                return "document.getElementById('" + id + "').value = document.gsEditors." + id + ".getCode();";
             }
+            
         };
     }
     
@@ -96,9 +97,9 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         @Override
         public void renderHead(Component c, IHeaderResponse response) {
             super.renderHead(c, response);
-            response.renderJavaScriptReference(REFERENCE);
+            response.render(JavaScriptHeaderItem.forReference(REFERENCE));
 
-            response.renderOnDomReadyJavaScript(getInitJavascript());
+            response.render(OnDomReadyHeaderItem.forScript(getInitJavascript()));
         }
 
         private String getInitJavascript() {

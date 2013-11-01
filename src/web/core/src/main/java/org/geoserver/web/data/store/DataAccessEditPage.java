@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -49,7 +50,7 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
         DataStoreInfo dsi = getCatalog().getDataStoreByName(wsName, storeName);
         
         if(dsi == null) {
-            error(new ParamResourceModel("DataAccessEditPage.notFound", this, wsName, storeName).getString());
+            Session.get().error(new ParamResourceModel("DataAccessEditPage.notFound", this, wsName, storeName).getString());
             doReturn(StorePage.class);
             return;
         }
@@ -57,7 +58,7 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
         try {
             initUI(dsi);
         } catch (IllegalArgumentException e) {
-            error(e.getMessage());
+            Session.get().error(e.getMessage());
             doReturn(StorePage.class);
             return;
         }

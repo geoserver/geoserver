@@ -4,8 +4,9 @@
  */
 package org.geoserver.web.wicket;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.markup.html.navigation.paging.AjaxPagingNavigator;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.navigation.paging.IPageable;
 import org.apache.wicket.markup.html.navigation.paging.IPagingLabelProvider;
@@ -34,18 +35,18 @@ public class GeoServerPagingNavigator extends AjaxPagingNavigator {
     }
     
     @Override
-    protected Link newPagingNavigationLink(String id, IPageable pageable, int pageNumber) {
-        Link link = super.newPagingNavigationLink(id, pageable, pageNumber);
+    protected AbstractLink newPagingNavigationLink(String id, IPageable pageable, int pageNumber) {
+        AbstractLink link = super.newPagingNavigationLink(id, pageable, pageNumber);
         // we turn the id into the css class
-        link.add(new SimpleAttributeModifier("class", id));
+        link.add(AttributeModifier.replace("class", id));
         return link;
     }
     
     @Override
-    protected Link newPagingNavigationIncrementLink(String id, IPageable pageable, int increment) {
-        Link link = super.newPagingNavigationIncrementLink(id, pageable, increment);
+    protected AbstractLink newPagingNavigationIncrementLink(String id, IPageable pageable, int increment) {
+        AbstractLink link = super.newPagingNavigationIncrementLink(id, pageable, increment);
         // we turn the id into the css class
-        link.add(new SimpleAttributeModifier("class", id));
+        link.add(AttributeModifier.replace("class", id));
         return link;
     }
     

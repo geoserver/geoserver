@@ -42,7 +42,9 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
 
     @After
     public void clearErrorMessages() {
-        Session.get().cleanupFeedbackMessages();
+        if(tester.getLastRenderedPage() != null) {
+            tester.cleanupFeedbackMessages();
+        }
     }
 
     @Override

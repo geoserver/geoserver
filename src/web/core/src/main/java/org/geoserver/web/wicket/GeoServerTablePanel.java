@@ -9,17 +9,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -127,7 +124,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
             }
         };
         filterForm.add(filter);
-        filter.add(new SimpleAttributeModifier("title", String.valueOf(new ResourceModel(
+        filter.add(AttributeModifier.replace("title", String.valueOf(new ResourceModel(
                 "GeoServerTablePanel.search", "Search").getObject())));
         filterForm.add(hiddenSubmit = hiddenSubmit());
         filterForm.setDefaultButton(hiddenSubmit);
@@ -328,8 +325,8 @@ public abstract class GeoServerTablePanel<T> extends Panel {
                 setSelection(selectAllValue);
                 
                 // update table and the checkbox itself
-                target.addComponent(getComponent());
-                target.addComponent(listContainer);
+                target.add(getComponent());
+                target.add(listContainer);
                 
                 // allow subclasses to play on this change as well
                 onSelectionUpdate(target);
@@ -349,7 +346,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
             protected void onUpdate(AjaxRequestTarget target) {
                 if(Boolean.FALSE.equals(getComponent().getDefaultModelObject())) {
                     selectAllValue = false;
-                    target.addComponent(selectAll);
+                    target.add(selectAll);
                 }
                 onSelectionUpdate(target);
             }
@@ -468,7 +465,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
                             .setSort(new SortParam(property.getName(), !currSort.isAscending()));
                 }
                 setSelection(false);
-                target.addComponent(listContainer);
+                target.add(listContainer);
             }
 
         };
@@ -493,9 +490,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         navigatorBottom.updateMatched();
         setSelection(false);
 
-        target.addComponent(listContainer);
-        target.addComponent(navigatorTop);
-        target.addComponent(navigatorBottom);
+        target.add(listContainer);
+        target.add(navigatorTop);
+        target.add(navigatorBottom);
     }
     
     /**
@@ -546,16 +543,16 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     protected void onPopulateItem(Property<T> property, ListItem item) {
     }
 
-    IModel showingAllRecords(int first, int last, int size) {
+    IModel showingAllRecords(long first, long last, long size) {
         return new ParamResourceModel("showingAllRecords", this, first, last, size);
     }
     
-    IModel matchedXOutOfY(int first, int last, int size, int fullSize) {
+    IModel matchedXOutOfY(long first, long last, long size, long fullSize) {
         return new ParamResourceModel("matchedXOutOfY", this, first, last, size, fullSize);
     }
 
     protected class PagerDelegate implements Serializable {
-        int fullSize, size, first, last;
+        long fullSize, size, first, last;
         
         public PagerDelegate() {
             updateMatched();
@@ -584,8 +581,8 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         /**
          * User oriented index of the first item in the current page
          */
-        int first(int fullSize) {
-            int size = fullSize;
+        long first(long fullSize) {
+            long size = fullSize;
             if (dataProvider.getKeywords() != null) {
                 size = dataView.getDataProvider().size();
             }
@@ -598,11 +595,11 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         /**
          * User oriented index of the last item in the current page
          */
-        int last(int fullSize) {
+        long last(long fullSize) {
             
-            int count = dataProvider.getKeywords() != null ? 
+            long count = dataProvider.getKeywords() != null ? 
                     dataView.getPageCount() : optGetPageCount(fullSize);
-            int page = dataView.getCurrentPage();
+            long page = dataView.getCurrentPage();
             if (page < (count - 1))
                 return dataView.getItemsPerPage() * (page + 1);
             else {
@@ -610,9 +607,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
             }
         }
         
-        int optGetPageCount(int total) {
-            int page = dataView.getItemsPerPage();
-            int count = total / page;
+        long optGetPageCount(long total) {
+            long page = dataView.getItemsPerPage();
+            long count = total / page;
 
             if (page * count < total)
             {
@@ -653,8 +650,8 @@ public abstract class GeoServerTablePanel<T> extends Panel {
                     pagerDelegate.updateMatched();
                     navigatorTop.updateMatched();
                     navigatorBottom.updateMatched();
-                    target.addComponent(navigatorTop);
-                    target.addComponent(navigatorBottom);
+                    target.add(navigatorTop);
+                    target.add(navigatorBottom);
                 }
             };
         }

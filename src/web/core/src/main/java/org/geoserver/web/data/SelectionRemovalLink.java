@@ -77,8 +77,8 @@ public class SelectionRemovalLink extends AjaxLink {
                 // occurred, so refresh the table
                 if(catalogObjects.getSelection().size() == 0) {
                     setEnabled(false);
-                    target.addComponent(SelectionRemovalLink.this);
-                    target.addComponent(catalogObjects);
+                    target.add(SelectionRemovalLink.this);
+                    target.add(catalogObjects);
                 }
             }
             

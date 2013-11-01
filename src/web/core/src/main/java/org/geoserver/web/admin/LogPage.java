@@ -27,7 +27,7 @@ import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.request.resource.ResourceStreamResource;
 import org.apache.wicket.util.resource.AbstractResourceStream;
 import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
-import org.apache.wicket.validation.validator.MinimumValidator;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.logging.LoggingUtils;
 import org.geoserver.platform.GeoServerExtensions;
@@ -85,13 +85,14 @@ public class LogPage extends GeoServerSecuredPage {
         form.add(new SubmitLink("refresh") {
             @Override
             public void onSubmit() {
-                setResponsePage(LogPage.class, new PageParameters(LINES + "="
-                        + String.valueOf(lines)));
+                PageParameters pp = new PageParameters();
+                pp.set(LINES, String.valueOf(lines));
+                setResponsePage(LogPage.class,pp);
             }
         });
 
         TextField lines = new TextField("lines", new PropertyModel(this, "lines"));
-        lines.add(new MinimumValidator(1));
+        lines.add(RangeValidator.minimum(1));
         form.add(lines);
 
         TextArea logs = new TextArea("logs", new GSLogsModel());

@@ -138,7 +138,7 @@ public class WebUtils {
 
             if (source != null) {
                 long modified = cfg.getTemplateLoader().getLastModified(source);
-                return Time.valueOf(modified);
+                return Time.millis(modified);
             }
 
             return null;

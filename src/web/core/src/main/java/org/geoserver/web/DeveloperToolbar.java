@@ -72,7 +72,7 @@ public class DeveloperToolbar extends Panel {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 wicketPaths.setModelObject(Boolean.FALSE);
-                target.addComponent(wicketPaths);
+                target.add(wicketPaths);
             }
 
         };

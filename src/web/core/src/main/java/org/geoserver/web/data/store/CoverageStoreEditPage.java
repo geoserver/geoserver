@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.geoserver.catalog.Catalog;
@@ -48,7 +49,7 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
         CoverageStoreInfo csi = getCatalog().getCoverageStoreByName(wsName, storeName);
         
         if(csi == null) {
-            error(new ParamResourceModel("CoverageStoreEditPage.notFound", this, storeName, wsName).getString());
+            Session.get().error(new ParamResourceModel("CoverageStoreEditPage.notFound", this, storeName, wsName).getString());
             doReturn(StorePage.class);
             return;
         }

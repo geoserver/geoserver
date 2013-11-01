@@ -104,7 +104,7 @@ abstract class AbstractCoverageStorePage extends GeoServerSecuredPage {
 
             @Override
             protected void onError(AjaxRequestTarget target, Form form) {
-                target.addComponent(paramsForm);
+                target.add(paramsForm);
             }
 
             @Override
@@ -114,7 +114,7 @@ abstract class AbstractCoverageStorePage extends GeoServerSecuredPage {
                     onSave(info, target);
                 } catch (IllegalArgumentException e) {
                     paramsForm.error(e.getMessage());
-                    target.addComponent(paramsForm);
+                    target.add(paramsForm);
                 }
             }
         };

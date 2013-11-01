@@ -10,6 +10,7 @@ import java.io.Serializable;
 
 import org.apache.wicket.Session;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.PropertyModel;
@@ -111,7 +112,7 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         FormTester ft = tester.newFormTester( "form");
         ft.submit();
         
-        assertEquals(1, Session.get().getFeedbackMessages().size());
+        assertEquals(1, tester.getMessages(FeedbackMessage.ERROR).size());
         // System.out.println(Session.get().getFeedbackMessages().messageForComponent(panel));
     }
     

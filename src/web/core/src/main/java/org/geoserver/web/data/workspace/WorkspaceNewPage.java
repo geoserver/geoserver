@@ -14,8 +14,8 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
-import org.apache.wicket.validation.validator.StringValidator;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -62,15 +62,18 @@ public class WorkspaceNewPage extends GeoServerSecuredPage {
         TextField<String> nameTextField = new TextField<String>("name");
         nameTextField.setRequired(true);
         nameTextField.add(new XMLNameValidator());
-        nameTextField.add(new StringValidator() {
+        nameTextField.add(new IValidator() {
             
-            protected ValidationError decorate(ValidationError error, IValidatable validatable) {
+           
+
+            @Override
+            public void validate(IValidatable validatable) {
                 if(CatalogImpl.DEFAULT.equals(validatable.getValue())) {
+                    ValidationError error = new ValidationError(this);
                     error.addKey("defaultWsError");
+                    validatable.error(error);
                 }
-                
-                return error;
-             }
+            }
             
         });
         form.add( nameTextField.setRequired(true) );

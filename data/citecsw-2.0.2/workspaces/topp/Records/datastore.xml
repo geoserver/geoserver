@@ -1,0 +1,14 @@
+<dataStore>
+  <id>DataStoreInfoImpl-370abbc5:13f592321a9:-8000</id>
+  <name>Records</name>
+  <type>Properties</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl-78ff667e:12476299803:-7ffd</id>
+  </workspace>
+  <connectionParameters>
+    <entry key="directory">file:./workspaces/topp/Records</entry>
+    <entry key="namespace">http://www.openplans.org/topp</entry>
+  </connectionParameters>
+  <__default>false</__default>
+</dataStore>

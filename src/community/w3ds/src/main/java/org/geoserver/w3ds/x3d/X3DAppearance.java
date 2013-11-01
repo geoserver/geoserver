@@ -16,7 +16,6 @@ import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.IsEqualsToImpl;
 import org.geotools.filter.LiteralExpressionImpl;
 import org.geotools.styling.Fill;
-import org.geotools.styling.PolygonSymbolizerImpl;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Symbolizer;
 import org.opengis.feature.Feature;

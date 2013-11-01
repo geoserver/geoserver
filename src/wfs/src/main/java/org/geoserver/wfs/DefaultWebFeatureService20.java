@@ -104,7 +104,7 @@ public class DefaultWebFeatureService20 implements WebFeatureService20, Applicat
 
     @Override
     public ValueCollectionType getPropertyValue(GetPropertyValueType request) throws WFSException {
-        return new GetPropertyValue(getServiceInfo(), getCatalog()).run(request);
+    	return new GetPropertyValue(getServiceInfo(), getCatalog(), filterFactory).run(request);
     }
 
     public LockFeatureResponseType lockFeature(LockFeatureType request) throws WFSException {

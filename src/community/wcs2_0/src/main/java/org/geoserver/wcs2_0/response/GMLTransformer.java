@@ -6,9 +6,13 @@ package org.geoserver.wcs2_0.response;
 
 import java.awt.image.DataBuffer;
 import java.awt.image.RenderedImage;
+import java.io.IOException;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 import javax.measure.unit.Unit;
@@ -17,14 +21,19 @@ import javax.media.jai.PlanarImage;
 import javax.media.jai.iterator.RectIter;
 import javax.media.jai.iterator.RectIterFactory;
 
+import org.geoserver.catalog.CoverageDimensionInfo;
+import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wcs2_0.GetCoverage;
+import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.TypeMap;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
@@ -32,6 +41,7 @@ import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.resources.coverage.CoverageUtilities;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
+import org.geotools.util.Utilities;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
 import org.opengis.coverage.SampleDimension;
@@ -43,8 +53,10 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.crs.GeographicCRS;
 import org.opengis.referencing.cs.CoordinateSystem;
 import org.opengis.referencing.operation.MathTransform2D;
+import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
+import org.xml.sax.helpers.NamespaceSupport;
 
 /**
  * Internal Base {@link GMLTransformer} for DescribeCoverage and GMLCoverageEncoding
@@ -68,15 +80,77 @@ class GMLTransformer extends TransformerBase {
         this.fileReference = fileReference;
     }
 
+    /**
+     * Set of custom TAGs for Metadata elements
+     */
+    static class TAG {
+        private final static String RANGE = "wcsgs:Range";
+        
+        private final static String INTERVAL_START = "wcsgs:start";
+        
+        private final static String INTERVAL_END = "wcsgs:end";
+        
+        private final static String INTERVAL_PERIOD = "wcsgs:Interval";
+        
+        private final static String SINGLE_VALUE = "wcsgs:SingleValue";
+        
+        private static final String ADDITIONAL_DIMENSION = "wcsgs:DimensionDomain";
+        
+        private static final String TIME_DOMAIN = "wcsgs:TimeDomain";
+        
+        private static final String ELEVATION_DOMAIN = "wcsgs:ElevationDomain";
+     
+    }
+    
     class GMLTranslator extends TranslatorSupport {
+
+        protected List<WCS20CoverageMetadataProvider> extensions;
+        private WCS20CoverageMetadataProvider.Translator translator = new WCS20CoverageMetadataProvider.Translator() {
+            
+            @Override
+            public void start(String element, Attributes attributes) {
+                GMLTranslator.this.start(element, attributes);
+            }
+            
+            @Override
+            public void start(String element) {
+                GMLTranslator.this.start(element);
+                
+            }
+            
+            @Override
+            public void end(String element) {
+                GMLTranslator.this.end(element);
+                
+            }
+            
+            @Override
+            public void chars(String text) {
+                GMLTranslator.this.chars(text);
+            }
+        };
+        protected TranslatorHelper helper = new TranslatorHelper();
 
         public GMLTranslator(ContentHandler contentHandler) {
             super(contentHandler, null, null);
+            this.extensions = GeoServerExtensions.extensions(WCS20CoverageMetadataProvider.class);
         }
 
         @Override
         public void encode(Object o) throws IllegalArgumentException {
-            // TODO does the real encoding
+            // register namespaces provided by extended capabilities
+            NamespaceSupport namespaces = getNamespaceSupport();
+            namespaces.declarePrefix("wcscrs", "http://www.opengis.net/wcs/service-extension/crs/1.0");
+            namespaces.declarePrefix("int", "http://www.opengis.net/WCS_service-extension_interpolation/1.0");
+            namespaces.declarePrefix("gml", "http://www.opengis.net/gml/3.2");
+            namespaces.declarePrefix("gmlcov", "http://www.opengis.net/gmlcov/1.0");
+            namespaces.declarePrefix("swe", "http://www.opengis.net/swe/2.0");
+            namespaces.declarePrefix("xlink", "http://www.w3.org/1999/xlink");
+            namespaces.declarePrefix("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+
+            for (WCS20CoverageMetadataProvider cp : extensions) {
+                cp.registerNamespaces(namespaces);
+            }
 
             // is this a GridCoverage?
             if (!(o instanceof GridCoverage2D)) {
@@ -86,8 +160,6 @@ class GMLTransformer extends TransformerBase {
             final GridCoverage2D gc2d = (GridCoverage2D) o;
             // we are going to use this name as an ID
             final String gcName = gc2d.getName().toString(Locale.getDefault());
-            
-
 
             // get the crs and look for an EPSG code
             final CoordinateReferenceSystem crs = gc2d.getCoordinateReferenceSystem2D();
@@ -108,18 +180,8 @@ class GMLTransformer extends TransformerBase {
             // handle axes swap for geographic crs
             final boolean axisSwap = CRS.getAxisOrder(crs).equals(AxisOrder.EAST_NORTH);
 
-            // TODO do we miss any of them?
             final AttributesImpl attributes = new AttributesImpl();
-            attributes.addAttribute("", "xmlns:gml", "xmlns:gml", "",
-                    "http://www.opengis.net/gml/3.2");
-            attributes.addAttribute("", "xmlns:gmlcov", "xmlns:gmlcov", "",
-                    "http://www.opengis.net/gmlcov/1.0");
-            attributes.addAttribute("", "xmlns:swe", "xmlns:swe", "",
-                    "http://www.opengis.net/swe/2.0");
-            attributes.addAttribute("", "xmlns:xlink", "xmlns:xlink", "",
-                    "http://www.w3.org/1999/xlink");
-            attributes.addAttribute("", "xmlns:xsi", "xmlns:xsi", "",
-                    "http://www.w3.org/2001/XMLSchema-instance");
+            helper.registerNamespaces(getNamespaceSupport(), attributes);
 
             // using Name as the ID
             attributes.addAttribute("", "gml:id", "gml:id", "",
@@ -132,7 +194,12 @@ class GMLTransformer extends TransformerBase {
                 builder.append(axisName).append(" ");
             }
             String axesLabel = builder.substring(0, builder.length() - 1);
-            handleBoundedBy(gc2d, axisSwap, srsName, axesLabel, null);
+            try {
+                GeneralEnvelope envelope = new GeneralEnvelope(gc2d.getEnvelope());
+                handleBoundedBy(envelope, axisSwap, srsName, axesLabel, null);
+            } catch (IOException ex) {
+                throw new WCS20Exception(ex);
+            }
 
             // handle domain
             builder.setLength(0);
@@ -142,19 +209,25 @@ class GMLTransformer extends TransformerBase {
                 builder.append(axisName).append(" ");
             }
             axesLabel = builder.substring(0, builder.length() - 1);
-            handleDomainSet(gc2d, gcName, srsName, axisSwap);
+            handleDomainSet(gc2d.getGridGeometry(), gc2d.getDimension(), gcName, srsName, axisSwap);
 
             // handle rangetype
             handleRangeType(gc2d);
 
             // handle coverage function
-            handleCoverageFunction(gc2d, axisSwap);
+            final GridEnvelope2D ge2D = gc2d.getGridGeometry().getGridRange2D();
+            handleCoverageFunction(ge2D, axisSwap);
 
             // handle range
             handleRange(gc2d);
 
             // handle metadata OPTIONAL
-            handleMetadata(gc2d, null);
+            try {
+                handleMetadata(null, null);
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
 
             end("gml:RectifiedGridCoverage");
 
@@ -174,7 +247,7 @@ class GMLTransformer extends TransformerBase {
          * @param gc2d
          * @param axisSwap
          */
-        public void handleCoverageFunction(GridCoverage2D gc2d, boolean axisSwap) {
+        public void handleCoverageFunction(GridEnvelope2D gridRange, boolean axisSwap) {
             start("gml:coverageFunction");
             start("gml:GridFunction");
 
@@ -182,8 +255,7 @@ class GMLTransformer extends TransformerBase {
             final AttributesImpl gridAttrs = new AttributesImpl();
             gridAttrs.addAttribute("", "axisOrder", "axisOrder", "", axisSwap ? "+2 +1" : "+1 +2");
             element("gml:sequenceRule", "Linear", gridAttrs); // minOccurs 0, default Linear
-            final GridEnvelope2D ge2D = gc2d.getGridGeometry().getGridRange2D();
-            element("gml:startPoint", ge2D.x + " " + ge2D.y); // we start at minx, miny (this is optional though)
+            element("gml:startPoint", gridRange.x + " " + gridRange.y); // we start at minx, miny (this is optional though)
 
             end("gml:GridFunction");
             end("gml:coverageFunction");
@@ -202,59 +274,290 @@ class GMLTransformer extends TransformerBase {
          * }
          * </pre>
          * 
-         * @param gc2d
+         * @param context Can be either a {@link GridCoverage2DReader} or a {@link GridCoverage2D}, depending
+         *                on how the method is invoked
+         * @throws IOException 
          */
-        public void handleMetadata(GridCoverage2D gc2d, TimeDimensionHelper timeHelper) {
+        public void handleMetadata(Object context, WCSDimensionsHelper dimensionsHelper) throws IOException {
             start("gmlcov:metadata");
             start("gmlcov:Extension");
-         
-            // handle time if necessary
-            if(timeHelper != null) {
-                start("wcsgs:TimeDomain");
-                DimensionPresentation presentation = timeHelper.getPresentation();
-                switch(presentation) {
-                    case CONTINUOUS_INTERVAL:
-                        String id0 = timeHelper.getCoverageId() + "_tp_0";
-                        encodeTimePeriod(timeHelper.getBeginPosition(), timeHelper.getEndPosition(), id0, null, null);
-                        break;
-                    case DISCRETE_INTERVAL:
-                        String id1 = timeHelper.getCoverageId() + "_tp_0";
-                        encodeTimePeriod(timeHelper.getBeginPosition(), timeHelper.getEndPosition(), id1, 
-                                timeHelper.getResolutionUnit(), timeHelper.getResolutionValue());
 
-                        break;
-                    default:
-                        // TODO: check if we are in the list of instants case, or in the list of periods case
-                        
-                        // list case
-                        TreeSet<Object> domain = timeHelper.getTimeDomain();
-                        int i = 0;
-                        for (Object item : domain) {
-                            // gml:id is mandatory for time instant...
-                            final AttributesImpl atts = new AttributesImpl();
-                            atts.addAttribute("", "gml:id", "gml:id", "", timeHelper.getCoverageId() + "_td_" + i);
-                            if(item instanceof Date) {
-                                start("gml:TimeInstant", atts);
-                                element("gml:timePosition", timeHelper.format((Date) item));
-                                end("gml:TimeInstant");
-                            } else if(item instanceof DateRange) {
-                                DateRange range = (DateRange) item;
-                                start("gml:TimePeriod", atts);
-                                element("gml:beginPosition", timeHelper.format(range.getMinValue()));
-                                element("gml:endPosition", timeHelper.format(range.getMaxValue()));
-                                end("gml:TimePeriod");
-                            }
-                            i++;
-                        }
-                        break;
-                }
-                end("wcsgs:TimeDomain");
+            if (dimensionsHelper != null) {
+
+                // handle time if necessary
+                handleTimeMetadata(dimensionsHelper);
+
+                // handle elevation if necessary
+                handleElevationMetadata(dimensionsHelper);
+
+                // handle additional dimensions if necessary
+                handleAdditionalDimensionMetadata(dimensionsHelper);
+            }
+
+            for (WCS20CoverageMetadataProvider extension : extensions) {
+                extension.encode(translator, context);
             }
 
             end("gmlcov:Extension");
             end("gmlcov:metadata");
         }
 
+        /**
+         * Look for additional dimensions in the dimensionsHelper and put additional domains to the metadata
+         * @param helper
+         * @throws IOException 
+         */
+        private void handleAdditionalDimensionMetadata(final WCSDimensionsHelper helper) throws IOException {
+            Utilities.ensureNonNull("helper", helper);
+            final Map<String, DimensionInfo> additionalDimensions = helper.getAdditionalDimensions();
+            final Set<String> dimensionsName = additionalDimensions.keySet();
+            final Iterator<String> dimensionsIterator = dimensionsName.iterator();
+            while (dimensionsIterator.hasNext()) {
+                final String dimensionName = dimensionsIterator.next();
+                final DimensionInfo customDimension = additionalDimensions.get(dimensionName);
+                if (customDimension != null) {
+                    setAdditionalDimensionMetadata(dimensionName, customDimension, helper);
+                }
+            }
+        }
+
+        /**
+         * Set additional dimension metadata to the DescribeCoverage element
+         * @param name the custom dimension name
+         * @param dimension the custom dimension related {@link DimensionInfo} instance
+         * @param helper the {@link WCSDimensionsHelper} instance to be used to parse domains
+         * @throws IOException
+         */
+        private void setAdditionalDimensionMetadata(final String name,
+                final DimensionInfo dimension, WCSDimensionsHelper helper)
+                throws IOException {
+            Utilities.ensureNonNull("helper", helper);
+            final String startTag = initStartMetadataTag(TAG.ADDITIONAL_DIMENSION, name, dimension, helper);
+
+            start(startTag);
+            // Custom dimension only supports List presentation
+            final List<String> domain = helper.getDomain(name);
+            // TODO: check if we are in the list of instants case, or in the list of periods case
+
+            // list case
+            int i = 0;
+            for (String item : domain) {
+                Date date = WCSDimensionsValueParser.parseAsDate(item);
+                if (date != null) {
+                    final String dimensionId = helper.getCoverageId() + "_dd_" + i;
+                    encodeDate(date, helper, dimensionId); 
+                    continue;
+                }
+
+                Double number = WCSDimensionsValueParser.parseAsDouble(item);
+                if (number != null ) {
+                    element(TAG.SINGLE_VALUE, item.toString());
+                    continue;
+                }
+
+                NumberRange<Double> range = WCSDimensionsValueParser.parseAsDoubleRange(item);
+                if (range != null ) {
+                    encodeInterval(range.getMinValue().toString(), range.getMaxValue()
+                          .toString(), null, null);
+                    continue;
+                }
+
+                //TODO: Add support for date Ranges
+                if (item instanceof String) {
+                    element(TAG.SINGLE_VALUE, item.toString());
+                } 
+//                else if (item instanceof DateRange) {
+//                    final String dimensionId = helper.getCoverageId() + "_dd_" + i;
+//                    encodeDateRange((DateRange) item, helper, dimensionId);
+//                }
+                
+                //TODO: Add more cases
+                i++;
+            }
+            end(TAG.ADDITIONAL_DIMENSION);
+        }
+
+        /**
+         * Initialize the metadata start tag for a custom dimension, setting dimension name, 
+         * checking for UOM, defaultValue, ...  
+         * 
+         * @param dimensionTag the TAG referring to type of dimension (Time, Elevation, Additional ,...)
+         * @param name the name of the custom dimension 
+         * @param dimension the custom dimension {@link DimensionInfo} instance
+         * @param helper the {@link WCSDimensionsHelper} instance used to parse default values
+         * @return
+         * @throws IOException
+         */
+        private String initStartMetadataTag(final String dimensionTag, final String name, final DimensionInfo dimension,
+                final WCSDimensionsHelper helper) throws IOException {
+            final String uom = dimension.getUnitSymbol();
+            String defaultValue = null;
+            String prolog = null;
+            if (dimensionTag.equals(TAG.ADDITIONAL_DIMENSION)) {
+                prolog = TAG.ADDITIONAL_DIMENSION + " name = \"" + name + "\"";
+                defaultValue = helper.getDefaultValue(name);
+            } else if (dimensionTag.equals(TAG.ELEVATION_DOMAIN)) {
+                prolog = TAG.ELEVATION_DOMAIN;
+                defaultValue = helper.getBeginElevation();
+            } else if (dimensionTag.equals(TAG.TIME_DOMAIN)) {
+                prolog = TAG.TIME_DOMAIN;
+                defaultValue = helper.getEndTime();
+            }
+            return prolog + (uom != null ? (" uom=\"" + uom + "\"") : "") 
+                    + (defaultValue != null ? (" default=\"" + defaultValue + "\"") : "");
+        }
+
+        /**
+         * Set the timeDomain metadata in case the dimensionsHelper instance has a timeDimension
+         * 
+         * @param helper
+         * @throws IOException
+         */
+        private void handleTimeMetadata(WCSDimensionsHelper helper) throws IOException {
+            Utilities.ensureNonNull("helper", helper);
+            final DimensionInfo timeDimension = helper.getTimeDimension();
+            if (timeDimension != null) {
+                start(initStartMetadataTag(TAG.TIME_DOMAIN, null, timeDimension, helper));
+                final DimensionPresentation presentation = timeDimension.getPresentation();
+                final String id = helper.getCoverageId();
+                switch(presentation) {
+                    case CONTINUOUS_INTERVAL:
+                        encodeTimePeriod(helper.getBeginTime(), helper.getEndTime(), id + "_tp_0", null, null);
+                        break;
+                    case DISCRETE_INTERVAL:
+                        encodeTimePeriod(helper.getBeginTime(), helper.getEndTime(), id + "_tp_0", 
+                                helper.getTimeResolutionUnit(), helper.getTimeResolutionValue());
+                        break;
+                    default:
+                        // TODO: check if we are in the list of instants case, or in the list of periods case
+                        
+                        // list case
+                        final TreeSet<Object> domain = helper.getTimeDomain();
+                        int i = 0;
+                        for (Object item : domain) {
+                            // gml:id is mandatory for time instant...
+                            if(item instanceof Date) {
+                               encodeDate((Date) item, helper, id + "_td_" + i);
+                            } else if(item instanceof DateRange) {
+                               encodeDateRange((DateRange) item, helper, id + "_td_" + i);
+                            }
+                            i++;
+                        }
+                        break;
+                }
+                end(TAG.TIME_DOMAIN);
+            }
+        }
+
+        /**
+         * Set the elevationDomain metadata in case the dimensionsHelper instance has an elevationDimension
+         * 
+         * @param helper
+         * @throws IOException
+         */
+        private void handleElevationMetadata(WCSDimensionsHelper helper) throws IOException {
+            // Null check has been performed in advance
+            final DimensionInfo elevationDimension = helper.getElevationDimension();
+            if (elevationDimension != null) {
+                start(initStartMetadataTag(TAG.ELEVATION_DOMAIN, null, elevationDimension, helper));
+                final DimensionPresentation presentation = elevationDimension.getPresentation();
+                switch(presentation) {
+                    // Where _er_ means elevation range
+                    case CONTINUOUS_INTERVAL:
+                        encodeInterval(helper.getBeginElevation(), helper.getEndElevation(), null, null);
+                        break;
+                    case DISCRETE_INTERVAL:
+                        encodeInterval(helper.getBeginElevation(), helper.getEndElevation(),  
+                                helper.getElevationResolutionUnit(), helper.getElevationResolutionValue());
+                        break;
+                    default:
+                        // TODO: check if we are in the list of instants case, or in the list of periods case
+                        
+                        // list case
+                        final TreeSet<Object> domain = helper.getElevationDomain();
+                        for (Object item : domain) {
+                            if (item instanceof Number) {
+                                element(TAG.SINGLE_VALUE, item.toString());
+                            } else if(item instanceof NumberRange) {
+                                NumberRange range = (NumberRange) item;
+                                encodeInterval(range.getMinValue().toString(), range.getMaxValue().toString(), null, null);
+                            }
+                        }
+                        break;
+                }
+                end(TAG.ELEVATION_DOMAIN);
+            }
+        }
+
+        /** 
+         * Encode a DateRange item as a GML TimePeriod 
+         * @param range
+         * @param helper
+         * @param id
+         */
+        private void encodeDateRange(final DateRange range, final WCSDimensionsHelper helper, final String id) {
+            encodeTimePeriod(helper.format(range.getMinValue()), helper.format(range.getMaxValue()), 
+                    id, null, null);
+        }
+
+        /**
+         * Encode a Date item as a GML TimeInstant
+         * @param item
+         * @param helper
+         * @param id
+         */
+        private void encodeDate(final Date item, final WCSDimensionsHelper helper, final String id) {
+            final AttributesImpl atts = new AttributesImpl();
+            atts.addAttribute("", "gml:id", "gml:id", "", id);
+            start("gml:TimeInstant", atts);
+            element("gml:timePosition", helper.format(item));
+            end("gml:TimeInstant");
+        }
+
+
+        /**
+         * Encode a GML time period 
+         * 
+         * @param beginPosition
+         * @param endPosition
+         * @param timePeriodId
+         * @param intervalUnit
+         * @param intervalValue
+         */
+        public void encodeTimePeriod(String beginPosition, String endPosition, String timePeriodId, String intervalUnit, Long intervalValue) {
+            AttributesImpl atts = new AttributesImpl();
+            atts.addAttribute("", "gml:id", "gml:id", "", timePeriodId);
+            start("gml:TimePeriod", atts);
+            element("gml:beginPosition", beginPosition);
+            element("gml:endPosition", endPosition);
+            if (intervalUnit != null && intervalValue != null) {
+                atts = new AttributesImpl();
+                atts.addAttribute("", "unit", "unit", "", intervalUnit);
+                element("gml:TimeInterval", intervalValue.toString(), atts);
+            }
+            end("gml:TimePeriod");
+        }
+
+        /**
+         * Encode Interval
+         * 
+         * @param beginPosition
+         * @param endPosition
+         * @param dimensionId
+         */
+        public void encodeInterval(String beginPosition, String endPosition,
+                String intervalUnit, Double intervalValue) {
+            AttributesImpl atts = new AttributesImpl();
+            start(TAG.RANGE, atts);
+            element(TAG.INTERVAL_START, beginPosition);
+            element(TAG.INTERVAL_END, endPosition);
+            if (intervalUnit != null && intervalValue != null) {
+                atts = new AttributesImpl();
+                atts.addAttribute("", "unit", "unit", "", intervalUnit);
+                element(TAG.INTERVAL_PERIOD, intervalValue.toString(), atts);
+            }
+            end(TAG.RANGE);
+        }
         /**
          * Encodes the boundedBy element
          * 
@@ -277,27 +580,43 @@ class GMLTransformer extends TransformerBase {
          * @param srsName
          * @param axesNames
          * @param axisLabels
+         * @throws IOException 
          */
-        public void handleBoundedBy(GridCoverage2D gc2d, boolean axisSwap, String srsName, String axisLabels, TimeDimensionHelper timeHelper) {
-            final GeneralEnvelope envelope = new GeneralEnvelope(gc2d.getEnvelope());
-            final CoordinateReferenceSystem crs = gc2d.getCoordinateReferenceSystem2D();
+        public void handleBoundedBy(final GeneralEnvelope envelope, boolean axisSwap, String srsName, String axisLabels, WCSDimensionsHelper dimensionHelper) throws IOException {
+            final CoordinateReferenceSystem crs = envelope.getCoordinateReferenceSystem();
             final CoordinateSystem cs = crs.getCoordinateSystem();
 
             // TODO time
             String uomLabels = extractUoM(crs, cs.getAxis(axisSwap ? 1 : 0).getUnit()) + " "
                     + extractUoM(crs, cs.getAxis(axisSwap ? 0 : 1).getUnit());
-            if(timeHelper != null) {
-                uomLabels = uomLabels + " s";
-            }
-            final int srsDimension = cs.getDimension();
 
+            // time and elevation dimensions management
+            boolean hasElevation = false;
+            boolean hasTime = false;
+            if (dimensionHelper != null) {
+                if (dimensionHelper.getElevationDimension() != null) {
+                    uomLabels = uomLabels + " m"; //TODO: Check elevation uom
+                    hasElevation = true;
+                }
+                if (dimensionHelper.getTimeDimension() != null) {
+                    uomLabels = uomLabels + " s";
+                    hasTime = true;
+                }
+            }
+            final int srsDimension = cs.getDimension() + (hasElevation ? 1 : 0); 
+
+            // Setting up envelope bounds (including elevation)
             final String lower = new StringBuilder()
                     .append(envelope.getLowerCorner().getOrdinate(axisSwap ? 1 : 0)).append(" ")
-                    .append(envelope.getLowerCorner().getOrdinate(axisSwap ? 0 : 1)).toString();
+                    .append(envelope.getLowerCorner().getOrdinate(axisSwap ? 0 : 1))
+                    .append(hasElevation ? " " + dimensionHelper.getBeginElevation() : "")
+                    .toString();
 
             final String upper = new StringBuilder()
                     .append(envelope.getUpperCorner().getOrdinate(axisSwap ? 1 : 0)).append(" ")
-                    .append(envelope.getUpperCorner().getOrdinate(axisSwap ? 0 : 1)).toString();
+                    .append(envelope.getUpperCorner().getOrdinate(axisSwap ? 0 : 1))
+                    .append(hasElevation ? " " + dimensionHelper.getEndElevation() : "")
+                    .toString();
 
             // build the fragment
             final AttributesImpl envelopeAttrs = new AttributesImpl();
@@ -308,7 +627,7 @@ class GMLTransformer extends TransformerBase {
                     String.valueOf(srsDimension));
             start("gml:boundedBy");
             String envelopeName;
-            if(timeHelper != null) {
+            if (dimensionHelper != null && (hasTime || hasElevation)) {
                 envelopeName = "gml:EnvelopeWithTimePeriod";
             } else {
                 envelopeName = "gml:Envelope";
@@ -318,9 +637,9 @@ class GMLTransformer extends TransformerBase {
             element("gml:lowerCorner", lower);
             element("gml:upperCorner", upper);
             
-            if(timeHelper != null) {
-                element("gml:beginPosition", timeHelper.getBeginPosition());
-                element("gml:endPosition", timeHelper.getEndPosition());
+            if (dimensionHelper != null && hasTime) {
+                element("gml:beginPosition", dimensionHelper.getBeginTime());
+                element("gml:endPosition", dimensionHelper.getEndTime());
             }
 
             end(envelopeName);
@@ -335,7 +654,7 @@ class GMLTransformer extends TransformerBase {
          * @param uom
          * @return
          */
-        public String extractUoM(CoordinateReferenceSystem crs, Unit<?> uom) {
+        public String extractUoM (CoordinateReferenceSystem crs, Unit<?> uom) {
             // special handling for Degrees
             if (crs instanceof GeographicCRS) {
                 return "Deg";
@@ -482,7 +801,7 @@ class GMLTransformer extends TransformerBase {
 
                 // Description
                 start("swe:description");
-                chars(sd.toString());// TODO can we make up something better??
+                chars(sd.getDescription().toString());// TODO can we make up something better??
                 end("swe:description");
 
                 // UoM
@@ -496,7 +815,7 @@ class GMLTransformer extends TransformerBase {
                 // constraint on values
                 start("swe:constraint");
                 start("swe:AllowedValues");
-                handleSampleDimensionRange((GridSampleDimension) sd);// TODO make this generic
+                handleSampleDimensionRange(sd);// TODO make this generic
                 end("swe:AllowedValues");
                 end("swe:constraint");
 
@@ -565,13 +884,32 @@ class GMLTransformer extends TransformerBase {
          * 
          * @param sd the {@link SampleDimension} to encode a meaningful range for.
          */
-        public void handleSampleDimensionRange(GridSampleDimension sd) {
+        public void handleSampleDimensionRange(CoverageDimensionInfo sd) {
+            SampleDimensionType sdType = sd.getDimensionType();
+            handleSampleDimension(sdType);
 
-            final SampleDimensionType sdType = sd.getSampleDimensionType();
+        }
+
+        private void handleSampleDimension(SampleDimensionType sdType) {
+            // old data dirs upgrading will have this empty
+            if(sdType == null) {
+                // pick the one with the largest domain and be done with it
+                sdType = SampleDimensionType.REAL_64BITS;
+            }
             final NumberRange<? extends Number> indicativeRange = TypeMap.getRange(sdType);
             start("swe:interval");
             chars(indicativeRange.getMinValue() + " " + indicativeRange.getMaxValue());
             end("swe:interval");
+        }
+        
+        /**
+         * Tries to encode a meaningful range for a {@link SampleDimension}.
+         * 
+         * @param sd the {@link SampleDimension} to encode a meaningful range for.
+         */
+        public void handleSampleDimensionRange(SampleDimension sd) {
+            SampleDimensionType sdType = sd.getSampleDimensionType();
+            handleSampleDimension(sdType);
 
         }
 
@@ -601,18 +939,13 @@ class GMLTransformer extends TransformerBase {
          * @param srsName
          * @param axesSwap
          */
-        public void handleDomainSet(GridCoverage2D gc2d, String gcName, String srsName,
+        public void handleDomainSet(GridGeometry2D gg2D, int gridDimension, String gcName, String srsName,
                 boolean axesSwap) {
-            // retrieve info
-
-            final GridGeometry2D gg2D = gc2d.getGridGeometry();
-
             // setup vars
             final String gridId = "grid00__" + gcName;
 
             // Grid Envelope
             final GridEnvelope gridEnvelope = gg2D.getGridRange();
-            final int gridDimension = gc2d.getDimension();
 
             final StringBuilder lowSb = new StringBuilder();
             for (int i : gridEnvelope.getLow().getCoordinateValues()) {
@@ -643,7 +976,7 @@ class GMLTransformer extends TransformerBase {
             // Axis Label
             element("gml:axisLabels", "i j");
 
-            final MathTransform2D transform = gg2D.getGridToCRS2D(PixelOrientation.UPPER_LEFT);
+            final MathTransform2D transform = gg2D.getGridToCRS2D(PixelOrientation.CENTER);
             if (!(transform instanceof AffineTransform2D)) {
                 throw new IllegalStateException("Invalid grid to worl provided:"
                         + transform.toString());
@@ -679,29 +1012,11 @@ class GMLTransformer extends TransformerBase {
                     offsetAttr);
             end("gml:RectifiedGrid");
             end("gml:domainSet");
-
         }
-
-        private void encodeTimePeriod(String beginPosition, String endPosition, String timePeriodId, String intervalUnit, Long intervalValue) {
-            AttributesImpl atts = new AttributesImpl();
-            atts.addAttribute("", "gml:id", "gml:id", "", timePeriodId);
-            start("gml:TimePeriod", atts);
-            element("gml:beginPosition", beginPosition);
-            element("gml:endPosition", endPosition);
-            if(intervalUnit != null && intervalValue != null) {
-                atts = new AttributesImpl();
-                atts.addAttribute("", "unit", "unit", "", intervalUnit);
-                element("gml:TimeInterval", intervalValue.toString(), atts);
-            }
-            end("gml:TimePeriod");
-        }
-
     }
 
     @Override
     public Translator createTranslator(ContentHandler handler) {
         return new GMLTranslator(handler);
     }
-
-
 }

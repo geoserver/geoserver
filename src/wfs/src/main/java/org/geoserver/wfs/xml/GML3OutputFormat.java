@@ -40,15 +40,14 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.GeoServer;
-import org.geoserver.config.GeoServerInfo;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
-import org.geoserver.wfs.GMLInfo.SrsNameStyle;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.request.Query;
@@ -114,7 +113,7 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
         GetFeatureRequest request = GetFeatureRequest.adapt(getFeature.getParameters()[0]);
 
         // round up the info objects for each feature collection
-        HashMap<String, Set<FeatureTypeInfo>> ns2metas = new HashMap<String, Set<FeatureTypeInfo>>();
+        HashMap<String, Set<ResourceInfo>> ns2metas = new HashMap<String, Set<ResourceInfo>>();
         for (int fcIndex = 0; fcIndex < featureCollections.size(); fcIndex++) {
             if(request != null) {
                 List<Query> queries = request.getQueries();
@@ -124,7 +123,7 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
                 for (QName name : queryType.getTypeNames()) {
                     // get a feature type name from the query
                     Name featureTypeName = new NameImpl(name.getNamespaceURI(), name.getLocalPart());
-                    FeatureTypeInfo meta = catalog.getFeatureTypeByName(featureTypeName);
+                    ResourceInfo meta = catalog.getResourceByName(featureTypeName, ResourceInfo.class);
                     
                     if (meta == null) {
                         throw new WFSException(request, "Could not find feature type " + featureTypeName
@@ -132,10 +131,10 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
                     }
                     
                     // add it to the map
-                    Set<FeatureTypeInfo> metas = ns2metas.get(featureTypeName.getNamespaceURI());
+                    Set<ResourceInfo> metas = ns2metas.get(featureTypeName.getNamespaceURI());
                     
                     if (metas == null) {
-                        metas = new HashSet<FeatureTypeInfo>();
+                        metas = new HashSet<ResourceInfo>();
                         ns2metas.put(featureTypeName.getNamespaceURI(), metas);
                     }
                     metas.add(meta);
@@ -221,18 +220,21 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
 
             StringBuffer typeNames = new StringBuffer();
             for (Iterator m = metas.iterator(); m.hasNext();) {
-                FeatureTypeInfo meta = (FeatureTypeInfo) m.next();
-                FeatureType featureType = meta.getFeatureType();
-                Object userSchemaLocation = featureType.getUserData().get("schemaURI");
-                if (userSchemaLocation != null && userSchemaLocation instanceof Map) {
-                    Map<String, String> schemaURIs = (Map<String, String>) userSchemaLocation;
-                    for (String namespace : schemaURIs.keySet()) {
-                        encoder.setSchemaLocation(namespace, schemaURIs.get(namespace));
-                    }
-                } else {
-                    typeNames.append(meta.getPrefixedName());
-                    if (m.hasNext()) {
-                        typeNames.append(",");
+                ResourceInfo ri = (ResourceInfo) m.next();
+                if(ri instanceof FeatureTypeInfo) {
+                    FeatureTypeInfo meta = (FeatureTypeInfo) ri;
+                    FeatureType featureType = meta.getFeatureType();
+                    Object userSchemaLocation = featureType.getUserData().get("schemaURI");
+                    if (userSchemaLocation != null && userSchemaLocation instanceof Map) {
+                        Map<String, String> schemaURIs = (Map<String, String>) userSchemaLocation;
+                        for (String namespace : schemaURIs.keySet()) {
+                            encoder.setSchemaLocation(namespace, schemaURIs.get(namespace));
+                        }
+                    } else {
+                        typeNames.append(meta.getPrefixedName());
+                        if (m.hasNext()) {
+                            typeNames.append(",");
+                        }
                     }
                 }
             }
@@ -257,7 +259,7 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
     }
     
     protected Encoder createEncoder(Configuration configuration, 
-        Map<String, Set<FeatureTypeInfo>> featureTypes, Object request ) {
+        Map<String, Set<ResourceInfo>> featureTypes, Object request ) {
         return new Encoder(configuration, configuration.schema());
     }
 

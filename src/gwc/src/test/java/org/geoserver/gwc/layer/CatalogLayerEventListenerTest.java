@@ -10,6 +10,7 @@ import static junit.framework.Assert.assertSame;
 import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.atMost;
@@ -24,12 +25,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -40,6 +43,8 @@ import org.geoserver.catalog.event.impl.CatalogRemoveEventImpl;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geowebcache.grid.GridSetBroker;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -72,6 +77,9 @@ public class CatalogLayerEventListenerTest {
     private LayerGroupInfo mockLayerGroupInfo;
 
     private CatalogLayerEventListener listener;
+    
+    private StyleInfo mockDefaultStyle;
+    private Set<StyleInfo> mockStyles;
 
     /**
      * @see junit.framework.TestCase#setUp()
@@ -96,16 +104,25 @@ public class CatalogLayerEventListenerTest {
 
         mockResourceInfo = mock(FeatureTypeInfo.class);
         mockNamespaceInfo = mock(NamespaceInfo.class);
+        
+        mockDefaultStyle = mock(StyleInfo.class);
+        when(mockDefaultStyle.getName()).thenReturn("defaultStyle");
 
         when(mockLayerGroupInfo.getName()).thenReturn(LAYER_GROUP_NAME);
         when(mockLayerGroupInfo.prefixedName()).thenReturn(LAYER_GROUP_NAME);
+        when(mockLayerGroupInfo.getLayers()).thenReturn(Arrays.asList((PublishedInfo) mockLayerInfo));
+        when(mockLayerGroupInfo.getStyles()).thenReturn(Arrays.asList((StyleInfo) null));
         when(mockResourceInfo.prefixedName()).thenReturn(PREFIXED_RESOURCE_NAME);
         when(mockResourceInfo.getName()).thenReturn(RESOURCE_NAME);
         when(mockResourceInfo.getNamespace()).thenReturn(mockNamespaceInfo);
         when(mockNamespaceInfo.getPrefix()).thenReturn(NAMESPACE_PREFIX);
         when(mockLayerInfo.getResource()).thenReturn(mockResourceInfo);
 
-        listener = new CatalogLayerEventListener(mockMediator);
+        Catalog mockCatalog = mock(Catalog.class);
+        when(mockCatalog.getLayerGroups()).thenReturn(Arrays.asList(mockLayerGroupInfo));
+        when(mockLayerInfo.getDefaultStyle()).thenReturn(mockDefaultStyle);
+
+        listener = new CatalogLayerEventListener(mockMediator, mockCatalog);
     }
 
     @Test public void testLayerInfoAdded() throws Exception {
@@ -418,11 +435,18 @@ public class CatalogLayerEventListenerTest {
 
         GeoServerTileLayer tileLayer = mock(GeoServerTileLayer.class);
         when(mockMediator.getTileLayerByName(eq(PREFIXED_RESOURCE_NAME))).thenReturn(tileLayer);
+        GeoServerTileLayer lgTileLayer = mock(GeoServerTileLayer.class);
+        when(mockMediator.getTileLayer(mockLayerGroupInfo)).thenReturn(lgTileLayer);
 
         // the tile layer must exist on the layer metadata otherwise the event will be ignored
         GeoServerTileLayerInfo info = TileLayerInfoUtil.loadOrCreate(mockLayerInfo,
                 GWCConfig.getOldDefaults());
         when(tileLayer.getInfo()).thenReturn(info);
+        
+        // same goes for the group layer
+        GeoServerTileLayerInfo groupInfo = TileLayerInfoUtil.loadOrCreate(mockLayerGroupInfo,
+                GWCConfig.getOldDefaults());
+        when(lgTileLayer.getInfo()).thenReturn(groupInfo);
 
         when(mockMediator.hasTileLayer(same(mockLayerInfo))).thenReturn(true);
         when(mockMediator.getTileLayer(same(mockLayerInfo))).thenReturn(tileLayer);
@@ -435,7 +459,12 @@ public class CatalogLayerEventListenerTest {
         listener.handlePostModifyEvent(postModifyEvent);
 
         verify(mockMediator).truncateByLayerAndStyle(eq(PREFIXED_RESOURCE_NAME), eq(oldName));
-        verify(mockMediator).save(any(GeoServerTileLayer.class));
+        // both the layer group and the layer got saved
+        verify(mockMediator, times(2)).save(any(GeoServerTileLayer.class));
+        
+        // verify the layer group was also truncated 
+        verify(mockMediator).truncate(LAYER_GROUP_NAME);
+
     }
 
     @Test public void testLayerInfoAlternateStylesChanged() throws Exception {
@@ -486,6 +515,20 @@ public class CatalogLayerEventListenerTest {
                 eq("removedStyleName"));
         // check no other style was truncated
         verify(mockMediator, atMost(1)).truncateByLayerAndStyle(anyString(), anyString());
-        verify(mockMediator).save(any(GeoServerTileLayer.class));
+        // verify only got modified
+        verify(mockMediator).save(argThat(new BaseMatcher<GeoServerTileLayer>() {
+
+            @Override
+            public boolean matches(Object item) {
+                GeoServerTileLayer tl = (GeoServerTileLayer) item;
+                LayerInfo li = tl.getLayerInfo();
+                return li == mockLayerInfo;
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                // TODO Auto-generated method stub
+            }
+        }));
     }
 }

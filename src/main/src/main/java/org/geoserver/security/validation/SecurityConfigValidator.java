@@ -429,7 +429,7 @@ public class SecurityConfigValidator extends AbstractSecurityValidator{
         validateRemoveNamedService(GeoServerSecurityFilter.class, config);
         
         List<String> patterns = 
-            manager.getSecurityConfig().getFilterChain().patternsForFilter(config.getClassName());
+            manager.getSecurityConfig().getFilterChain().patternsForFilter(config.getClassName(),false);
         if (patterns.isEmpty()==false) {
             throw createSecurityException(SecurityConfigException.FILTER_STILL_USED, 
                     config.getName(), 

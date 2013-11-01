@@ -46,7 +46,7 @@ import org.geoserver.wms.WMSInfo.WMSInterpolation;
 import org.geoserver.wms.WatermarkInfo.Position;
 import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
 import org.geoserver.wms.map.RenderedImageMapResponse;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.data.ows.Layer;
@@ -120,6 +120,10 @@ public class WMS implements ApplicationContextAware {
     public static final String LOOP_CONTINUOUSLY = "loopContinuously";
 
     public static final Boolean LOOP_CONTINUOUSLY_DEFAULT = Boolean.FALSE;
+    
+    public static final String SCALEHINT_MAPUNITS_PIXEL = "scalehintMapunitsPixel";
+    
+    public static final Boolean SCALEHINT_MAPUNITS_PIXEL_DEFAULT = Boolean.FALSE;
     
     static final Logger LOGGER = Logging.getLogger(WMS.class);
 
@@ -487,6 +491,10 @@ public class WMS implements ApplicationContextAware {
     public Boolean getLoopContinuously() {
        return getMetadataValue(LOOP_CONTINUOUSLY, LOOP_CONTINUOUSLY_DEFAULT, Boolean.class);
     }
+    
+    public Boolean getScalehintUnitPixel(){
+        return getMetadataValue(SCALEHINT_MAPUNITS_PIXEL, SCALEHINT_MAPUNITS_PIXEL_DEFAULT, Boolean.class);
+    }
 
     int getMetadataPercentage(MetadataMap metadata, String key, int defaultValue) {
         Integer parsedValue = Converters.convert(metadata.get(key), Integer.class);
@@ -758,6 +766,13 @@ public class WMS implements ApplicationContextAware {
         }
     }
 
+    /**
+     * Returns true if the layer is opaque
+     */
+    public boolean isOpaque(LayerInfo layer) {
+        return layer.isOpaque();
+    }
+
     public Integer getCascadedHopCount(LayerInfo layer) {
         if (!(layer.getResource() instanceof WMSLayerInfo)) {
             return null;
@@ -801,7 +816,7 @@ public class WMS implements ApplicationContextAware {
      */
     public GeneralParameterValue[] getWMSReadParameters(final GetMapRequest request,
             final MapLayerInfo mapLayerInfo, final Filter layerFilter, final List<Object> times,
-            final List<Object> elevations, final AbstractGridCoverage2DReader reader,
+            final List<Object> elevations, final GridCoverage2DReader reader,
             boolean readGeom) throws IOException {
         // setup the scene
         final ParameterValueGroup readParametersDescriptor = reader.getFormat().getReadParameters();

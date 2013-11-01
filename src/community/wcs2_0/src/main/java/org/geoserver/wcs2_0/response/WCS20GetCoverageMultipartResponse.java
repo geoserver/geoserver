@@ -41,17 +41,18 @@ import org.vfny.geoserver.wcs.WcsException;
  */
 public class WCS20GetCoverageMultipartResponse extends Response {
 
-    MimeMultipart multipart;
-
     CoverageResponseDelegateFinder responseFactory;
 
     EnvelopeAxesLabelsMapper envelopeDimensionsMapper;
 
     public WCS20GetCoverageMultipartResponse(CoverageResponseDelegateFinder responseFactory, EnvelopeAxesLabelsMapper envelopeDimensionsMapper) {
-        super(GridCoverage.class);
-        this.multipart = new MimeMultipart();
+        super(GridCoverage.class);      
         this.responseFactory = responseFactory;
         this.envelopeDimensionsMapper = envelopeDimensionsMapper;
+    }
+    
+    public String getPreferredDisposition(Object value, Operation operation) {
+        return DISPOSITION_ATTACH;
     }
 
     public String getMimeType(Object value, Operation operation) {
@@ -99,6 +100,9 @@ public class WCS20GetCoverageMultipartResponse extends Response {
 
         // use javamail classes to actually encode the document
         try {
+            MimeMultipart multipart = new MimeMultipart();
+            multipart.setSubType("related");
+            
             String fileName = "/coverages/" + getCoverage.getCoverageId() + "." + delegate.getFileExtension(format);
             
             // coverages xml structure, which is very close to the DescribeFeatureType output

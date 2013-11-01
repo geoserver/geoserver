@@ -1,10 +1,9 @@
 package org.geoserver.wcs2_0.xml;
 
-import static junit.framework.Assert.assertEquals;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertTrue;
 
 import java.io.File;
-
-import junit.framework.Assert;
 
 import org.apache.commons.io.FileUtils;
 import org.geoserver.wcs2_0.WCSTestSupport;
@@ -36,7 +35,7 @@ public class RangeSubsetExtentionTest extends WCSTestSupport {
         FileUtils.writeByteArrayToFile(file, tiffContents);
 
         final GeoTiffReader reader = new GeoTiffReader(file);
-        Assert.assertTrue(CRS.equalsIgnoreMetadata(reader.getCrs(), CRS.decode("EPSG:4326",true)));
+        assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), CRS.decode("EPSG:4326",true)));
         assertEquals(360, reader.getOriginalGridRange().getSpan(0));
         assertEquals(360, reader.getOriginalGridRange().getSpan(1));
         final GridCoverage2D coverage = reader.read(null);
@@ -62,7 +61,7 @@ public class RangeSubsetExtentionTest extends WCSTestSupport {
         FileUtils.writeByteArrayToFile(file, tiffContents);
 
         final GeoTiffReader reader = new GeoTiffReader(file);
-        Assert.assertTrue(CRS.equalsIgnoreMetadata(reader.getCrs(), CRS.decode("EPSG:4326",true)));
+        assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), CRS.decode("EPSG:4326",true)));
         assertEquals(360, reader.getOriginalGridRange().getSpan(0));
         assertEquals(360, reader.getOriginalGridRange().getSpan(1));
         final GridCoverage2D coverage = reader.read(null);
@@ -100,7 +99,7 @@ public class RangeSubsetExtentionTest extends WCSTestSupport {
         FileUtils.writeByteArrayToFile(file, tiffContents);
 
         final GeoTiffReader reader = new GeoTiffReader(file);
-        Assert.assertTrue(CRS.equalsIgnoreMetadata(reader.getCrs(), CRS.decode("EPSG:32611",true)));
+        assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), CRS.decode("EPSG:32611",true)));
         assertEquals(68, reader.getOriginalGridRange().getSpan(0));
         assertEquals(56 , reader.getOriginalGridRange().getSpan(1));
         final GridCoverage2D coverage = reader.read(null);
@@ -126,7 +125,7 @@ public class RangeSubsetExtentionTest extends WCSTestSupport {
         FileUtils.writeByteArrayToFile(file, tiffContents);
 
         final GeoTiffReader reader = new GeoTiffReader(file);
-        Assert.assertTrue(CRS.equalsIgnoreMetadata(reader.getCrs(), CRS.decode("EPSG:32611",true)));
+        assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), CRS.decode("EPSG:32611",true)));
         assertEquals(68, reader.getOriginalGridRange().getSpan(0));
         assertEquals(56 , reader.getOriginalGridRange().getSpan(1));
         final GridCoverage2D coverage = reader.read(null);
@@ -152,7 +151,7 @@ public class RangeSubsetExtentionTest extends WCSTestSupport {
         FileUtils.writeByteArrayToFile(file, tiffContents);
 
         final GeoTiffReader reader = new GeoTiffReader(file);
-        Assert.assertTrue(CRS.equalsIgnoreMetadata(reader.getCrs(), CRS.decode("EPSG:32611",true)));
+        assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), CRS.decode("EPSG:32611",true)));
         assertEquals(68, reader.getOriginalGridRange().getSpan(0));
         assertEquals(56 , reader.getOriginalGridRange().getSpan(1));
         final GridCoverage2D coverage = reader.read(null);
@@ -178,7 +177,7 @@ public class RangeSubsetExtentionTest extends WCSTestSupport {
         FileUtils.writeByteArrayToFile(file, tiffContents);
     
         final GeoTiffReader reader = new GeoTiffReader(file);
-        Assert.assertTrue(CRS.equalsIgnoreMetadata(reader.getCrs(), CRS.decode("EPSG:4326",true)));
+        assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), CRS.decode("EPSG:4326",true)));
         assertEquals(360, reader.getOriginalGridRange().getSpan(0));
         assertEquals(360, reader.getOriginalGridRange().getSpan(1));
         final GridCoverage2D coverage = reader.read(null);

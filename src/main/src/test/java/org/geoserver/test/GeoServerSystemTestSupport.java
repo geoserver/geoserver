@@ -6,7 +6,9 @@ package org.geoserver.test;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
+import static org.junit.Assert.assertEquals;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -26,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import javax.imageio.ImageIO;
 import javax.servlet.Filter;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -57,6 +60,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.TestHttpClientProvider;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
@@ -91,11 +95,13 @@ import org.geoserver.security.password.GeoServerPBEPasswordEncoder;
 import org.geoserver.security.password.GeoServerPlainTextPasswordEncoder;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
+import org.geotools.data.ows.HTTPClient;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.util.logging.Log4JLoggerFactory;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.XSD;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.GrantedAuthorityImpl;
@@ -179,6 +185,9 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         LoggingUtils.configureGeoServerLogging(loader, getClass().getResourceAsStream(getLogConfiguration()), false, true, null);
 
         setUpTestData(testData);
+        
+        // put the mock http server in test mode
+        TestHttpClientProvider.startTest();
 
         // if we have data, create a mock servlet context and start up the spring configuration
         if (testData.isTestDataAvailable()) {
@@ -219,6 +228,8 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             onTearDown(testData);
 
             destroyGeoServer();
+            
+            TestHttpClientProvider.endTest();
 
             // some tests do need a kick on the GC to fully clean up
             if(isMemoryCleanRequired()) {
@@ -1151,7 +1162,22 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             throws Exception {
         return getAsDOM(path, true);
     }
-    
+
+    /**
+     * Executes an ows request using the GET method and returns the result as an 
+     * xml document, with the ability to override the XML document encoding. 
+     * 
+     * @param path The portion of the request after the context, 
+     *   example: 'wms?request=GetMap&version=1.1.1&..."
+     * @param encoding Override for the encoding of the document.
+     * 
+     * @return A result of the request parsed into a dom.
+     * 
+     * @throws Exception
+     */
+    protected Document getAsDOM(final String path, String encoding) throws Exception {
+        return getAsDOM(path, true, encoding);
+    }
     /**
      * Executes a request using the GET method and parses the result as a json object.
      * 
@@ -1167,6 +1193,20 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     protected JSON json(MockHttpServletResponse response) {
         String content = response.getOutputStreamContent();
         return JSONSerializer.toJSON(content);
+    }
+    
+    /**
+     * Retries the request result as a BufferedImage, checking the mime type is the expected one
+     * @param path
+     * @param mime
+     * @return
+     * @throws Exception
+     */
+    protected BufferedImage getAsImage(String path, String mime) throws Exception {
+        MockHttpServletResponse resp = getAsServletResponse(path);
+        assertEquals(mime, resp.getContentType());
+        InputStream is = getBinaryInputStream(resp);
+        return ImageIO.read(is);
     }
 
     /**
@@ -1187,7 +1227,29 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     throws Exception {
         return dom(get(path), skipDTD);
     }
-    
+
+    /**
+     * Executes an ows request using the GET method and returns the result as an xml document.
+     * 
+     * @param path
+     *                The portion of the request after the context, example:
+     *                'wms?request=GetMap&version=1.1.1&..."
+     * @param skipDTD
+     *                if true, will avoid loading and validating against the response document
+     *                schema or DTD
+     *
+     * @param encoding 
+     *                Overide for the encoding of the document.
+     * 
+     * @return A result of the request parsed into a dom.
+     * 
+     * @throws Exception
+     */
+    protected Document getAsDOM(final String path, final boolean skipDTD, String encoding)
+            throws Exception {
+        return dom(get(path), skipDTD, encoding);
+    }
+
     /**
      * Executes an ows request using the POST method with key value pairs 
      * form encoded, returning the result as a dom.
@@ -1271,8 +1333,20 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * @param skipDTD If true, will skip loading and validating against the associated DTD
      */
     protected Document dom(InputStream input, boolean skipDTD) throws ParserConfigurationException, SAXException, IOException {
+        return dom(input, skipDTD, null);
+    }
+
+    protected Document dom(InputStream stream, boolean skipDTD, String encoding) 
+        throws ParserConfigurationException, SAXException, IOException {
+
+        InputSource input = new InputSource(stream);
+        if (encoding != null) {
+            input.setEncoding(encoding);
+        }
+
         if(skipDTD) {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); 
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            
             factory.setNamespaceAware( true );
             factory.setValidating( false );
            

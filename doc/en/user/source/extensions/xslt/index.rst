@@ -15,10 +15,21 @@ All the configuration for the output resides in the ``$GEOSERVER_DATA_DIR/wfs/tr
 which is going to be created on startup when missing if the XSLT output format has been installed
 in GeoServer.
 
-The configuration of a new output format requires the addition of two new files, a XML file configuring
-the new output format, and a XSLT transformation generating the desired output.
+Each XSLT transformation must be configured with its own xml file in the ``$GEOSERVER_DATA_DIR/wfs/transform`` folder,
+which in turn points to a xslt file for the transformation. While the names can be freeform, it is suggested to follow
+a simple naming convention:
 
-The full fledged form of the XML configuration is as follows:
+*  <mytransformation>.xml for the xml config file
+*  <mytransformation>.xslt for the xslt tile
+
+Transformations can be either global, and thus applicable to any feature type, or type specific, in which case
+the transformation knows about the specific attributes of the transformed feature type.
+
+Global transformation example
+-----------------------------
+
+Here is an example of a global transformation setup. The ``$GEOSERVER_DATA_DIR/wfs/transform/global.xml`` file will
+look like:
 
 .. code-block:: xml
 
@@ -27,10 +38,7 @@ The full fledged form of the XML configuration is as follows:
     <outputFormat>HTML</outputFormat>
     <outputMimeType>text/html</outputMimeType>
     <fileExtension>html</fileExtension>
-    <xslt>test.xslt</xslt>
-    <featureType>
-      <id>cite:Bridges</id>
-    </featureType>
+    <xslt>global.xslt</xslt>
   </transform>
 
 Here is an explanation of each element:
@@ -40,16 +48,9 @@ Here is an explanation of each element:
 *  ``outputMimeType`` (optional): the mime type for the generated output. In case it's missing, the ``outputFormat`` is assumed to be a mime type and used for the purpose.
 *  ``fileExtension`` (optional): the file extension for the generated output. In case it's missing ``txt`` will be used.
 *  ``xslt`` (mandatory): the name of XSLT 1.0 style sheet used for the transformation
-*  ``featureType`` (optional): an eventual association between this configuration and a specific feature type
 
-From the above it follows there are two types of style sheets in use:
-
-*  global XSLT that make no assumption about the contents of the input, and work equally well on all of them
-*  type specific XSLT that make assumptions about specific attributes available in the input, and that will work only against a specific feature type
-
-The XSLT file must be in the same ``$GEOSERVER_DATA_DIR/wfs/transform`` folder and use the name specified in the XML configuration.
-
-Here is an example sheet transforming any GML2 input into a HTML page:
+The associated XSLT file will be ``$GEOSERVER_DATA_DIR/wfs/transform/global.xslt`` folder, and it will be able to transform any GML2 input into a corresponding HTML file.
+Here is an example:
 
 .. code-block:: xml
 
@@ -86,7 +87,32 @@ Here is an example sheet transforming any GML2 input into a HTML page:
     </xsl:template>
   </xsl:stylesheet>
 
-And here is a type specific one, leveraging knowlegde about the input attributes:
+Type specific transformations
+-----------------------------
+
+Type specific transformations can refer to a specific type and leverage its attributes directly. While not required, it is good practice
+to setup a global transformation that can handle any feature type (since the output format is declared in the capabilities document as being
+general, not type specific) and then override it for specific feature types in order to create special transformations for them.
+
+Here is an example of a transformation declaration that is type specific, that will be located at ``$GEOSERVER_DATA_DIR/wfs/transform/html_bridges.xml``
+
+.. code-block:: xml
+
+  <transform>
+    <sourceFormat>text/xml; subtype=gml/2.1.2</sourceFormat>
+    <outputFormat>HTML</outputFormat>
+    <outputMimeType>text/html</outputMimeType>
+    <fileExtension>html</fileExtension>
+    <xslt>html_bridges.xslt</xslt>
+    <featureType>
+      <id>cite:Bridges</id>
+    </featureType>
+  </transform>
+
+The extra ``featureType`` element associates the transformation to the specific feature type
+
+The associated xslt file will be located at ``$GEOSERVER_DATA_DIR/wfs/transform/html_bridges.xslt`` and will 
+leveraging knowlegde about the input attributes:
 
 .. code-block:: xml
 
@@ -113,6 +139,9 @@ And here is a type specific one, leveraging knowlegde about the input attributes
   </xsl:stylesheet>
 
 .. note:: While writing the XSLT always remember to declare all prefixes used in the sheet in the ``stylesheet`` element, otherwise you might encounter hard to understand error messages
+
+A specific feature type can be associated to multiple output formats. While uncommon, the same xslt file can also be associated to multiple feature types by creating 
+multiple xml configuration files, and associating a different feature type in each.
 
 Rest configuration
 ------------------

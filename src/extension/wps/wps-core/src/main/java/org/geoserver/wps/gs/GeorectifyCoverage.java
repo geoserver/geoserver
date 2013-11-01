@@ -36,7 +36,7 @@ import org.geoserver.wps.resource.WPSFileResource;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.Query;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.image.ImageWorker;
@@ -125,7 +125,7 @@ public class GeorectifyCoverage implements GSProcess {
             // STEP 1: Getting the dataset to be georectified
             //
             // //
-            final Object fileSource = coverage.getProperty(AbstractGridCoverage2DReader.FILE_SOURCE_PROPERTY);
+            final Object fileSource = coverage.getProperty(GridCoverage2DReader.FILE_SOURCE_PROPERTY);
             if (fileSource != null && fileSource instanceof String) {
                 location = (String) fileSource;
             }
@@ -247,7 +247,7 @@ public class GeorectifyCoverage implements GSProcess {
 
     GridCoverage2D addLocationProperty(GridCoverage2D coverage, File warpedFile) {
         Map <String, String> properties = new HashMap<String,String>();
-        properties.put(AbstractGridCoverage2DReader.FILE_SOURCE_PROPERTY, warpedFile.getAbsolutePath());
+        properties.put(GridCoverage2DReader.FILE_SOURCE_PROPERTY, warpedFile.getAbsolutePath());
 
         return new GridCoverageFactory().create(coverage.getName(), coverage.getRenderedImage(), 
                 coverage.getGridGeometry(), coverage.getSampleDimensions(), null, properties);

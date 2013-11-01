@@ -36,8 +36,11 @@ import org.vfny.geoserver.global.GeoserverDataDirectory;
 public class IpBlacklistFilter implements GeoServerFilter {
 
     static final Logger LOGGER = Logging.getLogger(IpBlacklistFilter.class);
-
+    static final String PROPERTYFILENAME="controlflow.properties";
+    static final String BLPROPERTY="ip.blacklist";
+    static final String WLPROPERTY="ip.whitelist";
     private Set<String> blackListedAddresses;
+    private Set<String> whiteListedAddresses;
 
     private final PropertyFileWatcher configFile;
     
@@ -47,7 +50,8 @@ public class IpBlacklistFilter implements GeoServerFilter {
      * @param props
      */
     public IpBlacklistFilter(Properties props) {
-        blackListedAddresses = loadConfiguration(props);
+        this.blackListedAddresses = loadConfiguration(props, BLPROPERTY);
+        this.whiteListedAddresses = loadConfiguration(props, WLPROPERTY);
         configFile = null;
     }
 
@@ -57,9 +61,10 @@ public class IpBlacklistFilter implements GeoServerFilter {
     public IpBlacklistFilter() {
         try {
             File file = new File(GeoserverDataDirectory.getGeoserverDataDirectory(),
-                    "controlflow.properties");
+            		PROPERTYFILENAME);
             configFile = new PropertyFileWatcher(file);
-            blackListedAddresses = reloadConfiguration();
+            blackListedAddresses = reloadConfiguration(BLPROPERTY);
+            whiteListedAddresses = reloadConfiguration(WLPROPERTY);
         } catch (Exception e) {
             LOGGER.log(Level.FINER, e.getMessage(), e);
             throw new RuntimeException(e);
@@ -91,7 +96,8 @@ public class IpBlacklistFilter implements GeoServerFilter {
         if(configFile != null && configFile.isStale()){
             synchronized(configFile){
                 if(configFile.isStale()){
-                    this.blackListedAddresses = reloadConfiguration();
+                    this.blackListedAddresses = reloadConfiguration(BLPROPERTY);
+                    this.whiteListedAddresses = reloadConfiguration(WLPROPERTY);
                 }
             }
         }
@@ -99,27 +105,44 @@ public class IpBlacklistFilter implements GeoServerFilter {
             return false;
         }
         String incomingIp = IpFlowController.getRemoteAddr(httpRequest);
-        boolean blocked = blackListedAddresses.contains(incomingIp);
+        boolean blocked=false;
+        //Check IP on blackList roles (to block)
+        for(String blackListRole: blackListedAddresses){
+        	if(incomingIp.matches(blackListRole)){ 
+        		blocked=true;
+        		break;
+        	}
+        }
+        
+        //Check IP (if blocked) on whiteList roles (to unlock)
+        if(blocked && !whiteListedAddresses.isEmpty()){
+        	for(String whiteListRole: whiteListedAddresses){
+            	if(incomingIp.matches(whiteListRole)){ 
+            		blocked=false;
+            		break;
+            	}
+            }
+        }
         return blocked;
     }
 
-    private Set<String> reloadConfiguration() throws IOException {
+    private Set<String> reloadConfiguration(String property) throws IOException {
         Properties props = configFile.getProperties();
         if(props == null){
             //file doesn't exist
             return Collections.emptySet();
         }
-        return loadConfiguration(props);
+        return loadConfiguration(props,property);
     }
 
-    private Set<String> loadConfiguration(Properties props) {
-        String rawList = props.getProperty("ip.blacklist");
+    private Set<String> loadConfiguration(Properties props, String property) {
+        String rawList = props.getProperty(property);
         if(null == rawList){
             return Collections.emptySet();
         }
         Set<String> ipAddresses = new HashSet<String>();
         for(String ip : rawList.split(",")){
-            ipAddresses.add(ip.trim());
+            ipAddresses.add(ip.trim().replaceAll("\\*","(.{0,1}[0-9]+.{0,1}){0,4}"));
         }
         return ipAddresses;
     }

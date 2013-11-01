@@ -11,7 +11,7 @@
  <parent>
   <groupId>org.geoserver</groupId>
   <artifactId>geoserver</artifactId>
-  <version>2.4-SNAPSHOT</version>
+  <version>2.5-SNAPSHOT</version>
  </parent>
  <groupId>org.geoserver</groupId>
  <artifactId>release</artifactId>
@@ -74,11 +74,6 @@
   </dependency>
   <dependency>
    <groupId>org.geotools</groupId>
-   <artifactId>gt-vpf</artifactId>
-   <version>${gt.version}</version>
-  </dependency>
-  <dependency>
-   <groupId>org.geotools</groupId>
    <artifactId>gt-arcsde-common</artifactId>
    <version>${gt.version}</version>
   </dependency>
@@ -101,6 +96,11 @@
    <groupId>org.geotools</groupId>
    <artifactId>gt-app-schema</artifactId>
    <version>${gt.version}</version>
+  </dependency>
+  <dependency>
+   <groupId>org.geoserver.extension</groupId>
+   <artifactId>css</artifactId>
+   <version>${project.version}</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver.extension</groupId>
@@ -218,10 +218,30 @@
    <version>${project.version}</version>
   </dependency>
   <dependency>
+   <groupId>org.geoserver.security</groupId>
+   <artifactId>web-sec-cas</artifactId>
+   <version>${project.version}</version>
+  </dependency>
+  <dependency>
    <groupId>org.geoserver</groupId>
    <artifactId>xslt</artifactId>
    <version>${project.version}</version>
   </dependency>
+   <dependency>
+     <groupId>org.geoserver.extension</groupId>
+     <artifactId>inspire</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.csw</groupId>
+     <artifactId>csw-api</artifactId>
+     <version>${project.version}</version>
+   </dependency> 
+   <dependency>
+     <groupId>org.geoserver.csw</groupId>
+     <artifactId>csw-core</artifactId>
+     <version>${project.version}</version>
+   </dependency> 
  </dependencies>
  <build>
   <plugins>

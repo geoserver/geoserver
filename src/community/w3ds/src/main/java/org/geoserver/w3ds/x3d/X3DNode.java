@@ -184,6 +184,10 @@ public class X3DNode {
 	public X3DNode clone() {
 		return new X3DNode(this);
 	}
+	
+	public boolean haveChilds() {
+		return !nodes.isEmpty();
+	}
 
 	public boolean haveChild(String tag) {
 		for (X3DNode n : this.nodes) {

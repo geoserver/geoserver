@@ -1,0 +1,42 @@
+<featureType>
+  <id>FeatureTypeInfoa06af396-3105-442d-8b40-22b57a90d2f2</id>
+  <name>Record_a06af396-3105-442d-8b40-22b57a90d2f2</name>
+  <nativeName>Record_a06af396-3105-442d-8b40-22b57a90d2f2</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl-78ff667e:12476299803:-7ffe</id>
+  </namespace>
+  <title>Record_a06af396-3105-442d-8b40-22b57a90d2f2</title>
+  <abstract></abstract>
+  <keywords>
+  </keywords>
+   <nativeCRS>GEOGCS[&quot;WGS 84&quot;, 
+  DATUM[&quot;World Geodetic System 1984&quot;, 
+    SPHEROID[&quot;WGS 84&quot;, 6378137.0, 298.257223563, AUTHORITY[&quot;EPSG&quot;,&quot;7030&quot;]], 
+    AUTHORITY[&quot;EPSG&quot;,&quot;6326&quot;]], 
+  PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]], 
+  UNIT[&quot;degree&quot;, 0.017453292519943295], 
+  AXIS[&quot;Geodetic longitude&quot;, EAST], 
+  AXIS[&quot;Geodetic latitude&quot;, NORTH], 
+  AUTHORITY[&quot;EPSG&quot;,&quot;4326&quot;]]</nativeCRS>
+  <srs>EPSG:4326</srs>
+  <latLonBoundingBox>
+    <minx>0.0</minx>
+    <maxx>0.0</maxx>
+    <miny>0.0</miny>
+    <maxy>0.0</maxy>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="id">urn:uuid:a06af396-3105-442d-8b40-22b57a90d2f2</entry>
+    <entry key="type">http://purl.org/dc/dcmitype/Image</entry>
+    <entry key="title">Lorem ipsum dolor sit amet</entry>
+    <entry key="spatial">IT-FI</entry>
+    <entry key="format">image/jpeg</entry>
+  </metadata>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl-370abbc5:13f592321a9:-8000</id>
+  </store>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+</featureType>

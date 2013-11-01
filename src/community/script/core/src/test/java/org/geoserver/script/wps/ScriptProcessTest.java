@@ -5,6 +5,8 @@
 package org.geoserver.script.wps;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +14,7 @@ import org.apache.commons.io.FileUtils;
 import org.geoserver.script.ScriptIntTestSupport;
 import org.geoserver.script.ScriptManager;
 import org.geotools.data.Parameter;
+import org.geotools.feature.NameImpl;
 import org.opengis.feature.type.Name;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -20,18 +23,24 @@ import com.vividsolutions.jts.io.WKTReader;
 public abstract class ScriptProcessTest extends ScriptIntTestSupport {
 
     File script;
-    ScriptManager scriptMgr;
-
+    
     @Override
     protected void oneTimeSetUp() throws Exception {
         super.oneTimeSetUp();
     
-        scriptMgr = getScriptManager();
+        script = copyScriptIfExists("buffer");
+    }
 
+    File copyScriptIfExists(String baseName) throws IOException {
         File wps = scriptMgr.getWpsRoot();
-        script = new File(wps, "buffer." + getExtension());
+        File script = new File(wps, baseName + "." + getExtension());
 
-        FileUtils.copyURLToFile(getClass().getResource(script.getName()), script);
+        URL u = getClass().getResource(script.getName());
+        if (u != null) {
+            FileUtils.copyURLToFile(u, script);
+            return script;
+        }
+        return null;
     }
 
     public abstract String getExtension();
@@ -103,6 +112,30 @@ public abstract class ScriptProcessTest extends ScriptIntTestSupport {
         Map outputs = p.execute(inputs, null);
         Geometry h = (Geometry) outputs.get("result");
         assertTrue(h.equals(g.buffer(1)));
-        
     }
+
+    public void testRunMultipleOutputs() throws Exception {
+        String pname = "buffer-multipleOutputs";
+        File script = copyScriptIfExists(pname);
+        if (script != null) {
+            ScriptProcessFactory pf = new ScriptProcessFactory(scriptMgr);
+            Name buffer = new NameImpl(getExtension(), pname);
+
+            org.geotools.process.Process p = pf.create(buffer);
+            
+            Map inputs = new HashMap();
+            inputs.put("geom", new WKTReader().read("POINT(0 0)"));
+            inputs.put("distance", 1d);
+
+            Map outputs = p.execute(inputs, null);
+            assertEquals(2, outputs.size());
+            
+            assertNotNull((Geometry) outputs.get("geom"));
+            assertEquals(1d, (Double) outputs.get("distance"), 0.1);
+        }
+        else {
+            System.out.println("Script " + pname + " does not exist, skipping test");
+        }
+    }
+
 }

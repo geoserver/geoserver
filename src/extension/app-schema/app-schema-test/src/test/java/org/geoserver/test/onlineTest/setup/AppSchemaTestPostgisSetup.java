@@ -128,13 +128,13 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
             // remove .properties as it will be added in PropertyFeatureReader constructor
                     fileName.substring(0, fileName.lastIndexOf(".properties")));
             SimpleFeatureType schema = reader.getFeatureType();
-            String tableName = schema.getName().getLocalPart();
+            String tableName = schema.getName().getLocalPart().toUpperCase();
             // create the table
             buf.append("CREATE TABLE ").append(ONLINE_DB_SCHEMA).append(".\"").append(tableName)
                     .append("\"(");
             List<GeometryDescriptor> geoms = new ArrayList<GeometryDescriptor>();
-            // + id +pkey
-            int size = schema.getAttributeCount() + 2;
+            // +pkey
+            int size = schema.getAttributeCount() + 1;
             String[] fieldNames = new String[size];
             List<String> createParams = new ArrayList<String>();
             int j = 0;
@@ -157,16 +157,12 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
                 fieldNames[j] = desc.getName().toString();
                 j++;
             }
-            if (schema.isIdentified()) {
-                fieldNames[j] = "ROW_ID";
-                createParams.add("\"ROW_ID\" TEXT");
-                j++;
-            }
             // Add numeric PK for sorting
             fieldNames[j] = "PKEY";
-            createParams.add("\"PKEY\" INTEGER");
+            createParams.add("\"PKEY\" TEXT");
             buf.append(StringUtils.join(createParams.iterator(), ", "));
             buf.append(");\n");
+            buf.append("ALTER TABLE " + ONLINE_DB_SCHEMA + ".\"" + tableName + "\" ADD CONSTRAINT " + tableName + "_PK PRIMARY KEY (\"PKEY\")\n");
 
             // add geometry columns
             for (GeometryDescriptor geom : geoms) {
@@ -185,8 +181,6 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
             // then insert rows
             SimpleFeature feature;
             FeatureId id;
-            // primary key sequence
-            int pKey = 0;
             while (reader.hasNext()) {
                 buf.append("INSERT INTO ").append(ONLINE_DB_SCHEMA).append(".\"").append(tableName)
                         .append("\"(\"");
@@ -221,13 +215,8 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
                 }
 
                 id = feature.getIdentifier();
-                if (id != null) {
-                    values[valueIndex] = "'" + id.toString() + "'";
-                    valueIndex++;
-                }
                 // insert primary key
-                values[valueIndex] = "'" + pKey + "'";
-                pKey++;
+                values[valueIndex] = "'" + id.toString() + "'";
                 buf.append(StringUtils.join(values, ","));
                 buf.append(");\n");
             }

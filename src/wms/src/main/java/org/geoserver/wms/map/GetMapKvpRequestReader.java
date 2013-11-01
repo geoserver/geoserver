@@ -41,7 +41,7 @@ import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSErrorCode;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureReader;
 import org.geotools.data.Query;
@@ -448,9 +448,9 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
                 //
                 // Adding a coverage layer
                 //
-                AbstractGridCoverage2DReader reader;
+                GridCoverage2DReader reader;
                 try {
-                    reader = (AbstractGridCoverage2DReader) layer.getCoverageReader();
+                    reader = (GridCoverage2DReader) layer.getCoverageReader();
                 } catch (IOException e) {
                     throw new ServiceException(e);
                 }

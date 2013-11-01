@@ -141,4 +141,19 @@ public interface SettingsInfo extends Info {
      * </p>
      */
     Map<Object, Object> getClientProperties();
+
+    /**
+     * If true local workspace should keep the namespace prefixes in
+     * getCapabilities etc...
+     */
+    boolean isLocalWorkspaceIncludesPrefix();
+
+    /**
+     * Set whether or not a local workspace should keep namespace prefixes in
+     * the getCapabilities etc...
+     *
+     * @param includePrefix
+     *            if true then the prefixes will be kept, default behaviour is to remove it.
+     */
+    void setLocalWorkspaceIncludesPrefix(boolean includePrefix);
 }

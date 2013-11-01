@@ -48,7 +48,7 @@ import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.data.DataUtilities;
@@ -382,14 +382,30 @@ public class SystemTestData extends CiteTestData {
      * @param scope Class from which to load sld resource from.
      */
     public void addStyle(String name, String filename, Class scope, Catalog catalog) throws IOException {
+        addStyle((WorkspaceInfo)null, name, filename, scope, catalog);
+    }
+
+    /**
+     * Adds a style to the test setup.
+     * <p>
+     * To set up the style a file named <tt>filename</tt> is copied from the classpath relative
+     * to the <tt>scope</tt> parameter.
+     * </p>
+     * @param ws The workspace to include the style in.
+     * @param name The name of the style.
+     * @param filename The filename to copy from classpath.
+     * @param scope Class from which to load sld resource from.
+     */
+    public void addStyle(WorkspaceInfo ws, String name, String filename, Class scope, Catalog catalog) throws IOException {
         File styles = catalog.getResourceLoader().findOrCreateDirectory(data, "styles");
 
         catalog.getResourceLoader().copyFromClassPath(filename, new File(styles, filename), scope);
 
-        StyleInfo style = catalog. getStyleByName(name);
+        StyleInfo style = catalog.getStyleByName(ws, name);
         if (style == null) {
             style = catalog.getFactory().createStyle();
             style.setName(name);
+            style.setWorkspace(ws);
         }
         style.setFilename(filename);
         if (style.getId() == null) {
@@ -399,6 +415,7 @@ public class SystemTestData extends CiteTestData {
             catalog.save(style);
         }
     }
+    
     /**
      * Adds a vector layer to the catalog setup.
      * <p>
@@ -712,9 +729,9 @@ public class SystemTestData extends CiteTestData {
         if (format == null) {
             throw new RuntimeException("No format for " + file.getCanonicalPath());
         }
-        AbstractGridCoverage2DReader reader = null;
+        GridCoverage2DReader reader = null;
         try {
-            reader = (AbstractGridCoverage2DReader) format.getReader(file);
+            reader = (GridCoverage2DReader) format.getReader(file);
             if (reader == null) {
                 throw new RuntimeException("No reader for " + file.getCanonicalPath() + " with format " + format.getName());
             }
@@ -870,6 +887,7 @@ public class SystemTestData extends CiteTestData {
         settings.setOnlineResource("http://geoserver.org");
         settings.setVerbose(false);
         settings.setVerboseExceptions(false);
+        settings.setLocalWorkspaceIncludesPrefix(false);
 
         if (ws != null) {
             if (settings.getId() != null) {

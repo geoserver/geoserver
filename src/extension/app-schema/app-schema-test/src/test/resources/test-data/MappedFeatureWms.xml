@@ -47,7 +47,7 @@
 						gsml:MappedFeature
 					</targetAttribute>
                     <idExpression>
-                        <OCQL>getId()</OCQL>
+                        <OCQL>ID</OCQL>
                     </idExpression>
 				</AttributeMapping>
 				<AttributeMapping>
@@ -87,7 +87,10 @@
 					<targetAttribute>gsml:specification</targetAttribute>
 					<sourceExpression>
 						<OCQL>GEOLOGIC_UNIT_ID</OCQL>
-						<linkElement>myGeologicUnit</linkElement>
+						<!-- Add a function to test GEOT-4460. This would previously fail because 
+							the WMS query fails to load function parameters in linkElement (polymorphism 
+							use case). -->
+						<linkElement>if_then_else(isNull(HAS_GEOLOGIC_UNIT), toXlinkHref('urn:ogc:def:nil:OGC:1.0:missing'), 'myGeologicUnit')</linkElement>
 						<linkField>FEATURE_LINK</linkField>
 					</sourceExpression>
 				</AttributeMapping>

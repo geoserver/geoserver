@@ -4,6 +4,7 @@
  */
 package org.geoserver.geosearch.rest;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -16,7 +17,16 @@ import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerInfo;
+import org.geoserver.kml.KMLEncoder;
+import org.geoserver.kml.KMZMapOutputFormat;
+import org.geoserver.kml.KmlEncodingContext;
+import org.geoserver.kml.builder.SimpleNetworkLinkBuilder;
+import org.geoserver.kml.sequence.PlainFolderSequenceFactory;
+import org.geoserver.kml.sequence.SequenceFactory;
+import org.geoserver.kml.sequence.SequenceList;
 import org.geoserver.ows.util.KvpMap;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.rest.AbstractResource;
 import org.geoserver.rest.RestletException;
 import org.geoserver.rest.format.DataFormat;
@@ -26,12 +36,13 @@ import org.geoserver.wms.GetMap;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
+import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.GetMapKvpRequestReader;
-import org.geoserver.wms.map.XMLTransformerMap;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.map.Layer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.logging.Logging;
 import org.restlet.Context;
@@ -39,7 +50,11 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
-import org.springframework.util.Assert;
+
+import de.micromata.opengis.kml.v_2_2_0.Document;
+import de.micromata.opengis.kml.v_2_2_0.Feature;
+import de.micromata.opengis.kml.v_2_2_0.Kml;
+import de.micromata.opengis.kml.v_2_2_0.atom.Author;
 
 /**
  * @author groldan
@@ -53,28 +68,22 @@ public class GeoSearchLayer extends AbstractResource {
 
     private final GeoServer geoserver;
 
+    private KMLEncoder encoder;
+
     public GeoSearchLayer(final Context context, final Request request, final Response response,
-            final CatalogInfo layer, GeoServer geoserver) {
+            final CatalogInfo layer, GeoServer geoserver, KMLEncoder encoder) {
         super(context, request, response);
         this.layer = layer;
         this.geoserver = geoserver;
+        this.encoder = encoder;
     }
 
     @Override
     public void handleGet() {
         final WMS wms = new WMS(geoserver) {
-            /**
-             * Override to KMLMetadataDocumentMapOutputFormat does not need to be in the spring
-             * context and hence available to the whole geoserver
-             * 
-             * @see org.geoserver.wms.WMS#getMapOutputFormat(java.lang.String)
-             */
             @Override
             public GetMapOutputFormat getMapOutputFormat(final String mimeType) {
-                if (KMLMetadataDocumentMapOutputFormat.MIME_TYPE.equals(mimeType)) {
-                    return new KMLMetadataDocumentMapOutputFormat(this);
-                }
-                return super.getMapOutputFormat(mimeType);
+                return new GetMapSnatcher();
             }
         };
 
@@ -108,20 +117,72 @@ public class GeoSearchLayer extends AbstractResource {
         context.setMapHeight(getMapRequest.getHeight());
         context.getViewport().setBounds((ReferencedEnvelope) getMapRequest.getBbox());
 
-        WebMap webMap;
+        MapContentWebMap webMap;
         try {
-            webMap = new GetMap(wms).run(getMapRequest, context);
+            webMap = (MapContentWebMap) new GetMap(wms).run(getMapRequest, context);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new RestletException(e.getMessage(), Status.SERVER_ERROR_INTERNAL, e);
         }
-        // final WebMap webMap = wmsService.getMap(getMapRequest);
-        Assert.isTrue(webMap instanceof XMLTransformerMap);
+        
+        KmlEncodingContext encodingContext = new KmlEncodingContext(webMap.getMapContent(), wms, true);
+        Kml kml = buildKml(encodingContext);
 
         DataFormat format = getFormatGet();
-        Representation representation = format.toRepresentation(webMap);
+        Representation representation = format.toRepresentation(kml);
         Response response = getResponse();
         response.setEntity(representation);
+    }
+
+    private Kml buildKml(KmlEncodingContext encodingContext) {
+        SimpleNetworkLinkBuilder nlBuilder = new SimpleNetworkLinkBuilder(encodingContext);
+        Kml kml = nlBuilder.buildKMLDocument();
+
+        Document doc = (Document) kml.getFeature();
+        doc.createAndSetAtomAuthor();
+        doc.setOpen(true);
+        GeoServerInfo gsInfo = encodingContext.getWms().getGeoServer().getGlobal();
+        String authorName = gsInfo.getSettings().getContact().getContactPerson();
+        Author author = doc.createAndSetAtomAuthor();
+        author.addToNameOrUriOrEmail(authorName);
+        doc.createAndSetAtomLink(gsInfo.getSettings().getOnlineResource());
+        
+        WMSMapContent mapContent = encodingContext.getMapContent();
+        doc.setDescription(buildDescription(mapContent));
+
+        // see if we have to include sample data
+        List<Layer> layers = mapContent.layers();
+        boolean includeSampleData = false;
+        for (int i = 0; i < layers.size(); i++) {
+            // layer and info
+            MapLayerInfo layerInfo = mapContent.getRequest().getLayers().get(i);
+            final int type = layerInfo.getType();
+            if (MapLayerInfo.TYPE_VECTOR == type || MapLayerInfo.TYPE_REMOTE_VECTOR == type) {
+                includeSampleData = true;
+            }
+        }
+        if(includeSampleData) {
+            SequenceFactory<Feature> generatorFactory = new PlainFolderSequenceFactory(encodingContext);
+            SequenceList<Feature> folders = new SequenceList<Feature>(generatorFactory);
+            encodingContext.addFeatures(doc, folders);
+        }
+        
+        return kml;
+    }
+    
+    private String buildDescription(WMSMapContent mapContent) {
+        StringBuilder sb = new StringBuilder();
+        if (null != mapContent.getAbstract()) {
+            sb.append(mapContent.getAbstract());
+        }
+        if (null != mapContent.getKeywords()) {
+            sb.append("\n");
+            for (String kw : mapContent.getKeywords()) {
+                if (null != kw) {
+                    sb.append(kw).append(" ");
+                }
+            }
+        }
+        return sb.toString();
     }
 
     /**
@@ -131,7 +192,7 @@ public class GeoSearchLayer extends AbstractResource {
     @Override
     protected List<DataFormat> createSupportedFormats(final Request request, final Response response) {
         final List<DataFormat> siteMapFormats = new ArrayList<DataFormat>(1);
-        siteMapFormats.add(new LayerKMLDocumentFormat());
+        siteMapFormats.add(new LayerKMLDocumentFormat(encoder));
         return siteMapFormats;
     }
 
@@ -142,7 +203,7 @@ public class GeoSearchLayer extends AbstractResource {
         Catalog catalog = geoserver.getCatalog();
         List<MapLayerInfo> layers = expandLayers(catalog, info);
         request.setLayers(layers);
-        request.setFormat(KMLMetadataDocumentMapOutputFormat.MIME_TYPE);
+        request.setFormat(KMZMapOutputFormat.MIME_TYPE);
         request.setBbox(getLatLonBbox(info));
         request.setSRS("EPSG:4326");
 
@@ -239,6 +300,45 @@ public class GeoSearchLayer extends AbstractResource {
             title.append("\"").append(li.getResource().getTitle()).append("\"  ");
         }
         return title.toString();
+    }
+    
+    private static class GetMapSnatcher implements GetMapOutputFormat {
+
+        @Override
+        public WebMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
+            return new MapContentWebMap(mapContent);
+        }
+
+        @Override
+        public Set<String> getOutputFormatNames() {
+            return null;
+        }
+
+        @Override
+        public String getMimeType() {
+            return null;
+        }
+
+        @Override
+        public MapProducerCapabilities getCapabilities(String format) {
+            return new MapProducerCapabilities(false, false, false, false, "fake/mime");
+        }
+        
+    }
+    
+    private static class MapContentWebMap extends WebMap {
+
+        private WMSMapContent content;
+
+        public MapContentWebMap(WMSMapContent context) {
+            super(context);
+            this.content = context;
+        }
+        
+        public WMSMapContent getMapContent() {
+            return content;
+        }
+        
     }
 
 }

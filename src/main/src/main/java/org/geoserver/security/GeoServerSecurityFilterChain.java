@@ -87,6 +87,7 @@ public class GeoServerSecurityFilterChain implements Serializable {
     static {
         WEB_LOGIN.setName(WEB_LOGIN_CHAIN_NAME);
         WEB_LOGIN.setFilterNames(FORM_LOGIN_FILTER);
+        WEB_LOGIN.setAllowSessionCreation(true);
     }
 
     private static LogoutFilterChain WEB_LOGOUT = new LogoutFilterChain(FORM_LOGOUT_CHAIN);
@@ -295,17 +296,22 @@ public class GeoServerSecurityFilterChain implements Serializable {
 
     /**
      * Get a list of patterns having the filter in their chain.
+     * If includeAll is false, only authentication filters are searched
      */
-    public List<String> patternsForFilter(String filterName) {
+    public List<String> patternsForFilter(String filterName, boolean includeAll) {
         List<String> result = new ArrayList<String>();
         for (RequestFilterChain requestChain : requestChains) {
-            if (requestChain.getFilterNames().contains(filterName)) {
+            List<String> filterNames = includeAll ?
+                    requestChain.getCompiledFilterNames() :
+                    requestChain.getFilterNames();                    
+            if (filterNames.contains(filterName)) {
                 result.addAll(requestChain.getPatterns());
             }
         }
         return result;
     }
-
+    
+    
     /**
      * Get the filters for the specified pattern.
      */

@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import net.sf.json.JSONException;
 import net.sf.json.util.JSONBuilder;
 
+import org.geotools.geometry.jts.coordinatesequence.CoordinateSequences;
 import org.geotools.util.Converters;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -63,8 +64,9 @@ public class GeoJSONBuilder extends JSONBuilder {
 
             switch (geometryType) {
             case POINT:
-                Point point = (Point)geometry;
-                writeCoordinate(point.getX(), point.getY());
+                Point point = (Point) geometry;
+                Coordinate c = point.getCoordinate();
+                writeCoordinate(c.x, c.y, c.z);
                 break;
             case LINESTRING:
                 writeCoordinates(((LineString)geometry).getCoordinateSequence());
@@ -107,8 +109,8 @@ public class GeoJSONBuilder extends JSONBuilder {
     }
 
     private JSONBuilder writeGeomCollection(GeometryCollection collection) {
-        this.array();
         this.key("geometries");
+        this.array();
 
         for (int i = 0, n = collection.getNumGeometries(); i < n; i++) {
             writeGeom(collection.getGeometryN(i));
@@ -131,10 +133,17 @@ public class GeoJSONBuilder extends JSONBuilder {
     private JSONBuilder writeCoordinates(CoordinateSequence coords)
         throws JSONException {
         this.array();
+        
+        // guess the dimension of the coordinate sequence
+        int dim = CoordinateSequences.coordinateDimension(coords);
 
         final int coordCount = coords.size();
         for (int i = 0; i < coordCount; i++) {
-            writeCoordinate(coords.getX(i), coords.getY(i));
+            if(dim > 2) {
+                writeCoordinate(coords.getX(i), coords.getY(i), coords.getOrdinate(i, 2));
+            } else {
+                writeCoordinate(coords.getX(i), coords.getY(i));
+            }
         }
 
         return this.endArray();
@@ -147,6 +156,20 @@ public class GeoJSONBuilder extends JSONBuilder {
 
         return this.endArray();
     }
+    
+    private JSONBuilder writeCoordinate(double x, double y, double z) {
+        this.array();
+        this.value(x);
+        this.value(y);
+        if(!Double.isNaN(z)) {
+            this.value(z);
+        }
+
+        return this.endArray();
+    }
+
+    
+    
     /**
      * Turns an envelope into an array [minX,minY,maxX,maxY]
      * @param env envelope representing bounding box

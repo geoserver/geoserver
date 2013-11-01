@@ -1,0 +1,49 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+  <body>
+   <wicket:extend>
+    <form wicket:id="form">
+     <ul>
+       <li>
+         <label for="name"><wicket:message key="name">Name</wicket:message></label>
+         <input wicket:id="name" id="name" class="text"></input>
+       </li>
+       <li>
+         <label for="title"><wicket:message key="layerGroupTitle">Title</wicket:message></label>
+         <input wicket:id="title" id="title" class="text"></input>
+       </li>
+       <li>
+         <label for="abstract"><wicket:message key="abstract">Abstract</wicket:message></label>
+         <textarea rows="60" cols="20" wicket:id="abstract"></textarea>
+       </li>
+       <li>
+         <label for="workspace"><wicket:message key="workspace">Workspace</wicket:message></label>
+         <select wicket:id="workspace"></select>
+       </li>
+       <li>
+         <label><wicket:message key="bounds">Bounds</wicket:message></label>
+         <div wicket:id="bounds" class="selfclear"></div>
+       </li>
+       <li>
+         <input wicket:id="generateBounds" type="submit" wicket:message="value:generateBounds"></input>
+       </li>
+       <li>
+         <ul>
+           <li><label><wicket:message key="layers">Layers</wicket:message></label></li>
+           <li><a class="add-link" wicket:id="createStore"><wicket:message key="fromNewCoverageStore">Add Store</wicket:message></a> </li>
+           <li><a class="add-link" wicket:id="addFromStore"><wicket:message key="fromExistingStore">Add Store</wicket:message></a> </li>
+           <li><a class="add-link" wicket:id="addLayer"><wicket:message key="fromExistingLayer">Add Layer</wicket:message></a> <select wicket:id="layerType"></select></li>
+           <li><wicket:message key="createOutlines">Create outlines</wicket:message> <select wicket:id="sourceLayer"></select></li>
+           <div wicket:id="layers"></div>
+         </ul>
+       </li>
+       <li class="button-group selfclear">
+         <a href="#" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
+         <a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a> 
+       </li>  
+     </ul>
+    </form>
+    <div wicket:id="popup"></div>
+    <div wicket:id="dialog"></div>
+   </wicket:extend>
+  </body>
+</html>

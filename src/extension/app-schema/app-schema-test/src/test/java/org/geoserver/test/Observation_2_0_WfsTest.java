@@ -41,9 +41,9 @@ public class Observation_2_0_WfsTest extends AbstractAppSchemaTestSupport {
         assertXpathEvaluatesTo(id, "(//om:OM_Observation)[1]/@gml:id", doc);
         assertXpathEvaluatesTo("TP." + id, "//om:OM_Observation[@gml:id='" + id
                 + "']/om:phenomenonTime/gml:TimePeriod/@gml:id", doc);
-        assertXpathEvaluatesTo("1948-01-01T00:00:00", "//om:OM_Observation[@gml:id='" + id
+        assertXpathEvaluatesTo("1948-01-01T00:00:00Z", "//om:OM_Observation[@gml:id='" + id
                 + "']/om:phenomenonTime/gml:TimePeriod/gml:beginPosition", doc);
-        assertXpathEvaluatesTo("1949-04-01T00:00:00", "//om:OM_Observation[@gml:id='" + id
+        assertXpathEvaluatesTo("1949-04-01T00:00:00Z", "//om:OM_Observation[@gml:id='" + id
                 + "']/om:phenomenonTime/gml:TimePeriod/gml:endPosition", doc);
 
         assertXpathEvaluatesTo("measurement." + id, "//om:OM_Observation[@gml:id='" + id
@@ -55,10 +55,10 @@ public class Observation_2_0_WfsTest extends AbstractAppSchemaTestSupport {
                         + "']/om:result/wml2dr:MeasurementTimeseriesDomainRange/gml:domainSet/wml2dr:TimePositionList/@gml:id",
                 doc);
         assertXpathEvaluatesTo(
-                "1948-01-01T00:00:00 1948-02-01T00:00:00 1948-03-01T00:00:00 1948-04-01T00:00:00 1948-05-01T00:00:00 "
-                        + "1948-06-01T00:00:00 1948-07-01T00:00:00 1948-08-01T00:00:00 1948-09-01T00:00:00 1948-10-01T00:00:00 "
-                        + "1948-11-01T00:00:00 1948-12-01T00:00:00 1949-01-01T00:00:00 1949-02-01T00:00:00 1949-03-01T00:00:00 "
-                        + "1949-04-01T00:00:00",
+                "1948-01-01T00:00:00Z 1948-02-01T00:00:00Z 1948-03-01T00:00:00Z 1948-04-01T00:00:00Z 1948-05-01T00:00:00Z "
+                        + "1948-06-01T00:00:00Z 1948-07-01T00:00:00Z 1948-08-01T00:00:00Z 1948-09-01T00:00:00Z 1948-10-01T00:00:00Z "
+                        + "1948-11-01T00:00:00Z 1948-12-01T00:00:00Z 1949-01-01T00:00:00Z 1949-02-01T00:00:00Z 1949-03-01T00:00:00Z "
+                        + "1949-04-01T00:00:00Z",
                 "//om:OM_Observation[@gml:id='"
                         + id
                         + "']/om:result/wml2dr:MeasurementTimeseriesDomainRange/gml:domainSet/wml2dr:TimePositionList/wml2dr:timePositionList",
@@ -92,9 +92,9 @@ public class Observation_2_0_WfsTest extends AbstractAppSchemaTestSupport {
         assertXpathEvaluatesTo(id, "(//om:OM_Observation)[2]/@gml:id", doc);
         assertXpathEvaluatesTo("TP." + id, "//om:OM_Observation[@gml:id='" + id
                 + "']/om:phenomenonTime/gml:TimePeriod/@gml:id", doc);
-        assertXpathEvaluatesTo("1949-05-01T00:00:00", "//om:OM_Observation[@gml:id='" + id
+        assertXpathEvaluatesTo("1949-05-01T00:00:00Z", "//om:OM_Observation[@gml:id='" + id
                 + "']/om:phenomenonTime/gml:TimePeriod/gml:beginPosition", doc);
-        assertXpathEvaluatesTo("1950-12-01T00:00:00", "//om:OM_Observation[@gml:id='" + id
+        assertXpathEvaluatesTo("1950-12-01T00:00:00Z", "//om:OM_Observation[@gml:id='" + id
                 + "']/om:phenomenonTime/gml:TimePeriod/gml:endPosition", doc);
         assertXpathEvaluatesTo("measurement." + id, "//om:OM_Observation[@gml:id='" + id
                 + "']/om:result/wml2dr:MeasurementTimeseriesDomainRange/@gml:id", doc);
@@ -105,10 +105,10 @@ public class Observation_2_0_WfsTest extends AbstractAppSchemaTestSupport {
                         + "']/om:result/wml2dr:MeasurementTimeseriesDomainRange/gml:domainSet/wml2dr:TimePositionList/@gml:id",
                 doc);
         assertXpathEvaluatesTo(
-                "1949-05-01T00:00:00 1949-06-01T00:00:00 1949-07-01T00:00:00 1949-08-01T00:00:00 1949-09-01T00:00:00 "
-                        + "1949-10-01T00:00:00 1949-11-01T00:00:00 1949-12-01T00:00:00 1950-01-01T00:00:00 1950-02-01T00:00:00 "
-                        + "1950-03-01T00:00:00 1950-04-01T00:00:00 1950-05-01T00:00:00 1950-06-01T00:00:00 1950-07-01T00:00:00 "
-                        + "1950-08-01T00:00:00 1950-09-01T00:00:00 1950-10-01T00:00:00 1950-11-01T00:00:00 1950-12-01T00:00:00",
+                "1949-05-01T00:00:00Z 1949-06-01T00:00:00Z 1949-07-01T00:00:00Z 1949-08-01T00:00:00Z 1949-09-01T00:00:00Z "
+                        + "1949-10-01T00:00:00Z 1949-11-01T00:00:00Z 1949-12-01T00:00:00Z 1950-01-01T00:00:00Z 1950-02-01T00:00:00Z "
+                        + "1950-03-01T00:00:00Z 1950-04-01T00:00:00Z 1950-05-01T00:00:00Z 1950-06-01T00:00:00Z 1950-07-01T00:00:00Z "
+                        + "1950-08-01T00:00:00Z 1950-09-01T00:00:00Z 1950-10-01T00:00:00Z 1950-11-01T00:00:00Z 1950-12-01T00:00:00Z",
                 "//om:OM_Observation[@gml:id='"
                         + id
                         + "']/om:result/wml2dr:MeasurementTimeseriesDomainRange/gml:domainSet/wml2dr:TimePositionList/wml2dr:timePositionList",
@@ -145,8 +145,8 @@ public class Observation_2_0_WfsTest extends AbstractAppSchemaTestSupport {
      */
     @Test
     public void testTimePositionSubset() {
-        String beginPosition = "1950-03-01T00:00:00";
-        String endPosition = "1950-06-01T00:00:00";
+        String beginPosition = "1950-03-01T00:00:00Z";
+        String endPosition = "1950-06-01T00:00:00Z";
         String xml = "<wfs:GetFeature "
                 + "service=\"WFS\" " //
                 + "version=\"1.1.0\" " //
@@ -194,7 +194,7 @@ public class Observation_2_0_WfsTest extends AbstractAppSchemaTestSupport {
                 doc);
         // subset values matching the list (isList requirement)
         assertXpathEvaluatesTo(
-                "1950-03-01T00:00:00 1950-04-01T00:00:00 1950-05-01T00:00:00 1950-06-01T00:00:00",
+                "1950-03-01T00:00:00Z 1950-04-01T00:00:00Z 1950-05-01T00:00:00Z 1950-06-01T00:00:00Z",
                 "//om:OM_Observation/om:result/wml2dr:MeasurementTimeseriesDomainRange/gml:domainSet/wml2dr:TimePositionList/wml2dr:timePositionList",
                 doc);
         // matching QuantityList subset

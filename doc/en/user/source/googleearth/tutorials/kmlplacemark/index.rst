@@ -138,7 +138,7 @@ You will notice that hovering the mouse over one of the points on the map displa
 	
 2. Add the following network link in Google Earth::
 
-	http://localhost:8080/geoserver/wms/kml_reflect?layers=tiger:poi
+	http://localhost:8080/geoserver/wms/kml?layers=tiger:poi
 	
 Poi.4
 

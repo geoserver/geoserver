@@ -4,6 +4,7 @@
  */
 package org.geoserver.gwc.layer;
 
+import org.geowebcache.config.ContextualConfigurationProvider;
 import org.geowebcache.config.XMLConfigurationProvider;
 
 import com.thoughtworks.xstream.XStream;
@@ -17,12 +18,19 @@ import com.thoughtworks.xstream.XStream;
  * and unmarshaling {@link GeoServerTileLayer} objects for the GWC REST API.
  * 
  */
-public class GWCGeoServerConfigurationProvider implements XMLConfigurationProvider {
+public class GWCGeoServerConfigurationProvider implements ContextualConfigurationProvider {
 
     @Override
     public XStream getConfiguredXStream(XStream xs) {
         xs.alias("GeoServerTileLayer", GeoServerTileLayerInfo.class);
+        xs.processAnnotations(GeoServerTileLayerInfoImpl.class);
+        xs.processAnnotations(StyleParameterFilter.class);
         xs.addDefaultImplementation(GeoServerTileLayerInfoImpl.class, GeoServerTileLayerInfo.class);
         return xs;
+    }
+
+    @Override
+    public boolean appliesTo(Context ctxt) {
+        return Context.PERSIST==ctxt;
     }
 }

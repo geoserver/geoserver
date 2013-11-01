@@ -19,10 +19,13 @@ import java.util.logging.Logger;
 import javax.xml.transform.TransformerException;
 
 import org.geoserver.ows.util.RequestUtils;
+import org.geotools.data.DataUtilities;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.sld.v1_1.SLDConfiguration;
+import org.geotools.styling.DefaultResourceLocator;
 import org.geotools.styling.NamedLayer;
 import org.geotools.styling.NamedStyle;
+import org.geotools.styling.ResourceLocator;
 import org.geotools.styling.SLDParser;
 import org.geotools.styling.SLDTransformer;
 import org.geotools.styling.Style;
@@ -332,7 +335,22 @@ public class Styles {
             
             @Override
             public StyledLayerDescriptor parse(Object input, EntityResolver entityResolver) throws IOException {
-                SLDConfiguration sld = new SLDConfiguration();
+                SLDConfiguration sld;
+                if (input instanceof File) {
+                    // setup for resolution of relative paths
+                    final java.net.URL surl = DataUtilities.fileToURL((File) input);
+                    sld = new SLDConfiguration() {
+                        protected void configureContext(
+                                org.picocontainer.MutablePicoContainer container) {
+                            DefaultResourceLocator locator = new DefaultResourceLocator();
+                            locator.setSourceUrl(surl);
+                            container.registerComponentInstance(ResourceLocator.class, locator);
+                        };
+                    };
+                } else {
+                    sld = new SLDConfiguration();
+                }
+                
                 try {
                     Parser parser = new Parser(sld);
                     parser.setEntityResolver(entityResolver);

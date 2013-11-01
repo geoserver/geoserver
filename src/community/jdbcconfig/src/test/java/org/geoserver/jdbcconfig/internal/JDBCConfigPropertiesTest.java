@@ -101,7 +101,7 @@ public class JDBCConfigPropertiesTest {
             JDBCConfigPropertiesFactoryBean factory = new JDBCConfigPropertiesFactoryBean(loader);
             JDBCConfigProperties props = (JDBCConfigProperties) factory.createProperties();
     
-            assertEquals("jdbc:h2:nofile", props.getJdbcUrl());
+            assertEquals("jdbc:h2:nofile", props.getJdbcUrl().get());
             assertFalse(props.isInitDb());
             assertFalse(props.isImport());
         }
@@ -118,6 +118,6 @@ public class JDBCConfigPropertiesTest {
         JDBCConfigProperties props = (JDBCConfigProperties) factory.createProperties();
 
         
-        assertTrue(props.getJdbcUrl().contains(loader.getBaseDirectory().getAbsolutePath()));
+        assertTrue(props.getJdbcUrl().get().contains(loader.getBaseDirectory().getAbsolutePath()));
     }
 }

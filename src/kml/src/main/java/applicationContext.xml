@@ -1,92 +1,116 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<!-- 
- Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
- This code is licensed under the GPL 2.0 license, available at the root
- application directory.
- -->
+<!-- Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights 
+  reserved. This code is licensed under the GPL 2.0 license, available at the 
+  root application directory. -->
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
 
-    <bean id="wmsServiceInterceptor-kmlReflector" class="org.geoserver.kml.WebMapServiceKmlInterceptor">
-    	<constructor-arg index="0" ref="wms"/>
-    	<constructor-arg index="1" ref="wmsServiceTarget"/>
-    </bean>
+  <bean id="wmsServiceInterceptor-kmlReflector" class="org.geoserver.kml.WebMapServiceKmlInterceptor">
+    <constructor-arg index="0" ref="wms"/>
+    <constructor-arg index="1" ref="wmsServiceTarget"/>
+  </bean>
 
-	<bean id="KMLMapProducer" 
-		class="org.geoserver.kml.KMLMapOutputFormat">
-      <constructor-arg index="0" ref="wms"/>
-	</bean>
-
-    <bean id="KMZMapProducer" class="org.geoserver.kml.KMZMapOutputFormat">
-      <constructor-arg ref="wms" />
-    </bean>
-    <bean id="KMZMapResponse" class="org.geoserver.kml.KMZMapResponse">
-      <constructor-arg ref="wms" />
-    </bean>
-    <bean id="NetworkLinkMapProducer" class="org.geoserver.kml.NetworkLinkMapOutputFormat">
-      <constructor-arg ref="wms" />
-    </bean>
-
-	<!-- http url mapping -->
-	<bean id="kmlURLMapping" 
-		class="org.geoserver.ows.OWSHandlerMapping">
-		<constructor-arg ref="catalog"/>
-		<property name="alwaysUseFullPath" value="true"/>
-		<property name="mappings">
-			<props>
-				<prop key="/kml">dispatcher</prop>
-				<prop key="/kml/*">dispatcher</prop>
-			</props>
-		</property>
-	</bean>
-	
-	<!-- kml kvp parsers -->
- 	<bean id="superOverlayKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
-		<constructor-arg value="superoverlay"/>
- 	</bean>
- 	<bean id="legendKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
-		<constructor-arg value="legend"/>
- 	</bean>
- 	<bean id="kmatrrKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
-		<constructor-arg value="kmattr"/>
- 	</bean>
- 	<bean id="kmscoreKvpParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
-		<constructor-arg value="kmscore"/>
- 	</bean>
- 	<bean id="kmplacemarkKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
-		<constructor-arg value="kmplacemark"/>
- 	</bean>
+  <bean id="KMLMapProducer" class="org.geoserver.kml.KMLMapOutputFormat">
+    <constructor-arg index="0" ref="wms" />
+  </bean>
   
-    <bean id="nativeSortingRegionator"
-        class="org.geoserver.kml.ReflectiveRegionatingStrategyFactory">
-      <constructor-arg value="native-sorting"/>
-      <constructor-arg value="org.geoserver.kml.NativeSortRegionatingStrategy"/>
-      <constructor-arg ref="geoServer"/>
-    </bean>
-    <bean id="externalSortingRegionator"
-        class="org.geoserver.kml.ReflectiveRegionatingStrategyFactory">
-      <constructor-arg value="external-sorting"/>
-      <constructor-arg value="org.geoserver.kml.ExternalSortRegionatingStrategy"/>
-      <constructor-arg ref="geoServer"/>
-    </bean>
-    <bean id="geometryRegionator"
-        class="org.geoserver.kml.ReflectiveRegionatingStrategyFactory">
-      <constructor-arg value="geometry"/>
-      <constructor-arg value="org.geoserver.kml.GeometryRegionatingStrategy"/>
-      <constructor-arg ref="geoServer"/>
-    </bean>
-    <bean id="randomRegionator"
-        class="org.geoserver.kml.ReflectiveRegionatingStrategyFactory">
-      <constructor-arg value="random"/>
-      <constructor-arg value="org.geoserver.kml.RandomRegionatingStrategy"/>
-      <constructor-arg ref="geoServer"/>
-    </bean>
-    <bean id="bestGuessRegionator"
-        class="org.geoserver.kml.ReflectiveRegionatingStrategyFactory">
-      <constructor-arg value="best_guess"/>
-      <constructor-arg value="org.geoserver.kml.BestGuessRegionatingStrategy"/>
-      <constructor-arg ref="geoServer"/>
-    </bean>
+  <bean id="KMLEncoder" class="org.geoserver.kml.KMLEncoder"/>
+
+  <bean id="KMZMapProducer" class="org.geoserver.kml.KMZMapOutputFormat">
+    <constructor-arg ref="wms" />
+  </bean>
+
+  <!-- <bean id="KMZMapResponse" class="org.geoserver.kml.KMZMapResponse"> -->
+   
+  <bean id="NetworkLinkMapProducer" class="org.geoserver.kml.NetworkLinkMapOutputFormat">
+    <constructor-arg ref="wms" />
+  </bean>
+
+  <bean id="KMLMapResponse" class="org.geoserver.kml.KMLMapResponse">
+    <constructor-arg ref="KMLEncoder" />
+    <constructor-arg ref="wms" />
+  </bean>
+  
+  <bean id="WFSKMLOutputFormat" class="org.geoserver.kml.WFSKMLOutputFormat">
+    <constructor-arg ref="KMLEncoder" />
+    <constructor-arg ref="geoServer"/>
+  </bean>
+
+  <!--  icon service -->
+  <bean id="kmlIconService" class="org.geoserver.kml.icons.IconService">
+    <constructor-arg ref="catalog"/>
+  </bean>
+
+  <!-- http url mapping -->
+  <bean id="kmlURLMapping" class="org.geoserver.ows.OWSHandlerMapping">
+    <constructor-arg ref="catalog" />
+    <property name="alwaysUseFullPath" value="true" />
+    <property name="mappings">
+      <props>
+        <prop key="/kml/icon/**/*">kmlIconService</prop>
+        <prop key="/kml">dispatcher</prop>
+        <prop key="/kml/*">dispatcher</prop>
+      </props>
+    </property>
+  </bean>
+
+  <!-- kml kvp parsers -->
+  <bean id="superOverlayKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
+    <constructor-arg value="superoverlay" />
+  </bean>
+  <bean id="legendKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
+    <constructor-arg value="legend" />
+  </bean>
+  <bean id="kmatrrKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
+    <constructor-arg value="kmattr" />
+  </bean>
+  <bean id="kmscoreKvpParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
+    <constructor-arg value="kmscore" />
+  </bean>
+  <bean id="kmplacemarkKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
+    <constructor-arg value="kmplacemark" />
+  </bean>
+
+  <!-- KML decorators -->
+  <bean id="kmlLegendDecorator" class="org.geoserver.kml.decorator.LegendDecoratorFactory"/>
+  <bean id="kmlGeometryDecorator" class="org.geoserver.kml.decorator.PlacemarkGeometryDecoratorFactory"/>
+  <bean id="kmlStyleDecorator" class="org.geoserver.kml.decorator.PlacemarkStyleDecoratorFactory"/>
+  <bean id="kmlNameDecorator" class="org.geoserver.kml.decorator.PlacemarkNameDecoratorFactory"/>
+  <bean id="kmlDescriptionDecorator" class="org.geoserver.kml.decorator.PlacemarkDescriptionDecoratorFactory"/>
+  <bean id="kmlLookAtDecorator" class="org.geoserver.kml.decorator.LookAtDecoratorFactory"/>
+  <bean id="kmlTimeDecorator" class="org.geoserver.kml.decorator.PlacemarkTimeDecoratorFactory"/>
+  <bean id="kmlExtendedDataDecorator" class="org.geoserver.kml.decorator.ExtendedDataDecoratorFactory"/>
+  
+  <!-- GeoSearch KML decorators -->
+  <bean id="kmlRelativeLinksDecorator" class="org.geoserver.kml.decorator.FolderRelativeLinksDecoratorFactory"/>
+  <bean id="kmlSelfLinksDecorator" class="org.geoserver.kml.decorator.PlacemarkSelfLinkDecoratorFactory"/>
+
+  <!-- Regionation support -->
+  <bean id="nativeSortingRegionator" class="org.geoserver.kml.regionate.ReflectiveRegionatingStrategyFactory">
+    <constructor-arg value="native-sorting" />
+    <constructor-arg value="org.geoserver.kml.regionate.NativeSortRegionatingStrategy" />
+    <constructor-arg ref="geoServer" />
+  </bean>
+  <bean id="externalSortingRegionator" class="org.geoserver.kml.regionate.ReflectiveRegionatingStrategyFactory">
+    <constructor-arg value="external-sorting" />
+    <constructor-arg value="org.geoserver.kml.regionate.ExternalSortRegionatingStrategy" />
+    <constructor-arg ref="geoServer" />
+  </bean>
+  <bean id="geometryRegionator" class="org.geoserver.kml.regionate.ReflectiveRegionatingStrategyFactory">
+    <constructor-arg value="geometry" />
+    <constructor-arg value="org.geoserver.kml.regionate.GeometryRegionatingStrategy" />
+    <constructor-arg ref="geoServer" />
+  </bean>
+  <bean id="randomRegionator" class="org.geoserver.kml.regionate.ReflectiveRegionatingStrategyFactory">
+    <constructor-arg value="random" />
+    <constructor-arg value="org.geoserver.kml.regionate.RandomRegionatingStrategy" />
+    <constructor-arg ref="geoServer" />
+  </bean>
+  <bean id="bestGuessRegionator" class="org.geoserver.kml.regionate.ReflectiveRegionatingStrategyFactory">
+    <constructor-arg value="best_guess" />
+    <constructor-arg value="org.geoserver.kml.regionate.BestGuessRegionatingStrategy" />
+    <constructor-arg ref="geoServer" />
+  </bean>
 
 </beans>

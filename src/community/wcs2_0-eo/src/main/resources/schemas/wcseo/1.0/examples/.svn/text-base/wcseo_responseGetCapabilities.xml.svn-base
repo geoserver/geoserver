@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wcs:Capabilities updateSequence="20110104T160000Z" version="2.0.0"
+    xmlns:gml="http://www.opengis.net/gml/3.2"
+    xmlns:gmlcov="http://www.opengis.net/gmlcov/1.0"
+    xmlns:ogc="http://www.opengis.net/ogc"
+    xmlns:ows="http://www.opengis.net/ows/2.0"
+    xmlns:swe="http://www.opengis.net/swe/2.0"
+    xmlns:wcs="http://www.opengis.net/wcs/2.0"
+    xmlns:wcseo="http://www.opengis.net/wcseo/1.0"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.opengis.net/wcseo/1.0 http://schemas.opengis.net/wcseo/1.0/wcsEOAll.xsd">
+    <ows:ServiceIdentification>
+        <ows:Title>Title</ows:Title>
+        <ows:Abstract>Abstract</ows:Abstract>
+        <ows:Keywords>
+            <ows:Keyword>EO-WCS</ows:Keyword>
+            <ows:Keyword>WCS 2.0</ows:Keyword>
+            <ows:Keyword>WCS</ows:Keyword>
+            <ows:Keyword>Keyword</ows:Keyword>
+        </ows:Keywords>
+        <ows:ServiceType codeSpace="OGC">OGC WCS</ows:ServiceType>
+        <ows:ServiceTypeVersion>2.0.0</ows:ServiceTypeVersion>
+        <ows:Profile>http://www.opengis.net/spec/WCS/2.0/conf/core</ows:Profile>
+        <ows:Profile>http://www.opengis.net/spec/WCS_protocol-binding_get-kvp/1.0/conf/get-kvp</ows:Profile>
+        <ows:Profile>http://www.opengis.net/spec/WCS_protocol-binding_post-xml/1.0/conf/post-xml</ows:Profile>
+        <ows:Profile>http://www.opengis.net/spec/WCS_encoding_geotiff/1.0/conf/geotiff</ows:Profile>
+        <ows:Profile>http://www.placeholder.com/EPSG</ows:Profile>
+        <ows:Profile>http://www.placeholder.com/IMAGECRS</ows:Profile>
+        <ows:Profile>http://www.placeholder.com/GML_and_GeoTIFF</ows:Profile>
+        <ows:Profile>http://www.placeholder.com/SCALING</ows:Profile>
+        <ows:Profile>http://www.placeholder.com/INTERPOLATION</ows:Profile>
+        <ows:Profile>http://www.placeholder.com/RANGESUBSET</ows:Profile>
+        <ows:Profile>http://www.opengis.net/spec/WCS_application-profile_earth-observation/1.0/conf/eowcs</ows:Profile>
+        <ows:Profile>http://www.opengis.net/spec/WCS_application-profile_earth-observation/1.0/conf/eowcs_get-kvp</ows:Profile>
+    </ows:ServiceIdentification>
+
+    <ows:OperationsMetadata>
+        <ows:Operation name="GetCapabilities">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="http://www.someu.rl?" xlink:type="simple"/>
+                    <ows:Post xlink:href="http://www.someu.rl?" xlink:type="simple">
+                        <ows:Constraint name="PostEncoding">
+                            <ows:AllowedValues>
+                                <ows:Value>XML</ows:Value>
+                            </ows:AllowedValues>
+                        </ows:Constraint>
+                    </ows:Post>
+                </ows:HTTP>
+            </ows:DCP>
+        </ows:Operation>
+        <ows:Operation name="DescribeCoverage">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="http://www.someu.rl?" xlink:type="simple"/>
+                    <ows:Post xlink:href="http://www.someu.rl?" xlink:type="simple">
+                        <ows:Constraint name="PostEncoding">
+                            <ows:AllowedValues>
+                                <ows:Value>XML</ows:Value>
+                            </ows:AllowedValues>
+                        </ows:Constraint>
+                    </ows:Post>
+                </ows:HTTP>
+            </ows:DCP>
+        </ows:Operation>
+        <ows:Operation name="GetCoverage">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="http://www.someu.rl?" xlink:type="simple"/>
+                    <ows:Post xlink:href="http://www.someu.rl?" xlink:type="simple">
+                        <ows:Constraint name="PostEncoding">
+                            <ows:AllowedValues>
+                                <ows:Value>XML</ows:Value>
+                            </ows:AllowedValues>
+                        </ows:Constraint>
+                    </ows:Post>
+                </ows:HTTP>
+            </ows:DCP>
+        </ows:Operation>
+        <ows:Operation name="DescribeEOCoverageSet">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="http://www.someu.rl?" xlink:type="simple"/>
+                    <ows:Post xlink:href="http://www.someu.rl?" xlink:type="simple">
+                        <ows:Constraint name="PostEncoding">
+                            <ows:AllowedValues>
+                                <ows:Value>XML</ows:Value>
+                            </ows:AllowedValues>
+                        </ows:Constraint>
+                    </ows:Post>
+                </ows:HTTP>
+            </ows:DCP>
+        </ows:Operation>
+        <!-- CountDefault is used to limit the number of coverageDescriptions returned with DescribeEOCoverageSet operations by the server. -->
+        <ows:Constraint name="CountDefault">
+            <ows:NoValues/>
+            <ows:DefaultValue>100</ows:DefaultValue>
+        </ows:Constraint>
+    </ows:OperationsMetadata>
+
+    <wcs:ServiceMetadata/>
+
+    <wcs:Contents>
+        <!-- CoverageSummary including mandatory elements only -->
+        <wcs:CoverageSummary>
+            <wcs:CoverageId>someCoverage</wcs:CoverageId>
+            <wcs:CoverageSubtype>RectifiedGridCoverage</wcs:CoverageSubtype>
+        </wcs:CoverageSummary>
+        <!-- CoverageSummary including mandatory elements for EO Coverages only -->
+        <wcs:CoverageSummary>
+            <wcs:CoverageId>someEOCoverage1</wcs:CoverageId>
+            <wcs:CoverageSubtype>RectifiedDataset</wcs:CoverageSubtype>
+            <wcs:CoverageSubtypeParent>
+                <wcs:CoverageSubtype>RectifiedGridCoverage</wcs:CoverageSubtype>
+        </wcs:CoverageSubtypeParent>
+        </wcs:CoverageSummary>
+        <!-- CoverageSummary including also optional elements -->
+        <wcs:CoverageSummary>
+            <ows:WGS84BoundingBox>
+                <ows:LowerCorner>-180 -90</ows:LowerCorner>
+                <ows:UpperCorner>180 90</ows:UpperCorner>
+            </ows:WGS84BoundingBox>
+            <wcs:CoverageId>someEOCoverage2</wcs:CoverageId>
+            <wcs:CoverageSubtype>RectifiedDataset</wcs:CoverageSubtype>
+            <wcs:CoverageSubtypeParent>
+                <wcs:CoverageSubtype>RectifiedGridCoverage</wcs:CoverageSubtype>
+            </wcs:CoverageSubtypeParent>
+            <ows:BoundingBox crs="http://www.opengis.net/def/crs/EPSG/0/3035" dimensions="2">
+                <ows:LowerCorner>4742525 2665925</ows:LowerCorner>
+                <ows:UpperCorner>4767525 2690925</ows:UpperCorner>
+            </ows:BoundingBox>
+        </wcs:CoverageSummary>
+        <!-- DatasetSeriesSummary including mandatory elements only -->
+        <wcs:Extension>
+            <wcseo:DatasetSeriesSummary>
+                <ows:WGS84BoundingBox>
+                    <ows:LowerCorner>-180 -90</ows:LowerCorner>
+                    <ows:UpperCorner>180 90</ows:UpperCorner>
+                </ows:WGS84BoundingBox>
+                <wcseo:DatasetSeriesId>someDatasetSeries</wcseo:DatasetSeriesId>
+                <gml:TimePeriod gml:id="someDatasetSeries_timeperiod">
+                    <gml:beginPosition>2010-01-01T00:00:00.000</gml:beginPosition>
+                    <gml:endPosition>2010-12-31T23:59:59.999</gml:endPosition>
+                </gml:TimePeriod>
+            </wcseo:DatasetSeriesSummary>
+        </wcs:Extension>
+    </wcs:Contents>
+</wcs:Capabilities>

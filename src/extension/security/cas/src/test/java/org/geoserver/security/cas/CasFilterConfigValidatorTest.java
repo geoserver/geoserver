@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.logging.Logger;
 
 import org.geoserver.security.config.RequestHeaderAuthenticationFilterConfig;
+import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource;
 import org.geoserver.security.validation.FilterConfigException;
 import org.geoserver.security.xml.XMLRoleService;
 import org.geoserver.security.xml.XMLUserGroupService;
@@ -57,7 +58,7 @@ public class CasFilterConfigValidatorTest extends GeoServerMockTestSupport {
         assertTrue(failed);
 
         
-        config.setRoleSource(RequestHeaderAuthenticationFilterConfig.RoleSource.UserGroupService);
+        config.setRoleSource(PreAuthenticatedUserNameRoleSource.UserGroupService);
         failed = false;                                        
         try {
             validator.validateCASFilterConfig(config);
@@ -85,7 +86,7 @@ public class CasFilterConfigValidatorTest extends GeoServerMockTestSupport {
         
         config.setUserGroupServiceName(XMLUserGroupService.DEFAULT_NAME);
         
-        config.setRoleSource(RequestHeaderAuthenticationFilterConfig.RoleSource.RoleService);                
+        config.setRoleSource(PreAuthenticatedUserNameRoleSource.RoleService);                
         config.setRoleServiceName("blabla");
         failed = false;                                        
         try {
@@ -101,7 +102,7 @@ public class CasFilterConfigValidatorTest extends GeoServerMockTestSupport {
         
         config.setRoleServiceName(XMLRoleService.DEFAULT_NAME);
         
-        config.setRoleSource(RequestHeaderAuthenticationFilterConfig.RoleSource.Header);
+        config.setRoleSource(PreAuthenticatedUserNameRoleSource.Header);
         failed = false;                                        
         try {
             validator.validateCASFilterConfig(config);

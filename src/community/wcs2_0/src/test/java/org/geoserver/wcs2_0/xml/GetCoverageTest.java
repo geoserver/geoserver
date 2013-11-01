@@ -1,7 +1,8 @@
 package org.geoserver.wcs2_0.xml;
 
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -10,8 +11,6 @@ import java.io.IOException;
 import javax.mail.BodyPart;
 import javax.mail.Multipart;
 import javax.xml.namespace.QName;
-
-import junit.framework.Assert;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -24,7 +23,7 @@ import org.geoserver.wcs2_0.GetCoverage;
 import org.geoserver.wcs2_0.WCSTestSupport;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.DataSourceException;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
@@ -161,7 +160,7 @@ public class GetCoverageTest extends WCSTestSupport {
 
             final double scale = getScale(targetCoverage);
             assertEnvelopeEquals(expectedEnvelope,scale,(GeneralEnvelope) targetCoverage.getEnvelope(),scale);
-            Assert.assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), expectedEnvelope.getCoordinateReferenceSystem()));
+            assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), expectedEnvelope.getCoordinateReferenceSystem()));
             assertEquals(gridRange.getSpan(0), 360);
             assertEquals(gridRange.getSpan(1), 120);
             
@@ -205,7 +204,7 @@ public class GetCoverageTest extends WCSTestSupport {
 
             final double scale = getScale(targetCoverage);
             assertEnvelopeEquals(expectedEnvelope,scale,(GeneralEnvelope) targetCoverage.getEnvelope(),scale);
-            Assert.assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), expectedEnvelope.getCoordinateReferenceSystem()));
+            assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), expectedEnvelope.getCoordinateReferenceSystem()));
             assertEquals(gridRange.getSpan(0), 120);
             assertEquals(gridRange.getSpan(1), 120);
             
@@ -325,7 +324,7 @@ public class GetCoverageTest extends WCSTestSupport {
     
             final double scale = getScale(targetCoverage);
             assertEnvelopeEquals(expectedEnvelope,scale,(GeneralEnvelope) targetCoverage.getEnvelope(),scale);
-            Assert.assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), expectedEnvelope.getCoordinateReferenceSystem()));
+            assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), expectedEnvelope.getCoordinateReferenceSystem()));
             assertEquals(gridRange.getSpan(0), 120);
             assertEquals(gridRange.getSpan(1), 360);
             
@@ -369,7 +368,7 @@ public class GetCoverageTest extends WCSTestSupport {
     
             final double scale = getScale(targetCoverage);
             assertEnvelopeEquals(expectedEnvelope,scale,(GeneralEnvelope) targetCoverage.getEnvelope(),scale);
-            Assert.assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), expectedEnvelope.getCoordinateReferenceSystem()));
+            assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), expectedEnvelope.getCoordinateReferenceSystem()));
             assertEquals(gridRange.getSpan(1), 1);
             assertEquals(gridRange.getSpan(0), 120);
             
@@ -425,7 +424,7 @@ public class GetCoverageTest extends WCSTestSupport {
     
             final double scale = getScale(targetCoverage);
             assertEnvelopeEquals(expectedEnvelope,scale,(GeneralEnvelope) targetCoverage.getEnvelope(),scale);
-            Assert.assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), expectedEnvelope.getCoordinateReferenceSystem()));
+            assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), expectedEnvelope.getCoordinateReferenceSystem()));
             assertEquals(gridRange.getSpan(0), 1);
             assertEquals(gridRange.getSpan(1), 360);
             
@@ -470,7 +469,7 @@ public class GetCoverageTest extends WCSTestSupport {
     
             final double scale = getScale(targetCoverage);
             assertEnvelopeEquals(expectedEnvelope,scale,(GeneralEnvelope) targetCoverage.getEnvelope(),scale);
-            Assert.assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), expectedEnvelope.getCoordinateReferenceSystem()));
+            assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), expectedEnvelope.getCoordinateReferenceSystem()));
             assertEquals(gridRange.getSpan(1), 1);
             assertEquals(gridRange.getSpan(0), 360);
             
@@ -588,6 +587,66 @@ public class GetCoverageTest extends WCSTestSupport {
         // timeranges is really just an expanded watertemp 
         checkWaterTempValue(request, 14.52999974018894136);
     }
+    
+    @Test
+    public void testCoverageTimeElevationSlicingAgainstLowestOldestGranule() throws Exception {
+        setupRasterDimension(getLayerId(TIMERANGES), ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        setupRasterDimension(getLayerId(TIMERANGES), ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
+        setupRasterDimension(getLayerId(TIMERANGES), ResourceInfo.CUSTOM_DIMENSION_PREFIX + "WAVELENGTH", DimensionPresentation.LIST, null);
+        final File xml = new File("./src/test/resources/trimming/requestGetCoverageTimeElevationCustomSlicingXML.xml");
+        String request= FileUtils.readFileToString(xml);
+        request = request.replace("${coverageId}", "sf__timeranges");
+        request = request.replace("${slicePointElevation}", "20");
+        request = request.replace("${slicePointTime}", "2008-10-31T00:00:00.000Z");
+        request = request.replace("${Custom}", "WAVELENGTH");
+        request = request.replace("${slicePointCustom}", "20");
+        // timeranges is really just an expanded watertemp 
+        checkWaterTempValue(request, 18.478999927756377);
+    }
+
+    @Test
+    public void testCoverageTimeElevationSlicingAgainstHighestNewestGranuleLatestWavelength() throws Exception {
+        setupRasterDimension(getLayerId(TIMERANGES), ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        setupRasterDimension(getLayerId(TIMERANGES), ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
+        setupRasterDimension(getLayerId(TIMERANGES), ResourceInfo.CUSTOM_DIMENSION_PREFIX + "WAVELENGTH", DimensionPresentation.LIST, null);
+        final File xml = new File("./src/test/resources/trimming/requestGetCoverageTimeElevationCustomSlicingXML.xml");
+        String request= FileUtils.readFileToString(xml);
+        request = request.replace("${coverageId}", "sf__timeranges");
+        request = request.replace("${slicePointElevation}", "140");
+        request = request.replace("${slicePointTime}", "2008-11-07T00:00:00.000Z");
+        request = request.replace("${Custom}", "WAVELENGTH");
+        request = request.replace("${slicePointCustom}", "80");
+        // timeranges is really just an expanded watertemp 
+        checkWaterTempValue(request, 14.52999974018894136);
+    }
+
+    @Test
+    public void testCoverageTimeElevationSlicingAgainstHighestNewestGranule() throws Exception {
+        setupRasterDimension(getLayerId(TIMERANGES), ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        setupRasterDimension(getLayerId(TIMERANGES), ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
+        setupRasterDimension(getLayerId(TIMERANGES), ResourceInfo.CUSTOM_DIMENSION_PREFIX + "WAVELENGTH", DimensionPresentation.LIST, null);
+        final File xml = new File("./src/test/resources/trimming/requestGetCoverageTimeElevationSlicingXML.xml");
+        String request= FileUtils.readFileToString(xml);
+        request = request.replace("${coverageId}", "sf__timeranges");
+        request = request.replace("${slicePointElevation}", "140");
+        request = request.replace("${slicePointTime}", "2008-11-07T00:00:00.000Z");
+        // timeranges is really just an expanded watertemp 
+        checkWaterTempValue(request, 14.52999974018894136);
+    }
+
+    @Test
+    public void testCoverageElevationSlicingDefaultTime() throws Exception {
+        setupRasterDimension(getLayerId(TIMERANGES), ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        setupRasterDimension(getLayerId(TIMERANGES), ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
+        setupRasterDimension(getLayerId(TIMERANGES), ResourceInfo.CUSTOM_DIMENSION_PREFIX + "WAVELENGTH", DimensionPresentation.LIST, null);
+        final File xml = new File("./src/test/resources/trimming/requestGetCoverageElevationSlicingXML.xml");
+        String request= FileUtils.readFileToString(xml);
+        request = request.replace("${coverageId}", "sf__timeranges");
+        request = request.replace("${slicePoint}", "140");
+
+        // timeranges is really just an expanded watertemp 
+        checkWaterTempValue(request, 14.52999974018894136);
+    }
 
     private void checkWaterTempValue(String request, double expectedValue) throws Exception, IOException,
             DataSourceException {
@@ -604,10 +663,10 @@ public class GetCoverageTest extends WCSTestSupport {
             targetCoverage = readerTarget.read(null);
 
             // checks spatial consistency
-            AbstractGridCoverage2DReader sourceReader = (AbstractGridCoverage2DReader) getCatalog().getCoverageByName(getLayerId(WATTEMP)).getGridCoverageReader(null, null);
+            GridCoverage2DReader sourceReader = (GridCoverage2DReader) getCatalog().getCoverageByName(getLayerId(WATTEMP)).getGridCoverageReader(null, null);
             GeneralEnvelope expectedEnvelope  = sourceReader.getOriginalEnvelope();
             assertEnvelopeEquals(expectedEnvelope, 1.0,(GeneralEnvelope) targetCoverage.getEnvelope(), 1.0);
-            Assert.assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), expectedEnvelope.getCoordinateReferenceSystem()));
+            assertTrue(CRS.equalsIgnoreMetadata(targetCoverage.getCoordinateReferenceSystem(), expectedEnvelope.getCoordinateReferenceSystem()));
             
             // check raster space consistency
             final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();

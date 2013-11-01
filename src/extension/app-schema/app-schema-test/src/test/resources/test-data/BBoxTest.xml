@@ -40,7 +40,7 @@
 						ex:geomContainer						
 					</targetAttribute>
 					<idExpression>
-                        <OCQL>getId()</OCQL>
+                        <OCQL>ID</OCQL>
                     </idExpression>
                 </AttributeMapping>
                 <AttributeMapping>
@@ -71,7 +71,7 @@
 						ex:nestedGeom
 					</targetAttribute>
                     <idExpression>
-                        <OCQL>strConcat('nested.', getId())</OCQL>
+                        <OCQL>strConcat('nested.', ID)</OCQL>
                     </idExpression>
                 </AttributeMapping>
                 <AttributeMapping>
@@ -87,7 +87,7 @@
                     <sourceExpression>
                     <!-- Removed strTrim for online test because it'd fail
                         <OCQL>strTrim(getId())</OCQL> -->
-                        <OCQL>getId()</OCQL>
+                        <OCQL>ID</OCQL>
                     </sourceExpression>
                 </AttributeMapping>
             </attributeMappings>

@@ -22,6 +22,7 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.protocol.http.WebRequest;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StoreInfo;
@@ -29,6 +30,9 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.security.GeoServerSecurityFilterChainProxy;
+import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.web.data.layer.LayerPage;
 import org.geoserver.web.data.layer.NewLayerPage;
 import org.geoserver.web.data.store.NewDataPage;
@@ -75,6 +79,7 @@ public class GeoServerHomePage extends GeoServerBasePage {
             label.setEscapeModelStrings(false);
             add(label);
         }
+        
         
         Authentication auth = getSession().getAuthentication();
         if(isAdmin(auth)) {
@@ -169,15 +174,10 @@ public class GeoServerHomePage extends GeoServerBasePage {
     /**
      * Checks if the current user is authenticated and is the administrator
      */
-    private boolean isAdmin(Authentication authentication) {
-        if(authentication == null || !authentication.isAuthenticated())
-            return false;
+    private boolean isAdmin(Authentication authentication) {        
         
-        for (GrantedAuthority authority : authentication.getAuthorities()) {
-            if ("ROLE_ADMINISTRATOR".equals(authority.getAuthority()))
-                return true;
-        }
-        return false;
+        return GeoServerExtensions.bean(GeoServerSecurityManager.class).
+            checkAuthenticationForAdminRole(authentication);
     }
 
 }

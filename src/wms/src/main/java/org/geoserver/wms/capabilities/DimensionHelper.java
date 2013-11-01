@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -26,8 +27,7 @@ import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.util.ISO8601Formatter;
 import org.geoserver.wms.WMS;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
-import org.geotools.factory.GeoTools;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.temporal.object.DefaultPeriodDuration;
 import org.geotools.util.Converters;
 import org.geotools.util.DateRange;
@@ -111,8 +111,9 @@ abstract class DimensionHelper {
      * 
      * @param layer
      * @throws RuntimeException
+     * @throws IOException 
      */
-    void handleRasterLayerDimensions(final LayerInfo layer) throws RuntimeException {
+    void handleRasterLayerDimensions(final LayerInfo layer) throws RuntimeException, IOException {
         
         // do we have time and elevation?
         CoverageInfo cvInfo = (CoverageInfo) layer.getResource();
@@ -123,7 +124,7 @@ abstract class DimensionHelper {
         DimensionInfo timeInfo = null;
         DimensionInfo elevInfo = null;
         Map<String, DimensionInfo> customDimensions = new HashMap<String, DimensionInfo>();
-        AbstractGridCoverage2DReader reader = null;
+        GridCoverage2DReader reader = null;
         
         for (Map.Entry<String, Serializable> e : cvInfo.getMetadata().entrySet()) {
             String key = e.getKey();
@@ -167,8 +168,7 @@ abstract class DimensionHelper {
                     + layer.getName());
 
         try {
-            reader = (AbstractGridCoverage2DReader) catalog.getResourcePool()
-                    .getGridCoverageReader(csinfo, GeoTools.getDefaultHints());
+            reader = (GridCoverage2DReader) cvInfo.getGridCoverageReader(null, null);
         } catch (Throwable t) {
                  LOGGER.log(Level.SEVERE, "Unable to acquire a reader for this coverage with format: "
                                  + csinfo.getFormat().getName(), t);
@@ -212,7 +212,7 @@ abstract class DimensionHelper {
         }
     }
 
-    private void handleElevationDimensionRaster(DimensionInfo elevInfo, ReaderDimensionsAccessor dimensions) {
+    private void handleElevationDimensionRaster(DimensionInfo elevInfo, ReaderDimensionsAccessor dimensions) throws IOException {
         TreeSet<Object> elevations = dimensions.getElevationDomain();
         String elevationMetadata = getZDomainRepresentation(elevInfo, elevations);
 
@@ -220,7 +220,7 @@ abstract class DimensionHelper {
                 elevInfo.getUnits(), elevInfo.getUnitSymbol());
     }
 
-    private void handleTimeDimensionRaster(DimensionInfo timeInfo, ReaderDimensionsAccessor dimension) {
+    private void handleTimeDimensionRaster(DimensionInfo timeInfo, ReaderDimensionsAccessor dimension) throws IOException {
         TreeSet<Object> temporalDomain = dimension.getTimeDomain();
         String timeMetadata = getTemporalDomainRepresentation(timeInfo, temporalDomain);
 
@@ -228,11 +228,11 @@ abstract class DimensionHelper {
     }
     
     private void handleCustomDimensionRaster(String dimName, DimensionInfo dimension,
-            ReaderDimensionsAccessor dimAccessor) {
-        final TreeSet<String> values = dimAccessor.getDomain(dimName);
+            ReaderDimensionsAccessor dimAccessor) throws IOException {
+        final List<String> values = dimAccessor.getDomain(dimName);
         String metadata = getCustomDomainRepresentation(dimension, values);
 
-        writeCustomDimension(dimName, metadata, values.first(), dimension.getUnits(), dimension.getUnitSymbol());
+        writeCustomDimension(dimName, metadata, values.get(0), dimension.getUnits(), dimension.getUnitSymbol());
     }
 
     /**
@@ -474,23 +474,23 @@ abstract class DimensionHelper {
      * @param values
      * @return
      */
-    String getCustomDomainRepresentation(DimensionInfo dimension, TreeSet<String> values) {
-        String timeMetadata = null;
+    String getCustomDomainRepresentation(DimensionInfo dimension, List<String> values) {
+        String metadata = null;
 
         final StringBuilder buff = new StringBuilder();
 
         if (DimensionPresentation.LIST == dimension.getPresentation()) {
             for (String value : values) {
-                buff.append(value);
+                buff.append(value.trim());
                 buff.append(",");
             }
-            timeMetadata = buff.substring(0, buff.length() - 1).toString().replaceAll("\\[", "")
-                    .replaceAll("\\]", "").replaceAll(" ", "");
+            metadata = buff.substring(0, buff.length() - 1);
+
         } else if (DimensionPresentation.DISCRETE_INTERVAL == dimension.getPresentation()) {
-            buff.append(values.first());
+            buff.append(values.get(0));
             buff.append("/");
 
-            buff.append(values.last());
+            buff.append(values.get(0));
             buff.append("/");
 
             final BigDecimal resolution = dimension.getResolution();
@@ -498,10 +498,10 @@ abstract class DimensionHelper {
                 buff.append(resolution);
             }
 
-            timeMetadata = buff.toString();
+            metadata = buff.toString();
         }
 
-        return timeMetadata;
+        return metadata;
     }
 
     /**

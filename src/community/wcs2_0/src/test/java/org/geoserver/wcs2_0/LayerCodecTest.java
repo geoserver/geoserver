@@ -1,13 +1,16 @@
 package org.geoserver.wcs2_0;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.util.List;
+
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wcs2_0.util.NCNameResourceCodec;
 import org.junit.Test;
-import org.w3c.dom.Document;
-import static org.junit.Assert.*;
 
 public class LayerCodecTest extends GeoServerSystemTestSupport {
 

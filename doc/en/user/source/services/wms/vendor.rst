@@ -48,7 +48,7 @@ Automatic buffer sizing cannot be computed if:
 In this event, the following defaults are used:
 
 * 0 pixels for :ref:`wms_getmap` requests
-* 3 pixels for :ref:`wms_getfeatureinfo` requests
+* 5 pixels for :ref:`wms_getfeatureinfo` requests
   
 If these are not sufficiently large, the explicit parameter can be used.
 
@@ -112,7 +112,7 @@ The syntax is::
     
 The supported format options are:
 
-* ``antialiasing`` (values = ``on``, ``off``, ``text``): controls the use of antialiased rendering in raster output. 
+* ``antialias`` (values = ``on``, ``off``, ``text``): controls the use of antialiased rendering in raster output. 
 * ``callback``: specifies the callback function name for the jsonp response format (default is ``parseResponse``).
 * ``dpi``: sets the rendering DPI (dots-per-inch) for raster outputs. 
   The OGC standard output resolution is 90 DPI. 

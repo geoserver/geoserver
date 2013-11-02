@@ -41,9 +41,9 @@ import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.store.StoreChoiceRenderer;
 import org.geoserver.web.data.store.StoreNameComparator;
 import org.geoserver.web.wicket.GeoServerDataProvider;
-import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
+import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.wms.eo.EoLayerType;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.util.logging.Logging;
@@ -120,8 +120,8 @@ public class EoCoverageSelectorPage extends GeoServerSecuredPage {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 updateCoveragesList(true);
-                target.addComponent(coveragesContainer);
-                target.addComponent(feedbackPanel);
+                target.add(coveragesContainer);
+                target.add(feedbackPanel);
             }
 
         });

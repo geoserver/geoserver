@@ -78,9 +78,9 @@ class DeleteEoGroupLink extends AjaxLink {
                 // occurred, so refresh the table
                 if (groupTable.getSelection().size() == 0) {
                     setEnabled(false);
-                    target.addComponent(groupTable);
+                    target.add(groupTable);
                     for (AbstractLink link : groupTable.getSelectionLinks()) {
-                        target.addComponent(link);
+                        target.add(link);
                     }                    
                 }
             }            

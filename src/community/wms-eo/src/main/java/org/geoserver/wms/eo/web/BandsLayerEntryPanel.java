@@ -10,13 +10,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.convert.IConverter;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -59,12 +59,12 @@ public class BandsLayerEntryPanel extends Panel {
         Link link = new Link("bandsLayer") {
             @Override
             public void onClick() {
-                Map<String,String> params = new HashMap<String,String>(2);
+                PageParameters pp = new PageParameters();
                 if (layer.getResource().getStore().getWorkspace() != null) {
-                    params.put(ResourceConfigurationPage.WORKSPACE, layer.getResource().getStore().getWorkspace().getName());
+                    pp.set(ResourceConfigurationPage.WORKSPACE, layer.getResource().getStore().getWorkspace().getName());
                 }
-                params.put(ResourceConfigurationPage.NAME, layer.getName());
-                setResponsePage(ResourceConfigurationPage.class, new PageParameters(params));
+                pp.set(ResourceConfigurationPage.NAME, layer.getName());
+                setResponsePage(ResourceConfigurationPage.class, pp);
             }            
         };
         link.add(new Label("bandsLayerName", new PropertyModel(layer, "name")));
@@ -88,10 +88,13 @@ public class BandsLayerEntryPanel extends Panel {
         Collections.sort(styles,  new StyleInfoNameComparator());
         
         DropDownChoice<StyleInfo> styleField = new DropDownChoice<StyleInfo>("bandsLayerStyle", new PropertyModel<StyleInfo>(this, "layerStyle"), styles) {
+            
             @Override
-            public IConverter getConverter(Class<?> type) { 
+            public <C> IConverter<C> getConverter(Class<C> type) {
                 return form.getConverter(type);
-            }                         
+            }
+            
+            
         };
         styleField.setNullValid(true);
         styleField.setOutputMarkupId(true);        

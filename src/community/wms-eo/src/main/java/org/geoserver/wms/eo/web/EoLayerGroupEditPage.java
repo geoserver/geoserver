@@ -5,11 +5,13 @@
 package org.geoserver.wms.eo.web;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.Session;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.web.data.layergroup.LayerGroupPage;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -20,8 +22,8 @@ public class EoLayerGroupEditPage extends EoLayerGroupAbstractPage {
     public static final String WORKSPACE = "workspace";
 
     public EoLayerGroupEditPage(PageParameters parameters) {
-        String groupName = parameters.getString(GROUP);
-        String wsName = parameters.getString(WORKSPACE);
+        String groupName = parameters.get(GROUP).toString();
+        String wsName = parameters.get(WORKSPACE).toString();
 
         LayerGroupInfo lg = wsName != null ? getCatalog().getLayerGroupByName(wsName, groupName) :  
             getCatalog().getLayerGroupByName(groupName);
@@ -40,13 +42,13 @@ public class EoLayerGroupEditPage extends EoLayerGroupAbstractPage {
             //global layer groups only editable by full admin
             if (lg.getWorkspace() == null) {
                 //disable all form components but cancel
-                f.visitChildren(new IVisitor<Component>() {
+                f.visitChildren(new IVisitor<Component, Void>() {
                     @Override
-                    public Object component(Component c) {
+                    public void component(Component c, IVisit<Void> visit) {
                         if (!(c instanceof AbstractLink && "cancel".equals(c.getId()))) {
                             c.setEnabled(false);
                         }
-                        return CONTINUE_TRAVERSAL_BUT_DONT_GO_DEEPER;
+                        visit.dontGoDeeper();
                     }
                 });
                 f.get("save").setVisible(false);

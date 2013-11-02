@@ -81,7 +81,7 @@ public class LayerGroupTablePanel extends GeoServerTablePanel<LayerGroupInfo> {
         if (editSelectionLinks != null) {
             for (AbstractLink link : editSelectionLinks) {
                 link.setEnabled(canEdit);
-                target.addComponent(link);
+                target.add(link);
             }
         }
     }

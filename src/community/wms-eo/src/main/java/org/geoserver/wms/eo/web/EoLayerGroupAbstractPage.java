@@ -86,13 +86,14 @@ public abstract class EoLayerGroupAbstractPage extends GeoServerSecuredPage {
         add(popupWindow = new ModalWindow("popup"));
         add(dialog = new GeoServerDialog("dialog"));
 
-        Form form = new Form( "form", new CompoundPropertyModel( lgModel ) ) {
+        Form form = new Form("form", new CompoundPropertyModel(lgModel)) {
+
             @Override
-            public IConverter getConverter(Class<?> type) {
+            public <C> IConverter<C> getConverter(Class<C> type) {
                 if (LayerInfo.class.isAssignableFrom(type)) {
                     return new LayerInfoConverter();
                 } else if (StyleInfo.class.isAssignableFrom(type)) {
-                    return new StyleInfoConverter(); 
+                    return new StyleInfoConverter();
                 } else {
                     return super.getConverter(type);
                 }
@@ -150,7 +151,7 @@ public abstract class EoLayerGroupAbstractPage extends GeoServerSecuredPage {
                     }
                     
                     envelopePanel.setModelObject( lg.getBounds() );
-                    target.addComponent( envelopePanel );
+                    target.add( envelopePanel );
                     
                 } 
                 catch (Exception e) {
@@ -221,9 +222,9 @@ public abstract class EoLayerGroupAbstractPage extends GeoServerSecuredPage {
                         lgEntryPanel.entryProvider.getItems().add(
                             new EoLayerGroupEntry( layer, layer.getDefaultStyle(), groupName));
                         
-                        target.addComponent(lgEntryPanel);
+                        target.add(lgEntryPanel);
                         layerTypes.setDefaultModelObject(layerTypes.getDefaultModelObject());
-                        target.addComponent(layerTypes);
+                        target.add(layerTypes);
                     }
                 });
                 
@@ -262,9 +263,9 @@ public abstract class EoLayerGroupAbstractPage extends GeoServerSecuredPage {
                 } finally {
                     outlinesEntryChooser.setDefaultModelObject(null);
                 }
-                target.addComponent(lgEntryPanel);
-                target.addComponent(getFeedbackPanel());
-                target.addComponent(outlinesEntryChooser);
+                target.add(lgEntryPanel);
+                target.add(getFeedbackPanel());
+                target.add(outlinesEntryChooser);
             }
             
         });
@@ -276,7 +277,7 @@ public abstract class EoLayerGroupAbstractPage extends GeoServerSecuredPage {
                 layerTypes.processInput();
                 boolean input = layerTypes.getModelObject() != null;
                 addLayerLink.setEnabled(input);
-                target.addComponent(addLayerLink);
+                target.add(addLayerLink);
             }
             
         });
@@ -295,9 +296,9 @@ public abstract class EoLayerGroupAbstractPage extends GeoServerSecuredPage {
                         info (new ParamResourceModel("layerRenameWarning", EoLayerGroupAbstractPage.this, groupName).getString());
                     }
                 }
-                target.addComponent(createStoreLink);
-                target.addComponent(addFromStoreLink);
-                target.addComponent(getFeedbackPanel());
+                target.add(createStoreLink);
+                target.add(addFromStoreLink);
+                target.add(getFeedbackPanel());
             }
             
         });

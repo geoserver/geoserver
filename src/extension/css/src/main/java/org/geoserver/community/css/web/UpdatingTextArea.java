@@ -16,7 +16,7 @@ public class UpdatingTextArea extends TextArea<String> {
         add(new AjaxFormComponentUpdatingBehavior("onblur") {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                target.addComponent(feedback);
+                target.add(feedback);
             }
         });
     }

@@ -70,7 +70,7 @@ public class DataPanel extends Panel {
                                 error("Failed to compute stats for the attribute: " + e.getMessage());
                                 
                             }
-                            target.addComponent(attsContainer);
+                            target.add(attsContainer);
                         }
                     });
                     

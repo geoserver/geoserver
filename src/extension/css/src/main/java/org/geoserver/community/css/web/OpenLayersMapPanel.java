@@ -16,10 +16,12 @@ import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.head.OnLoadHeaderItem;
 import org.apache.wicket.markup.html.IHeaderContributor;
-import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.panel.Panel;
-
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -92,7 +94,7 @@ class OpenLayersMapPanel extends Panel implements IHeaderContributor {
         Template template = templates.getTemplate("ol-style.ftl");
         StringWriter css = new java.io.StringWriter();
         template.process(context, css);
-        header.renderString(css.toString());
+        header.render(CssHeaderItem.forCSS(css.toString(), "ol-css"));
     }
 
     private void renderHeaderScript(IHeaderResponse header) 
@@ -104,7 +106,7 @@ class OpenLayersMapPanel extends Panel implements IHeaderContributor {
         context.put("maxx", bbox.getMaxX());
         context.put("maxy", bbox.getMaxY());
         context.put("id", getMarkupId());
-        context.put("layer", resource.getPrefixedName());
+        context.put("layer", resource.prefixedName());
         context.put("style", style.getName());
         if (style.getWorkspace() != null) {
           context.put("styleWorkspace", style.getWorkspace().getName());
@@ -114,8 +116,8 @@ class OpenLayersMapPanel extends Panel implements IHeaderContributor {
         Template template = templates.getTemplate("ol-load.ftl");
         StringWriter script = new java.io.StringWriter();
         template.process(context, script);
-        header.renderJavaScriptReference("../openlayers/OpenLayers.js");
-        header.renderOnLoadJavaScript(script.toString());
+        header.render(JavaScriptHeaderItem.forUrl("../openlayers/OpenLayers.js"));
+        header.render(OnLoadHeaderItem.forScript(script.toString()));
     }
 
     public String getUpdateCommand() throws IOException, TemplateException {

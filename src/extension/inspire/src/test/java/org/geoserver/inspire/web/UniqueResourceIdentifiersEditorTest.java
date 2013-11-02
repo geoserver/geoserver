@@ -90,7 +90,7 @@ public class UniqueResourceIdentifiersEditorTest extends GeoServerWicketTestSupp
         ft.submit();
         List<Serializable> messages = tester.getMessages(FeedbackMessage.ERROR);
         assertEquals(1, messages.size());
-        assertTrue(((ValidationErrorFeedback) messages.get(0)).getMessage().contains("Code"));
+        assertTrue(((ValidationErrorFeedback) messages.get(0)).getMessage().toString().contains("Code"));
         
         // print(tester.getLastRenderedPage(), true, true);
         

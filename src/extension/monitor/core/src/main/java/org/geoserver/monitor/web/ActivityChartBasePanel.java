@@ -92,7 +92,7 @@ public abstract class ActivityChartBasePanel extends Panel {
                 Date[] range = new Date[]{ from, to };
                 
                 chartImage.setImageResource(queryAndRenderChart(monitor, range));
-                target.addComponent(chartImage);
+                target.add(chartImage);
             }
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {

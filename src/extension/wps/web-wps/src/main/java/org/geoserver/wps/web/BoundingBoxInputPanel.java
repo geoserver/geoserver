@@ -55,7 +55,7 @@ public class BoundingBoxInputPanel extends Panel {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 updateEditor();
-                target.addComponent(BoundingBoxInputPanel.this);
+                target.add(BoundingBoxInputPanel.this);
             }
 
         });

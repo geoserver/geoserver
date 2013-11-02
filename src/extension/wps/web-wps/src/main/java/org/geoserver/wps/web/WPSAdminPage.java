@@ -15,7 +15,7 @@ import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.validation.validator.MinimumValidator;
+import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -51,19 +51,19 @@ public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
     @Override
     protected void build(IModel info, final Form form) {
         TextField connectionTimeout = new TextField("connectionTimeout", Integer.class);
-        connectionTimeout.add(new MinimumValidator<Integer>(-1));
+        connectionTimeout.add(RangeValidator.minimum(-1));
         form.add(connectionTimeout);
         
         TextField maxSynchProcesses = new TextField("maxSynchronousProcesses", Integer.class);
-        maxSynchProcesses.add(new MinimumValidator<Integer>(1));
+        maxSynchProcesses.add(RangeValidator.minimum(1));
         form.add(maxSynchProcesses);
         
         TextField maxAsynchProcesses = new TextField("maxAsynchronousProcesses", Integer.class);
-        maxAsynchProcesses.add(new MinimumValidator<Integer>(1));
+        maxAsynchProcesses.add(RangeValidator.minimum(1));
         form.add(maxAsynchProcesses);
         
         TextField resourceExpirationTimeout = new TextField("resourceExpirationTimeout", Integer.class);
-        resourceExpirationTimeout.add(new MinimumValidator<Integer>(1));
+        resourceExpirationTimeout.add(RangeValidator.minimum(1));
         form.add(resourceExpirationTimeout);
         
         WPSInfo wpsInfo = (WPSInfo) info.getObject();

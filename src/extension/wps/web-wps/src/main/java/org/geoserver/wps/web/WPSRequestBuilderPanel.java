@@ -37,7 +37,6 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.request.http.WebRequest;
 import org.geoserver.ows.Ows11Util;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
@@ -230,13 +229,13 @@ public class WPSRequestBuilderPanel extends Panel {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 initProcessView();
-                target.addComponent(WPSRequestBuilderPanel.this);
+                target.add(WPSRequestBuilderPanel.this);
                 
                 // ensure the parent page feedback panel gets refreshed to clear any existing err msg
                 // check for GeoServerBasePage, because parent page can also be a SubProcessBuilder
                 WebPage page = getWebPage();
                 if (page instanceof GeoServerBasePage) {
-                    target.addComponent(((GeoServerBasePage) page).getFeedbackPanel());
+                    target.add(((GeoServerBasePage) page).getFeedbackPanel());
                 }
             }
         });
@@ -267,7 +266,7 @@ public class WPSRequestBuilderPanel extends Panel {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 userpwdContainer.setVisible(authenticate);
-                target.addComponent(authenticationContainer);                
+                target.add(authenticationContainer);                
             }
             
         });

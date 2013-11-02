@@ -89,17 +89,7 @@ public class LDAPAuthProviderPanelTest extends AbstractSecurityWicketTestSupport
                 
                 return current = new LDAPAuthProviderPanel(id, new Model(config));
             };
-        }, new CompoundPropertyModel(config)){
-
-            @Override
-            protected void onBeforeRender() {
-                feedbackPanel = new FeedbackPanel("feedback");
-                feedbackPanel.setOutputMarkupId(true);
-                add(feedbackPanel);
-                super.onBeforeRender();
-            }
-            
-        });
+        }, new CompoundPropertyModel(config)));
     }
     
     @Test

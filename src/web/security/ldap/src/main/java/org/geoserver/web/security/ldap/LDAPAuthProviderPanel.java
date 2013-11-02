@@ -5,12 +5,9 @@
 package org.geoserver.web.security.ldap;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 
 import javax.naming.AuthenticationException;
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLSession;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
@@ -25,19 +22,14 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
-import org.geoserver.security.ldap.GeoserverLdapBindAuthenticator;
 import org.geoserver.security.ldap.LDAPAuthenticationProvider;
 import org.geoserver.security.ldap.LDAPSecurityProvider;
 import org.geoserver.security.ldap.LDAPSecurityServiceConfig;
 import org.geoserver.security.web.auth.AuthenticationProviderPanel;
 import org.geoserver.security.web.usergroup.UserGroupServiceChoice;
-import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.util.MapModel;
-import org.springframework.ldap.core.support.DefaultTlsDirContextAuthenticationStrategy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
-import org.springframework.security.ldap.authentication.SpringSecurityAuthenticationSource;
 
 /**
  * Configuration panel for {@link LDAPAuthenticationProvider}.

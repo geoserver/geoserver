@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.feedback.FeedbackMessage;
+import org.apache.wicket.feedback.FeedbackMessages;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.Model;
@@ -163,9 +164,9 @@ public class ArcSDECoverageStoreEditPanelTest extends GeoServerWicketTestSupport
         // simulate clicking on the refresh button
         String submitLink = base + "tableNamePanel:refresh";
         tester.executeAjaxEvent(submitLink, "onclick");
-        FeedbackMessage feedbackMessage = formTester.getForm().getFeedbackMessage();
+        FeedbackMessages feedbackMessage = formTester.getForm().getFeedbackMessages();
         assertNotNull(feedbackMessage);
-        Serializable message = feedbackMessage.getMessage();
+        Serializable message = feedbackMessage.first().getMessage();
         assertNotNull(message);
         String expectedMessage = "Refreshing raster tables list: can't connect for some reason";
         assertEquals(expectedMessage, message.toString());
@@ -245,7 +246,7 @@ public class ArcSDECoverageStoreEditPanelTest extends GeoServerWicketTestSupport
         // simulate clicking on the refresh button
         String submitLink = base + "tableNamePanel:refresh";
         tester.executeAjaxEvent(submitLink, "onclick");
-        FeedbackMessage feedbackMessage = formTester.getForm().getFeedbackMessage();
+        FeedbackMessage feedbackMessage = formTester.getForm().getFeedbackMessages().first();
         assertNull(feedbackMessage);
 
         assertEquals(rasterColumns, choice.getChoices());

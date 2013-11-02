@@ -21,9 +21,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
@@ -120,7 +120,7 @@ public class RasterTableSelectionPanel extends Panel {
             final String titleKey = RESOURCE_KEY_PREFIX + ".tableNameChoice.title";
             ResourceModel titleModel = new ResourceModel(titleKey);
             String title = String.valueOf(titleModel.getObject());
-            choice.add(new SimpleAttributeModifier("title", title));
+            choice.add(AttributeModifier.replace("title", title));
         }
 
         final AjaxSubmitLink refreshTablesLink = new AjaxSubmitLink("refresh", storeEditForm) {
@@ -154,11 +154,11 @@ public class RasterTableSelectionPanel extends Panel {
                     rasterColumns = Collections.emptyList();
                     String message = "Refreshing raster tables list: " + e.getMessage();
                     storeEditForm.error(message);
-                    target.addComponent(storeEditForm);// refresh
+                    target.add(storeEditForm);// refresh
                 }
 
                 choice.setChoices(rasterColumns);
-                target.addComponent(choice);
+                target.add(choice);
                 // do nothing else, so we return to the same page...
             }
         };
@@ -167,7 +167,7 @@ public class RasterTableSelectionPanel extends Panel {
             final String titleKey = RESOURCE_KEY_PREFIX + ".refresh.title";
             ResourceModel titleModel = new ResourceModel(titleKey);
             String title = String.valueOf(titleModel.getObject());
-            refreshTablesLink.add(new SimpleAttributeModifier("title", title));
+            refreshTablesLink.add(AttributeModifier.replace("title", title));
         }
     }
 

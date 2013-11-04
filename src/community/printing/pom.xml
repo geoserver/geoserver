@@ -43,6 +43,16 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+    <groupId>xml-apis</groupId>
+    <artifactId>xml-apis-xerces</artifactId>
+    <version>2.7.1</version>
+   </dependency>   
+   <dependency>
+    <groupId>xerces</groupId>
+    <artifactId>xercesImpl</artifactId>
+    <version>2.7.1</version>
+   </dependency>
+    <dependency>
       <groupId>org.mapfish.print</groupId>
       <artifactId>print-lib</artifactId>
       <version>1.2-20101018133712</version>

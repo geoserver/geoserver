@@ -347,9 +347,3 @@ as well as a base map layer.)
 .. figure:: images/heatmap_urban_us_east.png
    :align: center
 
-
-
-
-
-  
-  

@@ -24,5 +24,6 @@ officially part of the GeoServer releases. They are however built along with the
    libjpeg-turbo/index
    netcdf/index
    netcdf-out/index
+   colormap/index
    jdbcconfig/index
    importer/index

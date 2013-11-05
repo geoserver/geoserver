@@ -265,4 +265,5 @@
     <!-- The default process filters -->
     <bean id="unsupportedParameterTypeProcessFilter" class="org.geoserver.wps.UnsupportedParameterTypeProcessFilter"/>
     <bean id="configuredProcessesFilter" class="org.geoserver.wps.DisabledProcessesSelector"/>
+
 </beans>

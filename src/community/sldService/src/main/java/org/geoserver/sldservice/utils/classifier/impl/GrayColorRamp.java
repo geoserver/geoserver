@@ -60,7 +60,6 @@ public class GrayColorRamp implements ColorRamp {
 	private void createRamp() {
 
 		double step = (225.0 / (double) classNum-1);
-		colors.add(new Color(0, 0, 0));
 		for (int i = 1; i < classNum; i++)
 			colors.add(new Color((int) (step * i + 30), (int) (step * i + 30),
 					(int) (step * i + 30)));

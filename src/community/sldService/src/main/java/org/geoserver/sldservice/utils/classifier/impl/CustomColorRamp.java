@@ -78,7 +78,6 @@ public class CustomColorRamp implements ColorRamp {
 		int red, green, blue;
 		double sRed, sGreen, sBlue;
 		int mid;
-		colors.add(new Color(0, 0, 0));
 		if (startColor == null || endColor == null)
 			throw new Exception(
 					"Start or end color not setted unable to build color ramp");

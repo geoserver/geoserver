@@ -822,32 +822,34 @@ public class ResourcePool {
     
     FeatureType getCacheableFeatureType( FeatureTypeInfo info, boolean handleProjectionPolicy ) throws IOException {
         String key = getFeatureTypeInfoKey(info, handleProjectionPolicy);
-        synchronized ( featureTypeCache ) {
-            FeatureType ft = (FeatureType) featureTypeCache.get( key );
-            if ( ft == null ) {
-                
-                //grab the underlying feature type
-                DataAccess<? extends FeatureType, ? extends Feature> dataAccess = getDataStore(info.getStore());
-                
-                if(isSQLView(info, dataAccess)) {
-
-                    VirtualTable vt = info.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, VirtualTable.class);
-                    JDBCDataStore jstore = (JDBCDataStore) dataAccess;
-                    if(!jstore.getVirtualTables().containsValue(vt)) {
-                        jstore.addVirtualTable(vt);
+        FeatureType ft = (FeatureType) featureTypeCache.get( key );
+        if ( ft == null ) {
+            synchronized ( featureTypeCache ) {
+                ft = (FeatureType) featureTypeCache.get( key );
+                if ( ft == null ) {
+                    
+                    //grab the underlying feature type
+                    DataAccess<? extends FeatureType, ? extends Feature> dataAccess = getDataStore(info.getStore());
+                    
+                    if(isSQLView(info, dataAccess)) {
+    
+                        VirtualTable vt = info.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, VirtualTable.class);
+                        JDBCDataStore jstore = (JDBCDataStore) dataAccess;
+                        if(!jstore.getVirtualTables().containsValue(vt)) {
+                            jstore.addVirtualTable(vt);
+                        }
+                        ft = jstore.getSchema(vt.getName());
+                    } else {
+                        ft = dataAccess.getSchema(info.getQualifiedNativeName());
                     }
-                    ft = jstore.getSchema(vt.getName());
-                } else {
-                    ft = dataAccess.getSchema(info.getQualifiedNativeName());
+                    
+                    ft = buildFeatureType(info, handleProjectionPolicy, ft);
+                    
+                    featureTypeCache.put( key, ft );
                 }
-                
-                ft = buildFeatureType(info, handleProjectionPolicy, ft);
-                
-                featureTypeCache.put( key, ft );
             }
-            return ft;
         }
-        
+        return ft;
     }
 
     private FeatureType getNonCacheableFeatureType( FeatureTypeInfo info, boolean handleProjectionPolicy ) throws IOException {

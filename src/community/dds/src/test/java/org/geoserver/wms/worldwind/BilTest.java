@@ -75,7 +75,7 @@ public class BilTest extends WMSTestSupport {
 		"&format=application/bil16&srs=EPSG:4326";
 	    response = getAsString(request);
 	    // Check response length in bytes
-	    assertEquals("testStandardRequest",8193,response.getBytes().length);
+	    assertEquals("testStandardRequest",9355,response.getBytes().length);
 	    
 	    request = "wms?service=wms&request=GetMap&version=1.1.1" +
 		"&layers=" + layer + "&styles=&bbox=108.3,-46.3,160.3,-4.2&width=64&height=64" + 

@@ -167,7 +167,7 @@ public class StyleEncoder {
                             meta.propertyName,
                             null, // field 2
                             null, // field 3
-                            null, // delimiter
+                            ", ", // delimiter, required even with single field
                             null, // default symbol (set later)
                             null, // default label (set later)
                             new LinkedList<UniqueValueInfo>());
@@ -186,7 +186,9 @@ public class StyleEncoder {
                 // Robust programatic parsing of typical defaults written in SLD
                 // will be a PITA, let's defer.
                 Rule rule = rulesOther.get(0);
-                uniqueValueRenderer.setDefaultLabel(rule.getTitle());
+                String title = rule.getTitle();
+                if (title == null) title = "";
+                uniqueValueRenderer.setDefaultLabel(title);
                 uniqueValueRenderer.setDefaultSymbol(symbolizerToSymbol(rule.symbolizers().get(0)));
             }
             return uniqueValueRenderer;
@@ -225,9 +227,14 @@ public class StyleEncoder {
                 ((Literal)expression2).getValue().toString() : null;
         if (valueAsString == null) return null;
         
+        String title = rule.getTitle();
+        if (title == null) title = "";
+        String description = rule.getAbstract();
+        if (description == null) description = "";
+        
         return new UniqueValueInfoMeta(propertyName,
-                new UniqueValueInfo(valueAsString, rule.getTitle(),
-                    rule.getAbstract(), symbolizerToSymbol(symbolizer)));    
+                new UniqueValueInfo(valueAsString, title, description,
+                    symbolizerToSymbol(symbolizer)));    
     }
     
     private static Renderer defaultPolyRenderer() {

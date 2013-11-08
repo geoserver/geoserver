@@ -38,6 +38,7 @@ objectClass: top
 objectClass: organizationalRole
 objectClass: groupOfNames
 cn: other
+member: cn=admin
 member: cn=other
 telephoneNumber: 20
 
@@ -52,3 +53,10 @@ cn: uid=other,ou=People,dc=example,dc=com
 userPassword: {SHA}0JQeaNqPOBUf+Gph/Fn3xc+fyqI=
 telephoneNumber: 2
 
+dn: cn=extra,ou=Groups,dc=example,dc=com
+objectClass: top
+objectClass: organizationalRole
+objectClass: groupOfNames
+cn: extra
+member: cn=extra
+telephoneNumber: 30

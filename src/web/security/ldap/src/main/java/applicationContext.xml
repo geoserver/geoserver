@@ -14,4 +14,11 @@
         <property name="descriptionKey" value="LDAPAuthProviderPanel.description"/>
     </bean>
   
+  <!-- LDAP role service panel infos -->
+    <bean id="ldapRoleServicePanelInfo" class="org.geoserver.web.security.ldap.LDAPRoleServicePanelInfo">
+        <property name="id" value="security.ldapRoleService" />
+        <property name="shortTitleKey" value="LDAPRoleServicePanel.short"/>
+        <property name="titleKey" value="LDAPRoleServicePanel.title"/>
+        <property name="descriptionKey" value="LDAPRoleServicePanel.description"/>
+    </bean>
 </beans>

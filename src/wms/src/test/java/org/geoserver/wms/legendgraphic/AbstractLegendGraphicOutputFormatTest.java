@@ -816,6 +816,30 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         assertPixel(image, 10, 70, new Color(255, 0, 0));
     }
     
+    @org.junit.Test
+    public void testExternalGraphic() throws Exception {
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest();
+        FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName(
+                MockData.MPOINTS.getNamespaceURI(), MockData.MPOINTS.getLocalPart());
+
+        List<FeatureType> layers = new ArrayList<FeatureType>();
+        layers.add(ftInfo.getFeatureType());
+        req.setLayers(layers);
+
+        List<Style> styles = new ArrayList<Style>();
+        req.setStyles(styles);
+
+        styles.add(readSLD("ExternalGraphic.sld"));
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+
+        assertNotBlank("testExternalGraphic", image, LegendUtils.DEFAULT_BG_COLOR);
+       
+        assertPixel(image, 10, 3, new Color(0, 150, 0));
+        assertPixel(image, 10, 10, new Color(128, 203, 128));
+        assertPixel(image, 10, 16, new Color(0, 150, 0));
+        
+    }
+    
     /**
      * Tests that minSymbolSize legend option is respected.
      */

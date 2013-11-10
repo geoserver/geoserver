@@ -1037,6 +1037,12 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 } catch (Exception e) {
                     // report what layer we failed on to help the admin locate and fix it
                     if (skipping) {
+                        if(group != null) {
+                            LOGGER.log(Level.WARNING, "Skipping layer group " + group.getName() + " as its caps document element failed to generate", e);
+                        } else {
+                            LOGGER.log(Level.WARNING, "Skipping a null layer group during caps during caps document generation", e);
+                        }
+
                         reset();
                     } else { 
                         throw new ServiceException(

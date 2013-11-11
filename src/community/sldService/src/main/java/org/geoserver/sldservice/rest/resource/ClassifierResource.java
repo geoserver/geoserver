@@ -52,6 +52,8 @@ import org.geoserver.sldservice.utils.classifier.impl.BlueColorRamp;
 import org.geoserver.sldservice.utils.classifier.impl.CustomColorRamp;
 import org.geoserver.sldservice.utils.classifier.impl.RandomColorRamp;
 import org.geoserver.sldservice.utils.classifier.impl.RedColorRamp;
+import org.geoserver.sldservice.utils.classifier.impl.JetColorRamp;
+import org.geoserver.sldservice.utils.classifier.impl.GrayColorRamp;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.styling.Rule;
 import org.geotools.styling.SLDTransformer;
@@ -296,6 +298,10 @@ public class ClassifierResource extends AbstractCatalogResource {
 									ramp = (ColorRamp) new RedColorRamp();
 								else if (colorRamp.equalsIgnoreCase("blue"))
 									ramp = (ColorRamp) new BlueColorRamp();
+                                else if (colorRamp.equalsIgnoreCase("jet"))
+                                    ramp = (ColorRamp) new JetColorRamp();
+                                else if (colorRamp.equalsIgnoreCase("gray"))
+                                    ramp = (ColorRamp) new GrayColorRamp();
 								else if (colorRamp.equalsIgnoreCase("custom")) {
 									Color startColor = Color.decode(form.getFirst("startColor").getValue());
 									Color endColor = Color.decode(form.getFirst("endColor").getValue());
@@ -446,6 +452,12 @@ public class ClassifierResource extends AbstractCatalogResource {
 							}
 							writer.endNode();
 						}
+                    }
+                    else if (((String)key).startsWith("@")){
+                        writer.addAttribute(((String) key).substring(1), (String)obj);
+                    }
+                    else if (((String)key).startsWith("#text")){
+                        writer.setValue((String) obj);
 					} else {
 						writer.startNode((String) key);
 						writeChild(writer, obj);

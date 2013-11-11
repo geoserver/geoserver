@@ -83,7 +83,7 @@ data
 ----
 
 The ``data`` directory can be used to store file-based geospatial datasets being served as layers.
-(This should not be confused this with the main "GeoServer data directory".)
+(This should not be confused with the main "GeoServer data directory".)
 This directory is commonly used to store shapefiles and raster files, 
 but can be used for any data that is file-based.
 

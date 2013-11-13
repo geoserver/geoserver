@@ -57,7 +57,7 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
         Authentication result = authProvider.authenticate(authentication);
         assertNotNull(result);
         assertEquals("admin", result.getName());
-        assertEquals(2, result.getAuthorities().size());
+        assertEquals(3, result.getAuthorities().size());
     }
 
     /**
@@ -103,7 +103,7 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
         createAuthenticationProvider();
 
         Authentication result = authProvider.authenticate(authentication);
-        assertEquals(2, result.getAuthorities().size());
+        assertEquals(3, result.getAuthorities().size());
     }
     
     /**
@@ -124,7 +124,7 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
         createAuthenticationProvider();
     
         Authentication result = authProvider.authenticate(authentication);
-        assertEquals(2, result.getAuthorities().size());
+        assertEquals(3, result.getAuthorities().size());
     
         // filter to extract user data
         ((LDAPSecurityServiceConfig)config).setUserFilter("(cn={0})");
@@ -134,7 +134,7 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
         createAuthenticationProvider();
     
         result = authProvider.authenticate(authentication);
-        assertEquals(2, result.getAuthorities().size());
+        assertEquals(3, result.getAuthorities().size());
     }
 
     /**

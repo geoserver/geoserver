@@ -955,6 +955,7 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         try {
             req.setStyle(externalGraphicStyle);
             req.setLayer(null);
+            req.setScale(1.0);
             
             final int HEIGHT_HINT = 30;
             req.setHeight(HEIGHT_HINT);

@@ -48,6 +48,7 @@ public class LDAPRoleServicePanel extends RoleServicePanel<LDAPRoleServiceConfig
         add(new TextField("groupSearchBase").setRequired(true));
         add(new TextField("groupSearchFilter"));
         add(new TextField("allGroupsSearchFilter"));
+        add(new TextField("userFilter"));
         add(new AjaxCheckBox("bindBeforeGroupSearch") {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {

@@ -27,6 +27,8 @@ public abstract class LDAPBaseSecurityServiceConfig extends BaseSecurityNamedSer
     String adminGroup;
     String groupAdminGroup;
     
+    // extract user data using the given filter (alternative to userDnPattern)
+    String userFilter;
       
 
     public LDAPBaseSecurityServiceConfig() {
@@ -40,6 +42,7 @@ public abstract class LDAPBaseSecurityServiceConfig extends BaseSecurityNamedSer
         adminGroup = other.getAdminGroup();
         groupAdminGroup = other.getGroupAdminGroup();
         bindBeforeGroupSearch = other.isBindBeforeGroupSearch();        
+        userFilter = other.getUserFilter();
         useTLS = other.isUseTLS();
     }
         
@@ -94,5 +97,14 @@ public abstract class LDAPBaseSecurityServiceConfig extends BaseSecurityNamedSer
 
     public void setGroupAdminGroup(String groupAdminGroup) {
         this.groupAdminGroup = groupAdminGroup;
+    }
+    
+
+    public String getUserFilter() {
+        return userFilter;
+    }
+
+    public void setUserFilter(String userFilter) {
+        this.userFilter = userFilter;
     }
 }

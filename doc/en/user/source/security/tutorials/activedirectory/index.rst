@@ -110,9 +110,13 @@ from the LDAP repository and allow access rights to be assigned to those roles.
 
 #. Enter ``CN=Users`` in the  ``Group search base`` text field.
 
-#. Enter ``member=cn={0},cn=users,dc=ad,dc=local`` in the  ``Group user membership search filter`` text field.
+#. Enter ``member={1},dc=ad,dc=local`` in the  ``Group user membership search filter`` text field.
 
 #. Enter ``objectClass=group`` in the  ``All groups search filter`` text field.
+
+#. Enter ``sAMAccountName={0}`` in the  ``Filter used to lookup user`` text field.
+
+Then we need to a choose a user to authenticate on the server (many LDAP server don't allow anonymous data lookup).
 
 #. Check the ``Authenticate to extract roles`` checkbox.
 

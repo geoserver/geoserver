@@ -291,19 +291,18 @@ An example of configuration file (config.xml) for this type of role service is t
    .. code-block:: xml
 
         <org.geoserver.security.ldap.LDAPRoleServiceConfig>
-          <id>353ba013:1422e62d7f0:-8000</id>
-          <name>ldaprs2</name>
+          <id>-36dfbd50:1424687f3e0:-8000</id>
+          <name>ldapacme</name>
           <className>org.geoserver.security.ldap.LDAPRoleService</className>
-          <serverURL>ldap://127.0.0.1:389/dc=maxcrc,dc=com</serverURL>
-          <groupSearchBase>ou=Groups</groupSearchBase>
-          <groupSearchFilter>memberUid={0}</groupSearchFilter>
+          <serverURL>ldap://127.0.0.1:10389/dc=acme,dc=org</serverURL>
+          <groupSearchBase>ou=groups</groupSearchBase>
+          <groupSearchFilter>member=uid={0},ou=people,dc=acme,dc=org</groupSearchFilter>
           <useTLS>false</useTLS>
           <bindBeforeGroupSearch>true</bindBeforeGroupSearch>
           <adminGroup>ROLE_ADMIN</adminGroup>
           <groupAdminGroup>ROLE_ADMIN</groupAdminGroup>
-          <userFormat>cn={0},dc=maxcrc,dc=com</userFormat>
-          <user>Manager</user>
-          <password>secret</password>
+          <user>uid=bill,ou=people,dc=acme,dc=org</user>
+          <password>hello</password>
           <allGroupsSearchFilter>cn=*</allGroupsSearchFilter>
         </org.geoserver.security.ldap.LDAPRoleServiceConfig>
 

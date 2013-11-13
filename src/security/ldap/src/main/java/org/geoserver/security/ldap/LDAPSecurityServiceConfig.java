@@ -15,8 +15,7 @@ public class LDAPSecurityServiceConfig extends LDAPBaseSecurityServiceConfig
     
     String userGroupServiceName;
     
-    // extract user data using the given filter (alternative to userDnPattern)
-    String userFilter;
+    
      
     // format username before doing authentication using the given format
     String userFormat; 
@@ -28,7 +27,6 @@ public class LDAPSecurityServiceConfig extends LDAPBaseSecurityServiceConfig
         super(other);        
         userDnPattern = other.getUserDnPattern();        
         userGroupServiceName = other.getUserGroupServiceName();        
-        userFilter = other.getUserFilter();
         userFormat = other.getUserFormat();
     }
     
@@ -61,12 +59,5 @@ public class LDAPSecurityServiceConfig extends LDAPBaseSecurityServiceConfig
         this.userGroupServiceName = userGroupServiceName;
     }
 
-    public String getUserFilter() {
-        return userFilter;
-    }
-
-    public void setUserFilter(String userFilter) {
-        this.userFilter = userFilter;
-    }
 
 }

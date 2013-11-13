@@ -196,6 +196,8 @@ from the LDAP repository and allow access rights to be assigned to those roles.
 
 #. Enter ``cn=*`` in the  ``All groups search filter`` text field.
 
+Then we need to a choose a user to authenticate on the server (many LDAP server don't allow anonymous data lookup).
+
 #. Check the ``Authenticate to extract roles`` checkbox.
 
 #. Enter ``uid=bill,ou=people,dc=acme,dc=org`` in the  ``Username`` text field.

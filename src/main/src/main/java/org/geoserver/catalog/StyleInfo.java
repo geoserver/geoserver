@@ -5,8 +5,6 @@
 package org.geoserver.catalog;
 
 import java.io.IOException;
-import java.util.List;
-
 import org.geotools.styling.Style;
 import org.geotools.util.Version;
 
@@ -87,5 +85,15 @@ public interface StyleInfo extends CatalogInfo {
      * The style object.
      */
     Style getStyle() throws IOException;
+
+    /**
+     * The Legend for the style.
+     */
+    LegendInfo getLegend();
+
+    /**
+     * Sets the Legend for the style.
+     */
+    void setLegend(LegendInfo legend);
     
 }

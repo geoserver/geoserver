@@ -49,19 +49,22 @@ class LazyInputMap extends AbstractMap<String, Object> {
         }
         return result;
     }
-    
+    /**
+     * The retrieved input percentage, as a number between 0 and 100
+     * @return
+     */
     public float getRetrievedInputPercentage() {
         if(providers.size() == 0) {
-            return 1.0f;
+            return 100.0f;
         }
         
-        float count = 0;
+        int  count = 0;
         for (InputProvider provider: providers.values()) {
             if(provider.resolved()) {
                 count++;
             }
         }
-        return count / providers.size();
+        return 100f * count / providers.size();
     }
     
     public boolean longParse() {

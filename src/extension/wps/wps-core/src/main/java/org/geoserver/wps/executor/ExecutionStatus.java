@@ -34,7 +34,7 @@ public class ExecutionStatus {
     ProcessState phase;
 
     /**
-     * Process execution status
+     * Process execution status (as a percentage between 0 and 100)
      */
     float progress;
     
@@ -57,6 +57,10 @@ public class ExecutionStatus {
         return phase;
     }
 
+    /**
+     * Returns the progress percentage, as a number between 0 and 100
+     * @return
+     */
     public float getProgress() {
         return progress;
     }

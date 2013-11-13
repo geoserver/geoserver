@@ -48,7 +48,7 @@ public class PlacemarkDescriptionDecoratorFactory implements KmlDecoratorFactory
             SimpleFeature sf = context.getCurrentFeature();
             String description = null;
             try {
-                description = template.description(sf).toString();
+                description = template.description(sf);
             } catch (IOException e) {
                 String msg = "Error occured processing 'description' template.";
                 LOGGER.log(Level.WARNING, msg, e);

@@ -86,6 +86,17 @@ public class LDAPTestUtils {
      * @throws Exception
      */
     public static boolean initLdapServer(boolean allowAnonymous, String ldapServerUrl, String basePath) throws Exception {
+        return initLdapServer(allowAnonymous, ldapServerUrl, basePath, "data.ldif");
+    }
+    
+    /**
+     * Initializes an in-memory LDAP server to use for testing.
+     * 
+     * @param allowAnonymous
+     *            anonymous access is allowed or not
+     * @throws Exception
+     */
+    public static boolean initLdapServer(boolean allowAnonymous, String ldapServerUrl, String basePath, String ldifPath) throws Exception {
         try {
             if (!portIsBusy("127.0.0.1", LDAP_SERVER_PORT)) {
                 // Start an LDAP server and import test data
@@ -107,7 +118,7 @@ public class LDAPTestUtils {
                 // Clear out any old data - and load the test data
                 LdapTestUtils.cleanAndSetup(template.getContextSource(),
                         new DistinguishedName("dc=example,dc=com"),
-                        new ClassPathResource("data.ldif"));
+                        new ClassPathResource(ldifPath));
                 return true;
             }
             return false;

@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:extend>
+    <ul class="leftwise">
+      <li>
+        <fieldset>
+          <legend>
+            <span><wicket:message key="ldapSettings"></wicket:message></span>
+          </legend>
+          <ul>
+            <li>
+              <label for="serverURL"><wicket:message key="serverURL"></wicket:message></label>
+              <input id="serverURL" wicket:id="serverURL" type="text" class="text"></input>
+            </li>
+            
+            <li>
+              <input id="useTLS" wicket:id="useTLS" type="checkbox" class="field checkbox"></input>
+              <label for="useTLS" class="choice"><wicket:message key="useTLS"></wicket:message></label>
+            </li>
+            <li>
+			    <label for="groupSearchBase"><wicket:message key="groupSearchBase"></wicket:message></label>
+			    <input id="groupSearchBase" wicket:id="groupSearchBase" type="text" class="text"></input>
+			  </li>
+			  <li>
+			    <label for="groupSearchFilter"><wicket:message key="groupSearchFilter"></wicket:message></label>
+			    <input id="groupSearchFilter" wicket:id="groupSearchFilter" type="text" class="text"></input>
+			  </li>
+			  <li>
+	               <label for="allGroupsSearchFilter"><wicket:message key="allGroupsSearchFilter"></wicket:message></label>
+	               <input id="allGroupsSearchFilter" wicket:id="allGroupsSearchFilter" type="text" class="text"></input>
+	             </li>
+	             <li>
+	              <label for="userFilter"><wicket:message key="userFilter"></wicket:message></label>
+	              <input id="userFilter" wicket:id="userFilter" type="text" class="text"></input>
+	          </li>
+          </ul>
+        </fieldset>
+      </li>
+      <li>
+         <fieldset>
+          <legend>
+            <span><wicket:message key="authentication"></wicket:message></span>
+          </legend>
+          <ul>
+           <li>
+            <input id="bindBeforeGroupSearch" wicket:id="bindBeforeGroupSearch" type="checkbox" class="field checkbox"></input>
+            <label for="bindBeforeGroupSearch" class="choice">
+              <wicket:message key="bindBeforeGroupSearch"></wicket:message>
+            </label>
+           </li>
+           <li>
+            <div wicket:id="authenticationPanelContainer">
+              <div wicket:id="authenticationPanel">
+              </div>
+            </div>
+           </li>
+          </ul>
+         </fieldset>
+      </li>
+    </ul>
+</wicket:extend>
+</body>
+</html>

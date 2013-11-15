@@ -186,7 +186,7 @@ public class RulesBuilder {
 
         } catch (Exception e) {
             if (LOGGER.isLoggable(Level.INFO))
-                LOGGER.log(Level.INFO, "Failed to build Jenks Classification"
+                LOGGER.log(Level.INFO, "Failed to build Jenks classification"
                         + e.getLocalizedMessage(), e);
         }
         return null;

@@ -7,4 +7,5 @@ The following pages contain CSS styling examples, groped by topics
    :maxdepth: 1
 
    random-fills
+   kml
    assorted-examples

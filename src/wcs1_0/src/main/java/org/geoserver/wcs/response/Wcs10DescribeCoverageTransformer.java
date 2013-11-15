@@ -285,8 +285,8 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
 
                 final String minCP = referencedEnvelope.getMinX() + " " + referencedEnvelope.getMinY();
                 final String maxCP = referencedEnvelope.getMaxX() + " " + referencedEnvelope.getMaxY();
-                element("gml:pos", minCP.toString());
-                element("gml:pos", maxCP.toString());
+                element("gml:pos", minCP);
+                element("gml:pos", maxCP);
                 
                 // are we going to report time?
                 DimensionInfo timeInfo = ci.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);

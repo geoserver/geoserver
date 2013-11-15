@@ -285,7 +285,7 @@ abstract class DimensionHelper {
                 }
                 buff.append(",");
             }
-            elevationMetadata = buff.substring(0, buff.length() - 1).toString().replaceAll("\\[",
+            elevationMetadata = buff.substring(0, buff.length() - 1).replaceAll("\\[",
                     "").replaceAll("\\]", "").replaceAll(" ", "");
         } else if (DimensionPresentation.CONTINUOUS_INTERVAL == dimension.getPresentation()) {
             NumberRange<Double> range = getMinMaxZInterval(values);
@@ -345,7 +345,7 @@ abstract class DimensionHelper {
                 buff.append(df.format(date));
                 buff.append(",");
             }
-            timeMetadata = buff.substring(0, buff.length() - 1).toString().replaceAll("\\[", "")
+            timeMetadata = buff.substring(0, buff.length() - 1).replaceAll("\\[", "")
                     .replaceAll("\\]", "").replaceAll(" ", "");
         } else if (DimensionPresentation.CONTINUOUS_INTERVAL == dimension.getPresentation()) {
             DateRange interval = getMinMaxTimeInterval(values);

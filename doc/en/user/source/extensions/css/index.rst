@@ -22,6 +22,5 @@ Read on for information about:
    properties
    values
    styled-marks
-   examples
    cookbook
-
+   examples

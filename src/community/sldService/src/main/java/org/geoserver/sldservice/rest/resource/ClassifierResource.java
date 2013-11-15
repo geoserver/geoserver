@@ -269,6 +269,7 @@ public class ClassifierResource extends AbstractCatalogResource {
 			final String intervals = form.getFirstValue("intervals", "2");
 			final String open = form.getFirstValue("open", "false");
 			final String colorRamp = form.getFirstValue("ramp");
+            final boolean reverse = Boolean.parseBoolean(form.getFirstValue("reverse"));
 
 			if (property != null && property.length() > 0) {
 				/* First try to find as a FeatureType */
@@ -288,6 +289,8 @@ public class ClassifierResource extends AbstractCatalogResource {
 								rules = builder.uniqueIntervalClassification(ftCollection, property);
 							} else if ("quantile".equals(method)) {
 								rules = builder.quantileClassification(ftCollection, property, Integer.parseInt(intervals), Boolean.parseBoolean(open));
+							} else if ("jenks".equals(method)) {
+                                rules = builder.jenksClassification(ftCollection, property, Integer.parseInt(intervals), Boolean.parseBoolean(open));
 							}
 
 							if (colorRamp != null && colorRamp.length() > 0) {
@@ -322,7 +325,7 @@ public class ClassifierResource extends AbstractCatalogResource {
 								 * Line Symbolizer
 								 */
 								if (geomT == LineString.class || geomT == MultiLineString.class) {
-									builder.lineStyle(rules, ramp);
+									builder.lineStyle(rules, ramp, reverse);
 								}
 
 								/*
@@ -332,7 +335,7 @@ public class ClassifierResource extends AbstractCatalogResource {
 										|| geomT == Polygon.class
 										|| geomT == Point.class
 										|| geomT == MultiPoint.class) {
-									builder.polygonStyle(rules, ramp);
+									builder.polygonStyle(rules, ramp, reverse);
 								}
 							}
 

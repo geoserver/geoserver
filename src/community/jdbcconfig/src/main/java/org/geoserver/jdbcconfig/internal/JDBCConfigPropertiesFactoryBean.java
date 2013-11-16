@@ -55,10 +55,6 @@ public class JDBCConfigPropertiesFactoryBean extends PropertiesFactoryBean {
             LOGGER.info("jdbcconfig is disabled");
             return config;
         }
-        if (config.isInitDb()) {
-            //copy over script files
-            copyScriptsToDataDir();
-        }
         return config;
     }
 
@@ -97,7 +93,8 @@ public class JDBCConfigPropertiesFactoryBean extends PropertiesFactoryBean {
         saveConfig(config, "Default GeoServer JDBC config driver and connection pool options." + 
             " Edit as appropriate.");
         copySampleConfigsToDataDir();
-
+        copyScriptsToDataDir();
+        
         return config;
     }
 

@@ -34,8 +34,13 @@ public class JDBCConfigPropertiesTest {
         JDBCConfigPropertiesFactoryBean factory = new JDBCConfigPropertiesFactoryBean(loader);
         JDBCConfigProperties props = (JDBCConfigProperties) factory.createProperties();
 
+        assertFalse(props.isEnabled());
         assertTrue(props.isInitDb());
         assertTrue(props.isImport());
+
+        //assert files copied over
+        assertNotNull(loader.find("jdbcconfig", "jdbcconfig.properties"));
+        assertNotNull(loader.find("jdbcconfig", "scripts", "initdb.postgres.sql"));
     }
 
     private File createDummyConfigFile() throws IOException {

@@ -29,6 +29,7 @@ public class DataSourceFactoryBeanTest {
          JDBCConfigProperties config = EasyMock.createMock(JDBCConfigProperties.class);
          Context jndi = EasyMock.createMock(Context.class);
          
+         expect(config.isEnabled()).andReturn(true);
          expectJndi(config, null);
          
          expect(config.getJdbcUrl()).andStubReturn(Optional.of("jdbc:test"));
@@ -89,6 +90,7 @@ public class DataSourceFactoryBeanTest {
          JDBCConfigProperties config = EasyMock.createMock(JDBCConfigProperties.class);
          Context jndi = EasyMock.createMock(Context.class);
          
+         expect(config.isEnabled()).andReturn(true);
          expectJndi(config, "java:comp/env/jdbc/test");
          expect(jndi.lookup("java:comp/env/jdbc/test")).andStubReturn(ds);
          config.setDatasourceId("java:comp/env/jdbc/test"); expectLastCall();
@@ -126,6 +128,7 @@ public class DataSourceFactoryBeanTest {
          JDBCConfigProperties config = EasyMock.createMock(JDBCConfigProperties.class);
          Context jndi = EasyMock.createMock(Context.class);
          
+         expect(config.isEnabled()).andReturn(true);
          expectJndi(config, "java:comp/env/jdbc/test");
          expect(jndi.lookup("java:comp/env/jdbc/test")).andStubThrow(new NamingException());
          

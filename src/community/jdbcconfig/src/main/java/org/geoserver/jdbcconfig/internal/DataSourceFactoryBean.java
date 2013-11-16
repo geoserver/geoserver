@@ -1,5 +1,8 @@
 package org.geoserver.jdbcconfig.internal;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -54,18 +57,38 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Disposabl
 
     @Override
     public DataSource getObject() throws Exception {
+        
         if (dataSource == null) {
-            dataSource = getDataSource();
+            if (!config.isEnabled()) {
+                //hack, create a stub database so that other beans in the context like the 
+                // transaction manager can function, despite the fact that the plugin is
+                // disabled
+                dataSource = createDataSourceStub();
+            }
+            else {
+                dataSource = lookupOrCreateDataSource();
+            }
         }
         return dataSource;
     }
-    
+
+    protected DataSource createDataSourceStub() {
+        return (DataSource) Proxy.newProxyInstance(getClass().getClassLoader(), 
+            new Class[]{DataSource.class}, new InvocationHandler() {
+                @Override
+                public Object invoke(Object proxy, Method method, Object[] args)
+                        throws Throwable {
+                    return null;
+                }
+            });
+    }
+
     /**
      * Look up or create a DataSource
      * @return
      * @throws Exception
      */
-    protected DataSource getDataSource() throws Exception {
+    protected DataSource lookupOrCreateDataSource() throws Exception {
         DataSource ds = null;
         
         boolean jndi = true;

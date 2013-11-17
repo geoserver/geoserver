@@ -87,7 +87,9 @@ public class ComplexFeatureTypeBinding extends AbstractComplexBinding {
         AttributeDescriptor ad = null;
 
         try {
-            ad = registry.getDescriptor(new NameImpl(instance.getNamespace(), instance.getName()));
+            ad = registry.getDescriptor(new NameImpl(instance.getName()), null);
+            
+        	//ad = registry.getDescriptor(new NameImpl(instance.getNamespace(), instance.getName()));
         } catch(Throwable t) {
             LOG.warn("Getting descriptor: ", t);
         }
@@ -138,7 +140,9 @@ public class ComplexFeatureTypeBinding extends AbstractComplexBinding {
         XSDTypeDefinition def = instance.getTypeDefinition();
 
         try {
-            featureType = registry.getDescriptor(new NameImpl(instance.getNamespace(), instance.getName())).getType();
+            featureType = registry.getDescriptor(new NameImpl(instance.getName()),  null).getType();
+            
+        	//featureType = registry.getDescriptor(new NameImpl(instance.getNamespace(), instance.getName())).getType();
         } catch(Throwable t) {
             // ignore
         }

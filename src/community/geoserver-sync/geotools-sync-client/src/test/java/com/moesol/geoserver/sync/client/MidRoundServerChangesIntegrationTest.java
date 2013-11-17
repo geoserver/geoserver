@@ -54,6 +54,8 @@ import com.moesol.geoserver.sync.client.GeoserverClientSynchronizer;
 import com.moesol.geoserver.sync.client.RoundListener;
 import com.vividsolutions.jts.io.ParseException;
 
+import static org.junit.Assert.*;
+
 /**
  * Inject changes on the server side to attempt to induce extra deletes being detected on client side.
  */

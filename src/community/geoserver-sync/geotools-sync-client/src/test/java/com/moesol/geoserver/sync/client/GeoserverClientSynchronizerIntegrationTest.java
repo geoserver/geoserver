@@ -67,6 +67,8 @@ import com.moesol.geoserver.sync.core.Sha1Value;
 import com.moesol.geoserver.sync.core.VersionFeatures;
 import com.vividsolutions.jts.io.ParseException;
 
+import static org.junit.Assert.*;
+
 public class GeoserverClientSynchronizerIntegrationTest extends WFSTestSupport {
 	
 	public void testParseWfs() throws IOException, SAXException, ParserConfigurationException {

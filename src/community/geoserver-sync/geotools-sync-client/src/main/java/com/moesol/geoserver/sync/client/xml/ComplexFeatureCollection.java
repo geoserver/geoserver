@@ -257,7 +257,8 @@ public class ComplexFeatureCollection implements FeatureCollection<FeatureType, 
         }
         finally {
             if( collection instanceof FeatureCollection ){
-                ((FeatureCollection)collection).close( iterator );
+                //((FeatureCollection)collection).close( iterator );
+            	((ComplexFeatureCollection)collection).close( iterator );
             }
         }
     }
@@ -266,7 +267,8 @@ public class ComplexFeatureCollection implements FeatureCollection<FeatureType, 
         //TODO check inheritance with FeatureType here!!!
         boolean changed = false;
 
-        Iterator iterator = collection.iterator();
+        //Iterator iterator = collection.iterator();
+        Iterator iterator = ((ComplexFeatureCollection) collection).iterator();
         try {
             List featuresAdded = new ArrayList(collection.size());
             while (iterator.hasNext()) {
@@ -284,7 +286,8 @@ public class ComplexFeatureCollection implements FeatureCollection<FeatureType, 
             return changed;
         }
         finally {
-            collection.close( iterator );
+            ((ComplexFeatureCollection) collection).close( iterator );
+            //collection.close( iterator );
         }
     }
 
@@ -344,7 +347,8 @@ public class ComplexFeatureCollection implements FeatureCollection<FeatureType, 
         }
         finally {
             if( collection instanceof FeatureCollection ){
-                ((FeatureCollection)collection).close( iterator );
+                ((ComplexFeatureCollection)collection).close( iterator );
+                //((FeatureCollection)collection).close( iterator );
             }
         }
     }
@@ -395,7 +399,8 @@ public class ComplexFeatureCollection implements FeatureCollection<FeatureType, 
      * @return the FeatureIterator for this collection.
      */
     public FeatureIterator features() {
-        return new FeatureIteratorImpl(this);
+        return new FeatureIteratorImpl((Collection) this);
+        //return new FeatureIteratorImpl(this);
     }
 
     /**
@@ -459,7 +464,8 @@ public class ComplexFeatureCollection implements FeatureCollection<FeatureType, 
         }
         finally {
             if( collection instanceof FeatureCollection ){
-                ((FeatureCollection)collection).close( iterator );
+                //((FeatureCollection)collection).close( iterator );
+            	((ComplexFeatureCollection)collection).close( iterator );
             }
         }
     }
@@ -640,7 +646,8 @@ public class ComplexFeatureCollection implements FeatureCollection<FeatureType, 
         finally {
             iterator.close();
         }
-        copy.addAll( list );
+        ((ComplexFeatureCollection) copy).addAll( list );
+        //copy.addAll( list );
         return copy;
     }
 

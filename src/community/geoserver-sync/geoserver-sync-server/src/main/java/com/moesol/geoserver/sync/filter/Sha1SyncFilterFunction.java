@@ -42,6 +42,7 @@ import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
 import org.opengis.filter.capability.FunctionName;
 import org.opengis.filter.expression.Expression;
+import org.opengis.parameter.Parameter;
 
 import com.google.gson.Gson;
 import com.moesol.geoserver.sync.core.FeatureSha1;
@@ -107,6 +108,24 @@ public class Sha1SyncFilterFunction extends FunctionImpl /* 2.2 requires this im
         public String getName() {
             return "sha1Sync";
         }
+
+		@Override
+		public List<Parameter<?>> getArguments() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public org.opengis.feature.type.Name getFunctionName() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Parameter<?> getReturn() {
+			// TODO Auto-generated method stub
+			return null;
+		}
     };
     
     @Override

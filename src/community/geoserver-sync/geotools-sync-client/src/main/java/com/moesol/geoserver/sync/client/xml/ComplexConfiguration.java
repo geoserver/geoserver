@@ -40,6 +40,7 @@ import org.geotools.gml3.GMLConfiguration;
 import org.geotools.xml.Configuration;
 import org.geotools.xs.XS;
 import org.geotools.xs.XSConfiguration;
+import org.opengis.feature.type.FeatureTypeFactory;
 import org.picocontainer.MutablePicoContainer;
 
 import com.moesol.geoserver.sync.client.xml.pwfs.GeoLabelBinding;
@@ -65,7 +66,8 @@ public class ComplexConfiguration extends Configuration {
         super.configureContext(container);
 
         if(registry == null) {
-            registry = new FeatureTypeRegistry();
+            registry = new FeatureTypeRegistry(null, null);
+        	//registry = new FeatureTypeRegistry();
             try {
                 registry.addSchemas(EmfAppSchemaReader.newInstance().parse(this));
             } catch(IOException e) {

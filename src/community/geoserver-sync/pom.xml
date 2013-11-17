@@ -42,12 +42,16 @@
 	
 	
 	<properties>
-		<geoserver.version>2.0.1</geoserver.version>
-		<geotools.version>2.6.1</geotools.version>
+		<!--<geoserver.version>2.0.1</geoserver.version>
+		<geotools.version>2.6.1</geotools.version>-->
+		<!--<geoserver.version>2.5-SNAPSHOT</geoserver.version>-->
+		<geoserver.version>2.4.0</geoserver.version>
+		<geotools.version>10.0</geotools.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.organization.name>Moebius Solutions Inc.</project.organization.name>
 		<project.inceptionYear>2013</project.inceptionYear>
 		<project.projectName>geoserver-sync</project.projectName>
+		
 		<license.licenseName>gpl_v2</license.licenseName>
 	</properties>
 
@@ -94,6 +98,15 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+		<repository>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>http://www.mygrid.org.uk/maven/repository</url>
+		</repository>
 
     </repositories>
 
@@ -109,7 +122,9 @@
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
-				<version>4.8.1</version>
+				<!--<version>4.8.1</version>-->
+				<version>4.9</version>
+				
 				<scope>test</scope>
 			</dependency>
 			<dependency>
@@ -133,6 +148,18 @@
                 <artifactId>xmlunit</artifactId>
                 <version>1.1</version>
             </dependency>
+			<dependency>
+				<groupId>org.geoserver</groupId>
+				<artifactId>rest</artifactId>
+				<version>2.0=SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.geoserver</groupId>
+				<artifactId>main</artifactId>
+				<version>2.0-SNAPSHOT</version>
+				<classifier>tests</classifier>
+				<scope>test</scope>
+			</dependency>
 			
 
 		</dependencies>
@@ -162,6 +189,16 @@
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>1.1.1</version>
 			</dependency>
+		<dependency>
+			<groupId>net.java.dev.jai-imageio</groupId>
+			<artifactId>jai-imageio-core-standalone</artifactId>
+			<version>1.2-pre-dr-b04-2011-07-04</version>
+		</dependency>
+		<dependency>	
+			<groupId>org.springframework</groupId>
+			<artifactId>spring</artifactId>
+			<version>2.5.6</version>
+		</dependency>
 	</dependencies>
     
     <build>
@@ -180,8 +217,11 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.12.4</version>
+					<!--<version>2.12.4</version>-->
+					<version>2.4.2</version>
 					<configuration>
+						<!--<parallel>methods</parallel>
+						<threadCount>10</threadCount>-->
 						<excludes>
 							<exclude>**/*IntegrationTest.java</exclude>
 						</excludes>

@@ -65,6 +65,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
+import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.xml.v1_1_0.WFSConfiguration;
 import org.geotools.data.store.FilteringFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
@@ -87,7 +88,7 @@ public class SyncGMLOutputFormat extends WFSGetFeatureOutputFormat {
     WFSConfiguration configuration;
 
     public SyncGMLOutputFormat(GeoServer geoServer, WFSConfiguration configuration) {
-        super(new HashSet(Arrays.asList(new Object[] {"SyncGML"})));
+        super(geoServer, new HashSet(Arrays.asList(new Object[] {"SyncGML"})));
 
         wfs = geoServer.getService( WFSInfo.class );
         catalog = geoServer.getCatalog();
@@ -101,7 +102,7 @@ public class SyncGMLOutputFormat extends WFSGetFeatureOutputFormat {
         return "text/xml; subtype=gml/3.1.1";
     }
 
-    @Override
+    //@Override
     protected void write(FeatureCollectionType results, OutputStream output, Operation getFeature)
         throws ServiceException, IOException {
         List featureCollections = results.getFeature();
@@ -252,4 +253,11 @@ public class SyncGMLOutputFormat extends WFSGetFeatureOutputFormat {
             nss.declarePrefix(pref == null ? "" : pref, e.getValue());
         }
     }
+
+	@Override
+	protected void write(FeatureCollectionResponse arg0, OutputStream arg1,
+			Operation arg2) throws IOException, ServiceException {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -70,7 +70,8 @@ public class ComplexFeatureArrayPropertyTypeBinding extends AbstractComplexBindi
         }
 
         fc = new ComplexFeatureCollection(null, null);
-        fc.addAll(node.getChildValues(Feature.class));
+        ((ComplexFeatureCollection) fc).addAll(node.getChildValues(Feature.class));
+        //fc.addAll(node.getChildValues(Feature.class));
 
         return fc;
     }

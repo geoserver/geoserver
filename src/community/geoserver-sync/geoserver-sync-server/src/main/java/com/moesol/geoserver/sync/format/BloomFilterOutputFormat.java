@@ -40,17 +40,18 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
+import org.geoserver.wfs.request.FeatureCollectionResponse;
 
 import com.moesol.geoserver.sync.format.BloomFilterFeatureCollectionWriter;
 
 public class BloomFilterOutputFormat extends WFSGetFeatureOutputFormat {
 
 	public BloomFilterOutputFormat(GeoServer gs, Set<String> outputFormats) {
-		super(outputFormats);
+		super(gs, outputFormats);
 	}
 
 	public BloomFilterOutputFormat(GeoServer gs, String outputFormat) {
-		super(outputFormat);
+		super(gs, outputFormat);
 	}
 
 	public BloomFilterOutputFormat(GeoServer gs) {
@@ -58,7 +59,7 @@ public class BloomFilterOutputFormat extends WFSGetFeatureOutputFormat {
         // that will be used when requesting the format in a 
         // GEtFeature request: 
         // ie ;.../geoserver/wfs?request=getfeature&outputFormat=myOutputFormat
-        super("sha1");
+        super(gs, "sha1");
     }
 
     @Override
@@ -78,7 +79,7 @@ public class BloomFilterOutputFormat extends WFSGetFeatureOutputFormat {
         return super.canHandleInternal(operation);
     }
     
-    @Override
+   // @Override
     protected void write(FeatureCollectionType featureCollection,
             OutputStream output, Operation getFeature) throws IOException,
             ServiceException {
@@ -91,5 +92,12 @@ public class BloomFilterOutputFormat extends WFSGetFeatureOutputFormat {
     	writer.parseAttributesToInclude(atts);
 		writer.write();
     }
+
+	@Override
+	protected void write(FeatureCollectionResponse arg0, OutputStream arg1,
+			Operation arg2) throws IOException, ServiceException {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

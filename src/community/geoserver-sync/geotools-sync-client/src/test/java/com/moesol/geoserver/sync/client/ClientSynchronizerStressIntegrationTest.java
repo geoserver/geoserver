@@ -50,6 +50,8 @@ import com.moesol.geoserver.sync.client.GeoserverClientSynchronizer;
 import com.moesol.geoserver.sync.client.RequestBuilder;
 import com.vividsolutions.jts.io.ParseException;
 
+import static org.junit.Assert.*;
+
 public class ClientSynchronizerStressIntegrationTest extends WFSTestSupport {
 
 	public void test_Server6_RunMany() throws IOException, SAXException, ParserConfigurationException, ParseException {

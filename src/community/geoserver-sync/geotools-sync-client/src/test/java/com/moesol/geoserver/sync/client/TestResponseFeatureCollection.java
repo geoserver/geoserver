@@ -33,6 +33,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.geotools.feature.FeatureCollection;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import com.moesol.geoserver.sync.client.ResponseFeatureCollection;
 
@@ -76,6 +78,11 @@ public class TestResponseFeatureCollection implements ResponseFeatureCollection 
 	@Override
 	public String getContentEncoding() {
 		return "text/xml";
+	}
+	@Test
+	public void dummyTest(){
+		assertEquals(1, 1);
+		
 	}
 
 }

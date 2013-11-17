@@ -43,6 +43,7 @@ import java.util.logging.Logger;
 import net.opengis.wfs.FeatureCollectionType;
 
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.util.logging.Logging;
@@ -83,14 +84,15 @@ public class FeatureCollectionSha1Sync {
 	private VersionFeatures versionFeatures = VersionFeatures.VERSION1;
 
 	/** collection we are working on */
-	private FeatureCollectionType m_featureCollection;
+	//private FeatureCollectionType m_featureCollection;
+	private FeatureCollectionResponse m_featureCollectionResponse;
 	private Sha1SyncJson m_remoteSha1SyncJson = EMPTY_SET;
 
 	public FeatureCollectionSha1Sync(OutputStream output) throws ServiceException {
 		m_out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(output, UTF8)));
 	}
 
-	public void write(FeatureCollectionType featureCollection) {
+	/*public void write(FeatureCollectionType featureCollection) {
 		captureFilterParameters();
 		setCollection(featureCollection);
 	    Sha1SyncJson response = compute();
@@ -100,6 +102,17 @@ public class FeatureCollectionSha1Sync {
 	    }
 		writeAsJsone(response);
 	    Sha1SyncFilterFunction.clearThreadLocals();
+	}*/
+	public void write(FeatureCollectionResponse featureCollection){
+		captureFilterParameters();
+		setCollection(featureCollection);
+	    Sha1SyncJson response = compute();
+		LOGGER.log(Level.FINE, "output({0}})", response); 
+	    if (TRACE_RESPONSE != null) {
+	    	response.dumpSha1SyncJson("RESPONSE", TRACE_RESPONSE);
+	    }
+		writeAsJsone(response);
+	    Sha1SyncFilterFunction.clearThreadLocals();	
 	}
 
 	private void captureFilterParameters() {
@@ -120,8 +133,11 @@ public class FeatureCollectionSha1Sync {
 		}
 	}
 
-	public void setCollection(FeatureCollectionType featureCollectionType) {
+	/*public void setCollection(FeatureCollectionType featureCollectionType) {
 		m_featureCollection = featureCollectionType;
+	}*/
+	public void setCollection(FeatureCollectionResponse featureCollectionResponse){
+		m_featureCollectionResponse = featureCollectionResponse;
 	}
 	
 	public void setRemoteSha1SyncJson(Sha1SyncJson remote) {
@@ -136,7 +152,7 @@ public class FeatureCollectionSha1Sync {
 		return computeServerResponse();
 	}
 	
-	public Sha1SyncJson computeZero() {
+	/*public Sha1SyncJson computeZero() {
 		LOGGER.log(Level.FINE, "attributes={0}, sync={1}", 
 				new Object[] { m_featureSha1Sync.getAttributesToInclude(), m_remoteSha1SyncJson});
 		List<FeatureCollection<?,?>> resultsList = m_featureCollection.getFeature();
@@ -145,9 +161,57 @@ public class FeatureCollectionSha1Sync {
 	    Sha1JsonLevelGrouper grouper = new Sha1JsonLevelGrouper(versionFeatures, m_featureSha1s);
 	    grouper.groupForLevel(0);
 	    return grouper.getJson();
+	}*/
+	public Sha1SyncJson computeZero() {
+		LOGGER.log(Level.FINE, "attributes={0}, sync={1}", 
+				new Object[] { m_featureSha1Sync.getAttributesToInclude(), m_remoteSha1SyncJson});
+		List<FeatureCollection> resultsList = m_featureCollectionResponse.getFeature();
+	    processAllCollections(resultsList);
+	    
+	    Sha1JsonLevelGrouper grouper = new Sha1JsonLevelGrouper(versionFeatures, m_featureSha1s);
+	    grouper.groupForLevel(0);
+	    return grouper.getJson();
 	}
 
+	/*public Sha1SyncJson computeServerResponse() {
+		List<FeatureCollection> resultsList = m_featureCollection.getFeature();
+	    processAllCollections(resultsList);
+	    
+	    Sha1JsonLevelGrouper grouper = new Sha1JsonLevelGrouper(versionFeatures, m_featureSha1s);
+	    grouper.groupForLevel(m_remoteSha1SyncJson.level());
+	    Sha1SyncJson localSha1SyncJson = grouper.getJson();
+	    
+	    grouper.groupForLevel(m_remoteSha1SyncJson.level() + 1);
+	    Sha1SyncJson outputSha1SyncJson = grouper.getJson();
+	    
+	    ServerReconciler recon = new ServerReconciler(localSha1SyncJson, m_remoteSha1SyncJson);
+	    recon.filterDownNextLevel(outputSha1SyncJson);
+	    
+		LOGGER.log(Level.FINER, "attributes({0}), local({1}), remote({2})", 
+				new Object[] { m_featureSha1Sync.getAttributesToInclude(), localSha1SyncJson, m_remoteSha1SyncJson});
+	    return outputSha1SyncJson;
+	}*/
+	
 	public Sha1SyncJson computeServerResponse() {
+		List<FeatureCollection> resultsList = m_featureCollectionResponse.getFeature();
+	    processAllCollections(resultsList);
+	    
+	    
+	    Sha1JsonLevelGrouper grouper = new Sha1JsonLevelGrouper(versionFeatures, m_featureSha1s);
+	    grouper.groupForLevel(m_remoteSha1SyncJson.level());
+	    Sha1SyncJson localSha1SyncJson = grouper.getJson();
+	    
+	    grouper.groupForLevel(m_remoteSha1SyncJson.level() + 1);
+	    Sha1SyncJson outputSha1SyncJson = grouper.getJson();
+	    
+	    ServerReconciler recon = new ServerReconciler(localSha1SyncJson, m_remoteSha1SyncJson);
+	    recon.filterDownNextLevel(outputSha1SyncJson);
+	    
+		LOGGER.log(Level.FINER, "attributes({0}), local({1}), remote({2})", 
+				new Object[] { m_featureSha1Sync.getAttributesToInclude(), localSha1SyncJson, m_remoteSha1SyncJson});
+	    return outputSha1SyncJson;
+	}
+	/*public Sha1SyncJson computeServerResponse() {
 		List<FeatureCollection<?,?>> resultsList = m_featureCollection.getFeature();
 	    processAllCollections(resultsList);
 	    
@@ -164,9 +228,9 @@ public class FeatureCollectionSha1Sync {
 		LOGGER.log(Level.FINER, "attributes({0}), local({1}), remote({2})", 
 				new Object[] { m_featureSha1Sync.getAttributesToInclude(), localSha1SyncJson, m_remoteSha1SyncJson});
 	    return outputSha1SyncJson;
-	}
+	}*/	
 	
-	private void processAllCollections(List<FeatureCollection<?,?>> resultsList) {
+	/*private void processAllCollections(List<FeatureCollection<?,?>> resultsList) {
 		List<IdAndValueSha1s> sha1s = Sha1SyncFilterFunction.getFeatureSha1s();
 		if (sha1s != null) {
 			m_featureSha1s = sha1s;
@@ -177,6 +241,18 @@ public class FeatureCollectionSha1Sync {
 	        FeatureCollection<?,?> collection = resultsList.get(i);
 	        processOne(collection);
 	    }
+	}*/
+	private void processAllCollections(List<FeatureCollection> resultsList) {
+		List<IdAndValueSha1s> sha1s = Sha1SyncFilterFunction.getFeatureSha1s();
+		if (sha1s != null) {
+			m_featureSha1s = sha1s;
+			return; // Filter beat us to it, no work for us :-)
+		}
+	
+		for (int i = 0; i < resultsList.size(); i++) {
+			FeatureCollection<?,?> collection = resultsList.get(i);
+			processOne(collection);
+		}
 	}
 
 	private void processOne(FeatureCollection<?,?> collection) {

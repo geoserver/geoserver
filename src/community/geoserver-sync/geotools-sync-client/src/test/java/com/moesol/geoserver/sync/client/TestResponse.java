@@ -31,7 +31,10 @@ package com.moesol.geoserver.sync.client;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.junit.Test;
+
 import com.moesol.geoserver.sync.client.Response;
+import static org.junit.Assert.*;
 
 public class TestResponse implements Response {
 	private int m_responseCode;
@@ -39,6 +42,7 @@ public class TestResponse implements Response {
 	private InputStream m_resultStream;
 
 	@Override
+	
 	public int getResponseCode() throws IOException {
 		return m_responseCode;
 	}
@@ -64,6 +68,10 @@ public class TestResponse implements Response {
 	@Override
 	public String getContentEncoding() {
 		return "text";
+	}
+	@Test
+	public void dummyTest(){
+		assertEquals(1, 1);
 	}
 
 }

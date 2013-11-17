@@ -101,5 +101,33 @@ public class Sha1SyncJson {
 		}
 		out.println("}");
 	}
+	public int getL() {
+		return l;
+	}
+	public void setL(int l) {
+		this.l = l;
+	}
+	public List<Sha1SyncPositionHash> getH() {
+		return h;
+	}
+	public void setH(List<Sha1SyncPositionHash> h) {
+		this.h = h;
+	}
+	public long getM() {
+		return m;
+	}
+	public void setM(long m) {
+		this.m = m;
+	}
+	public String getV() {
+		return v;
+	}
+	public void setV(String v) {
+		if(v != null) {
+			this.v = v;
+		} else {
+			this.v = "1.0";
+		}
+	}
 	
 }

@@ -37,31 +37,43 @@ import java.util.Set;
 import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.QueryType;
+import net.opengis.wfs.impl.FeatureCollectionTypeImpl;
+import net.opengis.wfs20.impl.GetFeatureTypeImpl;
 
+import org.apache.commons.cli.Options;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wfs.GetFeature;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
+import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.store.FilteringFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureImpl;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.feature.type.FeatureTypeImpl;
 import org.opengis.feature.Feature;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.expression.Function;
 
+import com.google.gson.Gson;
+
 public class SyncChecksumOutputFormat extends WFSGetFeatureOutputFormat {
 	public static ThreadLocal<String> JUNIT_SHA1_SYNC = new ThreadLocal<String>();
 
 	public SyncChecksumOutputFormat(GeoServer gs, Set<String> outputFormats) {
-		super(outputFormats);
+		super(gs, outputFormats);
 	}
 
 	public SyncChecksumOutputFormat(GeoServer gs, String outputFormat) {
-		super(outputFormat);
+		super(gs, outputFormat);
 	}
 
 	public SyncChecksumOutputFormat(GeoServer gs) {
@@ -69,7 +81,7 @@ public class SyncChecksumOutputFormat extends WFSGetFeatureOutputFormat {
         // that will be used when requesting the format in a 
         // GEtFeature request: 
         // ie ;.../geoserver/wfs?request=getfeature&outputFormat=myOutputFormat
-        super("SyncChecksum");
+        super(gs, "SyncChecksum");
     }
 
     @Override
@@ -89,8 +101,8 @@ public class SyncChecksumOutputFormat extends WFSGetFeatureOutputFormat {
         return super.canHandleInternal(operation);
     }
     
-    @Override
-    protected void write(FeatureCollectionType featureCollection,
+   // @Override
+   /* protected void write(FeatureCollectionType featureCollection,
             OutputStream output, Operation getFeature) throws IOException,
             ServiceException {
     	
@@ -102,7 +114,7 @@ public class SyncChecksumOutputFormat extends WFSGetFeatureOutputFormat {
         	// Try unit test source
         	sha1SyncJson = JUNIT_SHA1_SYNC.get();
         }
-
+        
 // Here's some sample code that finds the sha1 filter function.
 // However, this instances is NOT the instance that collected the SHA-1's
 // Therefore, we are sticking with the thread local state storage.
@@ -118,7 +130,7 @@ public class SyncChecksumOutputFormat extends WFSGetFeatureOutputFormat {
     	
         if(getFeature.getParameters()[0] instanceof GetFeatureType) {
             // get the query for this featureCollection
-            GetFeatureType request = (GetFeatureType) OwsUtils.parameter(getFeature.getParameters(),
+            GetFeatureType request = OwsUtils.parameter(getFeature.getParameters(),
                     GetFeatureType.class);
             QueryType queryType = (QueryType) request.getQuery().get(0);
             if(queryType.getFunction().size()>0) {
@@ -127,6 +139,7 @@ public class SyncChecksumOutputFormat extends WFSGetFeatureOutputFormat {
                 FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
                 Filter f = ff.equal(ff.literal("true"), syncFunction, false);
                 
+               
                 for(FeatureCollection fc : (List<FeatureCollection>)featureCollection.getFeature()) {
                     filtered.add(new FilteringFeatureCollection<FeatureType, Feature>(fc, f));
                 }
@@ -147,10 +160,85 @@ public class SyncChecksumOutputFormat extends WFSGetFeatureOutputFormat {
             }
         }
         
-    	FeatureCollectionSha1Sync writer = new FeatureCollectionSha1Sync(output);
+        FeatureCollectionSha1Sync writer = new FeatureCollectionSha1Sync(output);
     	writer.parseAttributesToInclude(atts);
     	writer.parseSha1SyncJson(sha1SyncJson);
 		writer.write(featureCollection);
-    }
+    }*/
+
+	@Override
+	protected void write(FeatureCollectionResponse featureCollection, OutputStream output,
+			Operation getFeature) throws IOException, ServiceException {
+		// TODO Auto-generated method stub
+        // let's check which attributes are specified ATTS=A,B,C
+        // let's check which attributes are specified ATTS=A,B,C
+        // let's check which attributes are specified ATTS=A,B,C
+		
+		GetFeatureTypeImpl gft = (GetFeatureTypeImpl)getFeature.getParameters()[0];
+		//GetFeature gft = (GetFeature) getFeature.getParameters()[0];
+		//GetFeatureType gft = (GetFeatureType) getFeature.getParameters()[0];
+        String atts = (String) gft.getFormatOptions().get("ATTRIBUTES");
+		
+		
+		
+       // String atts = "the_geom,FID";
+        String sha1SyncJson = (String)gft.getFormatOptions().get("SYNC");
+        //String sha1SyncJson = null;
+        if (sha1SyncJson == null) {
+        	// Try unit test source
+        	sha1SyncJson = JUNIT_SHA1_SYNC.get();
+        }
+        
+// Here's some sample code that finds the sha1 filter function.
+// However, this instances is NOT the instance that collected the SHA-1's
+// Therefore, we are sticking with the thread local state storage.
+//        FindSha1SyncFilterFunction visitor = new FindSha1SyncFilterFunction();
+//        QueryType queryType = (QueryType)gft.getQuery().get(0);
+//        if (queryType != null) {
+//        	queryType.getFilter().accept(visitor, null);
+//        }
+//        if (visitor.getSha1SyncFilterFunction() != null) {
+//        	// Found it
+//        	visitor.getSha1SyncFilterFunction().getFeatureSha1s();
+//        }
+    	
+        if(getFeature.getParameters()[0] instanceof GetFeatureType) {
+            // get the query for this featureCollection
+            GetFeatureType request = OwsUtils.parameter(getFeature.getParameters(),
+                    GetFeatureType.class);
+            QueryType queryType = (QueryType) request.getQuery().get(0);
+            if(queryType.getFunction().size()>0) {
+                Function syncFunction = (Function) queryType.getFunction().get(0);
+                List<FeatureCollection> filtered = new ArrayList<FeatureCollection>();
+                FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
+                Filter f = ff.equal(ff.literal("true"), syncFunction, false);
+                
+               
+                for(FeatureCollection fc : (List<FeatureCollection>)featureCollection.getFeature()) {
+                    filtered.add(new FilteringFeatureCollection<FeatureType, Feature>(fc, f));
+                }
+                
+                featureCollection.getFeature().clear();
+                featureCollection.getFeature().addAll(filtered);
+                
+                // Hack to initialize the threadlocals
+                for(FeatureCollection fc : (List<FeatureCollection>)featureCollection.getFeature()) {
+                    FeatureIterator fi = fc.features();
+                    try {
+                        while(fi.hasNext())
+                            fi.next();
+                    } finally {
+                        fi.close();
+                    }
+                }
+            }
+        }
+        
+        FeatureCollectionSha1Sync writer = new FeatureCollectionSha1Sync(output);
+    	writer.parseAttributesToInclude(atts);
+    	writer.parseSha1SyncJson(sha1SyncJson);
+		writer.write(featureCollection);		
+
+	}
 
 }

@@ -70,7 +70,9 @@ public class ComplexFeatureCollectionTypeBinding extends AbstractComplexBinding 
         }
 
         for(Node n : featureMembers) {
-            coll.addAll(n.getChildValues(Feature.class));
+            ((List<Node>) coll).addAll(n.getChildValues(Feature.class));
+            
+        	//coll.addAll(n.getChildValues(Feature.class));
         }
 
         return coll;

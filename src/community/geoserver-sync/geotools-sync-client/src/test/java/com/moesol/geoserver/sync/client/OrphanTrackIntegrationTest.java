@@ -24,6 +24,7 @@
  *
  */
 
+
 package com.moesol.geoserver.sync.client;
 
 
@@ -46,6 +47,8 @@ import com.moesol.geoserver.sync.client.xml.ComplexConfiguration;
 import com.moesol.geoserver.sync.client.xml.ComplexFeatureCollection;
 import com.moesol.geoserver.sync.core.FeatureSha1;
 import com.moesol.geoserver.sync.core.Sha1Value;
+
+import static org.junit.Assert.*;
 
 public class OrphanTrackIntegrationTest extends WFSTestSupport {
 	

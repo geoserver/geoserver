@@ -47,6 +47,7 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
 import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.ComplexType;
+import org.opengis.feature.type.Name;
 
 public class ComplexFeaturePropertyTypeBinding extends AbstractComplexBinding {
     private final FeatureTypeRegistry registry;
@@ -83,8 +84,9 @@ public class ComplexFeaturePropertyTypeBinding extends AbstractComplexBinding {
         XSDTypeDefinition def = instance.getTypeDefinition();
         if(def.getName() == null)
             featureType =
-                registry.getDescriptor(new NameImpl(instance.getNamespace(), instance.getName()))
-                    .getType();
+                registry.getDescriptor(new NameImpl(instance.getName()), null).getType();
+                
+            	//registry.getDescriptor(new NameImpl(instance.getNamespace(), instance.getName())).getType();
         else
             featureType =
                 registry.getAttributeType(new NameImpl(def.getTargetNamespace(), def.getName()));

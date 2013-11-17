@@ -38,6 +38,7 @@ import junit.framework.TestCase;
 import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.WfsFactory;
 
+import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataAccessFinder;
 import org.geotools.data.FeatureSource;
@@ -97,29 +98,33 @@ public class FeatureCollectionSha1SyncTest extends TestCase {
 	}
 	
 	public void testSimpleFeature() throws ParseException, IOException {
-		FeatureCollectionType featureCollectionType = buildSomeFeatures("US");
+		FeatureCollectionResponse featureCollectionResponse = buildSomeFeatures("US");
 		
-		m_sha1Sync.setCollection(featureCollectionType);
+		m_sha1Sync.setCollection(featureCollectionResponse);
 		Sha1SyncJson json = m_sha1Sync.computeZero();
 		
 		assertEquals("78dc226e7d37ab5c800d8922857452bebea3709b", json.h.get(0).s);
 	}
 	
 	public void testSimpleFeatureAll() throws ParseException, IOException {
-		FeatureCollectionType featureCollectionType = buildSomeFeatures("US");
+		FeatureCollectionResponse featureCollectionResponse = buildSomeFeatures("US");
 		
 		m_sha1Sync.parseAttributesToInclude("-all");
-		m_sha1Sync.setCollection(featureCollectionType);
+		m_sha1Sync.setCollection(featureCollectionResponse);
 		Sha1SyncJson json = m_sha1Sync.computeZero();
 		
-		assertEquals("f8aff4d2381ad249d96e74b16a4f9184e586fd15", json.h.get(0).s);
+		//assertEquals("f8aff4d2381ad249d96e74b16a4f9184e586fd15", json.h.get(0).s);
+		assertEquals("009a30c622303abd830fec205d4b75c4f2134547", json.h.get(0).s);
+
 	}
 	
 	public void testSimpleFeatureAllOneDiff() throws ParseException, IOException {
-		FeatureCollectionType featureCollectionType = buildSomeFeatures("UT");
+		//FeatureCollectionType featureCollectionType = buildSomeFeatures("UT");
+		FeatureCollectionResponse featureCollectionResponse = buildSomeFeatures("UT");
 		
 		m_sha1Sync.parseAttributesToInclude("-all");
-		m_sha1Sync.setCollection(featureCollectionType);
+		//m_sha1Sync.setCollection(featureCollectionType);
+		m_sha1Sync.setCollection(featureCollectionResponse);
 		Sha1SyncJson json = m_sha1Sync.computeZero();
 
 		assertFalse( "5dcee332c8b73888d821b475f8bcd3450e277484".equals(json.h.get(0)) );
@@ -145,8 +150,10 @@ public class FeatureCollectionSha1SyncTest extends TestCase {
 	
     public void testCompute_Level0() throws Exception {
 		FeatureCollectionType server = make(f("F1", 0), f("F2", 1), f("F3", 2), f("F4", 3));
-		
-		m_sha1Sync.setCollection(server);
+		FeatureCollectionResponse rserver = FeatureCollectionResponse.adapt(server);
+		//m_sha1Sync.setCollection(server);
+		m_sha1Sync.setCollection(rserver);
+
 		m_sha1Sync.parseSha1SyncJson("{l:0,h:[{p:'',s:'deadbeef'}]}"); // no matches
 		Sha1SyncJson sync = m_sha1Sync.compute();
 		
@@ -161,8 +168,10 @@ public class FeatureCollectionSha1SyncTest extends TestCase {
     
     public void testComput_Level0_Match() throws Exception {
 		FeatureCollectionType server = make(f("F1", 0), f("F2", 1), f("F3", 2), f("F4", 3));
-		
-		m_sha1Sync.setCollection(server);
+		FeatureCollectionResponse rserver = FeatureCollectionResponse.adapt(server);
+		//m_sha1Sync.setCollection(server);
+		m_sha1Sync.setCollection(rserver);
+
 		m_sha1Sync.parseSha1SyncJson("{l:0,h:[{p:'',s:'949ff963844796006fdfcab0a003b2d48f708771'}]}"); // no matches
 		Sha1SyncJson sync = m_sha1Sync.compute();
 		
@@ -172,9 +181,11 @@ public class FeatureCollectionSha1SyncTest extends TestCase {
     }
     
     public void testComput_Level1() throws Exception {
-		FeatureCollectionType featureCollectionType = buildSomeFeatures("US");
-		
-		m_sha1Sync.setCollection(featureCollectionType);
+		//FeatureCollectionType featureCollectionType = buildSomeFeatures("US");
+		FeatureCollectionResponse featureCollectionResponse = buildSomeFeatures("US");
+		//m_sha1Sync.setCollection(featureCollectionType);
+		m_sha1Sync.setCollection(featureCollectionResponse);
+
 		Sha1SyncJson client = new Sha1SyncJson().level(1).hashes(
 				new Sha1SyncPositionHash().position("56").summary("deadbeef"),
 				new Sha1SyncPositionHash().position("ed").summary("deadbeef")
@@ -191,9 +202,11 @@ public class FeatureCollectionSha1SyncTest extends TestCase {
     }
     
     public void testComput_Level1_Partial() throws Exception {
-		FeatureCollectionType featureCollectionType = buildSomeFeatures("US");
+		//FeatureCollectionType featureCollectionType = buildSomeFeatures("US");
+		FeatureCollectionResponse featureCollectionResponse = buildSomeFeatures("US");
+		//m_sha1Sync.setCollection(featureCollectionType);
+		m_sha1Sync.setCollection(featureCollectionResponse);
 		
-		m_sha1Sync.setCollection(featureCollectionType);
 		Sha1SyncJson client = new Sha1SyncJson().level(1).hashes(
 				new Sha1SyncPositionHash().position("ed").summary("deadbeef")
 		);
@@ -208,9 +221,10 @@ public class FeatureCollectionSha1SyncTest extends TestCase {
     }
     
     public void testComput_Level1_Partial_Extra() throws Exception {
-		FeatureCollectionType featureCollectionType = buildSomeFeatures("US");
-		
-		m_sha1Sync.setCollection(featureCollectionType);
+		//FeatureCollectionType featureCollectionType = buildSomeFeatures("US");
+		FeatureCollectionResponse featureCollectionResponse = buildSomeFeatures("US");
+		//m_sha1Sync.setCollection(featureCollectionType);
+		m_sha1Sync.setCollection(featureCollectionResponse);
 		Sha1SyncJson client = new Sha1SyncJson().level(1).hashes(
 				new Sha1SyncPositionHash().position("ed").summary("deadbeef"),
 				new Sha1SyncPositionHash().position("ff").summary("deadbeef")
@@ -227,15 +241,16 @@ public class FeatureCollectionSha1SyncTest extends TestCase {
     }
     
     public void testComput_Level1_Empty() throws Exception {
-		FeatureCollectionType featureCollectionType = buildSomeFeatures("US");
-		
+		//FeatureCollectionType featureCollectionType = buildSomeFeatures("US");
+		FeatureCollectionResponse featureCollectionResponse = buildSomeFeatures("US");
 		// An empty client should produce 256 empty hashes
 		List<Sha1SyncPositionHash> h = new ArrayList<Sha1SyncPositionHash>();
 		for (int i = 0; i < 256; i++) {
 			h.add(new Sha1SyncPositionHash().position(String.format("%02x", i)));
 			
 		}
-		m_sha1Sync.setCollection(featureCollectionType);
+		//m_sha1Sync.setCollection(featureCollectionType);
+		m_sha1Sync.setCollection(featureCollectionResponse);
 		Sha1SyncJson client = new Sha1SyncJson().level(1).hashes(h);
 		m_sha1Sync.parseSha1SyncJson(client.toString());
 		
@@ -261,9 +276,10 @@ public class FeatureCollectionSha1SyncTest extends TestCase {
     }
     
     public void testComput_Level2() throws Exception {
-		FeatureCollectionType featureCollectionType = buildSomeFeatures("US");
-		
-		m_sha1Sync.setCollection(featureCollectionType);
+		//FeatureCollectionType featureCollectionType = buildSomeFeatures("US");
+		FeatureCollectionResponse featureCollectionResponse = buildSomeFeatures("US");
+		//m_sha1Sync.setCollection(featureCollectionType);
+		m_sha1Sync.setCollection(featureCollectionResponse);
 		m_sha1Sync.parseSha1SyncJson("{l:2,h:[{p:'56e8'},{p:'ed3c'}]}");
 		Sha1SyncJson sync = m_sha1Sync.compute();
 		
@@ -275,9 +291,10 @@ public class FeatureCollectionSha1SyncTest extends TestCase {
     }
 
     public void testComput_Level2_Partial() throws Exception {
-		FeatureCollectionType featureCollectionType = buildSomeFeatures("US");
-		
-		m_sha1Sync.setCollection(featureCollectionType);
+		//FeatureCollectionType featureCollectionType = buildSomeFeatures("US");
+		FeatureCollectionResponse featureCollectionResponse = buildSomeFeatures("US");
+		//m_sha1Sync.setCollection(featureCollectionType);
+		m_sha1Sync.setCollection(featureCollectionResponse);
 		m_sha1Sync.parseSha1SyncJson("{l:2,h:[{p:'56e8'}]}");
 		Sha1SyncJson sync = m_sha1Sync.compute();
 		
@@ -288,9 +305,10 @@ public class FeatureCollectionSha1SyncTest extends TestCase {
     }
     
     public void testComput_Level2_Empty() throws Exception {
-		FeatureCollectionType featureCollectionType = buildSomeFeatures("US");
-		
-		m_sha1Sync.setCollection(featureCollectionType);
+		//FeatureCollectionType featureCollectionType = buildSomeFeatures("US");
+		FeatureCollectionResponse featureCollectionResponse = buildSomeFeatures("US");
+		//m_sha1Sync.setCollection(featureCollectionType);
+		m_sha1Sync.setCollection(featureCollectionResponse);
 		m_sha1Sync.parseSha1SyncJson("{l:2,h:[]}");
 		Sha1SyncJson sync = m_sha1Sync.compute();
 		
@@ -315,8 +333,37 @@ public class FeatureCollectionSha1SyncTest extends TestCase {
 		t.buildSomeFeatures("US");
 		
 	}
-	
-	private FeatureCollectionType buildSomeFeatures(String firstFlag) throws ParseException, IOException {
+	private FeatureCollectionResponse buildSomeFeatures(String firstFlag) throws IOException, ParseException{
+		SimpleFeatureBuilder builder = new SimpleFeatureBuilder(m_samples.getFlagType());
+		builder.add(firstFlag);
+		builder.add(1);
+		builder.add(20.5);
+		builder.add(makePoint("POINT(1 2)"));
+		SimpleFeature f1 = builder.buildFeature("fid-0001");
+		
+		builder.add("JA");
+		builder.add(2);
+		builder.add(20.5);
+		builder.add(makePoint("POINT (1 2)"));
+		SimpleFeature f2 = builder.buildFeature("fid-0002");
+
+        MemoryDataStore data = new MemoryDataStore();
+        
+        data.createSchema(m_samples.getFlagType());
+        
+        data.addFeature(f1);
+        data.addFeature(f2);
+        FeatureSource<SimpleFeatureType, SimpleFeature> fs = data.getFeatureSource(m_samples.getFlagType().getName());
+        
+        
+        
+        
+        FeatureCollectionType fct = WfsFactory.eINSTANCE.createFeatureCollectionType();
+        addFeaturesFromSource(fct, fs);
+        FeatureCollectionResponse fcr = FeatureCollectionResponse.adapt(fct);
+		return fcr;		
+	}
+	/*private FeatureCollectionType buildSomeFeatures(String firstFlag) throws ParseException, IOException {
 		SimpleFeatureBuilder builder = new SimpleFeatureBuilder(m_samples.getFlagType());
 		builder.add(firstFlag);
 		builder.add(1);
@@ -341,7 +388,7 @@ public class FeatureCollectionSha1SyncTest extends TestCase {
         FeatureCollectionType fct = WfsFactory.eINSTANCE.createFeatureCollectionType();
         addFeaturesFromSource(fct, fs);
 		return fct;
-	}
+	}*/
 
 	@SuppressWarnings("unchecked")
 	private void addFeaturesFromSource(FeatureCollectionType fct, FeatureSource<SimpleFeatureType, SimpleFeature> fs) throws IOException {

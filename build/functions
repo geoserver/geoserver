@@ -61,7 +61,7 @@ function upload_installer() {
 # start_installer_job <hudson_url> <user> <key> <tag>
 # starts a hudson installer job
 function start_installer_job() {
-  local job_url=$1/job/geoserver-installer/buildWithParameters?TAG=$4&token=buildme"
+  local job_url="$1/job/geoserver-installer/buildWithParameters?TAG=$4&token=buildme"
   local creds=$2:$3 
 
   echo "executing installer job $job_url with credentials $creds"

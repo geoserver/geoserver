@@ -74,6 +74,14 @@ Configuring an Oracle datastore
    * - ``Loose bbox``
      - 	Controls how bounding box comparisons are made against geometries in the database. See the :ref:`oracle_loose_bbox` section below.
 
+Connecting to an Oracle cluster
+-------------------------------
+
+In order to connect to an Oracle RAC one can use an almost full JDBC url as the ``database``, provided it starts with ``(`` it will be used verbatim and options "host" and "port" will be ignored. Here is an example "database" value used to connect to an Oracle RAC::
+
+   (DESCRIPTION=(LOAD_BALANCE=on)(ADDRESS=(PROTOCOL=TCP)(HOST=host1) (PORT=1521))(ADDRESS=(PROTOCOL=TCP)(HOST=host2) (PORT=1521))(CONNECT_DATA=(SERVICE_NAME=service)))
+
+More information about this syntax can be found in the `Oracle documentation <http://docs.oracle.com/cd/B28359_01/java.111/e10788/rac.htm#CHDCDFAC>`_.
      
 Connecting to a SID or a Service
 ````````````````````````````````

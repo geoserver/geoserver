@@ -14,12 +14,7 @@ This page describes the use of "Feature Chaining" to compose complex features fr
  * Encoding the same referenced property object as links when it appears in multiple containing features
  * Eliminating the need for large denormalized data store views of top level features and their related features. Denormalized views would still be needed for special cases, such as many-to-many relationships, but won't be as large.
 
-The current state of the User guide refers to setting up Geotools application schema configurations, and will be updated to reflect a Geoserver 2.0 configuration example shortly.
 For non-application schema configurations, please refer to :ref:`app-schema.data-access-integration`.
-
-Versions supported
-``````````````````
-Feature chaining is implemented within the app-schemas module in GeoTools trunk (from 2.6.x on). Work on supporting this in Geoserver trunk is currently underway.  It is not supported in GeoServer 1.6 community-schemas. 
 
 Mapping steps
 -------------

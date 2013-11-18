@@ -17,13 +17,13 @@ This tutorial is organized in 4 chapter:
 * The second chapter, **Configuration examples**, describes the details, providing examples, of the configurations files needed.
 * The last 2 chapters, **Coverage based on filestore** and **Coverage based on database** describe, once the previous configurations steps are done, how to create and configure an Imagemosaic store using the geoserver GUI.
 
-The dataset used in the tutorial can be downloaded :download:`Here <snowLZWdataset.zip>`. It contains 3 image files and a .tld file representing a style needed for correctly render the images.
+The dataset used in the tutorial can be downloaded :download:`Here <snowLZWdataset.zip>`. It contains 3 image files and a .sld file representing a style needed for correctly render the images.
 
 Configuration
 -------------
 In order to load a new CoverageStore from the GeoServer GUI two steps are needed:
 
-1. Create a new directory in which you store all your tif files (the mosaic granules) and three configuration files. This directory rerpresents the **MOSAIC_DIR**.
+1. Create a new directory in which you store all your tif files (the mosaic granules) and three configuration files. This directory represents the **MOSAIC_DIR**.
 2. Install and setup a DBMS instance, this DB is that one where the mosaic indexes will be stored.
 3. Another important thing is that the web container where geoserver is deployed must have the **timezone properly configured**.
 
@@ -62,7 +62,7 @@ Please note that **datastore.properties** isn't mandatory. The plugin provides t
 * **Using a shapefile** in order to store the granules indexes. That's the default behavior without providing the *datastore.properties* file.
 * **Using a DBMS**, which maps the timestamp to the corresponding raster source. The former uses the **time** attribute for access to the granule from the mapping table. 
 
-For production installation is strong reccomended the usage of a DBMS instead of shapefile in order to improve performances. 
+For production installation is strong recommended the usage of a DBMS instead of shapefile in order to improve performances. 
 
 Otherwise the usage of a shapefile could be useful in development and test environments due to less configurations are needed.
 
@@ -112,9 +112,9 @@ Here is shown an example of datastore.properties suitable for Postgis.
      - Specifies the timeout in minutes.    
    * - *preparedStatements*
      - **N** default 'false'
-     - Boolean flag that specifies if for the database queries prepared statements should be used. This improves performant, because the database query parser has to parse the query only once     
+     - Boolean flag that specifies if for the database queries prepared statements should be used. This improves performance, because the database query parser has to parse the query only once     
 
-.. note:: The first 8 parameters are valid for each DBMS used, the last 4 may vary from different DBMS. for more informations see `GeoTools JDBC documentation <http://docs.geotools.org/latest/userguide/library/jdbc/index.html>`_
+.. note:: The first 8 parameters are valid for each DBMS used, the last 4 may vary from different DBMS. for more information see `GeoTools JDBC documentation <http://docs.geotools.org/latest/userguide/library/jdbc/index.html>`_
  
 indexer.properties
 """"""""""""""""""
@@ -132,7 +132,7 @@ indexer.properties
      - Specifies the name of the elevation attribute.
    * - *Schema*
      - Y
-     - A coma separed sequence that describes the mapping between attribute and the data type.
+     - A coma separated sequence that describes the mapping between attribute and the data type.
    * - *PropertyCollectors*
      - Y
      - Specifies the extractor classes.
@@ -173,7 +173,7 @@ For this running example we will create a layer named snow.
 
 As mentioned before the files could located in any part of the file system.
 
-In this tutorial the chosen MOSAIC_DIR direcory is called ``hydroalp`` and is placed under the root of the GEOSERVER_DATA_DIR.
+In this tutorial the chosen MOSAIC_DIR directory is called ``hydroalp`` and is placed under the root of the GEOSERVER_DATA_DIR.
 
 
 Configure the MOSAIC_DIR:
@@ -189,7 +189,7 @@ datastore.properties:
 .. note:: In case of a missing datastore.properties file a shape file is created for the use of the indexes.
 
 
-Granules Naming Convenction
+Granules Naming Convention
 """""""""""""""""""""""""""
 Here an example of the granules naming that satisfy the rule shown before:
 
@@ -241,14 +241,14 @@ We specify the directory in which the property and tif files are located (path m
    
 Step 3: set Coverage Parameter
 ``````````````````````````````
-The relevant parameters are AllowMultithreading and USE_JAI_IMAGEREAD. Do not forget to specify the background value according to your the value in your tif file.   
+The relevant parameters are AllowMultithreading and USE_JAI_IMAGEREAD. Do not forget to specify the background value according to your the value in your tif file. If you want to control which granule is displayed when a number of images match the time period specified then set the SORTING parameter to the variable name you want to use for sorting followed by a space and either D or A for descending or ascending. Descending values will mean that the latest image in a series that occurs in the time period requested is shown.
 
 .. figure:: img/step_2_1.png
    :align: center
 
 Remember that for display correctly the images contained in the provided dataset a custom style is needed.
 
-Set as default style the *snow_style.tld* contained in the dataset archive.
+Set as default style the *snow_style.sld* contained in the dataset archive.
 
 More information about raster styling can be found at chapter :ref:`sld_cookbook_rasters`
    
@@ -269,7 +269,7 @@ Setting the presentation to **List**, all mosaic times are listed:
 		2009-10-01T00:00:00.000Z,2009-11-01T00:00:00.000Z,2009-12-01T00:00:00.000Z,2010-01-01T00:00:00.000Z,2010-02-01T00:00:00.000Z,2010-03-01T00:00:00.000Z,2010-04-01T00:00:00.000Z,2010-05-01T00:00:00.000Z,2010-06-01T00:00:00.000Z,2010-07-01T00:00:00.000Z,2010-08-01T00:00:00.000Z,2010-09-01T00:00:00.000Z,2010-10-01T00:00:00.000Z,2010-11-01T00:00:00.000Z,2010-12-01T00:00:00.000Z,2011-01-01T00:00:00.000Z,2011-02-01T00:00:00.000Z,2011-03-01T00:00:00.000Z,2011-04-01T00:00:00.000Z,2011-05-01T00:00:00.000Z,2011-06-01T00:00:00.000Z,2011-07-01T00:00:00.000Z,2011-08-01T00:00:00.000Z,2011-09-01T00:00:00.000Z
 	</Dimension>
 	
-Setting the presentation to **Continuos interval** only the start, end and interval extent times are listed:
+Setting the presentation to **Continuous interval** only the start, end and interval extent times are listed:
 
 .. code-block:: xml
 
@@ -288,7 +288,7 @@ Setting the presentation to **Interval and resolutions** gives to user the possi
 
 In this case the resolution is set to one day and half
 
-.. note:: For visualize the getCapabilities document go to geoserver homepage, under the rigt tab called **Service Capabilities** click on the WMS 1.3.0 link.
+.. note:: For visualize the getCapabilities document go to geoserver homepage, under the right tab called **Service Capabilities** click on the WMS 1.3.0 link.
 
 For this tutorial the Presentation attribute is set to **List**
 
@@ -319,7 +319,7 @@ Generated table:
 Step 5: query layer on timestamp: 
 `````````````````````````````````
 
-In order to display a snapshot of the map at a specific time instant you have to pass in the request an addtional time parameter with a specific notation
+In order to display a snapshot of the map at a specific time instant you have to pass in the request an additional time parameter with a specific notation
 **&time=** < **pattern** > where you pass a value that corresponds to them in the filestore. The only thing is the pattern of the time value is slightly different.
 
 For example if an user wants to obtain the snow coverage images from the months **Oct,Nov,Dec 2009** I pass in each request **&time=2009-10-01**, **&time=2009-11-01** and **&time=2009-12-01**. You can recognize in the three images how the snow coverage changes. Here the color blue means a lot of snow.
@@ -332,7 +332,7 @@ For example if an user wants to obtain the snow coverage images from the months 
 Create and publish a Layer from mosaic indexes:
 -----------------------------------------------
 
-After the previous steps it is also be possible to create a layer that represents the spatial indexes of the mosaic. This is an useful features when is required to handle large dataset of Mosaics with High Resolutions granules, the user can easilly get the footprints of the Images. In this case will be rendered only the geometries stored on the indexes tables.
+After the previous steps it is also be possible to create a layer that represents the spatial indexes of the mosaic. This is an useful features when is required to handle large dataset of Mosaics with High Resolutions granules, the user can easily get the footprints of the Images. In this case will be rendered only the geometries stored on the indexes tables.
 
 Step 1: add a postgis datastore:
 ````````````````````````````````

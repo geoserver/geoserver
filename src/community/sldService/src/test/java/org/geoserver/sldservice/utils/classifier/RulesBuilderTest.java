@@ -12,14 +12,6 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-
-/**
- * Created with IntelliJ IDEA.
- * User: mbertrand
- * Date: 11/18/13
- * Time: 4:36 PM
- * To change this template use File | Settings | File Templates.
- */
 public class RulesBuilderTest extends ClassifierTestSupport {
     private RulesBuilder builder;
 

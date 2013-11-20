@@ -5,9 +5,6 @@
 package org.geoserver.data.util;
 
 import java.awt.Color;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,7 +16,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.geoserver.catalog.DimensionInfo;
 import org.geotools.coverage.grid.GeneralGridGeometry;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.filter.text.ecql.ECQL;
@@ -390,7 +386,9 @@ public class CoverageUtils {
 
         return value;
     }
-
+    
+    
+    
     /**
      * Merges the provided parameter in the read parameters, provided it's included in the specified
      * descriptors with one of the aliases
@@ -402,21 +400,6 @@ public class CoverageUtils {
      */
     public static GeneralParameterValue[] mergeParameter(List<GeneralParameterDescriptor> parameterDescriptors, 
             GeneralParameterValue[] readParameters, Object value, String... parameterAliases) {
-        return CoverageUtils.mergeParameter(parameterDescriptors, readParameters, value, null, parameterAliases);
-    }
-
-    /**
-     * Merges the provided parameter in the read parameters, provided it's included in the specified
-     * descriptors with one of the aliases
-     * @param parameterDescriptors The parameter descriptors of the reader
-     * @param readParameters The current set of reader parameters
-     * @param value
-     * @param dimension
-     * @param parameterAliases
-     * @return
-     */
-    public static GeneralParameterValue[] mergeParameter(List<GeneralParameterDescriptor> parameterDescriptors, 
-            GeneralParameterValue[] readParameters, Object value, DimensionInfo dimension, String... parameterAliases) {
         // setup a param name alias set
         Set<String> aliases = new HashSet<String>(Arrays.asList(parameterAliases));
         
@@ -426,10 +409,6 @@ public class CoverageUtils {
             if (aliases.contains(pd.getName().getCode())) {
                 final ParameterValue pv = (ParameterValue) pd.createValue();
                 pv.setValue(value);
-
-                if (dimension != null) {
-                    CoverageUtils.addDimensionAttributesToParameterHints(pv, dimension);
-                }
 
                 // add to the list
                 GeneralParameterValue[] readParametersClone = new GeneralParameterValue[readParameters.length + 1];
@@ -445,55 +424,5 @@ public class CoverageUtils {
         
         return readParameters;
     }
-    
-    /**
-     * Adds all attributes of a DimensionInfo object to the ParameterValue object's hints.
-     * 
-     * @param pv ParameterValue
-     * @param dimension DimensionInfo
-     */
-    private static void addDimensionAttributesToParameterHints(ParameterValue pv,
-            final DimensionInfo dimension) {
-        try {
-            for (Method m : dimension.getClass().getMethods()) {
-                String key = null;
-                String mName = m.getName();
-                if (mName.startsWith("get") && !mName.equals("getClass")) {
-                    key = mName.substring(3);
-                } else if (mName.startsWith("is")) {
-                    key = mName.substring(2);
-                }
-                if ((key) != null) {
-                    Object methodValue = m.invoke(dimension);
-                    if (methodValue != null) {
-                        pv.getHints().put(key, methodValue.toString());
-                    }
-                }
-            }
-
-            for (Field f : dimension.getClass().getFields()) {
-                Object fieldValue = f.get(dimension);
-                if (fieldValue != null) {
-                    pv.getHints().put(f.getName(), fieldValue.toString());
-                }
-            }
-        } catch (IllegalArgumentException e) {
-            if (LOGGER.isLoggable(Level.WARNING)) {
-                LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
-            }
-        } catch (SecurityException e) {
-            if (LOGGER.isLoggable(Level.WARNING)) {
-                LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
-            }
-        } catch (IllegalAccessException e) {
-            if (LOGGER.isLoggable(Level.WARNING)) {
-                LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
-            }
-        } catch (InvocationTargetException e) {
-            if (LOGGER.isLoggable(Level.WARNING)) {
-                LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
-            }
-        }
-    }
-
+     
 }

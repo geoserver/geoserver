@@ -857,7 +857,7 @@ public class WMS implements ApplicationContextAware {
                 }
             }
             readParameters = CoverageUtils.mergeParameter(parameterDescriptors, readParameters,
-                    fixedElevations, elevationInfo, "ELEVATION", "Elevation");
+                    fixedElevations, "ELEVATION", "Elevation");
         }
 
         if (layerFilter != null && readParameters != null) {

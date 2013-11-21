@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.geopkg;
 
 import static java.lang.String.format;
@@ -66,6 +70,13 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import com.vividsolutions.jts.geom.Envelope;
 
+/**
+ * 
+ * WMS GetMap Output Format for GeoPackage
+ * 
+ * @author Justin Deoliveira, Boundless
+ *
+ */
 public class GeoPackageGetMapOutputFormat extends AbstractMapOutputFormat {
 
     static enum Mode {

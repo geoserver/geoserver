@@ -76,7 +76,7 @@ public class KVPUtils {
 				maxy, crs);
 		Envelope crsEnvelope = CRS.getEnvelope(crs);
 		if (crsEnvelope != null) {
-			ReferencedEnvelope crs_e = new ReferencedEnvelope(CRS.getEnvelope(crs));
+			ReferencedEnvelope crs_e = new ReferencedEnvelope(crsEnvelope);
 			if (!crs_e.covers(bbox_e)) {
 				// The specification says: If the Bounding Box values are
 				// not defined for the given CRS (e.g., latitudes greater than 90

@@ -41,16 +41,13 @@ import org.geoserver.wms.map.PNGMapResponse;
 import org.geoserver.wms.map.RawMap;
 import org.geoserver.wms.map.RenderedImageMap;
 import org.geoserver.wms.map.RenderedImageMapResponse;
-import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geopkg.Entry;
 import org.geotools.geopkg.GeoPackage;
-import org.geotools.geopkg.RasterEntry;
 import org.geotools.geopkg.Tile;
 import org.geotools.geopkg.TileEntry;
 import org.geotools.geopkg.TileMatrix;
-import org.geotools.map.GridCoverageLayer;
 import org.geotools.map.Layer;
 import org.geotools.referencing.CRS;
 import org.geotools.renderer.lite.RendererUtilities;
@@ -79,9 +76,6 @@ import com.vividsolutions.jts.geom.Envelope;
  */
 public class GeoPackageGetMapOutputFormat extends AbstractMapOutputFormat {
 
-    static enum Mode {
-        VECTOR, HYBRID,TILED;
-    }
     static Logger LOGGER = Logging.getLogger("org.geoserver.geopkg");
 
     static final String MIME_TYPE = "application/x-sqlite3";
@@ -134,41 +128,8 @@ public class GeoPackageGetMapOutputFormat extends AbstractMapOutputFormat {
         //list of layers to render directly and include as tiles
         List<MapLayerInfo> tileLayers = new ArrayList(); 
 
-        //check mode, one of:
-        // vector - render vector layers as feature entries and all else as tiles (default)
-        // hybrid - render vector layers as feature entries, raster layers as raster entries, all
-        //          others as tile entries
-        // tiled - all layers as a single tile set
-        Map formatOpts = req.getFormatOptions();
-        Mode mode = formatOpts.containsKey("mode") 
-            ? Mode.valueOf(((String) formatOpts.get("mode")).toUpperCase()) : Mode.VECTOR;
-
-        if (mode == Mode.TILED) {
-            //tiled mode means render all as map tile layer
-            tileLayers.addAll(mapLayers);
-        }
-        else {
-            
-            //hybrid mode, dump as raw vector or raster unless the request specifically asks for a
-            // layer to be rendered as tiles
-            for (int i = 0; i < layers.size(); i++) {
-                Layer layer = layers.get(i);
-                MapLayerInfo mapLayer = mapLayers.get(i);
-    
-                if (layer instanceof GridCoverageLayer) {
-                    if (mode == Mode.HYBRID) {
-                        addCoverageLayer(geopkg, (GridCoverageLayer)layer, mapLayer, map);    
-                    }
-                    else {
-                        tileLayers.add(mapLayer);
-                    }
-                }
-                else {
-                    tileLayers.add(mapLayer);
-                }
-            }
-        }
-
+        //tiled mode means render all as map tile layer
+        tileLayers.addAll(mapLayers);
         addTileLayers(geopkg, tileLayers, map);
 
         geopkg.close();
@@ -214,19 +175,6 @@ public class GeoPackageGetMapOutputFormat extends AbstractMapOutputFormat {
         return result;
     }
     
-    void addCoverageLayer(GeoPackage geopkg, GridCoverageLayer layer, MapLayerInfo mapLayer, WMSMapContent map) 
-        throws IOException {
-
-        RasterEntry e = new RasterEntry();
-        initEntry(e, layer, mapLayer, map);
-
-        //TODO: ensure this is one of the supported formats
-        AbstractGridFormat format = mapLayer.getCoverage().getStore().getFormat();
-
-        LOGGER.fine("Creating raster entry" + e.getTableName());
-        geopkg.add(e, layer.getCoverage(), format);
-    }
-
     void addTileLayers(GeoPackage geopkg, List<MapLayerInfo> mapLayers, WMSMapContent map) 
         throws IOException {
 

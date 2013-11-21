@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.geopkg;
 
 import static org.junit.Assert.assertTrue;
@@ -32,6 +36,13 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.FilterFactory;
 
+/**
+ * 
+ * Test for WFS GetFeature OutputFormat for GeoPackage
+ * 
+ * @author Niels Charlier
+ *
+ */
 public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
     
     protected static FilterFactory ff = CommonFactoryFinder.getFilterFactory();

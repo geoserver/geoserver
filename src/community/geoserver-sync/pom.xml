@@ -55,27 +55,6 @@
 		<license.licenseName>gpl_v2</license.licenseName>
 	</properties>
 
-	<profiles>
-	    <profile>
-			<id>repos-no-sdl</id>
-			<activation>
-				<property>
-					<name>nosdl</name>
-					<value>true</value>
-				</property>
-			</activation>
-			<repositories>
-				<repository>
-					<id>moesol</id>
-					<url>https://artifactory.moesol.com/artifactory/repo</url>
-
-				</repository>
-			</repositories>
-		</profile>
-	</profiles>
-    
-
-
     <repositories>
         <repository>
             <id>codehaus</id>

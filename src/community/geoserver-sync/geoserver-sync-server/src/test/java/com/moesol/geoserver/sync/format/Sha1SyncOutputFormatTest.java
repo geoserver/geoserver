@@ -56,21 +56,12 @@ public class Sha1SyncOutputFormatTest extends WFSTestSupport {
     	Sha1SyncFilterFunction.clearThreadLocals();
 		//super.tearDownInternal();
 	}
-	/*@Test
+	@Test
 	public void testOutputFormat() throws Exception {
         //execute a mock request using the output format
-//        InputStream in = get( "wfs?request=GetFeature&typeName=cite:Buildings" + 
-//           "&outputFormat=sha1&format_options=ATTRIBUTES:the_geom,FID,ADDRESS");
-//        print( in );
-       // tearDownInternal();
-		//setRequestAuth("admin", "password");
-        
-		//String result = getAsString("wfs?version=2.0.0&request=GetFeature&typeName=cite:Buildings" + 
-				//"&outputFormat=SyncChecksum&format_options=ATTRIBUTES:the_geom,FID");
-        
-		//String result = getAsString("wfs?request=GetFeature&typeName=cite:Buildings" + 
-        		//"&outputFormat=SyncChecksum&format_options=ATTRIBUTES:the_geom,FID"); 
-		String result = getAsString("wfs?request=GetFeature&version=2.0.0&typeName=cite:Buildings&outputFormat=SyncChecksum&format_options=ATTRIBUTES:the_geom,FID");
+    	SyncChecksumOutputFormat.JUNIT_SHA1_SYNC.set(null);
+		String result = getAsString("wfs?request=GetFeature&version=2.0.0&typeName=cite:Buildings"
+				+ "&outputFormat=SyncChecksum&format_options=ATTRIBUTES:the_geom,FID");
 
 		
         // NOTE: If this test fails check to see if the geoserver sample data changed.
@@ -78,17 +69,12 @@ public class Sha1SyncOutputFormatTest extends WFSTestSupport {
 
 		Sha1SyncJson sync = new Gson().fromJson(result, Sha1SyncJson.class);
 		
-		//assertEquals(0, sync.level());
-		assertEquals(3, sync.level());
+		assertEquals(0, sync.level());
 		assertEquals(1, sync.hashes().size());
-		//assertEquals(0, sync.hashes().size());
-		//assertEquals("", sync.hashes().get(0).position());
-		assertEquals("1442", sync.hashes().get(0).position());
-		assertEquals(null, sync.hashes().get(0).summary());
-		//assertEquals("d3659f943fcdda512093d1c573856e8295201c23", sync.hashes().get(0).summary());
-        //assertEquals(2L, sync.max());
-		assertEquals(1L, sync.max());
-    }*/
+		assertEquals("", sync.hashes().get(0).position());
+		assertEquals("d3659f943fcdda512093d1c573856e8295201c23", sync.hashes().get(0).summary());
+        assertEquals(2L, sync.max());
+    }
 	@Test
     public void testOutputFormatLevel0() throws Exception {
     	// Version 2.0.1 of geoserver does not support : in the format_options value via \\

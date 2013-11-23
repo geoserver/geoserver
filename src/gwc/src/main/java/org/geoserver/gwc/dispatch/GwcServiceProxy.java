@@ -16,10 +16,16 @@ import javax.servlet.http.HttpServletResponseWrapper;
 
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.impl.ServiceInfoImpl;
+import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCServiceEnablementInterceptor;
 import org.geoserver.ows.DisabledServiceCheck;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Response;
+import org.geoserver.ows.util.KvpUtils;
+import org.geoserver.platform.ServiceException;
+import org.geoserver.wfs.kvp.BBoxKvpParser;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.geotools.util.Version;
 import org.geowebcache.GeoWebCacheDispatcher;
 import org.geowebcache.GeoWebCacheExtensions;
@@ -83,6 +89,10 @@ public class GwcServiceProxy {
             throws Exception {
 
         ResponseWrapper responseWrapper = new ResponseWrapper(rawRespose);
+        
+        if (GWC.get().getConfig().isSecurityEnabled()) {
+            verifyAccess(rawRequest);
+        }
 
         gwcDispatcher.handleRequest(rawRequest, responseWrapper);
 
@@ -91,6 +101,86 @@ public class GwcServiceProxy {
         final byte[] bytes = responseWrapper.out.getBytes();
 
         return new GwcOperationProxy(contentType, headers, bytes);
+    }
+    
+    /***
+     * Do a security check using the geoserver internal catalog security for a specific gwc request 
+     * WMS-C requests are handled as regular WMS requests
+     * 
+     * @param rawRequest the request
+     * @throws org.geotools.ows.ServiceException
+     */
+    public void verifyAccess(HttpServletRequest rawRequest) throws org.geotools.ows.ServiceException {     
+        Map parameters = KvpUtils.normalize(rawRequest.getParameterMap());            
+
+        if (rawRequest.getPathInfo().toLowerCase().startsWith("/service/wms")) {
+            
+            //trick geoserver security into thinking this is a regular wms request
+            Dispatcher.REQUEST.get().setService("wms");
+            Dispatcher.REQUEST.get().setRequest((String) parameters.get("REQUEST"));
+
+            String layerstr = (String) parameters.get("LAYERS");
+            String bboxstr = (String) parameters.get("BBOX");
+            String srs = (String) parameters.get("SRS");
+                        
+            if (layerstr != null) {
+                ReferencedEnvelope bbox = null;
+
+                try {
+                     bbox = (ReferencedEnvelope) new BBoxKvpParser().parse(bboxstr);                            
+                } catch (Exception e) {
+                    throw new ServiceException("Invalid bbox: " + bboxstr, e, "MissingOrInvalidParameter");
+                }
+                if (srs != null) {
+                    try {
+                        bbox = new ReferencedEnvelope(bbox, CRS.decode(srs));
+                    } catch (Exception e) {
+                        throw new ServiceException("Invalid srs: " + srs, e, "MissingOrInvalidParameter");
+                    } 
+                }
+                
+                String[] layers = layerstr.split(",");
+                for (String layerName: layers) {
+                    layerName = layerName.trim();
+                    GWC.get().verifyAccessLayer(layerName, bbox);
+                }
+            }
+            
+        } else if (rawRequest.getPathInfo().toLowerCase().startsWith("/service/wmts")) {
+            String layer = (String) parameters.get("LAYER");
+                        
+            if (layer != null) {
+                GWC.get().verifyAccessLayer(layer, null);
+            }
+            
+        } else if (rawRequest.getPathInfo().toLowerCase().startsWith("/service/tms/1.0.0/")) {
+            String layer = rawRequest.getPathInfo().toLowerCase().substring("/service/tms/1.0.0/".length());
+            if (layer.indexOf('/') >= 0) {
+                layer = layer.substring(0, layer.indexOf('/'));
+            }
+            if (layer.indexOf('@') >= 0) {
+                layer = layer.substring(0, layer.indexOf('@'));
+            }
+            
+            GWC.get().verifyAccessLayer(layer, null);
+        } else if (rawRequest.getPathInfo().toLowerCase().startsWith("/service/kml/")) {
+            String layer = rawRequest.getPathInfo().toLowerCase().substring("/service/kml/".length());
+            if (layer.indexOf('.') >= 0) {
+                layer = layer.substring(0, layer.indexOf('.'));
+            }
+            
+            GWC.get().verifyAccessLayer(layer, null);
+        } else if (rawRequest.getPathInfo().toLowerCase().startsWith("/service/gmaps") || rawRequest.getPathInfo().toLowerCase().startsWith("/service/ve")) {
+            String layerstr = (String) parameters.get("LAYERS");
+                        
+            if (layerstr != null) {                
+                String[] layers = layerstr.split(",");
+                for (String layerName: layers) {
+                    layerName = layerName.trim();
+                    GWC.get().verifyAccessLayer(layerName, null);
+                }
+            }            
+        }
     }
 
     /**

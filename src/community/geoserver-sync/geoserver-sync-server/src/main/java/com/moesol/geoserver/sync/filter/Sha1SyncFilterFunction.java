@@ -1,7 +1,7 @@
 /**
  *
  *  #%L
- *  geoserver-sync-core
+ *  geoserver-sync-server
  *  $Id:$
  *  $HeadURL:$
  *  %%
@@ -26,23 +26,22 @@
 
 package com.moesol.geoserver.sync.filter;
 
-
-
+import static org.geotools.filter.capability.FunctionNameImpl.parameter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.geotools.filter.FunctionImpl;
+import org.geotools.filter.FunctionExpressionImpl;
+import org.geotools.filter.capability.FunctionNameImpl;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
 import org.opengis.filter.capability.FunctionName;
 import org.opengis.filter.expression.Expression;
-import org.opengis.parameter.Parameter;
+import org.opengis.filter.expression.VolatileFunction;
 
 import com.google.gson.Gson;
 import com.moesol.geoserver.sync.core.FeatureSha1;
@@ -52,24 +51,19 @@ import com.moesol.geoserver.sync.core.VersionFeatures;
 import com.moesol.geoserver.sync.json.Sha1SyncJson;
 import com.moesol.geoserver.sync.json.Sha1SyncPositionHash;
 
-// TODO the thread locals do not get cleared on plain WFS/GML output
-// TODO use userData...
-// 
-/**
- * Compute all SHA-1's and filter any where the group SHA-1 matches.
- * @author hastings
- */
-public class Sha1SyncFilterFunction extends FunctionImpl /* 2.2 requires this implements VolatileFunction */ {
+public class Sha1SyncFilterFunction extends FunctionExpressionImpl implements VolatileFunction {
 	private static final Logger LOGGER = Logging.getLogger(Sha1SyncFilterFunction.class.getName());
+	
 	private static final String LITERAL_TRUE = "true";
 	private static final Object LITERAL_FALSE = "false";
 	private static final int INITIAL_LIST_SIZE = 4096;
-	// TODO this is somewhat of a kludge, turns out we can get this instances from sha1 output format code
+	
+	// TODO this is somewhat of a kludge, turns out we can get a filter instances from sha1 output format code
 	// but the instance we get is not tied to the actual instance that was used in the filter.
 	private static final ThreadLocal<String> FORMAT_OPTIONS = new ThreadLocal<String>();
-	private static final ThreadLocal<Sha1SyncJson> SHA1_SYNC = new ThreadLocal<Sha1SyncJson>();
+	private static final ThreadLocal<Sha1SyncJson> REMOTE_SHA1_SYNC = new ThreadLocal<Sha1SyncJson>();
 	private static final ThreadLocal<List<IdAndValueSha1s>> FEATURE_SHA1S = new ThreadLocal<List<IdAndValueSha1s>>();
-	
+
 	private final FeatureSha1 m_featureSha1Evaluator = new FeatureSha1();
 	private final ArrayList<IdAndValueSha1s> m_featureSha1s = new ArrayList<IdAndValueSha1s>(INITIAL_LIST_SIZE);
 	private VersionFeatures versionFeatures;
@@ -81,71 +75,33 @@ public class Sha1SyncFilterFunction extends FunctionImpl /* 2.2 requires this im
 		}
 	};
 	
-	/******** BEGIN: stuff need for geotools */ 
-    /**
-     * Make the instance of FunctionName available in
-     * a consistent spot.
-     */
-    public static final FunctionName NAME = new Name();
+	public static FunctionName NAME = new FunctionNameImpl("sha1Sync", String.class, 
+			parameter("attributes", String.class),
+            parameter("sha1SyncJson", String.class));
 
-    /**
-     * Describe how this function works.
-     * (should be available via FactoryFinder lookup...)
-     */
-    public static class Name implements FunctionName {
+	public Sha1SyncFilterFunction() {
+		super(NAME);
+		// NOTE: the use of thread locals relies on a new filter being created for every request 
+		// AND the entire filter pass running on the same thread.
+		// RH: Instead of caching the computed response in thread local variables perhaps
+		// we should just have the format recompute the sha1 for any features that did not get filtered.
+		clearThreadLocals();
+	}
 
-        public int getArgumentCount() {
-            return 2; // indicating unbounded, 2 minimum
-        }
-
-        public List<String> getArgumentNames() {
-            return Arrays.asList(new String[]{
-                        "comma separated list of properties",
-                        "json formated input",
-                    });
-        }
-
-        public String getName() {
-            return "sha1Sync";
-        }
-
-		@Override
-		public List<Parameter<?>> getArguments() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public org.opengis.feature.type.Name getFunctionName() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public Parameter<?> getReturn() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-    };
-    
-    @Override
-    public String getName() {
-    	return NAME.getName();
-    }
-	/******** END: stuff need for geotools */ 
+	/*** Communication between the filter and the formatted output ***/
 	
 	public static String getFormatOptions() {
 		return FORMAT_OPTIONS.get();
 	}
 	public static Sha1SyncJson getSha1SyncJson() {
-		return SHA1_SYNC.get();
+		return REMOTE_SHA1_SYNC.get();
 	}
 	public static List<IdAndValueSha1s> getFeatureSha1s() {
 		return FEATURE_SHA1S.get();
 	}
 	public static void clearThreadLocals() {
 		LOGGER.log(Level.FINE, "Clear: {0}/{1}/{2}", 
-				new Object[] { FORMAT_OPTIONS.get(), SHA1_SYNC.get(), FEATURE_SHA1S.get() });
+				new Object[] { FORMAT_OPTIONS.get(), REMOTE_SHA1_SYNC.get(), FEATURE_SHA1S.get() });
 		
 		List<IdAndValueSha1s> sha1s = FEATURE_SHA1S.get();
 		if (sha1s != null) {
@@ -153,40 +109,18 @@ public class Sha1SyncFilterFunction extends FunctionImpl /* 2.2 requires this im
 		}
 		
 		FORMAT_OPTIONS.set(null);
-		SHA1_SYNC.set(null);
+		REMOTE_SHA1_SYNC.set(null);
 		FEATURE_SHA1S.set(null);
 	}
 
-	/**
-	 * Geotools 2.6.1 will call this...
-	 */
-	public Sha1SyncFilterFunction() {
-		clearThreadLocals();
-	}
-	
-	/**
-	 * Geotools 8-SNAPSHOT will call this via our factory
-	 * @param name
-	 * @param args
-	 */
-	public Sha1SyncFilterFunction(String name, List<Expression> args) {
-		setName(name);
-		setParameters(args);
-	}
-	
-	@Override
-	public void setParameters(List<Expression> params) {
-		super.setParameters(params);
-		
-		maybeOneTimeSetup();
-	}
-	
 	private void maybeOneTimeSetup() {
 		if (FEATURE_SHA1S.get() != null) {
 			return;
 		}
 		oneTimeSetup();
 	}
+	
+	/*** Filter computation ***/
 	
 	private void oneTimeSetup() {
 		List<Expression> args = getParameters();
@@ -200,16 +134,17 @@ public class Sha1SyncFilterFunction extends FunctionImpl /* 2.2 requires this im
 		Sha1SyncJson remoteSha1Sync = new Gson().fromJson(json, Sha1SyncJson.class);
 		versionFeatures = VersionFeatures.fromSha1SyncJson(remoteSha1Sync);
 		FORMAT_OPTIONS.set(atts);
-		SHA1_SYNC.set(remoteSha1Sync);
+		REMOTE_SHA1_SYNC.set(remoteSha1Sync);
 		FEATURE_SHA1S.set(m_featureSha1s);
 		LOGGER.log(Level.FINE, "Recorded: {0}/{1}/{2}", 
-				new Object[] { FORMAT_OPTIONS.get(), SHA1_SYNC.get(), FEATURE_SHA1S.get() });
+				new Object[] { FORMAT_OPTIONS.get(), REMOTE_SHA1_SYNC.get(), FEATURE_SHA1S.get() });
 	}
 	
 	@Override
 	public Object evaluate(Object object) {
-		maybeOneTimeSetup(); // Just in-case setParameters was bypassed...
-		
+		System.out.format("---------------- evaluate: %s, this=%s%n", object.hashCode(), this.hashCode());
+		maybeOneTimeSetup(); // Collect sha1s over all filters checked.
+
 		Feature feature = (Feature) object;
 		
 		Sha1Value idSha1 = m_featureSha1Evaluator.computeIdSha1(feature);
@@ -218,7 +153,7 @@ public class Sha1SyncFilterFunction extends FunctionImpl /* 2.2 requires this im
 		m_featureSha1s.add(pair);
 		Sha1Value prefixSha1 = versionFeatures.getBucketPrefixSha1(pair);
 		
-		Sha1SyncJson remoteSha1Sync = SHA1_SYNC.get();
+		Sha1SyncJson remoteSha1Sync = REMOTE_SHA1_SYNC.get();
 		if (remoteSha1Sync.max() > 1) {
 			return LITERAL_TRUE; // Keep all features, we are not deep enough in search tree
 		}

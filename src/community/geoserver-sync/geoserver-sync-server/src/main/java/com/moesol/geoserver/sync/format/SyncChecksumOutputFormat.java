@@ -36,7 +36,6 @@ import java.util.Set;
 
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.QueryType;
-import net.opengis.wfs.impl.GetFeatureTypeImpl;
 
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.util.OwsUtils;
@@ -98,16 +97,21 @@ public class SyncChecksumOutputFormat extends WFSGetFeatureOutputFormat {
         // let's check which attributes are specified ATTS=A,B,C
         // let's check which attributes are specified ATTS=A,B,C
 		
-		GetFeatureTypeImpl gft = (GetFeatureTypeImpl)getFeature.getParameters()[0];
-		//GetFeature gft = (GetFeature) getFeature.getParameters()[0];
-		//GetFeatureType gft = (GetFeatureType) getFeature.getParameters()[0];
-        String atts = (String) gft.getFormatOptions().get("ATTRIBUTES");
+		Object p0 = getFeature.getParameters()[0];
+		String atts;
+        String sha1SyncJson;
+		if (p0 instanceof net.opengis.wfs.impl.GetFeatureTypeImpl) {
+			net.opengis.wfs.impl.GetFeatureTypeImpl gft = (net.opengis.wfs.impl.GetFeatureTypeImpl) p0;
+			atts = (String) gft.getFormatOptions().get("ATTRIBUTES");
+	        sha1SyncJson = (String)gft.getFormatOptions().get("SYNC");
+		} else if (p0 instanceof net.opengis.wfs20.impl.GetFeatureTypeImpl) {
+			net.opengis.wfs20.impl.GetFeatureTypeImpl gft = (net.opengis.wfs20.impl.GetFeatureTypeImpl) p0;
+			atts = (String) gft.getFormatOptions().get("ATTRIBUTES");
+			sha1SyncJson = (String)gft.getFormatOptions().get("SYNC");
+		} else {
+			throw new IllegalArgumentException("unknown type: " + p0);
+		}
 		
-		
-		
-       // String atts = "the_geom,FID";
-        String sha1SyncJson = (String)gft.getFormatOptions().get("SYNC");
-        //String sha1SyncJson = null;
         if (sha1SyncJson == null) {
         	// Try unit test source
         	sha1SyncJson = JUNIT_SHA1_SYNC.get();

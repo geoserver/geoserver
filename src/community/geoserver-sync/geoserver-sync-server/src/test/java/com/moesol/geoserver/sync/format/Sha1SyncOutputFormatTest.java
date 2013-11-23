@@ -27,39 +27,38 @@
 package com.moesol.geoserver.sync.format;
 
 
-import junit.framework.Assert;
+import static org.junit.Assert.*;
+//import static org.junit.rules.;
 
 import org.geoserver.wfs.WFSTestSupport;
-import org.junit.Before;
+import org.junit.After;
 import org.junit.Test;
 
 import com.google.gson.Gson;
 import com.moesol.geoserver.sync.filter.Sha1SyncFilterFunction;
-import com.moesol.geoserver.sync.format.SyncChecksumOutputFormat;
 import com.moesol.geoserver.sync.json.Sha1SyncJson;
 import com.moesol.geoserver.sync.json.Sha1SyncPositionHash;
 
 
 
-
-import static org.junit.Assert.*;
-//import static org.junit.rules.;
-
-
-
 //public class Sha1SyncOutputFormatTest{
 public class Sha1SyncOutputFormatTest extends WFSTestSupport {
-	//@Override
+	
 	protected void tearDownInternal() throws Exception {
 		setRequestAuth("admin", "password");
 		SyncChecksumOutputFormat.JUNIT_SHA1_SYNC.set(null);
     	Sha1SyncFilterFunction.clearThreadLocals();
-		//super.tearDownInternal();
 	}
+	
+	@After
+	public void afterTest() {
+		SyncChecksumOutputFormat.JUNIT_SHA1_SYNC.set(null);
+    	Sha1SyncFilterFunction.clearThreadLocals();
+	}
+	
 	@Test
 	public void testOutputFormat() throws Exception {
         //execute a mock request using the output format
-    	SyncChecksumOutputFormat.JUNIT_SHA1_SYNC.set(null);
 		String result = getAsString("wfs?request=GetFeature&version=2.0.0&typeName=cite:Buildings"
 				+ "&outputFormat=SyncChecksum&format_options=ATTRIBUTES:the_geom,FID");
 
@@ -83,12 +82,12 @@ public class Sha1SyncOutputFormatTest extends WFSTestSupport {
         String result = getAsString("wfs?request=GetFeature&typeName=cite:Buildings" + 
         	"&outputFormat=SyncChecksum&format_options=ATTRIBUTES:-all");
     	Sha1SyncJson sync = new Gson().fromJson(result, Sha1SyncJson.class);
-        Assert.assertEquals(1, sync.level());
-        Assert.assertEquals("14", sync.hashes().get(0).position());
-        Assert.assertEquals("6e772c327cc8944c9f6d8ccfc82a6e6aabb4b840", sync.hashes().get(0).summary());
-        Assert.assertEquals("88", sync.hashes().get(1).position());
-        Assert.assertEquals("a667c90bedff19ec580e9d32a9572408ca4af94b", sync.hashes().get(1).summary());
-        Assert.assertEquals(1L, sync.max());
+        assertEquals(1, sync.level());
+        assertEquals("14", sync.hashes().get(0).position());
+        assertEquals("6e772c327cc8944c9f6d8ccfc82a6e6aabb4b840", sync.hashes().get(0).summary());
+        assertEquals("88", sync.hashes().get(1).position());
+        assertEquals("a667c90bedff19ec580e9d32a9572408ca4af94b", sync.hashes().get(1).summary());
+        assertEquals(1L, sync.max());
     }
     @Test
     public void testOutputFormatLevel1() throws Exception {
@@ -116,13 +115,13 @@ public class Sha1SyncOutputFormatTest extends WFSTestSupport {
         String result = getAsString("wfs?request=GetFeature&typeName=cite:Buildings" + 
         "&outputFormat=SyncChecksum&format_options=ATTRIBUTES:-all");
         Sha1SyncJson sync = new Gson().fromJson(result, Sha1SyncJson.class);
-        Assert.assertEquals(3, sync.level());
-        Assert.assertEquals(2, sync.hashes().size());
-        Assert.assertEquals("14429b", sync.hashes().get(0).position());
-        Assert.assertEquals("6e772c327cc8944c9f6d8ccfc82a6e6aabb4b840", sync.hashes().get(0).summary());
-        Assert.assertEquals("88dacc", sync.hashes().get(1).position());
-        Assert.assertEquals("a667c90bedff19ec580e9d32a9572408ca4af94b", sync.hashes().get(1).summary());
-        Assert.assertEquals(1L, sync.max());
+        assertEquals(3, sync.level());
+        assertEquals(2, sync.hashes().size());
+        assertEquals("14429b", sync.hashes().get(0).position());
+        assertEquals("6e772c327cc8944c9f6d8ccfc82a6e6aabb4b840", sync.hashes().get(0).summary());
+        assertEquals("88dacc", sync.hashes().get(1).position());
+        assertEquals("a667c90bedff19ec580e9d32a9572408ca4af94b", sync.hashes().get(1).summary());
+        assertEquals(1L, sync.max());
     }
     @Test
     public void testOutputFormatLevel2_Partial() throws Exception {
@@ -146,9 +145,9 @@ public class Sha1SyncOutputFormatTest extends WFSTestSupport {
         String result = getAsString("wfs?request=GetFeature&typeName=cite:Buildings" + 
         	"&outputFormat=SyncChecksum&format_options=ATTRIBUTES:-all");
         Sha1SyncJson sync = new Gson().fromJson(result, Sha1SyncJson.class);
-        Assert.assertEquals(3, sync.level());
-        Assert.assertEquals(0, sync.hashes().size());
-        Assert.assertEquals(1L, sync.max());
+        assertEquals(3, sync.level());
+        assertEquals(0, sync.hashes().size());
+        assertEquals(1L, sync.max());
     }
     @Test
     public void testOutputFormat2() throws Exception {
@@ -176,41 +175,32 @@ public class Sha1SyncOutputFormatTest extends WFSTestSupport {
         assertEquals("883aa2473212d6cd9c40db6df655b803b6b69de3", sync.hashes().get(0).summary());
         assertEquals(2L, sync.max());
     }
-   /* @Test
+    @Test
     public void testPostSync() throws Exception {
 //    	Logger.getLogger("").setLevel(Level.FINER);
 //    	Logger.getLogger("").getHandlers()[0].setLevel(Level.ALL);
     	
+        setRequestAuth("admin", "password");
         String tmpl = "<wfs:GetFeature " 
 	        + "service=\"WFS\" " 
 	        + "outputFormat=\"SyncChecksum\" "
-	        + "version=\"2.0.0\" "
+	        + "version=\"1.1.0\" "
 	        + "xmlns:cdf=\"http://www.opengis.net/cite/data\" "
 	        + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
 	        + "xmlns:wfs=\"http://www.opengis.net/wfs\" " + "> "
 	        +  "<wfs:Query typeName=\"cite:Buildings\"> "
-	       // +   "<ogc:Filter>"
-	        //+    "<ogc:PropertyIsEqualTo> "
-	       // +      "<ogc:Function name=\"sha1Sync\"> "
-	       // +       "<ogc:Literal>-all</ogc:Literal> "
-	       // +       "<ogc:Literal>%s</ogc:Literal> "
-	       // +      "</ogc:Function> "
-	       // +      "<ogc:Literal>true</ogc:Literal> "
-	       // +    "</ogc:PropertyIsEqualTo> "
-	      //  +   "</ogc:Filter> "
+	        +   "<ogc:Filter>"
+	        +    "<ogc:PropertyIsEqualTo> "
+	        +      "<ogc:Function name=\"sha1Sync\"> "
+	        +       "<ogc:Literal>-all</ogc:Literal> "
+	        +       "<ogc:Literal>%s</ogc:Literal> "
+	        +      "</ogc:Function> "
+	        +      "<ogc:Literal>true</ogc:Literal> "
+	        +    "</ogc:PropertyIsEqualTo> "
+	        +   "</ogc:Filter> "
 	        +  "</wfs:Query> " 
 	        + "</wfs:GetFeature>";
-    	/*String tmpl = "<wfs:GetFeature service=\"WFS\" "
-    			 + "outputFormat=\"SyncChecksum\" "
-    			 + "version=\"2.0.0\" "
-    			 + "xmlns:wfs=\"http://www.opengis.net/wfs\" " + ">"
-    			 
-    			 + 		"<wfs:Query typeName=\"cite:Buildings\">"
-
-    			 +		"</wfs:Query>"
-    			 + "</wfs:GetFeature>";*/
-    	
-        /*Sha1SyncJson client = new Sha1SyncJson().level(0).hashes(
+        Sha1SyncJson client = new Sha1SyncJson().level(0).hashes(
         		new Sha1SyncPositionHash().position("").summary("abc123")
         );
         String clientJson = new Gson().toJson(client);
@@ -218,15 +208,14 @@ public class Sha1SyncOutputFormatTest extends WFSTestSupport {
 //        System.out.println(xml);
         
         String result = postAsServletResponse("wfs", xml).getOutputStreamContent();
-        //String result = postAsServletResponse( "wfs", xml ).getOutputStreamContent();
         Sha1SyncJson sync = new Gson().fromJson(result, Sha1SyncJson.class);
         assertEquals(1, sync.level());
         assertEquals(2, sync.hashes().size());
         assertEquals("14", sync.hashes().get(0).position());
         assertEquals("6e772c327cc8944c9f6d8ccfc82a6e6aabb4b840", sync.hashes().get(0).summary());
         assertEquals(1L, sync.max());
-    }*/
-   /* @Test
+    }
+    @Test
     public void testPostSyncWithBadFunctionCall() throws Exception {
         String xml = "<wfs:GetFeature " 
 	        + "service=\"WFS\" " 
@@ -247,14 +236,14 @@ public class Sha1SyncOutputFormatTest extends WFSTestSupport {
 	        + "</wfs:GetFeature>";
 
         String out = postAsServletResponse( "wfs", xml ).getOutputStreamContent();
-        assertTrue(out, out.matches("(?s).*sha1Sync requires two arguments.*"));
-    }*/
+        assertTrue(out, out.contains("Unable to find function sha1Sync"));
+    }
 
     /**
      * Don't use sha1Sync output format and see if we get filtered features.
      * @throws Exception
      */
-  /*  @Test
+    @Test
     public void testPostSyncFilter() throws Exception {
         setRequestAuth("admin", "password");
     	String tmpl = "<wfs:GetFeature " 
@@ -284,13 +273,21 @@ public class Sha1SyncOutputFormatTest extends WFSTestSupport {
 
         String result = postAsServletResponse( "wfs", xml ).getOutputStreamContent();
         System.out.println(result);
-    }*/
-   @Test
-   public void testDescribeFeatureTypeList() throws Exception {
+        System.out.format("%s/%s/%s%n", 
+        		Sha1SyncFilterFunction.getFormatOptions(), 
+        		Sha1SyncFilterFunction.getSha1SyncJson(),
+        		Sha1SyncFilterFunction.getFeatureSha1s());
+        
+        System.out.println("********* Second run");
+        result = postAsServletResponse( "wfs", xml ).getOutputStreamContent();
+        System.out.println(result);
+    }
+    @Test
+    public void testDescribeFeatureTypeList() throws Exception {
     	setRequestAuth("admin", "password");
     	String result = getAsString("wfs?request=DescribeFeatureType"); 
         System.out.println("result: " + result);
-   }
+    }
    @Test
    
    public void testDescribeFeatureBuildings() throws Exception {

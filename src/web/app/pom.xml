@@ -747,7 +747,7 @@
           <version>${project.version}</version>
         </dependency>
         <dependency>
-          <groupId>org.geoserver.web</groupId>
+          <groupId>org.geoserver.security</groupId>
           <artifactId>web-sec-cas</artifactId>
           <version>${project.version}</version>
         </dependency>

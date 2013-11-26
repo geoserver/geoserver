@@ -67,7 +67,7 @@ public class GeoServerInternalCatalogStore extends InternalCatalogStore {
             watchers.put(typeName, watcher);
             
             if (!f.exists()) {           
-                IOUtils.copy(getClass().getResourceAsStream(typeName + ".properties"),f);
+                IOUtils.copy(getClass().getResourceAsStream(typeName + ".default.properties"),f);
             }
             
             addMapping (typeName, CatalogStoreMapping.parse(new HashMap<String, String>((Map) watcher.getProperties())));

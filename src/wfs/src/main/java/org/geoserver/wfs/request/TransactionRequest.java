@@ -24,6 +24,7 @@ import net.opengis.wfs20.UpdateType;
 import net.opengis.wfs20.Wfs20Factory;
 
 import org.eclipse.emf.ecore.EObject;
+import org.geotools.data.Transaction;
 
 /**
  * WFS Transaction request.
@@ -42,6 +43,9 @@ public abstract class TransactionRequest extends RequestObject {
         }
         return null;
     }
+    
+    private Transaction transaction;
+    
     protected TransactionRequest(EObject adaptee) {
         super(adaptee);
     }
@@ -56,6 +60,14 @@ public abstract class TransactionRequest extends RequestObject {
     
     public void setLockId(String lockId) {
         eSet(adaptee, "lockId", lockId);
+    }
+    
+    public Transaction getTransaction() {
+        return transaction;
+    }
+    
+    public void setTransaction(Transaction transaction) {
+        this.transaction = transaction;
     }
 
     public abstract boolean isReleaseActionAll();

@@ -4,7 +4,7 @@ Authentication with LDAP
 ========================
 
 This tutorial introduces GeoServer LDAP support and walks through the process of
-setting up authentication agianst an LDAP server. It is recommended that the 
+setting up authentication aganist an LDAP server. It is recommended that the 
 :ref:`sec_auth_provider_ldap` section be read before proceeding.
 
 LDAP server setup
@@ -170,3 +170,53 @@ At this point members of the ``admin`` LDAP group should be given full
 administrative privileges once authenticated. Log out of the admin account and
 log in as "bill" with the password "hello". Once logged in full administrative
 functionality should be available.
+
+Configure the LDAP role service
+------------------------------------------
+An additional step permits to configure a role service to get GeoServer roles
+from the LDAP repository and allow access rights to be assigned to those roles.
+
+#. Click the ``Users,Group,Roles`` link located under the ``Security`` section 
+   of the navigation sidebar.
+   
+#. Click the ``Add new link`` under the  ``Role Services`` section.
+
+#. Click the ``LDAP`` option under the  ``New Role Service`` section.
+
+   .. figure:: images/ldap13.jpg
+      :align: center
+      
+#. Enter ``ldaprs`` in the  ``Name`` text field.
+
+#. Enter ``ldap://127.0.0.1:10389/dc=acme,dc=org`` in the  ``Server URL`` text field.
+
+#. Enter ``ou=groups`` in the  ``Group search base`` text field.
+
+#. Enter ``member=uid={0},ou=people,dc=acme,dc=org`` in the  ``Group user membership search filter`` text field.
+
+#. Enter ``cn=*`` in the  ``All groups search filter`` text field.
+
+Then we need to a choose a user to authenticate on the server (many LDAP server don't allow anonymous data lookup).
+
+#. Check the ``Authenticate to extract roles`` checkbox.
+
+#. Enter ``uid=bill,ou=people,dc=acme,dc=org`` in the  ``Username`` text field.
+
+#. Enter ``hello`` in the  ``Password`` text field.
+
+#. Save.
+
+#. Click the ``ldaprs`` role service item under the  ``Role Services`` section.
+
+#. Select ``ROLE_ADMIN`` from the ``Administrator role`` combobox.
+
+#. Select ``ROLE_ADMIN`` from the ``Group administrator role`` combobox.
+
+#. Save again.
+
+You should now be able to see and assign the new ``ROLE_ADMIN`` and ``ROLE_USER`` roles wherever an ``Available Roles`` list is shown (for example in the ``Data`` and ``Services`` rules sections.
+
+
+
+
+

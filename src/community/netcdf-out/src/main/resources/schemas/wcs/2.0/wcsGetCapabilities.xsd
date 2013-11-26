@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/wcs/2.0"
+    xmlns:wcs="http://www.opengis.net/wcs/2.0"
+    xmlns:ows="http://www.opengis.net/ows/2.0"
+    xmlns="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified" version="2.0.1" xml:lang="en">
+    <annotation>
+        <appinfo>wcsGetCapabilities.xsd</appinfo>
+        <documentation>This XML Schema Document defines the GetCapabilities operation request and response XML elements and types, used by the OGC Web Coverage Service (WCS).
+            Last updated: 2012-feb-06
+            Copyright (c) 2012 Open Geospatial Consortium.
+            To obtain additional rights of use, visit http://www.opengeospatial.org/legal/.
+        </documentation>
+    </annotation>
+
+    <!-- ============================================================== -->
+    <!-- includes and imports                                           -->
+    <!-- ============================================================== -->
+    <import namespace="http://www.opengis.net/ows/2.0" schemaLocation="http://schemas.opengis.net/ows/2.0/owsAll.xsd"/>
+    <include schemaLocation="wcsCommon.xsd"/>
+
+    <!-- ============================================================== -->
+    <!-- elements and types                                             -->
+    <!-- ============================================================== -->
+    <element name="GetCapabilities" type="wcs:GetCapabilitiesType">
+        <annotation>
+            <documentation>Request to a WCS server to perform the GetCapabilities operation. This operation allows a client to retrieve a Capabilities XML document providing metadata for the specific WCS server. In this XML encoding, no "request" parameter is included, since the element name specifies the specific operation. </documentation>
+        </annotation>
+    </element>
+    <complexType name="GetCapabilitiesType">
+        <complexContent>
+            <extension base="ows:GetCapabilitiesType">
+                <sequence/>
+                <attribute name="service" type="ows:ServiceType" use="required" fixed="WCS"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <!-- =========================================================== -->
+    <element name="Capabilities" type="wcs:CapabilitiesType">
+        <annotation>
+            <documentation>XML encoded WCS GetCapabilities operation response. The Capabilities document provides clients with service metadata about a specific service instance, including metadata about the coverages served. If the server does not implement the updateSequence parameter, the server shall always return the Capabilities document, without the updateSequence parameter. When the server implements the updateSequence parameter and the GetCapabilities operation request included the updateSequence parameter with the current value, the server shall return this element with only the "version" and "updateSequence" attributes. Otherwise, all optional sections shall be included or not depending on the actual value of the Contents parameter in the GetCapabilities operation request. </documentation>
+        </annotation>
+    </element>
+    <complexType name="CapabilitiesType">
+        <complexContent>
+            <extension base="ows:CapabilitiesBaseType">
+                <sequence>
+                    <element ref="wcs:ServiceMetadata" minOccurs="0">
+                        <annotation>
+                            <documentation>Despite its name this element should not be confuse with the OWSServiceMetadata defined in OWS Common.</documentation>
+                        </annotation>
+                    </element>
+                    <element ref="wcs:Contents" minOccurs="0"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <!-- =========================================================== -->
+    <element name="Contents" type="wcs:ContentsType">
+        <annotation>
+            <documentation>This element redefines the OWS Common [OGC 06-121r9] Contents section with a CoverageSummary, in accordance with the rules for modification laid down there. In addition it allows WCS extensions or application profiles to extend its content.</documentation>
+        </annotation>
+    </element>
+    <complexType name="ContentsType">
+        <complexContent>
+            <extension base="ows:ContentsBaseType">
+                <sequence>
+                    <element ref="wcs:CoverageSummary" minOccurs="0" maxOccurs="unbounded"/>
+                    <element ref="wcs:Extension" minOccurs="0"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <!-- =========================================================== -->
+    <element name="CoverageSummary" type="wcs:CoverageSummaryType">
+        <annotation>
+            <documentation>A CoverageSummary contains information essential for accessing a coverage served by a WCS. The CoverageId is the identifier used to address a particular coverage. The CoverageSubtype is the name of the root of this coverage when expressed in XML. </documentation>
+        </annotation>
+    </element>
+    <complexType name="CoverageSummaryType">
+        <complexContent>
+            <extension base="ows:DescriptionType">
+                <sequence>
+                    <element ref="ows:WGS84BoundingBox" minOccurs="0" maxOccurs="unbounded"/>
+                        <!--
+                        This item above is put at this position (and not next to ows:BoundingBox)
+                        to avoid a problem of "ambiguity" (thanks, Joan Maso!): 
+                        ows:WGS84BoundingBox is on the same substitution group as ows:BoundingBox
+                        so when instantiating ows:WGS84BoundingBox you do not know if its a WGS84BoundingBox
+                        or an ows:BoundingBox substituded by a ows:WGS84BoundingBox.
+                        Because order is relevant and the wcs:CoverageId separates both this ambiguity gets resolved.
+                        -->
+                    <element ref="wcs:CoverageId"/>
+                    <element ref="wcs:CoverageSubtype"/>
+                    <element ref="wcs:CoverageSubtypeParent" minOccurs="0"/>
+                    <element ref="ows:BoundingBox" minOccurs="0" maxOccurs="unbounded"/>
+                    <element ref="ows:Metadata" minOccurs="0" maxOccurs="unbounded"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+</schema>

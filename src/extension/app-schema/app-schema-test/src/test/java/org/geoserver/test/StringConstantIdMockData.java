@@ -24,7 +24,7 @@ public class StringConstantIdMockData extends AbstractAppSchemaMockData {
     @Override
     public void addContent() {
         addFeatureType(GSML_PREFIX, "MappedFeature", "MappedFeatureStringConstantId.xml",
-                "MappedFeaturePropertyfile.properties");
+                "MappedFeaturePropertyfile.properties", "GeologicUnit.properties");
     }
 
 }

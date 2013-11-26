@@ -38,7 +38,7 @@ public interface CatalogStore {
      * Queries a specific record type using the GeoTools Query object (which contains type name,
      * attribute selection
      */
-    FeatureCollection getRecords(Query q, Transaction t) throws IOException;
+    FeatureCollection getRecords(Query q, Transaction t, String outputSchema) throws IOException;
 
     /**
      * Returns the number of records that {@link #getRecords(Query, Transaction)} would return given

@@ -290,12 +290,12 @@ public class WPSExecutionManager implements ApplicationContextAware,
             if (inner == null || inner.phase == ProcessState.COMPLETED) {
                 if (exception != null) {
                     // failed
-                    return new ExecutionStatus(request.getProcessName(), executionId, ProcessState.COMPLETED, 1f);
+                    return new ExecutionStatus(request.getProcessName(), executionId, ProcessState.COMPLETED, 100f);
                 } else {
                     // Still running, it's writing the output. Right now we have no way to track the
                     // output progress, so return 66% complete
                     return new ExecutionStatus(request.getProcessName(), executionId, ProcessState.RUNNING,
-                            0.66f);
+                            66f);
                 }
             } else {
                 // still running

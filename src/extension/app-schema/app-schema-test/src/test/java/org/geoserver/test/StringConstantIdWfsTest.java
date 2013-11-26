@@ -32,5 +32,13 @@ public class StringConstantIdWfsTest extends AbstractAppSchemaTestSupport {
         LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
         assertXpathEvaluatesTo("1", "/wfs:FeatureCollection/@numberOfFeatures", doc);
         assertXpathEvaluatesTo("string constant", "(//gsml:MappedFeature)[1]/@gml:id", doc);
+        // test feature chaining
+        assertXpathCount(1, "//gsml:GeologicUnit/@gml:id", doc);
+        if (System.getProperty("testDatabase") != null) {
+            // when run online, gml:id is prefixed with table name
+            assertXpathEvaluatesTo("GEOLOGICUNIT.4", "//gsml:GeologicUnit/@gml:id", doc);
+        } else {
+            assertXpathEvaluatesTo("4", "//gsml:GeologicUnit/@gml:id", doc);
+        }
     }
 }

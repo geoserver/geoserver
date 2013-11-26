@@ -166,6 +166,7 @@ public class Transaction {
 
         // the geotools transaction
         transaction = getDatastoreTransaction(request);
+        request.setTransaction(transaction);
 
         //
         // We are going to preprocess our elements,
@@ -381,6 +382,7 @@ public class Transaction {
         } finally {
             transaction.close();
             transaction = null;
+            request.setTransaction(null);
         }
 
         // inform plugins we're done

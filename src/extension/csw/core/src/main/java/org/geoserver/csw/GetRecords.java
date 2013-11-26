@@ -9,27 +9,33 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
 
 import net.opengis.cat.csw20.ElementSetType;
+import net.opengis.cat.csw20.GetRecordByIdType;
 import net.opengis.cat.csw20.GetRecordsType;
 import net.opengis.cat.csw20.QueryType;
 import net.opengis.cat.csw20.ResultType;
 
+import org.geoserver.csw.records.CSWRecordDescriptor;
 import org.geoserver.csw.records.RecordDescriptor;
-import org.geoserver.csw.records.SpatialFilterChecker;
 import org.geoserver.csw.response.CSWRecordsResult;
 import org.geoserver.csw.store.CatalogStore;
 import org.geoserver.feature.CompositeFeatureCollection;
+import org.geoserver.ows.URLMangler.URLType;
+import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
 import org.geotools.csw.CSW;
 import org.geotools.data.Query;
 import org.geotools.data.Transaction;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.factory.Hints;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.type.Types;
@@ -46,6 +52,8 @@ import org.opengis.filter.expression.PropertyName;
 public class GetRecords {
     
     static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    
+    static final public Hints.Key KEY_BASEURL = new Hints.Key(String.class);
 
     CSWInfo csw;
 
@@ -62,13 +70,12 @@ public class GetRecords {
     public CSWRecordsResult run(GetRecordsType request) {
         // mark the time the request started
         Date timestamp = new Date();
-        
+
         try {
-            // build the queries
-            RecordDescriptor rd = getRecordDescriptor(request);
+            // build the queries            
+        	RecordDescriptor outputRd = getRecordDescriptor(request);
             QueryType cswQuery = (QueryType) request.getQuery();
-            List<Query> queries = toGtQueries(rd, cswQuery);
-            
+            List<Query> queries = toGtQueries(outputRd, cswQuery, request);
             // see how many records we have to return
             int maxRecords;
             if(request.getMaxRecords() == null) {
@@ -140,7 +147,7 @@ public class GetRecords {
                                 continue;
                             }
                             
-                            results.add(store.getRecords(q, Transaction.AUTO_COMMIT));
+                            results.add(store.getRecords(q, Transaction.AUTO_COMMIT, request.getOutputSchema()));
                         }
                         
                         if(results.size() == 1) {
@@ -165,7 +172,7 @@ public class GetRecords {
         }
     }
 
-    private List<Query> toGtQueries(RecordDescriptor rd, QueryType query) throws IOException {
+    private List<Query> toGtQueries(RecordDescriptor outputRd, QueryType query, GetRecordsType request) throws IOException {
         // prepare to build the queries
         Filter filter = query.getConstraint() != null ? query.getConstraint().getFilter() : null;
         Set<Name> supportedTypes = getSupportedTypes();
@@ -185,9 +192,11 @@ public class GetRecords {
                         ServiceException.INVALID_PARAMETER_VALUE, "typeNames");
             }
             
+            RecordDescriptor rd = getRecordDescriptor(typeName);
+            
             Query q = new Query(typeName.getLocalPart());
             q.setFilter(filter);
-            q.setProperties(getPropertyNames(rd, query));
+            q.setProperties(getPropertyNames(outputRd, query));
             q.setSortBy(query.getSortBy());
             try {
                 q.setNamespace(new URI(typeName.getNamespaceURI()));
@@ -202,6 +211,9 @@ public class GetRecords {
                 rd.verifySpatialFilters(q.getFilter());
             }
             
+            //smuggle base url
+            adapted.getHints().put(KEY_BASEURL, request.getBaseUrl());
+                        
             result.add(adapted);
         }
         
@@ -255,7 +267,29 @@ public class GetRecords {
 
         return result;
     }
+    
+    /**
+     * Search for the record descriptor maching the typename, throws a service exception in case none
+     * is found
+     * 
+     * @param request
+     * @return
+     */
+    private RecordDescriptor getRecordDescriptor(Name typeName) {
+        if (typeName == null) {
+           return CSWRecordDescriptor.getInstance();
+        }
 
+        for (RecordDescriptor rd : recordDescriptors) {
+            if (typeName.equals(rd.getFeatureDescriptor().getName())) {
+                return rd;
+            }
+        }
+
+        throw new ServiceException("Unknown type: " + typeName,
+                ServiceException.INVALID_PARAMETER_VALUE, "typeNames");
+    }
+    
     /**
      * Search for the record descriptor maching the request, throws a service exception in case none
      * is found

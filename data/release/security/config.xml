@@ -11,7 +11,7 @@
       <filter>form</filter>
       <filter>anonymous</filter>
     </filters>
-    <filters name="webLogin" class="org.geoserver.security.ConstantFilterChain" path="/j_spring_security_check,/j_spring_security_check/" disabled="false" allowSessionCreation="false" ssl="false" matchHTTPMethod="false">
+    <filters name="webLogin" class="org.geoserver.security.ConstantFilterChain" path="/j_spring_security_check,/j_spring_security_check/" disabled="false" allowSessionCreation="true" ssl="false" matchHTTPMethod="false">
       <filter>form</filter>
     </filters>
     <filters name="webLogout" class="org.geoserver.security.LogoutFilterChain" path="/j_spring_security_logout,/j_spring_security_logout/" disabled="false" allowSessionCreation="false" ssl="false" matchHTTPMethod="false">

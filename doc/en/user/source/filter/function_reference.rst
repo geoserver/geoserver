@@ -218,9 +218,6 @@ Geometric functions
    * - bufferWithSegments
      - ``geometry``:Geometry, ``distance``:Double, ``segments``:Integer
      - Returns the buffered area around the geometry using the specified distance and using the specified number of segments to represent a quadrant of a circle.
-   * - bufferWithSegments
-     - ``geometry``:Geometry, ``distance``:Double, ``segments``:Integer
-     - Returns the buffered area around the geometry using the specified distance and using the specified number of segments to represent a quadrant of a circle.
    * - centroid
      - ``geometry``:Geometry
      - Returns the centroid of the geometry. Can be often used as a label point for polygons, though there is no guarantee it will actually lie inside the geometry 

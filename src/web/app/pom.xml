@@ -50,7 +50,12 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>
-      <artifactId>web-security</artifactId>
+      <artifactId>web-sec-jdbc</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.web</groupId>
+      <artifactId>web-sec-ldap</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -290,10 +295,32 @@
 		</configuration>
 		<executions>
 			<execution>
-				<phase>install</phase>
+				<phase>package</phase>
 				<goals>
 					<goal>war</goal>
 				</goals>
+			</execution>
+		</executions>
+	</plugin>
+	<plugin>
+		<groupId>org.codehaus.mojo</groupId>
+		<artifactId>build-helper-maven-plugin</artifactId>
+		<version>1.8</version>
+		<executions>
+			<execution>
+				<id>attach-war</id>
+				<phase>package</phase>
+				<goals>
+					<goal>attach-artifact</goal>
+				</goals>
+				<configuration>
+					<artifacts>
+						<artifact>
+							<file>${project.build.directory}/geoserver.war</file>
+							<type>war</type>
+						</artifact>
+					</artifacts>
+				</configuration>
 			</execution>
 		</executions>
 	</plugin>
@@ -694,6 +721,16 @@
       </dependencies>
     </profile>
     <profile>
+      <id>jp2k</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>jp2k</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>    
+    <profile>
       <id>gdal</id>
       <dependencies>
         <dependency>
@@ -739,6 +776,11 @@
         <dependency>
           <groupId>org.geoserver.security</groupId>
           <artifactId>sec-cas</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.web</groupId>
+          <artifactId>web-sec-cas</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>
@@ -994,6 +1036,17 @@
         <dependency>
           <groupId>org.geoserver.importer</groupId>
           <artifactId>importer-rest</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>netcdf-out</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>netcdf-out</artifactId>
+          <version>${project.version}</version>
         </dependency>
       </dependencies>
     </profile>
@@ -1003,6 +1056,26 @@
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>geopkg</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>png</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>png</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>wfs-notification</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>wfs-notification-plugin</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

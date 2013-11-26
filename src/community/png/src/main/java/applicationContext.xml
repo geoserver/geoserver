@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="PNGJOutputExclusionFilter" class="org.geoserver.platform.NameExclusionFilter">
+    <property name="beanId" value="PNGMapResponse" />
+  </bean>
+   <bean id="PNGJMapResponse" class="org.geoserver.map.png.PNGJMapResponse">
+      <constructor-arg ref="wms" />
+    </bean>
+</beans>

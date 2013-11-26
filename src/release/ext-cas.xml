@@ -10,6 +10,7 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>sec-cas-*.jar</include>
+        <include>web-sec-cas-*.jar</include>
         <include>spring-security-cas-*.jar</include>
         <include>cas-client-core-*.jar</include>
       </includes>

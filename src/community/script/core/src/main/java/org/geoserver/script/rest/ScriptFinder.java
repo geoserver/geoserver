@@ -6,7 +6,6 @@ package org.geoserver.script.rest;
 
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.script.ScriptManager;
-import org.restlet.Finder;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Resource;
@@ -16,16 +15,14 @@ import org.restlet.resource.Resource;
  * 
  * @author Justin Deoliveira, OpenGeo
  */
-public class ScriptFinder extends Finder {
-
-    ScriptManager scriptMgr;
+public class ScriptFinder extends FinderSupport {
 
     public ScriptFinder(ScriptManager scriptMgr) {
-        this.scriptMgr = scriptMgr;
+        super(scriptMgr);
     }
 
     @Override
-    public Resource findTarget(Request request, Response response) {
+    protected Resource doFindTarget(Request request, Response response) {
         String name = (String) request.getAttributes().get("name");
 
         //get a relative reference

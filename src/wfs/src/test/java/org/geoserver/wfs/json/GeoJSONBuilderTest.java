@@ -178,4 +178,25 @@ public class GeoJSONBuilderTest {
         assertEquals("{\"type\":\"GeometryCollection\",\"geometries\":[{\"type\":\"Point\",\"coordinates\":[2,0]},{\"type\":\"Point\",\"coordinates\":[7,1]}]}",
                 writer.toString());
     }
+    
+    @Test
+    public void testWrite3DPoint() throws Exception {
+        Geometry g = new WKTReader().read("POINT(2 0 20)");
+        builder.writeGeom(g);
+        assertEquals("{\"type\":\"Point\",\"coordinates\":[2,0,20]}", writer.toString());
+    }
+    
+    @Test
+    public void testWrite3DLine() throws Exception {
+        Geometry g = new WKTReader().read("LINESTRING(0 0 0, 0 10 1, 10 10 2, 10 0 3, 0 0 0)");
+        builder.writeGeom(g);
+        assertEquals("{\"type\":\"LineString\",\"coordinates\":[[0,0,0],[0,10,1],[10,10,2],[10,0,3],[0,0,0]]}", writer.toString());
+    }
+    
+    @Test
+    public void testWrite3DPolygon() throws Exception {
+        Geometry g = new WKTReader().read("POLYGON((0 0 0, 0 10 1, 10 10 2, 10 0 3, 0 0 0),(1 1 4, 1 2 5, 2 2 6, 2 1 7, 1 1 4))");
+        builder.writeGeom(g);
+        assertEquals("{\"type\":\"Polygon\",\"coordinates\":[[[0,0,0],[0,10,1],[10,10,2],[10,0,3],[0,0,0]],[[1,1,4],[1,2,5],[2,2,6],[2,1,7],[1,1,4]]]}", writer.toString());
+    }
 }

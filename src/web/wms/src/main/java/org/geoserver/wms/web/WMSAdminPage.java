@@ -170,6 +170,10 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         TextField<Integer> kmScoreField = new TextField<Integer>("kml.kmscore", kmScore, Integer.class);
         kmScoreField.add(new RangeValidator<Integer>(0, 100));
         form.add(kmScoreField);
+        
+        //scalehint
+        form.add(new CheckBox("scalehint.mapunitsPixel",defaultedModel(metadataModel, WMS.SCALEHINT_MAPUNITS_PIXEL, WMS.SCALEHINT_MAPUNITS_PIXEL_DEFAULT)));
+        
     }
     
     protected Component chooserButton(String linkId, final String windowTitle, final TextField<String> textField) {

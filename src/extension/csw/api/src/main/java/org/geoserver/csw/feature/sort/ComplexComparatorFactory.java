@@ -40,7 +40,7 @@ public class ComplexComparatorFactory {
                 comparators.add(comparator);
             }
 
-            return new CompositeComparator(comparators);
+            return new CompositeComparator<Feature>(comparators);
         }
     }
 
@@ -59,7 +59,7 @@ public class ComplexComparatorFactory {
         } else if (sortBy == SortBy.REVERSE_ORDER) {
             return new FidComparator(false);
         } else {
-            return new PropertyComparator(sortBy.getPropertyName(),
+            return new PropertyComparator<Feature>(sortBy.getPropertyName(),
                     sortBy.getSortOrder() == SortOrder.ASCENDING);
         }
     }

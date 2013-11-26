@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -61,12 +62,15 @@ import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.data.Parameter;
 import org.geotools.process.ProcessFactory;
 import org.geotools.util.Converters;
+import org.geotools.util.logging.Logging;
 import org.geotools.xml.EMFUtils;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.feature.type.Name;
 import org.springframework.context.ApplicationContext;
 
 public class ExecuteResponseBuilder {
+    
+    static final Logger LOGGER = Logging.getLogger(ExecuteResponseBuilder.class);
 
     ExecuteType request;
 
@@ -150,7 +154,14 @@ public class ExecuteResponseBuilder {
                 response.getStatus().setProcessAccepted("Process accepted.");
             } else if (status.getPhase() == ProcessState.RUNNING) {
                 ProcessStartedType startedType = f.createProcessStartedType();
-                int progressPercent = Math.round(status.getProgress() * 100);
+                int progressPercent = Math.round(status.getProgress());
+                if(progressPercent < 0) {
+                    LOGGER.warning("Progress reported is below zero, fixing it to 0: " + progressPercent);
+                    progressPercent = 0;
+                } else if(progressPercent > 100) {
+                    LOGGER.warning("Progress reported is above 100, fixing it to 100: " + progressPercent);
+                    progressPercent = 100;
+                }
                 startedType.setPercentCompleted(new BigInteger(String.valueOf(progressPercent)));
                 response.getStatus().setProcessStarted(startedType);
             } else if (status.getPhase() == ProcessState.COMPLETED) {

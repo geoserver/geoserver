@@ -18,9 +18,11 @@ officially part of the GeoServer releases. They are however built along with the
    authkey/index
    dxf/index
    dds/index
+   netcdf/netcdf
    printing/index
    python/index
    scripting/index
    spatialite/index
    libjpeg-turbo/index
+   netcdf-out/index
    jdbcconfig/index

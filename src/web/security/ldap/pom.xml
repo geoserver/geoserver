@@ -51,7 +51,11 @@
       <artifactId>spring-ldap-test</artifactId>
       <scope>test</scope>
     </dependency>
-    
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-ldap</artifactId>
+      <version>${spring.security.version}</version>
+    </dependency>
   </dependencies>
 
 </project>

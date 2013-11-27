@@ -172,7 +172,7 @@ public class LDAPAuthProviderPanel extends AuthenticationProviderPanel<LDAPSecur
                             return;
                         }
                         
-                        LDAPSecurityProvider provider = new LDAPSecurityProvider(null);
+                        LDAPSecurityProvider provider = new LDAPSecurityProvider(getSecurityManager());
                         LDAPAuthenticationProvider authProvider = (LDAPAuthenticationProvider) provider
                                 .createAuthenticationProvider(ldapConfig);
                         Authentication authentication = authProvider

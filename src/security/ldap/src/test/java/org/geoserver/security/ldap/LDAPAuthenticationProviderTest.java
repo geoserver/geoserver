@@ -140,6 +140,27 @@ public class LDAPAuthenticationProviderTest {
         Authentication result = authProvider.authenticate(authentication);
         assertEquals(2, result.getAuthorities().size());
     }
+    
+    /**
+     * Test that authentication can be done using the couple userFilter and
+     * userFormat instead of userDnPattern.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testUserFilterAndFormatPlaceholders() throws Exception {
+        Assume.assumeTrue(LDAPTestUtils.initLdapServer(true, ldapServerUrl,
+                basePath));
+        // filter to extract user data
+        config.setUserFilter("(sn={1})");
+        // username to bind to
+        config.setUserFormat("uid={0},ou=People,dc=example,dc=com");
+
+        createAuthenticationProvider();
+
+        Authentication result = authProvider.authenticate(authentication);
+        assertEquals(2, result.getAuthorities().size());
+    }
 
     /**
      * Test that if and adminGroup is defined, the roles contain

@@ -247,7 +247,7 @@ Geometric functions
      - Returns the exterior ring of the specified polygon
    * - geometryType
      - ``geometry``:Geometry
-     - Returns the type of the geometry as a string. May be ``Point``, ``MultiPoint``, ``LineString``, ``LinearRing``, ``MultiLineString``, ``Polygon``, ``MultiPoligon``, ``GeometryCollection``
+     - Returns the type of the geometry as a string. May be ``Point``, ``MultiPoint``, ``LineString``, ``LinearRing``, ``MultiLineString``, ``Polygon``, ``MultiPolygon``, ``GeometryCollection``
    * - geomFromWKT
      - ``wkt``:String
      - Returns the ``Geometry`` represented in the Well Known Text format contained in the ``wkt`` parameter

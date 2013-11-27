@@ -60,14 +60,15 @@ public class LDAPAuthProviderPanelTest extends AbstractSecurityWicketTestSupport
     }
     
     
-    protected void setupPanel(final String userDnPattern, String userFilter, String userFormat) {
+	protected void setupPanel(final String userDnPattern, String userFilter,
+			String userFormat, String userGroupService) {
         config = new LDAPSecurityServiceConfig();
         config.setName("test");
         config.setServerURL(ldapServerUrl + "/" + basePath);
         config.setUserDnPattern(userDnPattern);
         config.setUserFilter(userFilter);
         config.setUserFormat(userFormat);
-        
+        config.setUserGroupServiceName(userGroupService);
         setupPanel(config);
     }
     
@@ -105,14 +106,21 @@ public class LDAPAuthProviderPanelTest extends AbstractSecurityWicketTestSupport
     @Test
     public void testTestConnectionWithDnLookup() throws Exception {
         Assume.assumeTrue(LDAPTestUtils.initLdapServer(true, ldapServerUrl, basePath));
-        setupPanel(USER_DN_PATTERN, null, null);
+        setupPanel(USER_DN_PATTERN, null, null, null);
+        testSuccessfulConnection();
+    }
+    
+    @Test
+    public void testTestConnectionWitUserGroupService() throws Exception {
+        Assume.assumeTrue(LDAPTestUtils.initLdapServer(true, ldapServerUrl, basePath));
+        setupPanel(USER_DN_PATTERN, null, null, "default");
         testSuccessfulConnection();
     }
     
     @Test
     public void testTestConnectionWithUserFilter() throws Exception {
         Assume.assumeTrue(LDAPTestUtils.initLdapServer(true, ldapServerUrl, basePath));
-        setupPanel(null, USER_FILTER, USER_FORMAT);
+        setupPanel(null, USER_FILTER, USER_FORMAT, null);
         testSuccessfulConnection();
     }
 
@@ -122,14 +130,14 @@ public class LDAPAuthProviderPanelTest extends AbstractSecurityWicketTestSupport
     @Test
     public void testTestConnectionFailedWithDnLookup() throws Exception {
         Assume.assumeTrue(LDAPTestUtils.initLdapServer(true, ldapServerUrl, basePath));
-        setupPanel(USER_DN_PATTERN, null, null);
+        setupPanel(USER_DN_PATTERN, null, null, null);
         testFailedConnection();
     }
     
     @Test
     public void testTestConnectionFailedWithUserFilter() throws Exception {
         Assume.assumeTrue(LDAPTestUtils.initLdapServer(true, ldapServerUrl, basePath));
-        setupPanel(null, USER_FILTER, USER_FORMAT);
+        setupPanel(null, USER_FILTER, USER_FORMAT, null);
         testFailedConnection();
     }
 

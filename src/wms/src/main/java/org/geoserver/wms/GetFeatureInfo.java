@@ -42,8 +42,10 @@ public class GetFeatureInfo {
         try {
             results = execute(request);
         } catch (ServiceException se) {
+            se.printStackTrace();
             throw se;
         } catch (Exception e) {
+            e.printStackTrace();
             throw new ServiceException("Internal error occurred", e);
         }
         return buildResults(results);

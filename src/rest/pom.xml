@@ -17,14 +17,14 @@
   </parent>
 
   <groupId>org.geoserver</groupId>
-  <artifactId>rest</artifactId>
+  <artifactId>gs-rest</artifactId>
   <packaging>jar</packaging>
   <name>REST Support Module</name>
 
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
+      <artifactId>gs-main</artifactId>
     </dependency>
     <dependency>
       <groupId>org.restlet</groupId>
@@ -53,7 +53,7 @@
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
+      <artifactId>gs-main</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>

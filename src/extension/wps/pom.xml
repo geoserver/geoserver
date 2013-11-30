@@ -16,7 +16,7 @@
     </parent>
 
     <groupId>org.geoserver.extension</groupId>
-    <artifactId>wps</artifactId>
+    <artifactId>gs-wps</artifactId>
     <packaging>pom</packaging>
     <name>Web Processing Service parent</name>
 

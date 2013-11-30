@@ -9,8 +9,8 @@
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
-        <include>script-core*</include>
-        <include>script-groovy*</include>
+        <include>gs-script-core*</include>
+        <include>gs-script-groovy*</include>
         <include>geoscript-groovy*</include>
         <include>groovy*</include>
         <include>gt-brewer*</include>

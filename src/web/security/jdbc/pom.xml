@@ -11,12 +11,12 @@
 
 	<parent>
 		<groupId>org.geoserver.web</groupId>
-		<artifactId>web-sec</artifactId>
+		<artifactId>gs-web-sec</artifactId>
 		<version>2.5-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.geoserver.web</groupId>
-	<artifactId>web-sec-jdbc</artifactId>
+	<artifactId>gs-web-sec-jdbc</artifactId>
 	<packaging>jar</packaging>
 	<version>2.5-SNAPSHOT</version>
 	<name>Security UI JDBC Module</name>
@@ -24,24 +24,24 @@
 	<dependencies>
     <dependency>
       <groupId>org.geoserver.web</groupId>
-      <artifactId>web-sec-core</artifactId>
+      <artifactId>gs-web-sec-core</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.security</groupId>
-      <artifactId>sec-jdbc</artifactId>
+      <artifactId>gs-sec-jdbc</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>
-      <artifactId>web-sec-core</artifactId>
+      <artifactId>gs-web-sec-core</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver.security</groupId>
-      <artifactId>sec-jdbc</artifactId>
+      <artifactId>gs-sec-jdbc</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>

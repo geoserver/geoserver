@@ -11,12 +11,12 @@
 
   <parent>
     <groupId>org.geoserver</groupId>
-    <artifactId>csw</artifactId>
+    <artifactId>gs-csw</artifactId>
     <version>2.5-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.csw</groupId>
-  <artifactId>web-csw</artifactId>
+  <artifactId>gs-web-csw</artifactId>
   <packaging>jar</packaging>
   <version>2.5-SNAPSHOT</version>
   <name>CSW UI Module</name>
@@ -24,29 +24,29 @@
   <dependencies>
     <dependency>
       <groupId>org.geoserver.csw</groupId>
-      <artifactId>csw-api</artifactId>
+      <artifactId>gs-csw-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.csw</groupId>
-      <artifactId>csw-core</artifactId>
+      <artifactId>gs-csw-core</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>
-      <artifactId>web-core</artifactId>
+      <artifactId>gs-web-core</artifactId>
       <version>${project.version}</version>
     </dependency>
      <dependency>
       <groupId>org.geoserver.web</groupId>
-      <artifactId>web-core</artifactId>
+      <artifactId>gs-web-core</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
+      <artifactId>gs-main</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>

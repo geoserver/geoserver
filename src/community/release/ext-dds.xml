@@ -10,7 +10,7 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>worldwind*</include>
-        <include>dds*</include>
+        <include>gs-dds*</include>
       </includes>
     </fileSet>
   </fileSets>

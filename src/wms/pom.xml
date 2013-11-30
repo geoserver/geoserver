@@ -16,22 +16,22 @@
   </parent>
 
   <groupId>org.geoserver</groupId>
-  <artifactId>wms</artifactId>
+  <artifactId>gs-wms</artifactId>
   <packaging>jar</packaging>
   <name>Web Map Service Module</name>
 
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
+      <artifactId>gs-main</artifactId>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>wfs</artifactId>
+      <artifactId>gs-wfs</artifactId>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>wcs</artifactId>
+      <artifactId>gs-wcs</artifactId>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
@@ -84,13 +84,13 @@
     </dependency>
 	<dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>ows</artifactId>
+      <artifactId>gs-ows</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
+      <artifactId>gs-main</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>

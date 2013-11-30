@@ -9,7 +9,7 @@
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
-        <include>css-*.jar</include>
+        <include>gs-css-*.jar</include>
         <include>geocss_2.10*.jar</include>
         <include>scala-library-2.10*.jar</include>
       </includes>

@@ -16,7 +16,7 @@
   </parent>
 
   <groupId>org.geoserver.extension</groupId>
-  <artifactId>security</artifactId>
+  <artifactId>gs-security</artifactId>
   <packaging>pom</packaging>
   <version>2.5-SNAPSHOT</version>
   <name>GeoServer Security Extension Modules</name>
@@ -24,33 +24,33 @@
   <dependencies>
     <dependency>
       <groupId>org.geoserver.web</groupId>
-      <artifactId>web-sec-core</artifactId>
+      <artifactId>gs-web-sec-core</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
+      <artifactId>gs-main</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>wms</artifactId>
+      <artifactId>gs-wms</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>
-      <artifactId>web-core</artifactId>
+      <artifactId>gs-web-core</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>
-      <artifactId>web-sec-core</artifactId>
+      <artifactId>gs-web-sec-core</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>

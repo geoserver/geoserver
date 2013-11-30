@@ -97,65 +97,65 @@
   <dependencies>
    <dependency>
     <groupId>org.geoserver</groupId>
-    <artifactId>platform</artifactId>
+    <artifactId>gs-platform</artifactId>
     <version>${gs.version}</version>
    </dependency>
    <dependency>
     <groupId>org.geoserver</groupId>
-    <artifactId>ows</artifactId>
+    <artifactId>gs-ows</artifactId>
     <version>${gs.version}</version>
    </dependency>
    <dependency>
     <groupId>org.geoserver</groupId>
-    <artifactId>ows</artifactId>
-    <version>${gs.version}</version>
-    <classifier>tests</classifier>
-   </dependency>
-   <dependency>
-    <groupId>org.geoserver</groupId>
-    <artifactId>main</artifactId>
-    <version>${gs.version}</version>
-   </dependency>
-   <dependency>
-    <groupId>org.geoserver</groupId>
-    <artifactId>main</artifactId>
+    <artifactId>gs-ows</artifactId>
     <version>${gs.version}</version>
     <classifier>tests</classifier>
    </dependency>
    <dependency>
     <groupId>org.geoserver</groupId>
-    <artifactId>wcs</artifactId>
+    <artifactId>gs-main</artifactId>
     <version>${gs.version}</version>
    </dependency>
    <dependency>
     <groupId>org.geoserver</groupId>
-    <artifactId>wcs1_0</artifactId>
-    <version>${gs.version}</version>
-   </dependency>
-   <dependency>
-    <groupId>org.geoserver</groupId>
-    <artifactId>wcs1_1</artifactId>
-    <version>${gs.version}</version>
-   </dependency>
-   <dependency>
-    <groupId>org.geoserver</groupId>
-    <artifactId>wfs</artifactId>
-    <version>${gs.version}</version>
-   </dependency>
-   <dependency>
-    <groupId>org.geoserver</groupId>
-    <artifactId>wms</artifactId>
-    <version>${gs.version}</version>
-   </dependency>
-   <dependency>
-    <groupId>org.geoserver</groupId>
-    <artifactId>wms</artifactId>
+    <artifactId>gs-main</artifactId>
     <version>${gs.version}</version>
     <classifier>tests</classifier>
    </dependency>
    <dependency>
     <groupId>org.geoserver</groupId>
-    <artifactId>gwc</artifactId>
+    <artifactId>gs-wcs</artifactId>
+    <version>${gs.version}</version>
+   </dependency>
+   <dependency>
+    <groupId>org.geoserver</groupId>
+    <artifactId>gs-wcs1_0</artifactId>
+    <version>${gs.version}</version>
+   </dependency>
+   <dependency>
+    <groupId>org.geoserver</groupId>
+    <artifactId>gs-wcs1_1</artifactId>
+    <version>${gs.version}</version>
+   </dependency>
+   <dependency>
+    <groupId>org.geoserver</groupId>
+    <artifactId>gs-wfs</artifactId>
+    <version>${gs.version}</version>
+   </dependency>
+   <dependency>
+    <groupId>org.geoserver</groupId>
+    <artifactId>gs-wms</artifactId>
+    <version>${gs.version}</version>
+   </dependency>
+   <dependency>
+    <groupId>org.geoserver</groupId>
+    <artifactId>gs-wms</artifactId>
+    <version>${gs.version}</version>
+    <classifier>tests</classifier>
+   </dependency>
+   <dependency>
+    <groupId>org.geoserver</groupId>
+    <artifactId>gs-gwc</artifactId>
     <version>${gs.version}</version>
     <exclusions>
     	<exclusion>
@@ -166,12 +166,12 @@
    </dependency>
    <dependency>
     <groupId>org.geoserver</groupId>
-    <artifactId>rest</artifactId>
+    <artifactId>gs-rest</artifactId>
     <version>${gs.version}</version>
    </dependency>
    <dependency>
     <groupId>org.geoserver.web</groupId>
-    <artifactId>web-core</artifactId>
+    <artifactId>gs-web-core</artifactId>
     <version>${gs.version}</version>
    </dependency>
    <dependency>

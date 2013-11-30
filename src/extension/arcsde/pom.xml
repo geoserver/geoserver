@@ -15,19 +15,19 @@
    </parent>
 
    <groupId>org.geoserver.extension</groupId>
-   <artifactId>arcsde</artifactId>
+   <artifactId>gs-arcsde</artifactId>
    <packaging>jar</packaging>
    <name>ArcSDE DataStore Extension</name>
 
    <dependencies>
       <dependency>
          <groupId>org.geoserver.web</groupId>
-         <artifactId>web-core</artifactId>
+         <artifactId>gs-web-core</artifactId>
          <version>${project.version}</version>
       </dependency>
       <dependency>
          <groupId>org.geoserver.web</groupId>
-         <artifactId>web-core</artifactId>
+         <artifactId>gs-web-core</artifactId>
          <version>${project.version}</version>
          <classifier>tests</classifier>
          <scope>test</scope>
@@ -39,7 +39,7 @@
       </dependency>
       <dependency>
          <groupId>org.geoserver</groupId>
-         <artifactId>main</artifactId>
+         <artifactId>gs-main</artifactId>
          <version>${project.version}</version>
          <classifier>tests</classifier>
          <scope>test</scope>

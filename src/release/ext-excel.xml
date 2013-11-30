@@ -9,7 +9,7 @@
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
-        <include>excel-*.jar</include>
+        <include>gs-excel-*.jar</include>
         <include>poi-*.jar</include>
         <include>xmlbeans-*.jar</include>
         <include>dom4j-*.jar</include>

@@ -16,14 +16,14 @@
  </parent>
  
  <groupId>org.geoserver.community</groupId>
- <artifactId>netcdf-out</artifactId>
+ <artifactId>gs-netcdf-out</artifactId>
  <packaging>jar</packaging>
  <name>WCS NetCDF output Module</name>
  
  <dependencies>
   <dependency>
     <groupId>org.geoserver.community</groupId>
-    <artifactId>wcs2_0</artifactId>
+    <artifactId>gs-wcs2_0</artifactId>
     <version>${project.version}</version>
   </dependency>
   

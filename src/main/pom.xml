@@ -15,18 +15,18 @@
  </parent>
  
  <groupId>org.geoserver</groupId>
- <artifactId>main</artifactId>
+ <artifactId>gs-main</artifactId>
  <packaging>jar</packaging>
  <name>Main Module</name>
  
  <dependencies>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>ows</artifactId>
+   <artifactId>gs-ows</artifactId>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>ows</artifactId>
+   <artifactId>gs-ows</artifactId>
    <classifier>tests</classifier>
    <scope>test</scope>
   </dependency>
@@ -193,7 +193,7 @@
   </dependency>
   <dependency>
     <groupId>org.geoserver</groupId>
-    <artifactId>platform</artifactId>
+    <artifactId>gs-platform</artifactId>
   </dependency>
   <dependency>
    <groupId>org.springframework.security</groupId>

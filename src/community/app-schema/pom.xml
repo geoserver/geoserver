@@ -15,7 +15,7 @@
   </parent>
 
   <groupId>org.geoserver</groupId>
-  <artifactId>app-schema-community</artifactId>
+  <artifactId>gs-app-schema-community</artifactId>
   <packaging>pom</packaging>
   <name>Application Schema Community</name>
 

@@ -15,7 +15,7 @@
   </parent>
 
   <groupId>org.geoserver.extension</groupId>
-  <artifactId>jp2k</artifactId>
+  <artifactId>gs-jp2k</artifactId>
   <packaging>jar</packaging>
   <name>JP2K Coverage Extension</name>
 

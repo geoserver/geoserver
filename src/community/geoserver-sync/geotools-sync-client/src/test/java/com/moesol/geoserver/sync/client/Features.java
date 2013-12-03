@@ -26,9 +26,6 @@
 
 package com.moesol.geoserver.sync.client;
 
-
-
-
 import static org.mockito.Matchers.*;
 import static junit.framework.Assert.*;
 
@@ -92,6 +89,7 @@ public class Features {
 	
 	public static ComplexConfiguration makeConfiguration() {
 		URL xsdUrl = Features.class.getResource("buildings.xsd");
+		
 		ComplexConfiguration configuration = new ComplexConfiguration("http://www.opengis.net/cite", xsdUrl.toString());
 		return configuration;
 	}

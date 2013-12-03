@@ -26,12 +26,19 @@
 
 package com.moesol.geoserver.sync.client;
 
-
-
-
-import static com.moesol.geoserver.sync.client.Features.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static com.moesol.geoserver.sync.client.Features.asMap;
+import static com.moesol.geoserver.sync.client.Features.f;
+import static com.moesol.geoserver.sync.client.Features.featuresEq;
+import static com.moesol.geoserver.sync.client.Features.make;
+import static com.moesol.geoserver.sync.client.Features.makeConfiguration;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.notNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -45,6 +52,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import net.opengis.wfs.FeatureCollectionType;
 
 import org.geoserver.wfs.WFSTestSupport;
+import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.filter.identity.FeatureIdImpl;
 import org.junit.Test;
@@ -53,22 +61,11 @@ import org.opengis.filter.identity.FeatureId;
 import org.opengis.filter.identity.Identifier;
 import org.xml.sax.SAXException;
 
-import com.moesol.geoserver.sync.client.FeatureAccessor;
-import com.moesol.geoserver.sync.client.FeatureChangeListener;
-import com.moesol.geoserver.sync.client.FeaturesChangedAdaptor;
-import com.moesol.geoserver.sync.client.FeaturesChangedListener;
-import com.moesol.geoserver.sync.client.GeoserverClientSynchronizer;
-import com.moesol.geoserver.sync.client.HashAndFeatureValue;
-import com.moesol.geoserver.sync.client.RequestBuilder;
-import com.moesol.geoserver.sync.client.RoundListener;
-import com.moesol.geoserver.sync.client.xml.ComplexFeatureCollection;
 import com.moesol.geoserver.sync.core.FeatureSha1;
 import com.moesol.geoserver.sync.core.FeatureSha1Mapper;
 import com.moesol.geoserver.sync.core.Sha1Value;
 import com.moesol.geoserver.sync.core.VersionFeatures;
 import com.vividsolutions.jts.io.ParseException;
-
-import static org.junit.Assert.*;
 
 public class GeoserverClientSynchronizerIntegrationTest extends WFSTestSupport {
 	
@@ -76,7 +73,7 @@ public class GeoserverClientSynchronizerIntegrationTest extends WFSTestSupport {
 	public void testParseWfs() throws IOException, SAXException, ParserConfigurationException {
 		GeoserverClientSynchronizer clientSynchronizer = new GeoserverClientSynchronizer(makeConfiguration(), "", SimulatedRequestBuilder.POST_TEMPLATE);
 		InputStream is = loadResource("buildings.xml");
-		ComplexFeatureCollection features = (ComplexFeatureCollection) clientSynchronizer.parseWfs(is);
+		FeatureCollection features = (FeatureCollection) clientSynchronizer.parseWfs(is);
 		assertEquals(2, features.size());
 		FeatureIterator<?> it = features.features();
 		try {
@@ -431,10 +428,10 @@ public class GeoserverClientSynchronizerIntegrationTest extends WFSTestSupport {
 		FeatureSha1.MAPPER = new FeatureSha1Mapper() {
 			@Override
 			public Sha1Value map(Sha1Value old) {
-				if ("ba5a86a5a1c34f30e7e3a9e8eef485f025c8d605".equals(old.toString())) {
+				if ("e76becbcfbe3b847478a3aa706def57382d8b884".equals(old.toString())) {
 					return old;
 				}
-				if ("b0cfdb0661eb1c8b1db7e957915c05f8f2d43aa7".equals(old.toString())) {
+				if ("ac93e7bcebb89813f206d9b618c94e1531cc6a0d".equals(old.toString())) {
 					return new Sha1Value("ba5a86a5a1c34f30e7e3a9e8eef485f025c8d606");
 				}
 				if ("88bfad9cfffeafd299a44d4daf979d57419a2621".equals(old.toString())) {
@@ -443,7 +440,7 @@ public class GeoserverClientSynchronizerIntegrationTest extends WFSTestSupport {
 				if ("2a7bc94a06f3221293677515044b0a9dd3960f4e".equals(old.toString())) {
 					return new Sha1Value("88bfad9cfffeafd299a44d4daf979d57419a2622");
 				}
-				throw new IllegalStateException("Mapping of input SHA1's has changed unable to setup test conditions.");
+				throw new IllegalStateException("Mapping of input SHA1's has changed unable to setup test conditions: " + old);
 			}
 		};
 		
@@ -485,10 +482,10 @@ public class GeoserverClientSynchronizerIntegrationTest extends WFSTestSupport {
 		FeatureSha1.MAPPER = new FeatureSha1Mapper() {
 			@Override
 			public Sha1Value map(Sha1Value old) {
-				if ("ba5a86a5a1c34f30e7e3a9e8eef485f025c8d605".equals(old.toString())) {
+				if ("e76becbcfbe3b847478a3aa706def57382d8b884".equals(old.toString())) {
 					return old;
 				}
-				if ("b0cfdb0661eb1c8b1db7e957915c05f8f2d43aa7".equals(old.toString())) {
+				if ("ac93e7bcebb89813f206d9b618c94e1531cc6a0d".equals(old.toString())) {
 					return new Sha1Value("ba5a86a5a1c34f30e7e3a9e8eef485f025c8d605");
 				}
 				if ("88bfad9cfffeafd299a44d4daf979d57419a2621".equals(old.toString())) {

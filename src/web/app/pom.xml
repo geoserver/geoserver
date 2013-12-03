@@ -338,16 +338,6 @@
 
   <profiles>
     <profile>
-		<id>geoserver-sync</id>
-		<dependencies>
-			<dependency>
-				<groupId>org.geoserver</groupId>
-				<artifactId>geoserver-sync</artifactId>
-				<version>1.0-SNAPSHOT</version>
-			</dependency>
-		</dependencies>
-	</profile>
-	<profile>
       <id>release</id>
       <properties>
         <configDirectory>${basedir}/../../../data</configDirectory>
@@ -1086,6 +1076,16 @@
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>wfs-notification-plugin</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>geoserver-sync</id>
+      <dependencies>
+        <dependency>
+	  <groupId>org.geoserver.community</groupId>
+          <artifactId>geoserver-sync-server</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

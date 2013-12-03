@@ -52,9 +52,15 @@ public class DisabledServiceCheck implements DispatcherCallback {
             try {
                 ServiceInfo info = (ServiceInfo) m.invoke( s , null );
                 
-                //check if the service is enabled
-                if (!info.isEnabled()) {
-                    throw new ServiceException( "Service " + info.getName() + " is disabled" );
+                if(info == null) {
+                    // log a warning, we could not perform an important check
+                    LOGGER.warning("Could not get a ServiceInfo for service " + service.getId() 
+                            + " even if the service implements ServiceInfo, thus could not check if the service is enabled");
+                } else {
+                    // check if the service is enabled
+                    if (!info.isEnabled()) {
+                        throw new ServiceException( "Service " + info.getName() + " is disabled" );
+                    }
                 }
             } 
             catch (Exception e) {

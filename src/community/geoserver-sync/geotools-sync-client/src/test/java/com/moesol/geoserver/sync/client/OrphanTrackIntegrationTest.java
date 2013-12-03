@@ -39,6 +39,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.geoserver.wfs.WFSTestSupport;
 import org.geotools.feature.FeatureIterator;
+import org.junit.Test;
 import org.opengis.feature.Feature;
 import org.xml.sax.SAXException;
 
@@ -73,6 +74,7 @@ public class OrphanTrackIntegrationTest extends WFSTestSupport {
         + "</wfs:GetFeature>";
 	private FeatureSha1 m_engine = new FeatureSha1();
 
+	@Test
 	public void testParseWfs() throws IOException, SAXException, ParserConfigurationException {
 		m_engine.parseAttributesToInclude("-all");
 		GeoserverClientSynchronizer clientSynchronizer = new GeoserverClientSynchronizer(makeConfiguration(), "", POST_TEMPLATE);

@@ -45,6 +45,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import net.opengis.wfs.FeatureCollectionType;
 
 import org.geoserver.wfs.WFSTestSupport;
+import org.junit.Test;
 import org.opengis.feature.Feature;
 import org.opengis.filter.identity.Identifier;
 import org.xml.sax.SAXException;
@@ -61,6 +62,7 @@ import static org.junit.Assert.*;
  */
 public class MidRoundServerChangesIntegrationTest extends WFSTestSupport {
 	
+	@Test
 	public void test_Server6_RunManyUpdates() throws IOException, SAXException, ParserConfigurationException, ParseException {
 //		GeoserverClientSynchronizer.TRACE_POST = new PrintStream(new FileOutputStream("run.log"));
 //		FeatureCollectionSha1Sync.TRACE_RESPONSE = GeoserverClientSynchronizer.TRACE_POST;
@@ -151,6 +153,7 @@ public class MidRoundServerChangesIntegrationTest extends WFSTestSupport {
 //		}
 //	}
 	
+	@Test
 	public void test_Server6_RandomChanges() throws IOException, SAXException, ParserConfigurationException, ParseException {
 //		GeoserverClientSynchronizer.TRACE_POST = new PrintStream(new FileOutputStream("run.log"));
 //		FeatureCollectionSha1Sync.TRACE_RESPONSE = GeoserverClientSynchronizer.TRACE_POST;
@@ -208,6 +211,7 @@ public class MidRoundServerChangesIntegrationTest extends WFSTestSupport {
 		assertFeaturesEq(Arrays.asList(engine.getFeatures()), clientMap);
 	}
 	
+	@Test
 	public void testExtraUpdate1() throws IOException, ParseException, SAXException, ParserConfigurationException {
 		FeatureCollectionType client = make(f("F1",162),f("F5",167),f("F4",169),f("F3",168),f("F2",157),f("F6",164));
 		FeatureCollectionType server = make(f("F1",162),f("F5",167),f("F4",169),f("F3",170),f("F2",157),f("F6",164));
@@ -243,6 +247,8 @@ public class MidRoundServerChangesIntegrationTest extends WFSTestSupport {
 		assertEquals(0, synchronizer.getNumDeletes());
 		assertEquals(2, synchronizer.getNumRounds());
 	}
+
+	@Test
 	public void testExtraUpdate2() throws IOException, ParseException, SAXException, ParserConfigurationException {
 		FeatureCollectionType client = make(f("F1",39),f("F5",35),f("F4",33),f("F3",38),f("F2",36),f("F6",37));
 		FeatureCollectionType server = make(f("F1",39),f("F5",40),f("F4",33),f("F3",41),f("F2",36),f("F6",37));
@@ -278,6 +284,8 @@ public class MidRoundServerChangesIntegrationTest extends WFSTestSupport {
 		assertEquals(0, synchronizer.getNumDeletes());
 		assertEquals(2, synchronizer.getNumRounds());
 	}
+
+	@Test
 	public void testExtraUpdate3() throws IOException, ParseException, SAXException, ParserConfigurationException {
 		FeatureCollectionType client = make(f("F1",59),f("F5",60),f("F4",57),f("F3",58),f("F2",56),f("F6",61));
 		FeatureCollectionType server = make(f("F1",63),f("F5",60),f("F4",64),f("F3",58),f("F2",56),f("F6",62));
@@ -314,6 +322,7 @@ public class MidRoundServerChangesIntegrationTest extends WFSTestSupport {
 		assertEquals(2, synchronizer.getNumRounds());
 	}
 
+	@Test
 	public void testExtraUpdate3_6() throws IOException, ParseException, SAXException, ParserConfigurationException {
 		FeatureCollectionType client = make(f("F1",59),f("F5",60),f("F4",57),f("F3",58),f("F2",56),f("F6",61));
 		FeatureCollectionType server = make(f("F1",63),f("F5",60),f("F4",64),f("F3",58),f("F2",56),f("F6",62));
@@ -350,6 +359,7 @@ public class MidRoundServerChangesIntegrationTest extends WFSTestSupport {
 		assertEquals(2, synchronizer.getNumRounds());
 	}
 	
+	@Test
 	public void testExtraUpdateF1() throws IOException, ParseException, SAXException, ParserConfigurationException {
 		FeatureCollectionType client = make(f("F1",24203),f("F5",24206),f("F4",24208),f("F3",24207),f("F2",24209),f("F6",24201));
 		FeatureCollectionType server = make(f("F1",24214),f("F5",24211),f("F4",24210),f("F3",24215),f("F2",24212),f("F6",24213));
@@ -386,6 +396,7 @@ public class MidRoundServerChangesIntegrationTest extends WFSTestSupport {
 		assertEquals(2, synchronizer.getNumRounds());
 	}
 	
+	@Test
 	public void testAddUpdateDeleteDuringRounds() throws IOException, ParseException, SAXException, ParserConfigurationException {
 		FeatureCollectionType client = make(f("U1",100),f("U2",200),f("U3",300),f("U4",400));
 		FeatureCollectionType server = make(f("U1",101),f("U2",201),f("U3",301),f("U4",401));

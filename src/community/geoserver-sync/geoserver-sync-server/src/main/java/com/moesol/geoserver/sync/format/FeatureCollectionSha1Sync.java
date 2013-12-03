@@ -89,7 +89,7 @@ public class FeatureCollectionSha1Sync {
 		m_out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(output, UTF8)));
 	}
 
-	public void write(FeatureCollectionResponse featureCollection){
+	public void write(FeatureCollectionResponse featureCollection) {
 		captureFilterParameters();
 		setCollection(featureCollection);
 	    Sha1SyncJson response = compute();

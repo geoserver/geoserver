@@ -35,24 +35,29 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>geoserver.sync</groupId>
-        <artifactId>geoserver-sync</artifactId>
-        <version>2.0.6-SNAPSHOT</version>
+    	<groupId>org.geoserver.community</groupId>
+    	<artifactId>geoserver-sync</artifactId>
+        <version>2.5-SNAPSHOT</version>
     </parent>
 
     <artifactId>geoserver-sync-server</artifactId>
-
     <name>geoserver-sync-server</name>
 
     <dependencies>
 
         <dependency>
-            <groupId>geoserver.sync</groupId>
+            <groupId>org.geoserver.community</groupId>
             <artifactId>geoserver-sync-core</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+            	<exclusion>
+            		<artifactId>spring</artifactId>
+            		<groupId>org.springframework</groupId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
-            <groupId>geoserver.sync</groupId>
+            <groupId>org.geoserver.community</groupId>
             <artifactId>geoserver-sync-core</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
@@ -62,7 +67,6 @@
         <dependency>
             <groupId>org.geoserver</groupId>
             <artifactId>wfs</artifactId>
-            <version>${geoserver.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -72,16 +76,16 @@
         <dependency>
             <groupId>org.geoserver</groupId>
             <artifactId>wfs</artifactId>
-            <version>${geoserver.version}</version>
             <classifier>tests</classifier>
             <scope>test</scope>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.geoserver</groupId>
             <artifactId>main</artifactId>
-            <version>${geoserver.version}</version>
             <classifier>tests</classifier>
             <scope>test</scope>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.mockrunner</groupId>
@@ -96,7 +100,7 @@
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-sample-data-access</artifactId>
-            <version>${geotools.version}</version>
+            <version>${gt.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

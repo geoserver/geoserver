@@ -35,9 +35,9 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>geoserver.sync</groupId>
-        <artifactId>geoserver-sync</artifactId>
-        <version>2.0.6-SNAPSHOT</version>
+		<groupId>org.geoserver.community</groupId>
+		<artifactId>geoserver-sync</artifactId>
+		<version>2.5-SNAPSHOT</version>
     </parent>
 
     <artifactId>geoserver-sync-core</artifactId>
@@ -52,16 +52,16 @@
         <dependency>
             <groupId>org.geoserver</groupId>
             <artifactId>wfs</artifactId>
-            <version>${geoserver.version}</version>
             <classifier>tests</classifier>
             <scope>test</scope>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.geoserver</groupId>
             <artifactId>main</artifactId>
-            <version>${geoserver.version}</version>
             <classifier>tests</classifier>
             <scope>test</scope>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.mockrunner</groupId>
@@ -76,8 +76,8 @@
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-sample-data-access</artifactId>
-            <version>${geotools.version}</version>
             <scope>test</scope>
+            <version>${gt.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>

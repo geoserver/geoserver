@@ -33,25 +33,22 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0  http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>geoserver.sync</groupId>
+    
+    <parent>
+        <groupId>org.geoserver</groupId>
+        <artifactId>community</artifactId>
+        <version>2.5-SNAPSHOT</version>
+    </parent>
+    <groupId>org.geoserver.community</groupId>
     <artifactId>geoserver-sync</artifactId>
     <packaging>pom</packaging>
-    <version>2.0.6-SNAPSHOT</version>
     <name>Geoserver Synchronization</name>
 	
-	
-	
 	<properties>
-		<!--<geoserver.version>2.0.1</geoserver.version>
-		<geotools.version>2.6.1</geotools.version>-->
-		<!--<geoserver.version>2.5-SNAPSHOT</geoserver.version>-->
-		<geoserver.version>2.4.0</geoserver.version>
-		<geotools.version>10.0</geotools.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.organization.name>Moebius Solutions Inc.</project.organization.name>
 		<project.inceptionYear>2013</project.inceptionYear>
 		<project.projectName>geoserver-sync</project.projectName>
-		
 		<license.licenseName>gpl_v2</license.licenseName>
 	</properties>
 
@@ -149,7 +146,7 @@
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-app-schema</artifactId>
-            <version>${geotools.version}</version>
+            <version>${gt.version}</version>
             <exclusions>
                 <exclusion>
                     <artifactId>commons-io</artifactId>
@@ -172,11 +169,6 @@
 			<groupId>net.java.dev.jai-imageio</groupId>
 			<artifactId>jai-imageio-core-standalone</artifactId>
 			<version>1.2-pre-dr-b04-2011-07-04</version>
-		</dependency>
-		<dependency>	
-			<groupId>org.springframework</groupId>
-			<artifactId>spring</artifactId>
-			<version>2.5.6</version>
 		</dependency>
 	</dependencies>
     

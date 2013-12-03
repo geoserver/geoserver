@@ -35,9 +35,9 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>geoserver.sync</groupId>
-        <artifactId>geoserver-sync</artifactId>
-        <version>2.0.6-SNAPSHOT</version>
+    	<groupId>org.geoserver.community</groupId>
+    	<artifactId>geoserver-sync</artifactId>
+        <version>2.5-SNAPSHOT</version>
     </parent>
 
     <artifactId>sync-test-client</artifactId>
@@ -45,7 +45,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>geoserver.sync</groupId>
+            <groupId>org.geoserver.community</groupId>
             <artifactId>geotools-sync-client</artifactId>
             <version>${project.version}</version>
             <exclusions>
@@ -77,7 +77,7 @@
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-sample-data-access</artifactId>
-            <version>${geotools.version}</version>
+            <version>${gt.version}</version>
             <type>jar</type>
             <scope>test</scope>
         </dependency>

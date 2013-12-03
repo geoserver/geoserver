@@ -1,7 +1,7 @@
 /**
  *
  *  #%L
- *  geoserver-sync-server
+ *  geoserver-sync-core
  *  $Id:$
  *  $HeadURL:$
  *  %%
@@ -136,13 +136,12 @@ public class Sha1SyncFilterFunction extends FunctionExpressionImpl implements Vo
 		FORMAT_OPTIONS.set(atts);
 		REMOTE_SHA1_SYNC.set(remoteSha1Sync);
 		FEATURE_SHA1S.set(m_featureSha1s);
-		LOGGER.log(Level.FINE, "Recorded: {0}/{1}/{2}", 
+		LOGGER.log(Level.FINER, "Recorded: {0}/{1}/{2}", 
 				new Object[] { FORMAT_OPTIONS.get(), REMOTE_SHA1_SYNC.get(), FEATURE_SHA1S.get() });
 	}
 	
 	@Override
 	public Object evaluate(Object object) {
-		System.out.format("---------------- evaluate: %s, this=%s%n", object.hashCode(), this.hashCode());
 		maybeOneTimeSetup(); // Collect sha1s over all filters checked.
 
 		Feature feature = (Feature) object;

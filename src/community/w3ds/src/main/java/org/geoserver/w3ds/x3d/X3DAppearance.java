@@ -7,17 +7,19 @@
 
 package org.geoserver.w3ds.x3d;
 
+import java.awt.*;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import org.geoserver.w3ds.styles.FillImpl3D;
 import org.geoserver.w3ds.styles.PolygonSymbolizerImpl3D;
+import org.geotools.filter.AndImpl;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.IsEqualsToImpl;
 import org.geotools.filter.LiteralExpressionImpl;
 import org.geotools.styling.Fill;
-import org.geotools.styling.PolygonSymbolizerImpl;
 import org.geotools.styling.Rule;
+import org.geotools.styling.StrokeImpl;
 import org.geotools.styling.Symbolizer;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
@@ -175,14 +177,17 @@ public class X3DAppearance {
 			String v2 = this
 					.getExpressionValue(equal.getExpression2(), feature);
 			return v1.equalsIgnoreCase(v2);
-		}
+		} else if (this.filter.getClass().isAssignableFrom(AndImpl.class)) {
+            AndImpl and = (AndImpl) filter;
+            return and.evaluate(feature);
+        }
 		return false;
 	}
 
-	public void update(Fill fill_, Feature feature) {
+	public void update(Fill fill_, StrokeImpl stroke_, Feature feature) {
 
 		// Provisory hack to have 3D style (see Styles3D)
-		if (fill_.getClass().getName().equalsIgnoreCase(FillImpl3D.class.getName())) {
+		if (fill_ != null && fill_.getClass().getName().equalsIgnoreCase(FillImpl3D.class.getName())) {
 			FillImpl3D fill = (FillImpl3D) fill_;
 			if (fill.getDiffuseColor() != null) {
 				String value = getExpressionValue(fill.getDiffuseColor(),
@@ -207,6 +212,17 @@ public class X3DAppearance {
 				}
 			}
 		}
+        if (stroke_ != null) {
+            Expression color = stroke_.getColor();
+            if (color != null) {
+                String colorValue = (String)color.evaluate(feature);
+                Color colorObject = Color.decode(colorValue);
+                this.diffuseColor.setValue(colorObject.getRed()/255f + ", " +
+                                           colorObject.getGreen()/255f + ", " +
+                                           colorObject.getBlue()/255f);
+                this.diffuseColor.setValid(true);
+            }
+        }
 	}
 
 	public X3DNode getX3dNode(Feature feature) {
@@ -216,7 +232,7 @@ public class X3DAppearance {
 		for (Symbolizer s : symbolizers) {
 			if (s.getClass().isAssignableFrom(PolygonSymbolizerImpl3D.class)) {
 				PolygonSymbolizerImpl3D p = (PolygonSymbolizerImpl3D) s;
-				update(p.getFill(), feature);
+				update(p.getFill(), p.getStroke(), feature);
 			}
 		}
 		return appearance.clone();

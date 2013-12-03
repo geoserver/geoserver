@@ -1,7 +1,7 @@
 /**
  *
  *  #%L
- *  geoserver-sync-server
+ *  geoserver-sync-core
  *  $Id:$
  *  $HeadURL:$
  *  %%

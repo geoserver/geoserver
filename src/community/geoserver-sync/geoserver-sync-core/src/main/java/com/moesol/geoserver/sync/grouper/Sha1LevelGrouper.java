@@ -129,7 +129,7 @@ public abstract class Sha1LevelGrouper {
 	}
 	
 	private void doGroupCompleted(GroupPosition position, Sha1Value sha1Value, long maxInGroup) {
-		LOGGER.log(Level.INFO, "--group({0},{1},{2})", new Object[] {position, sha1Value, maxInGroup });
+		LOGGER.log(Level.FINER, "--group({0},{1},{2})", new Object[] {position, sha1Value, maxInGroup });
 		groupCompleted(position, sha1Value);
 	}
 

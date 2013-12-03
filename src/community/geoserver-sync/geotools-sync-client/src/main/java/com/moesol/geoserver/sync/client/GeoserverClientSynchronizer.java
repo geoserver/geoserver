@@ -306,7 +306,8 @@ public class GeoserverClientSynchronizer {
 		} finally {
 			m_numRounds++;
 			LOGGER.log(Level.FINEST, "ms({0}), server.level({1})", 
-					new Object[] {System.currentTimeMillis() - s, m_server.level()});
+					new Object[] {System.currentTimeMillis() - s, 
+					m_server != null ? m_server.level() : "server=null?"});
 			m_roundListener.afterRound(roundNumber);
 		}
 	}

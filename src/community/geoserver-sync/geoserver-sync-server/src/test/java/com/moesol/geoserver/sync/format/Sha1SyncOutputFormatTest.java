@@ -26,12 +26,11 @@
 
 package com.moesol.geoserver.sync.format;
 
-
 import static org.junit.Assert.*;
-//import static org.junit.rules.;
 
 import org.geoserver.wfs.WFSTestSupport;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.google.gson.Gson;
@@ -39,9 +38,6 @@ import com.moesol.geoserver.sync.filter.Sha1SyncFilterFunction;
 import com.moesol.geoserver.sync.json.Sha1SyncJson;
 import com.moesol.geoserver.sync.json.Sha1SyncPositionHash;
 
-
-
-//public class Sha1SyncOutputFormatTest{
 public class Sha1SyncOutputFormatTest extends WFSTestSupport {
 	
 	protected void tearDownInternal() throws Exception {
@@ -50,6 +46,10 @@ public class Sha1SyncOutputFormatTest extends WFSTestSupport {
     	Sha1SyncFilterFunction.clearThreadLocals();
 	}
 	
+	@Before
+	public void beforeTest() {
+    	Sha1SyncFilterFunction.clearThreadLocals();
+	}
 	@After
 	public void afterTest() {
 		SyncChecksumOutputFormat.JUNIT_SHA1_SYNC.set(null);
@@ -74,6 +74,7 @@ public class Sha1SyncOutputFormatTest extends WFSTestSupport {
 		assertEquals("d3659f943fcdda512093d1c573856e8295201c23", sync.hashes().get(0).summary());
         assertEquals(2L, sync.max());
     }
+
 	@Test
     public void testOutputFormatLevel0() throws Exception {
     	// Version 2.0.1 of geoserver does not support : in the format_options value via \\
@@ -288,19 +289,17 @@ public class Sha1SyncOutputFormatTest extends WFSTestSupport {
     	String result = getAsString("wfs?request=DescribeFeatureType"); 
         System.out.println("result: " + result);
     }
-   @Test
-   
-   public void testDescribeFeatureBuildings() throws Exception {
-    	setRequestAuth("admin", "password");
-    	String result = getAsString("wfs?request=DescribeFeatureType&typeName=cite:Buildings"); 
-        System.out.println("result: " + result);
-   }
-    @Test
-    public void testGetFeatureType() throws Exception {
-    	setRequestAuth("admin", "password");
-    	String result = getAsString("wfs?request=GetFeature&typeName=cite:Buildings"); 
-        System.out.println("result: " + result);
-    }
-    
+	@Test
+	public void testDescribeFeatureBuildings() throws Exception {
+		setRequestAuth("admin", "password");
+		String result = getAsString("wfs?request=DescribeFeatureType&typeName=cite:Buildings"); 
+		System.out.println("result: " + result);
+	}
+	@Test
+	public void testGetFeatureType() throws Exception {
+		setRequestAuth("admin", "password");
+		String result = getAsString("wfs?request=GetFeature&typeName=cite:Buildings"); 
+		System.out.println("result: " + result);
+	}
 
 }

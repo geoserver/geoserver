@@ -36,6 +36,8 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.FilterFactory;
 
+import com.mockrunner.mock.web.MockHttpServletResponse;
+
 /**
  * 
  * Test for WFS GetFeature OutputFormat for GeoPackage
@@ -100,7 +102,18 @@ public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
         fct.getFeature().add(coll);                
         testGetFeature(fct);
     }
-    
+
+    @Test
+    public void testHttpStuff() throws Exception {
+        String layerName = SystemTestData.BASIC_POLYGONS.getLocalPart(); 
+        MockHttpServletResponse resp = getAsServletResponse("wfs?request=getfeature&typename="
+            +layerName+"&outputformat=geopackage");
+        assertEquals(GeoPkg.MIME_TYPE, resp.getContentType());
+
+        
+        assertEquals("attachment; filename="+layerName+".gpkg", resp.getHeader("Content-Disposition"));
+    }
+
     public void testGetFeature (FeatureCollectionResponse fct) throws IOException {
         //FileOutputStream fos = new FileOutputStream(new File("/home/niels/Temp/geopkg.db"));
         //format.write(fct, fos, op);

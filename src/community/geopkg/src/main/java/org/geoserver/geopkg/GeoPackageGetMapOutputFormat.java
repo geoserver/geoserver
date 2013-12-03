@@ -5,6 +5,7 @@
 package org.geoserver.geopkg;
 
 import static java.lang.String.format;
+import static org.geoserver.geopkg.GeoPkg.*;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -78,14 +79,9 @@ public class GeoPackageGetMapOutputFormat extends AbstractMapOutputFormat {
 
     static Logger LOGGER = Logging.getLogger("org.geoserver.geopkg");
 
-    static final String MIME_TYPE = "application/x-sqlite3";
-    //static final String MIME_TYPE = "application/zip";
-
     static final String PNG_MIME_TYPE = "image/png";
 
     static final String JPEG_MIME_TYPE = "image/jpeg";
-
-    static final Set<String> NAMES = Sets.newHashSet("geopackage", "geopkg", "gpkg");
 
     static final int TILE_CLEANUP_INTERVAL;
     static {
@@ -101,7 +97,7 @@ public class GeoPackageGetMapOutputFormat extends AbstractMapOutputFormat {
     GWC gwc;
 
     public GeoPackageGetMapOutputFormat(WebMapService webMapService, WMS wms, GWC gwc) {
-        super(MIME_TYPE, NAMES);
+        super(MIME_TYPE, Sets.newHashSet(NAMES));
         this.webMapService = webMapService;
         this.wms = wms;
         this.gwc = gwc;

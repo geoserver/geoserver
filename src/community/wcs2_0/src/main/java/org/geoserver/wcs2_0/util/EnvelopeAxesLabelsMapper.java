@@ -84,9 +84,9 @@ public class EnvelopeAxesLabelsMapper {
         // some default axis have weird abbreviations (greek letters), handle them separately
         String label = axis.getAbbreviation();
         if(label.equals(DefaultCoordinateSystemAxis.LONGITUDE.getAbbreviation())) {
-            return "lon";
+            return "Long";
         } else if(label.equals(DefaultCoordinateSystemAxis.LATITUDE.getAbbreviation())) {
-            return "lat";
+            return "Lat";
         } else {
             
             return label;

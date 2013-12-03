@@ -61,7 +61,7 @@ public class ControlFlowCallback extends AbstractDispatcherCallback implements
     }
 
     public void finished(Request request) {
-        if(SENTINEL.isOutermostRequest()) {
+        if(SENTINEL.isOutermostRequest() && REQUEST_CONTROLLERS.get() != null) {
             runningRequests.decrementAndGet();
             // call back the same controllers we used when the operation started
             if (REQUEST_CONTROLLERS.get() != null) {

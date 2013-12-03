@@ -27,16 +27,17 @@
 package com.moesol.geoserver.sync.filter;
 
 
-
+import static org.junit.Assert.*;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.geotools.factory.CommonFactoryFinder;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Expression;
 
@@ -49,24 +50,21 @@ import com.moesol.geoserver.sync.json.Sha1SyncPositionHash;
 import com.moesol.geoserver.sync.samples.Samples;
 import com.vividsolutions.jts.io.ParseException;
 
-public class Sha1SyncFilterFunctionTest extends TestCase {
+public class Sha1SyncFilterFunctionTest {
     private final FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(null);
     private final Samples m_samples = new Samples();
     
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		System.setProperty("sha1.keep.name", "true");
+	@Before
+	public void setUp() throws Exception {
+    	Sha1SyncFilterFunction.clearThreadLocals();
 	}
 	
-    @Override
-	protected void tearDown() throws Exception {
-		super.tearDown();
+    @After
+    public void tearDown() throws Exception {
 		Sha1SyncFilterFunction.clearThreadLocals();
-		System.clearProperty("sha1.keep.name");
 	}
 
-
+    @Test
 	public void testTwoFewArgs() throws ParseException {
 		Sha1SyncJson sync = new Sha1SyncJson().level(0).max(0);
 		List<Expression> args = new ArrayList<Expression>();
@@ -81,6 +79,7 @@ public class Sha1SyncFilterFunctionTest extends TestCase {
 		}
     }
 	
+    @Test
 	public void testEvaluateObject() throws ParseException {
 		Sha1SyncJson sync = new Sha1SyncJson().level(0).max(0);
 		List<Expression> args = new ArrayList<Expression>();
@@ -90,11 +89,17 @@ public class Sha1SyncFilterFunctionTest extends TestCase {
 		func.setParameters(args);
 		Object result;
 		
-		result = func.evaluate(feature());
+		Object feature = feature();
+		result = func.evaluate(feature);
 		assertEquals("true", result.toString());
 		assertEquals(1, func.getFeatureSha1s().size());
-		assertEquals("ee99b7fbcfd28b5a84fd478d8c92d574d3e4875a", v1(func.getFeatureSha1s().get(0)).toString());
-		result = func.evaluate(feature());
+		//
+		System.out.println("EVALUATE OBJECT: " + func.getFeatureSha1s());
+		//
+		assertEquals("feature: " + feature + ",sha1s: " + func.getFeatureSha1s(),
+				"ee99b7fbcfd28b5a84fd478d8c92d574d3e4875a", 
+				v1(func.getFeatureSha1s().get(0)).toString());
+		result = func.evaluate(feature);
 		assertEquals("true", result.toString());
 		
 		assertEquals(2, func.getFeatureSha1s().size());
@@ -102,6 +107,63 @@ public class Sha1SyncFilterFunctionTest extends TestCase {
 		assertEquals("ee99b7fbcfd28b5a84fd478d8c92d574d3e4875a", v1(func.getFeatureSha1s().get(1)).toString());
 	}
 
+    @Test
+	public void testEvaluateObjectWithStar() throws ParseException {
+		Sha1SyncJson sync = new Sha1SyncJson().level(0).max(0);
+		List<Expression> args = new ArrayList<Expression>();
+		args.add(ff.literal("*"));
+		args.add(ff.literal(new Gson().toJson(sync)));
+		Sha1SyncFilterFunction func = new Sha1SyncFilterFunction();
+		func.setParameters(args);
+		Object result;
+		
+		Object feature = feature();
+		result = func.evaluate(feature);
+		assertEquals("true", result.toString());
+		assertEquals(1, func.getFeatureSha1s().size());
+		//
+		System.out.println("EVALUATE OBJECT: " + func.getFeatureSha1s());
+		//
+		assertEquals("feature: " + feature + ",sha1s: " + func.getFeatureSha1s(),
+				"ee99b7fbcfd28b5a84fd478d8c92d574d3e4875a", 
+				v1(func.getFeatureSha1s().get(0)).toString());
+		result = func.evaluate(feature);
+		assertEquals("true", result.toString());
+		
+		assertEquals(2, func.getFeatureSha1s().size());
+		assertEquals("ee99b7fbcfd28b5a84fd478d8c92d574d3e4875a", v1(func.getFeatureSha1s().get(0)).toString());
+		assertEquals("ee99b7fbcfd28b5a84fd478d8c92d574d3e4875a", v1(func.getFeatureSha1s().get(1)).toString());
+	}
+	
+    @Test
+	public void testEvaluateObjectWithoutName() throws ParseException {
+		Sha1SyncJson sync = new Sha1SyncJson().level(0).max(0);
+		List<Expression> args = new ArrayList<Expression>();
+		args.add(ff.literal("* -name"));
+		args.add(ff.literal(new Gson().toJson(sync)));
+		Sha1SyncFilterFunction func = new Sha1SyncFilterFunction();
+		func.setParameters(args);
+		Object result;
+		
+		Object feature = feature();
+		result = func.evaluate(feature);
+		assertEquals("true", result.toString());
+		assertEquals(1, func.getFeatureSha1s().size());
+		//
+		System.out.println("EVALUATE OBJECT: " + func.getFeatureSha1s());
+		//
+		assertEquals("feature: " + feature + ",sha1s: " + func.getFeatureSha1s(),
+				"a0d545781a8852e26514091f08f2384942bf4061", 
+				v1(func.getFeatureSha1s().get(0)).toString());
+		result = func.evaluate(feature);
+		assertEquals("true", result.toString());
+		
+		assertEquals(2, func.getFeatureSha1s().size());
+		assertEquals("a0d545781a8852e26514091f08f2384942bf4061", v1(func.getFeatureSha1s().get(0)).toString());
+		assertEquals("a0d545781a8852e26514091f08f2384942bf4061", v1(func.getFeatureSha1s().get(1)).toString());
+	}
+    
+    @Test
 	public void testSha1Match() throws ParseException, NoSuchAlgorithmException {
 		Sha1Value featureSha1 = new Sha1Value("ee99b7fbcfd28b5a84fd478d8c92d574d3e4875a");
 		MessageDigest SHA1 = MessageDigest.getInstance("SHA-1");
@@ -148,6 +210,7 @@ public class Sha1SyncFilterFunctionTest extends TestCase {
 //		}
 //	}
 	
+    @Test
 	public void testSha1Match_InSameGroupButNotSame() throws ParseException, NoSuchAlgorithmException {
 		Sha1Value featureSha1 = new Sha1Value("F6e82e2d2452830bbdb9bc1ce353a2e159996308");
 		MessageDigest SHA1 = MessageDigest.getInstance("SHA-1");
@@ -179,6 +242,7 @@ public class Sha1SyncFilterFunctionTest extends TestCase {
 		return VersionFeatures.VERSION1.getBucketPrefixSha1(pair);
 	}
 	
+    @Test
 	public void testSha1MatchShallow() throws ParseException, NoSuchAlgorithmException {
 		Sha1Value featureSha1 = new Sha1Value("56e82e2d2452830bbdb9bc1ce353a2e159996308");
 		MessageDigest SHA1 = MessageDigest.getInstance("SHA-1");

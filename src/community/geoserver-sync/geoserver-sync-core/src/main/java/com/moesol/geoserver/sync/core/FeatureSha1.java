@@ -56,7 +56,6 @@ import org.opengis.geometry.Geometry;
  */
 public class FeatureSha1 {
 	private static final Logger LOGGER = Logger.getLogger(FeatureSha1.class.getName());
-	private static boolean SHA1_KEEP_NAME = Boolean.getBoolean("sha1.keep.name");
 	public static FeatureSha1Mapper MAPPER = new FeatureSha1Mapper() {
 		@Override
 		public Sha1Value map(Sha1Value old) {
@@ -170,15 +169,17 @@ public class FeatureSha1 {
 			LOGGER.log(Level.FINER, "Geometry skipped {0}", value);
 			return;
 		}
-		// TODO: Strangely some features have two names on the client.
-		if ("name".equals(p.getName().toString()) && !SHA1_KEEP_NAME) {
-			LOGGER.log(Level.FINER, "Name skipped {0}", value);
-			return;
-		}
 		if (value instanceof com.vividsolutions.jts.geom.Geometry) {
 			LOGGER.log(Level.FINER, "Geometry skipped {0}", value);
 			return;
 		}
+		// TODO: Strangely some features have two names on the client.
+		// TODO: Use *,-name to remove name from the list of attributes
+		// -Dsha1.keep.name no longer supported
+//		if ("name".equals(p.getName().toString()) && !SHA1_KEEP_NAME) {
+//			LOGGER.log(Level.FINER, "Name skipped {0}", value);
+//			return;
+//		}
 		if (value instanceof Timestamp) {
 			Timestamp ts = (Timestamp) value;
 			value = ts.getTime(); // Make sure we use UTC
@@ -205,7 +206,13 @@ public class FeatureSha1 {
 		if (m_attributesToInclude.contains(p.getName().toString())) {
 			return true;
 		}
-		if (m_attributesToInclude.contains("-all")) {
+		if (m_attributesToInclude.contains("-" + p.getName().toString())) {
+			return false;
+		}
+		if (m_attributesToInclude.contains("-all")) { // deprecated
+			return true;
+		}
+		if (m_attributesToInclude.contains("*")) {
 			return true;
 		}
 		LOGGER.log(Level.FINER, "Skipping: {0}", p.getName());

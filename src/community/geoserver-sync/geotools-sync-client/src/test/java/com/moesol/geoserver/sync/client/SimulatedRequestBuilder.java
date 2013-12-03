@@ -55,8 +55,6 @@ import com.moesol.geoserver.sync.filter.Sha1SyncFilterFunction;
 import com.moesol.geoserver.sync.format.FeatureCollectionSha1Sync;
 import com.moesol.geoserver.sync.json.Sha1SyncJson;
 
-import static org.junit.Assert.*;
-
 final class SimulatedRequestBuilder implements RequestBuilderJUnit {
     private final FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(null);
 	private FeatureCollectionType m_server;
@@ -90,15 +88,9 @@ final class SimulatedRequestBuilder implements RequestBuilderJUnit {
 	SimulatedRequestBuilder(FeatureCollectionType server) {
 		m_server = server;
 	}
-	/*SimulatedRequestBuilder(FeatureCollectionResponse server) {
-		m_server = server;
-	}*/	
 	public void setServer(FeatureCollectionType server) {
 		m_server = server;
 	}
-	/*public void setServer(FeatureCollectionResponse server) {
-		m_server = server;
-	}*/
 
 	@Override
 	public Response post(String url, String xml) throws IOException {
@@ -109,8 +101,6 @@ final class SimulatedRequestBuilder implements RequestBuilderJUnit {
 			m_filter.setParameters(args);
 			
 			FeatureCollectionType serverResp = applyFilter(m_server, m_filter);
-			//FeatureCollectionResponse serverResp = applyFilter(m_server, m_filter);
-			
 			
 			TestResponseFeatureCollection respFeatureCollection = new TestResponseFeatureCollection();
 			respFeatureCollection.setFeatureCollection((FeatureCollection<?, ?>)serverResp.getFeature().get(0));
@@ -121,7 +111,7 @@ final class SimulatedRequestBuilder implements RequestBuilderJUnit {
 			FeatureCollectionSha1Sync sha1Sync = new FeatureCollectionSha1Sync(output);
 			sha1Sync.parseAttributesToInclude(m_atts);
 			sha1Sync.parseSha1SyncJson(m_json);
-			//sha1Sync.write(m_server);
+			sha1Sync.write(FeatureCollectionResponse.adapt(m_server));
 			
 			ByteArrayInputStream bais = new ByteArrayInputStream(output.toByteArray());
 			TestResponse response = new TestResponse();

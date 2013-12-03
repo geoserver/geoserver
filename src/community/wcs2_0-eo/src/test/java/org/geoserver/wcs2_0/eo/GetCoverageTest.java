@@ -22,6 +22,14 @@ public class GetCoverageTest extends WCSEOTestSupport {
     }
     
     @Test
+    public void testNoCoverageId() throws Exception {
+        // ask for a granule that's not there, but whose coverage is not there
+        MockHttpServletResponse response = getAsServletResponse("wcs?service=WCS&version=2.0.1&request=GetCoverage");
+        checkOws20Exception(response, 400, "MissingParameterValue", "coverageId");
+    }
+
+    
+    @Test
     public void testSimpleSelection() throws Exception {
         // ask for the right coverage, and the granule is there
         Document dom = getAsDOM("wcs?service=WCS&version=2.0.1&request=GetCoverage&coverageId=sf__timeranges_granule_time_domainsRanges.4&outputFormat=&format=application%2Fgml%2Bxml");

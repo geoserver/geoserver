@@ -45,6 +45,10 @@ public class GetCoverageEOCallback extends AbstractDispatcherCallback {
             // check we are going against a granule
             GetCoverageType gc = (GetCoverageType) parameters[0];
             String coverageId = gc.getCoverageId();
+            if(coverageId == null) {
+                throw new WCS20Exception("Required parameter coverageId is missing", 
+                        WCS20Exception.WCS20ExceptionCode.MissingParameterValue, "coverageId");
+            }
             CoverageInfo coverage = codec.getGranuleCoverage(coverageId);
             if(coverage != null) {
                 // set the actual coverage name

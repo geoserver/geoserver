@@ -201,7 +201,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         
         // check the envelope with time
         assertXpathEvaluatesTo("1", "count(//gml:boundedBy/gml:EnvelopeWithTimePeriod)", dom);
-        assertXpathEvaluatesTo("lat lon time", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/@axisLabels", dom);
+        assertXpathEvaluatesTo("Lat Long time", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/@axisLabels", dom);
         assertXpathEvaluatesTo("Deg Deg s", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/@uomLabels", dom);
         assertXpathEvaluatesTo("2008-10-31T00:00:00.000Z", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/gml:beginPosition", dom);
         assertXpathEvaluatesTo("2008-11-07T00:00:00.000Z", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/gml:endPosition", dom);
@@ -350,7 +350,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
     private void checkWaterTempTimeEnvelope(Document dom) throws XpathException {
         // check the envelope with time
         assertXpathEvaluatesTo("1", "count(//gml:boundedBy/gml:EnvelopeWithTimePeriod)", dom);
-        assertXpathEvaluatesTo("lat lon time", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/@axisLabels", dom);
+        assertXpathEvaluatesTo("Lat Long time", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/@axisLabels", dom);
         assertXpathEvaluatesTo("Deg Deg s", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/@uomLabels", dom);
         assertXpathEvaluatesTo("2008-10-31T00:00:00.000Z", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/gml:beginPosition", dom);
         assertXpathEvaluatesTo("2008-11-01T00:00:00.000Z", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/gml:endPosition", dom);
@@ -359,7 +359,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
     private void checkWaterTempTimeElevationEnvelope(Document dom) throws XpathException {
         // check the envelope with time
         assertXpathEvaluatesTo("1", "count(//gml:boundedBy/gml:EnvelopeWithTimePeriod)", dom);
-        assertXpathEvaluatesTo("lat lon elevation time", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/@axisLabels", dom);
+        assertXpathEvaluatesTo("Lat Long elevation time", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/@axisLabels", dom);
         assertXpathEvaluatesTo("Deg Deg m s", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/@uomLabels", dom);
         assertXpathEvaluatesTo("3", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/@srsDimension", dom);
         assertXpathEvaluatesTo("40.562080748421806 0.23722068851276978 0.0", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/gml:lowerCorner", dom);
@@ -371,7 +371,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
     private void checkWaterTempElevationEnvelope(Document dom) throws XpathException {
         // check the envelope with time
         assertXpathEvaluatesTo("1", "count(//gml:boundedBy/gml:EnvelopeWithTimePeriod)", dom);
-        assertXpathEvaluatesTo("lat lon elevation", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/@axisLabels", dom);
+        assertXpathEvaluatesTo("Lat Long elevation", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/@axisLabels", dom);
         assertXpathEvaluatesTo("Deg Deg m", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/@uomLabels", dom);
         assertXpathEvaluatesTo("3", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/@srsDimension", dom);
         assertXpathEvaluatesTo("40.562080748421806 0.23722068851276978 0.0", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/gml:lowerCorner", dom);
@@ -381,7 +381,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
     private void checkElevationRangesEnvelope(Document dom) throws XpathException {
         // check the envelope with time
         assertXpathEvaluatesTo("1", "count(//gml:boundedBy/gml:EnvelopeWithTimePeriod)", dom);
-        assertXpathEvaluatesTo("lat lon elevation", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/@axisLabels", dom);
+        assertXpathEvaluatesTo("Lat Long elevation", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/@axisLabels", dom);
         assertXpathEvaluatesTo("Deg Deg m", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/@uomLabels", dom);
         assertXpathEvaluatesTo("3", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/@srsDimension", dom);
         assertXpathEvaluatesTo("40.562080748421806 0.23722068851276978 20.0", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/gml:lowerCorner", dom);
@@ -391,7 +391,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
     private void checkTimeElevationRangesEnvelope(Document dom) throws XpathException {
         // check the envelope with time
         assertXpathEvaluatesTo("1", "count(//gml:boundedBy/gml:EnvelopeWithTimePeriod)", dom);
-        assertXpathEvaluatesTo("lat lon elevation time", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/@axisLabels", dom);
+        assertXpathEvaluatesTo("Lat Long elevation time", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/@axisLabels", dom);
         assertXpathEvaluatesTo("Deg Deg m s", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/@uomLabels", dom);
         assertXpathEvaluatesTo("3", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/@srsDimension", dom);
         assertXpathEvaluatesTo("40.562080748421806 0.23722068851276978 20.0", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/gml:lowerCorner", dom);

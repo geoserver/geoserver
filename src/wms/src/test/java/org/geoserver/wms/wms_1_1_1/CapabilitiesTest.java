@@ -313,6 +313,22 @@ public class CapabilitiesTest extends WMSTestSupport {
         assertXpathEvaluatesTo("__fax", cinfo + "ContactFacsimileTelephone", doc);
         assertXpathEvaluatesTo("e@mail", cinfo + "ContactElectronicMailAddress", doc);
     }
+    
+    @Test 
+    public void testNoFeesOrContraints() throws Exception {
+        final WMSInfo service = getGeoServer().getService(WMSInfo.class);
+        service.setAccessConstraints(null);
+        service.setFees(null);
+        getGeoServer().save(service);
+
+        Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.1.1", true);
+        // print(doc);
+
+        String base = "WMT_MS_Capabilities/Service/";
+        assertXpathEvaluatesTo("OGC:WMS", base + "Name", doc);
+        assertXpathEvaluatesTo("none", base + "Fees", doc);
+        assertXpathEvaluatesTo("none", base + "AccessConstraints", doc);
+    }
 
     @Test
     public void testQueryable() throws Exception{

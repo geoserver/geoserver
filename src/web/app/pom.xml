@@ -356,6 +356,16 @@
     </profile>
 
     <profile>
+      <id>kml</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geotools</groupId>
+          <artifactId>gt-kml</artifactId> 
+	  <version>${gt.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>arcsde</id>
       <dependencies>
         <dependency>

@@ -1,16 +1,25 @@
 package org.geoserver.community.css.web;
 
+import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.tabs.AjaxTabbedPanel;
-import org.apache.wicket.markup.html.panel.EmptyPanel;
+import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.data.test.MockData;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.GeoServerTablePanel;
+import org.junit.Before;
 import org.junit.Test;
 
 public class CssDemoTest extends GeoServerWicketTestSupport {
+
+    @Before 
+    public void setup() {
+        login();
+    }
+    
     @Test
     public void testBasicLayout() {
-        login();
         tester.startPage(CssDemoPage.class);
         tester.assertRenderedPage(CssDemoPage.class);
         tester.assertComponent("main-content:context", AjaxTabbedPanel.class);
@@ -24,7 +33,6 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testOpenLayersMapPanel() {
-        login();
         tester.startPage(CssDemoPage.class);
         tester.clickLink("main-content:context:tabs-container:tabs:1:link");
         tester.assertComponent("main-content:context:panel", OpenLayersMapPanel.class);
@@ -32,7 +40,6 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testSLDPreviewPanel() {
-        login();
         tester.startPage(CssDemoPage.class);
         tester.clickLink("main-content:context:tabs-container:tabs:0:link");
         tester.assertComponent("main-content:context:panel", SLDPreviewPanel.class);
@@ -40,7 +47,6 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
 
     @Test 
     public void testStyleChooser() {
-        login();
         tester.startPage(CssDemoPage.class);
         tester.clickLink("main-content:change.style");
         tester.assertComponent("main-content:popup:content:style.table", GeoServerTablePanel.class);
@@ -49,7 +55,6 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testLayerChooser() {
-        login();
         tester.startPage(CssDemoPage.class);
         tester.clickLink("main-content:change.layer");
         tester.assertComponent("main-content:popup:content:layer.table", GeoServerTablePanel.class);
@@ -57,9 +62,28 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testDocsPanel() {
-        login();
         tester.startPage(CssDemoPage.class);
         tester.clickLink("main-content:context:tabs-container:tabs:3:link");
         tester.assertComponent("main-content:context:panel", DocsPanel.class);
+    }
+    
+    @Test
+    public void testWorkspaceSpecificStyle() {
+        // make this style workspace specific
+        StyleInfo si = getCatalog().getStyleByName(MockData.BASIC_POLYGONS.getLocalPart());
+        WorkspaceInfo ws = getCatalog().getWorkspaceByName(MockData.BASIC_POLYGONS.getPrefix());
+        si.setWorkspace(ws);
+        getCatalog().save(si);
+        
+        login();
+        PageParameters pp = new PageParameters();
+        String prefixedName = getLayerId(MockData.BASIC_POLYGONS);
+        pp.put("layer", prefixedName);
+        pp.put("style", prefixedName);
+        tester.startPage(CssDemoPage.class, pp);
+        tester.assertRenderedPage(CssDemoPage.class);
+        // print(tester.getLastRenderedPage(), true, true);
+        tester.assertModelValue("main-content:style.name", prefixedName);
+        tester.assertModelValue("main-content:layer.name", prefixedName);
     }
 }

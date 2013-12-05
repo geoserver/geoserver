@@ -69,8 +69,9 @@ public class ReaderDimensionsAccessor {
     
     /**
      * Comparator for TreeSet made either by Double objects, or by NumberRange objects
+     * public instead of private for use in WMS unit test.
      */
-    private static final Comparator<Object> ELEVATION_COMPARATOR = new Comparator<Object>() {
+    public static final Comparator<Object> ELEVATION_COMPARATOR = new Comparator<Object>() {
 
         @Override
         public int compare(Object o1, Object o2) {

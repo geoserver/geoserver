@@ -64,7 +64,6 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.styling.Style;
 import org.geotools.util.Converters;
-import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 import org.geotools.util.Range;
 import org.geotools.util.Version;
@@ -180,7 +179,14 @@ public class WMS implements ApplicationContextAware {
     public static final String KML_KMSCORE = "kmlKmscore";
 
     public static final int KML_KMSCORE_DEFAULT = 40;
-    
+
+    /**
+     * default elevation ServiceException
+     */
+    protected static final String DEFAULT_ELEVATION_NOT_DOUBLE_MSG = "Cannot be parsed to a Double.";
+
+    protected static final String DEFAULT_ELEVATION_NOT_IN_DOMAIN_MSG = "Not in available elevations.";
+
     /**
      * the WMS Animator animatorExecutor service
      */
@@ -1116,20 +1122,48 @@ public class WMS implements ApplicationContextAware {
      */
     Double getDefaultElevation(CoverageInfo coverage, ReaderDimensionsAccessor dimensions)
             throws IOException {
-        // check the time metadata
-        DimensionInfo elevation = coverage.getMetadata().get(ResourceInfo.ELEVATION,
+        // check the elevation metadata
+        DimensionInfo elevationDimensionInfo = coverage.getMetadata().get(ResourceInfo.ELEVATION,
                 DimensionInfo.class);
-        if (elevation == null || !coverage.isEnabled()) {
+        if (elevationDimensionInfo == null || !coverage.isEnabled()) {
             throw new ServiceException("Layer " + coverage.getPrefixedName()
-                    + " does not have time support enabled");
+                    + " does not have elevation support enabled");
         }
 
-        if (elevation.getDefaultValue() != null) {
+        if (elevationDimensionInfo.getDefaultValue() != null) {
+            Double defaultValue = null;
             try {
-                return Double.parseDouble(elevation.getDefaultValue());
+                defaultValue = Double.parseDouble(elevationDimensionInfo.getDefaultValue());
             } catch (NumberFormatException e) {
-                return dimensions.getMinElevation();
+                throw new ServiceException("Layer " + coverage.getPrefixedName()
+                        + " has an invalid elevation default value." + "  " + DEFAULT_ELEVATION_NOT_DOUBLE_MSG);
             }
+            
+            // make sure defaultValue is one of the coverage's elevations.
+            boolean defaultValueIsInElevationDomain = false;
+            Collection<Object> elevationDomain = dimensions.getElevationDomain();
+            if (elevationDomain != null && !elevationDomain.isEmpty()) {
+                for (Object elevation : elevationDomain) {
+                    if (elevation instanceof Double) {
+                        if (((Double)elevation).compareTo(defaultValue) == 0) {
+                            defaultValueIsInElevationDomain = true;
+                            break;
+                        }
+                    } else if (elevation instanceof NumberRange) {
+                        if (((NumberRange)elevation).contains((Number)defaultValue)) {
+                            defaultValueIsInElevationDomain = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            if (!defaultValueIsInElevationDomain) {
+                throw new ServiceException("Layer " + coverage.getPrefixedName()
+                        + " has an invalid elevation default value." + "  " + DEFAULT_ELEVATION_NOT_IN_DOMAIN_MSG);
+            }
+
+            return defaultValue;
         } else {
             return dimensions.getMinElevation();
         }   

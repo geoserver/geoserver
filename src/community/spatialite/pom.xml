@@ -15,7 +15,7 @@
   </parent>
 
   <groupId>org.geoserver.community</groupId>
-  <artifactId>spatialite</artifactId>
+  <artifactId>gs-spatialite</artifactId>
   <packaging>jar</packaging>
   <name>SpatiaLite Extension</name>
 
@@ -42,7 +42,7 @@
  <dependencies>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>wfs</artifactId>
+   <artifactId>gs-wfs</artifactId>
    <version>2.5-SNAPSHOT</version>
   </dependency>
   <dependency>
@@ -52,14 +52,14 @@
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>wfs</artifactId>
+   <artifactId>gs-wfs</artifactId>
    <version>2.5-SNAPSHOT</version>
    <classifier>tests</classifier>
    <scope>test</scope>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>main</artifactId>
+   <artifactId>gs-main</artifactId>
    <version>2.5-SNAPSHOT</version>
    <classifier>tests</classifier>
    <scope>test</scope>

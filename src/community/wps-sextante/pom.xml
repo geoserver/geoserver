@@ -11,12 +11,12 @@
 
     <parent>
         <groupId>org.geoserver.community</groupId>
-        <artifactId>wps</artifactId>
+        <artifactId>gs-wps</artifactId>
         <version>2.5-SNAPSHOT</version>
     </parent>
 
     <groupId>org.geoserver.community</groupId>
-    <artifactId>wps-sextante</artifactId>
+    <artifactId>gs-wps-sextante</artifactId>
     <packaging>jar</packaging>
     <version>${gs.version}</version>
     <name>Web Processing Service - Sextante integration</name>
@@ -28,7 +28,7 @@
     <dependencies>
         <dependency>
            <groupId>org.geoserver.community</groupId>
-           <artifactId>wps-core</artifactId>
+           <artifactId>gs-wps-core</artifactId>
            <version>${gs.version}</version>
         </dependency>
         <dependency>
@@ -130,14 +130,14 @@
         </dependency>
         <dependency>
            <groupId>org.geoserver</groupId>
-           <artifactId>main</artifactId>
+           <artifactId>gs-main</artifactId>
            <version>${gs.version}</version>
            <classifier>tests</classifier>
            <scope>test</scope>
         </dependency>
         <dependency>
            <groupId>org.geoserver.community</groupId>
-           <artifactId>wps-core</artifactId>
+           <artifactId>gs-wps-core</artifactId>
            <version>${gs.version}</version>
            <classifier>tests</classifier>
            <scope>test</scope>

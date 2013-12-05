@@ -9,7 +9,7 @@
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
-        <include>simpleFeatureService*</include>
+        <include>gs-simpleFeatureService*</include>
         <include>gt-geojson*</include>
         <include>json-simple*</include>
       </includes>

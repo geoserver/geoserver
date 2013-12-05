@@ -12,13 +12,13 @@
   <version>2.5-SNAPSHOT</version>
  </parent>
  <groupId>org.geoserver.community</groupId>
- <artifactId>png</artifactId>
+ <artifactId>gs-png</artifactId>
  <packaging>jar</packaging>
  <name>Fast pure java PNG output format</name>
  <dependencies>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>wms</artifactId>
+   <artifactId>gs-wms</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
@@ -31,14 +31,14 @@
   <!-- test dependencies -->
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>main</artifactId>
+   <artifactId>gs-main</artifactId>
    <version>${project.version}</version>
    <classifier>tests</classifier>
    <scope>test</scope>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>wms</artifactId>
+   <artifactId>gs-wms</artifactId>
    <version>${project.version}</version>
    <classifier>tests</classifier>
    <scope>test</scope>

@@ -9,8 +9,8 @@
             <directory>release/target/dependency</directory>
             <outputDirectory></outputDirectory>
             <includes>
-                <include>csw-*.jar</include>		
-                <include>web-csw-*.jar</include>
+                <include>gs-csw-*.jar</include>		
+                <include>gs-web-csw-*.jar</include>
                 <include>gt-app-schema-resolver-*.jar</include>
                 <include>gt-complex-*.jar</include>
                 <include>gt-xsd-csw-*.jar</include>

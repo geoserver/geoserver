@@ -6,7 +6,7 @@
       <version>2.5-SNAPSHOT</version>
    </parent>
    <groupId>org.geoserver.community</groupId>
-   <artifactId>ftp</artifactId>
+   <artifactId>gs-ftp</artifactId>
    <packaging>jar</packaging>
    <version>2.5-SNAPSHOT</version>
    <name>GeoServer Embedded FTP server</name>
@@ -14,7 +14,7 @@
    <dependencies>
       <dependency>
          <groupId>org.geoserver</groupId>
-         <artifactId>main</artifactId>
+         <artifactId>gs-main</artifactId>
          <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -26,7 +26,7 @@
       <!-- Testing -->
       <dependency>
          <groupId>org.geoserver</groupId>
-         <artifactId>main</artifactId>
+         <artifactId>gs-main</artifactId>
          <classifier>tests</classifier>
          <scope>test</scope>
       </dependency>

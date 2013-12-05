@@ -17,7 +17,7 @@
   </parent>
 
   <groupId>org.geoserver</groupId>
-  <artifactId>dxf</artifactId>
+  <artifactId>gs-dxf</artifactId>
   <packaging>jar</packaging>
   <version>2.5-SNAPSHOT</version>
   <name>DXF output format</name>
@@ -25,13 +25,13 @@
     <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>wfs</artifactId>
+      <artifactId>gs-wfs</artifactId>
 	  <version>${project.version}</version>
        
     </dependency>	
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>wfs</artifactId>
+      <artifactId>gs-wfs</artifactId>
 	   <version>${project.version}</version>
        <classifier>tests</classifier>
       <scope>test</scope>
@@ -39,13 +39,13 @@
 
     <dependency>
       <groupId>org.geoserver.extension</groupId>
-      <artifactId>wps-core</artifactId>
+      <artifactId>gs-wps-core</artifactId>
       <version>${project.version}</version>
     </dependency>	
        
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
+      <artifactId>gs-main</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>

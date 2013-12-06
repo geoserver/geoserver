@@ -101,7 +101,9 @@ public class GML32OutputFormat extends GML3OutputFormat {
         wfs.getDependency(GMLConfiguration.class).setSrsSyntax(
             getInfo().getGML().get(WFSInfo.Version.V_20).getSrsNameStyle().toSrsSyntax());
         ApplicationSchemaConfiguration2 config = new ApplicationSchemaConfiguration2(xsd, wfs);
-        
+        // adding properties from original configuration to allow
+        // hints handling
+        config.getProperties().addAll(configuration.getProperties());
         return new Encoder(config);
     }
 

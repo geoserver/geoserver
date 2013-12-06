@@ -56,6 +56,15 @@ public class ControlFlowCallbackTest {
         assertEquals(0, c1.requestCompleteCalls);
         callback.finished(null);
     }
+    
+    @Test
+    public void testFailBeforeOperationDispatch() {
+        ControlFlowCallback callback = new ControlFlowCallback();
+        callback.init(null);
+        callback.finished(null);
+        assertEquals(0, callback.getRunningRequests());
+        assertEquals(0, callback.getBlockedRequests());
+    }
 
     /**
      * A wide open configurator to be used for testing

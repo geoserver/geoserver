@@ -48,7 +48,7 @@ Automatic buffer sizing cannot be computed if:
 In this event, the following defaults are used:
 
 * 0 pixels for :ref:`wms_getmap` requests
-* 2 pixels for :ref:`wms_getfeatureinfo` requests
+* 5 pixels for :ref:`wms_getfeatureinfo` requests (a different min value can be set via the ``org.geoserver.wms.featureinfo.minBuffer`` system variable, e.g., add ``-Dorg.geoserver.wms.featureinfo.minBuffer=10`` to make the min buffer be 10 pixels)
   
 If these are not sufficiently large, the explicit parameter can be used.
 

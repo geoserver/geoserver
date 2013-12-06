@@ -4,26 +4,37 @@
  */
 package org.geoserver.community.css.web;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import freemarker.template.Configuration;
-import freemarker.template.DefaultObjectWrapper;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.html.IHeaderContributor;
 import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.panel.Panel;
 
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.web.GeoServerApplication;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.util.logging.Logging;
+
+import freemarker.template.Configuration;
+import freemarker.template.DefaultObjectWrapper;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 
 class OpenLayersMapPanel extends Panel implements IHeaderContributor {
+    static final Logger LOGGER  = Logging.getLogger(OpenLayersMapPanel.class);
     final static Configuration templates;
     
     static {
@@ -37,13 +48,30 @@ class OpenLayersMapPanel extends Panel implements IHeaderContributor {
     final ResourceInfo resource;
     final StyleInfo style;
 
-    public OpenLayersMapPanel(String id, ResourceInfo resource, StyleInfo style) {
+    public OpenLayersMapPanel(String id, LayerInfo layer, StyleInfo style) {
         super(id);
-        bbox = resource.getLatLonBoundingBox();
-        this.resource = resource;
+        this.resource = layer.getResource();
+        this.bbox = resource.getLatLonBoundingBox();
         this.style = style;
         setOutputMarkupId(true);
+        
+        try {
+            ensureLegendDecoration();
+        } catch(IOException e) {
+            LOGGER.log(Level.WARNING, "Failed to put legend layout file in the data directory, the legend decoration will not appear", e);
+        }
     } 
+
+    private void ensureLegendDecoration() throws IOException {
+        GeoServerDataDirectory dd = GeoServerApplication.get().getBeanOfType(GeoServerDataDirectory.class);
+        File layouts = dd.findOrCreateDir("layouts");
+        File legend = new File(layouts, "css-legend.xml");
+        if(!legend.exists()) {
+            String legendLayout = IOUtils.toString(OpenLayersMapPanel.class.getResourceAsStream("css-legend.xml"));
+            FileUtils.writeStringToFile(legend, legendLayout);
+        }
+        
+    }
 
     public void renderHead(IHeaderResponse header) {
         try {

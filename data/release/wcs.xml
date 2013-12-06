@@ -15,6 +15,9 @@
     <org.geotools.util.Version>
       <version>1.1.1</version>
     </org.geotools.util.Version>
+    <org.geotools.util.Version>
+      <version>2.0.1</version>
+    </org.geotools.util.Version>
   </versions>
   <keywords>
     <string>WCS</string>
@@ -31,6 +34,7 @@
   <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
   <verbose>false</verbose>
   <gmlPrefixing>false</gmlPrefixing>
+  <latLon>false</latLon>
   <maxInputMemory>0</maxInputMemory>
   <maxOutputMemory>0</maxOutputMemory>
 </wcs>

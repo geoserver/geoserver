@@ -21,6 +21,7 @@ package org.geoserver.sldservice.utils.classifier.impl;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.geoserver.sldservice.utils.classifier.ColorRamp;
@@ -47,8 +48,7 @@ public class RandomColorRamp implements ColorRamp {
 	}
 
 	public void revert() {
-		// TODO Auto-generated method stub
-
+        Collections.reverse(colors);
 	}
 
 	public void setNumClasses(int numClass) {

@@ -14,6 +14,7 @@ import org.geoserver.kml.utils.SymbolizerCollector;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
+import org.geotools.filter.function.EnvFunction;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.geotools.styling.Style;
@@ -30,6 +31,10 @@ import de.micromata.opengis.kml.v_2_2_0.Placemark;
  * @author Andrea Aime - GeoSolutions
  */
 public class FeatureSequenceFactory implements SequenceFactory<Feature> {
+    
+    static final String OUTPUT_MODE = "kmlOutputMode";
+    
+    static final String VECTOR_MODE = "vector";
 
     private SimpleFeatureCollection features;
 
@@ -76,7 +81,11 @@ public class FeatureSequenceFactory implements SequenceFactory<Feature> {
         private SimpleFeatureIterator fi;
 
         public FeatureGenerator(SimpleFeatureIterator fi) {
-            this.fi = fi;
+            if(fi != null) {
+                // until we are scrolling this generator we are in vector mode
+                EnvFunction.setLocalValue(OUTPUT_MODE, VECTOR_MODE);
+                this.fi = fi;
+            }
         }
 
         @Override
@@ -120,6 +129,7 @@ public class FeatureSequenceFactory implements SequenceFactory<Feature> {
                     if (!featureRetrieved) {
                         // an exception has occurred, release the feature iterator
                         fi.close();
+                        EnvFunction.setLocalValue(OUTPUT_MODE, null);
                         fi = null;
                     }
                 }
@@ -127,6 +137,8 @@ public class FeatureSequenceFactory implements SequenceFactory<Feature> {
 
             // did we reach the end just now?
             if (!fi.hasNext()) {
+                // clean up the output mode, the next layer might be encoded as a raster overlay
+                EnvFunction.setLocalValue(OUTPUT_MODE, null);
                 fi.close();
             }
             return null;

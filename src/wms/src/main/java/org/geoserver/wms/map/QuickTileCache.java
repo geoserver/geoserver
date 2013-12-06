@@ -162,6 +162,24 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
 
         return new Point(x, y);
     }
+    
+    /**
+     * Given an envelope and the metatile envelope, locate the tile inside the metatile
+     * 
+     * @param env
+     * @param origin
+     * @return
+     */
+    Point getTileOffsetsInMeta(Envelope bbox, Envelope metatileBox) {
+        // compute using local coordinates, the previous math was using global one that
+        // broke at zoom level 23-24 in the global mercator projection (yes, at scale 1:33)
+        double dx = bbox.getMinX() - metatileBox.getMinX();
+        double dy = bbox.getMinY() - metatileBox.getMinY();
+        int x = (int) Math.round(dx / bbox.getWidth());
+        int y = (int) Math.round(dy / bbox.getHeight());
+
+        return new Point(x, y);
+    }
 
     /**
      * This is tricky. We need to have doubles that can be compared by equality because resolution
@@ -338,11 +356,10 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
         if(CRS.getAxisOrder(request.getCrs()) == AxisOrder.NORTH_EAST) {
             bbox = new Envelope(bbox.getMinY(), bbox.getMaxY(), bbox.getMinX(), bbox.getMaxX());
         }
-        Point tileCoord = getTileCoordinates(bbox, key.mapKey.origin);
-        Point metaCoord = key.metaTileCoords;
+        
+        Point tileCoord = getTileOffsetsInMeta(bbox, key.getMetaTileEnvelope());
 
-        return tiles[tileCoord.x - metaCoord.x
-                + ((tileCoord.y - metaCoord.y) * key.getMetaFactor())];
+        return tiles[tileCoord.x + (tileCoord.y * key.getMetaFactor())];
     }
 
     /**

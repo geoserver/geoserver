@@ -57,6 +57,7 @@ public abstract class AbstractFlowControllerTest {
         }
     }
 
+    
     /**
      * Waits maxWait for the thread to finish by itself, then forcefully kills it
      * @param t

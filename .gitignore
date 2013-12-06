@@ -8,3 +8,7 @@ target
 *.pyc
 
 /.metadata/
+
+# Intellij
+.idea/
+*.iml

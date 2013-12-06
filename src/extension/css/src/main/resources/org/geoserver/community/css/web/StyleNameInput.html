@@ -1,0 +1,16 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+  <head>
+  </head>
+  <body>
+    <wicket:panel>
+      <form wicket:id="layer.name.form">
+          <label for="layer.workspace.field">Workspace for new style</label>
+          <select wicket:id="layer.workspace.field"></select>
+          <label for="layer.name.field">New style name</label>
+          <input type="text" wicket:id="layer.name.field"></input>
+          <button wicket:id="submit.button">Create</button>
+          <div wicket:id="warningContainer"><span wicket:id="workspaceWarning"></span></div>
+      </form>
+    </wicket:panel>
+  </body>
+</html>

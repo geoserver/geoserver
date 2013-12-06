@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<!--
+ Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<beans>
+
+    <bean id="eventHelper" class="org.geoserver.wfs.notification.StaticJMSEventHelper" init-method="init" destroy-method="destroy">
+        <property name="propertiesFileName" value="jms-notification.properties" />        
+        <property name="geoServer" ref="geoServer" />
+    </bean>
+    
+    <bean id="publishCallback" class="org.geoserver.wfs.notification.GMLNotificationSerializer" init-method="init" destroy-method="destroy">
+        <constructor-arg ref="catalog" />
+        <constructor-arg ref="xmlConfiguration-1.1" />
+        <property name="objectName" value="mil.navy.spawar.c2rpc:service=GeoServer,plugin=WfsNotify,component=NotificationSerializer" />
+    </bean>
+
+    <bean id="triggerFileWatcherFactory" class="org.geoserver.wfs.notification.TriggerFileWatcherFactory">
+        <constructor-arg ref="catalog" />
+    </bean>
+
+    <bean id="triggerFileWatcher" class="org.geoserver.wfs.notification.TriggerFileWatcher" factory-bean="triggerFileWatcherFactory"
+        factory-method="createTriggerFileWatcher" />
+
+    <bean id="triggerManager" class="org.geoserver.wfs.notification.TriggerManager">
+        <constructor-arg ref="catalog" />
+        <constructor-arg ref="triggerFileWatcher" />
+    </bean>
+
+    <bean id="wfsNotify" class="org.geoserver.wfs.notification.WFSNotify" init-method="init">
+        <property name="catalog" ref="catalog" />
+        <property name="triggerManager" ref="triggerManager" />
+    </bean>
+
+</beans>

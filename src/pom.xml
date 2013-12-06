@@ -13,7 +13,7 @@
  <groupId>org.geoserver</groupId>
  <artifactId>geoserver</artifactId>
  <packaging>pom</packaging>
- <version>2.4-SNAPSHOT</version>
+ <version>2.5-SNAPSHOT</version>
  <name>GeoServer</name>
 
  <scm>
@@ -202,6 +202,11 @@
    <dependency>
     <groupId>org.geotools</groupId>
     <artifactId>gt-jp2k</artifactId>
+    <version>${gt.version}</version>
+   </dependency>
+   <dependency>
+    <groupId>org.geotools</groupId>
+    <artifactId>gt-netcdf</artifactId>
     <version>${gt.version}</version>
    </dependency>
    <dependency>
@@ -583,12 +588,12 @@
    <dependency>
     <groupId>org.easymock</groupId>
     <artifactId>easymock</artifactId>
-    <version>2.3</version>
+    <version>2.5.2</version>
    </dependency>
    <dependency>
     <groupId>org.easymock</groupId>
     <artifactId>easymockclassextension</artifactId>
-    <version>2.3</version>
+    <version>2.5.2</version>
    </dependency>
    <dependency>
     <groupId>cglib</groupId>
@@ -744,6 +749,16 @@
     <groupId>org.springframework.security</groupId>
     <artifactId>spring-security-core</artifactId>
     <version>${spring.security.version}</version>
+   </dependency>
+   <dependency>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-ldap</artifactId>
+    <version>${spring.security.version}</version>
+   </dependency>
+   <dependency>
+    <groupId>org.springframework.ldap</groupId>
+    <artifactId>spring-ldap-test</artifactId>
+    <version>1.3.1.RELEASE</version>
    </dependency>
 <!--
    <dependency>
@@ -1191,7 +1206,6 @@
       <descriptor>release/ext-jp2k.xml</descriptor>
       <descriptor>release/ext-mysql.xml</descriptor>
       <descriptor>release/ext-oracle.xml</descriptor>
-      <descriptor>release/ext-vpf.xml</descriptor>
       <descriptor>release/ext-arcsde.xml</descriptor>
       <descriptor>release/ext-pyramid.xml</descriptor>
       <descriptor>release/ext-gdal.xml</descriptor>
@@ -1212,9 +1226,10 @@
       <descriptor>release/ext-monitor-hibernate.xml</descriptor>
       <descriptor>release/ext-xslt.xml</descriptor>
       <descriptor>release/ext-inspire.xml</descriptor>
-      <descriptor>release/ext-css.xml</descriptor>
+      <descriptor>release/ext-css.xml</descriptor>      
+      <descriptor>release/ext-csw.xml</descriptor>
      </descriptors>
-     <finalName>geoserver-2.4-SNAPSHOT</finalName>
+     <finalName>geoserver-2.5-SNAPSHOT</finalName>
      <outputDirectory>${project.build.directory}/release</outputDirectory>
     </configuration>
    </plugin>
@@ -1480,10 +1495,10 @@
  </modules>
 
  <properties>
-  <gs.version>2.4-SNAPSHOT</gs.version>
-  <gt.version>10-SNAPSHOT</gt.version>
-  <gwc.version>1.5-SNAPSHOT</gwc.version>
-  <spring.version>3.1.1.RELEASE</spring.version>
+  <gs.version>2.5-SNAPSHOT</gs.version>
+  <gt.version>11-SNAPSHOT</gt.version>
+  <gwc.version>1.5.0</gwc.version>
+  <spring.version>3.1.4.RELEASE</spring.version>
   <spring.security.version>3.1.0.RELEASE</spring.security.version> 
   <poi.version>3.8</poi.version>
   <wicket.version>1.4.12</wicket.version>

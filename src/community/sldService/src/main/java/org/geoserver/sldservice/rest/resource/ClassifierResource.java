@@ -52,6 +52,8 @@ import org.geoserver.sldservice.utils.classifier.impl.BlueColorRamp;
 import org.geoserver.sldservice.utils.classifier.impl.CustomColorRamp;
 import org.geoserver.sldservice.utils.classifier.impl.RandomColorRamp;
 import org.geoserver.sldservice.utils.classifier.impl.RedColorRamp;
+import org.geoserver.sldservice.utils.classifier.impl.JetColorRamp;
+import org.geoserver.sldservice.utils.classifier.impl.GrayColorRamp;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.styling.Rule;
 import org.geotools.styling.SLDTransformer;
@@ -267,6 +269,7 @@ public class ClassifierResource extends AbstractCatalogResource {
 			final String intervals = form.getFirstValue("intervals", "2");
 			final String open = form.getFirstValue("open", "false");
 			final String colorRamp = form.getFirstValue("ramp");
+            final boolean reverse = Boolean.parseBoolean(form.getFirstValue("reverse"));
 
 			if (property != null && property.length() > 0) {
 				/* First try to find as a FeatureType */
@@ -286,6 +289,8 @@ public class ClassifierResource extends AbstractCatalogResource {
 								rules = builder.uniqueIntervalClassification(ftCollection, property);
 							} else if ("quantile".equals(method)) {
 								rules = builder.quantileClassification(ftCollection, property, Integer.parseInt(intervals), Boolean.parseBoolean(open));
+							} else if ("jenks".equals(method)) {
+                                rules = builder.jenksClassification(ftCollection, property, Integer.parseInt(intervals), Boolean.parseBoolean(open));
 							}
 
 							if (colorRamp != null && colorRamp.length() > 0) {
@@ -296,6 +301,10 @@ public class ClassifierResource extends AbstractCatalogResource {
 									ramp = (ColorRamp) new RedColorRamp();
 								else if (colorRamp.equalsIgnoreCase("blue"))
 									ramp = (ColorRamp) new BlueColorRamp();
+                                else if (colorRamp.equalsIgnoreCase("jet"))
+                                    ramp = (ColorRamp) new JetColorRamp();
+                                else if (colorRamp.equalsIgnoreCase("gray"))
+                                    ramp = (ColorRamp) new GrayColorRamp();
 								else if (colorRamp.equalsIgnoreCase("custom")) {
 									Color startColor = Color.decode(form.getFirst("startColor").getValue());
 									Color endColor = Color.decode(form.getFirst("endColor").getValue());
@@ -316,7 +325,7 @@ public class ClassifierResource extends AbstractCatalogResource {
 								 * Line Symbolizer
 								 */
 								if (geomT == LineString.class || geomT == MultiLineString.class) {
-									builder.lineStyle(rules, ramp);
+									builder.lineStyle(rules, ramp, reverse);
 								}
 
 								/*
@@ -326,7 +335,7 @@ public class ClassifierResource extends AbstractCatalogResource {
 										|| geomT == Polygon.class
 										|| geomT == Point.class
 										|| geomT == MultiPoint.class) {
-									builder.polygonStyle(rules, ramp);
+									builder.polygonStyle(rules, ramp, reverse);
 								}
 							}
 
@@ -446,6 +455,12 @@ public class ClassifierResource extends AbstractCatalogResource {
 							}
 							writer.endNode();
 						}
+                    }
+                    else if (((String)key).startsWith("@")){
+                        writer.addAttribute(((String) key).substring(1), (String)obj);
+                    }
+                    else if (((String)key).startsWith("#text")){
+                        writer.setValue((String) obj);
 					} else {
 						writer.startNode((String) key);
 						writeChild(writer, obj);

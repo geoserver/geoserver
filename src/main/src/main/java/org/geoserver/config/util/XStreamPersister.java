@@ -976,7 +976,8 @@ public class XStreamPersister {
             if ( reader.hasMoreChildren() ) {
                 while(reader.hasMoreChildren()) {
                     reader.moveDown();
-                    if ("workspace".equals(reader.getNodeName())) {
+                    String nodeName = reader.getNodeName();
+                    if ("workspace".equals(nodeName)) {
                         if (reader.hasMoreChildren()) {
                             //specified as <workspace><name>[name]</name></workspace>
                             reader.moveDown();
@@ -988,10 +989,10 @@ public class XStreamPersister {
                             pre = reader.getValue();
                         }
                     }
-                    else {
+                    else if("name".equals(nodeName) || "id".equals(nodeName) || "prefix".equals(nodeName)) {
                         ref = reader.getValue();
                     }
-
+                    
                     reader.moveUp();
                 }
             }
@@ -1950,8 +1951,6 @@ public class XStreamPersister {
                 escapeSql = Boolean.valueOf(readValue("escapeSql", String.class, reader));
             } catch (IllegalArgumentException e) {
                 escapeSql = false;
-                // the reader is now in the wrong position, it must be moved back a line
-                reader.moveUp();
             }
                 
             VirtualTable vt = new VirtualTable(name, sql, escapeSql);
@@ -1991,15 +1990,19 @@ public class XStreamPersister {
         
         <T> T readValue(String name, Class<T> type, HierarchicalStreamReader reader) {
            if(!reader.hasMoreChildren()) {
-               throw new IllegalArgumentException("Expected element " + name + " but could not find it");
+                throw new IllegalArgumentException("Expected element " + name + " but could not find it");
            }
            reader.moveDown();
-           if(!name.equals(reader.getNodeName())) {
-               throw new IllegalArgumentException("Expected element " + name + " but found " + reader.getNodeName() + " instead");
+           try {
+               if(!name.equals(reader.getNodeName())) {
+                   throw new IllegalArgumentException("Expected element " + name + " but found " + reader.getNodeName() + " instead");
+               }
+               String value = reader.getValue();
+               return Converters.convert(value, type);
+           } finally {
+               reader.moveUp();
            }
-           String value = reader.getValue();
-           reader.moveUp();
-           return Converters.convert(value, type);
+           
         }
 
         public boolean canConvert(Class type) {

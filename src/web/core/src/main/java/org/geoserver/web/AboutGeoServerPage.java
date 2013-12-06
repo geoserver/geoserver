@@ -19,7 +19,7 @@ public class AboutGeoServerPage extends GeoServerBasePage {
 
     public AboutGeoServerPage() {
         add(new Label("geotoolsVersion", GeoTools.getVersion().toString()));
-        add(new Label("geotoolsRevision", GeoTools.getBuildRevision().toString()));
+        add(new Label("geotoolsRevision", GeoTools.getBuildRevision()));
         add(new Label("geowebcacheVersion", getGwcVersion()));
         add(new Label("geowebcacheRevision", getGwcRevision()));
     }

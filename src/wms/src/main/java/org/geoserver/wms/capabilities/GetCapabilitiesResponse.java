@@ -146,7 +146,7 @@ public class GetCapabilitiesResponse extends BaseCapabilitiesResponse {
 
             // Set the full DTD declaration, including internal elements provided by
             // ExtendedCapabilitiesProviders, as an stylesheet parameter
-            dtdIncludeTransformer.setParameter("DTDDeclaration", internalDTDDeclaration.toString());
+            dtdIncludeTransformer.setParameter("DTDDeclaration", internalDTDDeclaration);
 
             Source source;
             try {

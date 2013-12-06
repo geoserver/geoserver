@@ -40,6 +40,14 @@
                   </span></span>
               </li>
               <li>
+                <label for="expireCache" class="text"><wicket:message key="expireCache">Expire server cache after n seconds (set to 0 to use source setting)</wicket:message></label>
+                <input id="tileExpireCache" wicket:id="expireCache" class="field text" style="width: 80px;" type="text"/>
+              </li>
+              <li>
+                <label for="expireClients" class="text"><wicket:message key="expireClients">Expire client cache after n seconds (set to 0 to use server setting)</wicket:message></label>
+                <input id="tileExpireClients" wicket:id="expireClients" class="field text" style="width: 80px;" type="text"/>
+              </li>
+              <li>
                 <label><wicket:message key="parameterFilters">ParameterFilters:</wicket:message></label>
                 <span wicket:id="parameterFilters"></span>
               </li>

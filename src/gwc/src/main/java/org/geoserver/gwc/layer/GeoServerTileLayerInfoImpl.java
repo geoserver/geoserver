@@ -79,14 +79,11 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
      * @see GWCVars#CACHE_USE_WMS_BACKEND_VALUE
      * @see GWCVars#CACHE_VALUE_UNSET
      */
-    @SuppressWarnings("unused")
-    transient private int expireCache;
+    private int expireCache;
 
-    @SuppressWarnings("unused")
-    transient private List<ExpirationRule> expireCacheList;
+    private List<ExpirationRule> expireCacheList;
 
-    @SuppressWarnings("unused")
-    transient private int expireClients;
+    private int expireClients;
 
     @SuppressWarnings("unused")
     transient private List<ExpirationRule> expireClientsList;
@@ -250,6 +247,32 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
     public void setMetaTilingX(int metaTilingX) {
         checkArgument(metaTilingX > 0);
         metaWidthHeight[0] = metaTilingX;
+    }
+    
+    public int getExpireCache() {
+        return expireCache;
+    }
+    
+    public void setExpireCache(int expireCache) {
+        this.expireCache = expireCache;
+    }
+    
+    public List<ExpirationRule> getExpireCacheList() {
+        return expireCacheList;
+    }
+    
+    public void setExpireCacheList(List<ExpirationRule> expireCacheList) {
+        this.expireCacheList = expireCacheList;
+    }
+    
+    @Override
+    public int getExpireClients() {
+    	return expireClients;
+    }
+    
+    @Override
+    public void setExpireClients(int seconds) {
+    	expireClients = seconds;
     }
 
     /**

@@ -37,6 +37,10 @@ Point Symbology
       * angle 
       * A rotation to be applied (clockwise) to the mark image.
       * yes
+    - * -gt-mark-label-obstacle
+      * boolean
+      * If true the point symbol will be consider an obstable for labels, no label will overlap it
+      * no
 
 Line Symbology
 --------------
@@ -102,6 +106,10 @@ Line Symbology
         appropriately to match the line's direction).  If stipple, then the line
         is treated as a polygon to be filled.
       * yes
+    - * -gt-stroke-label-obstacle
+      * boolean
+      * If true the line will be consider an obstable for labels, no label will overlap it
+      * no
 
 Polygon Symbology
 -----------------
@@ -137,6 +145,41 @@ Polygon Symbology
       * angle             
       * A rotation to be applied (clockwise) to the fill image. 
       * yes
+    - * -gt-fill-label-obstacle
+      * boolean
+      * If true the polygon will be consider an obstable for labels, no label will overlap it
+      * no
+    - * -gt-graphic-marging
+      * List of lengths
+      * A list of 1 to 4 values, specifying the space between repeated graphics in a texture paint. One value is uniform spacing in all directions, two values are considered top/bottom and right/left, three values are considered top, right/left, bottom, four values are read as top,right,bottom,left.
+      * no
+    - * -gt-graphic-marging
+      * List of lengths
+      * A list of 1 to 4 values, specifying the space between repeated graphics in a texture paint. One value is uniform spacing in all directions, two values are considered top/bottom and right/left, three values are considered top, right/left, bottom, four values are read as top,right,bottom,left.
+      * no
+    - * -gt-random
+      * none,grid,free
+      * Activates random distribution of symbols in a texture fill tile. See :ref:`randomized` for details. Defaults to "none"
+      * no
+    - * -gt-random-seed
+      * integer number
+      * The seed for the random generator. Defaults to 0
+      * no
+    - * -gt-random-rotation
+      * none/free
+      * When set to "free" activates random rotation of the symbol in addition to random distribution. Defaults to "none"
+      * no
+    - * -gt-random-symbol-count
+      * positive integer number
+      * Number of suymbols to be placed in the texture fill tile. May not be respected due to location conflicts (no two symbols are allowed to overlap). Defaults to 16.
+      * no
+    - * -gt-random-tile-size
+      * positive integer number
+      * Size of the texture paint tile that will be filled with the random symbols. Defaults to 256.
+      * no
+
+
+
 
 Text Symbology (Labeling)
 -------------------------

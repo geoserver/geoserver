@@ -25,10 +25,9 @@ public class StylePanel extends Panel {
         IModel<CssDemoPage> model,
         CssDemoPage page,
         Component feedback,
-        String cssSource
+        File cssFile
     ) {
         super(id, model);
-        File cssFile = page.findStyleFile(cssSource);
         if (cssFile != null && cssFile.exists()) {
             try {
                 styleBody = FileUtils.readFileToString(cssFile);
@@ -50,7 +49,7 @@ public class StylePanel extends Panel {
         textArea.add(new CssValidator());
         styleEditor.add(textArea);
         styleEditor.add(new CssSubmitButton(
-            "submit", styleEditor, page, cssSource, styleBodyModel));
+            "submit", styleEditor, page, cssFile, styleBodyModel));
         AjaxFormValidatingBehavior.addToAllFormComponents(styleEditor, "onkeyup", Duration.ONE_SECOND);
         add(styleEditor);
     }

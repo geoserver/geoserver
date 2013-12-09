@@ -167,3 +167,10 @@ The complex feature WFS response fragment could then be encoded as::
 * Multiple sampling points can share a single GeologicUnit. Application schemas can also define multivalued properties to support many-to-one or many-to-many associations.
 * Each GeologicUnit could have further properties describing in detail the properties of the rock, such as colour, weathering, lithology, or relevant geologic events.
 * The GeologicUnit feature type can be served separately, and could be uniquely identified through its properties as the same instance seen in the SamplingPoint.
+
+Portrayal complex features (SF0)
+````````````````````````````````
+Portrayal schemas are standardised schemas with flat attributes, also known as simple feature level 0 (SF0). Because a community schema is still required (e.g. GeoSciML-Portrayal), app-schema plugin is still used to map the database columns to the attributes.
+
+* :doc:`WFS CSV output format <../../services/wfs/outputformats>` is supported for complex features with portrayal schemas. At the moment, propertyName selection is not yet supported with csv outputFormat, so it always returns the full set of attributes. 
+* Complex features with nesting and multi-valued properties are not supported with :doc:`WFS CSV output format <../../services/wfs/outputformats>`.

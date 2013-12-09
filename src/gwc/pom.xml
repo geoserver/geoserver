@@ -132,6 +132,7 @@
 	<groupId>org.geoserver</groupId>
 	<artifactId>wms</artifactId>
 	<classifier>tests</classifier>
+	<version>${gs.version}</version>
         <scope>test</scope>
     </dependency>
   </dependencies>

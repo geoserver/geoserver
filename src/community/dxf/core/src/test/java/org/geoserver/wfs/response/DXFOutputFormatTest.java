@@ -4,19 +4,14 @@
  */
 package org.geoserver.wfs.response;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.fail;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.geoserver.wfs.WFSTestSupport;
+import org.junit.Test;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
@@ -54,6 +49,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
      * Test a request with two queries.
      * @throws Exception
      */
+    @Test
     public void testMultiLayer() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=Points,MPoints&outputFormat=dxf");
         String sResponse = testBasicResult(resp, "Points_MPoints");
@@ -64,6 +60,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
      * Test DXF-ZIP format.
      * @throws Exception
      */
+    @Test
     public void testZipOutput() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=Points&outputFormat=dxf-zip");
         // check mime type
@@ -74,6 +71,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
      * Test a Point geometry.
      * @throws Exception
      */
+    @Test
     public void testPoints() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=Points&outputFormat=dxf");
         String sResponse = testBasicResult(resp, "Points");
@@ -86,6 +84,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
      * Test a MultiPoint geometry.
      * @throws Exception
      */
+    @Test
     public void testMultiPoints() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=MPoints&outputFormat=dxf");
         String sResponse = testBasicResult(resp, "MPoints");
@@ -99,6 +98,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
      * Test a LineString geometry.
      * @throws Exception
      */
+    @Test
     public void testLines() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=Lines&outputFormat=dxf");
         String sResponse = testBasicResult(resp, "Lines");
@@ -111,6 +111,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
      * Test a MultiLineString geometry.
      * @throws Exception
      */
+    @Test
     public void testMultiLines() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=MLines&outputFormat=dxf");
         String sResponse = testBasicResult(resp, "MLines");
@@ -124,6 +125,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
      * Test a Polygon geometry.
      * @throws Exception
      */
+    @Test
     public void testPolygons() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=Polygons&outputFormat=dxf");
         String sResponse = testBasicResult(resp, "Polygons");
@@ -137,6 +139,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
      * Test a MultiPolygon geometry.
      * @throws Exception
      */
+    @Test
     public void testMultiPolygons() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=MPolygons&outputFormat=dxf");
         String sResponse = testBasicResult(resp, "MPolygons");
@@ -151,6 +154,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
      * 
      * @throws Exception
      */
+    @Test
     public void testGeometryAsBlock() {
         try {
             // geometry as blocks false
@@ -175,6 +179,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
      * 
      * @throws Exception
      */
+    @Test
     public void testVersion() throws Exception {
         try {
             // good request, version 14
@@ -220,6 +225,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
      * Test the ltypes format option.
      * @throws Exception
      */
+    @Test
     public void testCustomLineTypes() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=Lines&outputFormat=dxf&format_options=ltypes:DASHED!--_*_!0.5");
         String sResponse = testBasicResult(resp, "Lines");
@@ -229,6 +235,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
      * Test the colors format option.
      * @throws Exception
      */
+    @Test
     public void testCustomColors() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=Points,MPoints&outputFormat=dxf&format_options=colors:1,2");
         String sResponse = testBasicResult(resp, "Points_MPoints");
@@ -239,6 +246,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
      * Test custom naming for layers.
      * @throws Exception
      */
+    @Test
     public void testLayerNames() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=Points,MPoints&outputFormat=dxf&format_options=layers:MyLayer1,MyLayer2");
         String sResponse = testBasicResult(resp, "Points_MPoints");
@@ -254,21 +262,4 @@ public class DXFOutputFormatTest extends WFSTestSupport {
         return response.indexOf("BLOCKS");
     }
 
-    /**
-     * Convenience to read the dxf content and
-     * 
-     * @param dxfContent
-     * @return
-     * @throws IOException
-     */
-    private List<String> readLines(String dxfContent) throws IOException {
-        BufferedReader reader = new BufferedReader(new StringReader(dxfContent));
-
-        List<String> result = new ArrayList<String>();
-        String nextLine;
-        while ((nextLine = reader.readLine()) != null) {
-            result.add(nextLine);
-        }
-        return result;
-    }
 }

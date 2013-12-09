@@ -383,19 +383,8 @@ public class ImportPage extends GeoServerSecuredPage {
         @Override
         protected String load() {
             ImportData data = imp.getData();
+            String title =  data != null ? data.toString() : imp.toString();
 
-            String title = data.toString();
-            if (data instanceof FileData) {
-                FileData df = (FileData) data;
-//                ImportData parentData = task.getContext().getData();
-//                if (parentData instanceof Directory) {
-//                    try {
-//                        title = df.relativePath((Directory) parentData);
-//                    } catch (IOException e) {
-//                        LOGGER.log(Level.WARNING, e.getMessage(), e);
-//                    }
-//                }
-            }
             if (abbrev && title.length() > 70) {
                 //shorten it
                 title = title.substring(0,20) + "[...]" + title.substring(title.length()-50);

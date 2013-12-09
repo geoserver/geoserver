@@ -27,6 +27,8 @@ public class GWCServicesPanel extends Panel {
                 "WMTSEnabled");
         final IModel<Boolean> tmsEnabledModel = new PropertyModel<Boolean>(gwcConfigModel,
                 "TMSEnabled");
+        final IModel<Boolean> securityEnabledModel = new PropertyModel<Boolean>(gwcConfigModel,
+                "securityEnabled");
 
         add(checkbox("enableWMSIntegration", wmsIntegrationEnabledModel,
                 "GWCSettingsPage.enableWMSIntegration.title"));
@@ -34,6 +36,7 @@ public class GWCServicesPanel extends Panel {
         add(checkbox("enableWMSC", wmsCEnabledModel, "GWCSettingsPage.enableWMSC.title"));
         add(checkbox("enableWMTS", wmtsEnabledModel, "GWCSettingsPage.enableWMTS.title"));
         add(checkbox("enableTMS", tmsEnabledModel, "GWCSettingsPage.enableTMS.title"));
+        add(checkbox("enableSecurity", securityEnabledModel, "GWCSettingsPage.enableSecurity.title"));
 
     }
 }

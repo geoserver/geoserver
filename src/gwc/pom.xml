@@ -127,7 +127,13 @@
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-core</artifactId>
       <scope>test</scope>
-    </dependency>    
+    </dependency>  
+    <dependency>
+	<groupId>org.geoserver</groupId>
+	<artifactId>wms</artifactId>
+	<classifier>tests</classifier>
+        <scope>test</scope>
+    </dependency>
   </dependencies>
   
   <build>

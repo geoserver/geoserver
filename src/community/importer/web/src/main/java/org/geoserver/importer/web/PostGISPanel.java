@@ -39,12 +39,7 @@ public class PostGISPanel extends AbstractDbPanel {
     protected LinkedHashMap<String, Component> buildParamPanels() {
         LinkedHashMap<String, Component> result = new LinkedHashMap<String, Component>();
 
-        //
-        // suite postgis defaults:
-        //  port = 54321
-        //  database = username = <current user> 
-        //
-        int port = 54321;
+        int port = 5432;
         String db = System.getProperty("user.name");
         String user = db;
         

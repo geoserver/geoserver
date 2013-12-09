@@ -115,6 +115,7 @@ public class ImportJSONReader {
             json = json.getJSONObject("layer");
         }
 
+        //TODO: what about coverages?
         ResourceInfo r = f.createFeatureType();
         if (json.has("name")) {
             r.setName(json.getString("name"));
@@ -134,6 +135,15 @@ public class ImportJSONReader {
         }
         if (json.has("bbox")) {
             r.setNativeBoundingBox(bbox(json.getJSONObject("bbox")));
+        }
+        if (json.has("title")) {
+            r.setTitle(json.getString("title"));
+        }
+        if (json.has("abstract")) {
+            r.setAbstract(json.getString("abstract"));
+        }
+        if (json.has("description")) {
+            r.setDescription(json.getString("description"));
         }
 
         LayerInfo l = f.createLayer();

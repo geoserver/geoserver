@@ -108,7 +108,16 @@
      <artifactId>gs-png</artifactId>
      <version>${project.version}</version>
    </dependency> 
-
+    <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-dxf-core</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-dxf-wps</artifactId>
+     <version>${project.version}</version>
+   </dependency>
  </dependencies>
  <build>
   <plugins>

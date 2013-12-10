@@ -27,7 +27,6 @@ public class LayerResource extends AbstractCatalogResource {
     public LayerResource(Context context, Request request, Response response,
          Catalog catalog) {
         super(context, request, response, LayerInfo.class, catalog);
-        
     }
     
     @Override

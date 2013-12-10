@@ -11,22 +11,22 @@
 
 	<parent>
 		<groupId>org.geoserver.extension</groupId>
-		<artifactId>app-schema</artifactId>
+		<artifactId>gs-app-schema</artifactId>
 		<version>2.5-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.geoserver.extension</groupId>
-	<artifactId>app-schema-oracle-test</artifactId>
+	<artifactId>gs-app-schema-oracle-test</artifactId>
 	<name>Application Schema Integration Online Test with Oracle Database</name>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.geoserver</groupId>
-			<artifactId>main</artifactId>
+			<artifactId>gs-main</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.geoserver</groupId>
-			<artifactId>main</artifactId>
+			<artifactId>gs-main</artifactId>
 			<classifier>tests</classifier>
 		</dependency>
 		<dependency>
@@ -35,24 +35,24 @@
 				compile but will not run.
 			-->
 			<groupId>org.geoserver</groupId>
-			<artifactId>wfs</artifactId>
+			<artifactId>gs-wfs</artifactId>
 		</dependency>
         <dependency>
             <!--
                 //NC - wms package required for wms support
             -->
             <groupId>org.geoserver</groupId>
-            <artifactId>wms</artifactId>
+            <artifactId>gs-wms</artifactId>
         </dependency>     		
         <dependency>
             <groupId>org.geoserver</groupId>
-            <artifactId>restconfig</artifactId>
+            <artifactId>gs-restconfig</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.geoserver</groupId>
-            <artifactId>restconfig</artifactId>
+            <artifactId>gs-restconfig</artifactId>
             <version>${project.version}</version>
             <classifier>tests</classifier>
             <scope>test</scope>

@@ -14,101 +14,110 @@
   <version>2.5-SNAPSHOT</version>
  </parent>
  <groupId>org.geoserver.community</groupId>
- <artifactId>release</artifactId>
+ <artifactId>gs-release</artifactId>
  <packaging>jar</packaging>
  <name>GeoServer Community Release Module</name>
  <dependencies>
    <dependency>
      <groupId>org.geoserver.community</groupId>
-     <artifactId>authkey</artifactId>
+     <artifactId>gs-authkey</artifactId>
      <version>${project.version}</version>
    </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
-     <artifactId>netcdf</artifactId>
+     <artifactId>gs-netcdf</artifactId>
      <version>${project.version}</version>
    </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
-     <artifactId>netcdf-out</artifactId>
+     <artifactId>gs-netcdf-out</artifactId>
      <version>${project.version}</version>
    </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
-     <artifactId>printing</artifactId>
+     <artifactId>gs-printing</artifactId>
      <version>${project.version}</version>
    </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
-     <artifactId>ftp</artifactId>
+     <artifactId>gs-ftp</artifactId>
      <version>${project.version}</version>
    </dependency>
    <dependency>
      <groupId>org.geoserver.script</groupId>
-     <artifactId>script-py</artifactId>
+     <artifactId>gs-script-py</artifactId>
      <version>${project.version}</version>
    </dependency>
    <dependency>
      <groupId>org.geoserver.script</groupId>
-     <artifactId>script-js</artifactId>
+     <artifactId>gs-script-js</artifactId>
      <version>${project.version}</version>
    </dependency>
    <dependency>
      <groupId>org.geoserver.script</groupId>
-     <artifactId>script-groovy</artifactId>
+     <artifactId>gs-script-groovy</artifactId>
      <version>${project.version}</version>
    </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
-     <artifactId>jdbcconfig</artifactId>
+     <artifactId>gs-jdbcconfig</artifactId>
      <version>${project.version}</version>
    </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
-     <artifactId>dds</artifactId>
+     <artifactId>gs-dds</artifactId>
      <version>${project.version}</version>
    </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
-     <artifactId>sfs</artifactId>
+     <artifactId>gs-sfs</artifactId>
      <version>${project.version}</version>
    </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
-     <artifactId>feature-aggregate</artifactId>
+     <artifactId>gs-feature-aggregate</artifactId>
      <version>${project.version}</version>
    </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
-     <artifactId>wms-eo</artifactId>
+     <artifactId>gs-wms-eo</artifactId>
      <version>${project.version}</version>
    </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
-     <artifactId>wcs2_0</artifactId>
+     <artifactId>gs-wcs2_0</artifactId>
      <version>${project.version}</version>
    </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
-     <artifactId>wcs2_0-eo</artifactId>
+     <artifactId>gs-wcs2_0-eo</artifactId>
      <version>${project.version}</version>
    </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
-     <artifactId>web-wcs2_0-eo</artifactId>
+     <artifactId>gs-web-wcs2_0-eo</artifactId>
      <version>${project.version}</version>
    </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
-     <artifactId>libjpeg-turbo</artifactId>
+     <artifactId>gs-libjpeg-turbo</artifactId>
      <version>${project.version}</version>
    </dependency> 
    <dependency>
      <groupId>org.geoserver.community</groupId>
-     <artifactId>png</artifactId>
+     <artifactId>gs-png</artifactId>
      <version>${project.version}</version>
    </dependency> 
-
+    <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-dxf-core</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-dxf-wps</artifactId>
+     <version>${project.version}</version>
+   </dependency>
  </dependencies>
  <build>
   <plugins>

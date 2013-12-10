@@ -16,56 +16,16 @@
     <version>2.5-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.geoserver</groupId>
-  <artifactId>dxf</artifactId>
-  <packaging>jar</packaging>
+  <groupId>org.geoserver.community</groupId>
+  <artifactId>gs-dxf</artifactId>
+  <packaging>pom</packaging>
   <version>2.5-SNAPSHOT</version>
   <name>DXF output format</name>
+  
+  <modules>
+    <module>core</module>
+    <module>wps</module>
+  </modules>
+  
 
-    <dependencies>
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>wfs</artifactId>
-	  <version>${project.version}</version>
-       
-    </dependency>	
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>wfs</artifactId>
-	   <version>${project.version}</version>
-       <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>	
-
-    <dependency>
-      <groupId>org.geoserver.extension</groupId>
-      <artifactId>wps-core</artifactId>
-      <version>${project.version}</version>
-    </dependency>	
-       
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.mockrunner</groupId>
-      <artifactId>mockrunner</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>xmlunit</groupId>
-      <artifactId>xmlunit</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-	<testResources>
-      <testResource>
-        <directory>src/test/resources</directory>        
-      </testResource>      
-    </testResources>
-  </build>
 </project>

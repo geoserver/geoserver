@@ -16,14 +16,14 @@
   </parent>
 
   <groupId>org.geoserver</groupId>
-  <artifactId>csw</artifactId>
+  <artifactId>gs-csw</artifactId>
   <packaging>pom</packaging>
   <name>Catalog Services for the Web parent</name>
 
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
+      <artifactId>gs-main</artifactId>
       <version>2.5-SNAPSHOT</version>
     </dependency>
   </dependencies>

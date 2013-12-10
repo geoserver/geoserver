@@ -15,7 +15,7 @@
  </parent>
 
  <groupId>org.geoserver</groupId>
- <artifactId>platform</artifactId>
+ <artifactId>gs-platform</artifactId>
  <packaging>jar</packaging>
  <name>Core Platform Module</name>
 

@@ -16,7 +16,7 @@ application directory.
     </parent>
 
     <groupId>org.geoserver.community</groupId>
-    <artifactId>wcs2_0</artifactId>
+    <artifactId>gs-wcs2_0</artifactId>
     <packaging>jar</packaging>
     <name>Web Coverage Service 2.0 Module</name>
 
@@ -24,16 +24,16 @@ application directory.
 
         <dependency>
             <groupId>org.geoserver</groupId>
-            <artifactId>main</artifactId>
+            <artifactId>gs-main</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.geoserver</groupId>
-            <artifactId>wcs</artifactId>
+            <artifactId>gs-wcs</artifactId>
         </dependency>
         <dependency>
             <groupId>org.geoserver</groupId>
-            <artifactId>wcs1_1</artifactId>
+            <artifactId>gs-wcs1_1</artifactId>
             <type>jar</type>
         </dependency>
 
@@ -49,7 +49,7 @@ application directory.
 
         <dependency>
             <groupId>org.geoserver</groupId>
-            <artifactId>main</artifactId>
+            <artifactId>gs-main</artifactId>
             <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>

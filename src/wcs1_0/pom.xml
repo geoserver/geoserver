@@ -16,18 +16,18 @@
   </parent>
 
   <groupId>org.geoserver</groupId>
-  <artifactId>wcs1_0</artifactId>
+  <artifactId>gs-wcs1_0</artifactId>
   <packaging>jar</packaging>
   <name>Web Coverage Service 1.0 Module</name>
 
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
+      <artifactId>gs-main</artifactId>
     </dependency>
 	<dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>wcs</artifactId>
+      <artifactId>gs-wcs</artifactId>
     </dependency>
     <dependency>
       <groupId>org.geotools.ogc</groupId>
@@ -73,7 +73,7 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
+      <artifactId>gs-main</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>

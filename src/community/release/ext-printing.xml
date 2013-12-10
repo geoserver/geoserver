@@ -12,7 +12,7 @@
         <include>jtsio*</include>
         <include>jyaml*</include>
         <include>mapfish-geo-lib*</include>
-        <include>printing-*.jar</include>
+        <include>gs-printing-*.jar</include>
         <include>print-lib-*.jar</include>
         <include>pvalsecc-*.jar</include>
         <include>xercesImpl-*.jar</include>

@@ -10,7 +10,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -20,18 +19,14 @@ import java.util.zip.ZipOutputStream;
 
 import javax.xml.namespace.QName;
 
-import net.opengis.wfs.FeatureCollectionType;
-import net.opengis.wfs.GetFeatureType;
-import net.opengis.wfs.QueryType;
-
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.config.GeoServer;
-import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
+import org.geoserver.wfs.request.Query;
 import org.geoserver.wfs.response.dxf.DXFWriter;
 import org.geoserver.wfs.response.dxf.DXFWriterFinder;
 import org.geoserver.wfs.response.dxf.LineType;
@@ -101,8 +96,8 @@ public class DXFOutputFormat extends WFSGetFeatureOutputFormat {
      * @return
      */
     public String getDxfExtension(Operation operation) {
-        GetFeatureType request = (GetFeatureType) OwsUtils.parameter(operation.getParameters(),
-                GetFeatureType.class);
+        GetFeatureRequest request = GetFeatureRequest.adapt(operation
+                .getParameters()[0]);
 
         String outputFormat = request.getOutputFormat().toUpperCase();
         // DXF
@@ -132,31 +127,43 @@ public class DXFOutputFormat extends WFSGetFeatureOutputFormat {
      * with underscore as a separator (up to a maximum name length).
      */
     private String getFileName(Operation operation) {
-        GetFeatureType request = (GetFeatureType) OwsUtils.parameter(operation.getParameters(),
-                GetFeatureType.class);
-        
+        GetFeatureRequest request = GetFeatureRequest.adapt(operation
+                .getParameters()[0]);
+    
         if (request.getHandle() != null) {
-            LOGGER.log(Level.FINE,"Using handle for file name: "+request.getHandle());
+            LOGGER.log(Level.FINE,
+                    "Using handle for file name: " + request.getHandle());
             return request.getHandle();
         }
-        
-        StringBuffer sb = new StringBuffer();
-        for (Iterator f = request.getQuery().iterator(); f.hasNext();) {
-            QueryType query = (QueryType) f.next();
-            sb.append(getLayerName(query) + "_");
-        }        
-        sb.setLength(sb.length() - 1);
-        LOGGER.log(Level.FINE,"Using layer names for file name: "+sb.toString());
-        if (sb.length() > 20) {
-            LOGGER.log(Level.WARNING,"Calculated filename too long. Returing a shorter one: "+sb.toString().substring(0, 20));
-            return sb.toString().substring(0, 20);
+    
+        List<String> names = new ArrayList<String>();
+        for (Query query : request.getQueries()) {
+            addLayerNames(names, query, false);
         }
-        return sb.toString();
+        String layerNames = StringUtils.join(names.toArray(), '_');
+        LOGGER.log(Level.FINE, "Using layer names for file name: " + layerNames);
+        if (layerNames.length() > 20) {
+            LOGGER.log(Level.WARNING,
+                    "Calculated filename too long. Returing a shorter one: "
+                            + layerNames.substring(0, 20));
+            return layerNames.substring(0, 20);
+        }
+        return layerNames;
+    }
+    
+    private void addLayerNames(List<String> names, Query query, boolean toUpper) {
+        for (QName name : query.getTypeNames()) {
+            String localName = name.getLocalPart();
+            if (toUpper) {
+                localName = localName.toUpperCase();
+            }
+            names.add(localName);
+        }
+    
     }
 
     @Override
     public String getAttachmentFileName(Object value, Operation operation) {
-        GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
         return getFileName(operation) + '.' + getDxfExtension(operation);
     }
 
@@ -188,7 +195,7 @@ public class DXFOutputFormat extends WFSGetFeatureOutputFormat {
             w = new BufferedWriter(new OutputStreamWriter(zipStream));
         }
         // extract format_options (GET mode)
-        GetFeatureType gft = (GetFeatureType) operation.getParameters()[0];
+        GetFeatureRequest gft = GetFeatureRequest.adapt(operation.getParameters()[0]);
         String version = (String) gft.getFormatOptions().get("VERSION");
         String blocks = (String) gft.getFormatOptions().get("ASBLOCKS");
         String colors = (String) gft.getFormatOptions().get("COLORS");
@@ -204,7 +211,7 @@ public class DXFOutputFormat extends WFSGetFeatureOutputFormat {
             if(layerNames!=null)
                 layers=layerNames.toUpperCase().split(",");
             else
-                layers=getLayerNames(gft.getQuery().iterator());
+                layers=getLayerNames(gft.getQueries());
             LOGGER.log(Level.FINE,"Layers names: "+StringUtils.join(layers,","));
             dxfWriter.setOption("layers", layers);
             if (blocks != null && blocks.toLowerCase().equals("true"))
@@ -260,29 +267,13 @@ public class DXFOutputFormat extends WFSGetFeatureOutputFormat {
      * @param it
      * @return
      */
-    private String[] getLayerNames(Iterator it) {
+    private String[] getLayerNames(List<Query> queries) {
         List<String> names = new ArrayList<String>();
-        while (it.hasNext()) {
-            QueryType query = (QueryType) it.next();
-            names.add(getLayerName(query).toUpperCase());
+        for (Query query : queries) {
+            addLayerNames(names, query, true);
         }
 
         return names.toArray(new String[] {});
-    }
-
-    /**
-     * Gets a layer name from a query.
-     * The name can be:
-     *  - an handle, if available
-     *  - the typename
-     * @param query
-     * @return
-     */
-    private String getLayerName(QueryType query) {
-        if (query.getHandle() != null)
-            return query.getHandle();
-        return ((QName) query.getTypeName().get(0)).getLocalPart();
-
     }
 
 }

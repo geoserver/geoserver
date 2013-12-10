@@ -15,23 +15,23 @@
   </parent>
 
   <groupId>org.geoserver</groupId>
-  <artifactId>gwc</artifactId>
+  <artifactId>gs-gwc</artifactId>
   <packaging>jar</packaging>
   <name>GeoWebCache (GWC) Module</name>
 
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
+      <artifactId>gs-main</artifactId>
     </dependency>
     <dependency>
       <!-- needed to implement TransactionListener extension point in truncate cache upon WFS transactions -->
       <groupId>org.geoserver</groupId>
-      <artifactId>wfs</artifactId>
+      <artifactId>gs-wfs</artifactId>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>wms</artifactId>
+      <artifactId>gs-wms</artifactId>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
@@ -89,7 +89,7 @@
     <!-- test dependencies -->
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
+      <artifactId>gs-main</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
@@ -127,7 +127,14 @@
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-core</artifactId>
       <scope>test</scope>
-    </dependency>    
+    </dependency>  
+    <dependency>
+	<groupId>org.geoserver</groupId>
+	<artifactId>wms</artifactId>
+	<classifier>tests</classifier>
+	<version>${gs.version}</version>
+        <scope>test</scope>
+    </dependency>
   </dependencies>
   
   <build>

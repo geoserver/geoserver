@@ -60,6 +60,10 @@ Enables the Web Map Tiled Service (WMTS) endpoint in GeoWebCache. When this sett
 
 When the service is disabled, calls to the capabilities document will return a ``Service is disabled`` message.
 
+Enable Data Security
+~~~~~~~~~~~~~~~~~~~~
+
+Enables the :ref:`gwc_data_security` in the embedded GeoWebCache.
 
 Default Caching Options for GeoServer Layers
 --------------------------------------------

@@ -15,18 +15,18 @@
   </parent>
 
   <groupId>org.geoserver.extension</groupId>
-  <artifactId>h2</artifactId>
+  <artifactId>gs-h2</artifactId>
   <packaging>jar</packaging>
   <name>H2 DataStore Extension</name>
 
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
+      <artifactId>gs-main</artifactId>
     </dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>
-      <artifactId>web-core</artifactId>
+      <artifactId>gs-web-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.geotools.jdbc</groupId>
@@ -34,7 +34,7 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
+      <artifactId>gs-main</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>

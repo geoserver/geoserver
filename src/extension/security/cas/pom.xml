@@ -11,12 +11,12 @@
 
   <parent>
     <groupId>org.geoserver.extension</groupId>    
-    <artifactId>security</artifactId>
+    <artifactId>gs-security</artifactId>
     <version>2.5-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.security</groupId>
-  <artifactId>sec-cas</artifactId>
+  <artifactId>gs-sec-cas</artifactId>
   <packaging>jar</packaging>
   <version>2.5-SNAPSHOT</version>
   <name>GeoServer CAS Security Module</name>
@@ -24,7 +24,7 @@
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
+      <artifactId>gs-main</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

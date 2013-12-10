@@ -10,12 +10,12 @@ txsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/m
 
  <parent>
   <groupId>org.geoserver</groupId>
-  <artifactId>maven</artifactId>
+  <artifactId>gs-maven</artifactId>
   <version>2.5-SNAPSHOT</version>
  </parent>
 
  <groupId>org.geoserver.maven</groupId>
- <artifactId>archetype</artifactId>
+ <artifactId>gs-archetype</artifactId>
  <packaging>pom</packaging>
  <name>GeoServer Maven Archetypes</name>
 

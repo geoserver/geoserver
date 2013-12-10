@@ -256,6 +256,15 @@ public class ImportJSONWriter {
             .key("href").value(page.rootURI(pathTo(task) + "/layer"));
         
         if (expand > 0) {
+            if (r.getTitle() != null) {
+                json.key("title").value(r.getTitle());
+            }
+            if (r.getAbstract() != null) {
+                json.key("abstract").value(r.getAbstract());
+            }
+            if (r.getDescription() != null) {
+                json.key("description").value(r.getDescription());
+            }
             json.key("originalName").value(task.getOriginalLayerName());
             if (r != null) {
                 json.key("nativeName").value(r.getNativeName());

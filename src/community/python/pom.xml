@@ -12,7 +12,7 @@
   <version>2.5-SNAPSHOT</version>
  </parent>
  <groupId>org.geoserver.community</groupId>
- <artifactId>python</artifactId>
+ <artifactId>gs-python</artifactId>
  <packaging>jar</packaging>
  <name>Python Scripting Extension</name>
 
@@ -29,7 +29,7 @@
  <dependencies>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>rest</artifactId>
+   <artifactId>gs-rest</artifactId>
    <version>2.5-SNAPSHOT</version>
   </dependency>
   <dependency>
@@ -38,27 +38,27 @@
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>main</artifactId>
+   <artifactId>gs-main</artifactId>
    <version>2.5-SNAPSHOT</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>wfs</artifactId>
+   <artifactId>gs-wfs</artifactId>
    <version>2.5-SNAPSHOT</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>wms</artifactId>
+   <artifactId>gs-wms</artifactId>
    <version>2.5-SNAPSHOT</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>wfs</artifactId>
+   <artifactId>gs-wfs</artifactId>
    <version>2.5-SNAPSHOT</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver.web</groupId>
-   <artifactId>web-core</artifactId>
+   <artifactId>gs-web-core</artifactId>
    <version>2.5-SNAPSHOT</version>
   </dependency>
   <dependency>
@@ -83,14 +83,14 @@
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>main</artifactId>
+   <artifactId>gs-main</artifactId>
    <version>2.5-SNAPSHOT</version>
    <scope>test</scope>
    <classifier>tests</classifier>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>wms</artifactId>
+   <artifactId>gs-wms</artifactId>
    <version>2.5-SNAPSHOT</version>
    <scope>test</scope>
    <classifier>tests</classifier>
@@ -124,7 +124,7 @@
   </dependency>
   <dependency>
    <groupId>org.geoserver.extension</groupId>
-   <artifactId>h2</artifactId>
+   <artifactId>gs-h2</artifactId>
    <version>${project.version}</version>
    <scope>test</scope>
   </dependency>

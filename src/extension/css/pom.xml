@@ -6,7 +6,7 @@
     <version>2.5-SNAPSHOT</version>
   </parent>
   <groupId>org.geoserver.extension</groupId>
-  <artifactId>css</artifactId>
+  <artifactId>gs-css</artifactId>
   <packaging>jar</packaging>
   <version>2.5-SNAPSHOT</version>
   <name>GeoServer CSS Styling</name>
@@ -35,7 +35,7 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>
-      <artifactId>web-core</artifactId>
+      <artifactId>gs-web-core</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -51,14 +51,14 @@
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
+      <artifactId>gs-main</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>
-      <artifactId>web-core</artifactId>
+      <artifactId>gs-web-core</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>

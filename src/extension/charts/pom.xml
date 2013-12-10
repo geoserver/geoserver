@@ -8,7 +8,7 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.geoserver.extension</groupId>
-  <artifactId>charts</artifactId>
+  <artifactId>gs-charts</artifactId>
   <packaging>jar</packaging>
   <name>Chart external graphics support</name>
 

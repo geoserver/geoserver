@@ -9,7 +9,7 @@
  </parent>
 
  <groupId>org.geoserver.extension</groupId>
- <artifactId>inspire</artifactId>
+ <artifactId>gs-inspire</artifactId>
  <packaging>jar</packaging>
  <version>2.5-SNAPSHOT</version>
  <name>GeoServer INSPIRE Extensions</name>
@@ -17,34 +17,34 @@
  <dependencies>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>main</artifactId>
+   <artifactId>gs-main</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>wms</artifactId>
+   <artifactId>gs-wms</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>wfs</artifactId>
+   <artifactId>gs-wfs</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver.web</groupId>
-   <artifactId>web-core</artifactId>
+   <artifactId>gs-web-core</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>main</artifactId>
+   <artifactId>gs-main</artifactId>
    <classifier>tests</classifier>
    <scope>test</scope>
    <version>${project.version}</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver.web</groupId>
-   <artifactId>web-core</artifactId>
+   <artifactId>gs-web-core</artifactId>
    <classifier>tests</classifier>
    <scope>test</scope>
    <version>${project.version}</version>

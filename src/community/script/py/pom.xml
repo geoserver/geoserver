@@ -8,18 +8,18 @@
  <modelVersion>4.0.0</modelVersion>
  <parent>
   <groupId>org.geoserver.community</groupId>
-  <artifactId>script</artifactId>
+  <artifactId>gs-script</artifactId>
   <version>2.5-SNAPSHOT</version>
  </parent>
  <groupId>org.geoserver.script</groupId>
- <artifactId>script-py</artifactId>
+ <artifactId>gs-script-py</artifactId>
  <packaging>jar</packaging>
  <name>Python Scripting Extension</name>
 
  <dependencies>
   <dependency>
    <groupId>org.geoserver.script</groupId>
-   <artifactId>script-core</artifactId>
+   <artifactId>gs-script-core</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
@@ -49,7 +49,7 @@
   </dependency>
   <dependency>
    <groupId>org.geoserver.script</groupId>
-   <artifactId>script-core</artifactId>
+   <artifactId>gs-script-core</artifactId>
    <version>${project.version}</version>
    <classifier>tests</classifier>
    <scope>test</scope>
@@ -68,7 +68,7 @@
   </dependency>
   <dependency>
    <groupId>org.geoserver.extension</groupId>
-   <artifactId>h2</artifactId>
+   <artifactId>gs-h2</artifactId>
    <version>${project.version}</version>
    <scope>test</scope>
   </dependency>

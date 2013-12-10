@@ -15,7 +15,7 @@
   </parent>
 
   <groupId>org.geoserver.extension</groupId>
-  <artifactId>oracle</artifactId>
+  <artifactId>gs-oracle</artifactId>
   <packaging>jar</packaging>
   <name>Oracle DataStore Extension</name>
 

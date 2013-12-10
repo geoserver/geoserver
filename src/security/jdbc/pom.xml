@@ -11,11 +11,11 @@
 
   <parent>
     <groupId>org.geoserver</groupId>    
-    <artifactId>security</artifactId>
+    <artifactId>gs-security</artifactId>
     <version>2.5-SNAPSHOT</version>
   </parent>
   <groupId>org.geoserver.security</groupId>
-  <artifactId>sec-jdbc</artifactId>
+  <artifactId>gs-sec-jdbc</artifactId>
   <packaging>jar</packaging>
   <version>2.5-SNAPSHOT</version>
   <name>GeoServer JDBC Security Module</name>
@@ -23,7 +23,7 @@
   <dependencies>
     <dependency>	
       <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
+      <artifactId>gs-main</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

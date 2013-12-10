@@ -28,6 +28,8 @@ public class GWCConfig implements Cloneable, Serializable {
     private boolean WMTSEnabled;
 
     private boolean TMSEnabled;
+    
+    private boolean securityEnabled;
 
     /**
      * Whether to automatically cache GeoServer layers or they should be enabled explicitly
@@ -153,6 +155,14 @@ public class GWCConfig implements Cloneable, Serializable {
 
     public void setTMSEnabled(boolean tMSEnabled) {
         TMSEnabled = tMSEnabled;
+    }
+    
+    public void setSecurityEnabled(boolean securityEnabled) {
+        this.securityEnabled = securityEnabled;
+    }
+    
+    public boolean isSecurityEnabled() {
+        return securityEnabled;
     }
 
     public boolean isCacheNonDefaultStyles() {

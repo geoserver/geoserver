@@ -4,19 +4,17 @@
  */
 package org.geoserver.wps.ppio;
 
-import java.util.List;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.BufferedWriter;
 import java.io.OutputStreamWriter;
-
 import java.util.LinkedList;
-import org.opengis.feature.Feature;
-import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.FeatureIterator;
+import java.util.List;
+
 import org.geoserver.wfs.response.dxf.DXFWriter;
 import org.geoserver.wfs.response.dxf.DXFWriterFinder;
+import org.geotools.feature.FeatureCollection;
 
 /**
  * Outputs feature collections in DXF format

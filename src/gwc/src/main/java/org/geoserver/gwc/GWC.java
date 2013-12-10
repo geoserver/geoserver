@@ -53,13 +53,22 @@ import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
+import org.geoserver.security.CoverageAccessLimits;
 import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.security.AccessLimits;
+import org.geoserver.security.DataAccessLimits;
+import org.geoserver.security.WMSAccessLimits;
+import org.geoserver.security.WrapperPolicy;
+import org.geoserver.security.decorators.SecuredLayerInfo;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.map.RenderedImageMap;
+import org.opengis.filter.Filter;
+import org.geotools.filter.visitor.ExtractBoundsFilterVisitor;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.ows.ServiceException;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.util.logging.Logging;
@@ -1838,6 +1847,70 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         }
         return null;
     }
+    
+    /**
+     * Verify that a layer is accessible within a certain bounding box using the (secured) catalog
+     * 
+     * @param layerName name of the layer
+     * @param boundingBox bounding box
+     * @throws ServiceException 
+     */
+    public void verifyAccessLayer(String layerName, ReferencedEnvelope boundingBox) throws ServiceException {
+        LayerInfo layerInfo =  getLayerInfoByName(layerName); //catalog.getLayerByName(layerName);
+        if (layerInfo == null) {
+            throw new ServiceException("Could not find layer " + layerName, "LayerNotDefined");
+        }
+        if (layerInfo instanceof SecuredLayerInfo && boundingBox != null) {
+            //test layer bbox limits
+            SecuredLayerInfo securedLayerInfo = (SecuredLayerInfo) layerInfo;
+            WrapperPolicy policy = securedLayerInfo.getWrapperPolicy();
+            AccessLimits limits = policy.getLimits();
+                        
+            if (limits instanceof DataAccessLimits) {
+                //ensure we are all using the same CRS
+                CoordinateReferenceSystem dataCrs = layerInfo.getResource().getCRS();  
+                if (boundingBox.getCoordinateReferenceSystem()!=null && !CRS.equalsIgnoreMetadata(dataCrs, boundingBox.getCoordinateReferenceSystem())) {
+                    try {
+                        boundingBox = boundingBox.transform(dataCrs,true);
+                    } catch (Exception e) {
+                        //bboxes not compatible? deny access for all certainty.
+                        boundingBox = null;
+                    }
+                }
+                Envelope limitBox = new ReferencedEnvelope(ReferencedEnvelope.EVERYTHING, dataCrs); 
+                
+                Filter filter = ((DataAccessLimits) limits).getReadFilter();
+                if (filter != null) {
+                    //extract filter envelope from filter
+                    Envelope box = (Envelope) filter.accept(ExtractBoundsFilterVisitor.BOUNDS_VISITOR, null);
+                    if (box != null) {
+                        limitBox = new ReferencedEnvelope(limitBox.intersection(box), dataCrs);                        
+                    }
+                }
+                if (limits instanceof CoverageAccessLimits) {
+                    if (((CoverageAccessLimits) limits).getRasterFilter() != null) {
+                        Envelope box = ((CoverageAccessLimits) limits).getRasterFilter().getEnvelopeInternal();
+                        if (box != null) {
+                            limitBox = new ReferencedEnvelope(limitBox.intersection(box), dataCrs);                        
+                        }
+                    }
+                }
+                if (limits instanceof WMSAccessLimits) {
+                    if (((WMSAccessLimits) limits).getRasterFilter() != null) {
+                        Envelope box = ((WMSAccessLimits) limits).getRasterFilter().getEnvelopeInternal();
+                        if (box != null) {
+                            limitBox = new ReferencedEnvelope(limitBox.intersection(box), dataCrs);                        
+                        }
+                    }
+                }                
+                
+                if (!limitBox.covers(ReferencedEnvelope.EVERYTHING) && (boundingBox==null || !limitBox.contains(boundingBox))) {
+                    throw new ServiceException("Access denied to bounding box on layer " + layerName, "AccessDenied");
+                }
+            }
+            
+        }
+    }
 
     public CoordinateReferenceSystem getDeclaredCrs(final String geoServerTileLayerName) {
         GeoServerTileLayer layer = (GeoServerTileLayer) getTileLayerByName(geoServerTileLayerName);
@@ -1858,6 +1931,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     public static String tileLayerName(LayerGroupInfo lgi) {
         return lgi.prefixedName();
     }
+    
 
     /**
      * Flush caches

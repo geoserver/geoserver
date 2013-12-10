@@ -13,18 +13,18 @@
     <version>2.5-SNAPSHOT</version>
   </parent>
   <groupId>org.geoserver.community</groupId>
-  <artifactId>istyler</artifactId>
+  <artifactId>gs-istyler</artifactId>
   <version>2.5-SNAPSHOT</version>
   <name>Interactive Styler Web Plugin</name>
   <dependencies>
     <dependency>
       <groupId>org.geoserver.web</groupId>
-      <artifactId>web-core</artifactId>
+      <artifactId>gs-web-core</artifactId>
       <version>2.5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>
-      <artifactId>web-core</artifactId>
+      <artifactId>gs-web-core</artifactId>
       <version>2.5-SNAPSHOT</version>
       <classifier>tests</classifier>
       <scope>test</scope>
@@ -37,7 +37,7 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
+      <artifactId>gs-main</artifactId>
       <version>2.5-SNAPSHOT</version>
       <classifier>tests</classifier>
       <scope>test</scope>

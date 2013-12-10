@@ -23,6 +23,7 @@
                 </LineSymbolizer>
                 <PointSymbolizer>
                     <Graphic>
+                        <Size>5</Size>
                     </Graphic>
                 </PointSymbolizer>
             </Rule>

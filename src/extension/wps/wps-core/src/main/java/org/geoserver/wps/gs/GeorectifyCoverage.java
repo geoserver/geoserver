@@ -13,9 +13,11 @@ import java.awt.image.RenderedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,9 +30,6 @@ import javax.media.jai.JAI;
 import javax.media.jai.operator.ConstantDescriptor;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.ExecTask;
-import org.apache.tools.ant.types.Environment.Variable;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.resource.WPSFileResource;
 import org.geoserver.wps.resource.WPSResourceManager;
@@ -434,50 +433,36 @@ public class GeorectifyCoverage implements GSProcess {
      * logged error messages (if any).
      */
     private static void executeCommand(final String gdalCommand, final String argument,
-            final File loggingFolder, final long timeOut, final List<Variable> envVars)
+            final File loggingFolder, final long timeOut, final Map<String,String> envVars)
             throws IOException {
+
         final File logFile = File.createTempFile("LOG", ".log", loggingFolder);
+        OutputStream log = new FileOutputStream(logFile);
 
-        Project project = new Project();
-        project.init();
+        // run the process and grab the output for error reporting purposes
+        ProcessBuilder builder = new ProcessBuilder(gdalCommand);
+        builder.environment().putAll(envVars);
+        builder.redirectErrorStream(true);
 
-        ExecTask execTask = new ExecTask();
-        execTask.setProject(project);
-
-        // Setting executable
-        execTask.setExecutable(gdalCommand);
-        if (envVars != null) {
-            for (Variable var : envVars) {
-                execTask.addEnv(var);
-            }
-        }
-
-        // Setting command line argument
-        execTask.createArg().setLine(argument);
-        execTask.setLogError(true);
-
-        execTask.setError(logFile);
-        execTask.setOutput(logFile);
-        execTask.setFailonerror(true);
-        execTask.setTimeout(timeOut);
-
-        System.out.println("Executing " + gdalCommand + " " + argument);
-
-        // Executing
         try {
-            execTask.execute();
-        } catch (Exception e) {
+            Process p = builder.start();
+            IOUtils.copy(p.getInputStream(), log);
+    
+            p.waitFor();
+        }
+        catch(Exception e) {
             if (logFile.exists() && logFile.canRead()) {
                 checkError(logFile);
             }
             throw new WPSException("Error launching OS command", e);
-        } finally {
+        }
+        finally {
             if (logFile != null) {
                 logFile.delete();
             }
         }
-
     }
+
 
     /**
      * @param gcps

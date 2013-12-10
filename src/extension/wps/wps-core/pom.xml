@@ -107,16 +107,6 @@
           <groupId>com.google.guava</groupId>
           <artifactId>guava</artifactId>
         </dependency>
-        <dependency>
-	        <groupId>org.apache.ant</groupId>
-	        <artifactId>ant</artifactId>
-	        <version>${ant.version}</version>
-	    </dependency>
-	    <dependency>
-	        <groupId>org.apache.ant</groupId>
-	        <artifactId>ant-launcher</artifactId>
-	        <version>${ant.version}</version>
-	    </dependency>
         
         <!-- test dependencies -->
         <dependency>

@@ -423,7 +423,7 @@ public class GeoserverClientSynchronizer {
 		}
 	}
 
-	Object parseWfs(InputStream is) throws IOException, SAXException, ParserConfigurationException {
+	protected Object parseWfs(InputStream is) throws IOException, SAXException, ParserConfigurationException {
 		long s = System.currentTimeMillis();
 		try {
 			Parser parser = new Parser(m_configuration);

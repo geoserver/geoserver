@@ -6,7 +6,7 @@
       <version>2.5-SNAPSHOT</version>
    </parent>
    <groupId>org.geoserver.community</groupId>
-   <artifactId>gss</artifactId>
+   <artifactId>gs-gss</artifactId>
    <packaging>jar</packaging>
    <version>2.5-SNAPSHOT</version>
    <name>GeoServer Synchronization Service</name>
@@ -14,12 +14,12 @@
    <dependencies>
       <dependency>
          <groupId>org.geoserver</groupId>
-         <artifactId>wfsv</artifactId>
+         <artifactId>gs-wfsv</artifactId>
          <version>${project.version}</version>
       </dependency>
       <dependency>
          <groupId>org.geoserver</groupId>
-         <artifactId>main</artifactId>
+         <artifactId>gs-main</artifactId>
          <version>${gs.version}</version>
          <scope>provided</scope>
       </dependency>
@@ -29,7 +29,7 @@
       </dependency>
       <dependency>
          <groupId>org.geoserver</groupId>
-         <artifactId>main</artifactId>
+         <artifactId>gs-main</artifactId>
          <classifier>tests</classifier>
          <scope>test</scope>
       </dependency>

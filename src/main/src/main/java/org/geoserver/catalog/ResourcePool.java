@@ -853,7 +853,7 @@ public class ResourcePool {
     }
 
     private FeatureType getNonCacheableFeatureType( FeatureTypeInfo info, boolean handleProjectionPolicy ) throws IOException {
-        FeatureType ft;
+        FeatureType ft = null;
         
         //grab the underlying feature type
         DataAccess<? extends FeatureType, ? extends Feature> dataAccess = getDataStore(info.getStore());
@@ -863,19 +863,34 @@ public class ResourcePool {
             JDBCDataStore jstore = (JDBCDataStore) dataAccess;
             VirtualTable vt = info.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, VirtualTable.class);
             
-            // use a highly random name, we don't want to actually add the
-            // virtual table to the store as this feature type is not cacheable,
-            // it is "dirty" or un-saved. The renaming below will take care
-            // of making the user see the actual name
-            // NT 14/8/2012: Removed synchronization on jstore as it blocked query
-            // execution and risk of UUID clash is considered acceptable.
+            
+            // building the virtual table structure is expensive, see if the VT is already registered in the db
+            if(jstore.getVirtualTables().containsValue(vt)) {
+                // if the virtual table is already registered in the store (and equality in the test above
+                // guarantees the structure is the same), we can just get the schema from it directly
+                ft = jstore.getSchema(vt.getName());
+                // paranoid check: make sure nobody changed the vt structure while we fetched 
+                // the data (rather unlikely, even more unlikely would be 
+                if(!jstore.getVirtualTables().containsValue(vt)) {
+                    ft = null;
+                }
+            } 
+            
+            if(ft == null) {
+                // use a highly random name, we don't want to actually add the
+                // virtual table to the store as this feature type is not cacheable,
+                // it is "dirty" or un-saved. The renaming below will take care
+                // of making the user see the actual name
+                // NT 14/8/2012: Removed synchronization on jstore as it blocked query
+                // execution and risk of UUID clash is considered acceptable.
                 final String[] typeNames = jstore.getTypeNames();
                 do {
                     vtName = UUID.randomUUID().toString();
                 } while (Arrays.asList(typeNames).contains(vtName));                                
                 jstore.addVirtualTable(new VirtualTable(vtName, vt));
-
-            ft = jstore.getSchema(vtName);
+    
+                ft = jstore.getSchema(vtName);
+            }
         } else {
             ft = dataAccess.getSchema(info.getQualifiedNativeName());
         }

@@ -11,12 +11,12 @@
 
   <parent>
     <groupId>org.geoserver</groupId>    
-    <artifactId>security</artifactId>
+    <artifactId>gs-security</artifactId>
     <version>2.5-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.security</groupId>
-  <artifactId>sec-ldap</artifactId>
+  <artifactId>gs-sec-ldap</artifactId>
   <packaging>jar</packaging>
   <version>2.5-SNAPSHOT</version>
   <name>GeoServer LDAP Security Module</name>
@@ -24,7 +24,7 @@
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
+      <artifactId>gs-main</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -39,7 +39,7 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
+      <artifactId>gs-main</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>

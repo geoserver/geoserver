@@ -9,8 +9,8 @@
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
-        <include>script-core*</include>
-        <include>script-js*</include>
+        <include>gs-script-core*</include>
+        <include>gs-script-js*</include>
         <include>geoscript-js*</include>
         <include>rhino*</include>
         <include>jline*</include>

@@ -12,24 +12,24 @@
   <version>2.5-SNAPSHOT</version>
  </parent>
  <groupId>org.geoserver.community</groupId>
- <artifactId>geopkg</artifactId>
+ <artifactId>gs-geopkg</artifactId>
  <packaging>jar</packaging>
  <name>GeoServer GeoPackage Extension</name>
 
  <dependencies>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>gwc</artifactId>
+   <artifactId>gs-gwc</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>wms</artifactId>
+   <artifactId>gs-wms</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>wfs</artifactId>
+   <artifactId>gs-wfs</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
@@ -39,21 +39,21 @@
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>main</artifactId>
+   <artifactId>gs-main</artifactId>
    <version>${project.version}</version>
    <classifier>tests</classifier>
    <scope>test</scope>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>wms</artifactId>
+   <artifactId>gs-wms</artifactId>
    <version>${project.version}</version>
    <classifier>tests</classifier>
    <scope>test</scope>
   </dependency>
  <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>wfs</artifactId>
+   <artifactId>gs-wfs</artifactId>
    <version>${project.version}</version>
    <classifier>tests</classifier>
    <scope>test</scope>

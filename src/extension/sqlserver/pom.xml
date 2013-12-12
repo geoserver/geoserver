@@ -15,7 +15,7 @@
   </parent>
 
   <groupId>org.geoserver.extension</groupId>
-  <artifactId>sqlserver</artifactId>
+  <artifactId>gs-sqlserver</artifactId>
   <packaging>jar</packaging>
   <name>SQL Server DataStore Extension</name>
 

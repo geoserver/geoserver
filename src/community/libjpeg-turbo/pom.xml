@@ -11,7 +11,7 @@
  </parent>
 
 	<groupId>org.geoserver.community</groupId>
-	<artifactId>libjpeg-turbo</artifactId>
+	<artifactId>gs-libjpeg-turbo</artifactId>
 	<packaging>jar</packaging>
 	<version>2.5-SNAPSHOT</version>
 	<name>GeoServer libjpeg-turbo Module</name>
@@ -47,19 +47,19 @@
 		</dependency>
 		<dependency>
 			<groupId>org.geoserver</groupId>
-			<artifactId>main</artifactId>
+			<artifactId>gs-main</artifactId>
 			<version>${project.version}</version>
 			<classifier>tests</classifier>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.geoserver</groupId>
-			<artifactId>wms</artifactId>
+			<artifactId>gs-wms</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.geoserver</groupId>
-			<artifactId>wms</artifactId>
+			<artifactId>gs-wms</artifactId>
 			<version>${project.version}</version>
 			<classifier>tests</classifier>
 			<scope>test</scope>

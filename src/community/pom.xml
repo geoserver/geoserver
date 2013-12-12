@@ -21,7 +21,7 @@
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>platform</artifactId>
+      <artifactId>gs-platform</artifactId>
     </dependency>
   </dependencies>
 
@@ -49,6 +49,7 @@
           <descriptor>release/ext-netcdf.xml</descriptor>
           <descriptor>release/ext-netcdf-out.xml</descriptor>
           <descriptor>release/ext-png.xml</descriptor>
+          <descriptor>release/ext-dxf.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -165,6 +166,8 @@
         <module>netcdf</module>
         <module>netcdf-out</module>
         <module>png</module>
+        <module>dxf</module>
+        
       </modules>
     </profile>
     <profile>

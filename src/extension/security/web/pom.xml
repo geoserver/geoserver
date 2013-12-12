@@ -11,12 +11,12 @@
 
   <parent>
     <groupId>org.geoserver.extension</groupId>    
-    <artifactId>security</artifactId>
+    <artifactId>gs-security</artifactId>
     <version>2.5-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.extension</groupId>
-  <artifactId>web-sec</artifactId>
+  <artifactId>gs-web-sec</artifactId>
   <packaging>pom</packaging>
   <version>2.5-SNAPSHOT</version>
   <name>GeoServer Security Extension Web Modules</name>

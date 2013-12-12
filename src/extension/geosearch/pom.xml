@@ -15,34 +15,34 @@
  </parent>
 
  <groupId>org.geoserver.extension</groupId>
- <artifactId>geosearch</artifactId>
+ <artifactId>gs-geosearch</artifactId>
  <packaging>jar</packaging>
  <name>GeoSearch Index Module</name>
 
  <dependencies>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>rest</artifactId>
+   <artifactId>gs-rest</artifactId>
    <version>2.5-SNAPSHOT</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>main</artifactId>
+   <artifactId>gs-main</artifactId>
    <version>2.5-SNAPSHOT</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver.web</groupId>
-   <artifactId>web-core</artifactId>
+   <artifactId>gs-web-core</artifactId>
    <version>2.5-SNAPSHOT</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>kml</artifactId>
+   <artifactId>gs-kml</artifactId>
    <version>2.5-SNAPSHOT</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>main</artifactId>
+   <artifactId>gs-main</artifactId>
    <version>2.5-SNAPSHOT</version>
    <classifier>tests</classifier>
    <scope>test</scope>

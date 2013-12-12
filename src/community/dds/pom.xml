@@ -18,7 +18,7 @@
 	</parent>
 
 	<groupId>org.geoserver.community</groupId>
-	<artifactId>dds</artifactId>
+	<artifactId>gs-dds</artifactId>
 	<packaging>jar</packaging>
 	<version>2.5-SNAPSHOT</version>
 	<name>WorldWind Format Module</name>
@@ -33,27 +33,27 @@
 		</dependency>
 		<dependency>
 			<groupId>org.geoserver</groupId>
-			<artifactId>main</artifactId>
+			<artifactId>gs-main</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.geoserver</groupId>
-			<artifactId>wms</artifactId>
+			<artifactId>gs-wms</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.geoserver</groupId>
-			<artifactId>wcs</artifactId>
+			<artifactId>gs-wcs</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.geoserver</groupId>
-			<artifactId>ows</artifactId>
+			<artifactId>gs-ows</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.geoserver</groupId>
-			<artifactId>platform</artifactId>
+			<artifactId>gs-platform</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -63,14 +63,14 @@
       	</dependency>
       	<dependency>
 			<groupId>org.geoserver</groupId>
-			<artifactId>wms</artifactId>
+			<artifactId>gs-wms</artifactId>
 			<version>${project.version}</version>
 			<classifier>tests</classifier>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.geoserver</groupId>
-			<artifactId>main</artifactId>
+			<artifactId>gs-main</artifactId>
 			<classifier>tests</classifier>
 			<scope>test</scope>
 		</dependency>

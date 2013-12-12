@@ -9,7 +9,7 @@
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
-        <include>libjpeg-turbo*.jar</include>
+        <include>gs-libjpeg-turbo*.jar</include>
 				<include>*imageio-ext-turbojpeg*.jar</include>
 				<include>*turbojpeg-wrapper-*.jar</include> 
       </includes>

@@ -26,6 +26,7 @@ import org.geoserver.importer.ImporterTestSupport;
 import com.google.common.collect.Lists;
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Collections;
@@ -38,6 +39,7 @@ import javax.servlet.Filter;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.data.DataStore;
@@ -54,6 +56,24 @@ public class RESTDataTest extends ImporterTestSupport {
 
         postImport(i);
         runChecks("archsites");
+    }
+
+    public void testTitleAndDescriptionOnUpload() throws Exception {
+        int i = postNewImport();
+        int t = postNewTaskAsMultiPartForm(i, "shape/archsites_epsg_prj.zip");
+
+        JSONObject task = getTask(i, t);
+        assertEquals("READY", task.getString("state"));
+
+        putTaskLayer(i, t, "{\"title\":\"Archsites\", \"abstract\":\"Archeological Sites\"}");
+        postImport(i);
+        runChecks("archsites");
+
+        LayerInfo l = getCatalog().getLayerByName("archsites");
+        ResourceInfo r = l.getResource();
+
+        assertEquals("Archsites", r.getTitle());
+        assertEquals("Archeological Sites", r.getAbstract());
     }
 
     public void testFilePut() throws Exception {
@@ -374,6 +394,12 @@ public class RESTDataTest extends ImporterTestSupport {
         MockHttpServletResponse resp = putAsServletResponse(
             String.format("/rest/imports/%d/tasks/%d", imp, task), json, "application/json");
         assertEquals(204, resp.getStatusCode());
+    }
+
+    void putTaskLayer(int imp, int task, String json) throws Exception {
+        MockHttpServletResponse resp = putAsServletResponse(
+            String.format("/rest/imports/%d/tasks/%d/layer", imp, task), json, "application/json");
+        assertEquals(202, resp.getStatusCode());
     }
 
     int postNewTaskAsMultiPartForm(int imp, String data) throws Exception {

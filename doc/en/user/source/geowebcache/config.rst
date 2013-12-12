@@ -54,4 +54,19 @@ GeoWebCache with multiple GeoServer instances
 
 For stability reasons, it is not recommended to use the embedded GeoWebCache with multiple GeoServer instances. If you want to configure GeoWebCache as a front-end for multiple instances of GeoServer, we recommend using the `standalone GeoWebCache <http://geowebcache.org>`_.
 
+.. _gwc_data_security:
 
+Geoserver Data Security
+-----------------------
+
+GWC Data Security is an option that can be turned on and turned off through the :ref:`webadmin_tilecaching_defaults` page. By default it is turned off. 
+
+When turned on, the embedded GWC will do a data security check before calling GeoWebCache, i.e. verify whether the user actually has access to the layer, and reject the request if this is not the case. 
+In the case of WMS-C requests, there is also limited support for data access limit filters, only with respect to geographic boundaries (all other types of data access limits will be ignored).
+The embedded GWC will reject requests for which the requested bounding box is (partly) inaccessible. It is only possible to request a tile within a bounding box that is fully accessible.
+This behaviour is different from the regular WMS, which will filter the data before serving it. 
+However, if the integrated WMS/WMS-C is used, the request will be forwarded back to WMS and give the desired result.
+
+When using the default GeoServer security system, rules cannot combine data security with service security. However, when using a security subsystem it may be possible
+to make such particular combinations. In this case the WMS-C service inherits all security rules from the regular WMS service; while all other GWC services will get their security
+from rules associated with the 'GWC' service itself.

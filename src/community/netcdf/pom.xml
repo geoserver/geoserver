@@ -15,7 +15,7 @@
   </parent>
 
   <groupId>org.geoserver.community</groupId>
-  <artifactId>netcdf</artifactId>
+  <artifactId>gs-netcdf</artifactId>
   <packaging>jar</packaging>
   <name>NetCDF Coverage format</name>
 

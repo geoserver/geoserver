@@ -50,9 +50,7 @@
 	</bean>
 		
 	<bean id="wmsGetFeatureInfo"
-		class="org.geoserver.wms.GetFeatureInfo">
-      <constructor-arg ref="wms"/>
-	</bean>
+		class="org.geoserver.wms.GetFeatureInfo"/>
 		
 	<bean id="wmsGetLegendGraphic"
 		class="org.geoserver.wms.GetLegendGraphic">
@@ -679,4 +677,14 @@
        </props>
      </property>
   </bean>
+  
+  <!-- Pluggable layer identifiers -->
+  <bean id="basicVectorLayerIdentifier" class="org.geoserver.wms.featureinfo.BasicVectorLayerIdentifier">
+      <constructor-arg ref="wms"/>
+  </bean>
+  <bean id="rasterLayerIdentifier" class="org.geoserver.wms.featureinfo.RasterLayerIdentifier">
+      <constructor-arg ref="wms"/>
+  </bean>
+  <bean id="wmsLayerIdentifier" class="org.geoserver.wms.featureinfo.WMSLayerIdentifier"/>
+    
 </beans>

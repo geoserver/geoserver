@@ -1,5 +1,7 @@
 package org.geoserver.community.css.web;
 
+import static org.junit.Assert.*;
+
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.tabs.AjaxTabbedPanel;
@@ -82,8 +84,23 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
         pp.put("style", prefixedName);
         tester.startPage(CssDemoPage.class, pp);
         tester.assertRenderedPage(CssDemoPage.class);
-        // print(tester.getLastRenderedPage(), true, true);
         tester.assertModelValue("main-content:style.name", prefixedName);
         tester.assertModelValue("main-content:layer.name", prefixedName);
+    }
+    
+    @Test
+    public void testWorkspaceRelativeLinks() {
+        StyleInfo si = getCatalog().getStyleByName(MockData.LAKES.getLocalPart());
+        WorkspaceInfo ws = getCatalog().getWorkspaceByName(MockData.LAKES.getPrefix());
+        si.setWorkspace(ws);
+        
+        CssDemoPage page = new CssDemoPage();
+        String css = "* { mark: url(\"smiley.png\");  }";
+        String sld = page.cssText2sldText(css, si);
+        
+        // check the reference is workspace specific (see http://jira.codehaus.org/browse/GEOS-6229
+        // though, that should be a better fix)
+        // System.out.println(sld);
+        assertTrue(sld.contains("workspaces/cite/styles/smiley.png"));
     }
 }

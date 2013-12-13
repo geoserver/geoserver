@@ -156,11 +156,20 @@ public class CssDemoPage extends GeoServerSecuredPage {
 
     public LayerInfo getLayer() { return this.layer; } 
     
-    public String cssText2sldText(String css) {
+    public String cssText2sldText(String css, StyleInfo styleInfo) {
         try {
             GeoServerDataDirectory datadir = 
                 new GeoServerDataDirectory(getCatalog().getResourceLoader());
-            File styleDir = datadir.findStyleDir();
+            File styleDir;
+            if(styleInfo == null || styleInfo.getWorkspace() == null) {
+                styleDir= datadir.findStyleDir();
+            } else {
+                File ws = datadir.findOrCreateWorkspaceDir(styleInfo.getWorkspace());
+                styleDir = new File(ws, "styles");
+                if(!styleDir.exists()) {
+                    styleDir.mkdir();
+                }
+            }
 
             scala.collection.Seq<org.geoscript.geocss.Rule> rules = CssParser.parse(css).get();
             Translator translator = 
@@ -170,7 +179,6 @@ public class CssDemoPage extends GeoServerSecuredPage {
             SLDTransformer tx = new org.geotools.styling.SLDTransformer();
             tx.setIndentation(2);
             StringWriter sldChars = new java.io.StringWriter();
-            System.out.println(sldChars.toString());
             tx.transform(style, sldChars);
             return sldChars.toString();
         } catch (Exception e) {
@@ -199,7 +207,7 @@ public class CssDemoPage extends GeoServerSecuredPage {
                 if (sld == null || !sld.exists()) {
                     catalog.getResourcePool().writeStyle(
                             style,
-                            new ByteArrayInputStream(cssText2sldText(defaultStyle).getBytes())
+                            new ByteArrayInputStream(cssText2sldText(defaultStyle, style).getBytes())
                             );
                     sld = findStyleFile(style);
                 }

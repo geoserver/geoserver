@@ -11,7 +11,7 @@ Installation
 ------------
 
 The printing module is built nightly and published to the `nightly build server
-<http://gridlock.opengeo.org/geoserver/2.1.x/community-latest/>`_.  The installation process is similar to other GeoServer plugins:
+<http://ares.boundlessgeo.com/geoserver/2.4.x/community-latest/>`_.  The installation process is similar to other GeoServer plugins:
 
 * Download the file (named like
   ``geoserver-2.0.2-SNAPSHOT-printing-plugin.zip``)

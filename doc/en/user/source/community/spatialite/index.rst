@@ -29,7 +29,7 @@ For Mac OS X only Intel based machines are supported (ie. not PowerPC).
 Installing the SpatiaLite extension
 -----------------------------------
 
-#. Download the SpatiaLite extension from the `nightly GeoServer community module builds <http://gridlock.opengeo.org/geoserver/trunk/community-latest/>`_.
+#. Download the SpatiaLite extension from the `nightly GeoServer community module builds <http://ares.boundlessgeo.com/geoserver/2.4.x/community-latest/>`_.
 
    .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance.
 

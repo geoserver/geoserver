@@ -313,6 +313,18 @@ public class GeoServerTileLayer extends TileLayer {
             for (KeywordInfo kw : resourceInfo.getKeywords()) {
                 keywords.add(kw.getValue());
             }
+        } else {
+            LayerGroupInfo lg = getLayerGroupInfo();
+            if(lg != null) {
+                if (lg != null) {
+                    if(lg.getTitle() != null) {
+                        title = lg.getTitle();
+                    }
+                    if(lg.getAbstract() != null) {
+                        description = lg.getAbstract();
+                    }
+                }
+            }
         }
         meta = new LayerMetaInformation(title, description, keywords, contacts);
         return meta;

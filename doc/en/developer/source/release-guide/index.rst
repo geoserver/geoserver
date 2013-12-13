@@ -30,7 +30,7 @@ Prerequisites
 The following are necessary to perform a GeoServer release:
 
 #. Commit access to the GeoServer `Git repository <https://Github.com/geoserver/geoserver>`_
-#. Build access to `Hudson <http://hudson.opengeo.org/hudson>`_
+#. Build access to `Jenkins <http://ares.boundlessgeo.com/jenkins/>`_
 #. Edit access to the GeoServer `Blog <http://blog.geoserver.org>`_
 #. Administration rights to GeoServer `JIRA <https://jira.codehaus.org/browse/GEOS>`__
 #. Release/file management privileges in `SourceForge <https://sourceforge.net/projects/geoserver/>`_
@@ -40,9 +40,9 @@ Versions and revisions
 
 When performing a release we don't require a "code freeze" in which no developers can commit to the repository. Instead we release from a revision that is known to pass all tests, including unit/integration tests as well as CITE tests.
 
-To obtain the GeoServer and Geotools revisions that have passed the `CITE test <http://hudson.opengeo.org/hudson/view/cite/>`_, navigate to the latest Hudson run of the CITE test  and view it's console output and select to view its full log. For example::
+To obtain the GeoServer and Geotools revisions that have passed the `CITE test <http://ares.boundlessgeo.com/jenkins/view/geoserver-cite/>`_, navigate to the latest Jenkins run of the CITE test  and view it's console output and select to view its full log. For example::
 
-	 http://hudson.opengeo.org/hudson/view/cite/job/cite-wfs-1.1/813/consoleFull
+	 http://ares.boundlessgeo.com/jenkins/view/geoserver-cite/job/cite-wfs-1.1/9/consoleText
 
 Perform a search on the log for 'Git revision' and you should obtain the following.::
 
@@ -61,7 +61,7 @@ allowed to release directly from a specific GeoTools revision.
 Release in JIRA
 ---------------
 
-Run the `geoserver-release-jira <http://hudson.opengeo.org/hudson/job/geoserver-release-jira/>`_ job in Hudson. The job takes the following parameters:
+Run the `geoserver-release-jira <http://ares.boundlessgeo.com/jenkins/job/geoserver-release-jira/>`_ job in Jenkins. The job takes the following parameters:
 
 **VERSION**
 
@@ -84,7 +84,7 @@ This job will perform the tasks in JIRA to release ``VERSION``. Navigate to `JIR
 Build the Release
 -----------------
 
-Run the `geoserver-release <http://hudson.opengeo.org/hudson/job/geoserver-release/>`_ job in Hudson. The job takes the following parameters:
+Run the `geoserver-release <http://ares.boundlessgeo.com/jenkins/job/geoserver-release/>`_ job in Jenkins. The job takes the following parameters:
 
 **BRANCH**
 
@@ -119,7 +119,7 @@ release artifacts against the GeoTools/GeoWebCache versions specified. When
 successfully complete all release artifacts will be uploaded to the following
 location::
 
-   http://gridlock.opengeo.org/geoserver/release/<RELEASE>
+   http://ares.boundlessgeo.com/geoserver/release/<RELEASE>
 
 Additionally when the job completes it fires off two jobs for building the
 Windows and OSX installers. These jobs run on different hudson instances.
@@ -136,7 +136,7 @@ test on the developer list.
 Publish the Release
 -------------------
 
-Run the `geoserver-release-publish <http://hudson.opengeo.org/hudson/job/geoserver-release-publish/>`_ in Hudson. The job takes the following parameters:
+Run the `geoserver-release-publish <http://ares.boundlessgeo.com/jenkins/job/geoserver-release-publish/>`_ in Jenkins. The job takes the following parameters:
 
 **VERSION**
 
@@ -148,7 +148,7 @@ Run the `geoserver-release-publish <http://hudson.opengeo.org/hudson/job/geoserv
 
 This job will rsync all the artifacts located at::
 
-     http://gridlock.opengeo.org/geoserver/release/<RELEASE>
+     http://ares.boundlessgeo.com/geoserver/release/<RELEASE>
 
 to the SourceForge FRS server. Navigate to `Sourceforge <http://sourceforge.net/projects/geoserver/>`__ and verify that the artifacts have been uploaded properly. Set the necessary flags on the ``.exe``, ``.dmg`` and ``.bin`` artifacts so that they show up as the appropriate default for users downloading on the Windows, OSX, and Linux platforms.
 

@@ -18,5 +18,5 @@ After installation, you may find the following useful to get you started - :doc:
 Nightly builds
 --------------
 
-For those interested in trying out new features and other experimental changes, nightly builds are available from the GeoServer continuous integration system at http://gridlock.opengeo.org/geoserver/ .
+For those interested in trying out new features and other experimental changes, nightly builds are available from the GeoServer continuous integration system at http://ares.boundlessgeo.com/geoserver/ .
 After downloading the ZIP archive, the steps to install are the same as above.

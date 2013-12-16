@@ -162,6 +162,8 @@ public class GeoServerTileLayerTest {
         final String layerGroupId = "mock-layergroup-id";
         layerGroup.setId(layerGroupId);
         layerGroup.setName("MockLayerGroup");
+        layerGroup.setTitle("Group title");
+        layerGroup.setAbstract("Group abstract");
         layerGroup.setLayers(Collections.singletonList((PublishedInfo) layerInfo));
 
         defaults = GWCConfig.getOldDefaults();
@@ -338,8 +340,9 @@ public class GeoServerTileLayerTest {
         description = metaInformation.getDescription();
         keywords = metaInformation.getKeywords();
         // these properties are missing from LayerGroupInfo interface
-        assertEquals(GWC.tileLayerName(layerGroup), title);
-        assertEquals("", description);
+        assertEquals("Group title", title);
+        assertEquals("Group abstract", description);
+        
         assertEquals(0, keywords.size());
     }
 

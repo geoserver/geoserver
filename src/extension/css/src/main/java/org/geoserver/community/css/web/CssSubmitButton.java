@@ -36,7 +36,7 @@ class CssSubmitButton extends AjaxButton {
     @Override
     public void onSubmit(AjaxRequestTarget target, Form<?> form) {
         try {
-            String sld = page.cssText2sldText(styleBody.getObject());
+            String sld = page.cssText2sldText(styleBody.getObject(), page.getStyleInfo());
             Writer writer = new FileWriter(cssFile);
             writer.write(styleBody.getObject());
             writer.close();

@@ -45,6 +45,12 @@
             <artifactId>wms</artifactId>
         </dependency>
         <dependency>
+            <groupId>net.sf.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>1.8</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.geoserver</groupId>
             <artifactId>restconfig</artifactId>
             <version>${project.version}</version>

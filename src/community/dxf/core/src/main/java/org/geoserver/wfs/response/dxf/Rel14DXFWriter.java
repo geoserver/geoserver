@@ -11,10 +11,18 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.feature.type.FeatureTypeImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.util.logging.Logging;
+import org.opengis.feature.Property;
+import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.GeometryType;
+import org.opengis.feature.type.Name;
+import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.feature.simple.SimpleFeature;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -25,11 +33,14 @@ import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * DXFWriter for the release 14 of DXF.
+ * see http://www.autodesk.com/techpubs/autocad/acadr14/dxf/index.htm
  * 
  * @author Mauro Bartolomeoli, mbarto@infosia.it
  * 
  */
 public class Rel14DXFWriter extends AbstractDXFWriter {
+    private static final Logger LOGGER = Logging.getLogger(Rel14DXFWriter.class);
+
 
     // cache for block names
     Map<String, String> blockNames = null;
@@ -37,6 +48,9 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
     // cache for block handles
     Map<String, String> blockHandles = null;
 
+    // cache for block handles
+    Map<String, Object> textConfig = null;
+    
     // block name counter (blocks will be names "0", "1", ...
     int blockCounter = 0;
 
@@ -46,6 +60,8 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
     
     public Rel14DXFWriter() {
         super();
+        textConfig = new HashMap<String, Object>();
+        textConfig.put("height", 0.72);
     }
 
     public Rel14DXFWriter(Writer writer) {
@@ -152,6 +168,7 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
      * @throws IOException
      */
     private void writeTables(List featureList) throws IOException {
+        LOGGER.warning("Rel14DXFWriter.writeTables");
         writeSectionStart("TABLES");
         // Tables structure
         writeViewPort(featureList);
@@ -180,6 +197,7 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
         // blocks computed from the feature list
         // (complex geometries)
         writeEntityBlocks(featureList);
+        writeAttributeDefinitionBlocks(featureList);
         writeSectionEnd();
 
     }
@@ -237,12 +255,55 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
                         writeInsert(layer, name);
                     } else {
                         writeGeometry(layer, "1F", (Geometry) f.getDefaultGeometry());
+                        String name = blockNames.get(coll.hashCode()+"");
+                        if (writeAttributes) {
+                            String ownerHandle = blockHandles.get(coll.hashCode()
+                                    + "");
+                            String attributesLayer = layer + "_attributes";
+                            // writeInsert(layer, name);
+                            writeInsertWithAttributes(attributesLayer, ownerHandle,
+                                    name, f);
+                        }
                     }
                 }
             } finally {
                 iter.close();
             }
         }
+    }
+
+    private void writeAttributes(String layer, String ownerHandle, SimpleFeature f) throws IOException {
+        // TODO Auto-generated method stub
+        for ( Property p : f.getProperties()) {
+            Name name = p.getName();
+            LOGGER.warning("    attr: " + name.getLocalPart() + " = " + p.getValue());
+            if (!(p.getValue() instanceof Geometry)) {
+                writeAttribute(layer, ownerHandle, name.getLocalPart(), p.getValue());
+            }
+        }
+    }
+
+    private void writeAttribute(String layer, String ownerHandle, String attribName, Object value) throws IOException {
+        writeGroup(0, "ATTRIB");
+        writeHandle("Geometry");
+        // String handle = getNewHandle("Attrib");
+        // writeGroup(5, handle);
+        writeOwnerHandle(ownerHandle);
+        writeSubClass("AcDbEntity");
+        writeLayer(layer);
+        writeSubClass("AcDbText");
+        writeDoubleGroup(10, 0.0);
+        writeDoubleGroup(20, 0.0);
+        writeDoubleGroup(30, 0.0);
+        writeDoubleGroup(40, 0.72 /*(Double) textConfig.get("height")*/);
+        String valueString = "";
+        if (value != null) {
+            valueString = value.toString();
+        }
+        writeGroup(1, valueString);
+        writeSubClass("AcDbAttribute");
+        writeGroup(2, attribName);
+        writeGroup(70, "     0");
     }
 
     /**
@@ -262,6 +323,28 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
         writePoint(0.0, 0.0, 0.0);
     }
 
+    private void writeInsertWithAttributes(String layer, String ownerHandle, String name, SimpleFeature f) throws IOException {
+        writeGroup(0, "INSERT");
+        writeOwnerHandle(ownerHandle);
+        writeHandle("Geometry");
+        writeSubClass("AcDbEntity");
+        writeLayer(layer);
+        writeSubClass("AcDbBlockReference");
+        writeGroup(66, "     1");
+        writeName(name);
+        Geometry geometry = (Geometry)f.getDefaultGeometry();
+        Point intPoint = geometry.getInteriorPoint();
+        writePoint(intPoint.getX(), intPoint.getY(), 0.0);
+        writeAttributes(layer, ownerHandle, f);
+        writeGroup(0, "SEQEND");
+        writeHandle("Geometry");
+        // String handle = getNewHandle("AttDef");
+        // writeGroup(5, handle);
+        writeOwnerHandle(ownerHandle);
+        writeSubClass("AcDbEntity");
+        writeLayer(layer);
+    }
+    
     /**
      * Writes all the given feature list associated blocks.
      * 
@@ -281,11 +364,15 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
      * @throws IOException
      */
     private void writeFeatureBlocks(FeatureCollection coll) throws IOException {
+        LOGGER.warning("Rel14DXFWriter.writeFeatureBlocks");
+        String layer = getLayerName(coll);
+        
         FeatureIterator<SimpleFeature> iter = coll.features();
         try {
             while (iter.hasNext()) {
                 SimpleFeature f = iter.next();
                 String fid = f.getID();
+                
                 // consider only items cached to be treated as
                 // blocks (by the previous block_record analysis)
                 if (blockNames.containsKey(fid)) {
@@ -293,7 +380,6 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
                     String name = blockNames.get(fid);
                     String startHandle = getNewHandle("Block");
                     String endHandle = getNewHandle("Block");
-                    String layer = getLayerName(coll);
                     writeStartBlock(startHandle, ownerHandle, false, "0", name);
                     writeGeometry(layer, ownerHandle, (Geometry) f.getDefaultGeometry());
                     writeEndBlock(endHandle, ownerHandle, false, "0", name);
@@ -303,6 +389,72 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
             iter.close();
         }
 
+        }
+
+    /**
+     * Writes all the given attribute definition blocks to be used for later INSERT
+     * entities
+     * 
+     * @param featureList
+     * @throws IOException
+     */
+    private void writeAttributeDefinitionBlocks(List<FeatureCollection> featureList) throws IOException {
+        LOGGER.warning("Rel14DXFWriter.writeAttributeDefinitionBlocks");
+        for (FeatureCollection coll : featureList) {
+            String fid = coll.hashCode()+"";
+            
+            // consider only items cached to be treated as
+            // blocks (by the previous block_record analysis)
+            if (blockNames.containsKey(coll.hashCode()+"")) {
+                String ownerHandle = blockHandles.get(coll.hashCode()+"");
+                String name = blockNames.get(coll.hashCode()+"");
+                String startHandle = getNewHandle("Block");
+                String endHandle = getNewHandle("Block");
+                writeStartBlock(startHandle, ownerHandle, false, "0", name);
+                String attributesLayer = getLayerName(coll) + "_attributes";
+                // writeGeometryStart("POINT", layer, ownerHandle);
+                writeGeometryStart("CIRCLE", attributesLayer, ownerHandle);
+                // writeSubClass("AcDbPoint");
+                writeSubClass("AcDbCircle");
+                writePoint(0.0, 0.0, 0.0);
+                writeDoubleGroup(40, 1.0);
+                writeAttributeDefinitions(attributesLayer, ownerHandle, coll);
+                writeEndBlock(endHandle, ownerHandle, false, "0", name);
+            }
+        }
+    }
+    
+    private void writeAttributeDefinitions(String layer, String ownerHandle,
+            FeatureCollection fc) throws IOException {
+        FeatureTypeImpl schema = (FeatureTypeImpl) fc.getSchema();
+        for ( PropertyDescriptor p : schema.getDescriptors()) {
+            Name name = p.getName();
+            LOGGER.warning("    attr: " + name.getLocalPart());
+            if (!(p.getType() instanceof GeometryType)) {
+                writeAttrDef(layer, ownerHandle, name.getLocalPart());
+            }
+        }
+    }
+
+    private void writeAttrDef(String layer, String ownerHandle, String attribName) throws IOException {
+        // http://www.autodesk.com/techpubs/autocad/acad2000/dxf/attdef_dxf_06.htm
+        writeGroup(0, "ATTDEF");
+        writeHandle("Geometry");
+        // String handle = getNewHandle("AttDef");
+        // writeGroup(5, handle);
+        writeOwnerHandle(ownerHandle);
+        writeSubClass("AcDbEntity");
+        writeLayer(layer);
+        writeSubClass("AcDbText");
+        writeDoubleGroup(10, 0.0);
+        writeDoubleGroup(20, 0.0);
+        writeDoubleGroup(30, 0.0);
+        writeDoubleGroup(40, 2.0);
+        writeGroup(1, "");
+        writeSubClass("AcDbAttributeDefinition");
+        writeGroup(3, attribName);
+        writeGroup(2, attribName);
+        writeGroup(70, "     0");
     }
 
     /**
@@ -404,9 +556,9 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
         writeGroup(5, handle);
         writeOwnerHandle(ownerHandle);
         writeSubClass("AcDbEntity");
+        writeLayer(layer);
         if (paperSpace)
             writeIntegerGroup(67, 1);
-        writeLayer(layer);
         writeSubClass("AcDbBlockBegin");
         writeName(name);
         writeIntegerGroup(70, 0);
@@ -552,12 +704,19 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
                 // exported as a block; we use fid to cache
                 // this for further using (blocks and entities
                 // sections)
-                if (geometryAsBlock || isBlockGeometry(geom))
+                if (geometryAsBlock || isBlockGeometry(geom)) {
+                    LOGGER.warning("    added");
                     blockNames.put(f.getID(), (blockCounter++) + "");
             }
+            }
         } finally {
-        	iter.close();
+            iter.close();
         }
+        if (writeAttributes) {
+            // add attribute definition blocks 
+            blockNames.put(coll.hashCode()+"", (blockCounter++) + "");
+        }
+        
     }
 
     /**
@@ -702,6 +861,11 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
         for (Object coll : featureList) {
             writeLayer((FeatureCollection) coll);
         }
+        if (writeAttributes){
+            for (Object coll : featureList) {
+                writeAttributeLayer((FeatureCollection) coll);
+            }
+        }
         writeTableEnd();
 
     }
@@ -751,6 +915,18 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
                 getLineType(coll));
     }
 
+    /**
+     * Writes a layer for the given featurecollection.
+     * 
+     * @param coll
+     * @throws IOException
+     */
+    private void writeAttributeLayer(FeatureCollection coll) throws IOException {
+        String attributesLayer = getLayerName(coll) + "_attributes";
+        writeLayerItem(getNewHandle("Layer"), "2", attributesLayer, false, getColor(coll),
+                getLineType(coll));
+    }
+    
     /**
      * Writes the line types table.
      * 

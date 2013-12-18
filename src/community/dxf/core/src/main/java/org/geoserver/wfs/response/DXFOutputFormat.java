@@ -201,7 +201,8 @@ public class DXFOutputFormat extends WFSGetFeatureOutputFormat {
         String colors = (String) gft.getFormatOptions().get("COLORS");
         String ltypes = (String) gft.getFormatOptions().get("LTYPES");
         String layerNames = (String) gft.getFormatOptions().get("LAYERS");
-        LOGGER.log(Level.FINE,"Format options: "+version+"; "+blocks+"; "+colors+"; "+ltypes+"; "+layerNames);
+        String writeAttributes = (String) gft.getFormatOptions().get("WITHATTRIBUTES");
+        LOGGER.log(Level.FINE,"Format options: "+version+"; "+blocks+"; "+colors+"; "+ltypes+"; "+layerNames+"; "+writeAttributes);
         // get a suitable DXFWriter, for the requested version (null -> get any writer)
         DXFWriter dxfWriter = DXFWriterFinder.getWriter(version, w);
         
@@ -214,6 +215,9 @@ public class DXFOutputFormat extends WFSGetFeatureOutputFormat {
                 layers=getLayerNames(gft.getQueries());
             LOGGER.log(Level.FINE,"Layers names: "+StringUtils.join(layers,","));
             dxfWriter.setOption("layers", layers);
+            if(writeAttributes != null) {
+                dxfWriter.setOption("writeattributes", writeAttributes.toLowerCase().equals("true"));
+            }
             if (blocks != null && blocks.toLowerCase().equals("true"))
                 dxfWriter.setOption("geometryasblock", true);
             // set optional colors

@@ -50,12 +50,17 @@ public abstract class AbstractDXFWriter implements DXFWriter {
     // (faster) or only when they are too complex (slower)
     protected boolean geometryAsBlock = false;
 
-    // array of cyclical used colors (specified as autocad color indexes)
+    // flag to choose if feature attributes should be written to file
+    // This forces all features to be converted to blocks, since
+    // attributes are tight to BLOCK/INSERT
+    protected boolean writeAttributes = false;
+
+    // array of cyclically used colors (specified as autocad color indexes)
     // each color is assigned to a layer until there are elements
     // available, then they are reused again
     protected int[] colors = new int[] { 7, 1, 2, 3, 4, 5, 6, 8, 9 };
 
-    // array of cyclical used line types
+    // array of cyclically used line types
     protected LineType[] lineTypes = new LineType[] { new LineType("CONTINUOUS", "Solid line") };
 
     // current layer color (index in the colors array)
@@ -122,7 +127,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
         handles.put("Layer", 46); // max 154 layers
         handles.put("BlockRecord", 200); // max 299800 blocks
         handles.put("Block", 300000); 
-        handles.put("Geometry", 600000); // max 395075 geometries  
+        handles.put("Geometry", 700000); // max 395075 geometries  
         
         this.writer = writer;
         if (encoding != null)
@@ -604,14 +609,27 @@ public abstract class AbstractDXFWriter implements DXFWriter {
      * Configure an option (usually got as a format option).
      */
     public void setOption(String optionName, Object optionValue) {
-        if (optionName.equalsIgnoreCase("geometryasblock"))
+        if (optionName.equalsIgnoreCase("geometryasblock")) {
             setGeometryAsBlock(((Boolean) optionValue).booleanValue());
-        if (optionName.equalsIgnoreCase("colors"))
+        } else if (optionName.equalsIgnoreCase("colors")) {
             setColors((int[]) optionValue);
-        if (optionName.equalsIgnoreCase("linetypes"))
+        } else if (optionName.equalsIgnoreCase("linetypes")) {
             setLineTypes((LineType[]) optionValue);
-        if (optionName.equalsIgnoreCase("layers"))
+        } else if (optionName.equalsIgnoreCase("layers")) {
             setLayerNames((String[]) optionValue);
+        } else if (optionName.equalsIgnoreCase("writeattributes")) {
+            setWriteAttributes((Boolean) optionValue);
+        } else {
+            System.err.println("unknown option " + optionName);
+        }
+    }
+    /**
+     * Sets the "write attributes to file" flag.
+     * 
+     * @param writeAttributes
+     */
+    private void setWriteAttributes(boolean writeAttributes) {
+        this.writeAttributes = writeAttributes;
     }
 
     /**

@@ -134,6 +134,20 @@ public class DXFOutputFormatTest extends WFSTestSupport {
         // has to insert an lwpolyline
         checkSequence(sResponse,new String[] {"LWPOLYLINE"},pos);
     }
+    
+    /**
+     * Test writeattributes option.
+     * @throws Exception
+     */
+    @Test
+    public void testWriteAttributes() throws Exception {
+        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=Polygons&outputFormat=dxf&format_options=withattributes:true");
+        String sResponse = testBasicResult(resp, "Polygons");
+        int pos = getGeometrySearchStart(sResponse);
+        assertTrue(pos != -1);
+        // has to insert an attribute
+        checkSequence(sResponse,new String[] {"ATTRIB", "AcDbAttribute"},pos);
+    }
 
     /**
      * Test a MultiPolygon geometry.

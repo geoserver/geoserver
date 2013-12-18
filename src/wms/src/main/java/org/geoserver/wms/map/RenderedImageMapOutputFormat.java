@@ -470,6 +470,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         final RenderExceptionStrategy nonIgnorableExceptionListener;
         nonIgnorableExceptionListener = new RenderExceptionStrategy(renderer);
         renderer.addRenderListener(nonIgnorableExceptionListener);
+        
+        onBeforeRender(renderer);
 
         // setup the timeout enforcer (the enforcer is neutral when the timeout is 0)
         int maxRenderingTime = wms.getMaxRenderingTime() * 1000;
@@ -639,11 +641,21 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * @param paletteInverter
      * @return
      */
-    final protected RenderedImage prepareImage(int width, int height, IndexColorModel palette,
+    protected RenderedImage prepareImage(int width, int height, IndexColorModel palette,
             boolean transparent) {
         return ImageUtils.createImage(width, height, isPaletteSupported() ? palette : null,
                 transparent && isTransparencySupported());
     }
+    
+    /**
+     * Allows subclasses to customize the renderer before the paint method gets invoked
+     * 
+     * @param renderer
+     */
+    protected void onBeforeRender(StreamingRenderer renderer) {
+        // nothing to do here
+    }
+
 
     /**
      * Returns true if the format supports image transparency, false otherwise (defaults to

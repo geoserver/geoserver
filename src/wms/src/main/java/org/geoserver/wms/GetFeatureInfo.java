@@ -30,6 +30,8 @@ import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.featureinfo.FeatureCollectionDecorator;
+import org.geoserver.wms.featureinfo.FeatureInfoRequestParameters;
+import org.geoserver.wms.featureinfo.VectorRenderingLayerIdentifier;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
@@ -240,10 +242,20 @@ public class GetFeatureInfo {
             
             FeatureCollection collection = null;
             if (layer.getType() == MapLayerInfo.TYPE_VECTOR) {
-                final Map<String, String> viewParam = viewParams != null ? viewParams.get(i) : null;
-				collection = identifyVectorLayer(filters, x, y, buffer, viewParam,
-                        requestedCRS, width, height, bbox, ff, results, i, layer, rules, maxFeatures,
-                        times, elevations, names);
+                if(VectorRenderingLayerIdentifier.RENDERING_FEATUREINFO_ENABLED && layer.getFeatureSource(false).getSchema() instanceof SimpleFeatureType) {
+                    FeatureInfoRequestParameters params = new FeatureInfoRequestParameters(request);
+                    params.setCurrentLayer(i);
+                    List<FeatureCollection> collections = new VectorRenderingLayerIdentifier(wms).identify(params, maxFeatures);
+                    if(collections != null && collections.size() > 0) {
+                        collection = collections.get(0);
+                        collection = selectProperties(collection, names);
+                    }
+                } else {
+                    final Map<String, String> viewParam = viewParams != null ? viewParams.get(i) : null;
+    				collection = identifyVectorLayer(filters, x, y, buffer, viewParam,
+                            requestedCRS, width, height, bbox, ff, results, i, layer, rules, maxFeatures,
+                            times, elevations, names);
+                }
             } else if (layer.getType() == MapLayerInfo.TYPE_RASTER) {
                 final CoverageInfo cinfo = requestedLayers.get(i).getCoverage();
                 final GridCoverage2DReader reader = (GridCoverage2DReader) cinfo

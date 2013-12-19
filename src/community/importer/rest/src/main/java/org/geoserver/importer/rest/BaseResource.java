@@ -7,12 +7,17 @@ package org.geoserver.importer.rest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 import org.geoserver.rest.AbstractResource;
 import org.geoserver.rest.RestletException;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.Importer;
+import org.geoserver.rest.format.StreamDataFormat;
+import org.restlet.data.MediaType;
+import org.restlet.data.Preference;
+import org.restlet.data.Request;
 import org.restlet.data.Status;
 
 public abstract class BaseResource extends AbstractResource {

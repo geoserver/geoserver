@@ -54,7 +54,8 @@ public class TaskResource extends BaseResource {
 
     @Override
     protected List<DataFormat> createSupportedFormats(Request request, Response response) {
-        return (List) Arrays.asList(new ImportTaskJSONFormat());
+        return (List) Arrays.asList(new ImportTaskJSONFormat(MediaType.APPLICATION_JSON),
+                new ImportTaskJSONFormat(MediaType.TEXT_HTML));
     }
 
     @Override
@@ -119,7 +120,7 @@ public class TaskResource extends BaseResource {
                     String.format("/imports/%d/tasks/%d", context.getId(), taskId)));
             }
 
-            getResponse().setEntity(new ImportTaskJSONFormat().toRepresentation(result));
+            getResponse().setEntity(getFormatGet().toRepresentation(result));
             getResponse().setStatus(Status.SUCCESS_CREATED);
         }
 
@@ -325,8 +326,8 @@ public class TaskResource extends BaseResource {
 
     class ImportTaskJSONFormat extends StreamDataFormat {
 
-        ImportTaskJSONFormat() {
-            super(MediaType.APPLICATION_JSON);
+        ImportTaskJSONFormat(MediaType type) {
+            super(type);
         }
 
         @Override

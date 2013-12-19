@@ -263,4 +263,16 @@ public class ImportResourceTest extends ImporterTestSupport {
         MockHttpServletResponse resp = postAsServletResponse("/rest/imports/foo", "");
         assertEquals(404, resp.getStatusCode());
     }
+
+    public void testContentNegotiation() throws Exception {
+        MockHttpServletResponse res = getAsServletResponse("/rest/imports/0");
+        assertEquals("application/json", res.getContentType());
+
+        MockHttpServletRequest req = createRequest("/rest/imports/0");
+        req.setMethod("GET");
+        req.setHeader("Accept", "text/html");
+
+        res = dispatch(req);
+        assertEquals("text/html", res.getContentType());
+    }
 }

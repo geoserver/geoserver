@@ -7,6 +7,7 @@ package org.geoserver.importer.rest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -44,14 +45,15 @@ public class ImportResource extends BaseResource {
 
     @Override
     protected List<DataFormat> createSupportedFormats(Request request, Response response) {
-        return (List) Collections.singletonList(new ImportContextJSONFormat());
+        return (List) Arrays.asList(new ImportContextJSONFormat(MediaType.APPLICATION_JSON),
+                new ImportContextJSONFormat(MediaType.TEXT_HTML));
     }
 
     @Override
     public void handleGet() {
         DataFormat formatGet = getFormatGet();
         if (formatGet == null) {
-            formatGet = new ImportContextJSONFormat();
+            formatGet = new ImportContextJSONFormat(MediaType.APPLICATION_JSON);
         }
         Object lookupContext = lookupContext(true, false);
         if (lookupContext == null) {
@@ -140,7 +142,7 @@ public class ImportResource extends BaseResource {
 
             context.reattach(importer.getCatalog(), true);
             getResponse().redirectSeeOther(getPageInfo().rootURI("/imports/"+context.getId()));
-            getResponse().setEntity(new ImportContextJSONFormat().toRepresentation(context));
+            getResponse().setEntity(getFormatGet().toRepresentation(context));
             getResponse().setStatus(Status.SUCCESS_CREATED);
             importer.changed(context);
         } 
@@ -261,8 +263,8 @@ public class ImportResource extends BaseResource {
 
     class ImportContextJSONFormat extends StreamDataFormat {
 
-        public ImportContextJSONFormat() {
-            super(MediaType.APPLICATION_JSON);
+        public ImportContextJSONFormat(MediaType type) {
+            super(type);
         }
 
         @Override

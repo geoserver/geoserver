@@ -46,7 +46,8 @@ public class LayerResource extends BaseResource {
 
     @Override
     protected List<DataFormat> createSupportedFormats(Request request, Response response) {
-        return (List) Arrays.asList(new ItemLayerJSONFormat());
+        return (List) Arrays.asList(new ItemLayerJSONFormat(MediaType.APPLICATION_JSON),
+                new ItemLayerJSONFormat(MediaType.TEXT_HTML));
     }
 
     @Override
@@ -147,10 +148,10 @@ public class LayerResource extends BaseResource {
 
     class ItemLayerJSONFormat extends StreamDataFormat {
 
-        public ItemLayerJSONFormat() {
-            super(MediaType.APPLICATION_JSON);
+        public ItemLayerJSONFormat(MediaType type) {
+            super(type);
         }
-    
+
         @Override
         protected Object read(InputStream in) throws IOException {
             return newReader(in).layer();

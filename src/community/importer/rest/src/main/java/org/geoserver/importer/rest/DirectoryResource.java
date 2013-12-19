@@ -57,7 +57,8 @@ public class DirectoryResource extends BaseResource {
 
     @Override
     protected List<DataFormat> createSupportedFormats(Request request, Response response) {
-        return (List) Arrays.asList(new DirectoryJSONFormat());
+        return (List) Arrays.asList(new DirectoryJSONFormat(MediaType.APPLICATION_JSON),
+                new DirectoryJSONFormat(MediaType.TEXT_HTML));
     }
 
     @Override
@@ -71,7 +72,7 @@ public class DirectoryResource extends BaseResource {
 
         DataFormat formatGet = getFormatGet();
         if (formatGet == null) {
-            formatGet = new DirectoryJSONFormat();
+            formatGet = new DirectoryJSONFormat(MediaType.APPLICATION_JSON);
         }
 
         getResponse().setEntity(formatGet.toRepresentation(response));
@@ -191,8 +192,8 @@ public class DirectoryResource extends BaseResource {
 
     class DirectoryJSONFormat extends StreamDataFormat {
 
-        protected DirectoryJSONFormat() {
-            super(MediaType.APPLICATION_JSON);
+        protected DirectoryJSONFormat(MediaType type) {
+            super(type);
         }
 
         @Override

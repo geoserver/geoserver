@@ -31,7 +31,8 @@ public class TransformResource extends BaseResource {
 
     @Override
     protected List<DataFormat> createSupportedFormats(Request request, Response response) {
-        return (List) Arrays.asList(new TransformJSONFormat());
+        return (List) Arrays.asList(new TransformJSONFormat(MediaType.APPLICATION_JSON),
+                new TransformJSONFormat(MediaType.TEXT_HTML));
     }
 
     public void handleGet() {
@@ -116,8 +117,8 @@ public class TransformResource extends BaseResource {
 
     class TransformJSONFormat extends StreamDataFormat {
 
-        TransformJSONFormat() {
-            super(MediaType.APPLICATION_JSON);
+        TransformJSONFormat(MediaType type) {
+            super(type);
         }
 
         @Override

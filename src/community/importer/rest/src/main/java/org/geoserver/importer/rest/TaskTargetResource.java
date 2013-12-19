@@ -39,7 +39,8 @@ public class TaskTargetResource extends BaseResource {
 
     @Override
     protected List<DataFormat> createSupportedFormats(Request request, Response response) {
-        return (List) Arrays.asList(new TaskTargetJSONFormat());
+        return (List) Arrays.asList(new TaskTargetJSONFormat(MediaType.APPLICATION_JSON),
+                new TaskTargetJSONFormat(MediaType.TEXT_HTML));
     }
 
     @Override
@@ -144,8 +145,8 @@ public class TaskTargetResource extends BaseResource {
 
     class TaskTargetJSONFormat extends StreamDataFormat {
 
-        public TaskTargetJSONFormat() {
-            super(MediaType.APPLICATION_JSON);
+        public TaskTargetJSONFormat(MediaType type) {
+            super(type);
         }
 
         @Override

@@ -1051,19 +1051,13 @@ public class WMS implements ApplicationContextAware {
         // check the time metadata
         DimensionInfo time = typeInfo.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
         if (time == null || !time.isEnabled()) {
-            throw new ServiceException("Layer " + typeInfo.getPrefixedName()
+            throw new ServiceException("Layer " + typeInfo.prefixedName()
                     + " does not have time support enabled");
         }
-
-        // current is the max time we have
-        FeatureCollection collection = getDimensionCollection(typeInfo, time);
-        final MaxVisitor max = new MaxVisitor(time.getAttribute());
-        collection.accepts(max, null);
-        if (max.getResult() != CalcResult.NULL_RESULT) {
-            return (Date) max.getMax();
-        } else {
-            return null;
-        }
+        //Refactored time selection to use different Strategies:
+        CurrentTimeSelectionContext strategyCtx = CurrentTimeSelectionContext.getInstance(time);
+        FeatureCollection<?,?> collection = getDimensionCollection(typeInfo, time);
+        return strategyCtx.getCurrentTime(typeInfo, collection);
     }
 
     /**
@@ -1073,13 +1067,12 @@ public class WMS implements ApplicationContextAware {
             throws IOException {
         // check the time metadata
         DimensionInfo time = coverage.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
-        String name = coverage.getPrefixedName();
+        String name = coverage.prefixedName();
         if (time == null || !time.isEnabled()) {
             throw new ServiceException("Layer " + name + " does not have time support enabled");
         }
-
-        // get and parse the current time
-        return dimensions.getMaxTime();
+        CurrentTimeSelectionContext strategyCtx = CurrentTimeSelectionContext.getInstance(time);
+        return strategyCtx.getCurrentTime(coverage, dimensions);
     }
 
     /**

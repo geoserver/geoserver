@@ -88,13 +88,12 @@ public class NearestCurrentTimeSelectionStrategy implements CurrentTimeSelection
                 } else if (d.after(now)) {
                     currentDistance = d.getTime() - now.getTime();
                     if (currentDistance < shortestDistance) {
-                        shortestDistance = currentDistance;
                         candidate = d;
                     }
                     // the distance can only grow after this
                     // assuming the times are in ascending order,
                     // so stop iterating at this point for efficiency:
-                    // break;
+                    break;
                 } else if (d.equals(now)) {
                     candidate = d;
                     break;
@@ -111,12 +110,11 @@ public class NearestCurrentTimeSelectionStrategy implements CurrentTimeSelection
                     currentDistance = d.getMinValue().getTime() - now.getTime();
                     if (currentDistance < shortestDistance) {
                         candidate = d.getMinValue();
-                        shortestDistance = currentDistance;
                     }
                     // the distance can only grow after this
                     // assuming the times are in ascending order,
                     // so stop iterating at this point for efficiency:
-                    // break;
+                    break;
                 } else {
                     // we are within this range, "now" will do:
                     candidate = now;

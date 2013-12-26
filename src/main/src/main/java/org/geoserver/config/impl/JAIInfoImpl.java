@@ -11,8 +11,6 @@ import javax.media.jai.TileCache;
 
 import org.geoserver.config.JAIInfo;
 
-import com.sun.media.jai.util.SunTileCache;
-
 public class JAIInfoImpl implements Serializable, JAIInfo {
 
     public static final String KEY = "jai.info";
@@ -47,6 +45,8 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
     
     public static final boolean DEFAULT_MosaicNative = false;
     boolean allowNativeMosaic = DEFAULT_MosaicNative;
+    
+    PngEncoderType pngEncoderType = PngEncoderType.PNGJ;
 
     /**
      * @uml.property name="allowInterpolation"
@@ -203,6 +203,7 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
         result = prime * result + (recycling ? 1231 : 1237);
         result = prime * result + tilePriority;
         result = prime * result + tileThreads;
+        result = prime * result + getPngEncoderType().hashCode();
         return result;
     }
 
@@ -237,6 +238,8 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
             return false;
         if (tileThreads != other.tileThreads)
             return false;
+        if (getPngEncoderType() != other.getPngEncoderType())
+            return false;
         return true;
     }
     
@@ -246,5 +249,17 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public PngEncoderType getPngEncoderType() {
+        if(pngEncoderType == null) {
+            return PngEncoderType.PNGJ;
+        } else {
+            return pngEncoderType;
+        }
+    }
+
+    public void setPngEncoderType(PngEncoderType pngEncoderType) {
+        this.pngEncoderType = pngEncoderType;
     }
 }

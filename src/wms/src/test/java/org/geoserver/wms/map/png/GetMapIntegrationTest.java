@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.map.png;
+package org.geoserver.wms.map.png;
 
 import static org.junit.Assert.*;
 

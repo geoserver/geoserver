@@ -1,4 +1,4 @@
-package org.geoserver.map.png;
+package org.geoserver.wms.map.png;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -59,7 +59,7 @@ public class BufferedImageTypesTest {
     @Test
     public void compareImage() throws Exception {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        new PNGJMapResponse(null).writePNG(image, bos, 4, FilterType.FILTER_NONE);
+        new PNGJWriter().writePNG(image, bos, 4, FilterType.FILTER_NONE);
         ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
         BufferedImage readBack = ImageIO.read(bis);
         

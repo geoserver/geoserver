@@ -84,6 +84,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import com.sun.media.jai.codec.PNGEncodeParam;
 import com.vividsolutions.jts.geom.Coordinate;
 
 /**
@@ -305,9 +306,9 @@ public class WMS implements ApplicationContextAware {
         return getServiceInfo().getInterpolation();
     }
 
-    public Boolean getPNGNativeAcceleration() {
+    public JAIInfo.PngEncoderType getPNGEncoderType() {
         JAIInfo jaiInfo = getJaiInfo();
-        return Boolean.valueOf(jaiInfo.isPngAcceleration());
+        return jaiInfo.getPngEncoderType();
     }
 
     public Boolean getJPEGNativeAcceleration() {

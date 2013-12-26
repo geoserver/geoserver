@@ -1,4 +1,4 @@
-package org.geoserver.map.png;
+package org.geoserver.wms.map.png;
 
 
 import static org.junit.Assert.assertEquals;
@@ -23,7 +23,6 @@ import javax.media.jai.JAI;
 import javax.media.jai.RenderedOp;
 import javax.media.jai.operator.FormatDescriptor;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -41,15 +40,10 @@ public class PngSuiteImagesTest {
         this.sourceFile = sourceFile;
     }
 
-    @BeforeClass
-    public static void disableNativeCodecs() {
-         System.setProperty("com.sun.media.imageio.disableCodecLib", "true");
-    }
-
     @Parameters(name = "{0}")
     public static Collection<Object[]> parameters() {
         List<Object[]> result = new ArrayList<Object[]>();
-        File source = new File("./src/test/resources/suite");
+        File source = new File("./src/test/resources/pngsuite");
         File[] files = source.listFiles(new FilenameFilter() {
             
             @Override
@@ -57,7 +51,7 @@ public class PngSuiteImagesTest {
                 return name.endsWith(".png");
             }
         });
-        Arrays.sort(files);;
+        Arrays.sort(files);
         for (File file : files) {
             result.add(new Object[] { file });
         }
@@ -93,8 +87,7 @@ public class PngSuiteImagesTest {
     private void roundTripPNGJ(BufferedImage original, RenderedImage source) throws IOException {
         // write the PNG
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        PNGJMapResponse response = new PNGJMapResponse(null);
-        response.writePNG(original, bos, 4, FilterType.FILTER_NONE);
+        new PNGJWriter().writePNG(original, bos, 4, FilterType.FILTER_NONE);
 
         // write the output to file for eventual visual comparison
         byte[] bytes = bos.toByteArray();

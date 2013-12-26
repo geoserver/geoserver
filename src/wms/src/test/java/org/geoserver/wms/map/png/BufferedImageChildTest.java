@@ -1,11 +1,10 @@
-package org.geoserver.map.png;
+package org.geoserver.wms.map.png;
 
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
@@ -56,7 +55,7 @@ public class BufferedImageChildTest {
         BufferedImage subimage = bi.getSubimage(x, y, w, h);
         // ImageAssert.showImage("Subimage", 2000, subimage);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        new PNGJMapResponse(null).writePNG(subimage, bos, 4, FilterType.FILTER_NONE);
+        new PNGJWriter().writePNG(subimage, bos, 4, FilterType.FILTER_NONE);
         ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
         BufferedImage readBack = ImageIO.read(bis);
         // ImageAssert.showImage("ReadBack", 2000, readBack);

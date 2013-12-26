@@ -1,4 +1,4 @@
-package org.geoserver.map.png;
+package org.geoserver.wms.map.png;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

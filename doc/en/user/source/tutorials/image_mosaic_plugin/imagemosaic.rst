@@ -30,12 +30,12 @@ More specifically, the following files make up the mosaic configuration:
    2. A projection file (.prj) for the above-mentioned shapefile.
    3. A configuration file (.properties). This file contains properties such as cell size in x and y direction, the number of rasters for the ImageMosaic coverage, etc.. We will describe this file in the next section.
    
-Normally GeoServer will create automatically those files when pointed a directory containing images, but it's importat to understand them anyways in order to get better control on how the mosaic works, and troubleshoot eventual issues.
+Normally GeoServer will create automatically those files when pointed a directory containing images, but it's important to understand them in order to get better control on how the mosaic works, and troubleshoot eventual issues.
 
 Configuration File
 -------------------   
 
-The mosaic configuration file is used to store some configuration parameters to control the ImageMosaic plugin. It is created as part of the mosac creation and usually do not require manual editing.
+The mosaic configuration file is used to store some configuration parameters to control the ImageMosaic plugin. It is created as part of the mosaic creation and usually do not require manual editing.
 The table below describes the various elements in this configuration file.
 
 .. list-table::
@@ -58,7 +58,7 @@ The table below describes the various elements in this configuration file.
      - Represents the name for  this mosaic.
    * - *ExpandToRGB*
      - N
-     - Applies to colormapped granules. Asks the internal mosaic engine to expand the colormapped granules  to RGB prior to mosaicing them. This is needed whenever the the granulesdo not share the same color map hence a straight composition that would retain such a color map cannot be performed.
+     - Applies to colormapped granules. Asks the internal mosaic engine to expand the colormapped granules  to RGB prior to mosaicking them. This is needed whenever the the granules do not share the same color map hence a straight composition that would retain such a color map cannot be performed.
    * - *AbsolutePath*
      - Y
      - It controls whether or not the path stored inside the "location" attribute  represents an absolute path or a path relative to the location of the shapefile index. Notice that  a relative index  ensure much more portability of the mosaic itself. Default value for this parameter is False, which means relative paths.
@@ -75,11 +75,11 @@ The refactored version of the ImageMosaic plugin can be used to create the shape
 If you have a tree of directories containing the granules you want to be able to serve as a mosaic (and providing that you are respecting the conditions written above) all you need to do is to point the GeoServer to such a directory and it will create the proper ancillary files by inspecting all the files present in the the tree of directories starting from the provided input one.
 
 
-Configuring a Coverage in Geoserver
+Configuring a Coverage in GeoServer
 -----------------------------------
 
 
-This is a process very similar to creating a FeatureType. More specifically, one has to perform the steps higlighted in the sections here below.
+This is a process very similar to creating a FeatureType. More specifically, one has to perform the steps highlighted in the sections here below.
 
 
 Create a new CoverageStore:
@@ -140,12 +140,12 @@ Create a new Coverage using the new ImageMosaic CoverageStore:
 
 Once you complete the preceding operations it is possible to access the OpenLayers map preview of the created mosaic.
 
-.. warning:: In case the created layer appears to be all black it might be that GeoServer has not found no acceptable granules in the provided ImageMosaic index. It is possible that the shapefile index empty (not granules where found in in the provided directory) or it might be that the granules' paths in the shapefile index are not correct as it might happen in case we have moved an existing index using absolute paths to another place. If the shapefile index paths are not correct the dbf file can be opened and fixed with, as an instance OpenOffice. As an alternative on could simple delete the index and let GeoServer recreate it from the root directory.
+.. warning:: If the created layer appears to be all black, it may be that GeoServer has not found any acceptable granules in the provided ImageMosaic index. It is also possible that the shapefile index is empty (no granules were found in in the provided directory) or it might be that the granules' paths in the shapefile index are not correct, which could happen if an existing index (using absolute paths) is moved to another place. If the shapefile index paths are not correct, then the DBF file can be opened and fixed with OpenOffice (for example). As an alternative would be to delete the index and let GeoServer recreate it from the root directory.
 
 Tweaking an ImageMosaic CoverageStore:
 ''''''''''''''''''''''''''''''''''''''
 
-The Coverage Editor gives users the possibility to set a few control parameters to further tweak and/or control the mosaic creation process. Such parameters are as follows:
+The Coverage Editor gives users the possibility to set a few control parameters to further tweak and/or control the mosaic creation process. The parameters are as follows:
 
 .. list-table::
    :widths: 20 80
@@ -153,11 +153,11 @@ The Coverage Editor gives users the possibility to set a few control parameters 
    * - **Parameter**
      - **Description**
    * - *MaxAllowedTiles*
-     - Set the maximum number of the tiles that can be load simulatenously for a request. In case of a large mosaic this parameter should be opportunely set to not saturating the server with too many granules loaded at  the same  time.
+     - Set the maximum number of the tiles that can be loaded simultaneously for a request. In case of a large mosaic this parameter should be opportunely set to not saturating the server with too many granules loaded at  the same  time.
    * - *BackgroundValues*
      - Set the value of the mosaic background. Depending on the nature of the mosaic it is wise to set a value for the 'no data' area (usually -9999). This value is repeated on all the mosaic bands.
    * - *Filter* 
-     - Set the default mosaic filter. It should be a valid ECQL query which will be used as default if no 'cql_filter' are specified (instead of Filter.INCLUDE). If the cql_filter is specified in the request it will be overriden.
+     - Set the default mosaic filter. It should be a valid ECQL query which will be used as default if no 'cql_filter' are specified (instead of Filter.INCLUDE). If the cql_filter is specified in the request it will be overridden.
 
 .. note:: Do not use this filter to change time or elevation dimensions defaults. It will be added as AND condition with CURRENT for 'time' and LOWER for 'elevation'.
 
@@ -178,7 +178,7 @@ The Coverage Editor gives users the possibility to set a few control parameters 
    :widths: 20 80
    
    * - *InputTransparentColor*
-     - Set the transparent color for the granules prior to mosaicing them in order to control the superimposition process between them. When GeoServer composes the granules to satisfy the user request, some of them can overlap some others, therefore, setting this parameter with the opportune color avoids the overlap of 'no data' areas between granules. See below for an example:
+     - Set the transparent color for the granules prior to mosaicking them in order to control the superimposition process between them. When GeoServer composes the granules to satisfy the user request, some of them can overlap some others, therefore, setting this parameter with the opportune color avoids the overlap of 'no data' areas between granules. See below for an example:
 
 .. figure:: img/input_color.png
    :align: left
@@ -198,7 +198,7 @@ The Coverage Editor gives users the possibility to set a few control parameters 
    * - *USE_JAI_IMAGEREAD*
      - Controls the low level mechanism to read the granules. If 'true' GeoServer will make use of JAI ImageRead operation and its deferred loading mechanism, if  'false' GeoServer will perform direct ImageIO read calls which will result in immediate loading.
    * - *SUGGESTED_TILE_SIZE:*
-     - Controls the tile size  of the input granules as well as the tile size of  the output mosaic. It consists of two positive integersseparated by a comma,like 512,512.
+     - Controls the tile size  of the input granules as well as the tile size of  the output mosaic. It consists of two positive integers separated by a comma,like 512,512.
      
 .. note:: Deferred loading consumes less memory since it uses a streaming approach to load in memory only the data that is needed for the processing at each time, but, on the other side, may cause problems under heavy load since it keeps granules' files open for a long time to support deferred  loading.
 
@@ -215,7 +215,7 @@ Now we are going to provide a few examples of mosaic configurations to demonstra
 DEM/Bathymetric mosaic configuration (raw data)
 '''''''''''''''''''''''''''''''''''''''''''''''
 
-Such a mosaic can be use to serve large amount of data which represents altitude or depth and therefore does not specify colors directly while it reather needs an SLD to generate pictures. In our case we have a DEM dataset which consists of a set of raw geotiff files.
+Such a mosaic can be use to serve large amount of data which represents altitude or depth and therefore does not specify colors directly while it reather needs an SLD to generate pictures. In our case we have a DEM dataset which consists of a set of raw GeoTIFF files.
 
 The first operation is to create the CoverageStore following the three steps showed in 'Create a new CoverageStore' specifying, for example, the path of the shapefile in the 'URL' field. 
 Inside the Coverage Editor, Publishing tab - Default Title section, you can specify the 'dem' default style (Default Style combo box) in order to represent the visualization style of the mosaic. The following is an example style:
@@ -280,7 +280,7 @@ By setting in opportune  ways the other configuration parameters, it is possible
    *Advanced configuration*
 
 
-2. Allow multithreaded granules loading. By setting the 'AllowMultiThreading' parameter to tru GeoServer will load the granules in parallell sing multiple threads with a consequent increase of the performances on some architectures..
+2. Allow multithreaded granules loading. By setting the 'AllowMultiThreading' parameter to true, GeoServer will load the granules in parallel using multiple threads with a consequent increase of the performances on some architectures..
 
 
 The configuration parameters are the followings:
@@ -341,7 +341,7 @@ The result is the following.
    
    *Basic configuration*
 
-.. note:: Those ugly black areas, are the resulting of applying the eafalt mosaic parameters to a mosaic that does not entirey cover its bounding box. The areas within the BBOX that are not covered with data will default to a value of 0 on each band. Since this mosaic is RGB wecan simply set  the OutputTransparentCOlor to 0,0,0 in order to get back transparent fills for the BBOX.
+.. note:: Those ugly black areas, are the resulting of applying the default mosaic parameters to a mosaic that does not entirely cover its bounding box. The areas within the BBOX that are not covered with data will default to a value of 0 on each band. Since this mosaic is RGB we can simply set  the OutputTransparentColor to 0,0,0 in order to get transparent fills for the BBOX.
 
 The  various parameters can be set as follows:
 
@@ -355,7 +355,7 @@ The  various parameters can be set as follows:
 
 5. InputTransparentColor: 'no color'.
 
-6. AllowMultiThreading: true (in this way GeoServer manages the loading of the tiles in parallel mode with a consequent increase of the performances).
+6. AllowMultiThreading: true (in this way GeoServer manages the loading of the tiles in parallel mode which will increase performance).
 
 7. USE_JAI_IMAGEREAD: true.
 
@@ -387,7 +387,7 @@ The result is the following.
    *Basic configuration*
 
 This mosaic, formed by two single granules,  shows a typical case where the 'no data' collar areas of the granules overlap, as it is shown in the picture above.
-In this case we can use the 'InputTrasparentColor' parameter at  to make the collar areas disappear during the superimposition process, as instance, in this case, by using the '#FFFFFF' 'InputTrasparentColor'.  
+In this case we can use the 'InputTransparentColor' parameter to make the collar areas disappear during the superimposition process, as instance, in this case, by using the '#FFFFFF' 'InputTransparentColor'.  
 
 This is the result:
 
@@ -411,7 +411,7 @@ The final configuration parameters are the followings:
 
 5. InputTransparentColor: #FFFFFF.
 
-6. AllowMultiThreading: true (in this way GeoServer manages the loading of the tiles in parallel mode with a consequent increase of the performances).
+6. AllowMultiThreading: true (in this way GeoServer manages the loading of the tiles in parallel mode which will increase performance)
 
 7. USE_JAI_IMAGEREAD: true.
 

@@ -1492,7 +1492,7 @@
   <module>web</module>
   <module>community</module>
   <module>extension</module>
- </modules>
+</modules>
 
  <properties>
   <gs.version>2.5-SNAPSHOT</gs.version>

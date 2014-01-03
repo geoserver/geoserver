@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.map.png.providers;
+package org.geoserver.wms.map.png;
 
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -92,12 +92,14 @@ public class ScanlineProviderFactory {
             }
         } else if (cm instanceof IndexColorModel) {
             IndexColorModel icm = (IndexColorModel) cm;
+            int pixelSize = icm.getPixelSize();
+            // the RGBA quantizer can generate pixel sizes which are not powers of two, 
+            // re-align to powers of two
+            if((pixelSize & (pixelSize - 1)) != 0) {
+                int nextPower = (int) (Math.floor(Math.log(pixelSize) / Math.log(2)) + 1);
+                pixelSize = (int) Math.pow(2, nextPower);
+            }
             if (sm.getDataType() == DataBuffer.TYPE_BYTE) {
-                int pixelSize = icm.getPixelSize();
-                // the RGBA quantizer can generate odd pixel sizes
-                if(pixelSize > 1 && pixelSize % 2 == 1) {
-                    pixelSize++;
-                }
                 if (sm instanceof MultiPixelPackedSampleModel) {
                     if (pixelSize == 8) {
                         return new RasterByteSingleBandProvider(raster, 8, raster.getWidth(), icm);
@@ -128,12 +130,28 @@ public class ScanlineProviderFactory {
                                 icm);
                     }
                 }
+            } else if (sm.getDataType() == DataBuffer.TYPE_USHORT) {
+                if (sm instanceof MultiPixelPackedSampleModel) {
+                    if (pixelSize == 16) {
+                        int scanlineLength = raster.getWidth() * 2;
+                        return new RasterShortSingleBandProvider(raster, 16, scanlineLength, icm);
+                    } else if (pixelSize == 8) {
+                        int scanlineLength = raster.getWidth() + ((raster.getWidth() % 2 == 0) ? 0 : 1); 
+                        return new RasterShortSingleBandProvider(raster, 8, scanlineLength, icm);
+                    } else if (pixelSize == 4) {
+                        int scanlineLength = (raster.getWidth() + 1) / 2;
+                        return new RasterShortSingleBandProvider(raster, 4, scanlineLength, icm);
+                    } else if (pixelSize == 2) {
+                        int scanlineLength = (raster.getWidth() + 2) / 4;
+                        return new RasterShortSingleBandProvider(raster, 2, scanlineLength, icm);
+                    } else if (pixelSize == 1) {
+                        int scanlineLength = (raster.getWidth() + 4) / 8;
+                        return new RasterShortSingleBandProvider(raster, 1, scanlineLength, icm);
+                    }
+                }
             }
-        } else if (sm.getDataType() == DataBuffer.TYPE_USHORT) {
-            return new RasterShortSingleBandProvider(raster, (IndexColorModel) cm);
         }
 
-        throw new IllegalArgumentException("Unsupported image type: " + image);
-
+        return null;
     }
 }

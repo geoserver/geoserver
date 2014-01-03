@@ -48,7 +48,6 @@
           <descriptor>release/ext-libjpeg-turbo.xml</descriptor>
           <descriptor>release/ext-netcdf.xml</descriptor>
           <descriptor>release/ext-netcdf-out.xml</descriptor>
-          <descriptor>release/ext-png.xml</descriptor>
           <descriptor>release/ext-dxf.xml</descriptor>
         </descriptors>
       </configuration>
@@ -165,7 +164,6 @@
         <module>libjpeg-turbo</module>
         <module>netcdf</module>
         <module>netcdf-out</module>
-        <module>png</module>
         <module>dxf</module>
         
       </modules>
@@ -308,12 +306,6 @@
       <id>wfs-notification</id>
       <modules>
         <module>wfs-notification</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>png</id>
-      <modules>
-        <module>png</module>
       </modules>
     </profile>
     <profile>

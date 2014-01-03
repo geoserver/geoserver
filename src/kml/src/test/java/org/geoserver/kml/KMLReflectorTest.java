@@ -48,7 +48,6 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.kvp.FormatOptionsKvpParser;
-import org.geoserver.ows.kvp.URLKvpParser;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMSMapContent;
@@ -673,6 +672,31 @@ public class KMLReflectorTest extends WMSTestSupport {
         }
     }
     
+    @Test
+    public void testHeightTemplatePoint() throws Exception {
+        File template = null;
+        try {
+            String layerId = getLayerId(MockData.POINTS);
+            FeatureTypeInfo resource = getCatalog().getResourceByName(layerId, FeatureTypeInfo.class);
+            File parent = getDataDirectory().findOrCreateResourceDir(resource);
+            template = new File(parent, "height.ftl");
+            FileUtils.write(template, "${altitude.value}");
+
+            final String requestUrl = "wms/kml?layers=" + layerId
+                    + "&mode=download";
+            Document doc = getAsDOM(requestUrl);
+
+            String base = "//kml:Placemark[@id='Points.0']/kml:Point";
+            XMLAssert.assertXpathEvaluatesTo("1", "count(" + base+ ")", doc);
+            XMLAssert.assertXpathEvaluatesTo("1", base + "/kml:extrude", doc);
+            XMLAssert.assertXpathEvaluatesTo("relativeToGround", base + "/kml:altitudeMode", doc);
+        } finally {
+            if(template != null) {
+                template.delete();
+            }
+        }
+    }
+
     private void assertXPathCoordinates( String message, String expectedText, String xpath, Document doc ) throws XpathException {
     	XpathEngine engine = XMLUnit.newXpathEngine();
         String text = engine.evaluate(xpath, doc);

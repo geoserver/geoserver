@@ -88,3 +88,50 @@ Now we will login with a user having administrative rights.
 #. Login as the user "GISADMIN" with the with the password "secret".
 
 Once logged in full administrative functionality should be available.
+
+Configure the LDAP role service
+------------------------------------------
+An additional step permits to configure a role service to get GeoServer roles
+from the LDAP repository and allow access rights to be assigned to those roles.
+
+#. Click the ``Users,Group,Roles`` link located under the ``Security`` section 
+   of the navigation sidebar.
+   
+#. Click the ``Add new link`` under the  ``Role Services`` section.
+
+#. Click the ``LDAP`` option under the  ``New Role Service`` section.
+
+   .. figure:: images/ldap14.jpg
+      :align: center
+      
+#. Enter ``ldapadrs`` in the  ``Name`` text field.
+
+#. Enter ``ldap://domain-controller/dc=ad,dc=local`` in the  ``Server URL`` text field.
+
+#. Enter ``CN=Users`` in the  ``Group search base`` text field.
+
+#. Enter ``member={1},dc=ad,dc=local`` in the  ``Group user membership search filter`` text field.
+
+#. Enter ``objectClass=group`` in the  ``All groups search filter`` text field.
+
+#. Enter ``sAMAccountName={0}`` in the  ``Filter used to lookup user`` text field.
+
+Then we need to a choose a user to authenticate on the server (many LDAP server don't allow anonymous data lookup).
+
+#. Check the ``Authenticate to extract roles`` checkbox.
+
+#. Enter ``GISADMIN@ad.local`` in the  ``Username`` text field.
+
+#. Enter ``secret`` in the  ``Password`` text field.
+
+#. Save.
+
+#. Click the ``ldapadrs`` role service item under the  ``Role Services`` section.
+
+#. Select ``ROLE_DOMAIN ADMINS`` from the ``Administrator role`` combobox.
+
+#. Select ``ROLE_DOMAIN ADMINS`` from the ``Group administrator role`` combobox.
+
+#. Save again.
+
+You should now be able to see and assign the new ActiveDirectory roles wherever an ``Available Roles`` list is shown (for example in the ``Data`` and ``Services`` rules sections.

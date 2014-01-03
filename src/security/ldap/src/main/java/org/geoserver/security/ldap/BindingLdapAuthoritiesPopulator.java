@@ -45,61 +45,7 @@ import org.springframework.util.Assert;
 public class BindingLdapAuthoritiesPopulator implements
         LdapAuthoritiesPopulator {
 
-    /**
-     * Alternative SpringSecurityLdapTemplate, executing authentication without
-     * a prior search that could raise errors by some LDAP servers.
-     * 
-     * @author "Mauro Bartolomeoli - mauro.bartolomeoli@geo-solutions.it"
-     * 
-     */
-    public static class BindingLdapTemplate extends SpringSecurityLdapTemplate {
-
-        public BindingLdapTemplate(ContextSource contextSource) {
-            super(contextSource);
-        }
-
-        /**
-         * Alternative authenticate implementation, requiring a username instead
-         * of a filter.
-         */
-        @Override
-        public boolean authenticate(Name base, String username,
-                String password,
-                final AuthenticatedLdapEntryContextCallback callback,
-                AuthenticationErrorCallback errorCallback) {
-
-            try {
-                DirContext ctx = getContextSource().getContext(username,
-                        password);
-                ContextExecutor ce = new ContextExecutor() {
-                    public Object executeWithContext(DirContext ctx)
-                            throws javax.naming.NamingException {
-                        callback.executeWithContext(ctx, null);
-                        return null;
-                    }
-                };
-                try {
-                    ce.executeWithContext(ctx);
-                } catch (javax.naming.NamingException e) {
-                    throw LdapUtils.convertLdapException(e);
-                } finally {
-                    if (ctx != null) {
-                        try {
-                            ctx.close();
-                        } catch (Exception e) {
-                            // Never mind this.
-                        }
-                    }
-                }
-
-                return true;
-            } catch (Exception e) {
-                errorCallback.execute(e);
-                return false;
-            }
-        }
-
-    }
+    
 
     // ~ Static fields/initializers
     // =====================================================================================
@@ -253,31 +199,8 @@ public class BindingLdapAuthoritiesPopulator implements
         }
         SpringSecurityLdapTemplate authTemplate;
 
-        if (ctx == null) {
-            authTemplate = ldapTemplate;
-        } else {
-            // if we have the authenticated context we build a new LdapTemplate
-            // using it
-            authTemplate = new SpringSecurityLdapTemplate(new ContextSource() {
-
-                @Override
-                public DirContext getReadOnlyContext() throws NamingException {
-                    return ctx;
-                }
-
-                @Override
-                public DirContext getReadWriteContext() throws NamingException {
-                    return ctx;
-                }
-
-                @Override
-                public DirContext getContext(String principal,
-                        String credentials) throws NamingException {
-                    return ctx;
-                }
-
-            });
-        }
+        authTemplate = (SpringSecurityLdapTemplate) LDAPUtils
+                .getLdapTemplateInContext(ctx, ldapTemplate);
         Set<String> userRoles = authTemplate.searchForSingleAttributeValues(
                 getGroupSearchBase(), groupSearchFilter, new String[] { userDn,
                         username }, groupRoleAttribute);
@@ -297,6 +220,8 @@ public class BindingLdapAuthoritiesPopulator implements
 
         return authorities;
     }
+
+    
 
     protected ContextSource getContextSource() {
         return ldapTemplate.getContextSource();

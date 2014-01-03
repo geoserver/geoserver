@@ -19,7 +19,7 @@ objectClass: top
 objectClass: organizationalRole
 objectClass: groupOfNames
 cn: admin
-member: cn=admin
+member: uid=admin,ou=People,dc=example,dc=com
 telephoneNumber: 10
 
 
@@ -38,8 +38,8 @@ objectClass: top
 objectClass: organizationalRole
 objectClass: groupOfNames
 cn: other
-member: cn=admin
-member: cn=other
+member: uid=admin,ou=People,dc=example,dc=com
+member: uid=other,ou=People,dc=example,dc=com
 telephoneNumber: 20
 
 

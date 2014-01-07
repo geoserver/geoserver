@@ -77,23 +77,35 @@ public class LayerResource extends BaseResource {
         //TODO: this is not thread safe, clone the object before overwriting it
         //save the existing resource, which will be overwritten below,  
         ResourceInfo resource = orig.getLayer().getResource();
-        
-        CatalogBuilder cb = new CatalogBuilder(importer.getCatalog());
-        if (l != null) {
-            l.setResource(resource);
-            // @hack workaround OWSUtils bug - trying to copy null collections
-            // why these are null in the first place is a different question
-            LayerInfoImpl impl = (LayerInfoImpl) orig.getLayer();
-            if (impl.getAuthorityURLs() == null) {
-                impl.setAuthorityURLs(new ArrayList(1));
+
+        if (r != null) {
+            // we support the following resource info properties:
+            // (don't just use blindly copy everything)
+            if (r.getTitle() != null) {
+                resource.setTitle(r.getTitle());
             }
-            if (impl.getIdentifiers() == null) {
-                impl.setIdentifiers(new ArrayList(1));
+            if (r.getAbstract() != null) {
+                resource.setAbstract(r.getAbstract());
             }
-            // @endhack
-            cb.updateLayer(orig.getLayer(), l);
+            if (r.getDescription() != null) {
+                resource.setDescription(r.getDescription());
+            }
         }
         
+        CatalogBuilder cb = new CatalogBuilder(importer.getCatalog());
+        l.setResource(resource);
+        // @hack workaround OWSUtils bug - trying to copy null collections
+        // why these are null in the first place is a different question
+        LayerInfoImpl impl = (LayerInfoImpl) orig.getLayer();
+        if (impl.getAuthorityURLs() == null) {
+            impl.setAuthorityURLs(new ArrayList(1));
+        }
+        if (impl.getIdentifiers() == null) {
+            impl.setIdentifiers(new ArrayList(1));
+        }
+        // @endhack
+        cb.updateLayer(orig.getLayer(), l);
+
         // validate SRS - an invalid one will destroy capabilities doc and make
         // the layer totally broken in UI
         CoordinateReferenceSystem newRefSystem = null;

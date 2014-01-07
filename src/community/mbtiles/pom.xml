@@ -12,19 +12,14 @@
   <version>2.5-SNAPSHOT</version>
  </parent>
  <groupId>org.geoserver.community</groupId>
- <artifactId>gs-geopkg</artifactId>
+ <artifactId>gs-mbtiles</artifactId>
  <packaging>jar</packaging>
- <name>GeoServer GeoPackage Extension</name>
+ <name>GeoServer mbtiles Extension</name>
 
  <dependencies>
   <dependency>
    <groupId>org.geoserver</groupId>
    <artifactId>gs-main</artifactId>
-   <version>${project.version}</version>
-  </dependency>
-  <dependency>
-   <groupId>org.geoserver</groupId>
-   <artifactId>gs-ows</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
@@ -38,23 +33,13 @@
    <version>${project.version}</version>
   </dependency>
   <dependency>
-   <groupId>org.geoserver</groupId>
-   <artifactId>gs-wfs</artifactId>
-   <version>${project.version}</version>
-  </dependency>
-  <dependency>
    <groupId>org.geotools</groupId>
-   <artifactId>gt-geopkg</artifactId>
+   <artifactId>gt-mbtiles</artifactId>
    <version>${gt.version}</version>
   </dependency>
    <dependency>
    <groupId>org.geotools</groupId>
    <artifactId>gt-render</artifactId>
-   <version>${gt.version}</version>
-  </dependency>
-  <dependency>
-   <groupId>org.geotools</groupId>
-   <artifactId>gt-wfs</artifactId>
    <version>${gt.version}</version>
   </dependency>
   <dependency>
@@ -71,12 +56,10 @@
    <classifier>tests</classifier>
    <scope>test</scope>
   </dependency>
- <dependency>
+  <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>gs-wfs</artifactId>
+   <artifactId>gs-ows</artifactId>
    <version>${project.version}</version>
-   <classifier>tests</classifier>
-   <scope>test</scope>
   </dependency>
   <dependency>
    <groupId>org.geotools</groupId>
@@ -99,10 +82,11 @@
    <artifactId>xmlunit</artifactId>
    <scope>test</scope>
   </dependency>
-  <dependency>
-   <groupId>org.geowebcache</groupId>
-   <artifactId>gwc-core</artifactId>
-  </dependency>
+   <dependency>
+      <groupId>org.geowebcache</groupId>
+      <artifactId>gwc-core</artifactId>
+    </dependency>
+  
  </dependencies>
 
  <build>

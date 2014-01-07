@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.geopkg;
+package org.geoserver.mbtiles;
 
 import static org.junit.Assert.*;
 import static org.geoserver.data.test.MockData.*;
@@ -13,7 +13,6 @@ import java.io.IOException;
 
 import javax.xml.namespace.QName;
 
-import org.apache.commons.io.FileUtils;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.GWC;
 import org.geoserver.wms.GetMapRequest;
@@ -21,10 +20,9 @@ import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.RawMap;
-import org.geotools.geopkg.GeoPackage;
-import org.geotools.geopkg.Tile;
-import org.geotools.geopkg.TileEntry;
-import org.geotools.geopkg.TileReader;
+import org.geotools.mbtiles.MBTilesTile;
+import org.geotools.mbtiles.MBTilesFile;
+import org.geotools.mbtiles.MBTilesMetadata;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -32,18 +30,18 @@ import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * 
- * Test For WMS GetMap Output Format for GeoPackage
+ * Test For WMS GetMap Output Format for MBTiles
  * 
- * @author Justin Deoliveira, Boundless
+ * @author Niels Charlier
  *
  */
-public class GeoPackageGetMapOutputFormatTest extends WMSTestSupport {
+public class MBTilesGetMapOutputFormatTest extends WMSTestSupport {
 
-    GeoPackageGetMapOutputFormat format;
+    MBTilesGetMapOutputFormat format;
 
     @Before
     public void setUpFormat() {
-        format = new GeoPackageGetMapOutputFormat(getWebMapService(), getWMS(), GWC.get());
+        format = new MBTilesGetMapOutputFormat(getWebMapService(), getWMS(), GWC.get());
     }
 
     @Override
@@ -61,42 +59,42 @@ public class GeoPackageGetMapOutputFormatTest extends WMSTestSupport {
         mapContent.getRequest().getFormatOptions().put("max_zoom", "11");
         
         WebMap map = format.produceMap(mapContent);
-        GeoPackage geopkg = createGeoPackage(map);
+        MBTilesFile mbtiles = createMbTilesFiles(map);
+        
+        MBTilesMetadata metadata = mbtiles.loadMetaData();
+        
+        assertEquals("World_Lakes", metadata.getName());
+        assertEquals("0", metadata.getVersion());
+        assertEquals("World, null", metadata.getDescription());
+        assertEquals("-180.0,89.82421875,-179.82421875,90.0", metadata.getBoundsStr());
+        assertEquals(MBTilesMetadata.t_type.OVERLAY, metadata.getType());
+        assertEquals(MBTilesMetadata.t_format.PNG, metadata.getFormat());
+        
+        assertEquals(1, mbtiles.numberOfTiles());
 
-        assertTrue(geopkg.features().isEmpty());
-        assertTrue(geopkg.rasters().isEmpty());
-        assertEquals(1, geopkg.tiles().size());
-        assertNotNull(geopkg.tile("World_Lakes"));
+        MBTilesFile.TileIterator tiles = mbtiles.tiles();
+        assertTrue(tiles.hasNext());
+        MBTilesTile e = tiles.next();
+        assertEquals(10, e.getZoomLevel());
+        assertEquals(0, e.getTileColumn());
+        assertEquals(1023, e.getTileRow());
+        assertNotNull(e.getData());
+        tiles.close();
+        
+        mbtiles.close();
     }
 
-    GeoPackage createGeoPackage(WebMap map) throws IOException {
+    MBTilesFile createMbTilesFiles(WebMap map) throws IOException {
         assertTrue(map instanceof RawMap);
 
         RawMap rawMap = (RawMap) map;
-        File f = File.createTempFile("geopkg", "geopackage", new File("target"));
+        File f = File.createTempFile("temp", ".mbtiles", new File("target"));
         FileOutputStream fout = new FileOutputStream(f);
         rawMap.writeTo(fout);
         fout.flush(); 
         fout.close();
         
-        return new GeoPackage(f);
-//        File f = File.createTempFile("geopkg", "zip", new File("target"));
-//        FileOutputStream fout = new FileOutputStream(f);
-//        rawMap.writeTo(fout);
-//        fout.flush(); 
-//        fout.close();
-//
-//        File g = File.createTempFile("geopkg", "db", new File("target"));
-//        g.delete();
-//        g.mkdir();
-//
-//        IOUtils.decompress(f, g);
-//        return new GeoPackage(g.listFiles(new FileFilter() {
-//            @Override
-//            public boolean accept(File file) {
-//                return file.getName().endsWith(".geopackage");
-//            }
-//        })[0]);
+        return new MBTilesFile(f);
     }
 
     protected GetMapRequest createGetMapRequest(QName[] layerNames) {
@@ -113,20 +111,5 @@ public class GeoPackageGetMapOutputFormatTest extends WMSTestSupport {
         }
         return map;
     }
-
-    public static void main(String[] args) throws Exception {
-        GeoPackage geopkg = new GeoPackage(new File(
-            "/Users/jdeolive/geopkg.db"));;
-        File d = new File("/Users/jdeolive/tiles");
-        d.mkdir();
-
-        TileEntry te = geopkg.tiles().get(0);
-        TileReader r = geopkg.reader(te, null, null, null, null, null, null);
-        while(r.hasNext()) {
-            Tile t = r.next();
-            File f = new File(d, String.format("%d-%d-%d.png", t.getZoom(), t.getColumn(), t.getRow()));
-
-            FileUtils.writeByteArrayToFile(f, t.getData());
-        }
-    }
+   
 }

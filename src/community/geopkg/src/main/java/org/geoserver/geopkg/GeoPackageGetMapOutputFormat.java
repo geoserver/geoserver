@@ -8,7 +8,6 @@ import static org.geoserver.geopkg.GeoPkg.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import org.geoserver.catalog.ResourceInfo;
@@ -17,7 +16,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WebMapService;
-import org.geoserver.wms.map.AbstractTilesGetMapOutputFormat;
+import org.geoserver.tiles.AbstractTilesGetMapOutputFormat;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geopkg.GeoPackage;
 import org.geotools.geopkg.Tile;

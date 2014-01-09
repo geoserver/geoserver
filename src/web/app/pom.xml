@@ -513,8 +513,13 @@
       <id>dxf</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver</groupId>
-          <artifactId>gs-dxf</artifactId>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-dxf-core</artifactId>
+          <version>${project.version}</version> 
+        </dependency>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-dxf-wps</artifactId>
           <version>${project.version}</version> 
         </dependency>
       </dependencies>

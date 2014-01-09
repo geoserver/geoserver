@@ -1,4 +1,12 @@
-DXFOutputFormat WFS Output for GeoServer 1.7.x
+DXFOutputFormat WFS Output and WPS PPIO for GeoServer 2.5.x
+
+INSTALLATION
+---------------------------
+If you only need the WFS Output, copy gs-dxf-core-*.jar to geoserver WEB-INF/lib.
+If you need both the WFS Output and the WPS PPIO, copy gs-dxf-*.jar to geoserver WEB-INF/lib.
+
+Please note that the WPS PPIO needs the WPS extension to be installed, so please first download 
+and install that.
 
 USAGE
 ---------------------------
@@ -7,6 +15,8 @@ The DXFOutputFormat WFS Output adds support for two additional output formats fo
 WFS GetFeature requests. The new formats, DXF and DXF-ZIP are associated to the 
 "application/dxf" and "application/zip" mime type, respectively.
 They produce a standard DXF file or a DXF file compressed in zip format.
+
+The WPS PPIO adds dxf as an on output format option for WPS processes.
 
 DXF is a CAD interchange format, useful to import data in several CAD systems.
 Being a textual format it can be easily compressed to a much smaller version, so
@@ -201,6 +211,13 @@ available at that time. So just keep trying.
 DEPLOY THE DXFOUTPUTFORMAT
 ---------------------------
 
-1) copy target/dxf-*.jar to geoserver WEB-INF/lib.
+1) copy core/target/gs-dxf-core-*.jar to geoserver WEB-INF/lib.
+
+2) restart geoserver.
+
+DEPLOY THE DXFWPSPPIO
+---------------------------
+
+1) copy wps/target/gs-dxf-wps-*.jar to geoserver WEB-INF/lib.
 
 2) restart geoserver.

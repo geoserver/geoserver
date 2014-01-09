@@ -1,5 +1,5 @@
-DXFOutputFormat WFS Output for GeoServer
-Mauro Bartolomeoli, Esalab Srl - http://www.esalab.it
+DXFOutputFormat WFS Output and WPS PPIO for GeoServer
+Mauro Bartolomeoli, GeoSolutions Sas
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

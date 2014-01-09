@@ -257,6 +257,13 @@
         <module>csw</module>
       </modules>
     </profile>
+    
+    <profile>
+      <id>dxf</id>
+      <modules>
+        <module>dxf</module>
+      </modules>
+    </profile>
 
     <!-- allExtensions profile, includes all modules -->
     <profile>
@@ -289,6 +296,7 @@
         <module>inspire</module>
         <module>css</module>	
         <module>csw</module>
+        <module>dxf</module>
       </modules>
     </profile>
 
@@ -323,6 +331,7 @@
         <module>inspire</module>
         <module>css</module>
         <module>csw</module>
+        <module>dxf</module>
       </modules>
     </profile>
 

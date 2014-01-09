@@ -8,15 +8,16 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.gwc.GWC;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.tiles.AbstractTilesGetMapOutputFormat;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMapService;
-import org.geoserver.wms.map.AbstractTilesGetMapOutputFormat;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.mbtiles.MBTilesTile;
 import org.geotools.mbtiles.MBTilesFile;
@@ -36,6 +37,19 @@ import com.google.common.collect.Sets;
  * 
  */
 public class MBTilesGetMapOutputFormat extends AbstractTilesGetMapOutputFormat {
+    
+    private final static CoordinateReferenceSystem SPHERICAL_MERCATOR;
+
+    private final static CoordinateReferenceSystem WGS_84;
+    
+    static {
+        try {
+            SPHERICAL_MERCATOR = CRS.decode("EPSG:3857", true);
+            WGS_84 = CRS.decode("EPSG:4326", true);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private static class MbTilesFileWrapper implements TilesFile {
 
@@ -69,7 +83,11 @@ public class MBTilesGetMapOutputFormat extends AbstractTilesGetMapOutputFormat {
                 metadata.setType(MBTilesMetadata.t_type.OVERLAY);
             }
 
-            metadata.setBounds(box);
+            try {
+                metadata.setBounds(box.transform(WGS_84, true));
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "Failed to transform bounding box", e);
+            } 
 
             // save metadata
             metadata.setFormat(JPEG_MIME_TYPE.equals(imageFormat) ? MBTilesMetadata.t_format.JPEG
@@ -95,22 +113,15 @@ public class MBTilesGetMapOutputFormat extends AbstractTilesGetMapOutputFormat {
             mbTiles.close();
         }
     }
-
-    private final static CoordinateReferenceSystem SPHERICAL_MERCATOR;
-
-    static {
-        try {
-            SPHERICAL_MERCATOR = CRS.decode("EPSG:3857");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
+    
     static final String MIME_TYPE = "application/x-sqlite3";
 
     static final String EXTENSION = ".mbtiles";
 
     static final Set<String> NAMES = Sets.newHashSet("mbtiles");
+    
+    //lazy loading converted bounds
+    protected ReferencedEnvelope convertedBounds = null;
 
     public MBTilesGetMapOutputFormat(WebMapService webMapService, WMS wms, GWC gwc) {
         super(MIME_TYPE, EXTENSION, NAMES, webMapService, wms, gwc);
@@ -123,16 +134,24 @@ public class MBTilesGetMapOutputFormat extends AbstractTilesGetMapOutputFormat {
 
     @Override
     protected ReferencedEnvelope bounds(WMSMapContent map) {
-        try {
-            return super.bounds(map).transform(SPHERICAL_MERCATOR, true);
-        } catch (Exception e) {
-            throw new ServiceException(e);
+        if (convertedBounds == null) {
+            try {
+                convertedBounds = new ReferencedEnvelope(map.getRequest().getBbox(), map.getCoordinateReferenceSystem()).transform(SPHERICAL_MERCATOR, true);
+            } catch (Exception e) {
+                throw new ServiceException(e);
+            } 
         }
+        return convertedBounds;
     }
 
     @Override
     protected CoordinateReferenceSystem getCoordinateReferenceSystem(WMSMapContent map) {
         return SPHERICAL_MERCATOR;
+    }
+    
+    @Override
+    protected String getSRS(WMSMapContent map) {
+        return "EPSG:900913";
     }
 
 }

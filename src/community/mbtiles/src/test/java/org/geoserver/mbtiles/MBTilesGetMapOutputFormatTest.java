@@ -66,7 +66,10 @@ public class MBTilesGetMapOutputFormatTest extends WMSTestSupport {
         assertEquals("World_Lakes", metadata.getName());
         assertEquals("0", metadata.getVersion());
         assertEquals("World, null", metadata.getDescription());
-        assertEquals("-180.0,89.82421875,-179.82421875,90.0", metadata.getBoundsStr());
+        assertEquals(-0.17578125, metadata.getBounds().getMinimum(0), 0.001);
+        assertEquals(-0.087890625, metadata.getBounds().getMaximum(0), 0.001);
+        assertEquals(0.17578125, metadata.getBounds().getMaximum(1), 0.001);
+        assertEquals(0.087890625, metadata.getBounds().getMinimum(1), 0.001);
         assertEquals(MBTilesMetadata.t_type.OVERLAY, metadata.getType());
         assertEquals(MBTilesMetadata.t_format.PNG, metadata.getFormat());
         
@@ -76,8 +79,8 @@ public class MBTilesGetMapOutputFormatTest extends WMSTestSupport {
         assertTrue(tiles.hasNext());
         MBTilesTile e = tiles.next();
         assertEquals(10, e.getZoomLevel());
-        assertEquals(0, e.getTileColumn());
-        assertEquals(1023, e.getTileRow());
+        assertEquals(511, e.getTileColumn());
+        assertEquals(512, e.getTileRow());
         assertNotNull(e.getData());
         tiles.close();
         

@@ -1,4 +1,4 @@
-package org.geoserver.wms.map;
+package org.geoserver.tiles;
 
 import static java.lang.String.format;
 
@@ -31,6 +31,11 @@ import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.WebMapService;
 import org.geoserver.wms.map.AbstractMapOutputFormat;
+import org.geoserver.wms.map.JPEGMapResponse;
+import org.geoserver.wms.map.PNGMapResponse;
+import org.geoserver.wms.map.RawMap;
+import org.geoserver.wms.map.RenderedImageMap;
+import org.geoserver.wms.map.RenderedImageMapResponse;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
 import org.geotools.referencing.CRS;
@@ -208,8 +213,8 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         BoundingBox bbox = bbox(map);
         GridSubset gridSubset = findBestGridSubset(map);
         int[] minmax = findMinMaxZoom(gridSubset, map);
-        ReferencedEnvelope bounds = new ReferencedEnvelope(findTileBounds(gridSubset, bbox,
-                minmax[0]), getCoordinateReferenceSystem(map));
+        //ReferencedEnvelope bounds = new ReferencedEnvelope(findTileBounds(gridSubset, bbox,
+        //        minmax[0]), getCoordinateReferenceSystem(map));
 
         // create a prototype getmap request
         GetMapRequest req = new GetMapRequest();
@@ -222,9 +227,10 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         req.setFormat(imageFormat);
         req.setWidth(gridSubset.getTileWidth());
         req.setHeight(gridSubset.getTileHeight());
+        req.setCrs(getCoordinateReferenceSystem(map));
 
         // store metadata
-        tiles.setMetadata(tileEntryName, bounds, imageFormat, srid(map), mapLayers, minmax,
+        tiles.setMetadata(tileEntryName, bounds(map), imageFormat, srid(map), mapLayers, minmax,
                 gridSubset);
 
         // count tiles as we generate them
@@ -262,6 +268,10 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
     protected CoordinateReferenceSystem getCoordinateReferenceSystem(WMSMapContent map) {
         return map.getCoordinateReferenceSystem();
     }
+    
+    protected String getSRS(WMSMapContent map) {
+        return map.getRequest().getSRS().toUpperCase();
+    }
 
     // utility methods:
 
@@ -275,7 +285,7 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         try {
             srid = CRS.lookupEpsgCode(getCoordinateReferenceSystem(map), false);
             if (srid == null) {
-                srid = Integer.parseInt(map.getRequest().getSRS().split(":")[1]);
+                srid = Integer.parseInt(getSRS(map).split(":")[1]);
             }
         } catch (Exception ex) {
             LOGGER.log(Level.WARNING, "Error determining srid", ex);
@@ -308,7 +318,7 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
 
         // next check srs
         if (gridSet == null) {
-            gridSet = gridSetBroker.get(req.getSRS().toUpperCase());
+            gridSet = gridSetBroker.get( getSRS(map) );
         }
 
         if (gridSet != null) {

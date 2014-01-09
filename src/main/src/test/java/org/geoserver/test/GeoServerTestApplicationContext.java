@@ -10,12 +10,16 @@ import javax.servlet.ServletContext;
 
 import org.geoserver.data.util.IOUtils;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.ui.context.Theme;
+import org.springframework.web.context.ServletConfigAware;
+import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.ServletContextAwareProcessor;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * A spring application context used for GeoServer testing.
@@ -74,4 +78,21 @@ public class GeoServerTestApplicationContext extends ClassPathXmlApplicationCont
             def.setBeanClassName( "org.geoserver.test.TestGeoServerLoaderProxy");
         }
     }
+    
+	@Override
+	protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+        beanFactory.addBeanPostProcessor(new ServletContextAwareProcessor(this.servletContext));
+        beanFactory.ignoreDependencyInterface(ServletContextAware.class);
+        beanFactory.ignoreDependencyInterface(ServletConfigAware.class);
+
+        WebApplicationContextUtils.registerWebApplicationScopes(beanFactory, this.servletContext);
+        WebApplicationContextUtils.registerEnvironmentBeans(beanFactory, this.servletContext);
+	}
+    
+    @Override
+    protected void initPropertySources() {
+        super.initPropertySources();
+        WebApplicationContextUtils.initServletPropertySources(
+                this.getEnvironment().getPropertySources(), this.servletContext);
+	}
 }

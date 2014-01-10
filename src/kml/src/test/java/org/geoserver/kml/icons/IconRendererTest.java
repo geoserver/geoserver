@@ -4,7 +4,7 @@
  */
 package org.geoserver.kml.icons;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
@@ -14,26 +14,39 @@ import javax.imageio.ImageIO;
 
 import org.geoserver.kml.KMLTest;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.image.test.ImageAssert;
+import org.geotools.renderer.lite.StyledShapePainter;
 import org.geotools.styling.StyleFactory;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.expression.Expression;
+import org.opengis.style.FeatureTypeStyle;
 import org.opengis.style.Graphic;
 import org.opengis.style.GraphicalSymbol;
 import org.opengis.style.Mark;
-import org.opengis.style.FeatureTypeStyle;
 import org.opengis.style.Rule;
 import org.opengis.style.SemanticType;
 import org.opengis.style.Style;
 import org.opengis.style.Symbolizer;
-import org.junit.Test;
-import org.geotools.image.test.ImageAssert;
 
 public class IconRendererTest {
     /**
      * Upscaled images need a higher threshold for pdiff
      */
-    static final int THRESHOLD = 400; 
+    static final int THRESHOLD = 400;
+    
+    @BeforeClass
+    public static void setupIconRounding() {
+        StyledShapePainter.ROUND_ICON_COORDS = false;
+    }
+    
+    @AfterClass
+    public static void cleanIconRounding() {
+        StyledShapePainter.ROUND_ICON_COORDS = true;
+    }
 
     @Test
     public void testSimpleCircle() throws Exception {

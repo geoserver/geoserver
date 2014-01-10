@@ -96,6 +96,10 @@ public class BDBImportStore implements ImportStore {
     }
 
     public void init() {
+        if ("serial".equalsIgnoreCase(System.getProperty("org.geoserver.importer.bdb.binding"))) {
+            bindingType = BindingType.SERIAL;
+            LOGGER.info("Using serial binding");
+        }
         dbBinding = bindingType.createBinding();
 
         //create the db environment

@@ -39,9 +39,9 @@ public class MemoryImportStore implements ImportStore {
     @Override
     public Long advanceId(Long id) {
         if (id <= idseq.longValue()) {
-            id = idseq.incrementAndGet();
+            id = idseq.getAndIncrement();
         } else {
-            idseq.set(id);
+            idseq.set(id + 1);
         }
         return id;
     }

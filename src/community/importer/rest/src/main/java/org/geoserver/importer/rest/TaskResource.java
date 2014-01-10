@@ -195,7 +195,7 @@ public class TaskResource extends BaseResource {
 
     public boolean allowDelete() {
         return getAttribute("task") != null;
-    };
+    }
 
     @Override
     public void handleDelete() {
@@ -241,7 +241,7 @@ public class TaskResource extends BaseResource {
         }
         if (task.getUpdateMode() != null) {
             orig.setUpdateMode(task.getUpdateMode());
-            change = true;
+            change = orig.getUpdateMode() != task.getUpdateMode();
         }
 
         if (task.getLayer() != null) {

@@ -4,11 +4,9 @@
  */
 package org.geoserver.importer.rest;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -24,7 +22,6 @@ import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 import net.sf.json.util.JSONBuilder;
 
-import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -64,6 +61,7 @@ import org.restlet.data.Status;
 
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import org.geoserver.catalog.AttributeTypeInfo;
 
 /**
  * Utility class for reading/writing import/tasks/etc... to/from JSON.
@@ -172,9 +170,7 @@ public class ImportJSONWriter {
         json.key("state").value(task.getState());
 
         if (expand > 0) {
-            if (task.getUpdateMode() != null) {
-                json.key("updateMode").value(task.getUpdateMode().name());
-            }
+            json.key("updateMode").value(task.getUpdateMode().name());
     
             //data (used to be source)
             ImportData data = task.getData();
@@ -277,6 +273,9 @@ public class ImportJSONWriter {
                     bbox(json, r.getNativeBoundingBox());
                 }
             }
+            if (r instanceof FeatureTypeInfo) {
+                featureType((FeatureTypeInfo) r);
+            }
             StyleInfo s = layer.getDefaultStyle();
             if (s != null) {
                 style(s, task, false, expand-1);
@@ -288,6 +287,19 @@ public class ImportJSONWriter {
             json.endObject();
         }
         json.flush();
+    }
+
+    void featureType(FeatureTypeInfo featureTypeInfo) throws IOException {
+        json.key("attributes").array();
+        List<AttributeTypeInfo> attributes = featureTypeInfo.attributes();
+        for (int i = 0; i < attributes.size(); i++) {
+            AttributeTypeInfo att = attributes.get(i);
+            json.object();
+            json.key("name").value(att.getName());
+            json.key("binding").value(att.getBinding().getName());
+            json.endObject();
+        }
+        json.endArray();
     }
 
     void style(StyleInfo style, ImportTask task, boolean top, int expand) throws IOException {

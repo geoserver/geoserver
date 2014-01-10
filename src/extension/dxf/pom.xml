@@ -9,14 +9,14 @@
   
   <modelVersion>4.0.0</modelVersion>
 	
-  <!-- set parent pom to community pom -->
+  <!-- set parent pom to extension pom -->
   <parent>
     <groupId>org.geoserver</groupId>
-    <artifactId>community</artifactId>
+    <artifactId>extension</artifactId>
     <version>2.5-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.geoserver.community</groupId>
+  <groupId>org.geoserver.extension</groupId>
   <artifactId>gs-dxf</artifactId>
   <packaging>pom</packaging>
   <version>2.5-SNAPSHOT</version>

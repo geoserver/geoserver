@@ -12,5 +12,12 @@
         <include>gs-dxf*.jar</include>
       </includes>
     </fileSet>
+    <fileSet>
+     <directory>release/extensions/dxf</directory>
+     <outputDirectory></outputDirectory>
+     <includes>
+       <include>*</include>
+     </includes>
+   </fileSet>
   </fileSets>
 </assembly>

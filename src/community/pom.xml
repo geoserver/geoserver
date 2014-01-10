@@ -48,7 +48,7 @@
           <descriptor>release/ext-libjpeg-turbo.xml</descriptor>
           <descriptor>release/ext-netcdf.xml</descriptor>
           <descriptor>release/ext-netcdf-out.xml</descriptor>
-          <descriptor>release/ext-dxf.xml</descriptor>
+          
         </descriptors>
       </configuration>
      </plugin>
@@ -114,12 +114,7 @@
         <module>printing</module>
       </modules>
     </profile>
-    <profile>
-      <id>dxf</id>
-      <modules>
-        <module>dxf</module>
-      </modules>
-    </profile>
+    
     <profile>
       <id>dbconfig</id>
       <modules>
@@ -164,7 +159,7 @@
         <module>libjpeg-turbo</module>
         <module>netcdf</module>
         <module>netcdf-out</module>
-        <module>dxf</module>
+        
         
       </modules>
     </profile>

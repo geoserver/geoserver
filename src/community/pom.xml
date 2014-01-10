@@ -43,7 +43,6 @@
           <descriptor>release/ext-sfs.xml</descriptor>
        	  <descriptor>release/ext-dds.xml</descriptor>
           <descriptor>release/ext-aggregate.xml</descriptor>
-          <descriptor>release/ext-wcs2_0.xml</descriptor>
           <descriptor>release/ext-wms-eo.xml</descriptor>
           <descriptor>release/ext-libjpeg-turbo.xml</descriptor>
           <descriptor>release/ext-netcdf.xml</descriptor>
@@ -152,7 +151,6 @@
         <module>sfs</module>
         <module>feature-aggregate</module>
         <module>script</module>
-        <module>wcs2_0</module>
         <module>wcs2_0-eo</module>
         <module>web-wcs2_0-eo</module>
         <module>wms-eo</module>
@@ -221,12 +219,11 @@
       </modules>
     </profile>
     <profile>
-      <id>wcs20</id>
+      <id>wcs20-eo</id>
       <activation>
-        <property><name>wcs20</name></property>
+        <property><name>wcs20-eo</name></property>
       </activation> 
       <modules>
-        <module>wcs2_0</module>
         <module>wcs2_0-eo</module>
         <module>web-wcs2_0-eo</module>
       </modules>

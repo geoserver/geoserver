@@ -121,4 +121,4 @@ the result is instead:
 
 .. figure:: images/triangles.png
 
-   *Rendering with varialbes supplied* 
+   *Rendering with variables supplied* 

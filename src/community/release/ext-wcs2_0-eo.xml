@@ -1,5 +1,5 @@
 <assembly>
-  <id>wcs2_0-plugin</id>
+  <id>wcs2_0-eo-plugin</id>
   <formats>
     <format>zip</format>
   </formats>

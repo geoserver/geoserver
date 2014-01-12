@@ -11,11 +11,11 @@ application directory.
 
     <parent>
         <groupId>org.geoserver</groupId>
-        <artifactId>community</artifactId>
+        <artifactId>geoserver</artifactId>
         <version>2.5-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.geoserver.community</groupId>
+    <groupId>org.geoserver</groupId>
     <artifactId>gs-wcs2_0</artifactId>
     <packaging>jar</packaging>
     <name>Web Coverage Service 2.0 Module</name>

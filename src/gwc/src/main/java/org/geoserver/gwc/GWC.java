@@ -1162,6 +1162,32 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         owsDispatcher.handleRequest(req, resp);
         return new ByteArrayResource(resp.getBytes());
     }
+    
+    public void proxyOwsRequest(ConveyorTile tile) throws Exception {
+        HttpServletRequest actualRequest = tile.servletReq;
+        
+        // get the param map and force service to be WMS if missing
+        Map<String, String> parameterMap = new HashMap<String, String>();
+        Map<String, String[]> params = actualRequest.getParameterMap();
+        boolean hasService = false;
+        for (Map.Entry<String, String[]> param: params.entrySet()) {
+            String key = param.getKey();
+            String value = param.getValue()[0];
+            parameterMap.put(key, value);
+            if("service".equalsIgnoreCase(key) && (value == null || value.isEmpty() || !"WMS".equalsIgnoreCase(value))) {
+                throw new GeoWebCacheException("Failed to cascade request, service should be WMS but it was: '" + value + "'");
+            }
+        }
+        if(!hasService) {
+            parameterMap.put("service", "WMS");
+        }
+        
+        // cascade
+        Cookie[] cookies = actualRequest.getCookies();
+        FakeHttpServletRequest request = new FakeHttpServletRequest(parameterMap, cookies);
+        owsDispatcher.handleRequest(request, tile.servletResp);
+    }
+
 
     public GridSetBroker getGridSetBroker() {
         return gridSetBroker;
@@ -1981,4 +2007,5 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
+
 }

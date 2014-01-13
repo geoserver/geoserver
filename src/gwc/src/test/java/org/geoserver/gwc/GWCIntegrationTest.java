@@ -111,6 +111,15 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     }
     
     @Test 
+    public void testGetLegendGraphics() throws Exception {
+        String layerId = getLayerId(MockData.BASIC_POLYGONS);
+        MockHttpServletResponse sr = getAsServletResponse("gwc/service/wms?service=wms&version=1.1.1&request=GetLegendGraphic&layer="
+                + layerId + "&style=&format=image/png");
+        assertEquals(200, sr.getErrorCode());
+        assertEquals("image/png", sr.getContentType());
+    }
+    
+    @Test 
     public void testCachingHeadersSingleLayer() throws Exception {
         String layerId = getLayerId(MockData.BASIC_POLYGONS);
         setCachingMetadata(layerId, true, 7200);

@@ -44,6 +44,8 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMSInfo.WMSInterpolation;
 import org.geoserver.wms.WatermarkInfo.Position;
+import org.geoserver.wms.dimension.DimensionDefaultValueStrategy;
+import org.geoserver.wms.dimension.DimensionDefaultValueStrategyFactory;
 import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
 import org.geoserver.wms.map.RenderedImageMapResponse;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
@@ -837,7 +839,7 @@ public class WMS implements ApplicationContextAware {
             List<Object> fixedTimes = new ArrayList<Object>(times);
             for (int i = 0; i < fixedTimes.size(); i++) {
                 if (fixedTimes.get(i) == null) {
-                    fixedTimes.set(i, getCurrentTime(coverage, dimensions));
+                    fixedTimes.set(i, getCurrentTime(coverage));
                 }
             }
             // pass down the parameters
@@ -853,7 +855,7 @@ public class WMS implements ApplicationContextAware {
             List<Object> fixedElevations = new ArrayList<Object>(elevations);
             for (int i = 0; i < fixedElevations.size(); i++) {
                 if (fixedElevations.get(i) == null) {
-                    fixedElevations.set(i, getDefaultElevation(coverage, dimensions));
+                    fixedElevations.set(i, getDefaultElevation(coverage));
                 }
             }
             readParameters = CoverageUtils.mergeParameter(parameterDescriptors, readParameters,
@@ -1047,32 +1049,15 @@ public class WMS implements ApplicationContextAware {
      * @return
      * @throws IOException
      */
-    public Date getCurrentTime(FeatureTypeInfo typeInfo) throws IOException {
+    public Date getCurrentTime(ResourceInfo resourceInfo) throws IOException {
         // check the time metadata
-        DimensionInfo time = typeInfo.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
+        DimensionInfo time = resourceInfo.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
         if (time == null || !time.isEnabled()) {
-            throw new ServiceException("Layer " + typeInfo.prefixedName()
+            throw new ServiceException("Layer " + resourceInfo.prefixedName()
                     + " does not have time support enabled");
-        }
-        //Refactored time selection to use different Strategies:
-        CurrentTimeSelectionContext strategyCtx = CurrentTimeSelectionContext.getInstance(time);
-        FeatureCollection<?,?> collection = getDimensionCollection(typeInfo, time);
-        return strategyCtx.getCurrentTime(typeInfo, collection);
-    }
-
-    /**
-     * Returns the current time for the specified coverage
-     */
-    Date getCurrentTime(CoverageInfo coverage, ReaderDimensionsAccessor dimensions)
-            throws IOException {
-        // check the time metadata
-        DimensionInfo time = coverage.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
-        String name = coverage.prefixedName();
-        if (time == null || !time.isEnabled()) {
-            throw new ServiceException("Layer " + name + " does not have time support enabled");
-        }
-        CurrentTimeSelectionContext strategyCtx = CurrentTimeSelectionContext.getInstance(time);
-        return strategyCtx.getCurrentTime(coverage, dimensions);
+        }        
+        DimensionDefaultValueStrategy strategy = this.getDefaultValueStrategy(resourceInfo, ResourceInfo.TIME, time);        
+        return strategy.getDefaultValue(resourceInfo, ResourceInfo.TIME, time, Date.class);
     }
 
     /**
@@ -1081,43 +1066,28 @@ public class WMS implements ApplicationContextAware {
      * @param typeInfo
      * @return
      */
-    Double getDefaultElevation(FeatureTypeInfo typeInfo) throws IOException {
+    Double getDefaultElevation(ResourceInfo resourceInfo) throws IOException {
         // grab the time metadata
-        DimensionInfo elevation = typeInfo.getMetadata().get(ResourceInfo.ELEVATION,
+        DimensionInfo elevation = resourceInfo.getMetadata().get(ResourceInfo.ELEVATION,
                 DimensionInfo.class);
         if (elevation == null || !elevation.isEnabled()) {
-            throw new ServiceException("Layer " + typeInfo.getPrefixedName()
+            throw new ServiceException("Layer " + resourceInfo.prefixedName()
                     + " does not have time support enabled");
         }
-
-        FeatureCollection collection = getDimensionCollection(typeInfo, elevation);
-        final MinVisitor min = new MinVisitor(elevation.getAttribute());
-        collection.accepts(min, null);
-        if (min.getResult() == CalcResult.NULL_RESULT) {
-            return null;
-        } else {
-            return ((Number) min.getMin()).doubleValue();
-        }
+        DimensionDefaultValueStrategy strategy = this.getDefaultValueStrategy(resourceInfo, ResourceInfo.ELEVATION, elevation);
+        return strategy.getDefaultValue(resourceInfo, ResourceInfo.ELEVATION, elevation, Double.class);               
     }
-
-    /**
-     * Returns the default elevation (the minimum one)
-     * 
-     * @param typeInfo
-     * @return
-     */
-    Double getDefaultElevation(CoverageInfo coverage, ReaderDimensionsAccessor dimensions)
-            throws IOException {
-        // check the time metadata
-        DimensionInfo elevation = coverage.getMetadata().get(ResourceInfo.ELEVATION,
-                DimensionInfo.class);
-        if (elevation == null || !coverage.isEnabled()) {
-            throw new ServiceException("Layer " + coverage.getPrefixedName()
-                    + " does not have time support enabled");
-        }
-
-        // get and parse the lowest elevation
-        return dimensions.getMinElevation();
+    
+    
+    DimensionDefaultValueStrategy getDefaultValueStrategy(ResourceInfo resource,
+            String dimensionName, DimensionInfo dimensionInfo){
+         DimensionDefaultValueStrategyFactory factory = this.applicationContext.getBean(DimensionDefaultValueStrategyFactory.class);
+         if (factory != null){
+             return factory.getStrategy(resource, dimensionName, dimensionInfo);             
+         }
+         else {
+             return null;
+         }
     }
 
     /**

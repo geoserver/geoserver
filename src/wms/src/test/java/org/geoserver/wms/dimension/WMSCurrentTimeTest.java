@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.wms;
+package org.geoserver.wms.dimension;
 
 import static org.junit.Assert.assertTrue;
 
@@ -33,6 +33,8 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.wms.WMS;
+import org.geoserver.wms.WMSTestSupport;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.GridFormatFinder;
@@ -57,7 +59,7 @@ public class WMSCurrentTimeTest extends WMSTestSupport {
 
     static final QName TIME_WITH_START_END = new QName(MockData.SF_URI, "TimeWithStartEnd",
             MockData.SF_PREFIX);
-
+  
     static final QName WATTEMP_FUTURE = new QName(MockData.SF_URI, "watertemp_future_generated",
             MockData.SF_PREFIX);
 
@@ -68,10 +70,9 @@ public class WMSCurrentTimeTest extends WMSTestSupport {
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
-        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-
-        testData.addVectorLayer(TIME_WITH_START_END, Collections.EMPTY_MAP,
-                "TimeElevationWithStartEnd.properties", getClass(), getCatalog());
+        testData.addVectorLayer(TIME_WITH_START_END,Collections.EMPTY_MAP,"TimeElevationWithStartEnd.properties",
+                getClass(),getCatalog());
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));        
         setupFeatureTimeDimension("startTime", "endTime");
 
         prepareFutureCoverageData(WATTEMP_FUTURE);
@@ -80,7 +81,7 @@ public class WMSCurrentTimeTest extends WMSTestSupport {
 
     @Before
     public void setWMS() throws Exception {
-        wms = new WMS(getGeoServer());
+        wms = getWMS();
     }
 
     @Test
@@ -188,12 +189,12 @@ public class WMSCurrentTimeTest extends WMSTestSupport {
         ReaderDimensionsAccessor dimensions = new ReaderDimensionsAccessor(reader);
 
         System.setProperty("org.geoserver.wms.currentTimeSelectionStrategy", "latest");
-        java.util.Date d = wms.getCurrentTime(coverage, dimensions);
+        java.util.Date d = wms.getCurrentTime(coverage);
         assertTrue("Returns a valid current time", d != null);
         assertTrue("The current time is the furthest in the future", d.getTime() == oneYearInFuture);
 
         System.setProperty("org.geoserver.wms.currentTimeSelectionStrategy", "nearest");
-        d = wms.getCurrentTime(coverage, dimensions);
+        d = wms.getCurrentTime(coverage);
         assertTrue("Returns a valid current time", d != null);
         assertTrue("The current time is the closest in the past", d.getTime() == todayMidnight);
 

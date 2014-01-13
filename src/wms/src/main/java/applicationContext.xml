@@ -687,4 +687,47 @@
   </bean>
   <bean id="wmsLayerIdentifier" class="org.geoserver.wms.featureinfo.WMSLayerIdentifier"/>
     
+    
+  <!-- Dimension default value factory -->  
+  <bean id="dimensionDefaultValueStrategyFactory" class="org.geoserver.wms.dimension.DimensionDefaultValueStrategyFactoryImpl">
+    <property name="featureTimeMinimumStrategy">
+      <bean class="org.geoserver.wms.dimension.DefaultFeatureMinimumValueSelectionStrategy"/>
+    </property>
+    <property name="featureTimeMaximumStrategy">
+      <bean class="org.geoserver.wms.dimension.DefaultFeatureMaximumValueSelectionStrategy"/>
+    </property>    
+    <property name="coverageTimeMinimumStrategy">
+      <bean class="org.geoserver.wms.dimension.DefaultCoverageMinimumValueSelectionStrategy"/>
+    </property>
+    <property name="coverageTimeMaximumStrategy">
+      <bean class="org.geoserver.wms.dimension.DefaultCoverageMaximumValueSelectionStrategy"/>
+    </property>
+    
+    <property name="featureElevationMinimumStrategy">
+      <bean class="org.geoserver.wms.dimension.DefaultFeatureMinimumValueSelectionStrategy"/>
+    </property>
+    <property name="featureElevationMaximumStrategy">
+      <bean class="org.geoserver.wms.dimension.DefaultFeatureMaximumValueSelectionStrategy"/>
+    </property>
+     <property name="coverageElevationMinimumStrategy">
+      <bean class="org.geoserver.wms.dimension.DefaultCoverageMinimumValueSelectionStrategy"/>
+    </property>
+    <property name="coverageElevationMaximumStrategy">
+      <bean class="org.geoserver.wms.dimension.DefaultCoverageMaximumValueSelectionStrategy"/>
+    </property>
+    
+    <property name="featureCustomDimensionMinimumStrategy">
+      <bean class="org.geoserver.wms.dimension.DefaultFeatureMinimumValueSelectionStrategy"/>
+    </property>
+    <property name="featureCustomDimensionMaximumStrategy">
+      <bean class="org.geoserver.wms.dimension.DefaultFeatureMaximumValueSelectionStrategy"/>
+    </property>
+     <property name="coverageCustomDimensionMinimumStrategy">
+      <bean class="org.geoserver.wms.dimension.DefaultCoverageMinimumValueSelectionStrategy"/>
+    </property>
+    <property name="coverageCustomDimensionMaximumStrategy">
+      <bean class="org.geoserver.wms.dimension.DefaultCoverageMaximumValueSelectionStrategy"/>
+    </property>    
+  </bean>
+  
 </beans>

@@ -1,0 +1,18 @@
+<wfs:GetFeature service="WFS" version="1.1.0" 
+${outputFormat} 
+xmlns:cdf="http://www.opengis.net/cite/data" 
+xmlns:ogc="http://www.opengis.net/ogc"
+xmlns:wfs="http://www.opengis.net/wfs"
+>
+	<wfs:Query typeName="topp:states">
+		<ogc:Filter>
+			<ogc:PropertyIsEqualTo>
+				<ogc:Function name="sha1Sync">
+					<ogc:Literal>-all</ogc:Literal>
+					<ogc:Literal>${sha1Sync}</ogc:Literal>
+				</ogc:Function>
+				<ogc:Literal>true</ogc:Literal>
+			</ogc:PropertyIsEqualTo>
+		</ogc:Filter>
+	</wfs:Query>
+</wfs:GetFeature>

@@ -346,26 +346,31 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
 
         // first request, should provide no result, scale is 1:100
         int w = (int) (100.0 / 0.28 * 1000); // dpi compensation
-        Document dom = getAsDOM(base + "&width=" + w + "&height=" + w + "&i=20&j=" + (w - 20));
+        Document dom = getAsDOM(featureInfoRequest(base, w));
         // print(dom);
         // make sure the document is empty, the style we chose has thin lines
         assertXpathEvaluatesTo("0", "count(/html/body/table/tr)", dom);
 
         // second request, should provide oe result, scale is 1:50
         w = (int) (200.0 / 0.28 * 1000); // dpi compensation
-        dom = getAsDOM(base + "&width=" + w + "&height=" + w + "&i=20&j=" + (w - 20));
+        dom = getAsDOM(featureInfoRequest(base, w));
         // print(dom);
         assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[starts-with(.,'squares.')])", dom);
         assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[. = 'squares.1'])", dom);
 
         // third request, should provide two result, scale is 1:10
         w = (int) (1000.0 / 0.28 * 1000); // dpi compensation
-        dom = getAsDOM(base + "&width=" + w + "&height=" + w + "&i=20&j=" + (w - 20));
+        dom = getAsDOM(featureInfoRequest(base, w));
         // print(dom);
         assertXpathEvaluatesTo("2", "count(/html/body/table/tr/td[starts-with(.,'squares.')])", dom);
         assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[. = 'squares.1'])", dom);
         assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[. = 'squares.2'])", dom);
 
+    }
+
+    private String featureInfoRequest(String base, int w) {
+        String request = base + "&width=" + w + "&height=" + w + "&i=20&j=" + (w - 20);
+        return request;
     }
 
     /**
@@ -609,6 +614,7 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         
         String request = url + "&VERSION=1.1.1&BBOX=499699.999705,499502.050472,501800.000326,501597.949528";
         String result = getAsString(request);
+        System.out.println(result);
         assertTrue(result.indexOf("polygonProperty =") > 0);
         
         request = url + "&VERSION=1.3.0&BBOX=499699.999705,499502.050472,501800.000326,501597.949528";

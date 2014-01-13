@@ -211,6 +211,12 @@ public class ImportResourceTest extends ImporterTestSupport {
         json = (JSONObject) json(resp);
         imprt = json.getJSONObject("import");
         assertEquals(8675310, imprt.getInt("id"));
+
+        // now a normal request - make sure it continues the sequence
+        resp = postAsServletResponse("/rest/imports/", "");
+        assertEquals(201, resp.getStatusCode());
+        assertNotNull( resp.getHeader( "Location") );
+        assertTrue(resp.getHeader("Location").endsWith( "/imports/8675311"));
     }
 
     public void testPostWithTarget() throws Exception {
@@ -262,5 +268,17 @@ public class ImportResourceTest extends ImporterTestSupport {
     public void testImportSessionIdNotInt() throws Exception {
         MockHttpServletResponse resp = postAsServletResponse("/rest/imports/foo", "");
         assertEquals(404, resp.getStatusCode());
+    }
+
+    public void testContentNegotiation() throws Exception {
+        MockHttpServletResponse res = getAsServletResponse("/rest/imports/0");
+        assertEquals("application/json", res.getContentType());
+
+        MockHttpServletRequest req = createRequest("/rest/imports/0");
+        req.setMethod("GET");
+        req.setHeader("Accept", "text/html");
+
+        res = dispatch(req);
+        assertEquals("text/html", res.getContentType());
     }
 }

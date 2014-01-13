@@ -242,6 +242,16 @@
      <artifactId>gs-csw-core</artifactId>
      <version>${project.version}</version>
    </dependency> 
+   <dependency>
+     <groupId>org.geoserver.extension</groupId>
+     <artifactId>gs-dxf-core</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.extension</groupId>
+     <artifactId>gs-dxf-wps</artifactId>
+     <version>${project.version}</version>
+   </dependency>
  </dependencies>
  <build>
   <plugins>

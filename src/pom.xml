@@ -139,6 +139,11 @@
    </dependency>
    <dependency>
     <groupId>org.geoserver</groupId>
+    <artifactId>gs-wcs2_0</artifactId>
+    <version>${gs.version}</version>
+   </dependency>
+   <dependency>
+    <groupId>org.geoserver</groupId>
     <artifactId>gs-wfs</artifactId>
     <version>${gs.version}</version>
    </dependency>
@@ -1007,6 +1012,11 @@
       <artifactId>jfreechart</artifactId>
       <version>1.0.10</version>
     </dependency>
+    <dependency>
+      <groupId>ar.com.hjg</groupId>
+      <artifactId>pngj</artifactId>
+      <version>2.0.1</version>
+    </dependency>
   </dependencies>
  </dependencyManagement>
 
@@ -1228,6 +1238,7 @@
       <descriptor>release/ext-inspire.xml</descriptor>
       <descriptor>release/ext-css.xml</descriptor>      
       <descriptor>release/ext-csw.xml</descriptor>
+      <descriptor>release/ext-dxf.xml</descriptor>
      </descriptors>
      <finalName>geoserver-2.5-SNAPSHOT</finalName>
      <outputDirectory>${project.build.directory}/release</outputDirectory>
@@ -1482,6 +1493,7 @@
   <module>wcs</module>
   <module>wcs1_0</module>
   <module>wcs1_1</module>
+  <module>wcs2_0</module>
   <module>wfs</module>
   <module>wms</module>
   <module>kml</module>
@@ -1492,7 +1504,7 @@
   <module>web</module>
   <module>community</module>
   <module>extension</module>
- </modules>
+</modules>
 
  <properties>
   <gs.version>2.5-SNAPSHOT</gs.version>

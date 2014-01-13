@@ -35,14 +35,15 @@ public class DataResource extends BaseResource {
 
     @Override
     protected List<DataFormat> createSupportedFormats(Request request, Response response) {
-        return (List) Arrays.asList(new ImportDataJSONFormat());
+        return (List) Arrays.asList(new ImportDataJSONFormat(MediaType.APPLICATION_JSON),
+                new ImportDataJSONFormat(MediaType.TEXT_HTML));
     }
 
     @Override
     public void handleGet() {
         DataFormat formatGet = getFormatGet();
         if (formatGet == null) {
-            formatGet = new ImportDataJSONFormat();
+            formatGet = new ImportDataJSONFormat(MediaType.APPLICATION_JSON);
         }
 
         ImportData data = null;
@@ -60,8 +61,8 @@ public class DataResource extends BaseResource {
 
     public class ImportDataJSONFormat extends StreamDataFormat {
 
-        protected ImportDataJSONFormat() {
-            super(MediaType.APPLICATION_JSON);
+        protected ImportDataJSONFormat(MediaType type) {
+            super(type);
         }
 
         @Override

@@ -260,8 +260,6 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      */
     public RenderedImageMap produceMap(final WMSMapContent mapContent, final boolean tiled)
             throws ServiceException {
-        final MapDecorationLayout layout = findDecorationLayout(mapContent, tiled);
-
         Rectangle paintArea = new Rectangle(0, 0, mapContent.getMapWidth(),
                 mapContent.getMapHeight());
 
@@ -310,6 +308,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             throw new ServiceException("Rendering request would use " + kbUsed + "KB, whilst the "
                     + "maximum memory allowed is " + kbMax + "KB");
         }
+        
+        final MapDecorationLayout layout = findDecorationLayout(request, tiled);
 
         // TODO: allow rendering to continue with vector layers
         // TODO: allow rendering to continue with layout
@@ -424,14 +424,14 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         }
         
         // see if the user specified a dpi
-        if (mapContent.getRequest().getFormatOptions().get("dpi") != null) {
-            rendererParams.put(StreamingRenderer.DPI_KEY, ((Integer) mapContent.getRequest()
+        if (request.getFormatOptions().get("dpi") != null) {
+            rendererParams.put(StreamingRenderer.DPI_KEY, ((Integer) request
                     .getFormatOptions().get("dpi")));
         }
 
         boolean kmplacemark = false;
-        if (mapContent.getRequest().getFormatOptions().get("kmplacemark") != null)
-            kmplacemark = ((Boolean) mapContent.getRequest().getFormatOptions().get("kmplacemark"))
+        if (request.getFormatOptions().get("kmplacemark") != null)
+            kmplacemark = ((Boolean) request.getFormatOptions().get("kmplacemark"))
                     .booleanValue();
         if (kmplacemark) {
             // create a StyleVisitor that copies a style, but removes the
@@ -470,6 +470,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         final RenderExceptionStrategy nonIgnorableExceptionListener;
         nonIgnorableExceptionListener = new RenderExceptionStrategy(renderer);
         renderer.addRenderListener(nonIgnorableExceptionListener);
+        
+        onBeforeRender(renderer);
 
         // setup the timeout enforcer (the enforcer is neutral when the timeout is 0)
         int maxRenderingTime = wms.getMaxRenderingTime() * 1000;
@@ -514,15 +516,23 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                     "internalError");
         }
 
-        // if (!this.abortRequested) {
-        if (palette != null && palette.getMapSize() < 256)
+        if (palette != null && palette.getMapSize() < 256) {
             image = optimizeSampleModel(preparedImage);
-        else
+        } else {
             image = preparedImage;
-        // }
+        }
 
         RenderedImageMap map = buildMap(mapContent, image);
         return map;
+    }
+
+    /**
+     * Allows subclasses to customize the renderer before the paint method gets invoked
+     * 
+     * @param renderer
+     */
+    protected void onBeforeRender(StreamingRenderer renderer) {
+        // TODO Auto-generated method stub
     }
 
     protected RenderedImageMap buildMap(final WMSMapContent mapContent, RenderedImage image) {
@@ -533,10 +543,10 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         return map;
     }
     
-    protected MapDecorationLayout findDecorationLayout(WMSMapContent mapContent, final boolean tiled) {
+    protected MapDecorationLayout findDecorationLayout(GetMapRequest request, final boolean tiled) {
         String layoutName = null;
-        if (mapContent.getRequest().getFormatOptions() != null) {
-            layoutName = (String) mapContent.getRequest().getFormatOptions().get("layout");
+        if (request.getFormatOptions() != null) {
+            layoutName = (String) request.getFormatOptions().get("layout");
         }
 
         MapDecorationLayout layout = null;
@@ -639,7 +649,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * @param paletteInverter
      * @return
      */
-    final protected RenderedImage prepareImage(int width, int height, IndexColorModel palette,
+    protected RenderedImage prepareImage(int width, int height, IndexColorModel palette,
             boolean transparent) {
         return ImageUtils.createImage(width, height, isPaletteSupported() ? palette : null,
                 transparent && isTransparencySupported());

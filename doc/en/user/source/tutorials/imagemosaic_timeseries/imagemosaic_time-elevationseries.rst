@@ -1,4 +1,4 @@
-.. _tutorial_imagemosaic_timeseries:
+.. _tutorial_imagemosaic_timeelevationseries:
 
 Using the ImageMosaic plugin for raster with time and elevation data
 ====================================================================

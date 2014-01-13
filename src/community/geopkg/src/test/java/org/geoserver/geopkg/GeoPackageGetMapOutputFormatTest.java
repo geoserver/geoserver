@@ -66,7 +66,7 @@ public class GeoPackageGetMapOutputFormatTest extends WMSTestSupport {
         assertTrue(geopkg.features().isEmpty());
         assertTrue(geopkg.rasters().isEmpty());
         assertEquals(1, geopkg.tiles().size());
-        assertNotNull(geopkg.tile("tiles"));
+        assertNotNull(geopkg.tile("World_Lakes"));
     }
 
     GeoPackage createGeoPackage(WebMap map) throws IOException {

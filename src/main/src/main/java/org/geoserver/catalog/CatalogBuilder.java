@@ -765,10 +765,20 @@ public class CatalogBuilder {
      * Initialize a coverage object and set any unset info.
      */
     public void initCoverage(CoverageInfo cinfo) throws Exception {
+        initCoverage(cinfo, null);
+    }
+    
+    /**
+     * Initialize a coverage object and set any unset info.
+     */
+    public void initCoverage(CoverageInfo cinfo, final String coverageName) throws Exception {
     	CoverageStoreInfo csinfo = (CoverageStoreInfo) store;
         GridCoverage2DReader reader = (GridCoverage2DReader) catalog
             	.getResourcePool().getGridCoverageReader(csinfo, GeoTools.getDefaultHints());
-
+        if(coverageName != null) {
+            reader = SingleGridCoverage2DReader.wrap(reader, coverageName);
+        }
+        
         initResourceInfo(cinfo);
 
         if (reader == null)

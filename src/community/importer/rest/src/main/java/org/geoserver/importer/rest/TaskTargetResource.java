@@ -39,7 +39,8 @@ public class TaskTargetResource extends BaseResource {
 
     @Override
     protected List<DataFormat> createSupportedFormats(Request request, Response response) {
-        return (List) Arrays.asList(new TaskTargetJSONFormat());
+        return (List) Arrays.asList(new TaskTargetJSONFormat(MediaType.APPLICATION_JSON),
+                new TaskTargetJSONFormat(MediaType.TEXT_HTML));
     }
 
     @Override
@@ -87,17 +88,18 @@ public class TaskTargetResource extends BaseResource {
         StoreInfo existing = null;
         if (update.getName() != null) {
             Catalog cat = importer.getCatalog();
-            try {
-                if (update.getWorkspace() != null) {
-                    existing = cat.getStoreByName(
-                        update.getWorkspace(), update.getName(), StoreInfo.class);
-                }
-                else {
-                    existing = importer.getCatalog().getStoreByName(update.getName(), StoreInfo.class);
-                }
+            if (update.getWorkspace() != null) {
+                existing = cat.getStoreByName(
+                    update.getWorkspace(), update.getName(), StoreInfo.class);
             }
-            catch(Exception e) {
-                LOGGER.log(Level.FINE, e.getLocalizedMessage(), e);
+            else {
+                existing = importer.getCatalog().getStoreByName(update.getName(), StoreInfo.class);
+            }
+            if (existing == null) {
+                throw new RestletException("Unable to find referenced store", Status.CLIENT_ERROR_BAD_REQUEST);
+            }
+            if (!existing.isEnabled()) {
+                throw new RestletException("Proposed target store is not enabled", Status.CLIENT_ERROR_BAD_REQUEST);
             }
         }
 
@@ -144,8 +146,8 @@ public class TaskTargetResource extends BaseResource {
 
     class TaskTargetJSONFormat extends StreamDataFormat {
 
-        public TaskTargetJSONFormat() {
-            super(MediaType.APPLICATION_JSON);
+        public TaskTargetJSONFormat(MediaType type) {
+            super(type);
         }
 
         @Override

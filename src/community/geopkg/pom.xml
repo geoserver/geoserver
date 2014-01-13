@@ -19,6 +19,16 @@
  <dependencies>
   <dependency>
    <groupId>org.geoserver</groupId>
+   <artifactId>gs-main</artifactId>
+   <version>${project.version}</version>
+  </dependency>
+  <dependency>
+   <groupId>org.geoserver</groupId>
+   <artifactId>gs-ows</artifactId>
+   <version>${project.version}</version>
+  </dependency>
+  <dependency>
+   <groupId>org.geoserver</groupId>
    <artifactId>gs-gwc</artifactId>
    <version>${project.version}</version>
   </dependency>
@@ -33,8 +43,23 @@
    <version>${project.version}</version>
   </dependency>
   <dependency>
+   <groupId>org.geoserver.community</groupId>
+   <artifactId>gs-mbtiles</artifactId>
+   <version>${project.version}</version>
+  </dependency>
+  <dependency>
    <groupId>org.geotools</groupId>
    <artifactId>gt-geopkg</artifactId>
+   <version>${gt.version}</version>
+  </dependency>
+   <dependency>
+   <groupId>org.geotools</groupId>
+   <artifactId>gt-render</artifactId>
+   <version>${gt.version}</version>
+  </dependency>
+  <dependency>
+   <groupId>org.geotools</groupId>
+   <artifactId>gt-wfs</artifactId>
    <version>${gt.version}</version>
   </dependency>
   <dependency>
@@ -78,6 +103,10 @@
    <groupId>xmlunit</groupId>
    <artifactId>xmlunit</artifactId>
    <scope>test</scope>
+  </dependency>
+  <dependency>
+   <groupId>org.geowebcache</groupId>
+   <artifactId>gwc-core</artifactId>
   </dependency>
  </dependencies>
 

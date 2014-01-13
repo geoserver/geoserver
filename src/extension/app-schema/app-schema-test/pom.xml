@@ -194,9 +194,7 @@
 					        <include>**/*.xsd</include>
 							<include>**/*.sql</include>
 							<include>**/*.sld</include>
-			   				<include>**/*.tiff</include>
-							<include>**/*.sql</include>
-							<include>**/*.tiff</include>
+			   				<include>**/*.png</include>
 					    </includes>
 			        </testResource>
 		        </testResources>
@@ -248,7 +246,7 @@
 					        <include>**/*.xsd</include>
 				    	    <include>**/*.sql</include>
 					    	<include>**/*.sld</include>
-					    	<include>**/*.tiff</include>
+					    	<include>**/*.png</include>
 				        </includes>
 			        </testResource>
 		        </testResources>

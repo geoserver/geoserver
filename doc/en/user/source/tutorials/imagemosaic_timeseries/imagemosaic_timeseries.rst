@@ -7,41 +7,41 @@ Using the ImageMosaic plugin for raster time-series data
 Introduction
 ------------
 
-This step-by-step tutorial describes all the steps for building a time-series coverage using the new ImageMosaic plugin. The ImageMosaic plugin allows the creation of a time-series layer of a raster dataset. The single images are hold in a queryable structure in order to access to a specific dataset with a temporal filter.
+This step-by-step tutorial describes how to build a time-series coverage using the ImageMosaic plugin. The ImageMosaic plugin allows the creation of a time-series layer of a raster dataset. The single images are held in a queryable structure to allow access to a specific dataset with a temporal filter.
 
-The concepts explained in :ref:`tutorial_imagemosaic_extension` are required in order to properly understand the steps shown here.
+This tutorial assumes knowledge of the concepts explained in :ref:`tutorial_imagemosaic_extension`.
 
-This tutorial is organized in 4 chapter:
+This tutorial contains four sections:
 
-* The first chapter, **Configuration**, describes the environment configurations needed before load an Imagemosaic store from geoserver
-* The second chapter, **Configuration examples**, describes the details, providing examples, of the configurations files needed.
-* The last 2 chapters, **Coverage based on filestore** and **Coverage based on database** describe, once the previous configurations steps are done, how to create and configure an Imagemosaic store using the geoserver GUI.
+* The first section, **Configuration**, describes the configuration files needed to set up an ImageMosaic store from GeoServer.
+* The second section, **Configuration examples**, providing examples of the configuration files needed.
+* The last two sections, **Coverage based on filestore** and **Coverage based on database** describe, once the previous configurations steps are done, how to create and configure an Imagemosaic store using the GeoServer GUI.
 
 The dataset used in the tutorial can be downloaded :download:`Here <snowLZWdataset.zip>`. It contains 3 image files and a .sld file representing a style needed for correctly render the images.
 
 Configuration
 -------------
-In order to load a new CoverageStore from the GeoServer GUI two steps are needed:
-
-1. Create a new directory in which you store all your tif files (the mosaic granules) and three configuration files. This directory represents the **MOSAIC_DIR**.
-2. Install and setup a DBMS instance, this DB is that one where the mosaic indexes will be stored.
-3. Another important thing is that the web container where geoserver is deployed must have the **timezone properly configured**.
-
-In order to set the time in Coordinated Universal Time (UTC) add this switch when launching the java process::
+To support time-series layers, GeoServer needs to be run in a web container that has the **timezone properly configured**. To set the time zone to be Coordinated Universal Time (UTC), add this switch when launching the java process::
 
 -Duser.timezone=GMT
 
-If a shapefile is used (see next chapter) also this switch is needed in order to manage properly the timezone::
+If using a shapefile as the mosaic index store (see next section), another java process option is needed to enable support for timestamps in shapefile stores::
 
 -Dorg.geotools.shapefile.datetime=true
 
-.. note:: The above properties enables support for timestamp (date and time) data in Shapefile stores. Support for timestamp is not part of the DBF standard, which only supports Date instead, and only few applications understand it. As long as shapefiles are only used for GeoServer input that is not a problem, but the above setting will cause issues if you have WFS enabled and users also download shapefiles as GetFeature output: if the feature type extracted has timestamps the generated shapefile will have as well, making it difficult to use the generated shapefile in desktop applications. As a rule of thumb, if you also need WFS support it is advisable to use an external store (PostGIS, Oracle) instead. Of course, if all that's needed is a date, using shapefile as an index without the above property is fine as well.
+.. note:: Support for timestamp is not part of the DBF standard (used in shapefile for attributes). The DBF standard only supports Date, and only few applications understand it. As long as shapefiles are only used for GeoServer input that is not a problem, but the above setting will cause issues if you have WFS enabled and users also download shapefiles as GetFeature output: if the feature type extracted has timestamps, then the generated shapefile will have as well, making it difficult to use the generated shapefile in desktop applications. As a rule of thumb, if you also need WFS support it is advisable to use an external store (PostGIS, Oracle) instead of shapefile. Of course, if all that's needed is a date, using shapefile as an index without the above property is fine as well.
+
+In order to load a new CoverageStore from the GeoServer GUI two steps are needed:
+
+1. Create a new directory in which you store all the raster files (the mosaic granules) and three configuration files. This directory represents the **MOSAIC_DIR**.
+2. Install and setup a DBMS instance, this DB is that one where the mosaic indexes will be stored.
+
 
 
 MOSAIC_DIR and the Configuration Files
 ``````````````````````````````````````
 
-The user can name the and place the **MOSAIC_DIR** as and where he wants.
+The user can name and place the **MOSAIC_DIR** as and where they want.
 
 The **MOSAIC_DIR** contains all mosaic granules files and the 3 needed configuration files. The files are in ``.properties`` format.
 
@@ -151,23 +151,23 @@ timeregex.properties
      - Y
      - Specifies the pattern used for extracting the information from the file
 
-After this you can create a new imagemosaic datastore.
+After this you can create a new ImageMosaic datastore.
 
 Install and setup a DBMS instance
 `````````````````````````````````
-First of all note that the usage of a DBMS to store the mosaic indexes **isn't mandatory**. If the user don't place in the MOSAIC_DIR the datastore.properties file the plugin uses a **shapefile**. The shapefile will be created into the MOSAIC_DIR.
+First of all note that the usage of a DBMS to store the mosaic indexes **is not mandatory**. If the user does not create a datastore.properties file in the MOSAIC_DIR, then the plugin will use a **shapefile**. The shapefile will be created in the MOSAIC_DIR.
 
 Anyway, especially for large dataset, **the usage of a DBMS is strong recommended**. The ImageMosaic plugin supports all the most used DBMS. 
 
 The configuration needed are the basics: create a new empty DB with geospatial extensions, a new schema and configure the user with W/R grants.
 
-In this tutorial will be used PostgreSQL 9.1 together with PostGIS 2.0 .
+This tutorial shows use of PostgreSQL 9.1 together with PostGIS 2.0 .
 
 
 Configuration examples
 ---------------------- 
 
-As example is used a set of data that represents hydrological data in a certain area in South Tyrol, a region in northern Italy. The origin data were converted from asc format to tiff using the gdal utility **gdal translate**. 
+As example is used a set of data that represents hydrological data in a certain area in South Tyrol, a region in northern Italy. The origin data was converted from asc format to TIFF using the GDAL **gdal translate** utility. 
 
 For this running example we will create a layer named snow.
 
@@ -178,7 +178,7 @@ In this tutorial the chosen MOSAIC_DIR directory is called ``hydroalp`` and is p
 
 Configure the MOSAIC_DIR:
 `````````````````````````
-In this part is shown an entire MOSAIC_DIR configuration.
+This part showsn an entire MOSAIC_DIR configuration.
 
 
 datastore.properties:
@@ -186,12 +186,12 @@ datastore.properties:
 .. include:: src/datastore.properties
    :literal:
 
-.. note:: In case of a missing datastore.properties file a shape file is created for the use of the indexes.
+.. note:: In case of a missing datastore.properties file a shape file is created to hold the indexes.
 
 
 Granules Naming Convention
 """""""""""""""""""""""""""
-Here an example of the granules naming that satisfy the rule shown before:
+Here an example of the granules naming that satisfies the rule shown before:
 
 .. include:: src/tiffiles.out
    :literal:
@@ -199,7 +199,7 @@ Here an example of the granules naming that satisfy the rule shown before:
 
 timeregex.properties:
 """""""""""""""""""""
-In the timeregex property file you specify the pattern how the date(time) in the file looks like. In this example it consists simply of 8 digits as specified below. 
+In the timeregex property file you specify the pattern describing the date(time) part of the file names. In this example it consists simply of 8 digits as specified below. 
 
 .. include:: src/timeregex.properties
    :literal:
@@ -207,16 +207,16 @@ In the timeregex property file you specify the pattern how the date(time) in the
 
 indexer.properties:
 """""""""""""""""""
-Here the user can specify the information that needs Geoserver for creating the table in the database. In this table the time values are stored in the column ingestion.
+Here the user can specify the information that Geoserver uses to create the index table in the database. In this example, the time values are stored in the column ingestion.
 
 .. include:: src/indexer.properties
    :literal:
 
    
-Create and Publish an Imagemosaic store:
+Create and Publish an ImageMosaic store:
 ----------------------------------------
 
-Step 1: create new imagemosaic data store
+Step 1: Create new ImageMosaic data store
 `````````````````````````````````````````
 We create a new data store of type raster data and choose ImageMosaic.
 
@@ -224,7 +224,7 @@ We create a new data store of type raster data and choose ImageMosaic.
    :align: center
 
 
-.. note:: Be aware that Geoserver creates a table which is identical with the name of your layer. If the table already exists, it will not be dropped from the DB and the following error message appear. The same message appear, if the generated property file already exists in the directory or there are wrong connection parameters in datastore.properties file.
+.. note:: Be aware that Geoserver creates a table which is identical with the name of your layer. If the table already exists, it will not be dropped from the DB and the following error message will appear. The same message wwill appear if the generated property file already exists in the directory or there are incorrect connection parameters in datastore.properties file.
 
 .. figure:: img/errormessage.png
    :align: center
@@ -233,14 +233,14 @@ We create a new data store of type raster data and choose ImageMosaic.
 
 Step 2: Specify layer
 ```````````````````````
-We specify the directory in which the property and tif files are located (path must end with a slash) and add the layer. 
+We specify the directory that contains the property and TIFF files (path must end with a slash) and add the layer. 
 
 .. figure:: img/step_1_2.png
    :align: center
 
    
-Step 3: set Coverage Parameter
-``````````````````````````````
+Step 3: Set coverage parameters
+```````````````````````````````
 The relevant parameters are AllowMultithreading and USE_JAI_IMAGEREAD. Do not forget to specify the background value according to your the value in your tif file. If you want to control which granule is displayed when a number of images match the time period specified then set the SORTING parameter to the variable name you want to use for sorting followed by a space and either D or A for descending or ascending. Descending values will mean that the latest image in a series that occurs in the time period requested is shown.
 
 .. figure:: img/step_2_1.png
@@ -250,14 +250,14 @@ Remember that for display correctly the images contained in the provided dataset
 
 Set as default style the *snow_style.sld* contained in the dataset archive.
 
-More information about raster styling can be found at chapter :ref:`sld_cookbook_rasters`
+More information about raster styling can be found in chapter :ref:`sld_cookbook_rasters`
    
-Step 4: set temporal properties
+Step 4: Set temporal properties
 ```````````````````````````````
-In the tab Dimensions you can specify how the time attributes are represented. 
+In the Dimensions tab you can specify how the time attributes are represented. 
 
-By enabling the Time or Elevation checkbox you can specify the way of presentation. 
-In this example query is performed just only over the time attribute. 
+By enabling the Time or Elevation checkbox you can specify the how these dimensions will be presented. 
+In this example, queries are only over the time attribute. 
 
 Below is shown a snippet of the Capabilities document for each presentation case:
 
@@ -286,9 +286,9 @@ Setting the presentation to **Interval and resolutions** gives to user the possi
 		2009-10-01T00:00:00.000Z/2011-09-01T00:00:00.000Z/P1DT12H
 	</Dimension>
 
-In this case the resolution is set to one day and half
+In this case the resolution is set to 1.5 days.
 
-.. note:: For visualize the getCapabilities document go to geoserver homepage, under the right tab called **Service Capabilities** click on the WMS 1.3.0 link.
+.. note:: To visualize the GetCapabilities document, go to the GeoServer homepage, and click on the WMS 1.3.0 link under the tab labeled **Service Capabilities**.
 
 For this tutorial the Presentation attribute is set to **List**
 
@@ -296,7 +296,7 @@ For this tutorial the Presentation attribute is set to **List**
    :align: center
 
 
-After this steps the new layer is available in Geoserver. Additionally Geoserver has created in the source directory a property file and on the database he has created a table named with the name of the layer.
+After this steps the new layer is available in GeoServer. GeoServer will create a property file in the source directory. GeoServer will either create a shapefile for the mosaic indexes, or will create a table on the database (named the same as the layer name) for the index.
 
 
 Generated property file:
@@ -305,7 +305,7 @@ Generated property file:
 .. include:: src/snow.properties
    :literal:
 
-.. note:: The parameter **Caching=false** is important because in this way GeoServer doesn't cache any data. So the user is able to update manually the mosaic adding and removing granules to MOSAIC_DIR and update the relative entry on DB.
+.. note:: The parameter **Caching=false** is important to allow the user is to update manually the mosaic, by adding to and removing granules from MOSAIC_DIR and updating the appropriate database entry.
    
 Generated table:
 """"""""""""""""
@@ -322,7 +322,7 @@ Step 5: query layer on timestamp:
 In order to display a snapshot of the map at a specific time instant you have to pass in the request an additional time parameter with a specific notation
 **&time=** < **pattern** > where you pass a value that corresponds to them in the filestore. The only thing is the pattern of the time value is slightly different.
 
-For example if an user wants to obtain the snow coverage images from the months **Oct,Nov,Dec 2009** I pass in each request **&time=2009-10-01**, **&time=2009-11-01** and **&time=2009-12-01**. You can recognize in the three images how the snow coverage changes. Here the color blue means a lot of snow.
+For example if an user wants to obtain the snow coverage images from the months **Oct,Nov,Dec 2009**, pass in each request **&time=2009-10-01**, **&time=2009-11-01** and **&time=2009-12-01**. You can recognize in the three images how the snow coverage changes. Here the color blue means a lot of snow.
 
 
 .. figure:: img/step_3.png
@@ -332,7 +332,7 @@ For example if an user wants to obtain the snow coverage images from the months 
 Create and publish a Layer from mosaic indexes:
 -----------------------------------------------
 
-After the previous steps it is also be possible to create a layer that represents the spatial indexes of the mosaic. This is an useful features when is required to handle large dataset of Mosaics with High Resolutions granules, the user can easily get the footprints of the Images. In this case will be rendered only the geometries stored on the indexes tables.
+After the previous steps it is also possible to create a layer that represents the spatial indexes of the mosaic. This is an useful feature when handling a large dataset of mosaics with high resolutions granules, since the user can easily get the footprints of the images. In this case will be rendered only the geometries stored on the indexes tables.
 
 Step 1: add a postgis datastore:
 ````````````````````````````````

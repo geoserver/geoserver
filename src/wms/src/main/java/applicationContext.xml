@@ -679,8 +679,12 @@
   </bean>
   
   <!-- Pluggable layer identifiers -->
-  <bean id="basicVectorLayerIdentifier" class="org.geoserver.wms.featureinfo.BasicVectorLayerIdentifier">
+  <bean id="basicVectorLayerIdentifier" class="org.geoserver.wms.featureinfo.VectorBasicLayerIdentifier">
       <constructor-arg ref="wms"/>
+  </bean>
+  <bean id="renderVectorLayerIdentifier" class="org.geoserver.wms.featureinfo.VectorRenderingLayerIdentifier">
+      <constructor-arg ref="wms"/>
+      <constructor-arg ref="basicVectorLayerIdentifier"/>
   </bean>
   <bean id="rasterLayerIdentifier" class="org.geoserver.wms.featureinfo.RasterLayerIdentifier">
       <constructor-arg ref="wms"/>

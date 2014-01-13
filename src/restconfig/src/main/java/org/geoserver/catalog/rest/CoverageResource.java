@@ -74,10 +74,20 @@ public class CoverageResource extends AbstractCatalogResource {
             CoverageStoreInfo ds = catalog.getCoverageStoreByName( workspace, coveragestore );
             coverage.setStore( ds );
         }
-
+        final boolean isNew = isNewCoverage(coverage);
+        String name = coverage.getName();
         CatalogBuilder builder = new CatalogBuilder(catalog);
-        builder.setStore(coverage.getStore());
-        builder.initCoverage(coverage);
+        CoverageStoreInfo store = coverage.getStore();
+        builder.setStore(store);
+
+        // We handle 2 different cases here
+        if (!isNew) {
+            // Configuring a partially defined coverage
+            builder.initCoverage(coverage, name);
+        } else {
+            // Configuring a brand new coverage (only name has been specified)
+            coverage = builder.buildCoverage(name);
+        }
 
         NamespaceInfo ns = coverage.getNamespace();
         if ( ns != null && !ns.getPrefix().equals( workspace ) ) {
@@ -101,6 +111,26 @@ public class CoverageResource extends AbstractCatalogResource {
         
         LOGGER.info( "POST coverage " + coveragestore + "," + coverage.getName() );
         return coverage.getName();
+    }
+
+    /**
+     * This method returns {@code true} in case we have POSTed a Coverage object with the name only, as an instance
+     * when configuring a new coverage which has just been harvested. 
+     * 
+     * @param coverage
+     * @return
+     */
+    private boolean isNewCoverage(CoverageInfo coverage) {
+        return coverage.getName() != null && (coverage.isAdvertised()) && (!coverage.isEnabled())
+                && (coverage.getAlias() == null) && (coverage.getCRS() == null)
+                && (coverage.getDefaultInterpolationMethod() == null)
+                && (coverage.getDescription() == null) && (coverage.getDimensions() == null)
+                && (coverage.getGrid() == null) && (coverage.getInterpolationMethods() == null)
+                && (coverage.getKeywords() == null) && (coverage.getLatLonBoundingBox() == null)
+                && (coverage.getMetadata() == null) && (coverage.getNativeBoundingBox() == null)
+                && (coverage.getNativeCRS() == null) && (coverage.getNativeFormat() == null)
+                && (coverage.getProjectionPolicy() == null) && (coverage.getSRS() == null)
+                && (coverage.getResponseSRS() == null) && (coverage.getRequestSRS() == null);
     }
 
     @Override

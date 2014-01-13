@@ -82,6 +82,10 @@
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId> 
     </dependency>
+    <dependency>
+      <groupId>ar.com.hjg</groupId>
+      <artifactId>pngj</artifactId>
+    </dependency>
 	<dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-ows</artifactId>

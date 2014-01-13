@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+
+     #%L
+     geoserver-sync-core
+     $Id:$
+     $HeadURL:$
+     %%
+     Copyright (C) 2013 Moebius Solutions Inc.
+     %%
+     This program is free software: you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as
+     published by the Free Software Foundation, either version 2 of the
+     License, or (at your option) any later version.
+
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public
+     License along with this program.  If not, see
+     <http://www.gnu.org/licenses/gpl-2.0.html>.
+     #L%
+
+
+-->
+<!--
+
+    Testing testing 1 2 3
+
+-->
+<xsd:schema xmlns:cdf="http://www.opengis.net/cite/data"
+	xmlns:cgf="http://www.opengis.net/cite/geometry" xmlns:cite="http://www.opengis.net/cite"
+	xmlns:gml="http://www.opengis.net/gml" xmlns:gs="http://geoserver.org"
+	xmlns:sf="http://cite.opengeospatial.org/gmlsf" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	elementFormDefault="qualified" targetNamespace="http://www.opengis.net/cite">
+	<xsd:import namespace="http://www.opengis.net/gml"
+		schemaLocation="http://localhost:80/geoserver/schemas/gml/3.1.1/base/gml.xsd" />
+	<xsd:complexType name="BuildingsType">
+		<xsd:complexContent>
+			<xsd:extension base="gml:AbstractFeatureType">
+				<xsd:sequence>
+					<xsd:element maxOccurs="1" minOccurs="0" name="the_geom"
+						nillable="true" type="gml:MultiSurfacePropertyType" />
+					<xsd:element maxOccurs="1" minOccurs="0" name="FID"
+						nillable="true" type="xsd:string" />
+					<xsd:element maxOccurs="1" minOccurs="0" name="ADDRESS"
+						nillable="true" type="xsd:string" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:element name="Buildings" substitutionGroup="gml:_Feature"
+		type="cite:BuildingsType" />
+</xsd:schema>

@@ -34,6 +34,7 @@ import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.Importer;
 import org.geoserver.importer.UpdateMode;
 import org.geoserver.importer.ImportContext.State;
+import org.geoserver.importer.ValidationException;
 import org.geoserver.importer.mosaic.Mosaic;
 import org.geoserver.importer.mosaic.TimeMode;
 import org.geoserver.importer.transform.AttributeRemapTransform;
@@ -185,6 +186,10 @@ public class ImportJSONReader {
         }
         if (json.has("updateMode")) {
             task.setUpdateMode(UpdateMode.valueOf(json.getString("updateMode").toUpperCase()));
+        } else {
+            // if it hasn't been specified by the request, set this to null
+            // or else it's possible to overwrite an existing setting
+            task.setUpdateMode(null);
         }
 
         JSONObject data = null;
@@ -258,7 +263,7 @@ public class ImportJSONReader {
             try {
                 clazz = Class.forName( json.getString("target") );
             } catch (ClassNotFoundException cnfe) {
-                throw new RuntimeException("unable to locate target class " + json.getString("target"));
+                throw new ValidationException("unable to locate target class " + json.getString("target"));
             }
             transform = new AttributeRemapTransform(json.getString("field"), clazz);
         } else if ("AttributesToPointGeometryTransform".equalsIgnoreCase(type)) {
@@ -273,10 +278,10 @@ public class ImportJSONReader {
                 transform = new ReprojectTransform(source, target);
             } 
             catch(Exception e) {
-                throw new RuntimeException("Error parsing reproject transform", e);
+                throw new ValidationException("Error parsing reproject transform", e);
             }
         } else {
-            throw new RuntimeException("parsing of " + type + " not implemented");
+            throw new ValidationException("Invalid transform type '" + type + "'");
         }
         return transform;
     }

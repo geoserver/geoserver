@@ -38,16 +38,6 @@ public class IconRendererTest {
      */
     static final int THRESHOLD = 400;
     
-    @BeforeClass
-    public static void setupIconRounding() {
-        StyledShapePainter.ROUND_ICON_COORDS = false;
-    }
-    
-    @AfterClass
-    public static void cleanIconRounding() {
-        StyledShapePainter.ROUND_ICON_COORDS = true;
-    }
-
     @Test
     public void testSimpleCircle() throws Exception {
         StyleFactory sfact =  CommonFactoryFinder.getStyleFactory();
@@ -67,7 +57,7 @@ public class IconRendererTest {
         BufferedImage img = IconRenderer.renderIcon((org.geotools.styling.Style)s);
         
         // Default mark size, plus border, plus padding, times rendering scale, plus extra padding.
-        final int size = (16+1+1)*4+1;
+        final int size = (16+1+1+1)*4;
         assertEquals(size, img.getHeight());
         assertEquals(size, img.getWidth());
         
@@ -95,7 +85,7 @@ public class IconRendererTest {
         BufferedImage img = IconRenderer.renderIcon((org.geotools.styling.Style)s);
         
         // Default mark size, plus border, plus padding, times rendering scale, plus extra padding.
-        final int size = (16+1+1)*4+1;
+        final int size = (16+1+1+1)*4;
         assertEquals(size, img.getHeight());
         assertEquals(size, img.getWidth());
         
@@ -125,7 +115,7 @@ public class IconRendererTest {
         // Default mark size, plus border, plus padding, times rendering scale, plus extra padding.
         final int baseSize = 16;
         final int rotated = (int)Math.ceil(baseSize*Math.sqrt(2));
-        final int size = (rotated+1+1)*4+1;
+        final int size = (rotated+1+1+1)*4;
         assertEquals(size, img.getHeight());
         assertEquals(size, img.getWidth());
         
@@ -150,7 +140,7 @@ public class IconRendererTest {
         BufferedImage img = IconRenderer.renderIcon((org.geotools.styling.Style)s);
         
         // Default mark size, plus border, plus padding, times rendering scale, plus extra padding.
-        final int size = (16+0+1)*4+1;
+        final int size = (16+0+1+1)*4;
         assertEquals(size, img.getHeight());
         assertEquals(size, img.getWidth());
         
@@ -177,7 +167,7 @@ public class IconRendererTest {
         // Default mark size, plus border, plus padding, times rendering scale, plus extra padding.
         final int baseSize = 16;
         final int rotated = (int) Math.ceil(baseSize*Math.sqrt(2));
-        final int size = (rotated+0+1)*4+1;
+        final int size = (rotated+0+1+1)*4;
         assertEquals(size, img.getHeight());
         assertEquals(size, img.getWidth());
         
@@ -202,7 +192,7 @@ public class IconRendererTest {
         BufferedImage img = IconRenderer.renderIcon((org.geotools.styling.Style)s);
         
         // Default mark size, plus border, plus padding, times rendering scale, plus extra padding.
-        final int size = (42+0+1)*4+1;
+        final int size = (42+0+1+1)*4;
         assertEquals(size, img.getHeight());
         assertEquals(size, img.getWidth());
         
@@ -227,7 +217,7 @@ public class IconRendererTest {
         BufferedImage img = IconRenderer.renderIcon((org.geotools.styling.Style)s);
         
         // Default mark size, plus border, plus padding, times rendering scale, plus extra padding.
-        final int size = (42+0+1)*4+1;
+        final int size = (42+0+1+1)*4;
         assertEquals(size, img.getHeight());
         assertEquals(size, img.getWidth());
         
@@ -252,7 +242,7 @@ public class IconRendererTest {
         BufferedImage img = IconRenderer.renderIcon((org.geotools.styling.Style)s);
         
         // Default mark size, plus border, plus padding, times rendering scale, plus extra padding.
-        final int size = (42+0+1)*4+1;
+        final int size = (42+0+1+1)*4;
         assertEquals(size, img.getHeight());
         assertEquals(size, img.getWidth());
         

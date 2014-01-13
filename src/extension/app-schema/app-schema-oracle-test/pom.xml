@@ -190,7 +190,7 @@
 			        <include>**/*.xsd</include>
 		    	    <include>**/*.sql</include>
                     <include>**/*.sld</include>
-                    <include>**/*.tiff</include>
+                    <include>**/*.png</include>
 	            </includes>
 		    </testResource>
 	    </testResources>

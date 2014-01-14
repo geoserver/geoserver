@@ -14,12 +14,7 @@ This page describes the use of "Feature Chaining" to compose complex features fr
  * Encoding the same referenced property object as links when it appears in multiple containing features
  * Eliminating the need for large denormalized data store views of top level features and their related features. Denormalized views would still be needed for special cases, such as many-to-many relationships, but won't be as large.
 
-The current state of the User guide refers to setting up Geotools application schema configurations, and will be updated to reflect a Geoserver 2.0 configuration example shortly.
 For non-application schema configurations, please refer to :ref:`app-schema.data-access-integration`.
-
-Versions supported
-``````````````````
-Feature chaining is implemented within the app-schemas module in GeoTools trunk (from 2.6.x on). Work on supporting this in Geoserver trunk is currently underway.  It is not supported in GeoServer 1.6 community-schemas. 
 
 Mapping steps
 -------------
@@ -78,7 +73,7 @@ In GeologicEvent (the container feature) mapping::
   <AttributeMapping>
 	<targetAttribute>gsml:eventEnvironment</targetAttribute>
 	<sourceExpression>
-		<OCQL>getID()</OCQL>
+		<OCQL>id</OCQL>
 		<linkElement>gsml:CGI_TermValue</linkElement>
 		<linkField>FEATURE_LINK[1]</linkField>
 	</sourceExpression>
@@ -87,7 +82,7 @@ In GeologicEvent (the container feature) mapping::
   <AttributeMapping>
 	<targetAttribute>gsml:eventProcess</targetAttribute>
 	<sourceExpression>
-		<OCQL>getID()</OCQL>
+		<OCQL>id</OCQL>
 		<linkElement>gsml:CGI_TermValue</linkElement>
 		<linkField>FEATURE_LINK[2]</linkField>
 	</sourceExpression>
@@ -260,7 +255,7 @@ GeologicUnit has 3 gml:name properties in the mapping file, so each has a code s
       <AttributeMapping>
         <targetAttribute>gml:name[3]</targetAttribute> 
         <sourceExpression>
-          <OCQL>strTrim(getId())</OCQL> 
+          <OCQL>id</OCQL> 
         </sourceExpression>
         <ClientProperty>
           <name>codeSpace</name> 
@@ -305,14 +300,14 @@ In Geologic Unit mapping file::
   <AttributeMapping>
       <targetAttribute>gsml:composition</targetAttribute>
       <sourceExpression>
-	      <OCQL>getID()</OCQL>
+	      <OCQL>id</OCQL>
 	      <linkElement>gsml:CompositionPart</linkElement>
 	      <linkField>FEATURE_LINK</linkField>
       </sourceExpression>
       <isMultiple>true</isMultiple>
   </AttributeMapping>
 
-* *OCQL*: getID() returns the geologic unit id
+* *OCQL*: id is the geologic unit id
 * *linkElement*: links to gsml:CompositionPart type
 * *linkField*: FEATURE_LINK, the linking field mapped in gsml:CompositionPart type that also stores the geologic unit id. If there are more than one of these attributes in the nested feature type, make sure the index is included, e.g. FEATURE_LINK[2]. 
 
@@ -437,14 +432,14 @@ For this example, we are nesting gsml:GeologicUnit in gsml:MappedFeature as gsml
       <AttributeMapping>
         <targetAttribute>gsml:occurrence</targetAttribute>		
         <sourceExpression>
-	      <OCQL>strTrim(getId())</OCQL>
+	      <OCQL>id</OCQL>
 	      <linkElement>gsml:MappedFeature</linkElement>
 	      <linkField>gsml:specification</linkField>
         </sourceExpression>					              
         <isMultiple>true</isMultiple>			            				
         <ClientProperty>
 	       <name>xlink:href</name>
-	       <value>strConcat('urn:cgi:feature:MappedFeature:', getId())</value>
+	       <value>strConcat('urn:cgi:feature:MappedFeature:', ID)</value>
         </ClientProperty>     	
       </AttributeMapping>
 
@@ -457,5 +452,5 @@ This would be the encoded result for gsml:GeologicUnit::
            <gsml:occurrence xlink:href="urn:cgi:feature:MappedFeature:mf3"/>
 
 .. note::
-   * In the example above, we use *strConcat('urn:cgi:feature:MappedFeature:', getId())* as Client Property value. The function *getId()* would return the id value from the nested feature table (gsml:MappedFeature). You can use other column names from the nested feature data store. 
-   * Lastly, don't forget to add *XLink* in your mapping file namespaces section, or you could end up with a StackOverflowException as the *xlink:href* client property won't be recognized and the mappings would chain endlessly.
+   * Don't forget to add *XLink* in your mapping file namespaces section, or you could end up with a StackOverflowException as the *xlink:href* client property won't be recognized and the mappings would chain endlessly.
+   * :ref:`app-schema.resolve` may be used to force app-schema to do full feature chaining up to a certain level, even if an xlink reference is specified.

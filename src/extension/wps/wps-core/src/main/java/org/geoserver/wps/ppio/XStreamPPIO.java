@@ -6,6 +6,8 @@ package org.geoserver.wps.ppio;
 
 import java.io.InputStream;
 
+import javax.xml.namespace.QName;
+
 import org.xml.sax.ContentHandler;
 
 import com.thoughtworks.xstream.XStream;
@@ -21,8 +23,8 @@ import com.thoughtworks.xstream.mapper.MapperWrapper;
  */
 public class XStreamPPIO extends XMLPPIO {
 
-    protected XStreamPPIO(Class type) {
-        super(type, type, null);
+    protected XStreamPPIO(Class type, QName element) {
+        super(type, type, element);
     }
 
     @Override

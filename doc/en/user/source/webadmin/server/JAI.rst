@@ -30,6 +30,12 @@ When supporting large images it is efficient to work on image subsets without lo
 
 **JPEG Native Acceleration**—Enables/disable JAI JPEG Native Acceleration. When selected, enables JPEG native code, which may speed performance, but compromise security and crash protection. 
 
-**PNG Native Acceleration**—Enables/disables JAI PNG Native Acceleration. When selected, enables PNG native code, which may speed performance, but compromise security and crash protection. 
+**PNG Encoder Type**—Provides a selection of the PNG encoder between the Java own encoder, the JAI ImageIO native one, and a `PNGJ <https://code.google.com/p/pngj/>`_ based one:
+
+  * The Java own encoder is always set to maximum compression. It provides the smallest output images, balanced by a high performance cost (up to six times slower than the other two alternatives).
+  * The ImageIO native encoder, available only when the ImageIO native extensions are installed, provided higher performance, but also generated significantly larger PNG images
+  * The PNGJ based encoder provides the best performance and generated PNG images that are just slighly larged than the Java own encoder. It is the recommended choice, but it's also newer than the other two, so in case of misbehavior the other two encoders are left as an option for the administrator. 
 
 **Mosaic Native Acceleration**—To reduce the overhead of handling them, large data sets are often split into smaller chunks and then combined to create an image mosaic. An example of this is aerial imagery which is usually comprises thousands of small images at very high resolution. Both native and JAI implementations of mosaic are provided. When selected, Mosaic Native Acceleration use the native implementation for creating mosaics. 
+
+*It is quite important to remember that faster encoders are not necessarily going to visibly improve performance, if data loading and processing/rendering are dominating the response time, choosing a better encoder will likely not provide the expected benefits.*

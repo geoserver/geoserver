@@ -392,6 +392,10 @@ padding: 0.44em 0 0.5em;
 width: 90%;
 }
 
+ul.choiceList>li>label, ul.choiceList>li>input[type=checkbox] {
+display:inline;
+}
+
 textarea.small {
 height: 3em;
 }

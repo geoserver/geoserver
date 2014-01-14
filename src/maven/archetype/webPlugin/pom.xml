@@ -4,12 +4,12 @@
 
   <parent>
     <groupId>org.geoserver.maven</groupId>
-    <artifactId>archetype</artifactId>
-    <version>2.4-SNAPSHOT</version>
+    <artifactId>gs-archetype</artifactId>
+    <version>2.5-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.maven</groupId>
-  <artifactId>geoserver-archetype-webplugin</artifactId>
+  <artifactId>gs-geoserver-archetype-webplugin</artifactId>
   <packaging>jar</packaging>
   <name>GeoServer Web Plugin Archetype</name>
 

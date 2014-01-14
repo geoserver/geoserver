@@ -16,7 +16,7 @@ import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.ProjectionPolicy;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.factory.Hints;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.coverage.grid.GridCoverage;
@@ -54,6 +54,8 @@ public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
     protected List<String> responseSRS = new ArrayList<String>();
     
     protected Map parameters = new HashMap();
+    
+    protected String nativeCoverageName;
 
     protected CoverageInfoImpl() {
     }
@@ -159,7 +161,7 @@ public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
             else
                 hints=crsHints;
         }           
-        return catalog.getResourcePool().getGridCoverageReader(getStore(), hints);
+        return catalog.getResourcePool().getGridCoverageReader(getStore(), nativeCoverageName, hints);
     }
     
     public void setSupportedFormats(List<String> supportedFormats) {
@@ -211,6 +213,9 @@ public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
         result = prime
                 * result
                 + ((supportedFormats == null) ? 0 : supportedFormats.hashCode());
+        result = prime
+                * result
+                + ((nativeCoverageName == null) ? 0 : nativeCoverageName.hashCode());
         return result;
     }
 
@@ -269,6 +274,19 @@ public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
                 return false;
         } else if (!supportedFormats.equals(other.getSupportedFormats()))
             return false;
+        if (nativeCoverageName == null) {
+            if (other.getNativeCoverageName() != null)
+                return false;
+        } else if (!nativeCoverageName.equals(other.getNativeCoverageName()))
+            return false;
         return true;
+    }
+
+    public String getNativeCoverageName() {
+        return nativeCoverageName;
+    }
+
+    public void setNativeCoverageName(String nativeCoverageName) {
+        this.nativeCoverageName = nativeCoverageName;
     }
 }

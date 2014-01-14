@@ -5,9 +5,12 @@
 package org.geoserver.monitor.ows;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.geoserver.monitor.MonitorConfig;
 import org.geoserver.monitor.RequestData;
+import org.geotools.util.logging.Logging;
 import org.opengis.geometry.BoundingBox;
 
 /**
@@ -17,6 +20,8 @@ import org.opengis.geometry.BoundingBox;
  *
  */
 public abstract class RequestObjectHandler {
+
+    static Logger LOGGER = Logging.getLogger("org.geoserver.monitor");
 
     String reqObjClassName;
     protected MonitorConfig monitorConfig;
@@ -39,9 +44,16 @@ public abstract class RequestObjectHandler {
     }
     
     public void handle(Object request, RequestData data) {
-        data.setResources(getLayers(request));
-        if(monitorConfig.getBboxMode()!=MonitorConfig.BboxMode.NONE){
-            data.setBbox(getBBox(request));
+        try {
+            data.setResources(getLayers(request));
+            if(monitorConfig.getBboxMode()!=MonitorConfig.BboxMode.NONE){
+                data.setBbox(getBBox(request));
+            }
+        }
+        catch(Exception e) {
+            //TODO; rather than just catch and log we should add a configuration parameter, 
+            // development vs production, and throw the exception in development mode
+            LOGGER.log(Level.WARNING, "Error handling request object", e);
         }
     }
     

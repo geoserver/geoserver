@@ -23,7 +23,7 @@ import org.geoserver.catalog.*;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.ows.util.OwsUtils;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.data.DataAccess;
@@ -351,7 +351,7 @@ public class MockCatalogBuilder {
         CatalogBuilder cb = new CatalogBuilder(new CatalogImpl());
         cb.setStore(cs);
     
-        AbstractGridCoverage2DReader reader = cs.getFormat().getReader(cs.getURL());
+        GridCoverage2DReader reader = cs.getFormat().getReader(cs.getURL());
         if (reader == null) {
             throw new RuntimeException("No reader for " + cs.getURL());
         }
@@ -523,7 +523,7 @@ public class MockCatalogBuilder {
         expect(s.getSLDVersion()).andReturn(version).anyTimes();
         try {
             expect(s.getStyle()).andReturn(Styles.style(Styles.parse(
-                getClass().getResourceAsStream(filename), version))).anyTimes();
+                getClass().getResourceAsStream(filename), null, version))).anyTimes();
         }
         catch(IOException e) {
             throw new RuntimeException(e);

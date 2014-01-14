@@ -1,0 +1,16 @@
+language: java
+jdk:
+  - oraclejdk7
+  - openjdk7
+before_script:
+  - cd src
+script:
+  - mvn clean test -Prelease -T2
+notifications:
+  email:
+    on_success: never
+    on_failure: never
+branches:
+  only:
+    - master
+

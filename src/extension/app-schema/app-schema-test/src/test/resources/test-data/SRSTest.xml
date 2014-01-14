@@ -40,14 +40,14 @@
 						ex:geomContainer
 					</targetAttribute>
 					<idExpression>
-                        <OCQL>getId()</OCQL>
+                        <OCQL>ID</OCQL>
                     </idExpression>
                 </AttributeMapping>
                 <AttributeMapping>
                     <targetAttribute>ex:geom</targetAttribute>
                     <!-- Test gml:id for geometries -->                
                     <idExpression>
-                        <OCQL>strConcat('geom_', getId())</OCQL>
+                        <OCQL>strConcat('geom_', ID)</OCQL>
                     </idExpression>     
                     <sourceExpression>
                         <OCQL>GEOM</OCQL>
@@ -66,7 +66,7 @@
                     <targetAttribute>ex:shape</targetAttribute>    
                     <!-- Test gml:id for geometries -->                
                     <idExpression>
-                        <OCQL>strConcat('shape_', getId())</OCQL>
+                        <OCQL>strConcat('shape_', ID)</OCQL>
                     </idExpression>                      
                     <sourceExpression>
                         <OCQL>GEOM</OCQL>
@@ -89,14 +89,14 @@
                     <targetAttribute>ex:nestedFeature[2]/ex:nestedGeom</targetAttribute> 
                     <!-- Test gml:id for geometries -->                        
                     <idExpression>
-                        <OCQL>strConcat('nested_two_', getId())</OCQL>
+                        <OCQL>strConcat('nested_two_', ID)</OCQL>
                     </idExpression>      
                 </AttributeMapping>
                 <AttributeMapping>
                     <targetAttribute>ex:nestedFeature[2]/ex:nestedGeom/ex:geom</targetAttribute>    
                     <!-- Test gml:id for geometries -->                     
                     <idExpression>
-                        <OCQL>strConcat('nested_two_geom_', getId())</OCQL>
+                        <OCQL>strConcat('nested_two_geom_', ID)</OCQL>
                     </idExpression>                
                     <sourceExpression>
                         <OCQL>GEOM</OCQL>
@@ -116,14 +116,14 @@
 						ex:nestedGeom
 					</targetAttribute>
                     <idExpression>
-                        <OCQL>strConcat('nested_one_', getId())</OCQL>
+                        <OCQL>strConcat('nested_one_', ID)</OCQL>
                     </idExpression>
                 </AttributeMapping>
                 <AttributeMapping>
                     <targetAttribute>ex:geom</targetAttribute>   
                     <!-- Test gml:id for geometries -->                    
                     <idExpression>
-                        <OCQL>strConcat('nested_one_geom_', getId())</OCQL>
+                        <OCQL>strConcat('nested_one_geom_', ID)</OCQL>
                     </idExpression>  
                     <sourceExpression>
                         <OCQL>GEOM</OCQL>
@@ -134,7 +134,7 @@
 		                FEATURE_LINK
 		            </targetAttribute>
                     <sourceExpression>
-                        <OCQL>getId()</OCQL>
+                        <OCQL>ID</OCQL>
                     </sourceExpression>
                 </AttributeMapping>
             </attributeMappings>

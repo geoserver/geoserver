@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.geotools.util.NumberRange;
+import org.opengis.coverage.SampleDimensionType;
 
 /**
  * A coverage dimension.
@@ -69,4 +70,25 @@ public interface CoverageDimensionInfo extends Serializable {
      * @uml.property name="nullValues"
      */
     List<Double> getNullValues();
+    
+    /**
+     * Returns the unit name for this dimension, or null if unknown
+     * @return
+     */
+    String getUnit();
+    
+    /**
+     * Sets the dimenions unit name
+     * @param unit
+     */
+    void setUnit(String unit);
+
+    /**
+     * 
+     * @return
+     */
+    SampleDimensionType getDimensionType();
+
+    void setDimensionType(SampleDimensionType dimensionType);
+
 }

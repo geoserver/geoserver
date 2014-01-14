@@ -1,0 +1,22 @@
+<dataStore>
+  <id>DataStoreInfoImpl--2c671c92:13f101e60a5:-7fff</id>
+  <name>toponimi</name>
+  <type>Shapefile</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl--570ae188:124761b8d78:-7ffd</id>
+  </workspace>
+  <connectionParameters>
+    <entry key="memory mapped buffer">false</entry>
+    <entry key="timezone">Europe/Berlin</entry>
+    <entry key="fstype">shape</entry>
+    <entry key="create spatial index">true</entry>
+    <entry key="charset">ISO-8859-1</entry>
+    <entry key="filetype">shapefile</entry>
+    <entry key="enable spatial index">true</entry>
+    <entry key="cache and reuse memory maps">true</entry>
+    <entry key="url">file:data/shape.shp</entry>
+    <entry key="namespace">http://www.topp.org</entry>
+  </connectionParameters>
+  <__default>false</__default>
+</dataStore>

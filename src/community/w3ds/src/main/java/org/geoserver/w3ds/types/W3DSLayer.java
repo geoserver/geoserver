@@ -8,15 +8,12 @@
 package org.geoserver.w3ds.types;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.w3ds.styles.Styles3D;
-import org.geoserver.w3ds.utilities.W3DSUtils;
 import org.geoserver.w3ds.utilities.X3DInfoExtract;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.styling.Style;

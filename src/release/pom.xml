@@ -11,10 +11,10 @@
  <parent>
   <groupId>org.geoserver</groupId>
   <artifactId>geoserver</artifactId>
-  <version>2.4-SNAPSHOT</version>
+  <version>2.5-SNAPSHOT</version>
  </parent>
  <groupId>org.geoserver</groupId>
- <artifactId>release</artifactId>
+ <artifactId>gs-release</artifactId>
  <packaging>jar</packaging>
  <name>GeoServer Release Module</name>
  <dependencies>
@@ -74,11 +74,6 @@
   </dependency>
   <dependency>
    <groupId>org.geotools</groupId>
-   <artifactId>gt-vpf</artifactId>
-   <version>${gt.version}</version>
-  </dependency>
-  <dependency>
-   <groupId>org.geotools</groupId>
    <artifactId>gt-arcsde-common</artifactId>
    <version>${gt.version}</version>
   </dependency>
@@ -104,119 +99,159 @@
   </dependency>
   <dependency>
    <groupId>org.geoserver.extension</groupId>
-   <artifactId>h2</artifactId>
+   <artifactId>gs-css</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver.extension</groupId>
-   <artifactId>sqlserver</artifactId>
+   <artifactId>gs-h2</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver.extension</groupId>
-   <artifactId>oracle</artifactId>
+   <artifactId>gs-sqlserver</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver.extension</groupId>
-   <artifactId>db2</artifactId>
+   <artifactId>gs-oracle</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver.extension</groupId>
-   <artifactId>mysql</artifactId>
+   <artifactId>gs-db2</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver.extension</groupId>
-   <artifactId>imagemap</artifactId>
+   <artifactId>gs-mysql</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver.extension</groupId>
-   <artifactId>ogr</artifactId>
+   <artifactId>gs-imagemap</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver.extension</groupId>
-   <artifactId>excel</artifactId>
+   <artifactId>gs-ogr</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver.extension</groupId>
-   <artifactId>geosearch</artifactId>
+   <artifactId>gs-excel</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver.extension</groupId>
-   <artifactId>charts</artifactId>
+   <artifactId>gs-geosearch</artifactId>
+   <version>${project.version}</version>
+  </dependency>
+  <dependency>
+   <groupId>org.geoserver.extension</groupId>
+   <artifactId>gs-charts</artifactId>
    <version>${project.version}</version>
   </dependency> 
   <dependency>
    <groupId>org.geoserver.extension</groupId>
-   <artifactId>feature-pregeneralized</artifactId>
+   <artifactId>gs-feature-pregeneralized</artifactId>
    <version>${project.version}</version>
   </dependency> 
   <dependency>
    <groupId>org.geoserver.extension</groupId>
-   <artifactId>imagemosaic-jdbc</artifactId>
+   <artifactId>gs-imagemosaic-jdbc</artifactId>
    <version>${project.version}</version>
   </dependency> 
   <dependency>
    <groupId>org.geoserver.extension</groupId>
-   <artifactId>jp2k</artifactId>
+   <artifactId>gs-jp2k</artifactId>
    <version>${project.version}</version>
   </dependency> 
   <dependency>
    <groupId>org.geoserver.extension</groupId>
-   <artifactId>gdal</artifactId>
+   <artifactId>gs-gdal</artifactId>
    <version>${project.version}</version>
   </dependency> 
   <dependency>
    <groupId>org.geoserver.extension</groupId>
-   <artifactId>arcsde</artifactId>
+   <artifactId>gs-arcsde</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver.extension</groupId>
-   <artifactId>control-flow</artifactId>
+   <artifactId>gs-control-flow</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver.extension</groupId>
-   <artifactId>wps-core</artifactId>
+   <artifactId>gs-wps-core</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver.extension</groupId>
-   <artifactId>web-wps</artifactId>
+   <artifactId>gs-web-wps</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver.extension</groupId>
-   <artifactId>querylayer</artifactId>
+   <artifactId>gs-querylayer</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver.extension</groupId>
-   <artifactId>teradata</artifactId>
+   <artifactId>gs-teradata</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver.extension</groupId>
-   <artifactId>monitor-core</artifactId>
+   <artifactId>gs-monitor-core</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver.extension</groupId>
-   <artifactId>monitor-hibernate</artifactId>
+   <artifactId>gs-monitor-hibernate</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver.security</groupId>
-   <artifactId>sec-cas</artifactId>
+   <artifactId>gs-sec-cas</artifactId>
    <version>${project.version}</version>
   </dependency>
+  <dependency>
+   <groupId>org.geoserver.security</groupId>
+   <artifactId>gs-web-sec-cas</artifactId>
+   <version>${project.version}</version>
+  </dependency>
+  <dependency>
+   <groupId>org.geoserver</groupId>
+   <artifactId>gs-xslt</artifactId>
+   <version>${project.version}</version>
+  </dependency>
+   <dependency>
+     <groupId>org.geoserver.extension</groupId>
+     <artifactId>gs-inspire</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.csw</groupId>
+     <artifactId>gs-csw-api</artifactId>
+     <version>${project.version}</version>
+   </dependency> 
+   <dependency>
+     <groupId>org.geoserver.csw</groupId>
+     <artifactId>gs-csw-core</artifactId>
+     <version>${project.version}</version>
+   </dependency> 
+   <dependency>
+     <groupId>org.geoserver.extension</groupId>
+     <artifactId>gs-dxf-core</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.extension</groupId>
+     <artifactId>gs-dxf-wps</artifactId>
+     <version>${project.version}</version>
+   </dependency>
  </dependencies>
  <build>
   <plugins>

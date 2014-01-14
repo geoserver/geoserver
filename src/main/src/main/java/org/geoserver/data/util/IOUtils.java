@@ -454,18 +454,18 @@ public class IOUtils {
         if (source.getCanonicalPath().equalsIgnoreCase(dest.getCanonicalPath()))
             return;
 
-        // different path
+        // windows needs special treatment, we cannot rename onto an existing file
         boolean win = System.getProperty("os.name").startsWith("Windows");
         if ( win && dest.exists() ) {
-            //windows does not do atomic renames, and can not rename a file if the dest file
+            // windows does not do atomic renames, and can not rename a file if the dest file
             // exists
             if (!dest.delete()) {
                 throw new IOException("Could not delete: " + dest.getCanonicalPath());
             }
-            source.renameTo(dest);
         }
-        else {
-            source.renameTo(dest);
+        // make sure the rename actually succeeds
+        if(!source.renameTo(dest)) {
+            throw new IOException("Failed to rename " + source.getAbsolutePath() + " to " + dest.getAbsolutePath());
         }
     }
 }

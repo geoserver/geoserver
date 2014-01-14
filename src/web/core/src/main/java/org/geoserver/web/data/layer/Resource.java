@@ -26,6 +26,11 @@ public class Resource implements Comparable<Resource>, Serializable {
      * If this resource has already been published, or not
      */
     boolean published;
+    
+    /**
+     * Specified if this resource is from a multi-coverage reader
+     */
+    boolean multiCoverageReader;
 
     public void setPublished(boolean published) {
         this.published = published;
@@ -88,6 +93,14 @@ public class Resource implements Comparable<Resource>, Serializable {
     @Override
     public String toString() {
         return name + "(" + published + ")";
+    }
+
+    public boolean isMultiCoverageReader() {
+        return multiCoverageReader;
+    }
+
+    public void setMultiCoverageReader(boolean multiCoverageReader) {
+        this.multiCoverageReader = multiCoverageReader;
     }
 
 }

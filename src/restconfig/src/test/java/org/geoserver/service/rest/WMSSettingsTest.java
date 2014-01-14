@@ -19,7 +19,6 @@ import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-@TestSetup(run=TestSetupFrequency.REPEAT)
 public class WMSSettingsTest extends CatalogRESTTestSupport {
     
     @After 

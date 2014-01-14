@@ -11,11 +11,11 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>extension</artifactId>
-    <version>2.4-SNAPSHOT</version>
+    <version>2.5-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.extension</groupId>
-  <artifactId>teradata</artifactId>
+  <artifactId>gs-teradata</artifactId>
   <packaging>jar</packaging>
   <name>Teradata DataStore Extension</name>
 
@@ -27,7 +27,7 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>
-      <artifactId>web-core</artifactId>
+      <artifactId>gs-web-core</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

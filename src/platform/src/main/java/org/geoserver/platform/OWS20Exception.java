@@ -17,6 +17,7 @@ import java.util.logging.Logger;
  * @author Emanuele Tajariol - GeoSolutions
  */
 public class OWS20Exception extends ServiceException {
+    
     private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(OWS20Exception.class);
 
     /**
@@ -79,7 +80,13 @@ public class OWS20Exception extends ServiceException {
 
         @Override
         public String toString() {
-            return getClass().getSimpleName() + "[exCode:"+ exceptionCode + " httpCode=" + httpCode + " httpMessage=" + httpMessage + ']';
+            final StringBuilder builder = new StringBuilder();
+            builder.append(getClass().getSimpleName()).append("[exCode:").append(exceptionCode).append(" httpCode=").append(httpCode);
+            if(httpMessage!=null){
+                builder.append(" httpMessage=").append(httpMessage);
+            }
+            builder.append(']');
+            return builder.toString() ;
         }
     }
     /**

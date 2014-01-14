@@ -15,6 +15,9 @@ from New York City.</abstrct>
     <org.geotools.util.Version>
       <version>1.1.0</version>
     </org.geotools.util.Version>
+    <org.geotools.util.Version>
+      <version>2.0.0</version>
+    </org.geotools.util.Version>
   </versions>
   <keywords>
     <string>WFS</string>
@@ -29,19 +32,31 @@ from New York City.</abstrct>
   <verbose>false</verbose>
   <gml>
     <entry>
-      <org.geoserver.wfs.WFSInfo_-Version>V_11</org.geoserver.wfs.WFSInfo_-Version>
-      <org.geoserver.wfs.GMLInfoImpl>
+      <version>V_11</version>
+      <gml>
         <srsNameStyle>URN</srsNameStyle>
-      </org.geoserver.wfs.GMLInfoImpl>
+        <overrideGMLAttributes>false</overrideGMLAttributes>
+      </gml>
     </entry>
     <entry>
-      <org.geoserver.wfs.WFSInfo_-Version>V_10</org.geoserver.wfs.WFSInfo_-Version>
-      <org.geoserver.wfs.GMLInfoImpl>
+      <version>V_20</version>
+      <gml>
+        <srsNameStyle>URN2</srsNameStyle>
+        <overrideGMLAttributes>false</overrideGMLAttributes>
+      </gml>
+    </entry>
+    <entry>
+      <version>V_10</version>
+      <gml>
         <srsNameStyle>XML</srsNameStyle>
-      </org.geoserver.wfs.GMLInfoImpl>
+        <overrideGMLAttributes>true</overrideGMLAttributes>
+      </gml>
     </entry>
   </gml>
   <serviceLevel>COMPLETE</serviceLevel>
   <maxFeatures>10000</maxFeatures>
   <featureBounding>false</featureBounding>
+  <canonicalSchemaLocation>false</canonicalSchemaLocation>
+  <encodeFeatureMember>false</encodeFeatureMember>
+  <hitsIgnoreMaxFeatures>false</hitsIgnoreMaxFeatures>
 </wfs>

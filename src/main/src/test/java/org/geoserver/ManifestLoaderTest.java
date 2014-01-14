@@ -22,6 +22,7 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.SystemTest;
 import org.geoserver.test.TestSetup;
 import org.geoserver.test.TestSetupFrequency;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.springframework.util.Assert;
@@ -32,7 +33,6 @@ import org.springframework.util.Assert;
  * @author Carlo Cancellieri - Geo-Solutions SAS
  */
 @Category(SystemTest.class)
-@TestSetup(run = TestSetupFrequency.ONCE)
 public class ManifestLoaderTest extends GeoServerSystemTestSupport {
 
     // singleton
@@ -189,7 +189,16 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
 
         @Override
         protected void setUpTestData(SystemTestData testData) throws Exception {
-
+        }
+        
+        @Before
+        public void paranoidCleanup() {
+            // this file randomly shows up on the main module root and breaks the test
+            // could not find where it's coming from, just going to remove it if it's there.
+            File rootMonitor = new File(".", "manifest.properties");
+            if(rootMonitor.exists()) {
+                rootMonitor.delete();
+            }
         }
 
         @Override

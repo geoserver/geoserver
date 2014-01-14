@@ -11,27 +11,27 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>2.4-SNAPSHOT</version>
+    <version>2.5-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
-  <artifactId>gwc</artifactId>
+  <artifactId>gs-gwc</artifactId>
   <packaging>jar</packaging>
   <name>GeoWebCache (GWC) Module</name>
 
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
+      <artifactId>gs-main</artifactId>
     </dependency>
     <dependency>
       <!-- needed to implement TransactionListener extension point in truncate cache upon WFS transactions -->
       <groupId>org.geoserver</groupId>
-      <artifactId>wfs</artifactId>
+      <artifactId>gs-wfs</artifactId>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>wms</artifactId>
+      <artifactId>gs-wms</artifactId>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
@@ -46,6 +46,12 @@
     <dependency>
       <groupId>org.geowebcache</groupId>
       <artifactId>gwc-georss</artifactId>
+      <exclusions>
+        <exclusion>
+           <groupId>com.vividsolutions</groupId>
+           <artifactId>jts</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.geowebcache</groupId>
@@ -83,7 +89,7 @@
     <!-- test dependencies -->
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
+      <artifactId>gs-main</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
@@ -109,9 +115,26 @@
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
+      <artifactId>mockito-core</artifactId>
       <scope>test</scope>
     </dependency>    
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-library</artifactId>
+      <scope>test</scope>
+    </dependency>    
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-core</artifactId>
+      <scope>test</scope>
+    </dependency>  
+    <dependency>
+	<groupId>org.geoserver</groupId>
+	<artifactId>wms</artifactId>
+	<classifier>tests</classifier>
+	<version>${gs.version}</version>
+        <scope>test</scope>
+    </dependency>
   </dependencies>
   
   <build>

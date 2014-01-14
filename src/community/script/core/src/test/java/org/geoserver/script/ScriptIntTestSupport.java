@@ -4,13 +4,29 @@
  */
 package org.geoserver.script;
 
+import static org.easymock.classextension.EasyMock.*;
+
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.test.GeoServerTestSupport;
 
-public class ScriptIntTestSupport extends GeoServerTestSupport {
+public abstract class ScriptIntTestSupport extends GeoServerTestSupport {
+
+    protected ScriptManager scriptMgr;
+
+    @Override
+    protected void oneTimeSetUp() throws Exception {
+        super.oneTimeSetUp();
+        scriptMgr = getScriptManager();
+
+        // mock security manager to facilitate the requred admin access
+        GeoServerSecurityManager secMgr = createNiceMock(GeoServerSecurityManager.class);
+        expect(secMgr.checkAuthenticationForAdminRole()).andReturn(true).anyTimes();
+        replay(secMgr);
+        scriptMgr.setSecurityManager(secMgr);
+    }
 
     protected ScriptManager getScriptManager() {
         return GeoServerExtensions.bean(ScriptManager.class);
     }
-
 }

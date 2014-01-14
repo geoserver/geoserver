@@ -51,6 +51,9 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.xml.sax.helpers.NamespaceSupport;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.geoserver.ows.KvpParser;
+import org.geoserver.ows.kvp.FormatOptionsKvpParser;
+import org.geoserver.ows.kvp.ViewParamsKvpParser;
 
 /**
  * 
@@ -89,7 +92,7 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
             kvp.put("startIndex", 
                 new NumericKvpParser(null, BigInteger.class).parse((String)rawKvp.get("startIndex")));
         }
-
+        
         request = super.read(request, kvp, rawKvp);
         
         //get feature has some additional parsing requirements
@@ -298,13 +301,14 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
         
         // sql view params
         if(kvp.containsKey("viewParams")) {
-            if(req.getMetadata() == null) {
-                req.setMetadata(new HashMap());
+            
+            if(req.getViewParams() == null) {
+                req.setViewParams(new ArrayList<Map<String,String>>());
             }
 
             // fan out over all layers if necessary
             List<Map<String, String>> viewParams = (List<Map<String, String>>) kvp.get("viewParams");
-            if(viewParams.size() > 0) {
+            if(viewParams.size() > 0) {                
                 int layerCount = req.getQueries().size();
 
                 // if we have just one replicate over all layers
@@ -321,7 +325,7 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
                 }
             }
 
-            req.getMetadata().put(GetFeature.SQL_VIEW_PARAMS, viewParams);
+            req.setViewParams(viewParams);
         }
 
         return request;
@@ -389,14 +393,8 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
     }
     
     BBOX bboxFilter(QName typeName, Envelope bbox) throws Exception {
-        FeatureTypeInfo featureTypeInfo = 
-            catalog.getFeatureTypeByName(typeName.getNamespaceURI(), typeName.getLocalPart());
-        
-        //JD: should this be applied to all geometries?
-        //String name = featureType.getDefaultGeometry().getLocalName();
-        //JD: changing to "" so it is
+        //JD: use "" so that it applies to all geometries
         String name = "";
-        
 
         if ( bbox instanceof ReferencedEnvelope3D ) {
         	return filterFactory.bbox(name, (ReferencedEnvelope3D) bbox);        
@@ -405,10 +403,13 @@ public class GetFeatureKvpRequestReader extends WFSKvpRequestReader {
         //get the epsg code
         String epsgCode = null;
         
-        if ( bbox instanceof ReferencedEnvelope ) {
+        if(bbox instanceof SRSEnvelope) {
+            SRSEnvelope se = (SRSEnvelope) bbox;
+            epsgCode = se.getSrs();
+        } else if ( bbox instanceof ReferencedEnvelope ) {
             CoordinateReferenceSystem crs = ((ReferencedEnvelope)bbox).getCoordinateReferenceSystem();
             if ( crs != null ) {
-                epsgCode = GML2EncodingUtils.crs(crs);
+                epsgCode = GML2EncodingUtils.toURI(crs);
             }
         }
             

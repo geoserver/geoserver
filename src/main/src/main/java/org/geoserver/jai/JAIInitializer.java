@@ -21,10 +21,6 @@ import com.sun.media.jai.util.SunTileCache;
  * Initializes JAI functionality from configuration.
  * 
  * @author Justin Deoliveira, The Open Planning Project
- * 
- * TODO: we should figure out if we want JAI to be core to the model or a plugin
- * ... right now it is both
- *
  */
 public class JAIInitializer implements GeoServerInitializer {
 
@@ -50,11 +46,6 @@ public class JAIInitializer implements GeoServerInitializer {
         
         JAI jaiDef = JAI.getDefaultInstance();
         jai.setJAI( jaiDef );
-        
-        // setup concurrent operation registry
-        if(!(jaiDef.getOperationRegistry() instanceof ConcurrentOperationRegistry)) {
-            jaiDef.setOperationRegistry(ConcurrentOperationRegistry.initializeRegistry());
-        }
         
         // setting JAI wide hints
         jaiDef.setRenderingHint(JAI.KEY_CACHED_TILE_RECYCLING_ENABLED, jai.isRecycling());

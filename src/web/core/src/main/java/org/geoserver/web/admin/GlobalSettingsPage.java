@@ -17,6 +17,7 @@ import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.ListChoice;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -31,9 +32,11 @@ import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.web.GeoServerApplication;
-import org.geoserver.web.GeoServerHomePage;
+import org.geoserver.web.wicket.ParamResourceModel;
 
 public class GlobalSettingsPage extends ServerAdminPage {
+
+
     private static final long serialVersionUID = 4716657682337915996L;
 
     static final List<String> DEFAULT_LOG_PROFILES = Arrays.asList("DEFAULT_LOGGING.properties",
@@ -55,7 +58,8 @@ public class GlobalSettingsPage extends ServerAdminPage {
         form.add(new CheckBox("globalServices"));
         form.add(new TextField<Integer>("numDecimals").add(new MinimumValidator<Integer>(0)));
         form.add(new DropDownChoice("charset", AVAILABLE_CHARSETS));
-        form.add(new DropDownChoice<ResourceErrorHandling>("resourceErrorHandling", Arrays.asList(ResourceErrorHandling.values())));
+        form.add(new DropDownChoice<ResourceErrorHandling>("resourceErrorHandling", Arrays.asList(ResourceErrorHandling.values()),
+                new ResourceErrorHandlingRenderer()));
         form.add(new TextField("proxyBaseUrl").add(new UrlValidator()));
         
         logLevelsAppend(form, loggingInfoModel);
@@ -67,6 +71,8 @@ public class GlobalSettingsPage extends ServerAdminPage {
         xmlPostRequestLogBufferSize.add(new MinimumValidator<Integer>(0));
         form.add(xmlPostRequestLogBufferSize);
 
+        form.add(new CheckBox("xmlExternalEntitiesEnabled"));    
+        
         form.add(new TextField<Integer>("featureTypeCacheSize").add(new MinimumValidator<Integer>(0)));
         
         Button submit = new Button("submit", new StringResourceModel("submit", this, null)) {
@@ -117,4 +123,18 @@ public class GlobalSettingsPage extends ServerAdminPage {
         form.add(new ListChoice("log4jConfigFile", new PropertyModel(loggingInfoModel,
                 "level"), logProfiles));
     }
-};
+    
+    class ResourceErrorHandlingRenderer implements IChoiceRenderer<ResourceErrorHandling> {
+
+        @Override
+        public Object getDisplayValue(ResourceErrorHandling object) {
+            return new ParamResourceModel(object.name(), GlobalSettingsPage.this).getString();
+        }
+
+        @Override
+        public String getIdValue(ResourceErrorHandling object, int index) {
+            return object.name();
+        }
+
+    }
+}

@@ -50,9 +50,7 @@
 	</bean>
 		
 	<bean id="wmsGetFeatureInfo"
-		class="org.geoserver.wms.GetFeatureInfo">
-      <constructor-arg ref="wms"/>
-	</bean>
+		class="org.geoserver.wms.GetFeatureInfo"/>
 		
 	<bean id="wmsGetLegendGraphic"
 		class="org.geoserver.wms.GetLegendGraphic">
@@ -312,14 +310,6 @@
 			class="org.geoserver.wms.legendgraphic.GetLegendGraphicKvpReader">
       	<constructor-arg ref="wms" />
 	</bean>
-  <!-- 
-	<bean id="putStylesKvpReader"
-		class="org.geoserver.wms.kvp.WMSKvpRequestReaderAdapter">
-		<constructor-arg index="0" value="org.vfny.geoserver.sld.requests.PutStylesRequest" />
-      	<constructor-arg index="1" value="org.vfny.geoserver.sld.requests.PutStylesKvpReader" />
-      	<constructor-arg index="2" ref="wms" />
-	</bean>
-   -->
 	
 	<bean id="getStylesKvpReader" class="org.geoserver.sld.GetStylesKvpRequestReader">
 		<constructor-arg ref="wms"/> 
@@ -388,17 +378,6 @@
 	
 	<bean id="stylesResponse" class="org.geoserver.sld.GetStylesResponse"/>
 	
-	<!-- Wrapping the PutStyles servlet in a controller while we wait to rewrite it for good -->
-    <!-- GR: commenting out, putStyles is not being used nor maintained? -->
-	<!-- bean id="putStylesWrapper" class="org.springframework.web.servlet.mvc.ServletWrappingController">
-	   <property name="servletClass">
-	     <value>org.vfny.geoserver.sld.servlets.PutStyles</value>
-	   </property>
-	   <property name="servletName">
-	     <value>putstyles</value>
-       </property>
-	</bean-->
-	
 	<!-- http url mapping -->
 	<bean id="wmsURLMapping" 
 		class="org.geoserver.ows.OWSHandlerMapping">
@@ -407,7 +386,6 @@
 		<property name="mappings">
 			<props>
 				<prop key="/wms">dispatcher</prop>
-				<!-- prop key="/wms/putstyles">putStylesWrapper</prop-->
 				<prop key="/wms/*">dispatcher</prop>
 			</props>
 		</property>
@@ -586,21 +564,6 @@
       <constructor-arg ref="wms" />
     </bean>
 
-	<bean id="KMLMapProducer" 
-		class="org.geoserver.kml.KMLMapOutputFormat">
-      <constructor-arg index="0" ref="wms"/>
-	</bean>
-
-    <bean id="KMZMapProducer" class="org.geoserver.kml.KMZMapOutputFormat">
-      <constructor-arg ref="wms" />
-    </bean>
-    <bean id="KMZMapResponse" class="org.geoserver.kml.KMZMapResponse">
-      <constructor-arg ref="wms" />
-    </bean>
-    <bean id="NetworkLinkMapProducer" class="org.geoserver.kml.NetworkLinkMapOutputFormat">
-      <constructor-arg ref="wms" />
-    </bean>
-
     <bean id="OpenLayersMapProducer" class="org.geoserver.wms.map.OpenLayersMapOutputFormat">
       <constructor-arg index="0" ref="wms" />
     </bean>
@@ -640,20 +603,9 @@
       <value>wms</value>
     </constructor-arg>
   </bean>
+ 		
+	<bean id="animateFilter" class="org.geoserver.wms.animate.AnimatorFilter"/>
  	
-	<!-- http url mapping -->
-	<bean id="kmlURLMapping" 
-		class="org.geoserver.ows.OWSHandlerMapping">
-		<constructor-arg ref="catalog"/>
-		<property name="alwaysUseFullPath" value="true"/>
-		<property name="mappings">
-			<props>
-				<prop key="/kml">dispatcher</prop>
-				<prop key="/kml/*">dispatcher</prop>
-			</props>
-		</property>
-	</bean>
-	
 	<bean id="animateURLMapping" 
 		class="org.geoserver.ows.OWSHandlerMapping">
 		<constructor-arg ref="catalog"/>
@@ -666,56 +618,8 @@
 		</property>
 	</bean>
 	
-	<!-- kml kvp parsers -->
- 	<bean id="superOverlayKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
-		<constructor-arg value="superoverlay"/>
- 	</bean>
- 	<bean id="legendKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
-		<constructor-arg value="legend"/>
- 	</bean>
- 	<bean id="kmatrrKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
-		<constructor-arg value="kmattr"/>
- 	</bean>
- 	<bean id="kmscoreKvpParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
-		<constructor-arg value="kmscore"/>
- 	</bean>
- 	<bean id="kmplacemarkKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
-		<constructor-arg value="kmplacemark"/>
- 	</bean>
-  
     <!-- the meta tile cache, registered here because it's also a WFS transaction listener -->
     <bean id="metaTileCache" class="org.geoserver.wms.map.QuickTileCache">
-      <constructor-arg ref="geoServer"/>
-    </bean>
-
-    <bean id="nativeSortingRegionator"
-        class="org.geoserver.kml.ReflectiveRegionatingStrategyFactory">
-      <constructor-arg value="native-sorting"/>
-      <constructor-arg value="org.geoserver.kml.NativeSortRegionatingStrategy"/>
-      <constructor-arg ref="geoServer"/>
-    </bean>
-    <bean id="externalSortingRegionator"
-        class="org.geoserver.kml.ReflectiveRegionatingStrategyFactory">
-      <constructor-arg value="external-sorting"/>
-      <constructor-arg value="org.geoserver.kml.ExternalSortRegionatingStrategy"/>
-      <constructor-arg ref="geoServer"/>
-    </bean>
-    <bean id="geometryRegionator"
-        class="org.geoserver.kml.ReflectiveRegionatingStrategyFactory">
-      <constructor-arg value="geometry"/>
-      <constructor-arg value="org.geoserver.kml.GeometryRegionatingStrategy"/>
-      <constructor-arg ref="geoServer"/>
-    </bean>
-    <bean id="randomRegionator"
-        class="org.geoserver.kml.ReflectiveRegionatingStrategyFactory">
-      <constructor-arg value="random"/>
-      <constructor-arg value="org.geoserver.kml.RandomRegionatingStrategy"/>
-      <constructor-arg ref="geoServer"/>
-    </bean>
-    <bean id="bestGuessRegionator"
-        class="org.geoserver.kml.ReflectiveRegionatingStrategyFactory">
-      <constructor-arg value="best_guess"/>
-      <constructor-arg value="org.geoserver.kml.BestGuessRegionatingStrategy"/>
       <constructor-arg ref="geoServer"/>
     </bean>
 
@@ -773,4 +677,18 @@
        </props>
      </property>
   </bean>
+  
+  <!-- Pluggable layer identifiers -->
+  <bean id="basicVectorLayerIdentifier" class="org.geoserver.wms.featureinfo.VectorBasicLayerIdentifier">
+      <constructor-arg ref="wms"/>
+  </bean>
+  <bean id="renderVectorLayerIdentifier" class="org.geoserver.wms.featureinfo.VectorRenderingLayerIdentifier">
+      <constructor-arg ref="wms"/>
+      <constructor-arg ref="basicVectorLayerIdentifier"/>
+  </bean>
+  <bean id="rasterLayerIdentifier" class="org.geoserver.wms.featureinfo.RasterLayerIdentifier">
+      <constructor-arg ref="wms"/>
+  </bean>
+  <bean id="wmsLayerIdentifier" class="org.geoserver.wms.featureinfo.WMSLayerIdentifier"/>
+    
 </beans>

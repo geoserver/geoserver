@@ -68,6 +68,11 @@ public class RetypingDataStore implements DataStore {
                 "GeoServer does not support schema updates at the moment");
     }
 
+    public void removeSchema(String typeName) throws IOException {
+        throw new UnsupportedOperationException(
+                "GeoServer does not support schema removal at the moment");
+    }
+
     public FeatureWriter<SimpleFeatureType, SimpleFeature> getFeatureWriter(String typeName,
             Filter filter, Transaction transaction) throws IOException {
         FeatureTypeMap map = getTypeMapBackwards(typeName, true);
@@ -329,4 +334,12 @@ public class RetypingDataStore implements DataStore {
     public void updateSchema(Name typeName, SimpleFeatureType featureType) throws IOException {
         updateSchema(typeName.getLocalPart(), featureType);
     }    
+
+    /**
+     * Delegates to {@link #removeSchema(String)} with {@code name.getLocalPart()}
+     *
+     */
+    public void removeSchema(Name typeName) throws IOException {
+        removeSchema(typeName.getLocalPart());
+    }
 }

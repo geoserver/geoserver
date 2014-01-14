@@ -11,7 +11,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>2.4-SNAPSHOT</version>
+    <version>2.5-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
@@ -22,7 +22,7 @@
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>platform</artifactId>
+      <artifactId>gs-platform</artifactId>
     </dependency>
   </dependencies>
 
@@ -230,6 +230,41 @@
       </modules>
     </profile>
 
+    <profile>
+      <id>xslt</id>
+      <modules>
+        <module>xslt</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>inspire</id>
+      <modules>
+        <module>inspire</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>css</id>
+      <modules>
+        <module>css</module>
+      </modules>
+    </profile>
+    
+    <profile>      
+      <id>csw</id>
+      <modules>
+        <module>csw</module>
+      </modules>
+    </profile>
+    
+    <profile>
+      <id>dxf</id>
+      <modules>
+        <module>dxf</module>
+      </modules>
+    </profile>
+
     <!-- allExtensions profile, includes all modules -->
     <profile>
       <id>allExtensions</id>
@@ -257,6 +292,11 @@
         <module>teradata</module>
         <module>monitor</module>
         <module>security</module>
+        <module>xslt</module>
+        <module>inspire</module>
+        <module>css</module>	
+        <module>csw</module>
+        <module>dxf</module>
       </modules>
     </profile>
 
@@ -287,6 +327,11 @@
         <module>teradata</module>
         <module>monitor</module>
         <module>security</module>
+        <module>xslt</module>
+        <module>inspire</module>
+        <module>css</module>
+        <module>csw</module>
+        <module>dxf</module>
       </modules>
     </profile>
 

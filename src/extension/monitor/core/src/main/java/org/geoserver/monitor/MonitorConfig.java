@@ -45,7 +45,7 @@ public class MonitorConfig implements ApplicationContextAware {
         NONE, NO_WFS, FULL;
     }
     
-    Properties props;
+    protected Properties props;
     PropertyFileWatcher fw;
     ApplicationContext context;
     boolean enabled = true;

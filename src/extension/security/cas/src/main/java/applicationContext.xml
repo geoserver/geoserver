@@ -31,10 +31,4 @@
     <!--  CAS single sign out handler -->
   <bean id="casSingleSignOutHandler" class="org.jasig.cas.client.session.SingleSignOutHandler" />
 
-   <bean id="casPanelInfo" class="org.geoserver.security.web.cas.CasAuthFilterPanelInfo">
-        <property name="id" value="security.CasAuthFilter" />
-        <property name="shortTitleKey" value="CasAuthFilterPanel.short"/>
-        <property name="titleKey" value="CasAuthFilterPanel.title"/>
-        <property name="descriptionKey" value="CasAuthFilterPanel.description"/>
-   </bean>
 </beans>

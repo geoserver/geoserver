@@ -111,7 +111,7 @@
 				<AttributeMapping>
 					<targetAttribute>gml:name[3]</targetAttribute>
 					<sourceExpression>
-						<OCQL>strTrim(getId())</OCQL>
+						<OCQL>id</OCQL>
 					</sourceExpression>
 					<ClientProperty>
 						<name>codeSpace</name>
@@ -122,7 +122,7 @@
 				<AttributeMapping>
 					<targetAttribute>gsml:composition</targetAttribute>
 					<sourceExpression>
-						<OCQL>getID()</OCQL>
+						<OCQL>id</OCQL>
 						<linkElement>gsml:CompositionPart</linkElement>
 						<linkField>FEATURE_LINK</linkField>
 					</sourceExpression>
@@ -132,7 +132,7 @@
 				<AttributeMapping>
 					<targetAttribute>gsml:geologicHistory</targetAttribute>
 					<sourceExpression>
-						<OCQL>getId()</OCQL>
+						<OCQL>id</OCQL>
 						<linkElement>gsml:GeologicEvent</linkElement>
 						<linkField>gml:name</linkField>
 					</sourceExpression>

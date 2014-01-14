@@ -22,6 +22,8 @@ import org.apache.ftpserver.usermanager.impl.BaseUser;
 import org.apache.ftpserver.usermanager.impl.ConcurrentLoginPermission;
 import org.apache.ftpserver.usermanager.impl.WritePermission;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.security.impl.GeoServerRole;
+import org.geoserver.security.impl.GeoServerUser;
 import org.geotools.util.logging.Logging;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.GrantedAuthority;
@@ -48,17 +50,17 @@ public class GSFTPUserManager implements org.apache.ftpserver.ftplet.UserManager
     /**
      * The role given to the administrators
      */
-    private static final String ADMIN_ROLE = "ROLE_ADMINISTRATOR";
+    private static final String ADMIN_ROLE = GeoServerRole.ADMIN_ROLE.getAuthority();
 
     /**
      * The default user
      */
-    private static final String DEFAULT_USER = "admin";
+    private static final String DEFAULT_USER = GeoServerUser.ADMIN_USERNAME;
 
     /**
      * The default password
      */
-    private static final String DEFAULT_PASSWORD = "geoserver";
+    private static final String DEFAULT_PASSWORD = GeoServerUser.DEFAULT_ADMIN_PASSWD;
 
     private GeoServerDataDirectory dataDir;
 

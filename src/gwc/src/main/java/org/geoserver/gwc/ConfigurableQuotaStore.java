@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Future;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geotools.util.logging.Logging;
@@ -30,16 +29,11 @@ public class ConfigurableQuotaStore implements QuotaStore {
     private QuotaStore delegate;
 
     public void setStore(QuotaStore delegate) {
-        if (this.delegate != null) {
-            try {
-                this.delegate.close();
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE,
-                        "An error occurred while closing up the previous quota store", e);
-            }
-        }
-
         this.delegate = delegate;
+    }
+    
+    public QuotaStore getStore() {
+        return delegate;
     }
 
     public ConfigurableQuotaStore(QuotaStore delegate) {

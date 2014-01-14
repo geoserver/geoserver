@@ -5,13 +5,22 @@
 package org.geoserver.security.decorators;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Set;
+
+import javax.media.jai.ImageLayout;
 
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.OverviewPolicy;
-import org.geotools.data.ServiceInfo;
+import org.geotools.geometry.GeneralEnvelope;
 import org.opengis.coverage.grid.Format;
+import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.parameter.GeneralParameterValue;
+import org.opengis.parameter.ParameterDescriptor;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.datum.PixelInCell;
+import org.opengis.referencing.operation.MathTransform;
 
 /**
  * Delegates every method to the delegate grid coverage reader. Subclasses will
@@ -19,55 +28,60 @@ import org.opengis.parameter.GeneralParameterValue;
  * 
  * @author Andrea Aime
  */
-public abstract class DecoratingGridCoverage2DReader extends AbstractGridCoverage2DReader {
+public abstract class DecoratingGridCoverage2DReader implements GridCoverage2DReader {
 
-    AbstractGridCoverage2DReader delegate;
+    GridCoverage2DReader delegate;
 
-    public DecoratingGridCoverage2DReader(AbstractGridCoverage2DReader delegate) {
+    public DecoratingGridCoverage2DReader(GridCoverage2DReader delegate) {
         this.delegate = delegate;
-        this.crs = delegate.getCrs();
-        this.originalEnvelope = delegate.getOriginalEnvelope();
-        this.originalGridRange = delegate.getOriginalGridRange();
-    }
-
-    public void dispose() {
-        delegate.dispose();
-    }
-
-    public String getCurrentSubname() {
-        return delegate.getCurrentSubname();
     }
 
     public Format getFormat() {
         return delegate.getFormat();
     }
 
-    public int getGridCoverageCount() {
-        return delegate.getGridCoverageCount();
+    public Object getSource() {
+        return delegate.getSource();
     }
 
-    public ServiceInfo getInfo() {
-        return delegate.getInfo();
-    }
-
-    public String[] getMetadataNames() {
+    public String[] getMetadataNames() throws IOException {
         return delegate.getMetadataNames();
     }
 
-    public String getMetadataValue(String name) {
-        return delegate.getMetadataValue(name);
+    public GeneralEnvelope getOriginalEnvelope() {
+        return delegate.getOriginalEnvelope();
     }
 
-    public double[] getReadingResolutions(OverviewPolicy policy, double[] requestedResolution) {
-        return delegate.getReadingResolutions(policy, requestedResolution);
+    public GeneralEnvelope getOriginalEnvelope(String coverageName) {
+        return delegate.getOriginalEnvelope(coverageName);
     }
 
-    public boolean hasMoreGridCoverages() {
-        return delegate.hasMoreGridCoverages();
+    public CoordinateReferenceSystem getCoordinateReferenceSystem() {
+        return delegate.getCoordinateReferenceSystem();
     }
 
-    public String[] listSubNames() {
-        return delegate.listSubNames();
+    public CoordinateReferenceSystem getCoordinateReferenceSystem(String coverageName) {
+        return delegate.getCoordinateReferenceSystem(coverageName);
+    }
+
+    public GridEnvelope getOriginalGridRange() {
+        return delegate.getOriginalGridRange();
+    }
+
+    public String[] getMetadataNames(String coverageName) throws IOException {
+        return delegate.getMetadataNames(coverageName);
+    }
+
+    public GridEnvelope getOriginalGridRange(String coverageName) {
+        return delegate.getOriginalGridRange(coverageName);
+    }
+
+    public MathTransform getOriginalGridToWorld(PixelInCell pixInCell) {
+        return delegate.getOriginalGridToWorld(pixInCell);
+    }
+
+    public MathTransform getOriginalGridToWorld(String coverageName, PixelInCell pixInCell) {
+        return delegate.getOriginalGridToWorld(coverageName, pixInCell);
     }
 
     public GridCoverage2D read(GeneralParameterValue[] parameters) throws IllegalArgumentException,
@@ -75,14 +89,88 @@ public abstract class DecoratingGridCoverage2DReader extends AbstractGridCoverag
         return delegate.read(parameters);
     }
 
-    public void skip() {
+    public GridCoverage2D read(String coverageName, GeneralParameterValue[] parameters)
+            throws IllegalArgumentException, IOException {
+        return delegate.read(coverageName, parameters);
+    }
+
+    public String getMetadataValue(String name) throws IOException {
+        return delegate.getMetadataValue(name);
+    }
+
+    public String getMetadataValue(String coverageName, String name) throws IOException {
+        return delegate.getMetadataValue(coverageName, name);
+    }
+
+    public String[] listSubNames() throws IOException {
+        return delegate.listSubNames();
+    }
+
+    public String getCurrentSubname() throws IOException {
+        return delegate.getCurrentSubname();
+    }
+
+    public boolean hasMoreGridCoverages() throws IOException {
+        return delegate.hasMoreGridCoverages();
+    }
+
+    public void skip() throws IOException {
         delegate.skip();
     }
 
-    @Override
-    protected void finalize() throws Throwable {
-        // override, the base class ends up calling dispose() which in turn disposes of the reader
+    public void dispose() throws IOException {
+        delegate.dispose();
     }
-    
+
+    public Set<ParameterDescriptor<List>> getDynamicParameters() throws IOException {
+        return delegate.getDynamicParameters();
+    }
+
+    public Set<ParameterDescriptor<List>> getDynamicParameters(String coverageName)
+            throws IOException {
+        return delegate.getDynamicParameters(coverageName);
+    }
+
+    public double[] getReadingResolutions(OverviewPolicy policy, double[] requestedResolution)
+            throws IOException {
+        return delegate.getReadingResolutions(policy, requestedResolution);
+    }
+
+    public double[] getReadingResolutions(String coverageName, OverviewPolicy policy,
+            double[] requestedResolution) throws IOException {
+        return delegate.getReadingResolutions(coverageName, policy, requestedResolution);
+    }
+
+    public String[] getGridCoverageNames() throws IOException {
+        return delegate.getGridCoverageNames();
+    }
+
+    public int getGridCoverageCount() throws IOException {
+        return delegate.getGridCoverageCount();
+    }
+
+    public int getNumOverviews() {
+        return delegate.getNumOverviews();
+    }
+
+    public int getNumOverviews(String coverageName) {
+        return delegate.getNumOverviews(coverageName);
+    }
+
+    public ImageLayout getImageLayout() throws IOException {
+        return delegate.getImageLayout();
+    }
+
+    public ImageLayout getImageLayout(String coverageName) throws IOException {
+        return delegate.getImageLayout(coverageName);
+    }
+
+    public double[][] getResolutionLevels() throws IOException {
+        return delegate.getResolutionLevels();
+    }
+
+    public double[][] getResolutionLevels(String coverageName) throws IOException {
+        return delegate.getResolutionLevels(coverageName);
+    }
     
 }

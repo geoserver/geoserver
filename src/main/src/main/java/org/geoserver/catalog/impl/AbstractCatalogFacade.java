@@ -141,7 +141,7 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
                 resolved = unwrap(ResolvingProxy.resolve(getCatalog(), (LayerInfo) l));
             }
             
-            lg.getLayers().set(i, resolved);
+            lg.getLayers().set(i, resolved != null ? resolved : l);
         }
 
         for (int i = 0; i < lg.getStyles().size(); i++) {

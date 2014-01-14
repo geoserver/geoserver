@@ -10,7 +10,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>2.4-SNAPSHOT</version>
+    <version>2.5-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
@@ -21,7 +21,7 @@
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>platform</artifactId>
+      <artifactId>gs-platform</artifactId>
     </dependency>
   </dependencies>
 
@@ -33,7 +33,6 @@
       <configuration>
         <descriptors>
           <descriptor>release/ext-authkey.xml</descriptor>
-          <descriptor>release/ext-css.xml</descriptor>
           <descriptor>release/ext-ftp.xml</descriptor>
           <descriptor>release/ext-printing.xml</descriptor>
           <descriptor>release/ext-python.xml</descriptor>
@@ -41,12 +40,14 @@
           <descriptor>release/ext-javascript.xml</descriptor>
           <descriptor>release/ext-spatialite.xml</descriptor>
           <descriptor>release/ext-jdbcconfig.xml</descriptor>
-          <descriptor>release/ext-inspire.xml</descriptor>
           <descriptor>release/ext-sfs.xml</descriptor>
        	  <descriptor>release/ext-dds.xml</descriptor>
           <descriptor>release/ext-aggregate.xml</descriptor>
-          <descriptor>release/ext-xslt.xml</descriptor>
-          <descriptor>release/ext-wcs2_0.xml</descriptor>
+          <descriptor>release/ext-wms-eo.xml</descriptor>
+          <descriptor>release/ext-libjpeg-turbo.xml</descriptor>
+          <descriptor>release/ext-netcdf.xml</descriptor>
+          <descriptor>release/ext-netcdf-out.xml</descriptor>
+          
         </descriptors>
       </configuration>
      </plugin>
@@ -112,12 +113,7 @@
         <module>printing</module>
       </modules>
     </profile>
-    <profile>
-      <id>dxf</id>
-      <modules>
-        <module>dxf</module>
-      </modules>
-    </profile>
+    
     <profile>
       <id>dbconfig</id>
       <modules>
@@ -146,25 +142,23 @@
       <id>communityRelease</id>
       <modules>
         <module>authkey</module>
-        <module>css</module>
 	<module>dds</module>
         <module>printing</module>
         <module>release</module>
         <module>ftp</module>
         <module>spatialite</module>
         <module>jdbcconfig</module>
-        <module>inspire</module>
         <module>sfs</module>
         <module>feature-aggregate</module>
         <module>script</module>
-        <module>xslt</module>
-        <module>wcs2_0</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>css</id>
-      <modules>
-        <module>css</module>
+        <module>wcs2_0-eo</module>
+        <module>web-wcs2_0-eo</module>
+        <module>wms-eo</module>
+        <module>libjpeg-turbo</module>
+        <module>netcdf</module>
+        <module>netcdf-out</module>
+        
+        
       </modules>
     </profile>
     <profile>
@@ -191,12 +185,6 @@
         <module>wps-sextante</module>
       </modules>
     </profile>
-    <profile>
-      <id>inspire</id>
-      <modules>
-        <module>inspire</module>
-      </modules>
-    </profile>
     <profile>      
       <id>sfs</id>
       <modules>
@@ -215,12 +203,6 @@
         <module>authkey</module>
       </modules>
     </profile>
-    <profile>      
-      <id>csw</id>
-      <modules>
-        <module>csw</module>
-      </modules>
-    </profile>
     <profile>
       <id>jdbcconfig</id>
       <modules>
@@ -237,21 +219,31 @@
       </modules>
     </profile>
     <profile>
-      <id>xslt</id>
+      <id>wcs20-eo</id>
       <activation>
-        <property><name>xslt</name></property>
+        <property><name>wcs20-eo</name></property>
       </activation> 
       <modules>
-        <module>xslt</module>
+        <module>wcs2_0-eo</module>
+        <module>web-wcs2_0-eo</module>
       </modules>
     </profile>
     <profile>
-      <id>wcs20</id>
+      <id>netcdf-out</id>
       <activation>
-        <property><name>wcs20</name></property>
+        <property><name>netcdf-out</name></property>
       </activation> 
       <modules>
-        <module>wcs2_0</module>
+        <module>netcdf-out</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>netcdf</id>
+      <activation>
+        <property><name>netcdf</name></property>
+      </activation> 
+      <modules>
+        <module>netcdf</module>
       </modules>
     </profile>
     <profile>
@@ -262,9 +254,57 @@
     </profile>
     <profile>
       <id>wms-eo</id>
+      <activation>
+        <property><name>wms-eo</name></property>
+      </activation> 	  
       <modules>
         <module>wms-eo</module>
       </modules>
     </profile>	
+    <profile>
+      <id>kml-old</id>
+      <activation>
+        <property><name>kml-old</name></property>
+      </activation> 	  
+      <modules>
+        <module>kml-old</module>
+      </modules>
+    </profile>
+		<profile>
+			<id>libjpeg-turbo</id>
+			<activation>
+				<property>
+					<name>all</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<modules>
+				<module>libjpeg-turbo</module>
+			</modules>
+		</profile>    
+    <profile>
+      <id>importer</id>
+      <modules>
+        <module>importer</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>geopkg</id>
+      <modules>
+        <module>geopkg</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>wfs-notification</id>
+      <modules>
+        <module>wfs-notification</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>geoserver-sync</id>
+      <modules>
+        <module>geoserver-sync</module>
+      </modules>
+    </profile>
   </profiles>
 </project>

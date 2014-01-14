@@ -34,6 +34,7 @@ import org.geoserver.rest.util.RESTUtils;
 import org.geotools.data.DataAccessFactory;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFactorySpi;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.DefaultTransaction;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.DataAccessFactory.Param;
@@ -457,23 +458,23 @@ public class DataStoreFileResource extends StoreFileResource {
         catch (Exception e) {
             //TODO: report a proper error code
             throw new RuntimeException ( e );
-        }
-        
-        //dispose the datastore
-        source.dispose();
-        
-        //clean up the files if we can
-        if (isInlineUpload(method) && canRemoveFiles) {
-            if (uploadedFile.isFile()) uploadedFile = uploadedFile.getParentFile();
-            try {
-                FileUtils.deleteDirectory(uploadedFile);
-            } 
-            catch (IOException e) {
-                LOGGER.info("Unable to delete " + uploadedFile.getAbsolutePath());
-                if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.log(Level.FINE, "", e);
-                }
-            }
+        } finally {
+            //dispose the datastore
+            source.dispose();
+            
+            //clean up the files if we can
+            if (isInlineUpload(method) && canRemoveFiles) {
+        		if (uploadedFile.isFile()) uploadedFile = uploadedFile.getParentFile();
+        		try {
+        			FileUtils.deleteDirectory(uploadedFile);
+        		} 
+        		catch (IOException ie) {
+        			LOGGER.info("Unable to delete " + uploadedFile.getAbsolutePath());
+        			if (LOGGER.isLoggable(Level.FINE)) {
+        				LOGGER.log(Level.FINE, "", ie);
+        			}
+        		}
+            }        	
         }
     }
 
@@ -521,13 +522,8 @@ public class DataStoreFileResource extends StoreFileResource {
                     converted = f.toURI();
                 }
                 else if ( URL.class.equals( p.type ) ) {
-                    try {
-                        converted = f.toURL();
-                    } 
-                    catch (MalformedURLException e) {
-                    }
+                    converted = DataUtilities.fileToURL(f);
                 }
-                //Converters.convert( f.getAbsolutePath(), p.type );
                 
                 if ( converted != null ) {
                     connectionParameters.put( p.key, converted );    

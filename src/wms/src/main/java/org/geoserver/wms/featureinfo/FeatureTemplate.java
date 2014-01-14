@@ -8,6 +8,7 @@ import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
@@ -76,17 +77,35 @@ public class FeatureTemplate {
     }
     
     /**
+     * The pattern used by DATETIME_FORMAT
+     */
+    public static String DATE_FORMAT_PATTERN = "MM/dd/yy";
+    
+    /**
      * Default date format produced by templates
      */
-    public static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yy");
+    public static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_PATTERN);
+    
+    
+    /**
+     * The pattern used by DATETIME_FORMAT
+     */
+    public static String DATETIME_FORMAT_PATTERN = "MM/dd/yy HH:mm:ss";
+    
     /**
      * Default datetime format produced by templates
      */
-    public static SimpleDateFormat DATETIME_FORMAT = new SimpleDateFormat("MM/dd/yy HH:mm:ss");
+    public static SimpleDateFormat DATETIME_FORMAT = new SimpleDateFormat(DATETIME_FORMAT_PATTERN);
+
+    /**
+     * The pattern used by DATETIME_FORMAT
+     */
+    public static String TIME_FORMAT_PATTERN = "HH:mm:ss";
+    
     /**
      * Default time format produced by templates
      */
-    public static SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
+    public static SimpleDateFormat TIME_FORMAT = new SimpleDateFormat();
     
     /**
      * Template cache used to avoid paying the cost of template lookup for each feature
@@ -300,6 +319,29 @@ public class FeatureTemplate {
         return t;
     }
     
+    /**
+     * Returns true if the required template is empty or has its default content
+     * 
+     * @param featureType
+     * @param template
+     * @param lookup
+     * @return
+     * @throws IOException 
+     */
+    public boolean isTemplateEmpty(SimpleFeatureType featureType, String template,
+            Class<FeatureTemplate> lookup, String defaultContent) throws IOException {
+        Template t = lookupTemplate(featureType, template, lookup);
+        if(t == null) {
+            return true;
+        }
+        // check if the template is empty
+        StringWriter sw = new StringWriter();
+        t.dump(sw);
+        // an empty template canonical form is "0\n".. weird!
+        String templateText = sw.toString();
+        return "".equals(templateText) || (defaultContent != null && defaultContent.equals(templateText));
+    }
+    
     private static class TemplateKey {
         SimpleFeatureType type;
         String template;
@@ -338,4 +380,6 @@ public class FeatureTemplate {
             return true;
         }
     }
+
+    
 }

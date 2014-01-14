@@ -64,7 +64,7 @@ public abstract class AbstractURLPublisher extends AbstractController {
         
         File file = DataUtilities.urlToFile(url);
         if(file != null && file.exists() && file.isDirectory()) {
-            String uri = request.getRequestURI().toString();
+            String uri = request.getRequestURI();
             uri += uri.endsWith("/") ? "index.html" : "/index.html";
             
             response.addHeader("Location", uri);

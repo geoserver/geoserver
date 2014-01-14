@@ -1,0 +1,4 @@
+namespace: http://www.openplans.org/topp
+schemaLocation: http://localhost/geoserver/ows?service=WFS&version=1.0.0&request=DescribeFeatureType&typeName=topp:states
+url: http://localhost/geoserver/wfs
+printProperty: STATE_NAME

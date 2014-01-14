@@ -28,6 +28,7 @@
 <ul>
   <li>Maximum number of features:  "${properties.maxFeatures}"</li>
   <li>Return bounding box with every feature:  "${properties.isFeatureBounding}"</li>
+  <li>Ignore maximum number of features when calculating hits: ${properties.hitsIgnoreMaxFeatures}"</li>
   <li>Service Level:  "${properties.serviceLevel}"</li>
 </ul>
 

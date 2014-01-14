@@ -26,7 +26,6 @@ import org.geoserver.wfs.xml.GML3OutputFormat;
 import org.geoserver.wfs.xml.v1_1_0.WFS;
 import org.geoserver.wfs.xml.v1_1_0.WFSConfiguration;
 import org.geoserver.wms.GetFeatureInfoRequest;
-import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.gml2.bindings.GML2EncodingUtils;
@@ -48,7 +47,7 @@ public class GML3FeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
     /**
      * The MIME type of the format this response produces: <code>"application/vnd.ogc.gml"</code>
      */
-    private static final String FORMAT = "application/vnd.ogc.gml/3.1.1";
+    public static final String FORMAT = "application/vnd.ogc.gml/3.1.1";
 
     private WMS wms;
 

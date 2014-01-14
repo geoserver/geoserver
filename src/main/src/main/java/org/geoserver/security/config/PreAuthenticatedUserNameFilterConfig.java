@@ -15,12 +15,12 @@ import org.geoserver.security.filter.GeoServerPreAuthenticatedUserNameFilter;
  *<p>
  * {@link #getRoleSource()} determines how to calculate the roles:
  * <ol>
- * <li>{@link RoleSource#UserGroupService} - Roles are calculated using the named user group service
+ * <li>{@link PreAuthenticatedUserNameRoleSource#UserGroupService} - Roles are calculated using the named user group service
  *     {@link #getUserGroupServiceName()}</li>
- * <li>{@link RoleSource#RoleService} - Roles are calculated using the named role service
+ * <li>{@link PreAuthenticatedUserNameRoleSource#RoleService} - Roles are calculated using the named role service
  *     {@link #getRoleServiceName()}. If no role service is given, the default is 
  *     {@link GeoServerSecurityManager#getActiveRoleService()}</li>
- * <li>{@link RoleSource#Header} - Roles are calculated using the content of 
+ * <li>{@link PreAuthenticatedUserNameRoleSource#Header} - Roles are calculated using the content of 
  *     {@link #getRolesHeaderAttribute()} parsed by {@link #getRoleConverterName()}. if no converter 
  *     is given, roles are parsed by the default converter {@link GeoServerRoleConverter}</li>
  * 
@@ -35,9 +35,20 @@ public abstract class PreAuthenticatedUserNameFilterConfig extends SecurityFilte
     private String roleConverterName;
     private String roleServiceName;
 
-    
-    public static enum  RoleSource{
+    /**
+     * RoleSource list values common to all PreAuthenticatedUserNameFilterConfig
+     * hierarchy.
+     * 
+     * @author Mauro Bartolomeoli (mauro.bartolomeoli@geo-solutions.it)
+     *
+     */
+    public static enum  PreAuthenticatedUserNameRoleSource implements RoleSource {
         Header,UserGroupService,RoleService;
+        
+        @Override
+        public boolean equals(RoleSource other) {
+            return other != null && other.toString().equals(toString());
+        }
     } ;
     
     private static final long serialVersionUID = 1L;

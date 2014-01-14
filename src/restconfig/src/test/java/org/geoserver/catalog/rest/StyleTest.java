@@ -42,6 +42,11 @@ public class StyleTest extends CatalogRESTTestSupport {
     public void addPondsStyle() throws IOException {
        getTestData().addStyle(SystemTestData.PONDS.getLocalPart(), getCatalog());
     }
+    
+    @Before
+    public void restoreLayers() throws IOException {
+        revertLayer(SystemTestData.BASIC_POLYGONS);
+    }
 
     @Test
     public void testGetAllAsXML() throws Exception {

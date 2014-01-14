@@ -46,8 +46,8 @@ INSTALLATION
 
 COMPATIBILITY
 
-This jar should work with any version of GeoServer based on GeoTools 10.x.  
-Currently this is anything in 2.4.x. 
+This jar should work with any version of GeoServer based on GeoTools 11.x  
+Currently this is anything in 2.5.x. 
 
 For more information see on needed libraries and parameters, see:
 http://geoserver.org/display/GEOSDOC/ArcSDE+DataStore

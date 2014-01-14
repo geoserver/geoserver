@@ -1,0 +1,18 @@
+<assembly>
+  <id>libjpeg-turbo-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>gs-libjpeg-turbo*.jar</include>
+				<include>*imageio-ext-turbojpeg*.jar</include>
+				<include>*turbojpeg-wrapper-*.jar</include> 
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

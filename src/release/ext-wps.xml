@@ -9,8 +9,8 @@
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
-        <include>wps*</include>
-        <include>web-wps*</include>
+        <include>gs-wps*</include>
+        <include>gs-web-wps*</include>
         <include>gt-process*</include>
         <include>gt-grid*</include>
         <include>gt-xsd-wps*</include>

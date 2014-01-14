@@ -6,12 +6,12 @@
 
 package org.geoserver.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,8 +39,8 @@ import org.geoserver.test.onlineTest.support.AbstractReferenceDataSetup;
 import org.geoserver.wfs.WFSInfo;
 import org.geotools.data.complex.AppSchemaDataAccessRegistry;
 import org.geotools.data.complex.DataAccessRegistry;
-import org.geotools.xml.AppSchemaCache;
 import org.geotools.xml.AppSchemaXSDRegistry;
+import org.geotools.xml.resolver.SchemaCache;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -62,7 +62,7 @@ public class RestconfigWfsTest extends CatalogRESTTestSupport {
         wfs.setEncodeFeatureMember(true);
         getGeoServer().save(wfs);
         // disable schema caching in tests, as schemas are expected to provided on the classpath
-        AppSchemaCache.disableAutomaticConfiguration();
+        SchemaCache.disableAutomaticConfiguration();
     }
 
     

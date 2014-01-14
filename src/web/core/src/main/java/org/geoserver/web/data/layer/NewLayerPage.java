@@ -44,6 +44,7 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geotools.data.DataAccess;
+import org.geotools.data.DataStore;
 import org.geotools.data.wms.WebMapServer;
 import org.geotools.jdbc.JDBCDataStore;
 
@@ -247,7 +248,11 @@ public class NewLayerPage extends GeoServerSecuredPage {
     
     void updateSpecialFunctionPanels(StoreInfo store) {
         // at the moment just assume every store can create types
-        createTypeContainer.setVisible(store instanceof DataStoreInfo);
+        try {
+            createTypeContainer.setVisible(store instanceof DataStoreInfo && ((DataStoreInfo)store).getDataStore(null) instanceof DataStore);
+        } catch (IOException e) {
+            LOGGER.log(Level.FINEST, e.getMessage());
+        }
 
         // reset to default first, to avoid the container being displayed if store is not a
         // DataStoreInfo
@@ -257,7 +262,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
                 DataAccess da = ((DataStoreInfo) store).getDataStore(null);
                 createSQLViewContainer.setVisible(da instanceof JDBCDataStore);
             } catch (IOException e) {
-
+                LOGGER.log(Level.FINEST, e.getMessage());
             }
         }
 
@@ -269,7 +274,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
                 WebMapServer wms = ((WMSStoreInfo) store).getWebMapServer(null);
                 createWMSLayerImportContainer.setVisible(wms != null);
             } catch (IOException e) {
-
+                LOGGER.log(Level.FINEST, e.getMessage());
             }
         }
     }
@@ -289,7 +294,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
             CatalogBuilder builder = new CatalogBuilder(catalog);
             builder.setStore(store);
             if (store instanceof CoverageStoreInfo) {
-                CoverageInfo ci = builder.buildCoverage();
+                CoverageInfo ci = builder.buildCoverage(resource.getName().getLocalPart());
                 return builder.buildLayer(ci);
             } else if (store instanceof DataStoreInfo) {
                 FeatureTypeInfo fti = builder.buildFeatureType(resource.getName());

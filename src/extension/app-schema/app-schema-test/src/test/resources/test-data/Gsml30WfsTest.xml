@@ -61,7 +61,7 @@
                         gsml:MappedFeature
                     </targetAttribute>
                     <idExpression>
-                        <OCQL>getId()</OCQL>
+                        <OCQL>ID</OCQL>
                     </idExpression>
                 </AttributeMapping>
                 <AttributeMapping>
@@ -74,7 +74,7 @@
                     <targetAttribute>gsml:positionalAccuracy/swe:Quantity</targetAttribute>
                     <ClientProperty>
                         <name>gml:id</name>
-                        <value>strConcat('quantity.', getId())</value>
+                        <value>strConcat('quantity.', ID)</value>
                     </ClientProperty>
                 </AttributeMapping>
                 <AttributeMapping>
@@ -93,7 +93,7 @@
                 <AttributeMapping>
                     <targetAttribute>gsml:shape</targetAttribute>
                     <idExpression>
-                        <OCQL>strConcat('shape.', getId())</OCQL>
+                        <OCQL>strConcat('shape.', ID)</OCQL>
                     </idExpression>
                     <sourceExpression>
                         <OCQL>SHAPE</OCQL>

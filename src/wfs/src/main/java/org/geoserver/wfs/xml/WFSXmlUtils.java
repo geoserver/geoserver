@@ -60,7 +60,7 @@ public class WFSXmlUtils {
             strict = Boolean.TRUE;
         }
         parser.setValidating(strict.booleanValue());
-        parser.getURIHandlers().add(new WFSURIHandler(geoServer));
+        parser.getURIHandlers().add(0, new WFSURIHandler(geoServer));
 
         Catalog catalog = geoServer.getCatalog();
         //"inject" namespace mappings

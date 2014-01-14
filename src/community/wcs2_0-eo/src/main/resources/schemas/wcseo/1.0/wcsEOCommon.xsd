@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/wcseo/1.0"
+    xmlns:wcseo="http://www.opengis.net/wcseo/1.0"
+    xmlns:wcs="http://www.opengis.net/wcs/2.0"
+    xmlns:gmlcov="http://www.opengis.net/gmlcov/1.0"
+    xmlns:ows="http://www.opengis.net/ows/2.0"
+    xmlns:gml="http://www.opengis.net/gml/3.2"
+    xmlns:eop="http://www.opengis.net/eop/2.0"
+    xmlns="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified" version="1.0.0" xml:lang="en">
+    <annotation>
+        <appinfo>wcsEOCommon.xsd</appinfo>
+        <documentation>This XML Schema Document encodes the elements and types that are shared by multiple EO-WCS operations.
+            Last updated: 2011-feb-04
+            Copyright (c) 2011 Open Geospatial Consortium, Inc. All Rights Reserved.
+            To obtain additional rights of use, visit http://www.opengeospatial.org/legal/.
+        </documentation>
+    </annotation>
+
+    <!-- =========================================================== -->
+    <!-- includes and imports                                        -->
+    <!-- =========================================================== -->
+    <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+    <import namespace="http://www.opengis.net/ows/2.0" schemaLocation="http://schemas.opengis.net/ows/2.0/owsAll.xsd"/>
+    <import namespace="http://www.opengis.net/gmlcov/1.0" schemaLocation="http://schemas.opengis.net/gmlcov/1.0/gmlcovAll.xsd"/>
+    <import namespace="http://www.opengis.net/wcs/2.0" schemaLocation="http://schemas.opengis.net/wcs/2.0/wcsAll.xsd"/>
+    <import namespace="http://www.opengis.net/eop/2.0" schemaLocation="../../eop/2.0/eop.xsd"/> <!--TODO: Where will the schema reside?-->
+    <include schemaLocation="wcsEOAll.xsd"/>
+
+    <!-- =========================================================== -->
+    <!-- elements and types                                          -->
+    <!-- =========================================================== -->
+    <element name="DatasetSeriesId" type="NCName">
+        <annotation>
+            <documentation>This element represents dataset series identifiers. It uses the same type as gml:id to allow for identifier values to be used in both contexts. </documentation>
+        </annotation>
+    </element>
+    <!-- =========================================================== -->
+    <element name="EOMetadata" type="wcseo:EOMetadataType"/>
+    <complexType name="EOMetadataType">
+        <annotation>
+            <documentation></documentation>
+        </annotation>
+        <sequence>
+            <choice>
+                <element ref="eop:EarthObservation"/>
+                <element ref="ows:Reference"/>
+            </choice>
+            <element ref="wcseo:lineage" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+    </complexType>
+    <!-- =========================================================== -->
+    <element name="lineage" type="wcseo:lineageType"/>
+    <complexType name="lineageType">
+        <annotation>
+            <documentation></documentation>
+        </annotation>
+        <sequence>
+            <element ref="wcseo:processing"/>
+            <element ref="gml:timePosition" minOccurs="0"/>
+        </sequence>
+    </complexType>
+    <element name="processing" type="anyType"/>
+    <element name="referenceGetCoverage" type="wcseo:referenceGetCoverageType" substitutionGroup="wcseo:processing"/>
+    <complexType name="referenceGetCoverageType">
+        <annotation>
+            <documentation>The lineage records are supposed to describe the history of processing steps that has
+            led to the coverage on hand. As at the time of this writing there is no canonical format for such
+            histories available in OGC, for the purpose of this specification no assumption is made about the
+            contents of a lineage record, except that GetCoverage appends its request verbatim in an additional
+            record in the following way:
+             * In case of a GET/KVP request, this shall be the request URL with parameters as ows:Reference.
+             * In case of an XML or SOAP request this shall be an XML snippet as ows:ServiceReference which is in the substitutionGroup of ows:Reference.</documentation>
+        </annotation>
+        <sequence>
+            <element ref="ows:Reference"/>
+        </sequence>
+    </complexType>
+    <!-- =========================================================== -->
+    <element name="datasets" type="wcseo:datasetsType">
+         <annotation>
+            <documentation>This element is used in stitched mosaics to reference datasets.
+            Stitched mosaics have to reference at least one dataset but since this is also used for
+            subsets of them the minOccurs="0" is added.
+            </documentation>
+        </annotation>
+    </element>
+    <complexType name="datasetsType">
+        <sequence>
+            <element ref="wcseo:dataset" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+    </complexType>
+    <!-- =========================================================== -->
+    <element name="dataset" type="wcseo:datasetType">
+         <annotation>
+            <documentation>This element is used in stitched mosaics to reference a dataset.</documentation>
+        </annotation>
+    </element>
+    <complexType name="datasetType">
+        <sequence>
+            <element ref="wcs:CoverageId"/>
+            <element ref="wcseo:contributingFootprint" minOccurs="0"/>
+        </sequence>
+    </complexType>
+    <!-- =========================================================== -->
+    <element name="contributingFootprint">
+        <complexType>
+            <sequence>
+                <element ref="eop:Footprint"/>
+            </sequence>
+        </complexType>
+    </element>
+    <!-- =========================================================== -->
+    <element name="rectifiedDataset">
+        <complexType>
+            <sequence>
+                <element ref="wcs:CoverageId"/>
+            </sequence>
+        </complexType>
+    </element>
+    <element name="referenceableDataset">
+        <complexType>
+            <sequence>
+                <element ref="wcs:CoverageId"/>
+            </sequence>
+        </complexType>
+    </element>
+    <element name="rectifiedStitchedMosaic">
+        <complexType>
+            <sequence>
+                <element ref="wcs:CoverageId"/>
+            </sequence>
+        </complexType>
+    </element>
+    <element name="referenceableStitchedMosaic">
+        <complexType>
+            <sequence>
+                <element ref="wcs:CoverageId"/>
+            </sequence>
+        </complexType>
+    </element>
+</schema>

@@ -112,7 +112,6 @@ import org.xml.sax.helpers.NamespaceSupport;
  * @version $Id$
  */
 public class GetFeature {
-    public static final String SQL_VIEW_PARAMS = "GS_SQL_VIEW_PARAMS";
     
     /** Standard logging instance for class */
     private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.requests");
@@ -280,11 +279,21 @@ public class GetFeature {
 
         // take into consideration the wfs max features
         int maxFeatures = Math.min(request.getMaxFeatures().intValue(), wfs.getMaxFeatures());
-
+        
+        // if this is only a HITS request AND the wfs setting flag 
+        // hitsIgnoreMaxFeatures is set, then set the maxFeatures to be the 
+        // maximum supported value from geotools.  This is currently
+        // the maximum value of java.lang.Integer.MAX_VALUE so it is impossible
+        // to return more then this value even if there are matching values 
+        // without either changing geotools to use a long or paging the results.
+        if (wfs.isHitsIgnoreMaxFeatures() && request.isResultTypeHits()) {
+            maxFeatures = org.geotools.data.Query.DEFAULT_MAX;
+        }
+        
         // grab the view params is any
         List<Map<String, String>> viewParams = null;
-        if(request.getMetadata() != null) {
-            viewParams = (List<Map<String, String>>) request.getMetadata().get(SQL_VIEW_PARAMS);
+        if(request.getViewParams() != null && request.getViewParams().size() > 0) {
+            viewParams = (List<Map<String, String>>) request.getViewParams();
         }
 
         int count = 0; //should probably be long
@@ -955,6 +964,13 @@ public class GetFeature {
             hints.put(Hints.ASSOCIATION_TRAVERSAL_DEPTH, depth);
         }
         
+        //handle resolve parameters
+        hints.put(Hints.RESOLVE, request.getResolve());
+        BigInteger resolveTimeOut = request.getResolveTimeOut();
+        if (resolveTimeOut != null) {
+        	hints.put(Hints.RESOLVE_TIMEOUT, resolveTimeOut.intValue());
+        }
+                
         //handle xlink properties
         List<XlinkPropertyNameType> xlinkProperties = query.getXlinkPropertyNames();
         if (!xlinkProperties.isEmpty() ) {

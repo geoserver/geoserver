@@ -68,15 +68,62 @@ public class BBoxFilterTest extends AbstractAppSchemaTestSupport {
         assertXpathEvaluatesTo("0", "/wfs:FeatureCollection/@numberOfFeatures", doc);
         assertXpathCount(0, "//ex:geomContainer", doc);
     }
+    
+    /**
+     * This uses long lat bbox, with srsName specified in long lat format (EPSG code). This should return the results.
+     */
+    @Test
+    public void testQueryBboxLongLatEPSGCode() {
+        Document doc = getAsDOM(WFS_GET_FEATURE + LONGLAT + ",EPSG:4326");
+        LOGGER.info(WFS_GET_FEATURE_LOG + LONGLAT + prettyString(doc));
+        assertXpathEvaluatesTo("2", "/wfs:FeatureCollection/@numberOfFeatures", doc);
+        assertXpathCount(2, "//ex:geomContainer", doc);
+    }
+    
+    /**
+     * This uses long lat bbox, with srsName specified in lat long format (URN). This should not return the results.
+     */
+    @Test
+    public void testQueryBboxLongLatURN() {
+        Document doc = getAsDOM(WFS_GET_FEATURE + LONGLAT + ",urn:x-ogc:def:crs:EPSG:4326");
+        LOGGER.info(WFS_GET_FEATURE_LOG + LONGLAT + prettyString(doc));
+        assertXpathEvaluatesTo("0", "/wfs:FeatureCollection/@numberOfFeatures", doc);
+        assertXpathCount(0, "//ex:geomContainer", doc);
+    }
 
     /**
      * The following performs a WFS request specifying a BBOX parameter of axis ordering latitude
-     * longitude. This test should return features if the axis ordering behaves similar to queries
-     * to Simple features.
+     * longitude. This test should return features since WFS 1.1.0 defaults to lat long if unspecified.
      */
     @Test
     public void testQueryBboxLatLong() {
         Document doc = getAsDOM(WFS_GET_FEATURE + LATLONG);
+        LOGGER.info(WFS_GET_FEATURE_LOG + LATLONG + prettyString(doc));
+        assertXpathEvaluatesTo("2", "/wfs:FeatureCollection/@numberOfFeatures", doc);
+        assertXpathCount(2, "//ex:geomContainer", doc);
+    }
+    
+    /**
+     * The following performs a WFS request specifying a BBOX parameter of axis ordering latitude
+     * longitude and srsName in EPSG code format. This test should not return features if the axis ordering behaves similar to queries
+     * to Simple features.
+     */
+    @Test
+    public void testQueryBboxLatLongEPSGCode() {
+        Document doc = getAsDOM(WFS_GET_FEATURE + LATLONG + ",EPSG:4326");
+        LOGGER.info(WFS_GET_FEATURE_LOG + LATLONG + prettyString(doc));
+        assertXpathEvaluatesTo("0", "/wfs:FeatureCollection/@numberOfFeatures", doc);
+        assertXpathCount(0, "//ex:geomContainer", doc);
+    }
+    
+    /**
+     * The following performs a WFS request specifying a BBOX parameter of axis ordering latitude
+     * longitude and srsName in URN format. This test should return features if the axis ordering behaves similar to queries
+     * to Simple features.
+     */
+    @Test
+    public void testQueryBboxLatLongURN() {
+        Document doc = getAsDOM(WFS_GET_FEATURE + LATLONG + ",urn:x-ogc:def:crs:EPSG:4326");
         LOGGER.info(WFS_GET_FEATURE_LOG + LATLONG + prettyString(doc));
         assertXpathEvaluatesTo("2", "/wfs:FeatureCollection/@numberOfFeatures", doc);
         assertXpathCount(2, "//ex:geomContainer", doc);

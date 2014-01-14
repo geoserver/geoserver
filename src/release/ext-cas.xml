@@ -9,8 +9,10 @@
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
-        <include>sec-cas-*</include>
-        <include>spring-security-cas-*</include>
+        <include>gs-sec-cas-*.jar</include>
+        <include>gs-web-sec-cas-*.jar</include>
+        <include>spring-security-cas-*.jar</include>
+        <include>cas-client-core-*.jar</include>
       </includes>
     </fileSet>
     <fileSet>

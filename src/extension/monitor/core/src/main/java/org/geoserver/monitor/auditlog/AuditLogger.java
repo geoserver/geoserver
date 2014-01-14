@@ -301,15 +301,7 @@ public class AuditLogger implements RequestDataListener, ApplicationListener<App
                     LOGGER.log(Level.WARNING,
                             "Request Dumper exiting due to :" + e.getLocalizedMessage(), e);
             } finally {
-                // close quietly
-                try {
-                    if (writer != null) {
-                        writer.close();
-                    }
-                } catch (Exception e) {
-                    LOGGER.log(Level.FINE, e.getLocalizedMessage(), e);
-                }
-
+                closeWriter(writer);
             }
             LOGGER.info("Request Dumper stopped");
 
@@ -330,26 +322,7 @@ public class AuditLogger implements RequestDataListener, ApplicationListener<App
             if (this.lineCounter >= lineRollingLimit
                     || (day > 0 && day != current.get(GregorianCalendar.DAY_OF_YEAR))
                     || (logFile != null && !logFile.exists())) {
-                try {
-                    if (writer != null) {
-                        Template template = templateConfig.getTemplate(footerTemplate);
-                        template.process(null, writer);
-                        writer.flush();
-                    }
-                } catch (Exception e) {
-                    // eat me
-                    if (LOGGER.isLoggable(Level.FINE))
-                        LOGGER.log(Level.FINE, e.getLocalizedMessage(), e);
-                }
-                try {
-                    if (writer != null) {
-                        writer.close();
-                    }
-                } catch (Exception e) {
-                    // eat me
-                    if (LOGGER.isLoggable(Level.FINE))
-                        LOGGER.log(Level.FINE, e.getLocalizedMessage(), e);
-                }
+                closeWriter(writer);
 
                 // play with counters
                 this.fileRollCounter++;
@@ -424,6 +397,29 @@ public class AuditLogger implements RequestDataListener, ApplicationListener<App
             }
 
             return writer;
+        }
+
+        private void closeWriter(BufferedWriter writer) {
+            try {
+                if (writer != null) {
+                    Template template = templateConfig.getTemplate(footerTemplate);
+                    template.process(null, writer);
+                    writer.flush();
+                }
+            } catch (Exception e) {
+                // eat me
+                if (LOGGER.isLoggable(Level.FINE))
+                    LOGGER.log(Level.FINE, e.getLocalizedMessage(), e);
+            }
+            try {
+                if (writer != null) {
+                    writer.close();
+                }
+            } catch (Exception e) {
+                // eat me
+                if (LOGGER.isLoggable(Level.FINE))
+                    LOGGER.log(Level.FINE, e.getLocalizedMessage(), e);
+            }
         }
 
         /**

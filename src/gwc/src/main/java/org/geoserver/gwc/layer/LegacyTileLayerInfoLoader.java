@@ -18,7 +18,6 @@ import java.util.logging.Logger;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
-import org.geoserver.catalog.StyleInfo;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.config.XMLGridSubset;
 
@@ -67,17 +66,9 @@ public class LegacyTileLayerInfoLoader {
             Set<String> cachedStyles = unmarshalSet(cachedStylesStr);
             TileLayerInfoUtil.setCachedStyles(tileLayerInfo, defaultStyle, cachedStyles);
 
-        } else if (tileLayerInfo.isAutoCacheStyles()) {
-            if (layer.getStyles() != null && layer.getStyles().size() > 0) {
-                final String defaultStyle = layer.getDefaultStyle() == null ? "" : layer
-                        .getDefaultStyle().getName();
-                Set<String> cachedStyles = new HashSet<String>();
-                for (StyleInfo style : layer.getStyles()) {
-                    cachedStyles.add(style.getName());
-                }
-                TileLayerInfoUtil.setCachedStyles(tileLayerInfo, defaultStyle, cachedStyles);
-            }
         }
+        
+        TileLayerInfoUtil.checkAutomaticStyles(layer, tileLayerInfo);
         tileLayerInfo.setName(tileLayerName(layer));
         tileLayerInfo.setId(layer.getId());
         return tileLayerInfo;
@@ -97,6 +88,7 @@ public class LegacyTileLayerInfoLoader {
             tileLayerInfo.setName(tileLayerName(layerGroup));
             tileLayerInfo.setId(layerGroup.getId());
         }
+        TileLayerInfoUtil.checkAutomaticStyles(layerGroup, tileLayerInfo);
         return tileLayerInfo;
     }
 

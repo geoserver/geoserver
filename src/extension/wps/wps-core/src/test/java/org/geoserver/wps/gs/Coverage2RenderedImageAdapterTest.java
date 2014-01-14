@@ -178,7 +178,7 @@ public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
         //--- internal points should halves coords (no interp on coords)
         Point2D psrc = new Point2D.Double(0d,0d);
         Point2D pdst = cria.mapSourcePoint(psrc, 0);
-        System.out.println(pdst);
+        // System.out.println(pdst);
         assertEquals(0d, pdst.getX());
         assertEquals(250d, pdst.getY());
 
@@ -186,7 +186,7 @@ public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
         pdst = cria.mapSourcePoint(psrc, 0);
         assertEquals(10d, pdst.getX());
         assertEquals(250d + 15d, pdst.getY());
-        System.out.println(pdst);
+        // System.out.println(pdst);
 
 //        src.view(ViewType.RENDERED).show();
 //        dst.view(ViewType.RENDERED).show();

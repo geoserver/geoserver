@@ -37,6 +37,9 @@ public abstract class XMLPPIO extends ComplexPPIO {
      */
     protected XMLPPIO(Class externalType, Class internalType, String mimeType, QName element) {
         super( externalType, internalType, mimeType);
+        if (element == null) {
+            throw new NullPointerException("element must not be null");
+        }
         this.element = element;
     }
 

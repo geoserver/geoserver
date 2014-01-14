@@ -777,8 +777,17 @@ public interface CatalogFacade {
     /**
      * @return an iterator over the catalog objects of the requested type that match the given
      *         filter
+     * @deprecated use {@link #list(Class, Filter, Integer, Integer, SortBy...)}
      */
     public <T extends CatalogInfo> CloseableIterator<T> list(final Class<T> of,
             final Filter filter, @Nullable Integer offset, @Nullable Integer count,
             @Nullable SortBy sortOrder);
+    
+    /**
+     * @return an iterator over the catalog objects of the requested type that match the given
+     *         filter
+     */
+    public <T extends CatalogInfo> CloseableIterator<T> list(final Class<T> of,
+            final Filter filter, @Nullable Integer offset, @Nullable Integer count,
+            @Nullable SortBy... sortOrder);
 }

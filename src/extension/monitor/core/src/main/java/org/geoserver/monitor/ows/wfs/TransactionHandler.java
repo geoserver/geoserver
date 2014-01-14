@@ -9,16 +9,21 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.monitor.RequestData;
 import org.geoserver.monitor.MonitorConfig;
+import org.geoserver.monitor.RequestData;
 import org.geoserver.ows.util.OwsUtils;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.geotools.xml.EMFUtils;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.geometry.BoundingBox;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class TransactionHandler extends WFSRequestObjectHandler {
 
@@ -82,7 +87,7 @@ public class TransactionHandler extends WFSRequestObjectHandler {
             }
             else {
                 //this is most likely an insert, determine layers from feature collection
-                if (e.getClass().getSimpleName().startsWith("InsertElementType")) {
+                if (isInsert(e)) {
                     List<Feature> features = (List<Feature>) EMFUtils.get((EObject)e, "feature");
                     Set<String> set = new LinkedHashSet<String>();
                     for (Feature f : features) {
@@ -114,5 +119,65 @@ public class TransactionHandler extends WFSRequestObjectHandler {
         // For some reason it's wrapped inside an extra EMF object here but not in the other 
         // request types 
         return OwsUtils.get(element, "value");
+    }
+
+    boolean isInsert(Object element) {
+        return element.getClass().getSimpleName().startsWith("InsertElementType");
+    }
+
+    @Override
+    protected ReferencedEnvelope getBBoxFromElement(Object element) {
+        if (isInsert(element)) {
+            //check for srsName on insert element
+            ReferencedEnvelope bbox = null;
+            if (OwsUtils.has(element, "srsName")) {
+                Object srs = OwsUtils.get(element, "srsName");
+                CoordinateReferenceSystem crs = crs(srs);
+                
+                if (crs != null) {
+                    bbox = new ReferencedEnvelope(crs);
+                    bbox.setToNull();
+                }
+            }
+
+            //go through all the features and aggregate the bounding boxes
+            for (Feature f : (List<Feature>)OwsUtils.get(element, "feature")) {
+                BoundingBox fbbox = f.getBounds();
+                if (fbbox == null) {
+                    continue;
+                }
+
+                if (bbox == null) {
+                    bbox = new ReferencedEnvelope(fbbox);
+                }
+                bbox.include(fbbox);
+            }
+
+            return bbox;
+        }
+        return null;
+    }
+
+    @Override
+    protected CoordinateReferenceSystem getCrsFromElement(Object element) {
+        //special case for insert
+        if (isInsert(element) && OwsUtils.has(element, "srsName")) {
+            CoordinateReferenceSystem crs = crs(OwsUtils.get(element, "srsName"));
+            if (crs != null) {
+                return crs;
+            }
+        }
+        
+        return super.getCrsFromElement(element);
+
+    }
+
+    CoordinateReferenceSystem crs(Object srs) {
+        try {
+            return srs != null ? CRS.decode(srs.toString()) : null;
+        } catch (Exception e) {
+            LOGGER.log(Level.FINE, e.getMessage(), e);
+        }
+        return null;
     }
 }

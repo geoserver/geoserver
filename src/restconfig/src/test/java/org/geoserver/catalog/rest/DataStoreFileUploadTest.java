@@ -4,11 +4,11 @@
  */
 package org.geoserver.catalog.rest;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
@@ -18,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.net.URL;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
@@ -27,6 +28,7 @@ import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.data.test.MockData;
+import org.geotools.data.DataUtilities;
 import org.h2.tools.DeleteDbFiles;
 import org.junit.After;
 import org.junit.Before;
@@ -40,6 +42,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
     @Before
     public void removePdsDataStore() {
         removeStore("gs", "pds");
+        removeStore("gs", "store with spaces");
     }
 
     @After
@@ -176,7 +179,21 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         dom = getAsDOM( "wfs?request=getfeature&typename=gs:pds" );
         assertFeatures(dom);
     }
-
+    
+    @Test
+    public void testShapeFileUploadNotExisting() throws Exception {
+        File file = new File("./target/notThere.tiff");
+        if(file.exists()) {
+            assertTrue(file.delete());
+        }
+        
+        URL url = DataUtilities.fileToURL(file.getCanonicalFile());
+        String body = url.toExternalForm();
+        MockHttpServletResponse response = putAsServletResponse("/rest/workspaces/gs/datastores/pds/external.shp", 
+                body, "text/plain");
+        assertEquals(400, response.getStatusCode());
+    }
+    
     @Test
     public void testShapeFileUploadIntoExisting() throws Exception {
         Catalog cat = getCatalog();
@@ -223,6 +240,19 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         
         Document dom = getAsDOM( "wfs?request=getfeature&typename=gs:pds" );
         assertFeatures( dom );
+    }
+    
+    @Test
+    public void testShapeFileUploadWithSpaces() throws Exception {
+        Catalog cat = getCatalog();
+        assertNull(cat.getDataStoreByName("gs", "store with spaces"));
+        
+        byte[] bytes = shpZipAsBytes();
+        put( "/rest/workspaces/gs/datastores/store%20with%20spaces/file.shp", bytes, "application/zip");
+        
+        DataStoreInfo ds = cat.getDataStoreByName("gs", "store with spaces"); 
+        assertNotNull(ds);
+        assertFalse(cat.getFeatureTypesByDataStore(ds).isEmpty());
     }
  
     @Test

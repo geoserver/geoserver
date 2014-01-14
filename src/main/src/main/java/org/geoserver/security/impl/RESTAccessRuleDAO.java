@@ -9,6 +9,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeSet;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import org.geoserver.config.GeoServerDataDirectory;
@@ -21,10 +22,7 @@ import org.geotools.util.logging.Logging;
  *
  */
 public class RESTAccessRuleDAO extends AbstractAccessRuleDAO<String> {
-
-    static {
-       LOGGER = Logging.getLogger(RESTAccessRuleDAO.class);
-    }
+    private final static Logger LOGGER = Logging.getLogger(RESTAccessRuleDAO.class);
     
     /**
      * rule pattern

@@ -11,34 +11,34 @@
  <parent>
    <groupId>org.geoserver</groupId>
    <artifactId>community</artifactId>
-   <version>2.4-SNAPSHOT</version>
+   <version>2.5-SNAPSHOT</version>
  </parent>
   
  <groupId>org.geoserver.community</groupId>
- <artifactId>sldService</artifactId>
+ <artifactId>gs-sldService</artifactId>
  <packaging>jar</packaging>
  <name>REST SLD service</name>
 
  <dependencies>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>main</artifactId>
-   <version>2.4-SNAPSHOT</version>
+   <artifactId>gs-main</artifactId>
+   <version>2.5-SNAPSHOT</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>rest</artifactId>
-   <version>2.4-SNAPSHOT</version>
+   <artifactId>gs-rest</artifactId>
+   <version>2.5-SNAPSHOT</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>restconfig</artifactId>
-   <version>2.4-SNAPSHOT</version>
+   <artifactId>gs-restconfig</artifactId>
+   <version>2.5-SNAPSHOT</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>wms</artifactId>
-   <version>2.4-SNAPSHOT</version>
+   <artifactId>gs-wms</artifactId>
+   <version>2.5-SNAPSHOT</version>
   </dependency>
   <dependency>
     <groupId>jdom</groupId>
@@ -58,26 +58,26 @@
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>main</artifactId>
+   <artifactId>gs-main</artifactId>
    <version>${project.version}</version>
    <classifier>tests</classifier>
    <scope>test</scope>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>wcs1_0</artifactId>
+   <artifactId>gs-wcs1_0</artifactId>
    <version>${project.version}</version>
    <scope>test</scope>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>wcs1_1</artifactId>
+   <artifactId>gs-wcs1_1</artifactId>
    <version>${project.version}</version>
    <scope>test</scope>
   </dependency>
   <dependency>
    <groupId>org.geoserver.extension</groupId>
-   <artifactId>h2</artifactId>
+   <artifactId>gs-h2</artifactId>
    <version>${project.version}</version>
    <scope>test</scope>
   </dependency>

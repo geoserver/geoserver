@@ -11,19 +11,19 @@
  <parent>
   <groupId>org.geoserver</groupId>
   <artifactId>extension</artifactId>
-  <version>2.4-SNAPSHOT</version>
+  <version>2.5-SNAPSHOT</version>
  </parent>
 
  <groupId>org.geoserver.extension</groupId>
- <artifactId>validation</artifactId>
+ <artifactId>gs-validation</artifactId>
  <packaging>jar</packaging>
  <name>Validation Module</name>
 
  <dependencies>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>main</artifactId>
-   <version>2.4-SNAPSHOT</version>
+   <artifactId>gs-main</artifactId>
+   <version>2.5-SNAPSHOT</version>
   </dependency>
  </dependencies>
 

@@ -1,0 +1,50 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+<wicket:head>
+  <wicket:link>
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+  </wicket:link>
+ </wicket:head>
+</head>
+<body>
+<wicket:extend>
+  <form wicket:id="form">
+   <ul class="plain" style="padding-top: 3em;">
+     <li>
+     <fieldset>
+       <legend>
+         <span><wicket:message key="reprojection">Reprojection</wicket:message></span>
+       </legend>
+       <ul class="plain" style="padding-top: 0.5em;">
+         <li>
+           <input type="checkbox" wicket:id="enableReprojection"></input>
+           <span><wicket:message key="enabled"></wicket:message></span>
+            
+            <div wicket:id="reprojection">
+            </div>
+          </li>
+        </ul>
+     </fieldset>
+     </li>
+     <li>
+     <fieldset>
+       <legend>
+         <span><wicket:message key="attributeRemapping">Attribute Remapping</wicket:message></span>
+       </legend>
+       <ul class="plain" style="padding-top: 0.5em;">
+         <li>
+            <div wicket:id="remapping">
+            </div>
+          </li>
+        </ul>
+     </fieldset>
+     </li>
+   </ul>
+   <div class="button-group selfclear">
+      <a href="#" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
+      <a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
+    </div>
+   </form>
+</wicket:extend>
+</body>
+</html>

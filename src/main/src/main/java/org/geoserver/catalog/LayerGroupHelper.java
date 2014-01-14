@@ -192,10 +192,14 @@ public class LayerGroupHelper {
             l = layers.get(i);
 
             ReferencedEnvelope re;
+            ResourceInfo resource = l.getResource(); 
             if (latlon) {
-                re = l.getResource().getLatLonBoundingBox();
+                re = resource.getLatLonBoundingBox();
             } else {
-                re = l.getResource().boundingBox();
+                re = resource.boundingBox();
+                if(re == null) {
+                    re = resource.getLatLonBoundingBox();
+                }
             }
 
             re = transform(re, bounds.getCoordinateReferenceSystem());
@@ -242,19 +246,30 @@ public class LayerGroupHelper {
     
     private static boolean checkLoops(LayerGroupInfo group, Stack<LayerGroupInfo> path) {
         path.push(group);
-        
-        for (PublishedInfo child : group.getLayers()) {
-            if (child instanceof LayerGroupInfo) {
-                if (path.contains(child)) {
-                    path.push((LayerGroupInfo) child);
-                    return true;
-                } else if (checkLoops((LayerGroupInfo) child, path)) {
-                    return true;
-                }                
+        if (group.getLayers() != null) {
+            for (PublishedInfo child : group.getLayers()) {
+                if (child instanceof LayerGroupInfo) {
+                    if (isGroupInStack((LayerGroupInfo) child, path)) {
+                        path.push((LayerGroupInfo) child);
+                        return true;
+                    } else if (checkLoops((LayerGroupInfo) child, path)) {
+                        return true;
+                    }                
+                }
             }
         }
         
         path.pop();
+        return false;
+    }
+    
+    private static boolean isGroupInStack(LayerGroupInfo group, Stack<LayerGroupInfo> path) {
+        for (LayerGroupInfo groupInPath : path) {
+            if (groupInPath.getId() != null && groupInPath.getId().equals(group.getId())) {
+                return true;
+            }
+        }
+        
         return false;
     }
 }

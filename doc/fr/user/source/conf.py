@@ -45,12 +45,12 @@ copyright = u'2012 TOPP'
 # other places throughout the built documents.
 #
 # The short X.Y version.
-version = '2.4'
+version = '2.5'
 # The full version, including alpha/beta/rc tags.
-release = '2.4-SNAPSHOT'
+release = '2.5-SNAPSHOT'
 # Users don't need to see the "SNAPSHOT" notation when it's there
 if release.find('SNAPSHOT') != -1:
-   release = '2.4.x'
+   release = '2.5.x'
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:

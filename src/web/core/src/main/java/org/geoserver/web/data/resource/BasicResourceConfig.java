@@ -11,6 +11,7 @@ import java.util.logging.Level;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
@@ -54,6 +55,8 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         TextField name = new TextField("name");
         name.setRequired(true);
         add(name);
+        add(new CheckBox("enabled"));
+        add(new CheckBox("advertised"));
         add(new TextField("title"));
         add(new TextArea("abstract"));
         add(new KeywordsEditor("keywords", LiveCollectionModel.list(new PropertyModel(model, "keywords"))));

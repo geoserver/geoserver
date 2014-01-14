@@ -35,6 +35,8 @@ public class SnapTest extends WPSTestSupport {
         WFSInfo wfs = getGeoServer().getService( WFSInfo.class );
         wfs.setFeatureBounding(true);
         getGeoServer().save(wfs);
+        // workaround for GEOS-5650
+        getGeoServer().save(getGeoServer().getService(WPSInfo.class));
     }
 
     @Test

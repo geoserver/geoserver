@@ -1,4 +1,4 @@
-GEOSERVER 2.4+ SERVICE EXTENSIONS README
+GEOSERVER 2.5+ SERVICE EXTENSIONS README
 
 This package contains a versioning WFS service implementation as well
 as a versioning postgis datastore that is distributed as a separate plug-in.  
@@ -11,8 +11,8 @@ Any other issues can be discussed on the mailing list (http://lists.sourceforge.
 
 COMPATIBILITY
 
-This jar should work with any version of GeoServer based on GeoTools 10.x.  
-Currently this is anything in 2.4.x.
+This jar should work with any version of GeoServer based on GeoTools 11.x  
+Currently this is anything in 2.5.x.
 
 INSTALLATION
 

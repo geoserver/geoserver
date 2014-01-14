@@ -216,26 +216,26 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
 
     @Test
     public void testGlobalGetMap() throws Exception {
-        Document dom = getAsDOM("wms/reflect?layers=base&format=kml");
-        assertXpathExists("/kml:kml/kml:Document/kml:name[text() = 'cite:Lakes,cite:Forests']", dom);
+        Document dom = getAsDOM("wms/reflect?layers=base&format=rss");
+        assertXpathExists("rss/channel/title[text() = 'cite:Lakes,cite:Forests']", dom);
 
-        dom = getAsDOM("wms/reflect?layers=sf:base&format=kml");
-        assertXpathExists("/kml:kml/kml:Document/kml:name[text() = 'sf:PrimitiveGeoFeature,sf:AggregateGeoFeature']", dom);
+        dom = getAsDOM("wms/reflect?layers=sf:base&format=rss");
+        assertXpathExists("rss/channel/title[text() = 'sf:PrimitiveGeoFeature,sf:AggregateGeoFeature']", dom);
 
-        dom = getAsDOM("wms/reflect?layers=cite:base&format=kml");
-        assertXpathExists("/kml:kml/kml:Document/kml:name[text() = 'cite:Bridges,cite:Buildings']", dom);
+        dom = getAsDOM("wms/reflect?layers=cite:base&format=rss");
+        assertXpathExists("rss/channel/title[text() = 'cite:Bridges,cite:Buildings']", dom);
     }
 
     @Test 
     public void testWorkspaceGetMap() throws Exception {
-        Document dom = getAsDOM("sf/wms?request=reflect&layers=base&format=kml");
-        assertXpathExists("/kml:kml/kml:Document/kml:name[text() = 'sf:PrimitiveGeoFeature,sf:AggregateGeoFeature']", dom);
+        Document dom = getAsDOM("sf/wms?request=reflect&layers=base&format=rss");
+        assertXpathExists("rss/channel/title[text() = 'sf:PrimitiveGeoFeature,sf:AggregateGeoFeature']", dom);
 
-        dom = getAsDOM("cite/wms?request=reflect&layers=base&format=kml");
-        assertXpathExists("/kml:kml/kml:Document/kml:name[text() = 'cite:Bridges,cite:Buildings']", dom);
+        dom = getAsDOM("cite/wms?request=reflect&layers=base&format=rss");
+        assertXpathExists("rss/channel/title[text() = 'cite:Bridges,cite:Buildings']", dom);
 
-        dom = getAsDOM("sf/wms?request=reflect&layers=cite:base&format=kml");
-        assertXpathExists("/kml:kml/kml:Document/kml:name[text() = 'sf:PrimitiveGeoFeature,sf:AggregateGeoFeature']", dom);
+        dom = getAsDOM("sf/wms?request=reflect&layers=cite:base&format=rss");
+        assertXpathExists("rss/channel/title[text() = 'sf:PrimitiveGeoFeature,sf:AggregateGeoFeature']", dom);
     }
     
     @Test
@@ -329,10 +329,10 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         global.setMode(Mode.NAMED);
         cat.save(global);
         
-        Document dom = getAsDOM("wms?request=reflect&layers=nested&format=kml");
+        Document dom = getAsDOM("wms?request=reflect&layers=nested&format=rss");
         // print(dom);
         
-        assertXpathExists("/kml:kml/kml:Document/kml:name[text() = 'cite:Bridges,cite:Lakes,cite:Forests']", dom);
+        assertXpathExists("rss/channel/title[text() = 'cite:Bridges,cite:Lakes,cite:Forests']", dom);
     }
     
     @Test
@@ -342,8 +342,8 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         nested.setMode(Mode.NAMED);
         cat.add(nested);
 
-        Document dom = getAsDOM("wms?request=reflect&layers=nested&format=kml");
-        assertXpathExists("/kml:kml/kml:Document/kml:name[text() = 'cite:Lakes,cite:Forests,cite:Lakes,cite:Forests']", dom);
+        Document dom = getAsDOM("wms?request=reflect&layers=nested&format=rss");
+        assertXpathExists("rss/channel/title[text() = 'cite:Lakes,cite:Forests,cite:Lakes,cite:Forests']", dom);
     }
     
     @Test
@@ -353,10 +353,10 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         nested.setMode(Mode.NAMED);
         cat.add(nested);
         
-        Document dom = getAsDOM("wms?request=reflect&layers=nested&format=kml");
+        Document dom = getAsDOM("wms?request=reflect&layers=nested&format=rss");
         // print(dom);
         
-        assertXpathExists("/kml:kml/kml:Document/kml:name[text() = 'cite:Bridges,cite:Lakes,cite:Forests']", dom);
+        assertXpathExists("rss/channel/title[text() = 'cite:Bridges,cite:Lakes,cite:Forests']", dom);
     }
 
     void assertBounds(LayerGroupInfo lg, String name, Document dom) throws Exception {

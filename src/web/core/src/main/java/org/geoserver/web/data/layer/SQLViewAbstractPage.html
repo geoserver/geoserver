@@ -17,8 +17,9 @@
         <li><label for="parameters"><wicket:message key="parameters">parameters</wicket:message></label>
             <a href="#" wicket:id="guessParams"><wicket:message key="guessParams">guess from sql</wicket:message></a>&nbsp;&nbsp;&nbsp;&nbsp;
             <a href="#" wicket:id="addNewParam"><wicket:message key="addNewParam">add new</wicket:message></a>&nbsp;&nbsp;&nbsp;&nbsp;
-            <a href="#" wicket:id="removeParam"><wicket:message key="removeSelected">remove elected</wicket:message></a>
+            <a href="#" wicket:id="removeParam"><wicket:message key="removeSelected">remove selected</wicket:message></a>
             <div wicket:id="parameters"></div>
+            <input type="checkbox" wicket:id="escapeSql"><wicket:message key="escapeSql">Escape special characters</wicket:message></input>
         </li>
         <li><label for="attributes"><wicket:message key="attributes">attributes</wicket:message></label>
             <a href="#" wicket:id="refresh"><wicket:message key="refresh">refresh</wicket:message></a>&nbsp;&nbsp;&nbsp;

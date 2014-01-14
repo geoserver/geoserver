@@ -21,6 +21,7 @@ package org.geoserver.sldservice.utils.classifier.impl;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.geoserver.sldservice.utils.classifier.ColorRamp;
@@ -50,7 +51,7 @@ public class CustomColorRamp implements ColorRamp {
 	}
 
 	public void revert() {
-
+        Collections.reverse(colors);
 	}
 
 	public void setNumClasses(int numClass) {
@@ -78,7 +79,6 @@ public class CustomColorRamp implements ColorRamp {
 		int red, green, blue;
 		double sRed, sGreen, sBlue;
 		int mid;
-		colors.add(new Color(0, 0, 0));
 		if (startColor == null || endColor == null)
 			throw new Exception(
 					"Start or end color not setted unable to build color ramp");

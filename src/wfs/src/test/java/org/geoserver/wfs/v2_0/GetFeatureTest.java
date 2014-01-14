@@ -460,12 +460,12 @@ public class GetFeatureTest extends WFS20TestSupport {
                 + "xmlns:fes='" + FES.NAMESPACE + "' "
                 + "xmlns:wfs='" + WFS.NAMESPACE + "'> "
                 + "<wfs:Query typeNames='cdf:Other'> "
-                + "<wfs:PropertyName>cdf:string2</wfs:PropertyName> "
                 + "</wfs:Query> " + "</wfs:GetFeature>";
     
             Document doc = postAsDOM("wfs", xml);
             assertGML32(doc);
-            
+            NodeList aggregatedBoundList = doc.getElementsByTagName("wfs:boundedBy");
+            assertFalse(aggregatedBoundList.getLength() == 0);
             NodeList features = doc.getElementsByTagName("cdf:Other");
             assertFalse(features.getLength() == 0);
     
@@ -479,6 +479,41 @@ public class GetFeatureTest extends WFS20TestSupport {
                 assertEquals(1, boxList.getLength());
                 Element box = (Element) boxList.item(0);
                 assertTrue(box.hasAttribute("srsName"));
+            }
+        } finally {
+            wfs.setFeatureBounding(oldFeatureBounding);
+            getGeoServer().save( wfs );
+        }
+    }
+
+    @Test
+    public void testPostWithBoundsDisabled() throws Exception {
+        // enable feature bounds computation
+        WFSInfo wfs = getWFS();
+        boolean oldFeatureBounding = wfs.isFeatureBounding();
+        wfs.setFeatureBounding(false);
+        getGeoServer().save( wfs );
+
+        try {
+            String xml = "<wfs:GetFeature service='WFS' version='2.0.0' "
+                + "xmlns:cdf='http://www.opengis.net/cite/data' "
+                + "xmlns:fes='" + FES.NAMESPACE + "' "
+                + "xmlns:wfs='" + WFS.NAMESPACE + "'> "
+                + "<wfs:Query typeNames='cdf:Other'> "
+                + "</wfs:Query> " + "</wfs:GetFeature>";
+
+            Document doc = postAsDOM("wfs", xml);
+            assertGML32(doc);
+            NodeList aggregatedBoundList = doc.getElementsByTagName("wfs:boundedBy");
+            assertTrue(aggregatedBoundList.getLength() == 0);
+            NodeList features = doc.getElementsByTagName("cdf:Other");
+            assertFalse(features.getLength() == 0);
+
+            for (int i = 0; i < features.getLength(); i++) {
+                Element feature = (Element) features.item(i);
+                assertTrue(feature.hasAttribute("gml:id"));
+                NodeList boundList = feature.getElementsByTagName("gml:boundedBy");
+                assertEquals(0, boundList.getLength());
             }
         } finally {
             wfs.setFeatureBounding(oldFeatureBounding);

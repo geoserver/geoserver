@@ -141,10 +141,6 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
         String principal = super.getPreAuthenticatedPrincipal(request);
         
         HttpSession session = request.getSession(false);        
-        if (session==null && Boolean.TRUE.equals(request.getAttribute(GeoServerSecurityContextPersistenceFilter.ALLOWSESSIONCREATION_ATTR))) {
-            session=request.getSession();
-            LOGGER.info("Http session created by CAS");
-        }
 
         if (principal!=null && session!=null) {
             session.setAttribute(GeoServerCasConstants.CAS_ASSERTION_KEY, 
@@ -203,10 +199,6 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
         
         if (SecurityContextHolder.getContext().getAuthentication()!=null) {
             HttpSession session = httpReq.getSession(false);        
-            if (session==null && Boolean.TRUE.equals(httpReq.getAttribute(GeoServerSecurityContextPersistenceFilter.ALLOWSESSIONCREATION_ATTR))) {
-                session=httpReq.getSession();
-                LOGGER.info("Http session created by CAS");
-            }
 
             if (session !=null && 
                     session.getAttribute(GeoServerCasConstants.CAS_ASSERTION_KEY)!=null && singleSignOut) {

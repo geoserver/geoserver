@@ -12,12 +12,9 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Stroke;
 import java.awt.geom.Rectangle2D;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.geoserver.wms.WMSMapContent;
-import org.geotools.renderer.lite.RendererUtilities;
-import org.geotools.renderer.lite.StreamingRenderer;
 
 
 public class ScaleRatioDecoration implements MapDecoration {
@@ -31,13 +28,7 @@ public class ScaleRatioDecoration implements MapDecoration {
     }
 
     public double getScale(WMSMapContent mapContent) {
-        double dpi = RendererUtilities.getDpi(mapContent.getRequest().getFormatOptions());
-        Map hints = new HashMap();        
-        hints.put(StreamingRenderer.DPI_KEY, dpi);
-        return RendererUtilities.calculateOGCScale(
-                mapContent.getRenderingArea(),
-                mapContent.getRequest().getWidth(),
-                hints);
+        return mapContent.getScaleDenominator(true);
     }
 
     public String getScaleText(WMSMapContent mapContent) {

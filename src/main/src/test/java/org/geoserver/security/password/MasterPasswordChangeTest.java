@@ -19,15 +19,13 @@ import org.geoserver.security.GeoServerSecurityTestSupport;
 import org.geoserver.security.auth.GeoServerRootAuthenticationProvider;
 import org.geoserver.security.validation.MasterPasswordChangeException;
 import org.geoserver.test.SystemTest;
-import org.geoserver.test.TestSetup;
-import org.geoserver.test.TestSetupFrequency;
 import org.geotools.data.DataUtilities;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
-@TestSetup(run=TestSetupFrequency.REPEAT)
+//@TestSetup(run=TestSetupFrequency.REPEAT)
 @Category(SystemTest.class)
 public class MasterPasswordChangeTest extends GeoServerSecurityTestSupport {
 
@@ -121,31 +119,18 @@ public class MasterPasswordChangeTest extends GeoServerSecurityTestSupport {
         //////////
         assertEquals("geoserver3",getMasterPassword());
         getSecurityManager().getKeyStoreProvider().getConfigPasswordKey();
-    }
 
-    @Test
-    public void testRootLoginAfterMasterPasswdChange() throws Exception {
-        String masterPWAsString = getMasterPassword();
-
+        
+        /// Test root login after master password change
+        Authentication auth = new UsernamePasswordAuthenticationToken("root", "geoserver3");
         GeoServerRootAuthenticationProvider authProvider = new GeoServerRootAuthenticationProvider();
         authProvider.setSecurityManager(getSecurityManager());
-
-        Authentication auth = new UsernamePasswordAuthenticationToken("root", masterPWAsString);
         auth = authProvider.authenticate(auth);
         assertTrue(auth.isAuthenticated());
-
-        MasterPasswordConfig config = getSecurityManager().getMasterPasswordConfig();
-
-        getSecurityManager().saveMasterPasswordConfig(config, masterPWAsString.toCharArray(), 
-            "geoserver1".toCharArray(), "geoserver1".toCharArray());
-        assertEquals("geoserver1", getMasterPassword());
-
-        auth = new UsernamePasswordAuthenticationToken("root", masterPWAsString);
+        
+        auth = new UsernamePasswordAuthenticationToken("root", "abcdefghijk");
         assertNull(authProvider.authenticate(auth));
         assertFalse(auth.isAuthenticated());
-
-        auth = new UsernamePasswordAuthenticationToken("root", "geoserver1");
-        auth = authProvider.authenticate(auth);
-        assertTrue(auth.isAuthenticated());
     }
+
 }

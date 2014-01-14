@@ -61,10 +61,9 @@ import org.geoserver.wms.decoration.WatermarkDecoration;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
-import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.ImageWorker;
 import org.geotools.map.Layer;
@@ -73,11 +72,9 @@ import org.geotools.parameter.Parameter;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
-import org.geotools.renderer.GTRenderer;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.renderer.lite.gridcoverage2d.GridCoverageRenderer;
-import org.geotools.renderer.shape.ShapefileRenderer;
 import org.geotools.resources.image.ColorUtilities;
 import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.Style;
@@ -85,7 +82,6 @@ import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.geometry.BoundingBox;
-import org.opengis.geometry.Envelope;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -264,8 +260,6 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      */
     public RenderedImageMap produceMap(final WMSMapContent mapContent, final boolean tiled)
             throws ServiceException {
-        final MapDecorationLayout layout = findDecorationLayout(mapContent, tiled);
-
         Rectangle paintArea = new Rectangle(0, 0, mapContent.getMapWidth(),
                 mapContent.getMapHeight());
 
@@ -314,6 +308,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             throw new ServiceException("Rendering request would use " + kbUsed + "KB, whilst the "
                     + "maximum memory allowed is " + kbMax + "KB");
         }
+        
+        final MapDecorationLayout layout = findDecorationLayout(request, tiled);
 
         // TODO: allow rendering to continue with vector layers
         // TODO: allow rendering to continue with layout
@@ -398,14 +394,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         graphic.setRenderingHints(hintsMap);
 
         RenderingHints hints = new RenderingHints(hintsMap);
-        GTRenderer renderer;
-        if (DefaultWebMapService.useShapefileRenderer()) {
-            renderer = new ShapefileRenderer();
-        } else {
-            StreamingRenderer sr = new StreamingRenderer();
-            sr.setThreadPool(DefaultWebMapService.getRenderingPool());
-            renderer = sr;
-        }
+        StreamingRenderer renderer = new StreamingRenderer();
+        renderer .setThreadPool(DefaultWebMapService.getRenderingPool());
         renderer.setMapContent(mapContent);
         renderer.setJava2DHints(hints);
 
@@ -414,13 +404,13 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         rendererParams.put("optimizedDataLoadingEnabled", new Boolean(true));
         rendererParams.put("renderingBuffer", new Integer(mapContent.getBuffer()));
         rendererParams.put("maxFiltersToSendToDatastore", DefaultWebMapService.getMaxFilterRules());
-        rendererParams.put(ShapefileRenderer.SCALE_COMPUTATION_METHOD_KEY,
-                ShapefileRenderer.SCALE_OGC);
+        rendererParams.put(StreamingRenderer.SCALE_COMPUTATION_METHOD_KEY,
+                StreamingRenderer.SCALE_OGC);
         if (AA_NONE.equals(antialias)) {
-            rendererParams.put(ShapefileRenderer.TEXT_RENDERING_KEY,
+            rendererParams.put(StreamingRenderer.TEXT_RENDERING_KEY,
                     StreamingRenderer.TEXT_RENDERING_STRING);
         } else {
-            rendererParams.put(ShapefileRenderer.TEXT_RENDERING_KEY,
+            rendererParams.put(StreamingRenderer.TEXT_RENDERING_KEY,
                     StreamingRenderer.TEXT_RENDERING_ADAPTIVE);
         }
         if (DefaultWebMapService.isLineWidthOptimizationEnabled()) {
@@ -434,14 +424,14 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         }
         
         // see if the user specified a dpi
-        if (mapContent.getRequest().getFormatOptions().get("dpi") != null) {
-            rendererParams.put(StreamingRenderer.DPI_KEY, ((Integer) mapContent.getRequest()
+        if (request.getFormatOptions().get("dpi") != null) {
+            rendererParams.put(StreamingRenderer.DPI_KEY, ((Integer) request
                     .getFormatOptions().get("dpi")));
         }
 
         boolean kmplacemark = false;
-        if (mapContent.getRequest().getFormatOptions().get("kmplacemark") != null)
-            kmplacemark = ((Boolean) mapContent.getRequest().getFormatOptions().get("kmplacemark"))
+        if (request.getFormatOptions().get("kmplacemark") != null)
+            kmplacemark = ((Boolean) request.getFormatOptions().get("kmplacemark"))
                     .booleanValue();
         if (kmplacemark) {
             // create a StyleVisitor that copies a style, but removes the
@@ -480,6 +470,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         final RenderExceptionStrategy nonIgnorableExceptionListener;
         nonIgnorableExceptionListener = new RenderExceptionStrategy(renderer);
         renderer.addRenderListener(nonIgnorableExceptionListener);
+        
+        onBeforeRender(renderer);
 
         // setup the timeout enforcer (the enforcer is neutral when the timeout is 0)
         int maxRenderingTime = wms.getMaxRenderingTime() * 1000;
@@ -524,15 +516,23 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                     "internalError");
         }
 
-        // if (!this.abortRequested) {
-        if (palette != null && palette.getMapSize() < 256)
+        if (palette != null && palette.getMapSize() < 256) {
             image = optimizeSampleModel(preparedImage);
-        else
+        } else {
             image = preparedImage;
-        // }
+        }
 
         RenderedImageMap map = buildMap(mapContent, image);
         return map;
+    }
+
+    /**
+     * Allows subclasses to customize the renderer before the paint method gets invoked
+     * 
+     * @param renderer
+     */
+    protected void onBeforeRender(StreamingRenderer renderer) {
+        // TODO Auto-generated method stub
     }
 
     protected RenderedImageMap buildMap(final WMSMapContent mapContent, RenderedImage image) {
@@ -543,10 +543,10 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         return map;
     }
     
-    protected MapDecorationLayout findDecorationLayout(WMSMapContent mapContent, final boolean tiled) {
+    protected MapDecorationLayout findDecorationLayout(GetMapRequest request, final boolean tiled) {
         String layoutName = null;
-        if (mapContent.getRequest().getFormatOptions() != null) {
-            layoutName = (String) mapContent.getRequest().getFormatOptions().get("layout");
+        if (request.getFormatOptions() != null) {
+            layoutName = (String) request.getFormatOptions().get("layout");
         }
 
         MapDecorationLayout layout = null;
@@ -649,7 +649,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * @param paletteInverter
      * @return
      */
-    final protected RenderedImage prepareImage(int width, int height, IndexColorModel palette,
+    protected RenderedImage prepareImage(int width, int height, IndexColorModel palette,
             boolean transparent) {
         return ImageUtils.createImage(width, height, isPaletteSupported() ? palette : null,
                 transparent && isTransparencySupported());
@@ -754,7 +754,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         // Get the reader
         //
         final Feature feature = mapContent.layers().get(0).getFeatureSource().getFeatures().features().next();
-        final AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) feature.getProperty("grid").getValue();
+        final GridCoverage2DReader reader = (GridCoverage2DReader) feature.getProperty("grid").getValue();
         final Object params = feature.getProperty("params").getValue();
 
         // 
@@ -810,7 +810,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         //
         // Dead best available coverage and render it
         //        
-        final CoordinateReferenceSystem coverageCRS= reader.getCrs();
+        final CoordinateReferenceSystem coverageCRS= reader.getCoordinateReferenceSystem();
         final GridGeometry2D readGG;
         final boolean equalsMetadata=CRS.equalsIgnoreMetadata(mapCRS, coverageCRS);
         boolean sameCRS;
@@ -1182,7 +1182,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * @throws IOException
      */
     private static GridCoverage2D readBestCoverage(
-            final AbstractGridCoverage2DReader reader, 
+            final GridCoverage2DReader reader, 
             final Object params,
             final ReferencedEnvelope envelope,
             final Rectangle requestedRasterArea,
@@ -1196,7 +1196,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         //
         ////
         try {
-            final CoordinateReferenceSystem coverageCRS=reader.getCrs();
+            final CoordinateReferenceSystem coverageCRS=reader.getCoordinateReferenceSystem();
             final CoordinateReferenceSystem requestCRS= envelope.getCoordinateReferenceSystem();
             final ReferencedEnvelope coverageEnvelope=new ReferencedEnvelope(reader.getOriginalEnvelope());
             if(CRS.equalsIgnoreMetadata(coverageCRS, requestCRS)){
@@ -1217,7 +1217,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         }
 
         // //
-        // It is an AbstractGridCoverage2DReader, let's use parameters
+        // It is an GridCoverage2DReader, let's use parameters
         // if we have any supplied by a user.
         // //
         // first I created the correct ReadGeometry
@@ -1316,8 +1316,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      * @return
      */
     static List<RasterSymbolizer> getRasterSymbolizers(WMSMapContent mc, int layerIndex) {
-        double scaleDenominator = RendererUtilities.calculateOGCScale(mc.getRenderingArea(),
-                mc.getMapWidth(), null);
+        double scaleDenominator = mc.getScaleDenominator();
         Layer layer = mc.layers().get(layerIndex);
         FeatureType featureType = layer.getFeatureSource().getSchema();
         Style style = layer.getStyle();

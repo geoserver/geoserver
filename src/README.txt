@@ -7,16 +7,16 @@ compiling it and optionally import it into eclipse.
 1) Install prerequisites
 
 GeoServer needs a Java SDK, maven (version 3 is recommended) and git.
-While compiling GeoServer with openJDK 6 and 7 works now, sun's JDK 6 is stil the recommendation.
+While compiling GeoServer with OpenJDK 6 and 7 works now, Sun's JDK 6 is still the recommendation.
 Under Debian/Ubuntu simply run:
 
-sudo apt-get insall sun-java6-jdk maven git
+sudo apt-get install sun-java6-jdk maven git
 or
-sudo aptitude insall sun-java6-jdk maven git
+sudo aptitude install sun-java6-jdk maven git
 
 == Windows ==
 
-1) Install JAVA SDK
+1) Install Java SDK
 Download and install the Java SDK, Sun Java version 6.0 (1.6.0_XX)
 http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html#javasejdk
 

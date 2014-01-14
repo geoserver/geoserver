@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
@@ -19,9 +20,11 @@ import java.util.zip.ZipFile;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FileUtils;
+import org.geoserver.rest.RestletException;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
+import org.restlet.data.Status;
 import org.vfny.geoserver.global.ConfigurationException;
 import org.vfny.geoserver.global.GeoserverDataDirectory;
 
@@ -124,15 +127,33 @@ public class RESTUtils {
         throws IOException {
         
         final File newFile = new File(directory, fileName);
-        if (deleteDirectoryContent && newFile.exists()) {
-        	FileUtils.cleanDirectory(directory);
+        
+        if(newFile.exists()) {
+            if (deleteDirectoryContent) {
+                FileUtils.cleanDirectory(directory);
+            } else {
+                // delete the file, otherwise replacing it with a smaller one will leave bytes at the end
+                newFile.delete();
+            }
         }
         
-        final ReadableByteChannel source =request.getEntity().getChannel();
-        final FileChannel outputChannel = IOUtils.getOuputChannel(newFile);
-        IOUtils.copyChannel(1024*1024, source,outputChannel );
-        IOUtils.closeQuietly(source);
-        IOUtils.closeQuietly(outputChannel);
+        final ReadableByteChannel source = request.getEntity().getChannel();
+        RandomAccessFile raf = null;
+        FileChannel outputChannel = null;
+        try {
+            raf = new RandomAccessFile(newFile, "rw");
+            outputChannel = raf.getChannel();
+            IOUtils.copyChannel(1024 * 1024, source, outputChannel);
+        } finally {
+            try {
+                if(raf != null) {
+                    raf.close();
+                }
+            } finally {
+                IOUtils.closeQuietly(source);
+                IOUtils.closeQuietly(outputChannel);
+            }
+        }
         return newFile;
     }
     
@@ -208,16 +229,25 @@ public class RESTUtils {
      */
     public static File handleEXTERNALUpload(Request request) throws IOException {
         //get the URL for this file to upload
-        final InputStream inStream=request.getEntity().getStream();
-        final String stringURL=IOUtils.getStringFromStream(inStream);
-        final URL fileURL=new URL(stringURL);
-
-        final File inputFile= IOUtils.URLToFile(fileURL);
-        if(inputFile!=null && inputFile.exists() && inputFile.canRead()) {
-            return inputFile;
+        InputStream inStream = null;
+        URL fileURL ;
+        try {
+            inStream = request.getEntity().getStream();
+            final String stringURL = IOUtils.getStringFromStream(inStream);
+            fileURL = new URL(stringURL);
+        } finally {
+            IOUtils.closeQuietly(inStream);
         }
 
-        return null;
+        final File inputFile = IOUtils.URLToFile(fileURL);
+        if(inputFile == null || !inputFile.exists()) {
+            throw new RestletException("Failed to locate the input file " + fileURL, Status.CLIENT_ERROR_BAD_REQUEST);
+        } else if(!inputFile.canRead()) {
+            throw new RestletException("Input file is not readable, check filesystem permissions: " + fileURL, 
+                    Status.CLIENT_ERROR_BAD_REQUEST);
+        }
+
+        return inputFile;
     }
     
     static Set<String> ZIP_MIME_TYPES = new HashSet();

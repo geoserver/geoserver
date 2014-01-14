@@ -11,11 +11,11 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>extension</artifactId>
-    <version>2.4-SNAPSHOT</version>
+    <version>2.5-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.extension</groupId>
-  <artifactId>imagemosaic-jdbc</artifactId>
+  <artifactId>gs-imagemosaic-jdbc</artifactId>
   <packaging>jar</packaging>
   <name>Image Mosaic JDBC Extension</name>
 

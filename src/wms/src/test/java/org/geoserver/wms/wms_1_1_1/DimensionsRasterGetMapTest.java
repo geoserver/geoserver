@@ -7,6 +7,10 @@ package org.geoserver.wms.wms_1_1_1;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.wms.WMSDimensionsTestSupport;
@@ -33,8 +37,8 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
 
     @Test
     public void testDefaultValues() throws Exception {
-        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
-        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
         
         BufferedImage image = getAsImage(BASE_URL, "image/png");
 
@@ -45,8 +49,8 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
     
     @Test
     public void testElevation() throws Exception {
-        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
-        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
         
         BufferedImage image = getAsImage(BASE_URL + "&elevation=100", "image/png");
 
@@ -58,8 +62,8 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
     
     @Test
     public void testTime() throws Exception {
-        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
-        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
         
         BufferedImage image = getAsImage(BASE_URL + "&time=2008-10-31T00:00:00.000Z", "image/png");
 
@@ -70,8 +74,8 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
     
     @Test
     public void testTimeTwice() throws Exception {
-        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
-        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
         
         BufferedImage image = getAsImage(BASE_URL + "&time=2008-10-31T00:00:00.000Z", "image/png");
 
@@ -83,8 +87,8 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
     
     @Test
     public void testTimeElevation() throws Exception {
-        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
-        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
         
         BufferedImage image = getAsImage(BASE_URL + "&time=2008-10-31T00:00:00.000Z&elevation=100", "image/png");
 
@@ -94,5 +98,30 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         assertPixel(image, 68, 72, new Color(240, 240, 255));
     }
     
+    @Test
+    public void testTimeRange() throws Exception {
+        setupRasterDimension(TIMERANGES, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
+        setupRasterDimension(TIMERANGES, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(TIMERANGES, "wavelength", DimensionPresentation.LIST, null, null, null);
+        setupRasterDimension(TIMERANGES, "date", DimensionPresentation.LIST, null, null, null);
+
+        String baseUrl = "wms?LAYERS=" + getLayerId(TIMERANGES) + "&STYLES=temperature&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG:4326" +
+        		"&BBOX=-0.89131513678082,40.246933882167,15.721292974683,44.873229811941&WIDTH=200&HEIGHT=80&bgcolor=0xFFFFFF";
+
+        // in the last range, it's bluish
+        BufferedImage image = getAsImage(baseUrl + "&TIME=2008-11-05T00:00:00.000Z/2008-11-06T12:00:00.000Z", "image/png");
+        assertPixel(image, 36, 31, new Color(0,0,0));
+        assertPixel(image, 68, 72, new Color(249, 249, 255));
+        
+        // in the middle hole, no data, thus white
+        image = getAsImage(baseUrl + "&TIME=2008-11-04T12:00:00.000Z/2008-11-04T16:00:00.000Z", "image/png");
+        assertPixel(image, 36, 31, Color.WHITE);
+        assertPixel(image, 68, 72, Color.WHITE);
+        
+        // first range, red-ish
+        image = getAsImage(baseUrl + "&TIME=2008-10-31T12:00:00.000Z/2008-10-31T16:00:00.000Z", "image/png");
+        assertPixel(image, 36, 31, Color.BLACK);
+        assertPixel(image, 68, 72, new Color(255, 170, 170));
+    }
     
 }

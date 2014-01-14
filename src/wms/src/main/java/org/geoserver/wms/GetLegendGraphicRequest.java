@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.geotools.styling.Style;
@@ -36,6 +37,7 @@ import org.opengis.feature.type.Name;
  *  <tr><td>FORMAT </td><td>Required </td><td>This gives the MIME type of the file format in which to return the legend graphic. Allowed values are the same as for the FORMAT= parameter of the WMS GetMap request. </td></tr>
  *  <tr><td>WIDTH </td><td>Optional </td><td>This gives a hint for the width of the returned graphic in pixels. Vector-graphics can use this value as a hint for the level of detail to include. </td></tr>
  *  <tr><td>HEIGHT </td><td>Optional </td><td>This gives a hint for the height of the returned graphic in pixels. </td></tr>
+ *  <tr><td>LANGUAGE </td><td>Optional </td><td>Permits to have internationalized text in legend output. </td></tr>
  *  <tr><td>EXCEPTIONS </td><td>Optional </td><td>This gives the MIME type of the format in which to return exceptions. Allowed values are the same as for the EXCEPTIONS= parameter of the WMS GetMap request.</td></tr>
  *  <tr><td>TRANSPARENT </td><td>Optional </td><td><code>true</code> if the legend image background should be transparent. Defaults to <code>false</code>.</td></tr>
  *  </table>
@@ -141,6 +143,12 @@ public class GetLegendGraphicRequest extends WMSRequest {
     private boolean transparent;
 
     private boolean strict = true;
+    
+    /**
+     * Optional locale to be used for text in output.
+     * 
+     */
+    private Locale locale;
 
     /**
      * Creates a new GetLegendGraphicRequest object.
@@ -273,6 +281,7 @@ public class GetLegendGraphicRequest extends WMSRequest {
      * are available.
      * <li><code>minSymbolSize</code>: a number defining the minimum size to be rendered for a 
      * symbol (defaults to 3).
+     * 
      * </ul>
      * </p>
      * 
@@ -336,6 +345,8 @@ public class GetLegendGraphicRequest extends WMSRequest {
 	/** SLD replacement */
     private Map /* <String,Object> */env = new HashMap();
 
+    
+
     /**
      * Map of strings that make up the SLD enviroment for variable substitution
      *
@@ -352,5 +363,23 @@ public class GetLegendGraphicRequest extends WMSRequest {
      */
     public void setEnv(Map enviroment) {
         this.env = enviroment;
+    }
+
+    /**
+     * Sets the optional Locale to be used for text in legend output.
+     * 
+     * @param locale
+     */
+    public void setLocale(Locale locale) {
+        this.locale = locale;
+    }
+    
+    /**
+     * Gets the locale to be used for text in output
+     * (null to use default locale).
+     * @return
+     */
+    public Locale getLocale() {
+        return this.locale;
     }
 }

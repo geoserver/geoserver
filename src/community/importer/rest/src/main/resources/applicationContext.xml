@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <!--
+   rest bindings
+    -->
+  <bean id="importResource" class="org.geoserver.importer.rest.ImportResource">
+    <constructor-arg ref="importer"/>
+  </bean>
+  <bean id="importContextFinder" class="org.geoserver.rest.BeanResourceFinder">
+      <constructor-arg value="importResource"/>
+  </bean>
+
+  <bean id="importTaskResource" class="org.geoserver.importer.rest.TaskResource">
+    <constructor-arg ref="importer"/>
+  </bean>
+  <bean id="importTaskFinder" class="org.geoserver.rest.BeanResourceFinder">
+      <constructor-arg value="importTaskResource"/>
+  </bean>
+
+  <bean id="taskTargetResource" class="org.geoserver.importer.rest.TaskTargetResource">
+    <constructor-arg ref="importer"/>
+  </bean>
+  <bean id="taskTargetFinder" class="org.geoserver.rest.BeanResourceFinder">
+    <constructor-arg value="taskTargetResource"/>
+  </bean>
+
+  <bean id="layerResource" class="org.geoserver.importer.rest.LayerResource">
+    <constructor-arg ref="importer"/>
+  </bean>
+  <bean id="layerFinder" class="org.geoserver.rest.BeanResourceFinder">
+      <constructor-arg value="layerResource"/>
+  </bean>
+
+  <bean id="importDataResource" class="org.geoserver.importer.rest.DataResource">
+    <constructor-arg ref="importer"/>
+  </bean>
+  <bean id="importDataFinder" class="org.geoserver.rest.BeanResourceFinder">
+      <constructor-arg value="importDataResource"/>
+  </bean>
+
+  <bean id="dirResource" class="org.geoserver.importer.rest.DirectoryResource">
+    <constructor-arg ref="importer"/>
+  </bean>
+  <bean id="dirFinder" class="org.geoserver.rest.BeanResourceFinder">
+      <constructor-arg value="dirResource"/>
+  </bean>
+
+  <bean id="txResource" class="org.geoserver.importer.rest.TransformResource">
+    <constructor-arg ref="importer"/>
+  </bean>
+  <bean id="txFinder" class="org.geoserver.rest.BeanResourceFinder">
+      <constructor-arg value="txResource"/>
+  </bean>
+
+  
+  <bean id="importRestMapping" class="org.geoserver.rest.RESTMapping">
+    <property name="routes">
+      <map>
+        <entry>
+          <key>
+            <value>/imports</value>
+          </key>
+          <value>importContextFinder</value>
+        </entry>
+        <entry>
+          <key>
+            <value>/imports/{import}</value>
+          </key>
+          <value>importContextFinder</value>
+        </entry>
+        <entry>
+          <key>
+            <value>/imports/{import}/data</value>
+          </key>
+          <value>importDataFinder</value>
+        </entry>
+        <entry>
+          <key>
+            <value>/imports/{import}/tasks/{task}/data</value>
+          </key>
+          <value>importDataFinder</value>
+        </entry>
+        <entry>
+          <key>
+            <value>/imports/{import}/data/files</value>
+          </key>
+          <value>dirFinder</value>
+        </entry>
+        <entry>
+          <key>
+            <value>/imports/{import}/data/files/{file}</value>
+          </key>
+          <value>dirFinder</value>
+        </entry>
+        <entry>
+          <key>
+            <value>/imports/{import}/tasks/{task}/data/files</value>
+          </key>
+          <value>dirFinder</value>
+        </entry>
+        <entry>
+          <key>
+            <value>/imports/{import}/tasks/{task}/data/files/{file}</value>
+          </key>
+          <value>dirFinder</value>
+        </entry>
+        <entry>
+          <key>
+            <value>/imports/{import}/tasks</value>
+          </key>
+          <value>importTaskFinder</value>
+        </entry>
+        <entry>
+          <key>
+            <value>/imports/{import}/tasks/{task}</value>
+          </key>
+          <value>importTaskFinder</value>
+        </entry>
+        <entry>
+          <key>
+            <value>/imports/{import}/tasks/{task}/target</value>
+          </key>
+          <value>taskTargetFinder</value>
+        </entry>
+        <entry>
+          <key>
+            <value>/imports/{import}/tasks/{task}/progress</value>
+          </key>
+          <value>importTaskFinder</value>
+        </entry>
+        <entry>
+          <key>
+            <value>/imports/{import}/tasks/{task}/layer</value>
+          </key>
+          <value>layerFinder</value>
+        </entry>
+        <entry>
+          <key>
+            <value>/imports/{import}/tasks/{task}/transforms</value>
+          </key>
+          <value>txFinder</value>
+        </entry>
+        <entry>
+          <key>
+            <value>/imports/{import}/tasks/{task}/transforms/{transform}</value>
+          </key>
+          <value>txFinder</value>
+        </entry>
+      </map>
+    </property>
+  </bean>
+</beans>

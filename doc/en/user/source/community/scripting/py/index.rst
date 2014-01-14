@@ -245,7 +245,7 @@ The final completed version:
 
    @process(
       title='Buffer', 
-      description='Buffers a geometry'), 
+      description='Buffers a geometry', 
       inputs={'geom': (Geometry, 'The geometry to buffer'), 
               'distance':(float,'The buffer distance')}, 
       outputs={'result': (Geometry, 'The buffered geometry')}

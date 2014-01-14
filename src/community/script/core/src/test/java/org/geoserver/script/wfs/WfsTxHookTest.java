@@ -13,21 +13,11 @@ import javax.script.ScriptEngine;
 
 import org.apache.commons.io.FileUtils;
 import org.geoserver.script.ScriptIntTestSupport;
-import org.geoserver.script.ScriptManager;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.request.TransactionRequest;
 import org.geoserver.wfs.request.TransactionResponse;
 
 public abstract class WfsTxHookTest extends ScriptIntTestSupport {
-
-    ScriptManager scriptMgr;
-
-    @Override
-    protected void oneTimeSetUp() throws Exception {
-        super.oneTimeSetUp();
-
-        scriptMgr = getScriptManager();
-    }
 
     public abstract String getExtension();
 

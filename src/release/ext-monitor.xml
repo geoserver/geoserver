@@ -9,7 +9,7 @@
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
-        <include>monitor-core-*.jar</include>
+        <include>gs-monitor-core-*.jar</include>
         <include>jfreechart-*jar</include>
         <include>jcommon-*jar</include>
         <include>wicket-datetime-*.jar</include>

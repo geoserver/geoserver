@@ -268,7 +268,7 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
 
     public <T extends Info> T get(Class<T> type, Filter filter) throws IllegalArgumentException {
 
-        CloseableIterator<T> it = db.query(type, filter, null, 2, null);
+        CloseableIterator<T> it = db.query(type, filter, null, 2, (org.opengis.filter.sort.SortBy)null);
         T result = null;
         try {
             if (it.hasNext()) {

@@ -21,8 +21,9 @@ import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.monitor.Monitor;
 import org.geoserver.monitor.MonitorConfig;
 import org.geotools.util.logging.Logging;
+import org.springframework.beans.factory.DisposableBean;
 
-public class MonitoringDataSource extends BasicDataSource {
+public class MonitoringDataSource extends BasicDataSource implements DisposableBean {
 
     static Logger LOGGER = Logging.getLogger(Monitor.class);
 
@@ -160,4 +161,21 @@ public class MonitoringDataSource extends BasicDataSource {
     String getURL(Properties db) {
         return db.getProperty("url").replace("${GEOSERVER_DATA_DIR}", dataDirectory.root().getAbsolutePath());
     }
+
+	@Override
+	public <T> T unwrap(Class<T> iface) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isWrapperFor(Class<?> iface) throws SQLException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		super.close();
+	}
 }

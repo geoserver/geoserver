@@ -33,15 +33,26 @@
     </property>
   </bean>
 
+  <!-- disable the geoserver web console if server started with -DGEOSERVER_CONSOLE_DISABLED=true -->
+  <bean id="geoserverConsoleDisabled" class="java.lang.Boolean">
+    <constructor-arg value="#{ systemProperties['GEOSERVER_CONSOLE_DISABLED'] ?: false }" />
+  </bean>
+
+  <!-- choose between wicket UI or filePublisher depending if the console is diabled or not.
+  FilePublisher will give a 404 for all web console requests -->
+  <bean id="webDispatcherMappingSystem" class="java.lang.String">
+    <constructor-arg value="#{ geoserverConsoleDisabled ? 'filePublisher' : 'wicket' }" />
+  </bean>
+
   <bean id="webDispatcherMapping"
     class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping"
     lazy-init="true">
     <property name="alwaysUseFullPath" value="true" />
     <property name="mappings">
       <props>
-        <prop key="/web">wicket</prop>
-        <prop key="/web/**">wicket</prop>
-        <prop key="/web/resources/**">wicket</prop>
+        <prop key="/web">#{webDispatcherMappingSystem}</prop>
+        <prop key="/web/**">#{webDispatcherMappingSystem}</prop>
+        <prop key="/web/resources/**">#{webDispatcherMappingSystem}</prop>
         <prop key="/">filePublisher</prop>
         <prop key="/index.html">filePublisher</prop>
       </props>
@@ -256,14 +267,20 @@
       </list>
     </property>
   </bean>
-
-  <!-- Layer configuration panels -->
-  <bean id="basicLayerConfigPanel" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
-    <property name="id" value="basic" />
-    <property name="titleKey" value="publish.layer.config.basic" />
-    <property name="componentClass" value="org.geoserver.web.publish.BasicLayerConfig" />
+  <bean id="coverageBandsConfigPanel"
+    class="org.geoserver.web.data.resource.ResourceConfigurationPanelInfo">
+    <property name="id" value="coverage" />
+    <property name="titleKey" value="data.resource.config.coverage" />
+    <property name="componentClass"
+      value="org.geoserver.web.data.resource.CoverageBandsConfigurationPanel" />
+    <property name="supportedTypes">
+      <list>
+        <value>org.geoserver.catalog.CoverageInfo</value>
+      </list>
+    </property>
   </bean>
 
+  <!-- Layer configuration panels -->
   <bean id="httpLayerConfigPanel" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
     <property name="id" value="http" />
     <property name="titleKey" value="publish.layer.config.http" />
@@ -303,6 +320,15 @@
       value="org.geoserver.web.data.store.raster.GeoTIFFRasterEditPanel" />
   </bean>
 
+  <bean id="imageMosaicStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
+    <property name="id" value="imagemosaicRaster" />
+    <property name="factoryClass" value="org.geotools.gce.imagemosaic.ImageMosaicFormat" />
+    <property name="iconBase" value="org.geoserver.web.GeoServerApplication" />
+    <property name="icon" value="img/icons/geosilk/page_white_raster.png" />
+    <property name="componentClass"
+      value="org.geoserver.web.data.store.raster.DirectoryRasterEditPanel" />
+  </bean>
+
   <bean id="arcGridStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
     <property name="id" value="arcgridRaster" />
     <property name="factoryClass" value="org.geotools.gce.arcgrid.ArcGridFormat" />
@@ -314,7 +340,7 @@
 
   <bean id="gtopo30StorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
     <property name="id" value="gtopo30Raster" />
-    <property name="factoryClass" value="org.geotools.gce.arcgrid.ArcGridFormat" />
+    <property name="factoryClass" value="org.geotools.gce.gtopo30.GTopo30Format" />
     <property name="iconBase" value="org.geoserver.web.GeoServerApplication" />
     <property name="icon" value="img/icons/geosilk/page_white_raster.png" />
     <property name="componentClass"

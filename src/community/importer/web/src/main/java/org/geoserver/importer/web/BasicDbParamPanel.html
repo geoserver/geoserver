@@ -1,0 +1,43 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:panel>
+  <div class="group">
+    <li>
+      <label for="host"><wicket:message key="host">host</wicket:message> *</label> 
+      <input type="text" class="text" wicket:id="host" size="32" />
+    </li>
+    <li>
+      <label for="port"><wicket:message key="port">port</wicket:message> *</label> 
+      <input type="text" class="text" wicket:id="port" size="6" />
+    </li>
+  </div>
+  <div class="group">
+    <li>
+      <label for="database"><wicket:message key="database">database</wicket:message> *</label>
+      <input type="text" class="text" wicket:id="database" size="32" />
+    </li>
+    <li>
+      <label for="schema"><wicket:message key="schema">schema</wicket:message></label>
+      <input type="text" class="text" wicket:id="schema" size="32" />
+    </li>
+  </div>
+  <div class="group">
+    <li>
+      <label for="username"><wicket:message key="username">user</wicket:message> *</label> 
+      <input type="text" class="text" wicket:id="username" size="32" />
+    </li>
+    <li>
+      <label for="password"><wicket:message key="password">password</wicket:message></label> 
+      <input type="password" class="text" wicket:id="password" size="32" />
+    </li>
+  </div>
+  
+  <a href="#" wicket:id="connectionPoolLink"><wicket:message key="connectionPooling">conn pool</wicket:message></a>
+  
+  <div wicket:id="connPoolPanelContainer">
+    <ul wicket:id="connPoolPanel"></ul>
+  </div>
+
+</wicket:panel>
+</body>
+</html>

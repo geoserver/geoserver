@@ -11,11 +11,11 @@
  <parent>
   <groupId>org.geoserver</groupId>
   <artifactId>geoserver</artifactId>
-  <version>2.4-SNAPSHOT</version>
+  <version>2.5-SNAPSHOT</version>
  </parent>
  
  <groupId>org.geoserver</groupId>
- <artifactId>maven</artifactId>
+ <artifactId>gs-maven</artifactId>
  <packaging>pom</packaging>
  <name>GeoServer Maven Plugins</name>
  

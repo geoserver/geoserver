@@ -6,7 +6,9 @@
 
 package org.geoserver.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -14,7 +16,6 @@ import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
@@ -39,11 +40,11 @@ import org.geoserver.wfs.WFSInfo;
 import org.geotools.data.complex.AppSchemaDataAccess;
 import org.geotools.data.complex.AppSchemaDataAccessRegistry;
 import org.geotools.data.complex.DataAccessRegistry;
-import org.geotools.xml.AppSchemaCache;
-import org.geotools.xml.AppSchemaCatalog;
-import org.geotools.xml.AppSchemaResolver;
 import org.geotools.xml.AppSchemaValidator;
 import org.geotools.xml.AppSchemaXSDRegistry;
+import org.geotools.xml.resolver.SchemaCache;
+import org.geotools.xml.resolver.SchemaCatalog;
+import org.geotools.xml.resolver.SchemaResolver;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -96,9 +97,9 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
     private XpathEngine xpathEngine;
     
     /**
-     * AppSchemaCatalog to work with AppSchemaValidator for test requests validation. 
+     * SchemaCatalog to work with AppSchemaValidator for test requests validation. 
      */
-    private AppSchemaCatalog catalog;
+    private SchemaCatalog catalog;
 
     /**
      * Subclasses override this to construct the test data.
@@ -111,7 +112,7 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
      */
     @Override
     protected abstract AbstractAppSchemaMockData createTestData();
-    
+     
     /**
      * Configure WFS to encode canonical schema location and use featureMember.
      * 
@@ -133,7 +134,7 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
         wfs.setEncodeFeatureMember(true);
         getGeoServer().save(wfs);
         // disable schema caching in tests, as schemas are expected to provided on the classpath
-        AppSchemaCache.disableAutomaticConfiguration();
+        SchemaCache.disableAutomaticConfiguration();
     }
 
     /**
@@ -282,13 +283,13 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
     }
     
     /**
-     * Return the AppSchemaCatalog to resolve local schemas.
-     * @return AppSchemaCatalog
+     * Return the SchemaCatalog to resolve local schemas.
+     * @return SchemaCatalog
      */    
-    private AppSchemaCatalog getAppSchemaCatalog() {
+    private SchemaCatalog getSchemaCatalog() {
         if (catalog == null) {
             if (testData instanceof AbstractAppSchemaMockData) {
-                catalog = ((AbstractAppSchemaMockData) testData).getAppSchemaCatalog();
+                catalog = ((AbstractAppSchemaMockData) testData).getSchemaCatalog();
             }
         }
         return catalog;
@@ -451,7 +452,7 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
     /**
      * Schema-validate the response for a GET request for a path (starts with "wfs?"). Validation is
      * against schemas found on the classpath. See
-     * {@link AppSchemaResolver#getSimpleHttpResourcePath(java.net.URI)} for URL-to-classpath
+     * {@link SchemaResolver#getSimpleHttpResourcePath(java.net.URI)} for URL-to-classpath
      * convention.
      * 
      * <p>
@@ -466,7 +467,7 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
      */
     protected void validateGet(String path) {
         try {
-            AppSchemaValidator.validate(get(path), getAppSchemaCatalog());
+            AppSchemaValidator.validate(get(path), getSchemaCatalog());
         } catch (RuntimeException e) {
             LOGGER.severe(e.getMessage());
             throw e;
@@ -476,7 +477,7 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
     /**
      * Schema-validate the response for a POST request to a path (typically "wfs"). Validation is
      * against schemas found on the classpath. See
-     * {@link AppSchemaResolver#getSimpleHttpResourcePath(java.net.URI)} for URL-to-classpath
+     * {@link SchemaResolver#getSimpleHttpResourcePath(java.net.URI)} for URL-to-classpath
      * convention.
      * 
      * <p>
@@ -493,7 +494,7 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
      */
     protected void validatePost(String path, String xml) {
         try {
-            AppSchemaValidator.validate(post(path, xml), getAppSchemaCatalog());
+            AppSchemaValidator.validate(post(path, xml), getSchemaCatalog());
         } catch (RuntimeException e) {
             LOGGER.severe(e.getMessage());
             throw e;
@@ -519,7 +520,7 @@ public abstract class AbstractAppSchemaTestSupport extends GeoServerSystemTestSu
      */
     protected void validate(String xml) {
         try {
-            AppSchemaValidator.validate(xml, getAppSchemaCatalog());
+            AppSchemaValidator.validate(xml, getSchemaCatalog());
         } catch (RuntimeException e) {
             LOGGER.severe(e.getMessage());
             throw e;

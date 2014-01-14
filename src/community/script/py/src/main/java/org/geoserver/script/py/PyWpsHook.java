@@ -6,17 +6,20 @@ package org.geoserver.script.py;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
 import org.geoserver.script.wps.WpsHook;
 import org.geotools.data.Parameter;
+import org.geotools.util.logging.Logging;
 import org.python.core.Py;
 import org.python.core.PyDictionary;
 import org.python.core.PyList;
@@ -29,6 +32,8 @@ import org.python.core.PyType;
  * @author Justin Deoliveira, OpenGeo
  */
 public class PyWpsHook extends WpsHook {
+
+    static Logger LOGGER = Logging.getLogger(PyWpsHook.class);
 
     public PyWpsHook(PythonPlugin plugin) {
         super(plugin);
@@ -105,28 +110,41 @@ public class PyWpsHook extends WpsHook {
         
         PyObject r = run.__call__(args.toArray(new PyObject[args.size()]), 
             kw.toArray(new String[kw.size()]));
-        Collection result = null;
-      
-        if (r instanceof Collection) {
-            result = (Collection) r;
-        }
-        else {
-            result = new ArrayList();
-            result.add(r);
-        }
 
         Map<String,Parameter<?>> outputs = getOutputs(engine);
+
+        Map<String,?> result = null;
+        if (r instanceof Map) {
+            result = (Map<String, ?>) r;
+        }
+        else {
+            result = Collections.singletonMap(outputs.keySet().iterator().next(), r);
+        }
+
         if (result.size() != outputs.size()) {
             throw new IllegalStateException(String.format("Process returned %d values, should have " +
                 "returned %d", result.size(), outputs.size()));
         }
         
         Map<String,Object> results = new LinkedHashMap<String, Object>();
-        Iterator it = result.iterator();
-        for (Parameter output : outputs.values()) {
-            results.put(output.key, ((PyObject)it.next()).__tojava__(output.type));
-        }
+
+        for (Map.Entry<String, Parameter<?>> e : outputs.entrySet()) {
+            String key = e.getKey();
+            Parameter output = e.getValue();
             
+            Object obj = result.get(key);
+
+            if (obj instanceof PyObject) {
+                obj = ((PyObject) obj).__tojava__(output.type);
+            }
+            if (obj != null && !output.type.isInstance(obj)) {
+                LOGGER.warning(String.format("Output %s declared type %s but returned %s", 
+                    output.getName(), output.getType().getSimpleName(), obj.getClass().getSimpleName()));
+            }
+            
+            results.put(output.key, obj);
+        }
+
         return results;
     }
 

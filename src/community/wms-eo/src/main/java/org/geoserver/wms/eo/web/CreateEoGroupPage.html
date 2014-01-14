@@ -1,0 +1,39 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+	<title><wicket:message key="title">Configure a new WMS-EO Layer Group</wicket:message></title>
+</head>
+<body>
+<wicket:extend>
+
+<form wicket:id="createEoGroupForm">
+	<ul>    
+		<li>
+			<fieldset>
+				<div><span wicket:id="workspacePanel"></span></div>			
+				
+				<div><span wicket:id="groupName"></span></div>
+				<div><span wicket:id="groupTitle"></span></div>
+				
+				<div><span wicket:id="browseImageUrl"></span></div>
+
+				<div><span wicket:id="bandUrl"></span></div>
+				
+				<div><span wicket:id="parameterName"></span></div>												
+				<div><span wicket:id="parameterUrl"></span></div>
+				
+				<div><span wicket:id="bitmaskName"></span></div>
+				<div><span wicket:id="bitmaskUrl"></span></div>
+			</fieldset>
+		</li>
+	</ul>
+
+	<div wicket:id="feedback"></div>
+	<div class="button-group selfclear">
+		<a href="#" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
+		<a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
+	</div>
+</form>
+	
+</wicket:extend>
+</body>
+</html>

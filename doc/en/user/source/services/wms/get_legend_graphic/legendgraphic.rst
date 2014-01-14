@@ -69,7 +69,7 @@ Controlling legend appearance with LEGEND_OPTIONS
 GeoServer allows finer control over the legend appearance via the vendor parameter ``LEGEND_OPTIONS``.
 The general format of ``LEGEND_OPTIONS`` is the same as ``FORMAT_OPTIONS``, that is::
 
-  ...&LEGEND_OPTION=key1:v1;key2:v2;...;keyn:vn
+  ...&LEGEND_OPTIONS=key1:v1;key2:v2;...;keyn:vn
   
 Here is a description of the various parameters that can be used in ``LEGEND_OPTIONS``:
 

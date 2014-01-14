@@ -127,11 +127,18 @@ public class DecoratingLayerInfo extends AbstractDecorator<LayerInfo> implements
 
     public void setQueryable(boolean _queryableEnabled) {
         delegate.setQueryable(_queryableEnabled);
-
     }
 
     public boolean isQueryable() {
         return delegate.isQueryable();
+    }
+
+    public void setOpaque(boolean _opaqueEnabled) {
+        delegate.setOpaque(_opaqueEnabled);
+    }
+
+    public boolean isOpaque() {
+        return delegate.isOpaque();
     }
 
     @Override

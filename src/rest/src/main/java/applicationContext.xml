@@ -13,13 +13,14 @@
     <alias name="restWrapper" alias="restDispatcher"/>
     
     <bean id="restletDispatcherMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-    <property name="alwaysUseFullPath" value="true"/>
-    <property name="mappings">
-        <props>
-            <prop key="/rest">restWrapper</prop>
-            <prop key="/rest/**">restWrapper</prop>
-        </props>
-    </property>
-
+      <property name="alwaysUseFullPath" value="true"/>
+      <property name="mappings">
+          <props>
+              <prop key="/rest">restWrapper</prop>
+              <prop key="/rest/**">restWrapper</prop>
+          </props>
+      </property>
     </bean>
+    
+    <bean id="restEnviromentInjectionCallback" class="org.geoserver.rest.EnviromentInjectionCallback"/>
 </beans>

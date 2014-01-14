@@ -557,6 +557,7 @@
     <property column="SERVICE_LEVEL" name="serviceLevel" type="WfsServiceLevel"/>
     <property column="MAX_FEATURES" name="maxFeatures"/>
     <property column="FEATURE_BOUNDING" name="featureBounding"/>
+    <property column="HITS_IGNORE_MAX_FEATURES" name="hitsIgnoreMaxFeatures" />
     <property column="CANONICAL_SCHEMA" name="canonicalSchemaLocation"/>
     <property column="ENCODE_FEATURE_MEMBER" name="encodeFeatureMember"/>
     

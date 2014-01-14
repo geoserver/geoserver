@@ -36,11 +36,12 @@ import org.geoserver.ows.HttpServletRequestAware;
 import org.geoserver.ows.KvpRequestReader;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSErrorCode;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureReader;
 import org.geotools.data.Query;
@@ -104,16 +105,24 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
     private WMS wms;
 
     /**
+     * EntityResolver provider, used in SLD parsing
+     */
+    EntityResolverProvider entityResolverProvider;
+    
+    /**
      * This flags allows the kvp reader to go beyond the SLD library mode specification and match
      * the first style that can be applied to a given layer. This is for backwards compatibility
      */
     private boolean laxStyleMatchAllowed = true;
-
+    
+    
     public GetMapKvpRequestReader(WMS wms) {
         super(GetMapRequest.class);
         this.wms = wms;
+        this.entityResolverProvider = new EntityResolverProvider(wms.getGeoServer());
     }
 
+    
     /**
      * Implements {@link HttpServletRequestAware#setHttpRequest(HttpServletRequest)} to gather
      * request information for some properties like {@link GetMapRequest#isGet()} and
@@ -439,9 +448,9 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
                 //
                 // Adding a coverage layer
                 //
-                AbstractGridCoverage2DReader reader;
+                GridCoverage2DReader reader;
                 try {
-                    reader = (AbstractGridCoverage2DReader) layer.getCoverageReader();
+                    reader = (GridCoverage2DReader) layer.getCoverageReader();
                 } catch (IOException e) {
                     throw new ServiceException(e);
                 }
@@ -543,8 +552,8 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
             filters = null;
         }
         return filters;
-    }
-
+    }   
+    
     /**
      * validates an sld document.
      * 
@@ -552,29 +561,28 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
     private List validateSld(InputStream stream, GetMapRequest getMap) {
         try {
             if (getMap.getSldVersion() != null) {
-                return Styles.validate(stream, new Version(getMap.getSldVersion()));
+                return Styles.validate(stream, entityResolverProvider.getEntityResolver(), new Version(getMap.getSldVersion()));
             }
             else {
-                return Styles.validate(stream);
+                return Styles.validate(stream, entityResolverProvider.getEntityResolver());
             }
         } 
         catch (IOException e) {
             throw new ServiceException("Error validating style", e);
         }
     }
-
+    
     /**
      * Parses an sld document.
      */
     private StyledLayerDescriptor parseSld(GetMapRequest getMap, InputStream stream) {
-       
         StyledLayerDescriptor sld;
         try {
             if (getMap.getSldVersion() != null) {
-                sld = Styles.parse(stream, new Version(getMap.getSldVersion()));
+                sld = Styles.parse(stream, entityResolverProvider.getEntityResolver(), new Version(getMap.getSldVersion()));
             }
             else {
-                sld = Styles.parse(stream);
+                sld = Styles.parse(stream, entityResolverProvider.getEntityResolver());
             }
         }
         catch(IOException e) {

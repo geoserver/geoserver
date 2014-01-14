@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.demo;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -45,11 +46,15 @@ public class PreviewLayerProviderTest extends GeoServerWicketTestSupport {
         group.setName("testSingleLayerGroup");
         group.setMode(LayerGroupInfo.Mode.SINGLE);        
         group.getLayers().add(layer);
+        group.setTitle("This is the title");
+        group.setAbstract("This is the abstract");
         getCatalog().add(group);
         try {
             PreviewLayerProvider provider = new PreviewLayerProvider();
             PreviewLayer pl = getPreviewLayer(provider, group.prefixedName());
             assertNotNull(pl);
+            assertEquals("This is the title", pl.getTitle());
+            assertEquals("This is the abstract", pl.getAbstract());
         } finally {
             getCatalog().remove(group);
         }        

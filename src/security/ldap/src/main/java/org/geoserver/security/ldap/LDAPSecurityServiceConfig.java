@@ -4,38 +4,42 @@
  */
 package org.geoserver.security.ldap;
 
-import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
 
-public class LDAPSecurityServiceConfig extends BaseSecurityNamedServiceConfig 
+public class LDAPSecurityServiceConfig extends LDAPBaseSecurityServiceConfig 
     implements SecurityAuthProviderConfig {
 
-    String serverURL;
+    
+    // extract user data using a distinguished name
     String userDnPattern;
-    String groupSearchBase;
-    String groupSearchFilter;
+    
     String userGroupServiceName;
-    Boolean useTLS;
+    
+    
+     
+    // format username before doing authentication using the given format
+    String userFormat; 
 
     public LDAPSecurityServiceConfig() {
     }
 
     public LDAPSecurityServiceConfig(LDAPSecurityServiceConfig other) {
-        super(other);
-        serverURL = other.getServerURL();
-        userDnPattern = other.getUserDnPattern();
-        groupSearchBase = other.getGroupSearchBase();
-        groupSearchFilter= other.getGroupSearchFilter();
-        userGroupServiceName = other.getUserGroupServiceName();
-        useTLS = other.isUseTLS();
+        super(other);        
+        userDnPattern = other.getUserDnPattern();        
+        userGroupServiceName = other.getUserGroupServiceName();        
+        userFormat = other.getUserFormat();
+    }
+    
+
+    public String getUserFormat() {
+        return userFormat;
     }
 
-    public String getServerURL() {
-        return serverURL;
+    public void setUserFormat(String userFormat) {
+        this.userFormat = userFormat;
     }
-    public void setServerURL(String serverURL) {
-        this.serverURL = serverURL;
-    }
+
+    
 
     public String getUserDnPattern() {
         return userDnPattern;
@@ -44,25 +48,6 @@ public class LDAPSecurityServiceConfig extends BaseSecurityNamedServiceConfig
         this.userDnPattern = userDnPattern;
     }
 
-    public String getGroupSearchBase() {
-        return groupSearchBase;
-    }
-    public void setGroupSearchBase(String groupSearchBase) {
-        this.groupSearchBase = groupSearchBase;
-    }
-
-    public String getGroupSearchFilter() {
-        return groupSearchFilter;
-    }
-    public void setGroupSearchFilter(String groupSearchFilter) {
-        this.groupSearchFilter = groupSearchFilter;
-    }
-    public void setUseTLS(Boolean useTLS) {
-        this.useTLS = useTLS;
-    }
-    public Boolean isUseTLS() {
-        return useTLS;
-    }
 
     @Override
     public String getUserGroupServiceName() {
@@ -73,4 +58,6 @@ public class LDAPSecurityServiceConfig extends BaseSecurityNamedServiceConfig
     public void setUserGroupServiceName(String userGroupServiceName) {
         this.userGroupServiceName = userGroupServiceName;
     }
+
+
 }

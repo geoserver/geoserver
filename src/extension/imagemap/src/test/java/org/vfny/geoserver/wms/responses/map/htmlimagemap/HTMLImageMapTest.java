@@ -507,6 +507,27 @@ public class HTMLImageMapTest {
         EncodeHTMLImageMap result = mapProducer.produceMap(map);
         assertTestResult("NoCoords", result);
     }
+    
+    @Test
+    public void testPointsAreAlwaysRenderedAsCircles() throws Exception {
+        final String s = "VariousPoints";
+        FeatureSource<SimpleFeatureType, SimpleFeature> fs = testDS
+                .getFeatureSource(s);
+        ReferencedEnvelope env = new ReferencedEnvelope(fs.getBounds(), WGS84);
+        LOGGER.info("about to create map ctx for BuildingCenters with bounds "
+                + env);
+    
+        WMSMapContent map = new WMSMapContent();
+        map.getViewport().setBounds(env);
+        map.setMapWidth(mapWidth);
+        map.setMapHeight(mapHeight);
+        map.setTransparent(false);
+        Style basicStyle = getTestStyle(String.format("%s.sld", s));
+        map.addLayer(new FeatureLayer(fs, basicStyle));
+    
+        EncodeHTMLImageMap result = mapProducer.produceMap(map);
+        assertTestResult(s, result);
+    }
 
     static class MyPropertyDataStore extends PropertyDataStore {
 
@@ -539,6 +560,8 @@ public class HTMLImageMapTest {
                 throw new DataSourceException(e.getMessage(), e);
             }
         }
+        
+        
 
     }
 

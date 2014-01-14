@@ -11,6 +11,7 @@ import javax.xml.namespace.QName;
 
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.XmlRequestReader;
+import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.xml.WFSURIHandler;
 import org.geoserver.wfs.xml.WFSXmlUtils;
@@ -41,8 +42,10 @@ public class WfsXmlReader extends XmlRequestReader {
      */
     GeoServer geoServer;
 
+    EntityResolverProvider entityResolverProvider;
+    
     public WfsXmlReader(String element, GeoServer gs, Configuration configuration) {
-        this(element, gs, configuration, "wfs");
+        this(element, gs, configuration, "wfs");        
     }
     
     protected WfsXmlReader(String element, GeoServer gs, Configuration configuration, String serviceId) {
@@ -51,17 +54,18 @@ public class WfsXmlReader extends XmlRequestReader {
         this.geoServer = gs;
         this.wfs = gs.getService( WFSInfo.class );
         this.configuration = configuration;
+        this.entityResolverProvider = new EntityResolverProvider(geoServer);
     }
-
+    
     public Object read(Object request, Reader reader, Map kvp) throws Exception {
         //TODO: make this configurable?
         configuration.getProperties().add(Parser.Properties.PARSE_UNKNOWN_ELEMENTS);
 
         Parser parser = new Parser(configuration);
-        WFSXmlUtils.initRequestParser(parser, wfs, geoServer, kvp);
+        parser.setEntityResolver(entityResolverProvider.getEntityResolver());
         
+        WFSXmlUtils.initRequestParser(parser, wfs, geoServer, kvp);
         Object parsed = WFSXmlUtils.parseRequest(parser, reader, wfs);
-        parser.getURIHandlers().add(0, new WFSURIHandler(geoServer));
         
         WFSXmlUtils.checkValidationErrors(parser, this);
         

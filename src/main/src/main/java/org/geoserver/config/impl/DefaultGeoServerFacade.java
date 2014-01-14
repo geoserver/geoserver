@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -21,8 +23,11 @@ import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.ows.util.OwsUtils;
+import org.geotools.util.logging.Logging;
 
 public class DefaultGeoServerFacade implements GeoServerFacade {
+    
+    static final Logger LOGGER = Logging.getLogger(DefaultGeoServerFacade.class);
 
     GeoServerInfo global;
     List<SettingsInfo> settings = new ArrayList<SettingsInfo>();
@@ -174,7 +179,13 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
             if( id.equals( si.getId() ) ) {
                 return ModificationProxy.create( (T) si, clazz );
             }
-         }
+        }
+        
+        if(LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine("Could not locate service of type " + clazz + " and id '" + id 
+                    + "', available services were " + services);
+        }
+        
         return null;
     }
 
@@ -199,6 +210,7 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
 
     public void dispose() {
         if ( global != null ) global.dispose();
+        if ( settings != null) settings.clear();
         if ( services != null ) services.clear();
     }
 
@@ -226,8 +238,13 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
                  return ModificationProxy.create( (T) si, clazz );
              }
           }
+         
+         if(LOGGER.isLoggable(Level.FINE)) {
+             LOGGER.fine("Could not locate service of type " + clazz + " in workspace " + workspace 
+                     + ", available services were " + services);
+         }
           
-          return null;
+         return null;
      }
 
  <T extends ServiceInfo> T findByName(String name, WorkspaceInfo workspace, Class<T> clazz, 
@@ -236,6 +253,11 @@ public class DefaultGeoServerFacade implements GeoServerFacade {
             if( name.equals( si.getName() ) && wsEquals(workspace, si.getWorkspace())) {
                 return ModificationProxy.create( (T) si, clazz );
             }
+        }
+        
+        if(LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine("Could not locate service of type " + clazz + " in workspace " + workspace 
+                    + " and name '" + name + "', available services were " + services);
         }
 
         return null;

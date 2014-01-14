@@ -200,7 +200,8 @@ if [ -z $SKIP_GWC ]; then
       gwc_branch=${arr[0]}
       gwc_rev=${arr[1]}
       gwc_dir=build/geowebcache/$gwc_branch/$gwc_rev
-      if [ ! -e $gwc_dir ]; then
+      if [ ! -e $gwc_dir -o ! -e $gwc_dir/geowebcache ]; then
+         rm -rf $gwc_dir
          mkdir -p $gwc_dir 
          echo "checking out geowebache ${gwc_branch}@${gwc_rev}"
          git clone $GWC_GIT_URL $gwc_dir
@@ -359,8 +360,8 @@ done
 # fire off mac and windows build machines
 if [ -z $SKIP_INSTALLERS ]; then
   echo "starting installer jobs"
-  start_installer_job $WIN_HUDSON $tag
-  start_installer_job $MAC_HUDSON $tag
+  start_installer_job $WIN_JENKINS $WIN_JENKINS_USER $WIN_JENKINS_KEY $tag
+  start_installer_job $MAC_JENKINS $MAC_JENKINS_USER $MAC_JENKINS_KEY $tag
 fi
 
 # git commit changes on the release branch

@@ -5,12 +5,14 @@
 package org.geoserver.ows;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
 import org.geoserver.ows.util.OwsUtils;
+import org.geoserver.platform.ServiceException;
 import org.geotools.util.Converters;
 
 
@@ -23,6 +25,11 @@ import org.geotools.util.Converters;
  * <p>
  * This class is intended to be subclassed in cases when the creation
  * and initilization of a request bean cannot be created reflectivley.
+ * </p>
+ * <p>The class assumes each key is to be provided just once in the request, and will throw exceptions
+ *    if multiple values are found for it. For services/requests where having the same key repeated
+ *    multiple times is valid (e.g., CSW) call {@link #setRepeatedParameters(boolean)} to enable
+ *    support for repeated params
  * </p>
  * <p>
  * The type of the request bean must be declared by the class.
@@ -72,6 +79,11 @@ public class KvpRequestReader {
      * A list of kvp names to filter.
      */
     protected Set<String> filter;
+    
+    /**
+     * True if the KVP protocol of this service/request has repeated parameter, false otherwise
+     */
+    boolean hasRepeatedParameters = false;
     
     /**
      * Creats the new kvp request reader.
@@ -159,9 +171,19 @@ public class KvpRequestReader {
                 continue;
             }
             
-            //check the filter
+            // check the filter
             if ( filter(property) ) {
                 continue;
+            }
+            
+            // check for repeated parameters
+            if(!hasRepeatedParameters) {
+                Object rawValue = rawKvp.get(property);
+                if(rawValue instanceof String[]) {
+                    throw new ServiceException("Found multiple, inconsistent values for parameter " 
+                            + property + ": " + Arrays.toString((String[]) rawValue),
+                            ServiceException.INVALID_PARAMETER_VALUE, property);
+                }
             }
 
             Class<? extends Object> targetClass = request.getClass();
@@ -227,5 +249,9 @@ public class KvpRequestReader {
 
     public final int hashCode() {
         return requestBean.hashCode();
+    }
+    
+    protected void setRepeatedParameters(boolean hasRepeatedParameters) {
+        this.hasRepeatedParameters = hasRepeatedParameters;
     }
 }

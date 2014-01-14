@@ -64,5 +64,12 @@ public interface CoverageResponseDelegate {
      * @return
      */
     boolean isAvailable();
+
+    /**
+     * Returns the GML conformance class for this output format.
+     * @param format
+     * @return
+     */
+    String getConformanceClass(String format);
     
 }

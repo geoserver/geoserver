@@ -272,3 +272,38 @@ The default GeoServer security configuration is:
      - *Empty*
 
 For further information, please refer to :ref:`configuring a role service <webadmin_sec_roleservices>` in the :ref:`web_admin`.
+
+LDAP role service
+-----------------
+
+The LDAP role service is a read only role service that maps groups from an LDAP repository to GeoServer roles.
+
+Groups are extracted from a specific LDAP node, configured as the ``Groups search base``. A role is mapped for every matching group. The role will have a name that is built taking the Group common name (cn attribute), transformed to upper case and with a ``ROLE_`` prefix applied.
+
+It is possible to filter extracted groups using an ``All groups filter`` (defaults to ``cn=*`` that basically extracts all nodes from the configured base). It is also possible to configure the filter for ``users to roles membership`` (defaults to member={0}).
+
+A specific group can be assigned to the ``ROLE_ADMINISTRATOR`` and/or the ``ROLE_GROUP_ADMIN`` administrative roles.
+
+Groups extraction can be done anonymously or using a given username/password if the LDAP repository requires it.
+
+An example of configuration file (config.xml) for this type of role service is the following:
+
+   .. code-block:: xml
+
+        <org.geoserver.security.ldap.LDAPRoleServiceConfig>
+          <id>-36dfbd50:1424687f3e0:-8000</id>
+          <name>ldapacme</name>
+          <className>org.geoserver.security.ldap.LDAPRoleService</className>
+          <serverURL>ldap://127.0.0.1:10389/dc=acme,dc=org</serverURL>
+          <groupSearchBase>ou=groups</groupSearchBase>
+          <groupSearchFilter>member=uid={0},ou=people,dc=acme,dc=org</groupSearchFilter>
+          <useTLS>false</useTLS>
+          <bindBeforeGroupSearch>true</bindBeforeGroupSearch>
+          <adminGroup>ROLE_ADMIN</adminGroup>
+          <groupAdminGroup>ROLE_ADMIN</groupAdminGroup>
+          <user>uid=bill,ou=people,dc=acme,dc=org</user>
+          <password>hello</password>
+          <allGroupsSearchFilter>cn=*</allGroupsSearchFilter>
+        </org.geoserver.security.ldap.LDAPRoleServiceConfig>
+
+For further information, please refer to :ref:`configuring a role service <webadmin_sec_roleservices>` in the :ref:`web_admin`.

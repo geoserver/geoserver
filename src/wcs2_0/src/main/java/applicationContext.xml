@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights 
+  reserved. This code is licensed under the GPL 2.0 license, available at the 
+  root application directory. -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <!-- wcs service setup, with loggin as an interceptor -->
+  <bean id="wcs20ServiceTarget" class="org.geoserver.wcs2_0.DefaultWebCoverageService20">
+    <constructor-arg ref="geoServer" />
+    <constructor-arg ref="coverageResponseDelegateFactory" />
+    <constructor-arg ref="envelopeDimensionsMapper" />
+    <constructor-arg ref="MIMETYPEMapper" />
+  </bean>
+  <!-- <bean id="wcsLogger" class="org.geoserver.ows.util.EMFLogger"> <constructor-arg 
+    type="java.lang.String" value="org.geoserver.wcs" /> </bean> -->
+  <bean id="wcs20Service" class="org.springframework.aop.framework.ProxyFactoryBean">
+    <property name="proxyInterfaces">
+      <value>org.geoserver.wcs2_0.WebCoverageService20</value>
+    </property>
+    <property name="interceptorNames">
+      <list>
+        <value>wcsLogger</value>
+        <value>wcs20ServiceInterceptor*</value>
+        <value>wcs20ServiceTarget</value>
+      </list>
+    </property>
+  </bean>
+
+  <!-- service descriptors -->
+  <bean id="wcsService-2.0" class="org.geoserver.platform.Service">
+    <constructor-arg index="0" value="WCS" />
+    <constructor-arg index="1" value="http://www.opengis.net/wcs/2.0"/>
+    <constructor-arg index="2" ref="wcs20Service" />
+    <constructor-arg index="3" value="2.0.1" />
+    <constructor-arg index="4">
+      <list>
+        <value>GetCapabilities</value>
+        <value>DescribeCoverage</value>
+        <value>DescribeEOCoverageSet</value>
+        <value>GetCoverage</value>
+      </list>
+    </constructor-arg>
+  </bean>
+
+  <!-- the xml configuration for xml readers -->
+  <bean id="wcs-2.0.1-configuration" class="org.geotools.wcs.v2_0.WCSConfiguration" />
+
+  <!-- GetCapabilities -->
+  <bean id="wcs20GetCapabilitiesKvpReader"
+    class="org.geoserver.wcs2_0.kvp.WCS20GetCapabilitiesRequestReader" />
+
+  <bean id="wcs201CapabilitiesRequestReader" class="org.geoserver.wcs2_0.xml.WcsXmlReader">
+    <constructor-arg value="GetCapabilities" />
+    <constructor-arg value="2.0.1" />
+    <constructor-arg ref="wcs-2.0.1-configuration" />
+  </bean>
+
+  <bean id="wcs20GetCapabilitiesResponse"
+    class="org.geoserver.wcs2_0.response.WCS20GetCapabilitiesResponse"
+    singleton="false" />
+
+  <!-- DescribeCoverage -->
+  <bean id="wcs20describeCoverageIdKvpParser" class="org.geoserver.ows.FlatKvpParser">
+    <constructor-arg index="0" value="coverageId" />
+    <constructor-arg index="1" value="java.lang.String" />
+    <property name="service" value="WCS"/>
+    <property name="request" value="DescribeCoverage"/>
+  </bean>
+  <bean id="wcs20DescribeCoverageKvpReader"
+    class="org.geoserver.wcs2_0.kvp.WCS20DescribeCoverageRequestReader" />
+
+  <bean id="wcs201DescribeCoverageRequestReader" class="org.geoserver.wcs2_0.xml.WcsXmlReader">
+    <constructor-arg value="DescribeCoverage" />
+    <constructor-arg value="2.0.1" />
+    <constructor-arg ref="wcs-2.0.1-configuration" />
+  </bean>
+
+  <bean id="wcs20DescribeCoverageResponse"
+    class="org.geoserver.wcs2_0.response.WCS20DescribeCoverageResponse"
+    singleton="false" />
+
+  <!-- GetCoverage -->
+  <bean id="wcs20subsetKvpParser" class="org.geoserver.wcs2_0.kvp.SubsetKvpParser" />
+  <bean id="wcs20scaleFactorKvpParser" class="org.geoserver.ows.kvp.DoubleKvpParser">
+    <constructor-arg value="scalefactor" />
+  </bean>
+  <bean id="wcs20scaleAxesKvpParser" class="org.geoserver.wcs2_0.kvp.ScaleAxesKvpParser" />
+  <bean id="wcs20scaleSizeKvpParser" class="org.geoserver.wcs2_0.kvp.ScaleSizeKvpParser" />
+  <bean id="wcs20scaleExtentKvpParser" class="org.geoserver.wcs2_0.kvp.ScaleExtentKvpParser" />
+  <bean id="wcs20interpolationKvpParser" class="org.geoserver.wcs2_0.kvp.InterpolationKvpParser" />
+  <bean id="wcs20rangeSubsetKvpParser" class="org.geoserver.wcs2_0.kvp.RangeSubsetKvpParser">
+    <property name="service" value="WCS" />
+    <property name="version" value="2.0.0" />
+  </bean>
+  <bean id="wcs201rangeSubsetKvpParser" class="org.geoserver.wcs2_0.kvp.RangeSubsetKvpParser">
+    <property name="service" value="WCS" />
+    <property name="version" value="2.0.1" />
+  </bean>
+
+
+  <bean id="wcs20getCoverageKvpParser" class="org.geoserver.wcs2_0.kvp.WCS20GetCoverageRequestReader" />
+
+  <bean id="wcs201GetCoverageRequestReader" class="org.geoserver.wcs2_0.xml.WcsXmlReader">
+    <constructor-arg value="GetCoverage" />
+    <constructor-arg value="2.0.1" />
+    <constructor-arg ref="wcs-2.0.1-configuration" />
+  </bean>
+
+  <bean id="wcs201GetCoverageResponse" class="org.geoserver.wcs2_0.response.WCS20GetCoverageResponse">
+    <constructor-arg ref="coverageResponseDelegateFactory" />
+  </bean>
+
+  <bean id="wcs201MultipartGetCoverageResponse"
+    class="org.geoserver.wcs2_0.response.WCS20GetCoverageMultipartResponse">
+    <constructor-arg ref="coverageResponseDelegateFactory" />
+    <constructor-arg ref="envelopeDimensionsMapper" />
+  </bean>
+
+
+  <!-- Exception handler, we need to output ows 2.0 exceptions -->
+  <!-- <bean id="wcs20ExceptionHandler" class="org.geoserver.ows.OWS20ServiceExceptionHandler"> -->
+  <bean id="wcs20ExceptionHandler"
+    class="org.geoserver.wcs2_0.exception.OWS20ServiceExceptionHandler"> <!-- to be moved into ows package -->
+    <constructor-arg index="0">
+      <list>
+        <ref local="wcsService-2.0" />
+      </list>
+    </constructor-arg>
+  </bean>
+
+  <!-- Envelope dimensions mapper util class -->
+  <bean id="envelopeDimensionsMapper" class="org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper" />
+
+
+  <bean id="GMLCoverageResponseDelegate"
+    class="org.geoserver.wcs2_0.response.GMLCoverageResponseDelegate">
+    <constructor-arg ref="envelopeDimensionsMapper" />
+    <constructor-arg ref="geoServer" />
+  </bean>
+
+  <bean id="MIMETYPEMapper" class="org.geoserver.wcs2_0.response.MIMETypeMapper">
+    <constructor-arg ref="coverageResponseDelegateFactory"
+      index="0" />
+    <constructor-arg ref="catalog" index="1" />
+  </bean>
+
+  <bean id="arcGridWcsMimeMapper" class="org.geoserver.wcs2_0.response.ReaderClassMimeMapper">
+    <constructor-arg index="0" value="org.geotools.gce.arcgrid.ArcGridReader"/>
+    <constructor-arg index="1" value="text/plain" />
+  </bean>
+  
+  <bean id="gtopo30WcsMimeMapper" class="org.geoserver.wcs2_0.response.ReaderClassMimeMapper">
+    <constructor-arg index="0" value="org.geotools.gce.gtopo30.GTopo30Reader"/>
+    <constructor-arg index="1" value="text/plain" />
+  </bean>
+  
+  <bean id="imgWcsMimeMapper" class="org.geoserver.wcs2_0.response.ImgMimeTypeMapper"/>
+
+</beans>

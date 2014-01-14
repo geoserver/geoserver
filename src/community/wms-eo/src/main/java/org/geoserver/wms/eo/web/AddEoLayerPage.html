@@ -1,0 +1,30 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+	<title><wicket:message key="title">Add new layers to WMS-EO Group</wicket:message></title>
+</head>
+<body>
+<wicket:extend>
+
+<form wicket:id="addLayerForm">
+	<ul>    
+		<li>
+			<fieldset>
+				<div><span wicket:id="groupPanel"></span></div>
+				<div><span wicket:id="parameterName"></span></div>
+				<div><span wicket:id="parameterUrl"></span></div>
+				<div><span wicket:id="bitmaskName"></span></div>
+				<div><span wicket:id="bitmaskUrl"></span></div>
+			</fieldset>
+		</li>
+	</ul>
+
+	<div wicket:id="feedback"></div>
+	<div class="button-group selfclear">
+		<a href="#" wicket:id="save"><wicket:message key="save">Save</wicket:message></a>
+		<a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
+	</div>
+</form>
+	
+</wicket:extend>
+</body>
+</html>

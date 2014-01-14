@@ -183,12 +183,6 @@ public class LRUAuthenticationCacheTest {
         assertNull(cache.get("filterb","key3"));
         assertNull(cache.get("filterb","key4"));
         
-        // test timer task
-        cache = new LRUAuthenticationCacheImpl(5,0,4);        
-        fillCache(cache);
-        waitForMilliSecs(10);
-        cache.runRemoveExpiredTaskSynchron();
-        assertEquals(0,cache.cache.size());             
     }
 
 }

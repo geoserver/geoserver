@@ -10,12 +10,11 @@ import javax.xml.namespace.QName;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
-import org.geotools.index.Data;
 import org.geotools.xml.InstanceComponent;
 
 /**
  * Overrides the base class parsing code so that prefix can be resolved
- * to URI's using the GeoServer {@link Data} catalog as well
+ * to URI's using the GeoServer Data catalog as well
  * @author Andrea Aime - TOPP
  */
 public class XSQNameBinding extends org.geotools.xs.bindings.XSQNameBinding {

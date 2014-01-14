@@ -314,6 +314,22 @@ public class CapabilitiesTest extends WMSTestSupport {
         assertXpathEvaluatesTo("e@mail", cinfo + "ContactElectronicMailAddress", doc);
     }
     
+    @Test 
+    public void testNoFeesOrContraints() throws Exception {
+        final WMSInfo service = getGeoServer().getService(WMSInfo.class);
+        service.setAccessConstraints(null);
+        service.setFees(null);
+        getGeoServer().save(service);
+
+        Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.1.1", true);
+        // print(doc);
+
+        String base = "WMT_MS_Capabilities/Service/";
+        assertXpathEvaluatesTo("OGC:WMS", base + "Name", doc);
+        assertXpathEvaluatesTo("none", base + "Fees", doc);
+        assertXpathEvaluatesTo("none", base + "AccessConstraints", doc);
+    }
+
     @Test
     public void testQueryable() throws Exception{
         LayerInfo lines = getCatalog().getLayerByName(MockData.LINES.getLocalPart());
@@ -325,7 +341,7 @@ public class CapabilitiesTest extends WMSTestSupport {
 
         String linesName = MockData.LINES.getPrefix() + ":" + MockData.LINES.getLocalPart();
         String pointsName = MockData.POINTS.getPrefix() + ":" + MockData.POINTS.getLocalPart();
-        
+
         Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.1.1", true);
         // print(doc);
 
@@ -333,4 +349,21 @@ public class CapabilitiesTest extends WMSTestSupport {
         assertXpathEvaluatesTo("0", "//Layer[Name='" + pointsName + "']/@queryable", doc);
     }
 
+    @Test
+    public void testOpaque() throws Exception{
+        LayerInfo lines = getCatalog().getLayerByName(MockData.LINES.getLocalPart());
+        lines.setOpaque(true);
+        getCatalog().save(lines);
+        LayerInfo points = getCatalog().getLayerByName(MockData.POINTS.getLocalPart());
+        points.setOpaque(false);
+        getCatalog().save(points);        
+
+        String linesName = MockData.LINES.getPrefix() + ":" + MockData.LINES.getLocalPart();
+        String pointsName = MockData.POINTS.getPrefix() + ":" + MockData.POINTS.getLocalPart();
+        
+        Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.1.1", true);
+
+        assertXpathEvaluatesTo("1", "//Layer[Name='" + linesName + "']/@opaque", doc);
+        assertXpathEvaluatesTo("0", "//Layer[Name='" + pointsName + "']/@opaque", doc);
+    }
 }

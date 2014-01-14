@@ -10,15 +10,22 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.Collections;
+
+import javax.xml.namespace.QName;
+
+import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
+
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSTestSupport;
 import org.junit.Test;
+
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 /**
@@ -28,12 +35,15 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
  */
 public class GeoJSONTest extends WFSTestSupport {
        
+    public static QName LINE3D = new QName(SystemTestData.CITE_URI, "Line3D", SystemTestData.CITE_PREFIX);
+    
     @Override
     protected void setUpInternal(SystemTestData data) throws Exception {
         File security = new File(getTestData().getDataDirectoryRoot(), "security");
         security.mkdir();
         File layers = new File(security, "layers.properties");
         IOUtils.copy(GeoJSONTest.class.getResourceAsStream("layers_ro.properties"), layers);
+        data.addVectorLayer (LINE3D, Collections.EMPTY_MAP, getClass(), getCatalog());
     }
 	
     @Test
@@ -73,7 +83,10 @@ public class GeoJSONTest extends WFSTestSupport {
     
     @Test
     public void testGet() throws Exception {	
-    	String out = getAsString("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat="+JSONType.json);
+        MockHttpServletResponse response = getAsServletResponse("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat="+JSONType.json);
+        assertEquals("application/json", response.getContentType());
+        String out = response.getOutputStreamContent();
+
     	
     	JSONObject rootObject = JSONObject.fromObject( out );
     	assertEquals(rootObject.get("type"),"FeatureCollection");
@@ -84,7 +97,9 @@ public class GeoJSONTest extends WFSTestSupport {
     
     @Test
     public void testGetSimpleJson() throws Exception {    
-        String out = getAsString("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat="+JSONType.simple_json);
+        MockHttpServletResponse response = getAsServletResponse("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat="+JSONType.simple_json);
+        assertEquals("application/json", response.getContentType());
+        String out = response.getOutputStreamContent();
         
         JSONObject rootObject = JSONObject.fromObject( out );
         assertEquals(rootObject.get("type"),"FeatureCollection");
@@ -181,5 +196,76 @@ public class GeoJSONTest extends WFSTestSupport {
         JSONArray featureCol = rootObject.getJSONArray("features");
         JSONObject aFeature = featureCol.getJSONObject(0);
         assertEquals(aFeature.getString("geometry_name"), "surfaceProperty");
+    }
+    
+    @Test
+    public void testGetFeatureCount() throws Exception {        
+        //request without filter
+        String out = getAsString("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=10&outputformat="+JSONType.json);
+        JSONObject rootObject = JSONObject.fromObject( out );
+        assertEquals(rootObject.get("totalFeatures"),5);
+
+        //request with filter (featureid=PrimitiveGeoFeature.f001)
+        String out2 = getAsString("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=10&outputformat="+JSONType.json+"&featureid=PrimitiveGeoFeature.f001");
+        JSONObject rootObject2 = JSONObject.fromObject( out2 );
+        assertEquals(rootObject2.get("totalFeatures"),1);
+        
+        //check if maxFeatures doesn't affect totalFeatureCount; set Filter and maxFeatures
+        String out3 = getAsString("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat="+JSONType.json+"&featureid=PrimitiveGeoFeature.f001,PrimitiveGeoFeature.f002");
+        JSONObject rootObject3 = JSONObject.fromObject( out3 );
+        assertEquals(rootObject3.get("totalFeatures"),2);
+        
+        //request with multiple featureTypes and Filter
+        String out4 = getAsString("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature,sf:AggregateGeoFeature&outputformat="+JSONType.json + "&featureid=PrimitiveGeoFeature.f001,PrimitiveGeoFeature.f002,AggregateGeoFeature.f009");
+        JSONObject rootObject4 = JSONObject.fromObject( out4 );
+        assertEquals(rootObject4.get("totalFeatures"),3);
+        
+    }
+
+    @Test
+    public void testGetFeatureCountWfs20() throws Exception {        
+        //request without filter
+        String out = getAsString("wfs?request=GetFeature&version=2.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=10&outputformat="+JSONType.json);
+        JSONObject rootObject = JSONObject.fromObject( out );
+        assertEquals(rootObject.get("totalFeatures"),5);
+
+        //request with filter (featureid=PrimitiveGeoFeature.f001)
+        String out2 = getAsString("wfs?request=GetFeature&version=2.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=10&outputformat="+JSONType.json+"&featureid=PrimitiveGeoFeature.f001");
+        JSONObject rootObject2 = JSONObject.fromObject( out2 );
+        assertEquals(rootObject2.get("totalFeatures"),1);
+        
+        //check if maxFeatures doesn't affect totalFeatureCount; set Filter and maxFeatures
+        String out3 = getAsString("wfs?request=GetFeature&version=2.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat="+JSONType.json+"&featureid=PrimitiveGeoFeature.f001,PrimitiveGeoFeature.f002");
+        JSONObject rootObject3 = JSONObject.fromObject( out3 );
+        assertEquals(rootObject3.get("totalFeatures"),2);
+        
+        //request with multiple featureTypes and Filter
+        String out4 = getAsString("wfs?request=GetFeature&version=2.0.0&typename=sf:PrimitiveGeoFeature,sf:AggregateGeoFeature&outputformat="+JSONType.json + "&featureid=PrimitiveGeoFeature.f001,PrimitiveGeoFeature.f002,AggregateGeoFeature.f009");
+        JSONObject rootObject4 = JSONObject.fromObject( out4 );
+        assertEquals(rootObject4.get("totalFeatures"),3);
+        
+    }
+ 
+    @Test
+    public void testGetFeatureLine3D() throws Exception {
+        JSONObject collection = (JSONObject) getAsJSON("wfs?request=GetFeature&version=1.0.0&typename=" + getLayerId(LINE3D)
+                + "&outputformat=" + JSONType.json);
+        // print(collection);
+        assertEquals(1, collection.getInt("totalFeatures"));
+        assertEquals("4327", collection.getJSONObject("crs").getJSONObject("properties").getString("code"));
+        JSONArray features = collection.getJSONArray("features");
+        assertEquals(1, features.size());
+        JSONObject feature = features.getJSONObject(0);
+        JSONObject geometry = feature.getJSONObject("geometry");
+        assertEquals("LineString", geometry.getString("type"));
+        JSONArray coords = geometry.getJSONArray("coordinates");
+        JSONArray c1 = coords.getJSONArray(0);
+        assertEquals(0, c1.getInt(0));
+        assertEquals(0, c1.getInt(1));
+        assertEquals(50, c1.getInt(2));
+        JSONArray c2 = coords.getJSONArray(1);
+        assertEquals(120, c2.getInt(0));
+        assertEquals(0, c2.getInt(1));
+        assertEquals(100, c2.getInt(2));
     }
 }

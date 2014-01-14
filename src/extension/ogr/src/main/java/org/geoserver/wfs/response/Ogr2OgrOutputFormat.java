@@ -18,19 +18,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.zip.ZipOutputStream;
 
-import javax.xml.namespace.QName;
-
-import net.opengis.wfs.GetFeatureType;
-import net.opengis.wfs.QueryType;
-
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.util.IOUtils;
-import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geoserver.wfs.request.GetFeatureRequest;
+import org.geoserver.wfs.request.Query;
 import org.geotools.data.DataStore;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -136,13 +132,13 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat {
      * @see WFSGetFeatureOutputFormat#getMimeType(Object, Operation)
      */
     public String getMimeType(Object value, Operation operation) throws ServiceException {
-        GetFeatureType request = (GetFeatureType) OwsUtils.parameter(operation.getParameters(),
-                GetFeatureType.class);
-
-        OgrFormat format = formats.get(request.getOutputFormat());
+        GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
+        String outputFormat = request.getOutputFormat();
+        
+        OgrFormat format = formats.get(outputFormat);
         if (format == null) {
-            throw new WFSException("Unknown output format " + request.getOutputFormat());
-        } else if (format.singleFile && request.getQuery().size() <= 1) {
+            throw new WFSException("Unknown output format " + outputFormat);
+        } else if (format.singleFile && request.getQueries().size() <= 1) {
             if(format.mimeType != null) {
                 return format.mimeType;
             } else {
@@ -171,15 +167,15 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat {
     
     @Override
     public String getAttachmentFileName(Object value, Operation operation) {
-        GetFeatureType request = (GetFeatureType) OwsUtils.parameter(operation.getParameters(),
-                GetFeatureType.class);
-
-        OgrFormat format = formats.get(request.getOutputFormat());
+        GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
+        String outputFormat = request.getOutputFormat();
+        
+        OgrFormat format = formats.get(outputFormat);
+        List<Query> queries = request.getQueries();
         if (format == null) {
-            throw new WFSException("Unknown output format " + request.getOutputFormat());
-        } else if (!format.singleFile || request.getQuery().size() > 1) {
-            String outputFileName = ((QName) ((QueryType) request.getQuery().get(0)).getTypeName()
-                    .get(0)).getLocalPart();
+            throw new WFSException("Unknown output format " + outputFormat);
+        } else if (!format.singleFile || queries.size() > 1) {
+            String outputFileName = queries.get(0).getTypeNames().get(0).getLocalPart();
             return outputFileName + ".zip";
         } else {
             return null;
@@ -214,10 +210,12 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat {
         Operation getFeature) throws IOException ,ServiceException {
 
         // figure out which output format we're going to generate
-        GetFeatureType gft = (GetFeatureType) getFeature.getParameters()[0];
-        OgrFormat format = formats.get(gft.getOutputFormat());
+        GetFeatureRequest request = GetFeatureRequest.adapt(getFeature.getParameters()[0]);
+        String outputFormat = request.getOutputFormat();
+
+        OgrFormat format = formats.get(outputFormat);
         if (format == null)
-            throw new WFSException("Unknown output format " + gft.getOutputFormat());
+            throw new WFSException("Unknown output format " + outputFormat);
 
         // create the first temp directory, used for dumping gs generated
         // content
@@ -262,9 +260,14 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat {
                 }
             } else {
                 // scan the output directory and zip it all
-                ZipOutputStream zipOut = new ZipOutputStream(output);
-                IOUtils.zipDirectory(tempOGR, zipOut, null);
-                zipOut.finish();
+                ZipOutputStream zipOut = null;
+                try {
+                    zipOut = new ZipOutputStream(output);
+                    IOUtils.zipDirectory(tempOGR, zipOut, null);
+                    zipOut.finish();
+                } finally {
+                    org.apache.commons.io.IOUtils.closeQuietly(zipOut);
+                }
             }
 
             // delete the input and output directories

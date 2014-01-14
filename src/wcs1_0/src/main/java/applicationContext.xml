@@ -31,9 +31,10 @@
   <!-- service descriptors -->
   <bean id="wcsService-1.0.0" class="org.geoserver.platform.Service">
     <constructor-arg index="0" value="wcs" />
-    <constructor-arg index="1" ref="wcs100Service" />
-    <constructor-arg index="2" value="1.0.0" />
-    <constructor-arg index="3">
+    <constructor-arg index="1" value="http://www.opengis.net/wcs"/>
+    <constructor-arg index="2" ref="wcs100Service" />
+    <constructor-arg index="3" value="1.0.0" />
+    <constructor-arg index="4">
        <list>
           <value>GetCapabilities</value>
           <value>DescribeCoverage</value>
@@ -58,6 +59,8 @@
 
 
   <bean id="wcs100BBoxKvpParser" class="org.geoserver.wcs.kvp.BBoxKvpParser" />
+  
+  <bean id="wcs100InterpolationKvpParser" class="org.geoserver.wcs.kvp.InterpolationMethodKvpParser" />
 
 
 

@@ -1,0 +1,36 @@
+<featureType>
+        <id>FeatureTypeInfoImpl-6a021234:14179d3743e:-7fec</id>
+        <name>ft</name>
+        <nativeName>ft</nativeName>
+        <namespace>
+          <id>NamespaceInfoImpl-6a021234:14179d3743e:-7fee</id>
+        </namespace>
+        <abstract>abstract</abstract>
+        <nativeCRS>GEOGCS[&quot;WGS 84&quot;, &#xd;
+        DATUM[&quot;World Geodetic System 1984&quot;, &#xd;
+          SPHEROID[&quot;WGS 84&quot;, 6378137.0, 298.257223563, AUTHORITY[&quot;EPSG&quot;,&quot;7030&quot;]], &#xd;
+          AUTHORITY[&quot;EPSG&quot;,&quot;6326&quot;]], &#xd;
+        PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]], &#xd;
+        UNIT[&quot;degree&quot;, 0.017453292519943295], &#xd;
+        AXIS[&quot;Geodetic latitude&quot;, NORTH], &#xd;
+        AXIS[&quot;Geodetic longitude&quot;, EAST], &#xd;
+        AUTHORITY[&quot;EPSG&quot;,&quot;4326&quot;]]</nativeCRS>
+        <srs>EPSG:4326</srs>
+        <enabled>false</enabled>
+        <metadata>
+          <entry key="JDBC_VIRTUAL_TABLE">
+            <virtualTable>
+              <name>riverReduced</name>
+              <sql>select a, b, c * %mulparam% 
+       from table 
+       where x &gt; 1 %andparam%</sql>
+              
+            </virtualTable>
+          </entry>
+        </metadata>
+        <store class="dataStore">
+          <id>DataStoreInfoImpl-6a021234:14179d3743e:-7fed</id>
+        </store>
+        <maxFeatures>0</maxFeatures>
+        <numDecimals>0</numDecimals>
+      </featureType>

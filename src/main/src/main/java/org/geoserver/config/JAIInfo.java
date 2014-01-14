@@ -15,7 +15,9 @@ import javax.media.jai.TileCache;
  * @author Justin Deoliveira, OpenGeo
  *
  */
-public interface JAIInfo extends Cloneable, Serializable{
+public interface JAIInfo extends Cloneable, Serializable {
+    
+    static enum PngEncoderType { JDK, NATIVE, PNGJ }; 
 
     /**
      * Flag controlling image interpolation.
@@ -55,9 +57,15 @@ public interface JAIInfo extends Cloneable, Serializable{
 
     /**
      * Flag controlling native PNG image processing.
+     * @deprecated Use {@link #getPngEncoderType()} instead
      */
+    @Deprecated
     boolean isPngAcceleration();
+    @Deprecated
     void setPngAcceleration(boolean pngAcceleration);
+    
+    PngEncoderType getPngEncoderType();
+    void setPngEncoderType(PngEncoderType type);
 
     /**
      * Flag controlling native JPEG image processing.

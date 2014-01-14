@@ -7,17 +7,19 @@ package org.geoserver.wcs.responses;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFLZWCompressor;
 
 import java.awt.Dimension;
+import java.awt.image.RenderedImage;
+import java.awt.image.SampleModel;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.media.jai.JAI;
 
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.OWS20Exception;
-import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs.WCSInfo;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
@@ -26,6 +28,8 @@ import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffWriteParams;
 import org.geotools.gce.geotiff.GeoTiffWriter;
 import org.geotools.util.Utilities;
+import org.geotools.util.logging.Logging;
+import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
 import org.vfny.geoserver.wcs.WcsException;
@@ -41,6 +45,8 @@ import com.sun.media.imageio.plugins.tiff.BaselineTIFFTagSet;
  */
 public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegate implements CoverageResponseDelegate {
 
+    private final static Logger LOGGER= Logging.getLogger(GeoTIFFCoverageResponseDelegate.class.toString());
+    
     /** DEFAULT_JPEG_COMPRESSION_QUALITY */
     private static final float DEFAULT_JPEG_COMPRESSION_QUALITY = 0.75f;
 
@@ -79,7 +85,7 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
                 });        
     }
 
-    public void encode(GridCoverage2D sourceCoverage, String outputFormat, Map<String,String> econdingParameters, OutputStream output) throws ServiceException, IOException {
+    public void encode(GridCoverage2D sourceCoverage, String outputFormat, Map<String,String> econdingParameters, OutputStream output) throws IOException {
         Utilities.ensureNonNull("sourceCoverage", sourceCoverage);
         Utilities.ensureNonNull("econdingParameters", econdingParameters);
 
@@ -91,7 +97,7 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
         handleCompression(econdingParameters, wp);
         
         // tiling
-        handleTiling(econdingParameters, wp);
+        handleTiling(econdingParameters, wp, sourceCoverage);
         
         // interleaving
         handleInterleaving(econdingParameters, wp, sourceCoverage);
@@ -169,11 +175,30 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
      * 
      * @param econdingParameters a {@link Map} of {@link String} keys with {@link String} values to hold the encoding parameters.
      * @param wp an instance of {@link GeoTiffWriteParams} to be massaged as per the provided encoding parameters.
+     * @param sourceCoverage the source {@link GridCoverage2D} to encode.
      * 
      * @throws WcsException in case there are invalid or unsupported options.
      */
-    private void handleTiling(Map<String, String> econdingParameters, final GeoTiffWriteParams wp)
+    private void handleTiling(Map<String, String> econdingParameters, final GeoTiffWriteParams wp, GridCoverage2D sourceCoverage)
             throws WcsException {
+
+        // start with default dimension, since tileW and tileH are optional
+        final RenderedImage sourceImage=sourceCoverage.getRenderedImage();
+        final SampleModel sampleModel = sourceImage.getSampleModel();
+        final int sourceTileW=sampleModel.getWidth();
+        final int sourceTileH=sampleModel.getHeight();        
+        final Dimension tileDimensions= new Dimension(sourceTileW,sourceTileH);
+        LOGGER.fine("Source tiling:"+tileDimensions.width+"x"+tileDimensions.height);
+        // if the tile size exceeds the image dimension, let's retile to save space on output image
+        final GridEnvelope gr = sourceCoverage.getGridGeometry().getGridRange();
+        if(gr.getSpan(0) < tileDimensions.width) {
+            tileDimensions.width = gr.getSpan(0);
+        }
+        if(gr.getSpan(1) < tileDimensions.height) {
+            tileDimensions.height = gr.getSpan(1);
+        }
+        LOGGER.fine("Source tiling reviewed to save space:"+tileDimensions.width+"x"+tileDimensions.height);        
+
         //
         // tiling
         //
@@ -181,10 +206,7 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
             
             final String tilingS= econdingParameters.get("tiling");
             if(tilingS!=null&&Boolean.valueOf(tilingS)){  
-                wp.setTilingMode(GeoToolsWriteParams.MODE_EXPLICIT);
                 
-                // start with default dimension, since tileW and tileH are optional
-                final Dimension tileDimensions= new Dimension(JAI.getDefaultTileSize());
                 
                 // tileW
                 if(econdingParameters.containsKey("tilewidth")){
@@ -225,22 +247,27 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
                                 throw new OWS20Exception(
                                         "Provided tile height is invalid",
                                         ows20Code(WcsExceptionCode.TilingInvalid),
-                                        Integer.toString(tileH));                            
-                            } 
+                                        Integer.toString(tileH));
+                            }
                         }catch (Exception e) {
                             // tile height not supported
                             throw new OWS20Exception(
                                     "Provided tile height is invalid",
                                     ows20Code(WcsExceptionCode.TilingInvalid),
-                                    tileH_);    
+                                    tileH_);
                         }
                     }
-                    
-                }                
-                
-                // set tile dimensions
-                wp.setTiling(tileDimensions.width, tileDimensions.height);                      
+                }
             }
+        }
+
+        // set tile dimensions
+        if(tileDimensions.width!=sourceTileW||tileDimensions.height!=sourceTileH){
+            LOGGER.fine("Final tiling:"+tileDimensions.width+"x"+tileDimensions.height);
+            wp.setTilingMode(GeoToolsWriteParams.MODE_EXPLICIT);
+            wp.setTiling(tileDimensions.width, tileDimensions.height);
+        } else {
+            LOGGER.fine("Mantaining original tiling");
         }
     }
 
@@ -337,4 +364,9 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
         }
     }
 
+    
+    @Override
+    public String getConformanceClass(String format) {
+        return "http://www.opengis.net/spec/GMLCOV_geotiff-coverages/1.0/conf/geotiff-coverage";
+    }
 }

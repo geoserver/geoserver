@@ -35,6 +35,8 @@ WCS can perform the following operations:
 
 .. _wCs_getcap:
 
+.. note:: The following examples show the 1.1 protocol, the full specification for versions 1.0, 1.1 and 2.0 are available on the `OGC web site <http://www.opengeospatial.org/standards/wcs>`_
+
 GetCapabilities
 ---------------
 

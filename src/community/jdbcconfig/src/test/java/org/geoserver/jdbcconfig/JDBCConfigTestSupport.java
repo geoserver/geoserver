@@ -9,36 +9,29 @@ import static org.easymock.classextension.EasyMock.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 import java.util.logging.Level;
 
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
-import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.impl.CatalogImpl;
+import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.jdbcconfig.JDBCGeoServerLoader;
 import org.geoserver.jdbcconfig.internal.ConfigDatabase;
 import org.geoserver.jdbcconfig.internal.DbMappings;
+import org.geoserver.jdbcconfig.internal.Util;
 import org.geoserver.jdbcconfig.internal.XStreamInfoSerialBinding;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
-import org.springframework.context.ApplicationContext;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.web.context.WebApplicationContext;
 import org.vfny.geoserver.global.GeoserverDataDirectory;
 
-import com.google.common.collect.Lists;
-import com.google.common.io.Resources;
-
+@SuppressWarnings("unused")
 public class JDBCConfigTestSupport {
 
     public static File createTempDir() throws IOException {
@@ -176,32 +169,13 @@ public class JDBCConfigTestSupport {
     private void runScript(String dbScriptName) throws IOException {
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(dataSource);
 
-        String[] initScript = readDbScript(dbScriptName);
-        JdbcOperations jdbcOperations = template.getJdbcOperations();
-        for (String sentence : initScript) {
-            try {
-                jdbcOperations.update(sentence);
-            } catch (DataAccessException e) {
-                // e.printStackTrace();
-                throw e;
-            }
-        }
-    }
-
-    private String[] readDbScript(final String scriptName) throws IOException {
-
-        URL url = JDBCGeoServerLoader.class.getResource(scriptName);
+        URL url = JDBCGeoServerLoader.class.getResource(dbScriptName);
         if (url == null) {
             throw new IllegalArgumentException("Script not found: " + getClass().getName() + "/"
-                    + scriptName);
+                    + dbScriptName);
         }
-        List<String> lines = Lists.newArrayList(Resources.readLines(url, Charset.forName("UTF-8")));
-        for (Iterator<String> it = lines.iterator(); it.hasNext();) {
-            if (it.next().trim().length() == 0) {
-                it.remove();
-            }
-        }
-        return lines.toArray(new String[lines.size()]);
+
+        Util.runScript(url, template.getJdbcOperations(), null);
     }
 
     public DataSource getDataSource() {

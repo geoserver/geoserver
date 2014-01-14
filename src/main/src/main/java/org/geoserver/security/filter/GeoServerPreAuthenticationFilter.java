@@ -153,10 +153,7 @@ public abstract class GeoServerPreAuthenticationFilter extends GeoServerSecurity
 
     @Override
     public String getCacheKey(HttpServletRequest request) {
-        
-        if (Boolean.TRUE.equals(request.getAttribute(GeoServerSecurityContextPersistenceFilter.ALLOWSESSIONCREATION_ATTR)))
-            return null;
-        
+                
         if (request.getSession(false)!=null) // no caching if there is an HTTP session
             return null;
         

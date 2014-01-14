@@ -37,7 +37,7 @@ public class URLKvpParser extends KvpParser {
      * @param url
      * @return
      */
-    String fixURL(String url) {
+    public static String fixURL(String url) {
         StringBuffer sb = new StringBuffer();
 
         for (int i = 0; i < url.length(); i++) {

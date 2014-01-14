@@ -6,7 +6,6 @@ package org.geoserver.catalog.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.*;
-
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
@@ -22,10 +21,9 @@ import org.geoserver.test.RemoteOWSTestSupport;
 import org.geotools.feature.NameImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Document;
 
@@ -65,6 +63,14 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
             wml.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
             
             catalog.add(wml);
+        }
+    }
+    
+    @After
+    public void removeLayer() throws Exception {
+        LayerInfo l = catalog.getLayerByName(new NameImpl("sf", "states"));
+        if(l != null) {
+            catalog.remove(l);
         }
     }
 

@@ -77,14 +77,16 @@ public abstract class FeatureTypeSchemaBuilder {
     /** logging instance */
     static Logger logger = org.geotools.util.logging.Logging.getLogger("org.geoserver.wfs");
 
-    /** wfs configuration */
-    WFSInfo wfs;
-
     /** the catalog */
     Catalog catalog;
 
     /** resource loader */
     GeoServerResourceLoader resourceLoader;
+    
+    /**
+     * Access to service configuration
+     */
+    GeoServer gs;
 
     /**
      * profiles used for type mapping.
@@ -104,7 +106,7 @@ public abstract class FeatureTypeSchemaBuilder {
     protected volatile XSDElementDeclaration featureSubGroupElement;
 
     protected FeatureTypeSchemaBuilder(GeoServer gs) {
-        this.wfs = gs.getService( WFSInfo.class );
+        this.gs = gs;
         this.catalog = gs.getCatalog();
         this.resourceLoader = gs.getCatalog().getResourceLoader();
 
@@ -177,7 +179,7 @@ public abstract class FeatureTypeSchemaBuilder {
         }
         
         if (baseUrl == null)
-            baseUrl = wfs.getSchemaBaseURL(); 
+            baseUrl = gs.getService(WFSInfo.class).getSchemaBaseURL(); 
                 
         if (ns2featureTypeInfos.entrySet().size() == 0) {
             // for WFS 2.0 encoding to work we need to have at least a dependency on GML and
@@ -713,7 +715,7 @@ public abstract class FeatureTypeSchemaBuilder {
                 AttributeDescriptor attribute = (AttributeDescriptor) pd;
 
                 if ( filterAttributeType( attribute ) ) {
-                    GMLInfo gml = getGMLConfig(wfs);
+                    GMLInfo gml = getGMLConfig(gs.getService(WFSInfo.class));
                     if (gml == null || !gml.getOverrideGMLAttributes()) {
                         continue;
                     }

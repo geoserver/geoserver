@@ -50,14 +50,14 @@ import org.opengis.filter.expression.PropertyName;
  * Creates a List of Rule using different classification methods Sets up only
  * filter not Symbolyzer Available Classification: Quantile,Unique Interval &
  * Equal Interval
- * 
+ *
  * @author kappu
- * 
+ *
  */
 public class RulesBuilder {
 
 	private final static Logger LOGGER = Logger.getLogger(RulesBuilder.class.toString());
-	
+
 	private FilterFactory2 ff;
 	private StyleFactory styleFactory;
 	private StyleBuilder sb;
@@ -71,7 +71,7 @@ public class RulesBuilder {
 	/**
 	 * Generate a List of rules using quantile classification Sets up only
 	 * filter not symbolizer
-	 * 
+	 *
 	 * @param features
 	 * @param property
 	 * @param classNumber
@@ -96,7 +96,7 @@ public class RulesBuilder {
 
 		} catch (Exception e) {
 			if (LOGGER.isLoggable(Level.INFO))
-				LOGGER.log(Level.INFO, "Failed to build Quantile Classification" 
+				LOGGER.log(Level.INFO, "Failed to build Quantile Classification"
 						+ e.getLocalizedMessage(), e);
 		}
 		return null;
@@ -105,7 +105,7 @@ public class RulesBuilder {
 	/**
 	 * Generate a List of rules using equal interval classification Sets up only
 	 * filter not symbolizer
-	 * 
+	 *
 	 * @param features
 	 * @param property
 	 * @param classNumber
@@ -127,7 +127,7 @@ public class RulesBuilder {
 
 		} catch (Exception e) {
 			if (LOGGER.isLoggable(Level.INFO))
-				LOGGER.log(Level.INFO, "Failed to build EqualInterval Classification" 
+				LOGGER.log(Level.INFO, "Failed to build EqualInterval Classification"
 						+ e.getLocalizedMessage(), e);
 		}
 		return null;
@@ -136,7 +136,7 @@ public class RulesBuilder {
 	/**
 	 * Generate a List of rules using unique interval classification Sets up
 	 * only filter not symbolizer
-	 * 
+	 *
 	 * @param features
 	 * @param property
 	 * @return
@@ -155,19 +155,52 @@ public class RulesBuilder {
 
 		} catch (Exception e) {
 			if (LOGGER.isLoggable(Level.INFO))
-				LOGGER.log(Level.INFO, "Failed to build UniqueInterval Classification" 
+				LOGGER.log(Level.INFO, "Failed to build UniqueInterval Classification"
 						+ e.getLocalizedMessage(), e);
 		}
 		return null;
 	}
 
 	/**
+     * Generate a List of rules using Jenks Natural Breaks classification Sets up only
+     * filter not symbolizer
+     *
+     * @param features
+     * @param property
+     * @param classNumber
+     * @return
+     */
+    public List<Rule> jenksClassification(FeatureCollection features, String property, int classNumber, boolean open) {
+        Classifier groups = null;
+        try {
+            final Function classify = ff.function("Jenks", ff.property(property), ff.literal(classNumber));
+            groups = (Classifier) classify.evaluate(features);
+            //System.out.println(groups.getSize());
+            if (groups instanceof RangedClassifier)
+                if(open)
+                    return openRangedRules((RangedClassifier) groups, property);
+                else
+                    return closedRangedRules((RangedClassifier) groups, property);
+            else if (groups instanceof ExplicitClassifier)
+                return this.explicitRules((ExplicitClassifier) groups, property);
+
+        } catch (Exception e) {
+            if (LOGGER.isLoggable(Level.INFO))
+                LOGGER.log(Level.INFO, "Failed to build Jenks classification"
+                        + e.getLocalizedMessage(), e);
+        }
+        return null;
+    }
+
+
+    /**
 	 * Generate Polygon Symbolyzer for each rule in list
 	 * Fill color is choose from rampcolor
 	 * @param rules
-	 * @param ramp
+	 * @param fillRamp
+     * @param reverseColors
 	 */
-	public void polygonStyle(List<Rule> rules, ColorRamp fillRamp) {
+	public void polygonStyle(List<Rule> rules, ColorRamp fillRamp, boolean reverseColors) {
 
 		Iterator<Rule> it;
 		Rule rule;
@@ -177,8 +210,11 @@ public class RulesBuilder {
 		try {
 			//adjust the colorRamp with the correct number of classes
 			fillRamp.setNumClasses(rules.size());
+            if (reverseColors) {
+                fillRamp.revert();
+            }
 			colors = fillRamp.getRamp().iterator();
-			
+
 			it = rules.iterator();
 			while (it.hasNext() && colors.hasNext()) {
 				color = colors.next();
@@ -187,7 +223,7 @@ public class RulesBuilder {
 			}
 		} catch (Exception e) {
 			if (LOGGER.isLoggable(Level.INFO))
-				LOGGER.log(Level.INFO, "Failed to build polygon Symbolizer" 
+				LOGGER.log(Level.INFO, "Failed to build polygon Symbolizer"
 						+ e.getLocalizedMessage(), e);
 		}
 
@@ -197,9 +233,10 @@ public class RulesBuilder {
 	 * Generate Line Symbolyzer for each rule in list
 	 * Stroke color is choose from rampcolor
 	 * @param rules
-	 * @param ramp
+	 * @param fillRamp
+     * @param reverseColors
 	 */
-	public void lineStyle(List<Rule> rules, ColorRamp fillRamp) {
+	public void lineStyle(List<Rule> rules, ColorRamp fillRamp, boolean reverseColors) {
 
 		Iterator<Rule> it;
 		Rule rule;
@@ -209,6 +246,9 @@ public class RulesBuilder {
 		try {
 			//adjust the colorRamp with the correct number of classes
 			fillRamp.setNumClasses(rules.size());
+            if (reverseColors) {
+                fillRamp.revert();
+            }
 			colors = fillRamp.getRamp().iterator();
 
 			it = rules.iterator();
@@ -219,17 +259,17 @@ public class RulesBuilder {
 			}
 		} catch (Exception e) {
 			if (LOGGER.isLoggable(Level.INFO))
-				LOGGER.log(Level.INFO, "Failed to build Line Symbolizer" 
+				LOGGER.log(Level.INFO, "Failed to build Line Symbolizer"
 						+ e.getLocalizedMessage(), e);
 		}
 
 
 	}
-	
+
 	public StyleFactory getStyleFactory() {
 		return this.styleFactory;
 	}
-	
+
 	/**
      * Generate Rules from Rangedclassifier groups
      * build a List of rules
@@ -287,7 +327,7 @@ public class RulesBuilder {
             return list;
         } catch (CQLException e) {
         	if (LOGGER.isLoggable(Level.INFO))
-				LOGGER.log(Level.INFO, "Failed to build Open Ranged rules" 
+				LOGGER.log(Level.INFO, "Failed to build Open Ranged rules"
 						+ e.getLocalizedMessage(), e);
         }
         return null;
@@ -320,7 +360,7 @@ public class RulesBuilder {
 					list.add(r);
 				} else {
 					f = CQL.toFilter(att + (i == 0 ? ">=" : ">") + ff.literal(groups.getMin(i)) + " AND " + att + " <=" + ff.literal(groups.getMax(i)));
-					r.setTitle(" > " + ff.literal(groups.getMin(i)) + " AND <= " + ff.literal(groups.getMax(i)));
+					r.setTitle((i == 0 ? " >= " : " > ") + ff.literal(groups.getMin(i)) + " AND <= " + ff.literal(groups.getMax(i)));
 					r.setFilter(f);
 					list.add(r);
 				}
@@ -328,7 +368,7 @@ public class RulesBuilder {
 			return list;
 		} catch (CQLException e) {
 			if (LOGGER.isLoggable(Level.INFO))
-				LOGGER.log(Level.INFO, "Failed to build closed Ranged Rules" 
+				LOGGER.log(Level.INFO, "Failed to build closed Ranged Rules"
 						+ e.getLocalizedMessage(), e);
 		}
 		return null;
@@ -373,7 +413,7 @@ public class RulesBuilder {
 			return list;
 		} catch (CQLException e) {
 			if (LOGGER.isLoggable(Level.INFO))
-				LOGGER.log(Level.INFO, "Failed to build explicit Rules" 
+				LOGGER.log(Level.INFO, "Failed to build explicit Rules"
 						+ e.getLocalizedMessage(), e);
 		}
 		return null;

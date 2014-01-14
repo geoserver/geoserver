@@ -75,4 +75,8 @@
     <constructor-arg ref="scriptMgr"/>
   </bean>
   
+  <!-- wps stuff -->
+  <bean id="mapXmlPPIO" class="org.geoserver.script.wps.MapXMLPPIO"/>
+  <bean id="mapJsonPPIO" class="org.geoserver.script.wps.MapJSONPPIO"/>
+
 </beans>

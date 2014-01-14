@@ -15,3 +15,5 @@ Although not portable, the extensions make styling more powerful and concise and
    substitution
    uom
    label-obstacles
+   margins
+   randomized

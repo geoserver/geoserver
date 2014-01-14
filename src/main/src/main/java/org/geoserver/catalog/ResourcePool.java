@@ -51,6 +51,7 @@ import org.geoserver.feature.retype.RetypingFeatureSource;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataAccessFactory;
 import org.geotools.data.DataAccessFactory.Param;
@@ -112,6 +113,8 @@ import org.vfny.geoserver.util.DataStoreUtils;
  *
  */
 public class ResourcePool {
+
+    private static final String PROJECTION_POLICY_SEPARATOR = "_pp_";
 
     /**
      * Hint to specify if reprojection should occur while loading a 
@@ -270,7 +273,9 @@ public class ResourcePool {
     }
 
     protected Map<String,FeatureType> createFeatureTypeCache(int size) {
-        return new FeatureTypeCache(size);
+        // for each feature type we cache two versions, one with the projection policy applied, one
+        // without it
+        return new FeatureTypeCache(size * 2);
     }
 
     /**
@@ -287,7 +292,9 @@ public class ResourcePool {
     }
 
     protected Map<String, List<AttributeTypeInfo>> createFeatureTypeAttributeCache(int size) {
-        return new FeatureTypeAttributeCache(size);
+        // for each feature type we cache two versions, one with the projection policy applied, one
+        // without it
+        return new FeatureTypeAttributeCache(size * 2);
     }
 
     /**
@@ -586,7 +593,7 @@ public class ResourcePool {
      *
      * <p>
      * This is used to smooth any relative path kind of issues for any file
-     * URLS. This code should be expanded to deal with any other context
+     * URLS or directory. This code should be expanded to deal with any other context
      * sensitve isses dataStores tend to have.
      * </p>
      *
@@ -615,6 +622,14 @@ public class ResourcePool {
             } else if (value instanceof URL && ((URL) value).getProtocol().equals("file")) {
                 File fixedPath = GeoserverDataDirectory.findDataFile(((URL) value).toString());
                 entry.setValue(DataUtilities.fileToURL(fixedPath));
+            } else if ((key != null) && key.equals("directory") && value instanceof String) {
+                String path = (String) value;
+                //if a url is used for a directory (for example property store), convert it to path
+                
+                if (path.startsWith("file:")) {
+                    File fixedPath = GeoserverDataDirectory.findDataFile((String) value);
+                    entry.setValue(fixedPath.toString());            
+                }
             }
         }
 
@@ -801,101 +816,149 @@ public class ResourcePool {
     
     FeatureType getFeatureType( FeatureTypeInfo info, boolean handleProjectionPolicy ) throws IOException {
         boolean cacheable = isCacheable(info) && handleProjectionPolicy;
-        FeatureType ft = (FeatureType) featureTypeCache.get( info.getId() );
-        if ( ft == null || !cacheable ) {
+        return cacheable ? getCacheableFeatureType(info, handleProjectionPolicy): 
+                           getNonCacheableFeatureType(info, handleProjectionPolicy);
+    }
+    
+    FeatureType getCacheableFeatureType( FeatureTypeInfo info, boolean handleProjectionPolicy ) throws IOException {
+        String key = getFeatureTypeInfoKey(info, handleProjectionPolicy);
+        FeatureType ft = (FeatureType) featureTypeCache.get( key );
+        if ( ft == null ) {
             synchronized ( featureTypeCache ) {
-                ft = (FeatureType) featureTypeCache.get( info.getId() );
-                if ( ft == null || !cacheable) {
+                ft = (FeatureType) featureTypeCache.get( key );
+                if ( ft == null ) {
                     
                     //grab the underlying feature type
                     DataAccess<? extends FeatureType, ? extends Feature> dataAccess = getDataStore(info.getStore());
                     
-                    // sql view handling
-                    VirtualTable vt = null;
-                    String vtName = null;
-                    if(dataAccess instanceof JDBCDataStore && info.getMetadata() != null &&
-                            (info.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE) instanceof VirtualTable)) {
-                        JDBCDataStore jstore = (JDBCDataStore) dataAccess;
-                        vt = info.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, VirtualTable.class);
-                        
-                        if(!cacheable) {
-                            // use a highly random name, we don't want to actually add the
-                            // virtual table to the store as this feature type is not cacheable,
-                            // it is "dirty" or un-saved. The renaming below will take care
-                            // of making the user see the actual name
-                            final String[] typeNames = jstore.getTypeNames();
-                            do {
-                                vtName = UUID.randomUUID().toString();
-                            } while (Arrays.asList(typeNames).contains(vtName));
+                    if(isSQLView(info, dataAccess)) {
     
-                            // try adding the vt and see if that works
-                            jstore.addVirtualTable(new VirtualTable(vtName, vt));
-                            ft = jstore.getSchema(vtName);
-                        } else {
-                            vtName = vt.getName();
-                            if(!jstore.getVirtualTables().containsValue(vt)) {
-                                jstore.addVirtualTable(vt);
-                            }
-                            ft = jstore.getSchema(vt.getName());
+                        VirtualTable vt = info.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, VirtualTable.class);
+                        JDBCDataStore jstore = (JDBCDataStore) dataAccess;
+                        if(!jstore.getVirtualTables().containsValue(vt)) {
+                            jstore.addVirtualTable(vt);
                         }
+                        ft = jstore.getSchema(vt.getName());
                     } else {
                         ft = dataAccess.getSchema(info.getQualifiedNativeName());
                     }
                     
-                    // TODO: support reprojection for non-simple FeatureType
-                    if (ft instanceof SimpleFeatureType) {
-                        SimpleFeatureType sft = (SimpleFeatureType) ft;
-                        //create the feature type so it lines up with the "declared" schema
-                        SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
-                        tb.setName( info.getName() );
-                        tb.setNamespaceURI( info.getNamespace().getURI() );
-
-                        if ( info.getAttributes() == null || info.getAttributes().isEmpty() ) {
-                            //take this to mean just load all native
-                            for ( PropertyDescriptor pd : ft.getDescriptors() ) {
-                                if ( !( pd instanceof AttributeDescriptor ) ) {
-                                    continue;
-                                }
-                                
-                                AttributeDescriptor ad = (AttributeDescriptor) pd;
-                                if(handleProjectionPolicy) {
-                                    ad = handleDescriptor(ad, info);
-                                }
-                                tb.add( ad );
-                            }
-                        }
-                        else {
-                            //only load native attributes configured
-                            for ( AttributeTypeInfo att : info.getAttributes() ) {
-                                String attName = att.getName();
-                                
-                                //load the actual underlying attribute type
-                                PropertyDescriptor pd = ft.getDescriptor( attName );
-                                if ( pd == null || !( pd instanceof AttributeDescriptor) ) {
-                                    throw new IOException("the SimpleFeatureType " + info.getPrefixedName()
-                                            + " does not contains the configured attribute " + attName
-                                            + ". Check your schema configuration");
-                                }
-                            
-                                AttributeDescriptor ad = (AttributeDescriptor) pd;
-                                ad = handleDescriptor(ad, info);
-                                tb.add( (AttributeDescriptor) ad );
-                            }
-                        }
-                        ft = tb.buildFeatureType();
-                    } // end special case for SimpleFeatureType
+                    ft = buildFeatureType(info, handleProjectionPolicy, ft);
                     
-                    if(cacheable) {
-                        featureTypeCache.put( info.getId(), ft );
-                    } else if(vtName != null) {
-                        JDBCDataStore jstore = (JDBCDataStore) dataAccess;
-                        jstore.removeVirtualTable(vtName);
-                    }
+                    featureTypeCache.put( key, ft );
                 }
             }
         }
-        
         return ft;
+    }
+
+    private FeatureType getNonCacheableFeatureType( FeatureTypeInfo info, boolean handleProjectionPolicy ) throws IOException {
+        FeatureType ft = null;
+        
+        //grab the underlying feature type
+        DataAccess<? extends FeatureType, ? extends Feature> dataAccess = getDataStore(info.getStore());
+        
+        String vtName = null;
+        if(isSQLView(info, dataAccess)) {
+            JDBCDataStore jstore = (JDBCDataStore) dataAccess;
+            VirtualTable vt = info.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, VirtualTable.class);
+            
+            
+            // building the virtual table structure is expensive, see if the VT is already registered in the db
+            if(jstore.getVirtualTables().containsValue(vt)) {
+                // if the virtual table is already registered in the store (and equality in the test above
+                // guarantees the structure is the same), we can just get the schema from it directly
+                ft = jstore.getSchema(vt.getName());
+                // paranoid check: make sure nobody changed the vt structure while we fetched 
+                // the data (rather unlikely, even more unlikely would be 
+                if(!jstore.getVirtualTables().containsValue(vt)) {
+                    ft = null;
+                }
+            } 
+            
+            if(ft == null) {
+                // use a highly random name, we don't want to actually add the
+                // virtual table to the store as this feature type is not cacheable,
+                // it is "dirty" or un-saved. The renaming below will take care
+                // of making the user see the actual name
+                // NT 14/8/2012: Removed synchronization on jstore as it blocked query
+                // execution and risk of UUID clash is considered acceptable.
+                final String[] typeNames = jstore.getTypeNames();
+                do {
+                    vtName = UUID.randomUUID().toString();
+                } while (Arrays.asList(typeNames).contains(vtName));                                
+                jstore.addVirtualTable(new VirtualTable(vtName, vt));
+    
+                ft = jstore.getSchema(vtName);
+            }
+        } else {
+            ft = dataAccess.getSchema(info.getQualifiedNativeName());
+        }
+        
+        ft = buildFeatureType(info, handleProjectionPolicy, ft);
+        
+        if(vtName != null) {
+            JDBCDataStore jstore = (JDBCDataStore) dataAccess;
+            jstore.removeVirtualTable(vtName);
+        }
+        return ft;
+    }
+    
+    private boolean isSQLView(FeatureTypeInfo info,
+            DataAccess<? extends FeatureType, ? extends Feature> dataAccess) {
+        return dataAccess instanceof JDBCDataStore && info.getMetadata() != null &&
+                (info.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE) instanceof VirtualTable);
+    }
+    
+    private FeatureType buildFeatureType(FeatureTypeInfo info,
+            boolean handleProjectionPolicy, FeatureType ft) throws IOException {
+        // TODO: support reprojection for non-simple FeatureType
+        if (ft instanceof SimpleFeatureType) {
+            SimpleFeatureType sft = (SimpleFeatureType) ft;
+            //create the feature type so it lines up with the "declared" schema
+            SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
+            tb.setName( info.getName() );
+            tb.setNamespaceURI( info.getNamespace().getURI() );
+
+            if ( info.getAttributes() == null || info.getAttributes().isEmpty() ) {
+                //take this to mean just load all native
+                for ( PropertyDescriptor pd : ft.getDescriptors() ) {
+                    if ( !( pd instanceof AttributeDescriptor ) ) {
+                        continue;
+                    }
+                    
+                    AttributeDescriptor ad = (AttributeDescriptor) pd;
+                    if(handleProjectionPolicy) {
+                        ad = handleDescriptor(ad, info);
+                    }
+                    tb.add( ad );
+                }
+            }
+            else {
+                //only load native attributes configured
+                for ( AttributeTypeInfo att : info.getAttributes() ) {
+                    String attName = att.getName();
+                    
+                    //load the actual underlying attribute type
+                    PropertyDescriptor pd = ft.getDescriptor( attName );
+                    if ( pd == null || !( pd instanceof AttributeDescriptor) ) {
+                        throw new IOException("the SimpleFeatureType " + info.getPrefixedName()
+                                + " does not contains the configured attribute " + attName
+                                + ". Check your schema configuration");
+                    }
+                
+                    AttributeDescriptor ad = (AttributeDescriptor) pd;
+                    ad = handleDescriptor(ad, info);
+                    tb.add( (AttributeDescriptor) ad );
+                }
+            }
+            ft = tb.buildFeatureType();
+        } // end special case for SimpleFeatureType
+        return ft;
+    }
+
+    private String getFeatureTypeInfoKey(FeatureTypeInfo info, boolean handleProjectionPolicy) {
+        return info.getId() + PROJECTION_POLICY_SEPARATOR + handleProjectionPolicy;
     }
     
     /**
@@ -1006,7 +1069,8 @@ public class ResourcePool {
      * @param info The feature type metadata.
      */
     public void clear( FeatureTypeInfo info ) {
-        featureTypeCache.remove( info.getId() );
+        featureTypeCache.remove(getFeatureTypeInfoKey(info, true));
+        featureTypeCache.remove(getFeatureTypeInfoKey(info, false));
         featureTypeAttributeCache.remove( info.getId() );
     }
     
@@ -1157,12 +1221,27 @@ public class ResourcePool {
     @SuppressWarnings("deprecation")
     public GridCoverageReader getGridCoverageReader( CoverageStoreInfo info, Hints hints ) 
         throws IOException {
+        return getGridCoverageReader(info, (String) null, hints);
+    }
+    
+    /**
+     * Returns a coverage reader, caching the result.
+     *  
+     * @param info The coverage metadata.
+     * @param hints Hints to use when loading the coverage, may be <code>null</code>.
+     * 
+     * @throws IOException Any errors that occur loading the reader.
+     */
+    @SuppressWarnings("deprecation")
+    public GridCoverageReader getGridCoverageReader(CoverageStoreInfo info, String coverageName, Hints hints) 
+        throws IOException {
         
         final AbstractGridFormat gridFormat = info.getFormat();
         if(gridFormat == null) {
             throw new IOException("Could not find the raster plugin for format " + info.getType());
         }
         
+        // look into the cache
         GridCoverageReader reader = null;
         Object key;
         if ( hints != null && info.getId() != null) {
@@ -1170,7 +1249,9 @@ public class ResourcePool {
             final String formatName = gridFormat.getName();
             if (formatName.equalsIgnoreCase(IMAGE_MOSAIC) || formatName.equalsIgnoreCase(IMAGE_PYRAMID)){
                 if (coverageExecutor != null){
-                    if (hints != null){
+                    if (hints != null) {
+                        // do not modify the caller hints
+                        hints = new Hints(hints);
                         hints.add(new RenderingHints(Hints.EXECUTOR_SERVICE, coverageExecutor));
                     } else {
                         hints = new Hints(new RenderingHints(Hints.EXECUTOR_SERVICE, coverageExecutor));
@@ -1179,7 +1260,7 @@ public class ResourcePool {
             }
             
             key = new CoverageHintReaderKey(info.getId(), hints);
-            reader = (GridCoverageReader) hintCoverageReaderCache.get( key );    
+            reader = (GridCoverage2DReader) hintCoverageReaderCache.get( key );
         } else {
             key = info.getId();
             if(key != null) {
@@ -1187,39 +1268,53 @@ public class ResourcePool {
             }
         }
         
-        if (reader != null) {
-            return reader;
-        }
-        
-        synchronized ( hints != null ? hintCoverageReaderCache : coverageReaderCache ) {
-            if (key != null) {
-                if (hints != null) {
-                    reader = (GridCoverageReader) hintCoverageReaderCache.get(key);
-                } else {
-                    reader = (GridCoverageReader) coverageReaderCache.get(key);
-                }
-            }
-            if (reader == null) {
-                /////////////////////////////////////////////////////////
-                //
-                // Getting coverage reader using the format and the real path.
-                //
-                // /////////////////////////////////////////////////////////
-                final File obj = GeoserverDataDirectory.findDataFile(info.getURL());
-    
-                reader = gridFormat.getReader(obj,hints);
-                if(key != null) {
-                    if(hints != null) {
-                        hintCoverageReaderCache.put((CoverageHintReaderKey) key, reader);
+        // if not found in cache, create it
+        if(reader == null) {
+            synchronized ( hints != null ? hintCoverageReaderCache : coverageReaderCache ) {
+                if (key != null) {
+                    if (hints != null) {
+                        reader = (GridCoverageReader) hintCoverageReaderCache.get(key);
                     } else {
-                        coverageReaderCache.put((String) key, reader);
+                        reader = (GridCoverageReader) coverageReaderCache.get(key);
+                    }
+                }
+                if (reader == null) {
+                    /////////////////////////////////////////////////////////
+                    //
+                    // Getting coverage reader using the format and the real path.
+                    //
+                    // /////////////////////////////////////////////////////////
+                    final String url = info.getURL();
+                    final File obj = GeoserverDataDirectory.findDataFile(url);
+                    // In case no File is returned, provide the original String url
+                    final Object input = obj != null ? obj : url;  
+
+                    // readers might change the provided hints, pass down a defensive copy
+                    reader = gridFormat.getReader(input, new Hints(hints));
+                    if(reader == null) {
+                        throw new IOException("Failed to create reader from " + url + " and hints " + hints);
+                    }
+                    if(key != null) {
+                        if(hints != null) {
+                            hintCoverageReaderCache.put((CoverageHintReaderKey) key, reader);
+                        } else {
+                            coverageReaderCache.put((String) key, reader);
+                        }
                     }
                 }
             }
         }
         
-        return reader;
-            
+        // wrap it if we are dealing with a multi-coverage reader
+        if(coverageName != null) {
+            // force the result to work against a single coverage, so that the OGC service portion of
+            // GeoServer does not need to be updated to the multicoverage stuff
+            // (we might want to introduce a hint later for code that really wants to get the
+            // multi-coverage reader)
+            return SingleGridCoverage2DReader.wrap((GridCoverage2DReader) reader, coverageName);
+        } else {
+            return (GridCoverage2DReader) reader;
+        }
     }
     
     /**
@@ -1392,27 +1487,9 @@ public class ResourcePool {
                 synchronized (wmsCache) {
                     wms = (WebMapServer) wmsCache.get(id);
                     if (wms == null) {
-                        HTTPClient client;
-                        if (info.isUseConnectionPooling()) {
-                            client = new MultithreadedHttpClient();
-                            if (info.getMaxConnections() > 0) {
-                                int maxConnections = info.getMaxConnections();
-                                MultithreadedHttpClient mtClient = (MultithreadedHttpClient) client;
-                                mtClient.setMaxConnections(maxConnections);
-                            }
-                        } else {
-                            client = new SimpleHttpClient();
-                        }
-                        String username = info.getUsername();
-                        String password = info.getPassword();
-                        int connectTimeout = info.getConnectTimeout();
-                        int readTimeout = info.getReadTimeout();
-                        client.setUser(username);
-                        client.setPassword(password);
-                        client.setConnectTimeout(connectTimeout);
-                        client.setReadTimeout(readTimeout);
-
-                        URL serverURL = new URL(info.getCapabilitiesURL());
+                        HTTPClient client = getHTTPClient(info);
+                        String capabilitiesURL = info.getCapabilitiesURL();
+                        URL serverURL = new URL(capabilitiesURL);
                         wms = new WebMapServer(serverURL, client);
                         
                         wmsCache.put(id, wms);
@@ -1428,6 +1505,39 @@ public class ResourcePool {
         }
     }
     
+    private HTTPClient getHTTPClient(WMSStoreInfo info) {
+        String capabilitiesURL = info.getCapabilitiesURL();
+        
+        // check for mock bindings. Since we are going to run this code in production as well,
+        // guard it so that it only triggers if the MockHttpClientProvider has any active binding
+        if(TestHttpClientProvider.testModeEnabled() && capabilitiesURL.startsWith(TestHttpClientProvider.MOCKSERVER)) {
+            HTTPClient client = TestHttpClientProvider.get(capabilitiesURL);
+            return client;
+        }
+        
+        HTTPClient client;
+        if (info.isUseConnectionPooling()) {
+            client = new MultithreadedHttpClient();
+            if (info.getMaxConnections() > 0) {
+                int maxConnections = info.getMaxConnections();
+                MultithreadedHttpClient mtClient = (MultithreadedHttpClient) client;
+                mtClient.setMaxConnections(maxConnections);
+            }
+        } else {
+            client = new SimpleHttpClient();
+        }
+        String username = info.getUsername();
+        String password = info.getPassword();
+        int connectTimeout = info.getConnectTimeout();
+        int readTimeout = info.getReadTimeout();
+        client.setUser(username);
+        client.setPassword(password);
+        client.setConnectTimeout(connectTimeout);
+        client.setReadTimeout(readTimeout);
+        
+        return client;
+    }
+
     /**
      * Locates and returns a WMS {@link Layer} based on the configuration stored in WMSLayerInfo 
      * @param info
@@ -1484,7 +1594,7 @@ public class ResourcePool {
                         throw new IOException( "No such file: " + info.getFilename());
                     }
                     
-                    style = Styles.style(Styles.parse(styleFile, info.getSLDVersion()));
+                    style = Styles.style(Styles.parse(styleFile, null, info.getSLDVersion()));
                     
                     //set the name of the style to be the name of hte style metadata
                     // remove this when wms works off style info
@@ -1674,7 +1784,8 @@ public class ResourcePool {
             super(maxSize);
         }
         
-        protected void dispose(String id, FeatureType featureType) {
+        protected void dispose(String key, FeatureType featureType) {
+            String id = key.substring(0, key.indexOf(PROJECTION_POLICY_SEPARATOR));
         	FeatureTypeInfo info = catalog.getFeatureType(id);
             LOGGER.info( "Disposing feature type '" + info.getName() + "'");
             fireDisposed(info, featureType);

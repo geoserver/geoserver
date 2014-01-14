@@ -24,6 +24,7 @@ import net.sf.json.util.JSONBuilder;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.util.OwsUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 
 /**
@@ -59,7 +60,7 @@ public enum JSONType {
      */
     public final static String ENABLE_JSONP_KEY = "ENABLE_JSONP";
 
-    private static boolean jsonpEnabled = isJsonpEnabledByEnv() || isJsonpEnabledByProperty();
+    private static boolean jsonpEnabled = isJsonpPropertyEnabled();
 
     /**
      * Check if the passed MimeType is a valid jsonp
@@ -114,24 +115,13 @@ public enum JSONType {
     }
 
     /**
-     * Parses the ENABLE_JSONP value as a boolean from properties.
+     * Parses the ENABLE_JSONP value as a boolean.
      * 
      * @return The boolean returned represents the value true if the string argument of the ENABLE_JSONP property is not null and is equal, ignoring
      *         case, to the string "true".
      */
-    private static boolean isJsonpEnabledByProperty() {
-        String jsonp = System.getProperty(ENABLE_JSONP_KEY);
-        return Boolean.parseBoolean(jsonp);
-    }
-
-    /**
-     * Parses the ENABLE_JSONP value as a boolean from environment.
-     * 
-     * @return The boolean returned represents the value true if the string argument of the ENABLE_JSONP property is not null and is equal, ignoring
-     *         case, to the string "true".
-     */
-    private static boolean isJsonpEnabledByEnv() {
-        String jsonp = System.getenv(ENABLE_JSONP_KEY);
+    private static boolean isJsonpPropertyEnabled() {
+        String jsonp = GeoServerExtensions.getProperty(ENABLE_JSONP_KEY);
         return Boolean.parseBoolean(jsonp);
     }
 

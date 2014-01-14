@@ -42,10 +42,10 @@ public class WaterMLTimeSeriesWfsTest extends AbstractAppSchemaTestSupport {
         assertXpathEvaluatesTo("tpl." + id, "//wml2dr:MeasurementTimeseriesDomainRange[@gml:id='"
                 + id + "']/gml:domainSet/wml2dr:TimePositionList/@gml:id", doc);
         assertXpathEvaluatesTo(
-                "1948-01-01T00:00:00 1948-02-01T00:00:00 1948-03-01T00:00:00 1948-04-01T00:00:00 1948-05-01T00:00:00 "
-                        + "1948-06-01T00:00:00 1948-07-01T00:00:00 1948-08-01T00:00:00 1948-09-01T00:00:00 1948-10-01T00:00:00 "
-                        + "1948-11-01T00:00:00 1948-12-01T00:00:00 1949-01-01T00:00:00 1949-02-01T00:00:00 1949-03-01T00:00:00 "
-                        + "1949-04-01T00:00:00",
+                "1948-01-01T00:00:00Z 1948-02-01T00:00:00Z 1948-03-01T00:00:00Z 1948-04-01T00:00:00Z 1948-05-01T00:00:00Z "
+                        + "1948-06-01T00:00:00Z 1948-07-01T00:00:00Z 1948-08-01T00:00:00Z 1948-09-01T00:00:00Z 1948-10-01T00:00:00Z "
+                        + "1948-11-01T00:00:00Z 1948-12-01T00:00:00Z 1949-01-01T00:00:00Z 1949-02-01T00:00:00Z 1949-03-01T00:00:00Z "
+                        + "1949-04-01T00:00:00Z",
                 "//wml2dr:MeasurementTimeseriesDomainRange[@gml:id='" + id
                         + "']/gml:domainSet/wml2dr:TimePositionList/wml2dr:timePositionList", doc);
         assertXpathEvaluatesTo(
@@ -65,10 +65,10 @@ public class WaterMLTimeSeriesWfsTest extends AbstractAppSchemaTestSupport {
         assertXpathEvaluatesTo("tpl." + id, "//wml2dr:MeasurementTimeseriesDomainRange[@gml:id='"
                 + id + "']/gml:domainSet/wml2dr:TimePositionList/@gml:id", doc);
         assertXpathEvaluatesTo(
-                "1949-05-01T00:00:00 1949-06-01T00:00:00 1949-07-01T00:00:00 1949-08-01T00:00:00 1949-09-01T00:00:00 "
-                        + "1949-10-01T00:00:00 1949-11-01T00:00:00 1949-12-01T00:00:00 1950-01-01T00:00:00 1950-02-01T00:00:00 "
-                        + "1950-03-01T00:00:00 1950-04-01T00:00:00 1950-05-01T00:00:00 1950-06-01T00:00:00 1950-07-01T00:00:00 "
-                        + "1950-08-01T00:00:00 1950-09-01T00:00:00 1950-10-01T00:00:00 1950-11-01T00:00:00 1950-12-01T00:00:00",
+                "1949-05-01T00:00:00Z 1949-06-01T00:00:00Z 1949-07-01T00:00:00Z 1949-08-01T00:00:00Z 1949-09-01T00:00:00Z "
+                        + "1949-10-01T00:00:00Z 1949-11-01T00:00:00Z 1949-12-01T00:00:00Z 1950-01-01T00:00:00Z 1950-02-01T00:00:00Z "
+                        + "1950-03-01T00:00:00Z 1950-04-01T00:00:00Z 1950-05-01T00:00:00Z 1950-06-01T00:00:00Z 1950-07-01T00:00:00Z "
+                        + "1950-08-01T00:00:00Z 1950-09-01T00:00:00Z 1950-10-01T00:00:00Z 1950-11-01T00:00:00Z 1950-12-01T00:00:00Z",
                 "//wml2dr:MeasurementTimeseriesDomainRange[@gml:id='" + id
                         + "']/gml:domainSet/wml2dr:TimePositionList/wml2dr:timePositionList", doc);
         assertXpathEvaluatesTo(
@@ -131,7 +131,7 @@ public class WaterMLTimeSeriesWfsTest extends AbstractAppSchemaTestSupport {
                         + "']/gmlcov:rangeType/@xlink:href", doc);
         // timePositition is truncated too as they're value pairs with QuantityList
         assertXpathEvaluatesTo(
-                "1949-05-01T00:00:00",
+                "1949-05-01T00:00:00Z",
                 "//wml2dr:MeasurementTimeseriesDomainRange[@gml:id='" + "ID2"
                         + "']/gml:domainSet/wml2dr:TimePositionList/wml2dr:timePositionList", doc);
     }
@@ -160,8 +160,8 @@ public class WaterMLTimeSeriesWfsTest extends AbstractAppSchemaTestSupport {
                 + "             <ogc:PropertyName>"
                 + " wml2dr:MeasurementTimeseriesDomainRange/gml:domainSet/wml2dr:TimePositionList/wml2dr:timePositionList"
                 + "</ogc:PropertyName>"
-                + "             <ogc:LowerBoundary><ogc:Literal>1950-03-01T00:00:00</ogc:Literal></ogc:LowerBoundary>"
-                + "             <ogc:UpperBoundary><ogc:Literal>1950-06-01T00:00:00</ogc:Literal></ogc:UpperBoundary>"
+                + "             <ogc:LowerBoundary><ogc:Literal>1950-03-01T00:00:00Z</ogc:Literal></ogc:LowerBoundary>"
+                + "             <ogc:UpperBoundary><ogc:Literal>1950-06-01T00:00:00Z</ogc:Literal></ogc:UpperBoundary>"
                 + "        </ogc:PropertyIsBetween>" + "    </ogc:Filter>" + "</wfs:Query> "
                 + "</wfs:GetFeature>";
         validate(xml);
@@ -176,7 +176,7 @@ public class WaterMLTimeSeriesWfsTest extends AbstractAppSchemaTestSupport {
                         + "']/gml:domainSet/wml2dr:TimePositionList/@gml:id", doc);
         // timePositionList subset
         assertXpathEvaluatesTo(
-                "1950-03-01T00:00:00 1950-04-01T00:00:00 1950-05-01T00:00:00 1950-06-01T00:00:00",
+                "1950-03-01T00:00:00Z 1950-04-01T00:00:00Z 1950-05-01T00:00:00Z 1950-06-01T00:00:00Z",
                 "//wml2dr:MeasurementTimeseriesDomainRange[@gml:id='" + "ID2"
                         + "']/gml:domainSet/wml2dr:TimePositionList/wml2dr:timePositionList", doc);
         // matching subset of QuantityList

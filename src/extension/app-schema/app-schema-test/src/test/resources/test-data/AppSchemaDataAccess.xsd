@@ -237,7 +237,17 @@
                   Flag to indicate that we want to connect to an xml data source]]>
                 </documentation>
               </annotation>
-            </element>  
+            </element>
+            <element name="isDenormalised" type="boolean" default="true" minOccurs="0">
+              <annotation>
+                <documentation>
+                  <![CDATA[
+                  Flag to indicate if the data is denormalised or not.  If data is not denormalised
+                  (flag = false) then its safe for us to apply the system configured maxFeatures
+                  value when building the SQL query to run ]]>
+                </documentation>
+              </annotation>
+            </element>
             <element name="attributeMappings" minOccurs="0">
               <annotation>
                 <documentation>
@@ -445,7 +455,7 @@
             <![CDATA[ Flag to determine whether to skip a attribute mapping if it is empty default to false]]>
           </documentation>
         </annotation>
-      </element>	  
+      </element>
       <element name="isList" type="boolean" default="false" minOccurs="0">
         <annotation>
           <documentation>

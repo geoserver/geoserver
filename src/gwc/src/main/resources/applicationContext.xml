@@ -15,6 +15,11 @@
     <constructor-arg ref="gwcFacade" />
   </bean>
   
+  <bean id="gwcJdbcConfigurationStorage" class="org.geoserver.gwc.JDBCConfigurationStorage">
+    <constructor-arg index="0" ref="gwcDefaultStorageFinder"/>       
+    <constructor-arg index="1" ref="geoServerSecurityManager"/>
+  </bean>
+  
   <bean id="gwcFacade" class="org.geoserver.gwc.GWC" depends-on="geoWebCacheExtensions">
     <constructor-arg ref="gwcGeoServervConfigPersister" />
     <constructor-arg ref="gwcStorageBroker" />
@@ -25,6 +30,7 @@
     <constructor-arg ref="dispatcher" />
     <constructor-arg ref="catalog" />
     <constructor-arg ref="gwcDefaultStorageFinder"/>
+    <constructor-arg ref="gwcJdbcConfigurationStorage"/>
   </bean>
 
   <bean id="gwcWMSExtendedCapabilitiesProvider" class="org.geoserver.gwc.wms.CachingExtendedCapabilitiesProvider">

@@ -43,6 +43,8 @@ public class GeoServerInfoImpl implements GeoServerInfo {
 
     protected Integer xmlPostRequestLogBufferSize = 1024;
 
+    protected Boolean xmlExternalEntitiesEnabled = Boolean.FALSE;
+    
     //deprecated members, kept around to maintain xstream persistence backward compatability
     @Deprecated
     protected ContactInfo contact;
@@ -206,7 +208,7 @@ public class GeoServerInfoImpl implements GeoServerInfo {
     public void setAdminUsername(String adminUsername) {
         this.adminUsername = adminUsername;
     }
-    
+
     public int getFeatureTypeCacheSize() {
         return featureTypeCacheSize;
     }
@@ -232,6 +234,24 @@ public class GeoServerInfoImpl implements GeoServerInfo {
         return this.xmlPostRequestLogBufferSize;
     }
 
+    /**
+     * If true it enables evaluation of XML entities contained in XML files received in a service (WMS, WFS, ...) request.
+     * Default is FALSE.
+     * Enabling this feature is a security risk.
+     */
+    public void setXmlExternalEntitiesEnabled(Boolean xmlExternalEntitiesEnabled) {
+        this.xmlExternalEntitiesEnabled = xmlExternalEntitiesEnabled;
+    }
+    
+    /**
+     * If true it enables evaluation of XML entities contained in XML files received in a service (WMS, WFS, ...) request.
+     * Default is FALSE.
+     * Enabling this feature is a security risk.
+     */
+    public Boolean isXmlExternalEntitiesEnabled() {
+        return this.xmlExternalEntitiesEnabled;
+    }
+    
     public MetadataMap getMetadata() {
         return metadata;
     }

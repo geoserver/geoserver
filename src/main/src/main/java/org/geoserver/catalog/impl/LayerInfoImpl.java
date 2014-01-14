@@ -52,11 +52,19 @@ public class LayerInfoImpl implements LayerInfo {
 
     protected LegendInfo legend;
 
-    protected boolean enabled;
-    
-    protected Boolean advertised;
+    // this property has been left to ensure backwards compatibility with xstream but it's marked transient
+    // to avoid its value being serialized.
+    // TODO: revert to normal property when the resource/publishing split is done
+    transient protected boolean enabled;
+
+    // this property has been left to ensure backwards compatibility with xstream but it's marked transient
+    // to avoid its value being serialized.
+    // TODO: revert to normal property when the resource/publishing split is done
+    transient protected Boolean advertised;
 
     protected Boolean queryable;
+
+    protected Boolean opaque;
 
     protected MetadataMap metadata = new MetadataMap();
 
@@ -186,7 +194,12 @@ public class LayerInfoImpl implements LayerInfo {
 
     @Override
     public boolean isEnabled() {
-        return enabled;
+        if (resource == null) {
+            throw new NullPointerException("Unable to get Layer enabled flag without an underlying resource");
+        }
+        return resource.isEnabled();
+        // TODO: uncomment back when resource/publish split is complete
+        // return name;
     }
 
     /**
@@ -202,12 +215,15 @@ public class LayerInfoImpl implements LayerInfo {
 
     @Override
     public void setEnabled(boolean enabled) {
+        // TODO: remove this log and reinstate field assignment when resource/publish split is complete
+        LOGGER.log(Level.FINE, "Warning, some code is setting the LayerInfo enabled flag, but that will be ignored");
         this.enabled = enabled;
-        ResourceInfo resource = getResource();
-        if (resource != null) {
-            resource.setEnabled(enabled);
+        
+        if (resource == null) {
+            throw new NullPointerException("Layer enabled flag must not be set without an underlying resource");
         }
-    }
+        resource.setEnabled(enabled);
+   }
 
     @Override
     public MetadataMap getMetadata() {
@@ -229,7 +245,6 @@ public class LayerInfoImpl implements LayerInfo {
         int result = 1;
         result = prime * result
                 + ((defaultStyle == null) ? 0 : defaultStyle.hashCode());
-        result = prime * result + (enabled ? 1231 : 1237);
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((legend == null) ? 0 : legend.hashCode());
         // TODO: add back when resource publish split is in place
@@ -258,8 +273,6 @@ public class LayerInfoImpl implements LayerInfo {
             if (other.getDefaultStyle() != null)
                 return false;
         } else if (!defaultStyle.equals(other.getDefaultStyle()))
-            return false;
-        if (enabled != other.isEnabled())
             return false;
         if (id == null) {
             if (other.getId() != null)
@@ -334,29 +347,35 @@ public class LayerInfoImpl implements LayerInfo {
     }
 
     @Override
+    public void setOpaque(boolean opaque) {
+        this.opaque = opaque;
+    }
+
+    @Override
+    public boolean isOpaque() {
+        return this.opaque == null? false : this.opaque.booleanValue();
+    }
+
+    @Override
     public boolean isAdvertised() {
-        if(this.advertised != null) {
-            return advertised;
-        } 
-        
-        // check the metadata map for backwards compatibility with 2.1.x series
-        MetadataMap md = getMetadata();
-        if(md == null) {
-            return true;
+        if (resource == null) {
+            throw new NullPointerException("Unable to get Layer advertised flag without an underlying resource");
         }
-        Boolean metadataAdvertised = md.get(KEY_ADVERTISED, Boolean.class);
-        if(metadataAdvertised == null) {
-            metadataAdvertised = true;
-        }
-        return metadataAdvertised;
+        return resource.isAdvertised();
+        // TODO: uncomment back when resource/publish split is complete
+        // return name;
     }
 
     @Override
     public void setAdvertised(boolean advertised) {
+        // TODO: remove this log and reinstate field assignment when resource/publish split is complete
+        LOGGER.log(Level.FINE, "Warning, some code is setting the LayerInfo advertised flag, but that will be ignored");
         this.advertised = advertised;
-        if(resource != null) {
-            resource.setAdvertised(advertised);
+        
+        if (resource == null) {
+            throw new NullPointerException("Layer advertised flag must not be set without an underlying resource");
         }
+        resource.setAdvertised(advertised);
     }
 
     @Override

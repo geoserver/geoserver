@@ -40,7 +40,7 @@ Controls Web Coverage Service settings.
      - 
 
 
-``/services/wcs/<ws>/settings[.<format>]``
+``/services/wcs/workspaces/<ws>/settings[.<format>]``
 ------------------------------------------
 
 Controls Web Coverage Service settings for a given workspace.
@@ -110,7 +110,7 @@ Controls Web Feature Service settings.
      -
 
 
-``/services/wfs/<ws>/settings[.<format>]``
+``/services/wfs/workspaces/<ws>/settings[.<format>]``
 ------------------------------------------
 
 Controls Web Feature Service settings for a given workspace.
@@ -181,7 +181,7 @@ Controls Web Map Service settings.
      -
 
 
-``/services/wms/<ws>/settings[.<format>]``
+``/services/wms/workspaces/<ws>/settings[.<format>]``
 ------------------------------------------
 
 Controls Web Map Service settings for a given workspace.

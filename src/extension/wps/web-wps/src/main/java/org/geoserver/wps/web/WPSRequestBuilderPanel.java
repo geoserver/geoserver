@@ -28,6 +28,7 @@ import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
+import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -80,6 +81,12 @@ public class WPSRequestBuilderPanel extends Panel {
     private ListView<InputParameterValues> inputView;
 
     private ListView<OutputParameter> outputView;
+    
+    String username;
+    
+    String password;
+
+    boolean authenticate;
 
     /**
      * Creates a panel to display a process and its parameters.
@@ -236,6 +243,35 @@ public class WPSRequestBuilderPanel extends Panel {
         // handle process name submitted as request param
         if (execute.processName != null)
             initProcessView();
+        
+        // username and password for authenticated requests
+        final WebMarkupContainer authenticationContainer = new WebMarkupContainer("authenticationContainer");
+        authenticationContainer.setOutputMarkupId(true);
+        add(authenticationContainer);
+        
+        final WebMarkupContainer userpwdContainer = new WebMarkupContainer("userpwdContainer");
+        userpwdContainer.setOutputMarkupId(true);
+        userpwdContainer.setVisible(false);
+        authenticationContainer.add(userpwdContainer);
+        
+        final TextField username = new TextField("username", new PropertyModel(this, "username"));
+        userpwdContainer.add(username);
+
+        final PasswordTextField password = new PasswordTextField("password", new PropertyModel(this, "password"));
+        password.setRequired(false);
+        userpwdContainer.add(password);
+        
+        CheckBox checkbox = new CheckBox("authenticate", new PropertyModel(this, "authenticate"));
+        checkbox.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                userpwdContainer.setVisible(authenticate);
+                target.addComponent(authenticationContainer);                
+            }
+            
+        });
+        authenticationContainer.add(checkbox);
     }
 
     private void initProcessView() {

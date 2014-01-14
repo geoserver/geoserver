@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 import org.geotools.data.property.PropertyFeatureReader;
@@ -69,6 +68,11 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
         + "<value>true</value>"
         + "\n</Parameter>" //
         + "\n</parameters>"; //
+    
+    /**
+     * Default WKT parser for non 3D tests.
+     */
+    private static String DEFAULT_PARSER = "SDO_GEOMETRY";
 
     private String sql;
     
@@ -80,68 +84,62 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
      * @return This class instance.
      * @throws Exception
      */
-	public static AppSchemaTestOracleSetup getInstance(
-			Map<String, File> propertyFiles) throws Exception {
-		return new AppSchemaTestOracleSetup(propertyFiles, false);
-	}
-	
+    public static AppSchemaTestOracleSetup getInstance(Map<String, File> propertyFiles)
+            throws Exception {
+        return new AppSchemaTestOracleSetup(propertyFiles, false);
+    }
+
     /**
      * Factory method with 3D enabled.
      * 
-     * @param propertyFiles
-     *            Property file name and its parent directory map
+     * @param propertyFiles Property file name and its parent directory map
      * @return This class instance.
      * @throws Exception
      */
-	public static AppSchemaTestOracleSetup get3DInstance(
-			Map<String, File> propertyFiles) throws Exception {
-		return new AppSchemaTestOracleSetup(propertyFiles, true);
-	}
+    public static AppSchemaTestOracleSetup get3DInstance(Map<String, File> propertyFiles)
+            throws Exception {
+        return new AppSchemaTestOracleSetup(propertyFiles, true);
+    }
 
-	/**
-	 * Ensure the app-schema properties file is loaded with the database
-	 * parameters. Also create corresponding tables on the database based on
-	 * data from properties files.
-	 * 
-	 * @param propertyFiles
-	 *            Property file name and its feature type directory map
-	 * @param is3D
-     *            True if this is a 3D test and needs a particular WKT parser 
-	 * @throws Exception
-	 */
-	public AppSchemaTestOracleSetup(Map<String, File> propertyFiles,
-			boolean is3D) throws Exception {
-		configureFixture();
-		createTables(propertyFiles, is3D);
-	}
+    /**
+     * Ensure the app-schema properties file is loaded with the database parameters. Also create corresponding tables on the database based on data
+     * from properties files.
+     * 
+     * @param propertyFiles Property file name and its feature type directory map
+     * @param is3D True if this is a 3D test and needs a particular WKT parser
+     * @throws Exception
+     */
+    public AppSchemaTestOracleSetup(Map<String, File> propertyFiles, boolean is3D) throws Exception {
+        configureFixture();
+        String parser;
+        if (is3D) {
+            // use 3D parser
+            // if SC4OUser is different from the database user, it will be specified
+            // else, use the current database user
+            String user = System.getProperty("SC4OUser");
+            if (user == null) {
+                user = fixture.getProperty("user");
+            }
+            parser = user + ".SC4O.ST_GeomFromEWKT";
+        } else {
+            parser = DEFAULT_PARSER; // default wkt parser procedure, does not support 3D
+        }
+        createTables(propertyFiles, parser);
+    }
 
     /**
      * Write SQL string to create tables in the test database based on the property files.
      * 
      * @param propertyFiles
      *            Property files from app-schema-test suite.
-     * @param is3D
-     *            True if this is a 3D test and needs a particular WKT parser
+     * @param parser
+     *            The parser (WKT or an SC4O one for 3D tests)
      * @throws IllegalAttributeException
      * @throws NoSuchElementException
      * @throws IOException
      */
-	private void createTables(Map<String, File> propertyFiles, boolean is3D)
-			throws IllegalAttributeException, NoSuchElementException,
-			IOException {
-
-		String parser;
-		if (is3D) {
-			// use 3D parser
-			String user = System.getProperty("SC4OUser");
-			if (user == null) {
-				throw new UnsupportedOperationException(
-						"Please specify SC4OUser parameter to run 3D tests with Oracle!");
-			}
-			parser = user + ".SC4O.ST_GeomFromEWKT";
-		} else {
-			parser = "SDO_GEOMETRY"; //default wkt parser procedure, does not support 3D
-    	}
+	private void createTables(Map<String, File> propertyFiles, String parser)
+            throws IllegalAttributeException, NoSuchElementException, IOException {
     	
         StringBuffer buf = new StringBuffer();
         StringBuffer spatialIndex = new StringBuffer();
@@ -173,8 +171,8 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
             buf.append("CALL DROP_TABLE_OR_VIEW('").append(tableName).append("')\n");
             // create the table
             buf.append("CREATE TABLE ").append(tableName).append("(");
-            // + id + pkey
-            int size = schema.getAttributeCount() + 2;
+            // + pkey
+            int size = schema.getAttributeCount() + 1;
             String[] fieldNames = new String[size];
             List<String> createParams = new ArrayList<String>();
             int j = 0;
@@ -232,25 +230,15 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
                 createParams.add(field + " " + type);
                 j++;
             }
-            if (schema.isIdentified()) {  
-                // row id .. can't use ID because there are columns with that name in
-                // some tables and for oracle everythign has to be upper case so we
-                // can't differentiate between id and ID, we we use ROW_ID instead
-                fieldNames[j] = "ROW_ID";
-                createParams.add("ROW_ID VARCHAR2(30)");
-                j++;
-            }
             // Add numeric PK for sorting
             fieldNames[j] = "PKEY";
-            createParams.add("PKEY NUMBER(5)");
+            createParams.add("PKEY VARCHAR2(30)");
             buf.append(StringUtils.join(createParams.iterator(), ", "));
             buf.append(")\n");
             buf.append("ALTER TABLE " + tableName + " ADD CONSTRAINT " + tableName + " PRIMARY KEY (PKEY)\n");
             // then insert rows
             SimpleFeature feature;
             FeatureId id;
-            // primary key sequence
-            int pKey = 0;
             while (reader.hasNext()) {
                 buf.append("INSERT INTO ").append(tableName).append("(");
                 feature = reader.next();
@@ -286,14 +274,9 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
                     }
                     valueIndex++;
                 }
-                id = feature.getIdentifier();
-                if (id != null) {
-                    values[valueIndex] = "'" + id.toString() + "'";
-                    valueIndex++;
-                }
+                id = feature.getIdentifier();                
                 // insert primary key
-                values[valueIndex] = "'" + pKey + "'";
-                pKey++;
+                values[valueIndex] = "'" + id.toString() + "'";
                 buf.append(StringUtils.join(values, ","));
                 buf.append(")\n");
             }

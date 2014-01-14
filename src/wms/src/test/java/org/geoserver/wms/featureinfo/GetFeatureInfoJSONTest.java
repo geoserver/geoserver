@@ -18,7 +18,7 @@ import org.junit.Test;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
-
+    
     /**
      * Tests JSONP outside of expected polygon
      * 

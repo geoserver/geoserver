@@ -42,6 +42,17 @@ The pool configuration shows is quite full fledged:
 * at most 100 prepared statements in the pool
 * a validation query that double checks the connection is still alive before actually using it (this is not necessary if there is guarantee the connections will never drop, either due to the server forcefully closing them, or to network/maintenance issues).
 
+.. warning:: Modify following settings only if you really know what you are doing. Using too low values for ``removedAbandonedTimeout`` and ``minEvictableIdleTimeMillis`` may result in connection failures, if so try to setup ``logAbandoned`` to ``true`` and check your ``catalina.out`` log file.
+
+Other parameters to setup connection pool:
+
+* timeBetweenEvictionRunsMillis	(default -1) The number of milliseconds to sleep between runs of the idle object evictor thread. When non-positive, no idle object evictor thread will be run.
+* numTestsPerEvictionRun	(default 3) The number of objects to examine during each run of the idle object evictor thread (if any).
+* minEvictableIdleTimeMillis	(default 1000 * 60 * 30) The minimum amount of time an object may sit idle in the pool before it is eligable for eviction by the idle object evictor (if any).
+* removeAbandoned	(default false) Flag to remove abandoned connections if they exceed the removeAbandonedTimout. If set to true a connection is considered abandoned and eligible for removal if it has been idle longer than the removeAbandonedTimeout. Setting this to true can recover db connections from poorly written applications which fail to close a connection.
+* removeAbandonedTimeout	(default 300) Timeout in seconds before an abandoned connection can be removed.
+* logAbandoned	(default false) Flag to log stack traces for application code which abandoned a Statement or Connection.
+
 For more information about the possible parameters and their values refer to the `DBCP documentation <http://commons.apache.org/dbcp/configuration.html>`_.
 
 GeoServer setup

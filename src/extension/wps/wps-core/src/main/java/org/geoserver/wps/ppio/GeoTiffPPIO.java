@@ -18,7 +18,7 @@ import javax.media.jai.JAI;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.wps.WPSException;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridCoverageWriter;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridFormatFinder;
@@ -88,7 +88,7 @@ public class GeoTiffPPIO extends BinaryPPIO {
         boolean unreferenced = crs == null || crs instanceof EngineeringCRS;
         
         // did we get lucky and all we need to do is to copy a file over?
-        final Object fileSource = coverage.getProperty(AbstractGridCoverage2DReader.FILE_SOURCE_PROPERTY);
+        final Object fileSource = coverage.getProperty(GridCoverage2DReader.FILE_SOURCE_PROPERTY);
         if (fileSource != null && fileSource instanceof String) {
             File file = new File((String) fileSource);
             if(file.exists()) {

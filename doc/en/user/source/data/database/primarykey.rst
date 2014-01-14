@@ -15,7 +15,9 @@ In case none of the above is found normally the store will fall back on generati
 Metadata table description
 --------------------------
 
-These defaults can be overridden manually by creating a `primary key metadata table` that specifies which columns to use and what strategy to use to generate new primary key values. The table can be created with this SQL statement (this one is valid for PostGIS, adapt it to your specific database, you may remove the check at the end if you want to)::
+These defaults can be overridden manually by creating a `primary key metadata table` that specifies which columns to use and what strategy to use to generate new primary key values. The table can be created with this SQL statement (this one is valid for PostGIS and ORACLE, adapt it to your specific database, you may remove the check at the end if you want to)::
+
+   --PostGIS DDL
 
    CREATE TABLE gt_pk_metadata_table (
      table_schema VARCHAR(32) NOT NULL,
@@ -27,6 +29,21 @@ These defaults can be overridden manually by creating a `primary key metadata ta
      unique (table_schema, table_name, pk_column),
      check (pk_policy in ('sequence', 'assigned', 'autoincrement'))
    )
+   
+   
+   --ORACLE DDL
+
+   CREATE TABLE gt_pk_metadata_table (
+     table_schema VARCHAR2(32) NOT NULL,
+     table_name VARCHAR2(32) NOT NULL,
+     pk_column VARCHAR2(32) NOT NULL,
+     pk_column_idx NUMBER(38),
+     pk_policy VARCHAR2(32),
+     pk_sequence VARCHAR2(64),
+     constraint  chk_pk_policy check (pk_policy in ('sequence', 'assigned', 'autoincrement')));
+  
+   CREATE UNIQUE INDEX gt_pk_metadata_table_idx01 ON gt_pk_metadata_table (table_schema, table_name, pk_column);
+
 
 The table can be given a different name, in that case the name (eventually schema qualified) of the table must be specified in the `primary key metadata table` configuration parameter of the store.
 

@@ -1,0 +1,42 @@
+import com.vividsolutions.jts.geom.Geometry;
+
+title = "Buffer";
+description = "Buffers a geometry";
+
+inputs = new Hashtable();
+
+t = new Hashtable();
+t{"name"} = "geom";
+t{"title"} = "The geometry to buffer";
+t{"type"} = Geometry.class;
+inputs{"geom"} = t;
+
+t = new Hashtable();
+t{"name"} = "distance";
+t{"title"} = "The buffer distance";
+t{"type"} = Double.class;
+inputs{"distance"} = t; 
+
+outputs = new Hashtable();
+
+t = new Hashtable();
+t{"name"} = "result";
+t{"title"} = "The buffered geometry";
+t{"type"} = Geometry.class;
+outputs{"geom"} = t;
+
+t = new Hashtable();
+t{"name"} = "distance";
+t{"title"} = "The buffer distance";
+t{"type"} = Double.class;
+outputs{"distance"} = t; 
+
+run(inputs) {
+  geom = inputs{"geom"};
+  distance = inputs{"distance"};
+
+  result = new Hashtable();
+  result{"geom"} = geom.buffer(distance);
+  result{"distance"} = distance;
+  return result;
+}

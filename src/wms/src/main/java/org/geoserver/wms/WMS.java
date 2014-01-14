@@ -46,7 +46,7 @@ import org.geoserver.wms.WMSInfo.WMSInterpolation;
 import org.geoserver.wms.WatermarkInfo.Position;
 import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
 import org.geoserver.wms.map.RenderedImageMapResponse;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.data.ows.Layer;
@@ -64,6 +64,8 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.styling.Style;
 import org.geotools.util.Converters;
+import org.geotools.util.DateRange;
+import org.geotools.util.NumberRange;
 import org.geotools.util.Range;
 import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
@@ -82,6 +84,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import com.sun.media.jai.codec.PNGEncodeParam;
 import com.vividsolutions.jts.geom.Coordinate;
 
 /**
@@ -118,6 +121,10 @@ public class WMS implements ApplicationContextAware {
     public static final String LOOP_CONTINUOUSLY = "loopContinuously";
 
     public static final Boolean LOOP_CONTINUOUSLY_DEFAULT = Boolean.FALSE;
+    
+    public static final String SCALEHINT_MAPUNITS_PIXEL = "scalehintMapunitsPixel";
+    
+    public static final Boolean SCALEHINT_MAPUNITS_PIXEL_DEFAULT = Boolean.FALSE;
     
     static final Logger LOGGER = Logging.getLogger(WMS.class);
 
@@ -174,7 +181,7 @@ public class WMS implements ApplicationContextAware {
     public static final String KML_KMSCORE = "kmlKmscore";
 
     public static final int KML_KMSCORE_DEFAULT = 40;
-
+    
     /**
      * the WMS Animator animatorExecutor service
      */
@@ -299,9 +306,9 @@ public class WMS implements ApplicationContextAware {
         return getServiceInfo().getInterpolation();
     }
 
-    public Boolean getPNGNativeAcceleration() {
+    public JAIInfo.PngEncoderType getPNGEncoderType() {
         JAIInfo jaiInfo = getJaiInfo();
-        return Boolean.valueOf(jaiInfo.isPngAcceleration());
+        return jaiInfo.getPngEncoderType();
     }
 
     public Boolean getJPEGNativeAcceleration() {
@@ -484,6 +491,10 @@ public class WMS implements ApplicationContextAware {
     
     public Boolean getLoopContinuously() {
        return getMetadataValue(LOOP_CONTINUOUSLY, LOOP_CONTINUOUSLY_DEFAULT, Boolean.class);
+    }
+    
+    public Boolean getScalehintUnitPixel(){
+        return getMetadataValue(SCALEHINT_MAPUNITS_PIXEL, SCALEHINT_MAPUNITS_PIXEL_DEFAULT, Boolean.class);
     }
 
     int getMetadataPercentage(MetadataMap metadata, String key, int defaultValue) {
@@ -756,6 +767,13 @@ public class WMS implements ApplicationContextAware {
         }
     }
 
+    /**
+     * Returns true if the layer is opaque
+     */
+    public boolean isOpaque(LayerInfo layer) {
+        return layer.isOpaque();
+    }
+
     public Integer getCascadedHopCount(LayerInfo layer) {
         if (!(layer.getResource() instanceof WMSLayerInfo)) {
             return null;
@@ -799,7 +817,7 @@ public class WMS implements ApplicationContextAware {
      */
     public GeneralParameterValue[] getWMSReadParameters(final GetMapRequest request,
             final MapLayerInfo mapLayerInfo, final Filter layerFilter, final List<Object> times,
-            final List<Object> elevations, final AbstractGridCoverage2DReader reader,
+            final List<Object> elevations, final GridCoverage2DReader reader,
             boolean readGeom) throws IOException {
         // setup the scene
         final ParameterValueGroup readParametersDescriptor = reader.getFormat().getReadParameters();

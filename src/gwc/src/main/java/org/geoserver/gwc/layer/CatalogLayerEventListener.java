@@ -13,13 +13,16 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.apache.commons.httpclient.util.LangUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -91,6 +94,8 @@ public class CatalogLayerEventListener implements CatalogListener {
 
     private final GWC mediator;
 
+    private final Catalog catalog;
+
     /**
      * Holds the CatalogModifyEvent from {@link #handleModifyEvent} to be taken after the change was
      * applied to the {@link Catalog} at {@link #handlePostModifyEvent} and check whether it is
@@ -100,8 +105,9 @@ public class CatalogLayerEventListener implements CatalogListener {
 
     private static ThreadLocal<GeoServerTileLayerInfo> PRE_MODIFY_TILELAYER = new ThreadLocal<GeoServerTileLayerInfo>();
 
-    public CatalogLayerEventListener(final GWC mediator) {
+    public CatalogLayerEventListener(final GWC mediator, Catalog catalog) {
         this.mediator = mediator;
+        this.catalog = catalog;
     }
 
     /**
@@ -300,12 +306,12 @@ public class CatalogLayerEventListener implements CatalogListener {
     private void handleLayerInfoChange(final List<String> changedProperties,
             final List<Object> oldValues, final List<Object> newValues, final LayerInfo li,
             final GeoServerTileLayerInfo tileLayerInfo) {
-
         checkNotNull(tileLayerInfo);
 
         final String layerName = tileLayerName(li);
 
         boolean save = false;
+        boolean defaultStyleChanged = false;
 
         final String defaultStyle;
 
@@ -321,6 +327,7 @@ public class CatalogLayerEventListener implements CatalogListener {
             defaultStyle = newStyle.getName();
             if (!Objects.equal(oldStyleName, defaultStyle)) {
                 save = true;
+                defaultStyleChanged = true;
                 log.info("Truncating default style for layer " + layerName
                         + ", as it changed from " + oldStyleName + " to " + defaultStyle);
                 mediator.truncateByLayerAndStyle(layerName, oldStyleName);
@@ -351,12 +358,54 @@ public class CatalogLayerEventListener implements CatalogListener {
                 save = true;
             }
         }
+        
+        // check the caching settings, have they changed?
+        boolean cachingInfoChanged = false;
+        int metadataIdx = changedProperties.indexOf("metadata");
+        if(metadataIdx >= 0) {
+            MetadataMap oldMetadata = (MetadataMap) oldValues.get(metadataIdx);
+            MetadataMap newMetadata = (MetadataMap) newValues.get(metadataIdx);
+            boolean cachingEnabledChanged = LangUtils.equals(oldMetadata.get(ResourceInfo.CACHING_ENABLED, Boolean.class), 
+                    newMetadata.get(ResourceInfo.CACHING_ENABLED, Boolean.class));
+            boolean cachingMaxAgeChanged = LangUtils.equals(oldMetadata.get(ResourceInfo.CACHE_AGE_MAX, Boolean.class), 
+                    newMetadata.get(ResourceInfo.CACHE_AGE_MAX, Boolean.class));
+            // we do we don't need to truncate the layer, but we need to update
+            // its LayerInfo so that the resulting caching headers get updated
+            if(cachingEnabledChanged || cachingMaxAgeChanged) {
+                cachingInfoChanged = true;
+                save = true;
+            }
+        }
 
         if (save) {
             GridSetBroker gridSetBroker = mediator.getGridSetBroker();
-            LockProvider lockProvider = mediator.getLockProvider();
             GeoServerTileLayer tileLayer = new GeoServerTileLayer(li, gridSetBroker, tileLayerInfo);
             mediator.save(tileLayer);
+        }
+        // caching info and default style changes affect also the layer groups containing the layer 
+        if( cachingInfoChanged || defaultStyleChanged) {
+            List<LayerGroupInfo> groups = catalog.getLayerGroups();
+            for (LayerGroupInfo lg : groups) {
+                GeoServerTileLayer tileLayer = mediator.getTileLayer(lg);
+                if(tileLayer != null) {
+                    LayerGroupHelper helper = new LayerGroupHelper(lg);
+                    int idx = helper.allLayers().indexOf(li);
+                    if(idx >= 0) {
+                        // we need to save in case something changed in one of the layer
+                        GridSetBroker gridSetBroker = mediator.getGridSetBroker();
+                        GeoServerTileLayerInfo groupTileLayerInfo = tileLayer.getInfo();
+                        GeoServerTileLayer newTileLayer = new GeoServerTileLayer(lg, gridSetBroker, groupTileLayerInfo);
+                        mediator.save(newTileLayer);
+                        
+                        // we also need to truncate the group if the layer default style changed,
+                        // and the layer group was using 
+                        if(defaultStyleChanged && lg.getStyles().get(idx) == null) {
+                            mediator.truncate(groupTileLayerInfo.getName());
+                        }
+                    }
+                }
+            }
+            
         }
     }
 

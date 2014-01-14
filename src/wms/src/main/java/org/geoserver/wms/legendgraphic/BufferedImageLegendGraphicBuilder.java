@@ -16,12 +16,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.map.ImageUtils;
+import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.DataUtilities;
+import org.geotools.data.Parameter;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.SchemaException;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
@@ -29,6 +32,8 @@ import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.feature.type.GeometryDescriptorImpl;
 import org.geotools.feature.type.GeometryTypeImpl;
 import org.geotools.geometry.jts.LiteShape2;
+import org.geotools.process.Processors;
+import org.geotools.process.function.ProcessFunction;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.renderer.lite.StyledShapePainter;
 import org.geotools.renderer.style.SLDStyleFactory;
@@ -55,11 +60,12 @@ import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.GeometryType;
+import org.opengis.feature.type.Name;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Literal;
+import org.opengis.style.GraphicLegend;
 import org.opengis.util.InternationalString;
-
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -73,13 +79,13 @@ import com.vividsolutions.jts.geom.Polygon;
  * GeoTools' {@link GeoTools' {@link http
  * ://svn.geotools.org/geotools/trunk/gt/module/main/src/org/geotools
  * /renderer/lite/StyledShapePainter.java StyledShapePainter} that produces a BufferedImage with the
- * appropiate legend graphic for a given GetLegendGraphic WMS request.
+ * appropriate legend graphic for a given GetLegendGraphic WMS request.
  * 
  * <p>
  * It should be enough for a subclass to implement {@linkPlain
  * org.vfny.geoserver.responses.wms.GetLegendGraphicProducer#writeTo(OutputStream)} and
  * <code>getContentType()</code> in order to encode the BufferedImage produced by this class to the
- * appropiate output format.
+ * appropriate output format.
  * </p>
  * 
  * <p>
@@ -143,7 +149,7 @@ public class BufferedImageLegendGraphicBuilder {
 
     /**
      * Takes a GetLegendGraphicRequest and produces a BufferedImage that then can be used by a
-     * subclass to encode it to the appropiate output format.
+     * subclass to encode it to the appropriate output format.
      * 
      * @param request
      *            the "parsed" request, where "parsed" means that it's values are already validated
@@ -239,19 +245,51 @@ public class BufferedImageLegendGraphicBuilder {
                 titleImage=getLayerTitle(layer,  w, h, transparent, request);
             }
             
-            final boolean buildRasterLegend = (!strict && layer == null && LegendUtils
-                    .checkRasterSymbolizer(gt2Style)) || LegendUtils.checkGridLayer(layer);
+            // Check for rendering transformation
+            boolean hasVectorTransformation = false;
+            boolean hasRasterTransformation = false;
+            List<FeatureTypeStyle> ftsList = gt2Style.featureTypeStyles();
+            for (int i=0; i<ftsList.size(); i++) {
+                FeatureTypeStyle fts = ftsList.get(i);
+                Expression exp = fts.getTransformation();
+                if (exp != null) {
+                    ProcessFunction processFunction = (ProcessFunction) exp;
+                    Name processName = processFunction.getProcessName();
+                    Map<String, Parameter<?>> outputs = Processors.getResultInfo(processName,
+                            null);
+                    if (outputs.isEmpty()) {
+                        continue;
+                    }
+                    Parameter<?> output = outputs.values().iterator().next(); // we assume there is only one output
+                    if (SimpleFeatureCollection.class.isAssignableFrom(output.getType())) {
+                        hasVectorTransformation = true;
+                        break;
+                    } else if (GridCoverage2D.class.isAssignableFrom(output.getType())) {
+                        hasRasterTransformation = true;
+                        break;
+                    }
+                
+                }
+            }
+
+            final boolean buildRasterLegend = 
+            		(!strict && layer == null && LegendUtils.checkRasterSymbolizer(gt2Style)) || 
+            		(LegendUtils.checkGridLayer(layer) && !hasVectorTransformation) || 
+            		hasRasterTransformation;
+            		                   
             if (buildRasterLegend) {
                 final RasterLayerLegendHelper rasterLegendHelper = new RasterLayerLegendHelper(request,gt2Style,ruleName);
                 final BufferedImage image = rasterLegendHelper.getLegend();
-                if(image != null && titleImage != null) {
+                if(image != null) {
+                    if(titleImage != null) {
                     layersImages.add(titleImage);
                 }
                 layersImages.add(image);
+                }                
             } else {
                 
                 final Feature sampleFeature;
-                if (layer == null) {
+                if (layer == null || hasVectorTransformation) {
                     sampleFeature = createSampleFeature();
                 } else {                    
                     sampleFeature = createSampleFeature(layer);
@@ -316,35 +354,54 @@ public class BufferedImageLegendGraphicBuilder {
                     
                     FilterFactory ff = CommonFactoryFinder.getFilterFactory();
                     final Symbolizer[] symbolizers = applicableRules[i].getSymbolizers();
+                    final GraphicLegend legend = applicableRules[i].getLegend();
                     
-                    for (int sIdx = 0; sIdx < symbolizers.length; sIdx++) {
-                        Symbolizer symbolizer = symbolizers[sIdx];
-                        
-                        if (symbolizer instanceof RasterSymbolizer) {
-                            throw new IllegalStateException(
-                                    "It is not legal to have a RasterSymbolizer here");
-                        } else {
-                            // rescale symbols if needed
-                            if (symbolScale > 1.0
-                                    && symbolizer instanceof PointSymbolizer) {
-                                PointSymbolizer pointSymbolizer = cloneSymbolizer(symbolizer);
-                                if (pointSymbolizer.getGraphic() != null) {
-                                    double size = getPointSymbolizerSize(sample,
-                                            pointSymbolizer, Math.min(w, h) - 4);
-                                    pointSymbolizer.getGraphic().setSize(
-                                            ff.literal(size / symbolScale
-                                                    + minimumSymbolSize));
-    
-                                    symbolizer = pointSymbolizer;
-                                }
+                    // If this rule has a legend graphic defined in the SLD, use it
+                    if (legend != null) {
+                        if (this.samplePoint == null) {
+                            Coordinate coord = new Coordinate(w / 2, h / 2);
+
+                            try {
+                                this.samplePoint = new LiteShape2(geomFac.createPoint(coord), null, null, false);
+                            } catch (Exception e) {
+                                this.samplePoint = null;
                             }
-                            Style2D style2d = styleFactory.createStyle(sample,
-                                    symbolizer, scaleRange);
-                            LiteShape2 shape = getSampleShape(symbolizer, w, h);
-    
-                            if (style2d != null) {
-                                shapePainter.paint(graphics, shape, style2d,
-                                        scaleDenominator);
+                        }
+                        shapePainter.paint(graphics, this.samplePoint, legend, scaleDenominator, false);
+
+                    } else {
+
+                    
+                        for (int sIdx = 0; sIdx < symbolizers.length; sIdx++) {
+                            Symbolizer symbolizer = symbolizers[sIdx];
+                            
+                            if (symbolizer instanceof RasterSymbolizer) {
+                                throw new IllegalStateException(
+                                        "It is not legal to have a RasterSymbolizer here");
+                            } else {
+                                // rescale symbols if needed
+                                if (symbolScale > 1.0
+                                        && symbolizer instanceof PointSymbolizer) {
+                                    PointSymbolizer pointSymbolizer = cloneSymbolizer(symbolizer);
+                                    if (pointSymbolizer.getGraphic() != null) {
+                                        double size = getPointSymbolizerSize(sample,
+                                                pointSymbolizer, Math.min(w, h) - 4);
+                                        pointSymbolizer.getGraphic().setSize(
+                                                ff.literal(size / symbolScale
+                                                        + minimumSymbolSize));
+        
+                                        symbolizer = pointSymbolizer;
+                                    }
+                                }
+                                
+                                Style2D style2d = styleFactory.createStyle(sample,
+                                        symbolizer, scaleRange);
+                                LiteShape2 shape = getSampleShape(symbolizer, w, h);
+        
+                                if (style2d != null) {
+                                    shapePainter.paint(graphics, shape, style2d,
+                                            scaleDenominator);
+                                }
                             }
                         }
                     }
@@ -611,9 +668,15 @@ public class BufferedImageLegendGraphicBuilder {
                     // What's the label on this rule? We prefer to use
                     // the 'title' if it's available, but fall-back to 'name'
                     final Description description = rule.getDescription();
+                    Locale locale = req.getLocale();
+                    
                     if (description != null && description.getTitle() != null) {
                         final InternationalString title = description.getTitle();
+                        if(locale != null) {
+                        	labels[i] = title.toString(locale);
+                        } else {
                         labels[i] = title.toString();
+                        }
                     } else if (rule.getName() != null) {
                         labels[i] = rule.getName();
                     } else {

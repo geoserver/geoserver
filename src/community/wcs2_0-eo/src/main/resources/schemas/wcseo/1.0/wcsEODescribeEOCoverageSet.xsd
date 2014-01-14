@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.opengis.net/wcseo/1.0"
+    xmlns:wcseo="http://www.opengis.net/wcseo/1.0"
+    xmlns:wcs="http://www.opengis.net/wcs/2.0"
+    xmlns:gml="http://www.opengis.net/gml/3.2"
+    xmlns:gmlcov="http://www.opengis.net/gmlcov/1.0"
+    xmlns:eop="http://www.opengis.net/eop/2.0"
+    xmlns="http://www.w3.org/2001/XMLSchema" 
+    elementFormDefault="qualified" version="1.0.0" xml:lang="en">
+    <annotation>
+        <appinfo>wcsEODescribeCoverageSet.xsd</appinfo>
+        <documentation>This XML Schema Document defines the DescribeEOCoverageSet operation request and response XML elements and types, used by the OGC Web Coverage Service (WCS) Earth Observation Application Profile (EO-WCS).
+            Last updated: 2011-feb-04
+            Copyright (c) 2011 Open Geospatial Consortium, Inc. All Rights Reserved.
+            To obtain additional rights of use, visit http://www.opengeospatial.org/legal/.
+        </documentation>
+    </annotation>
+
+    <!-- =========================================================== -->
+    <!-- includes and imports                                        -->
+    <!-- =========================================================== -->
+    <import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+    <import namespace="http://www.opengis.net/gmlcov/1.0" schemaLocation="http://schemas.opengis.net/gmlcov/1.0/gmlcovAll.xsd"/>
+    <import namespace="http://www.opengis.net/wcs/2.0" schemaLocation="http://schemas.opengis.net/wcs/2.0/wcsAll.xsd"/>
+    <import namespace="http://www.opengis.net/eop/2.0" schemaLocation="http://schemas.opengis.net/eop/2.0/eop.xsd"/> <!--TODO: Where will the schema reside?-->
+    <include schemaLocation="wcsEOAll.xsd"/>
+
+    <!-- =========================================================== -->
+    <!-- elements and types                                          -->
+    <!-- =========================================================== -->
+    <element name="DescribeEOCoverageSet" type="wcseo:DescribeEOCoverageSetType">
+        <annotation>
+            <documentation>Request to a WCS to perform the DescribeCoverage operation. This operation allows a client to retrieve descriptions of one or more coverages. In this XML encoding, no "request" parameter is included, since the element name specifies the specific operation. </documentation>
+        </annotation>
+    </element>
+    <complexType name="DescribeEOCoverageSetType">
+        <complexContent>
+            <extension base="wcs:RequestBaseType">
+                <sequence>
+                    <element ref="wcseo:eoId" maxOccurs="unbounded"/>
+                    <element ref="wcseo:containment" minOccurs="0"/>
+                    <element ref="wcseo:Sections" minOccurs="0"/>
+                    <element ref="wcs:DimensionTrim" minOccurs="0" maxOccurs="3"/>
+                </sequence>
+                <attribute name="count" type="nonNegativeInteger"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <!-- =========================================================== -->
+    <element name="eoId" type="NCName">
+        <annotation>
+            <documentation>This element represents EO coverage or Dataset Series identifiers. It uses the same type as gml:id to allow for identifier values to be used in both contexts. </documentation>
+        </annotation>
+    </element>
+    <!-- =========================================================== -->
+    <element name="containment">
+        <simpleType>
+            <restriction base="string">
+                <enumeration value="OVERLAPS"/>
+                <enumeration value="CONTAINS"/>
+            </restriction>
+        </simpleType>
+    </element>
+    <!-- =========================================================== -->
+    <element name="Sections">
+        <complexType>
+            <sequence>
+                <element ref="wcseo:Section" maxOccurs="unbounded"/>
+            </sequence>
+        </complexType>
+    </element>
+    <element name="Section">
+        <simpleType>
+            <restriction base="string">
+                <enumeration value="CoverageDescriptions"/>
+                <enumeration value="DatasetSeriesDescriptions"/>
+                <enumeration value="All"/>
+            </restriction>
+        </simpleType>
+    </element>
+    <!-- =========================================================== -->
+    <element name="EOCoverageSetDescription" type="wcseo:EOCoverageSetDescriptionType">
+        <annotation>
+            <documentation>Response from an EO-WCS DescribeEOCoverageSet operation, containing a wcs: CoverageDescriptions and a wcseo:DatasetSeriesDescriptions element.</documentation>
+        </annotation>
+    </element>
+    <complexType name="EOCoverageSetDescriptionType">
+        <sequence>
+            <element ref="wcs:CoverageDescriptions" minOccurs="0"/> <!-- WCS core schema allows zero CoverageDescription elements in CoverageDescriptions but minOccurs needed for section parameter. -->
+            <element ref="wcseo:DatasetSeriesDescriptions" minOccurs="0"/> <!-- minOccurs needed for section parameter. -->
+        </sequence>
+        <attribute name="numberMatched" type="nonNegativeInteger" use="required"/>
+        <attribute name="numberReturned" type="nonNegativeInteger" use="required"/>
+        <!-- TODO: Paging -->
+<!-- From WFS 2.0:
+        <attribute name="next" type="anyURI"/>
+        <attribute name="previous" type="anyURI"/>
+-->
+    </complexType>
+    <!-- =========================================================== -->
+    <element name="DatasetSeriesDescriptions" type="wcseo:DatasetSeriesDescriptionsType">
+        <annotation>
+            <documentation>Contained in responses from an EO-WCS DescribeEOCoverageSet operation, containing zero or more Dataset Series descriptions.</documentation>
+        </annotation>
+    </element>
+    <complexType name="DatasetSeriesDescriptionsType">
+        <sequence>
+            <element ref="wcseo:DatasetSeriesDescription" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+    </complexType>
+    <!-- =========================================================== -->
+    <element name="DatasetSeriesDescription" type="wcseo:DatasetSeriesDescriptionType">
+        <annotation>
+            <documentation>Description of a Dataset Series available from an EO-WCS server.</documentation>
+        </annotation>
+    </element>
+    <complexType name="DatasetSeriesDescriptionType">
+        <complexContent>
+            <restriction base="wcs:CoverageDescriptionType">
+                <sequence>
+                    <element ref="gml:boundedBy"/>
+                    <element ref="wcseo:DatasetSeriesId"/>
+                    <element ref="gml:TimePeriod"/>
+                    <element ref="eop:Footprint" minOccurs="0"/>
+                    <element ref="wcseo:ServiceParameters" minOccurs="0"/>
+                </sequence>
+            </restriction>
+        </complexContent>
+    </complexType>
+    <!-- =========================================================== -->
+    <element name="ServiceParameters" type="wcseo:ServiceParametersType"/>
+    <complexType name="ServiceParametersType">
+        <sequence>
+            <element ref="wcseo:rectifiedDataset" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="wcseo:referenceableDataset" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="wcseo:rectifiedStitchedMosaic" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="wcseo:referenceableStitchedMosaic" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+    </complexType>
+</schema>

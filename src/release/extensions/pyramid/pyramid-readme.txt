@@ -1,4 +1,4 @@
-GEOSERVER 2.4+ DATA STORE EXTRAS README
+GEOSERVER 2.5+ DATA STORE EXTRAS README
 
 This package contains a Pyramid building coverage implementation that is 
 distributed as a separate plug-in.  
@@ -24,5 +24,5 @@ information see http://geoserver.org/display/GEOSDOC/Image+Pyramid
 
 COMPATIBILITY
 
-This jar should work with any version of GeoServer based on GeoTools 10.x.  
-Currently this is anything in 2.4.x.  
+This jar should work with any version of GeoServer based on GeoTools 11.x  
+Currently this is anything in 2.5.x.  

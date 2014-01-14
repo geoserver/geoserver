@@ -13,6 +13,7 @@ import org.geoserver.config.GeoServerImplTest;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.impl.GeoServerImpl;
+import org.geoserver.config.impl.ServiceInfoImpl;
 import org.geoserver.config.impl.SettingsInfoImpl;
 import org.geoserver.jdbcconfig.JDBCConfigTestSupport;
 import org.geoserver.jdbcconfig.catalog.JDBCCatalogFacade;
@@ -73,4 +74,26 @@ public class JDBCGeoServerImplTest extends GeoServerImplTest {
         geoServer.setGlobal(global);
         assertEquals( global, geoServer.getGlobal() );
     }
+    
+    @Test
+    public void testModifyService() throws Exception {
+        ServiceInfo service = geoServer.getFactory().createService();
+        ((ServiceInfoImpl)service).setId( "id" );
+        service.setName( "foo" );
+        service.setTitle( "bar" );
+        service.setMaintainer( "quux" );
+        
+        geoServer.add( service );
+        
+        ServiceInfo s1 = geoServer.getServiceByName( "foo", ServiceInfo.class );
+        s1.setMaintainer("quam");
+        
+        ServiceInfo s2 = geoServer.getServiceByName( "foo", ServiceInfo.class );
+        assertEquals( "quux", s2.getMaintainer() );
+        
+        geoServer.save( s1 );
+        s2 = geoServer.getServiceByName( "foo", ServiceInfo.class );
+        assertEquals( "quam", s2.getMaintainer() );
+    }
+
 }

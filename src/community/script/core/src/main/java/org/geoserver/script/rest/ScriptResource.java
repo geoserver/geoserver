@@ -6,9 +6,12 @@ package org.geoserver.script.rest;
 
 import static java.lang.String.format;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
+import org.apache.commons.io.IOUtils;
 import org.geoserver.rest.RestletException;
 import org.geoserver.script.ScriptManager;
 import org.restlet.data.MediaType;
@@ -51,5 +54,42 @@ public class ScriptResource extends Resource {
         //TODO: set different content type?
         //TODO: not sure about this time to live parameter...  
         getResponse().setEntity(new FileRepresentation(script, MediaType.TEXT_PLAIN, 10));
+    }
+
+    @Override
+    public boolean allowPut() {
+        return true;
+    }
+
+    @Override
+    public void handlePut() {
+        File script;
+        try {
+            script = scriptMgr.findOrCreateScriptFile(path);
+        }
+        catch(IOException e) {
+            throw new RestletException(format("Error creating script file %s", path),
+                Status.SERVER_ERROR_INTERNAL, e);
+        }
+
+        // copy over the contents
+        try {
+            BufferedWriter w = new BufferedWriter(new FileWriter(script));
+
+            try {
+                IOUtils.copy(getRequest().getEntity().getStream(), w);
+                w.flush();
+
+                //TODO: set Location header
+                getResponse().setStatus(Status.SUCCESS_CREATED);
+            }
+            finally {
+                IOUtils.closeQuietly(w);
+            }
+        }
+        catch(IOException e) {
+            throw new RestletException(format("Error writing script file %s", path),
+                Status.SERVER_ERROR_INTERNAL, e);
+        }
     }
 }

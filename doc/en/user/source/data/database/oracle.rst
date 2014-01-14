@@ -20,6 +20,15 @@ Installing the Oracle extension
 
 #. Extract the contents of the archive into the ``WEB-INF/lib`` directory of the GeoServer installation.
 
+Consider replacing the Oracle JDBC driver
+-----------------------------------------
+
+The Oracle data store zip file comes with ``ojdbc4.jar``, an old, Oracle 10 compatible JDBC driver that normally works fine with 11g as well.
+However, minor glitches have been observed with 11g (issues computing layer bounds when session initiation scripts are in use) and the driver
+has not been tested with 12i.
+
+If you encounter functionality or performance issues it is advices to remote this driver and download the latest version from the Oracle web site.
+
 Adding an Oracle datastore
 --------------------------
 
@@ -65,6 +74,14 @@ Configuring an Oracle datastore
    * - ``Loose bbox``
      - 	Controls how bounding box comparisons are made against geometries in the database. See the :ref:`oracle_loose_bbox` section below.
 
+Connecting to an Oracle cluster
+-------------------------------
+
+In order to connect to an Oracle RAC one can use an almost full JDBC url as the ``database``, provided it starts with ``(`` it will be used verbatim and options "host" and "port" will be ignored. Here is an example "database" value used to connect to an Oracle RAC::
+
+   (DESCRIPTION=(LOAD_BALANCE=on)(ADDRESS=(PROTOCOL=TCP)(HOST=host1) (PORT=1521))(ADDRESS=(PROTOCOL=TCP)(HOST=host2) (PORT=1521))(CONNECT_DATA=(SERVICE_NAME=service)))
+
+More information about this syntax can be found in the `Oracle documentation <http://docs.oracle.com/cd/B28359_01/java.111/e10788/rac.htm#CHDCDFAC>`_.
      
 Connecting to a SID or a Service
 ````````````````````````````````
@@ -74,6 +91,18 @@ A SID connection descriptor has the form:  ``host:port:database``,
 while a Service connection descriptor has the format ``host:port/database``.
 GeoServer uses the SID form by default. To connect via a Service,
 prefix the ``database`` name configuration entry with a ``/``.
+
+Connecting to database through LDAP
+`````````````````````````````````````
+
+For instance if you want to establish a connection with the jdbc thin driver through LDAP, you can use following connect string for the input field ``database`` 
+``ldap://[host]:[Port]/[db],cn=OracleContext,dc=[oracle_ldap_context]``.
+
+If you are using referrals, enable it by placing a jndi.properties file in geoserver's CLASSPATH, which is in geoserver/WEB-INF/classes.
+This property file contains:
+
+   java.naming.referral=follow
+
 
 .. _oracle_loose_bbox:
 

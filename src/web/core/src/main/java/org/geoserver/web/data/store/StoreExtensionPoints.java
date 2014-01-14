@@ -6,6 +6,9 @@ package org.geoserver.web.data.store;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.wicket.markup.html.form.Form;
@@ -14,6 +17,7 @@ import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StoreInfo;
+import org.geoserver.ows.Response;
 import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.data.resource.DataStorePanelInfo;
@@ -182,17 +186,58 @@ public class StoreExtensionPoints {
 
         final List<DataStorePanelInfo> providers = app.getBeansOfType(DataStorePanelInfo.class);
 
-        DataStorePanelInfo panelInfo = null;
-
+        List<DataStorePanelInfo> fallbacks = new ArrayList<DataStorePanelInfo>();
         for (DataStorePanelInfo provider : providers) {
             Class<?> providerFactoryClass = provider.getFactoryClass();
+            if(providerFactoryClass == null) {
+                continue;
+            }
             if (factoryClass.equals(providerFactoryClass)) {
-                panelInfo = provider;
-                break;
+                return provider;
+            } else if(providerFactoryClass.isAssignableFrom(factoryClass)) {
+                fallbacks.add(provider);
             }
         }
+        
+        if(fallbacks.size() == 1) {
+            return fallbacks.get(0);
+        } else if(fallbacks.size() > 1) {
+            // sort by class hierarchy, pick the closest match
+            Collections.sort(fallbacks,
+                    new Comparator<DataStorePanelInfo>() {
+                        public int compare(DataStorePanelInfo o1, DataStorePanelInfo o2) {
+                            Class c1 = o1.getFactoryClass();
+                            Class c2 = o2.getFactoryClass();
 
-        return panelInfo;
+                            if (c1.equals(c2)) {
+                                return 0;
+                            }
+
+                            if (c1.isAssignableFrom(c2)) {
+                                return 1;
+                            }
+
+                            if (c2.isAssignableFrom(c1)) {
+                                ;
+                            }
+
+                            return -1;
+                        }
+                    });
+            //check first two and make sure bindings are not equal
+            DataStorePanelInfo f1 = fallbacks.get(0);
+            DataStorePanelInfo f2 = fallbacks.get(1);
+
+            if (f1.getFactoryClass().equals(f2.getFactoryClass())) {
+                String msg = "Multiple editor panels for : (" + f1.getFactoryClass() + "): " + f1 + ", " + f2;
+                throw new RuntimeException(msg);
+            }
+            
+            return f1;
+        }
+
+        // ok, we don't have a specific one
+        return null;
     }
 
 }

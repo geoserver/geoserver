@@ -50,6 +50,8 @@ public class ScaleLineDecoration implements MapDecoration {
     private Color bgcolor = Color.WHITE;
     private Color fgcolor = Color.BLACK;
     
+    private Boolean transparent = Boolean.FALSE;
+    
     public void loadOptions(Map<String, String> options) {
     	if (options.get("fontsize") != null) {
     		try {
@@ -80,6 +82,15 @@ public class ScaleLineDecoration implements MapDecoration {
 
         tmp = MapDecorationLayout.parseColor(options.get("fgcolor"));
         if (tmp != null) fgcolor = tmp;
+
+    	// Creates a rectangle only if is defined, if not is "transparent" like Google Maps
+    	if (options.get("transparent") != null) {
+    		try {
+    			this.transparent = Boolean.parseBoolean(options.get("transparent"));
+    		} catch (Exception e) {
+    			this.LOGGER.log(Level.WARNING, "'transparent' must be a boolean.", e);
+    		}
+    	}
     }
 
     public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent){
@@ -118,11 +129,7 @@ public class ScaleLineDecoration implements MapDecoration {
     	// Set the font size.
     	g2d.setFont(oldFont.deriveFont(this.fontSize));
     	
-    	double scaleDenominator = RendererUtilities.calculateOGCScale(
-            mapContent.getRenderingArea(),
-            mapContent.getRequest().getWidth(),
-            new HashMap()
-        );
+    	double scaleDenominator = mapContent.getScaleDenominator();
     	
     	String curMapUnits = "m";
     	
@@ -173,20 +180,27 @@ public class ScaleLineDecoration implements MapDecoration {
     	
     	g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 
-        Rectangle frame = new Rectangle(
-            leftX - 4, centerY - prongHeight - 4, 
-            Math.max(topPx, bottomPx) + 8, 8 + prongHeight * 2
-        );
+    	// Creates a rectangle only if is defined, if not is "transparent" like Google Maps
+    	if (!this.transparent) {
+    		Rectangle frame = new Rectangle(
+    			leftX - 4, centerY - prongHeight - 4, 
+    			Math.max(topPx, bottomPx) + 8, 8 + prongHeight * 2
+    		);
 
-        g2d.setColor(bgcolor);
-        g2d.fill(frame);;
-        
-        frame.height -= 1;
-        frame.width -= 1;
-    	g2d.setColor(fgcolor);
-        g2d.setStroke(new BasicStroke(1));
-        g2d.draw(frame);
-    	
+    		// fill the rectangle
+    		g2d.setColor(bgcolor);
+    		g2d.fill(frame);
+
+    		// draw the border
+    		frame.height -= 1;
+    		frame.width -= 1;
+    		g2d.setColor(fgcolor);
+    		g2d.setStroke(new BasicStroke(1));
+    		g2d.draw(frame);
+    	} else {
+    		g2d.setColor(fgcolor);
+    	}
+
     	g2d.setStroke(new BasicStroke(2));
     	
     	// Draw scale lines

@@ -39,7 +39,7 @@
                         gsml:GeologicUnit
 					</targetAttribute>
 					<idExpression>
-						<OCQL>getId()</OCQL>
+						<OCQL>GML_ID</OCQL>
 					</idExpression>				
 				</AttributeMapping>
 				<AttributeMapping>

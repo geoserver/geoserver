@@ -875,7 +875,7 @@ public class Dispatcher extends AbstractController {
                 Response r2 = (Response) responses.get(1);
 
                 if (r1.getBinding().equals(r2.getBinding())) {
-                    String msg = "Multiple responses: (" + result.getClass() + ")";
+                    String msg = "Multiple responses: (" + result.getClass() + "): " + r1 + ", " + r2;
                     throw new RuntimeException(msg);
                 }
             }
@@ -1593,6 +1593,11 @@ public class Dispatcher extends AbstractController {
             	} else {
             		request.getHttpResponse().sendError(ece.getErrorCode());
             	}
+                if (ece.getErrorCode() < 400) {
+                    // gwc returns an HttpErrorCodeException for 304s
+                    // we don't want to flag these as errors for upstream filters, ie the monitoring extension
+                    t = null;
+                }
             } 
             catch (IOException e) {
                 //means the resposne was already commited

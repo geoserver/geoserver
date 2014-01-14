@@ -4,16 +4,20 @@
  */
 package org.geoserver.catalog.rest;
 
-import junit.framework.Assert;
+import static org.junit.Assert.*;
 
+import org.junit.Test;
+
+import com.vividsolutions.jts.util.Assert;
 
 public class FreemarkerTemplateUpdateTest extends CatalogRESTTestSupport {
 
+    @Test
 	public void testUpdate() throws Exception {
         String fooTemplate = "/rest/templates/foo.ftl";
         String barTemplate = "/rest/templates/bar.ftl";
         
-        String fooContent = "hello foo";
+        String fooContent = "hello foo - longer than bar";
         String barContent = "hello bar";
         
         // PUT
@@ -21,8 +25,8 @@ public class FreemarkerTemplateUpdateTest extends CatalogRESTTestSupport {
         put(barTemplate, barContent).close();
         
         // GET
-        Assert.assertEquals(fooContent, getAsString(fooTemplate).trim());
-        Assert.assertEquals(barContent, getAsString(barTemplate).trim());
+        assertEquals(fooContent, getAsString(fooTemplate).trim());
+        assertEquals(barContent, getAsString(barTemplate).trim());
         
         fooContent = "goodbye foo";
         
@@ -30,7 +34,7 @@ public class FreemarkerTemplateUpdateTest extends CatalogRESTTestSupport {
         put(fooTemplate, fooContent).close();
         
         // GET
-        Assert.assertEquals(fooContent, getAsString(fooTemplate).trim());
-        Assert.assertEquals(barContent, getAsString(barTemplate).trim());
+        assertEquals(fooContent, getAsString(fooTemplate).trim());
+        assertEquals(barContent, getAsString(barTemplate).trim());
     }
 }

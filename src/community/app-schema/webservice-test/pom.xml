@@ -11,22 +11,22 @@
 
 	<parent>
 		<groupId>org.geoserver</groupId>
-		<artifactId>app-schema-community</artifactId>
-		<version>2.4-SNAPSHOT</version>
+		<artifactId>gs-app-schema-community</artifactId>
+		<version>2.5-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.geoserver</groupId>
-	<artifactId>webservice-test</artifactId>
+	<artifactId>gs-webservice-test</artifactId>
 	<name>Web Service with Application Schema Integration Test</name>
 
 	<dependencies>       
 	    <dependency>
 			<groupId>org.geoserver</groupId>
-			<artifactId>main</artifactId>
+			<artifactId>gs-main</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.geoserver</groupId>
-			<artifactId>main</artifactId>
+			<artifactId>gs-main</artifactId>
 			<classifier>tests</classifier>
 		</dependency>		
 		<dependency>
@@ -35,11 +35,11 @@
 				compile but will not run.
 			-->
 			<groupId>org.geoserver</groupId>
-			<artifactId>wfs</artifactId>
+			<artifactId>gs-wfs</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.geoserver.extension</groupId>
-			<artifactId>app-schema-test</artifactId>
+			<artifactId>gs-app-schema-test</artifactId>
 			<version>${project.version}</version>
 			<classifier>tests</classifier>
 		</dependency>
@@ -57,7 +57,7 @@
 		</dependency>  
 	    <dependency>
             <groupId>org.geoserver</groupId>
-            <artifactId>ows</artifactId>
+            <artifactId>gs-ows</artifactId>
         </dependency>
 		<dependency>
             <groupId>org.geotools</groupId>

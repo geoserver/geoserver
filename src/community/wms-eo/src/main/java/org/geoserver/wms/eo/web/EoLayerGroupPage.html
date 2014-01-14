@@ -1,0 +1,17 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+  <body>
+    <wicket:extend>
+        <div wicket:id="table"></div>
+        
+        <!-- the cascade delete confirmation dialog -->
+        <div wicket:id="dialog"></div>
+        
+        <wicket:fragment wicket:id="header">
+          <ul>
+            <li><a class="add-link" href="#" wicket:id="addNew"><wicket:message key="addNew" /></a></li>
+            <li><a class="remove-link" href="#" wicket:id="removeSelected"><wicket:message key="removeSelected" /></a></li>
+          </ul>
+        </wicket:fragment>
+    </wicket:extend>
+  </body>
+</html>

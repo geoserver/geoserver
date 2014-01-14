@@ -1,4 +1,4 @@
-GeoServer 2.4+ H2 Data Store Extension
+GeoServer 2.5+ H2 Data Store Extension
 ======================================
 
 This package contains a H2 DataStore implementation that is

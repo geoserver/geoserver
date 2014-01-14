@@ -44,18 +44,12 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         container.setOutputMarkupId(true);
         add(container);
         
-        editor = new TextArea<String>("editor", new Model<String>((String) model.getObject()));
+        editor = new TextArea<String>("editor", model);
         container.add(editor);
         editor.setOutputMarkupId(true);
         editor.add(new CodeMirrorBehavior());
     }
     
-    @Override
-    protected void onBeforeRender() {
-        editor.setModelObject(getModelObject());
-        super.onBeforeRender();
-    }
-
     @Override
     protected void convertInput() {
         editor.processInput();

@@ -10,13 +10,13 @@ application directory.
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.geoserver</groupId>
-        <artifactId>community</artifactId>
+        <groupId>org.geoserver.extension</groupId>
+        <artifactId>gs-wcs2_0-eo</artifactId>
         <version>2.5-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.geoserver.community</groupId>
-    <artifactId>gs-wcs2_0-eo</artifactId>
+    <groupId>org.geoserver.extension</groupId>
+    <artifactId>gs-wcs2_0-eo-core</artifactId>
     <packaging>jar</packaging>
     <name>Web Coverage Service 2.0 Earth Observation extensions</name>
 

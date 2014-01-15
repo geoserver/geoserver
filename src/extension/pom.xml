@@ -265,6 +265,14 @@
       </modules>
     </profile>
 
+    <profile>
+      <id>wcs2_0-eo</id>
+      <modules>
+        <module>wcs2_0-eo</module>
+      </modules>
+    </profile>
+
+
     <!-- allExtensions profile, includes all modules -->
     <profile>
       <id>allExtensions</id>
@@ -332,6 +340,7 @@
         <module>css</module>
         <module>csw</module>
         <module>dxf</module>
+        <module>wcs2_0-eo</module>
       </modules>
     </profile>
 

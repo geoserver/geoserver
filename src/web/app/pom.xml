@@ -962,31 +962,15 @@
       </dependencies>
     </profile>	
     <profile>
-      <id>wcs20</id>
-      <activation>
-        <property><name>wcs20</name></property>
-      </activation> 
+      <id>wcs2_0-eo</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-wcs2_0</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>wcs20-eo</id>
-      <activation>
-        <property><name>wcs20</name></property>
-      </activation> 
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-wcs2_0-eo</artifactId>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-wcs2_0-eo-core</artifactId>
           <version>${project.version}</version>
         </dependency>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-web-wcs2_0-eo</artifactId>
           <version>${project.version}</version>
         </dependency>

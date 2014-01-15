@@ -151,8 +151,6 @@
         <module>sfs</module>
         <module>feature-aggregate</module>
         <module>script</module>
-        <module>wcs2_0-eo</module>
-        <module>web-wcs2_0-eo</module>
         <module>wms-eo</module>
         <module>libjpeg-turbo</module>
         <module>netcdf</module>
@@ -216,16 +214,6 @@
       </activation> 
       <modules>
         <module>script</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>wcs20-eo</id>
-      <activation>
-        <property><name>wcs20-eo</name></property>
-      </activation> 
-      <modules>
-        <module>wcs2_0-eo</module>
-        <module>web-wcs2_0-eo</module>
       </modules>
     </profile>
     <profile>

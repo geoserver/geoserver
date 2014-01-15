@@ -143,11 +143,7 @@ public class GeoTiffPPIO extends BinaryPPIO {
         } else {
             GeoTiffFormat format = new GeoTiffFormat();
             final GeoTiffWriteParams wp = new GeoTiffWriteParams();
-            
-//            // compression SG I hate doing things automagically
-//            wp.setCompressionMode(GeoTiffWriteParams.MODE_EXPLICIT);
-//            wp.setCompressionType("LZW");
-            
+
             // tiling 
             wp.setTilingMode(GeoToolsWriteParams.MODE_EXPLICIT);
             if(tiled){

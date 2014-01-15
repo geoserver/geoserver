@@ -105,7 +105,12 @@ public class SingleGranuleGridCoverageReader implements StructuredGridCoverage2D
 
     public boolean removeCoverage(String coverageName) throws IOException,
             UnsupportedOperationException {
-        throw new UnsupportedOperationException();
+        return reader.removeCoverage(coverageName);
+    }
+
+    public boolean removeCoverage(String coverageName, boolean delete) throws IOException,
+            UnsupportedOperationException {
+        return reader.removeCoverage(coverageName, delete);
     }
 
     public String getMetadataValue(String name) throws IOException {
@@ -272,6 +277,11 @@ public class SingleGranuleGridCoverageReader implements StructuredGridCoverage2D
     @Override
     public List<DimensionDescriptor> getDimensionDescriptors(String coverageName) throws IOException {
         return reader.getDimensionDescriptors(coverageName);
+    }
+
+    @Override
+    public void delete(boolean deleteData) throws IOException, UnsupportedOperationException {
+        reader.delete(deleteData);
     }
 
 }

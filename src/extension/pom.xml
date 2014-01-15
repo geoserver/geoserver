@@ -272,6 +272,13 @@
       </modules>
     </profile>
 
+    <profile>
+      <id>libjpeg-turbo</id>
+      <modules>
+        <module>libjpeg-turbo</module>
+      </modules>
+    </profile>
+
 
     <!-- allExtensions profile, includes all modules -->
     <profile>
@@ -305,6 +312,8 @@
         <module>css</module>	
         <module>csw</module>
         <module>dxf</module>
+        <module>wcs2_0-eo</module>
+        <module>libjpeg-turbo</module>
       </modules>
     </profile>
 
@@ -341,6 +350,7 @@
         <module>csw</module>
         <module>dxf</module>
         <module>wcs2_0-eo</module>
+        <module>libjpeg-turbo</module>
       </modules>
     </profile>
 

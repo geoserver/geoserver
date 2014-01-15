@@ -27,3 +27,4 @@ see the :ref:`data_vector`, :ref:`data_raster`, and :ref:`data_database` section
    xslt/index
    csw/index
    wcs20eo/index
+   libjpeg-turbo/index

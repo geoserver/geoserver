@@ -262,6 +262,11 @@
      <artifactId>gs-web-wcs2_0-eo</artifactId>
      <version>${project.version}</version>
    </dependency>
+   <dependency>
+     <groupId>org.geoserver.extension</groupId>
+     <artifactId>gs-libjpeg-turbo</artifactId>
+     <version>${project.version}</version>
+   </dependency>
  </dependencies>
  <build>
   <plugins>

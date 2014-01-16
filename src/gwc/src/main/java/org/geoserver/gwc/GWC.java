@@ -985,6 +985,21 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         DiskQuotaMonitor diskQuotaMonitor = getDiskQuotaMonitor();
         return diskQuotaMonitor.isEnabled();
     }
+    
+    /**
+     * Returns whether the disk quota module is enabled at all.
+     * <p>
+     * If not, none of the other diskquota related methods should be even called. The disk quota
+     * module may have been completely disabled through the {@code GWC_DISKQUOTA_DISABLED=true}
+     * environment variable
+     * </p>
+     * 
+     * @return whether the disk quota module is available at all.
+     */
+    public boolean isDiskQuotaEnabled() {
+        DiskQuotaMonitor diskQuotaMonitor = getDiskQuotaMonitor();
+        return diskQuotaMonitor.getConfig().isEnabled();
+    }
 
     /**
      * @return the current DiskQuota configuration or {@code null} if the disk quota module has been

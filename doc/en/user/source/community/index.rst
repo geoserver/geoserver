@@ -26,3 +26,4 @@ officially part of the GeoServer releases. They are however built along with the
    netcdf/index
    netcdf-out/index
    jdbcconfig/index
+   importer/index

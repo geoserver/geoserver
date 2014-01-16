@@ -5,6 +5,7 @@
 package org.geoserver.importer.mosaic;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -16,6 +17,7 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureWriter;
 import org.geotools.data.Transaction;
@@ -25,6 +27,10 @@ import org.geotools.data.shapefile.ShapefileDataStoreFactory;
 import org.geotools.data.shapefile.files.ShpFileType;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.gce.imagemosaic.ImageMosaicConfigHandler;
+import org.geotools.gce.imagemosaic.ImageMosaicFormat;
+import org.geotools.gce.imagemosaic.ImageMosaicReader;
+import org.geotools.gce.imagemosaic.Utils;
 import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.util.logging.Logging;
@@ -119,6 +125,20 @@ public class MosaicIndex {
         if (mosaic.getTimeMode() != TimeMode.NONE) {
             typeBuilder.add("time", Date.class);
         }
+        
+        // tell image mosaic to use the index file we are creating
+        File indexerFile = new File(mosaic.getFile(), "indexer.properties");
+        Properties indexer = new Properties();
+        indexer.put(Utils.Prop.NAME, mosaic.getName());
+        indexer.put(Utils.Prop.INDEX_NAME, mosaic.getName());
+        indexer.put(Utils.Prop.USE_EXISTING_SCHEMA, "true");
+        FileOutputStream ifos = null;
+        try {
+            ifos = new FileOutputStream(indexerFile);
+            indexer.store(ifos, null);
+        } finally {
+            IOUtils.closeQuietly(ifos);
+        }
 
         //create a new shapefile feature store
         ShapefileDataStoreFactory shpFactory = new ShapefileDataStoreFactory();
@@ -158,29 +178,29 @@ public class MosaicIndex {
             dir.dispose();
         }
 
-        double width = first.getGrid().getGridRange2D().getWidth();
-        double height = first.getGrid().getGridRange2D().getHeight();
-
-        //write out the properties file
-        Properties props = new Properties();
-        props.setProperty("Name", mosaic.getName());
-        props.setProperty("Levels", String.format("%f,%f", first.getEnvelope().getWidth()/width, 
-            first.getEnvelope().getHeight()/height));
-        props.setProperty("LevelsNum", "1");
-        props.setProperty("LocationAttribute", "location");
-
+        // have the image mosaic write the property file
+        ImageMosaicFormat format = new ImageMosaicFormat();
+        ImageMosaicReader reader = format.getReader(mosaic.getFile());
+        reader.dispose();
+        
+        // if we have to add the time, do so now
         if (mosaic.getTimeMode() != TimeMode.NONE) {
-            props.setProperty("TimeAttribute", "time");
+            File propertyFile = new File(mosaic.getFile(), mosaic.getName() + ".properties");
+            FileInputStream fis = null;
+            FileOutputStream fos = null;
+            try {
+                fis = new FileInputStream(propertyFile);
+                Properties props = new Properties();
+                props.load(fis);
+                fis.close();
+                props.setProperty("TimeAttribute", "time");
+                fos = new FileOutputStream(propertyFile);
+                props.store(fos, null);
+            } finally {
+                IOUtils.closeQuietly(fis);
+                IOUtils.closeQuietly(fos);
+            }
         }
 
-        FileOutputStream fout = new FileOutputStream(
-            new File(mosaic.getFile(), mosaic.getName()+".properties"));
-        try {
-            props.store(fout, null);
-            fout.flush();
-        }
-        finally {
-            fout.close();
-        }
     }
 }

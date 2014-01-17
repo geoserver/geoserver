@@ -10,7 +10,7 @@ import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geotools.feature.type.DateUtil;
 
-abstract class AbstractCapabilitiesDefaultValueSelectionStrategy implements DimensionDefaultValueStrategy {
+abstract class AbstractCapabilitiesDefaultValueSelectionStrategy extends AbstractDefaultValueStrategy {
     /** serialVersionUID */
     private static final long serialVersionUID = -4316579372963159438L;
 

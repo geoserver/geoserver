@@ -22,21 +22,14 @@ class DefaultFeatureMinimumValueSelectionStrategy extends
     public DefaultFeatureMinimumValueSelectionStrategy() {
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <T> T getDefaultValue(ResourceInfo resource, String dimensionName, DimensionInfo dimensionInfo, Class<T> clz) {
+    protected Object doGetDefaultValue(ResourceInfo resource, String dimensionName, DimensionInfo dimensionInfo) {
         final MinVisitor max = new MinVisitor(dimensionInfo.getAttribute());
         CalcResult res = getSelectedValue((FeatureTypeInfo) resource, dimensionInfo, max);
         if (res.equals(CalcResult.NULL_RESULT)) {
             return null;
         } else {
-            Comparable<?> value = max.getMin();
-            if (clz.isAssignableFrom(value.getClass())){
-                return (T)value;
-            }
-            else {
-                throw new IllegalArgumentException("The default value for dimension of type "+value.getClass().getCanonicalName()+" cannot be assigned to "+clz.getCanonicalName());
-            }
+            return max.getMin();
         }
     }              
 }

@@ -24,9 +24,8 @@ class DefaultCoverageMaximumValueSelectionStrategy extends AbstractCapabilitiesD
     public DefaultCoverageMaximumValueSelectionStrategy() {
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <T> T getDefaultValue(ResourceInfo resource, String dimensionName, DimensionInfo dimensionInfo, Class<T> clz) {
+    protected Object doGetDefaultValue(ResourceInfo resource, String dimensionName, DimensionInfo dimensionInfo) {
         Object retval = null;
         try {
             GridCoverage2DReader reader = (GridCoverage2DReader) ((CoverageInfo) resource)
@@ -62,16 +61,6 @@ class DefaultCoverageMaximumValueSelectionStrategy extends AbstractCapabilitiesD
         } catch (IOException e) {
             DimensionDefaultValueStrategyFactoryImpl.LOGGER.log(Level.FINER, e.getMessage(), e);
         }            
-        if (retval != null){
-            if (clz.isAssignableFrom(retval.getClass())){
-                return (T)retval;
-            }
-            else {
-                throw new IllegalArgumentException("The default value for dimension of type "+retval.getClass().getCanonicalName()+" cannot be assigned to "+clz.getCanonicalName());
-            }                
-        }
-        else {
-            return null;
-        }
+        return retval;
     }          
 }

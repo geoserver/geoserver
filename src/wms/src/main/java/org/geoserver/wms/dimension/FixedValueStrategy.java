@@ -16,20 +16,9 @@ class FixedValueStrategy extends AbstractCapabilitiesDefaultValueSelectionStrate
         this.value = value;
     }
     
-    @SuppressWarnings("unchecked")
     @Override
-    public <T> T getDefaultValue(ResourceInfo resource, String dimensionName,
-            DimensionInfo dimension, Class<T> clz) {
-        if (this.value != null){
-            if (clz.isAssignableFrom(this.value.getClass())){
-                return (T)value;
-            }
-            else {
-                throw new IllegalArgumentException("The default value for dimension of type "+this.value.getClass().getCanonicalName()+" cannot be assigned to "+clz.getCanonicalName());
-            }                
-        }
-        else {
-            return null;
-        }
+    protected Object doGetDefaultValue(ResourceInfo resource, String dimensionName,
+            DimensionInfo dimension) {
+        return this.value;
     }        
 }

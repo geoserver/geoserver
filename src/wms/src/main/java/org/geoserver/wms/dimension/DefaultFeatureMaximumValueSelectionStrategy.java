@@ -22,21 +22,14 @@ class DefaultFeatureMaximumValueSelectionStrategy extends
     public DefaultFeatureMaximumValueSelectionStrategy() {
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <T> T getDefaultValue(ResourceInfo resource, String dimensionName, DimensionInfo dim, Class<T> clz) {
+    protected Object doGetDefaultValue(ResourceInfo resource, String dimensionName, DimensionInfo dim) {
         final MaxVisitor max = new MaxVisitor(dim.getAttribute());
         CalcResult res = getSelectedValue((FeatureTypeInfo) resource, dim, max);
         if (res.equals(CalcResult.NULL_RESULT)) {
             return null;
         } else {
-            Comparable<?> value = max.getMax();
-            if (clz.isAssignableFrom(value.getClass())){
-                return (T)value;
-            }
-            else {
-                throw new IllegalArgumentException("The default value for dimension of type "+value.getClass().getCanonicalName()+" cannot be assigned to "+clz.getCanonicalName());
-            }
+            return max.getMax();
         }
     }    
 }

@@ -30,9 +30,8 @@ class DefaultFeatureNearestValueSelectionStrategy extends
         this.fixedCapabilitiesValue = capabilitiesValue;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <T> T getDefaultValue(ResourceInfo resource, String dimensionName, DimensionInfo dimensionInfo, Class<T> clz) {
+    protected Object doGetDefaultValue(ResourceInfo resource, String dimensionName, DimensionInfo dimensionInfo) {
         final NearestVisitor<Object> nearest = new NearestVisitor<Object>(dimensionInfo.getAttribute(),
                 this.toMatch);
 
@@ -40,13 +39,7 @@ class DefaultFeatureNearestValueSelectionStrategy extends
         if (res.equals(CalcResult.NULL_RESULT)) {
             return null;
         } else {
-            Object value = nearest.getNearestMatch();
-            if (clz.isAssignableFrom(value.getClass())){
-                return (T)value;
-            }
-            else {
-                throw new IllegalArgumentException("The default value for dimension of type "+value.getClass().getCanonicalName()+" cannot be assigned to "+clz.getCanonicalName());
-            }
+            return res.getValue();
         }
     }
     

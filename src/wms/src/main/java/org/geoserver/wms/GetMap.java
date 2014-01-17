@@ -492,19 +492,7 @@ public class GetMap {
             }
         }
 
-        // setup some SLD variable substitution environment used by rendering transformations
-        EnvFunction.setLocalValue("wms_bbox", mapContent.getRenderingArea());
-        EnvFunction.setLocalValue("wms_crs", mapContent.getRenderingArea().getCoordinateReferenceSystem());
-        EnvFunction.setLocalValue("wms_srs", mapContent.getRequest().getSRS());
-        EnvFunction.setLocalValue("wms_width", mapContent.getMapWidth());
-        EnvFunction.setLocalValue("wms_height", mapContent.getMapHeight());
-        try {
-            double scaleDenominator = RendererUtilities.calculateOGCScale(mapContent.getRenderingArea(),
-                    mapContent.getMapWidth(), null);
-            EnvFunction.setLocalValue("wms_scale_denominator", scaleDenominator);
-        } catch(Exception e) {
-            LOGGER.log(Level.SEVERE, "Failed to compute the scale denominator, wms_scale_denominator env variable is unset", e);
-        }
+        RenderingVariables.setupEnvironmentVariables(mapContent);
         
         // set the buffer value if the admin has set a specific value for some layers
         // in this map

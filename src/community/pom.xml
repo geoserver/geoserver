@@ -44,7 +44,6 @@
        	  <descriptor>release/ext-dds.xml</descriptor>
           <descriptor>release/ext-aggregate.xml</descriptor>
           <descriptor>release/ext-wms-eo.xml</descriptor>
-          <descriptor>release/ext-libjpeg-turbo.xml</descriptor>
           <descriptor>release/ext-netcdf.xml</descriptor>
           <descriptor>release/ext-netcdf-out.xml</descriptor>
           
@@ -151,10 +150,7 @@
         <module>sfs</module>
         <module>feature-aggregate</module>
         <module>script</module>
-        <module>wcs2_0-eo</module>
-        <module>web-wcs2_0-eo</module>
         <module>wms-eo</module>
-        <module>libjpeg-turbo</module>
         <module>netcdf</module>
         <module>netcdf-out</module>
         
@@ -219,16 +215,6 @@
       </modules>
     </profile>
     <profile>
-      <id>wcs20-eo</id>
-      <activation>
-        <property><name>wcs20-eo</name></property>
-      </activation> 
-      <modules>
-        <module>wcs2_0-eo</module>
-        <module>web-wcs2_0-eo</module>
-      </modules>
-    </profile>
-    <profile>
       <id>netcdf-out</id>
       <activation>
         <property><name>netcdf-out</name></property>
@@ -270,18 +256,6 @@
         <module>kml-old</module>
       </modules>
     </profile>
-		<profile>
-			<id>libjpeg-turbo</id>
-			<activation>
-				<property>
-					<name>all</name>
-					<value>true</value>
-				</property>
-			</activation>
-			<modules>
-				<module>libjpeg-turbo</module>
-			</modules>
-		</profile>    
     <profile>
       <id>importer</id>
       <modules>

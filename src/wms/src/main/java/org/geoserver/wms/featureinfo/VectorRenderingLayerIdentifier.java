@@ -31,6 +31,7 @@ import org.geoserver.security.decorators.DecoratingFeatureSource;
 import org.geoserver.wms.FeatureInfoRequestParameters;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
+import org.geoserver.wms.RenderingVariables;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.RenderedImageMapOutputFormat;
@@ -132,22 +133,30 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
         GetMapRequest getMap = params.getGetMapRequest();
         WMSMapContent mc = new WMSMapContent(getMap);
         try {
+            // prepare the fake web map content
+            mc.setTransparent(true);
+            mc.setBuffer(params.getBuffer());
+            mc.getViewport().setBounds(new ReferencedEnvelope(getMap.getBbox(), getMap.getCrs()));
+            mc.setMapWidth(getMap.getWidth());
+            mc.setMapWidth(getMap.getHeight());
+            FeatureLayer layer = getLayer(params, style);
+            mc.addLayer(layer);
+            // setup the env variables just like in the original GetMap
+            RenderingVariables.setupEnvironmentVariables(mc);
+            
             // setup the transformation from screen to world space
             AffineTransform worldToScreen = RendererUtilities.worldToScreenTransform(
                     params.getRequestedBounds(), new Rectangle(params.getWidth(), params.getHeight()));
             AffineTransform screenToWorld = worldToScreen.createInverse();
             
             // setup the area we are actually going to paint
-            
-            FeatureLayer layer = getLayer(params, style);
             int radius = getSearchRadius(params, rules, layer, getMap, screenToWorld);
             if(radius < buffer) {
                 radius = buffer;
             }
             Envelope targetRasterSpace = new Envelope(params.getX() - radius, params.getX() + radius,
                     params.getY() - radius, params.getY() + radius);
-            Envelope targetModelSpace = JTS.transform(targetRasterSpace, new AffineTransform2D(
-                    screenToWorld));
+            Envelope targetModelSpace = JTS.transform(targetRasterSpace, new AffineTransform2D(screenToWorld));
             
             // prepare the image we are going to check rendering against
             int paintAreaSize = (int) radius * 2 + 1;
@@ -160,15 +169,12 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             Rectangle hitArea = new Rectangle(mid - buffer, mid - buffer, hitAreaSize, hitAreaSize);
             final FeatureInfoRenderListener featureInfoListener = new FeatureInfoRenderListener(image,
                     hitArea, maxFeatures);
-    
-            // prepare the fake web map content
+
+            // update the map context
             mc.getViewport().setBounds(new ReferencedEnvelope(targetModelSpace, getMap.getCrs()));
             mc.setMapWidth(paintAreaSize);
             mc.setMapHeight(paintAreaSize);
-            mc.setTransparent(true);
-            mc.setBuffer(params.getBuffer());
-            mc.addLayer(layer);
-    
+            
             // and now run the rendering _almost_ like a GetMap
             RenderedImageMapOutputFormat rim = new RenderedImageMapOutputFormat(wms) {
     
@@ -202,7 +208,6 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
         }
     }
 
-    
     private Style preprocessStyle(Style style, FeatureType schema) {
         FeatureInfoStylePreprocessor preprocessor = new FeatureInfoStylePreprocessor(schema);
         style.accept(preprocessor);
@@ -494,7 +499,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
                     idx++;
                 }
             }
-
+            
             if (hit) {
                 if(features.size() < maxFeatures) {
                     features.add(feature);

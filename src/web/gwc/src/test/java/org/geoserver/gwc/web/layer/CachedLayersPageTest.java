@@ -16,6 +16,6 @@ public class CachedLayersPageTest extends GeoServerWicketTestSupport {
         tester.startPage(page);
         tester.assertRenderedPage(CachedLayersPage.class);
 
-        // print(page, true, true);
+        print(page, true, true);
     }
 }

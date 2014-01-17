@@ -1239,6 +1239,8 @@
       <descriptor>release/ext-css.xml</descriptor>      
       <descriptor>release/ext-csw.xml</descriptor>
       <descriptor>release/ext-dxf.xml</descriptor>
+      <descriptor>release/ext-wcs2_0-eo.xml</descriptor>
+      <descriptor>release/ext-libjpeg-turbo.xml</descriptor>
      </descriptors>
      <finalName>geoserver-2.5-SNAPSHOT</finalName>
      <outputDirectory>${project.build.directory}/release</outputDirectory>

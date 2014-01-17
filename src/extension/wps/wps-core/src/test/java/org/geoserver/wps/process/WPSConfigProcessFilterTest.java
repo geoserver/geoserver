@@ -15,6 +15,7 @@ import org.geotools.feature.NameImpl;
 import org.geotools.process.ProcessFactory;
 import org.geotools.process.Processors;
 import org.geotools.process.vector.VectorProcessFactory;
+import org.junit.After;
 import org.junit.Before;
 import org.opengis.feature.type.Name;
 
@@ -50,6 +51,14 @@ public class WPSConfigProcessFilterTest extends AbstractProcessFilterTest {
         gsGroup.setEnabled(false);
         pgs.add(gsGroup);
         
+        gs.save(wps);
+    }
+    
+    @After
+    public void cleanup() {
+        GeoServer gs = getGeoServer();
+        WPSInfo wps = gs.getService(WPSInfo.class);
+        wps.getProcessGroups().clear();
         gs.save(wps);
     }
     

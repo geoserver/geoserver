@@ -15,6 +15,7 @@ see the :ref:`data_vector`, :ref:`data_raster`, and :ref:`data_database` section
 
    controlflow/index
    css/index
+   dxf/index   
    excel
    geosearch
    imagemap
@@ -26,3 +27,5 @@ see the :ref:`data_vector`, :ref:`data_raster`, and :ref:`data_database` section
    wps/index
    xslt/index
    csw/index
+   wcs20eo/index
+   libjpeg-turbo/index

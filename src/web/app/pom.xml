@@ -615,6 +615,16 @@
       </dependencies>
     </profile>
     <profile>
+      <id>wps-raster-algebra</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-wps-raster-algebra</artifactId>
+          <version>${project.version}</version> 
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>css</id>
       <dependencies>
         <dependency>

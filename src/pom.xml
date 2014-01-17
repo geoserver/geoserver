@@ -52,6 +52,15 @@
 
  <repositories>
   <repository>
+   <id>geosolutions</id>
+   <name>GeoSolutions Maven Repository</name>
+   <url>http://maven.geo-solutions.it/</url>
+   <snapshots>
+     <enabled>true</enabled>
+   </snapshots>
+  </repository>  
+
+  <repository>
    <id>opengeo</id>
    <name>OpenGeo Maven Repository</name>
    <url>http://repo.opengeo.org/</url>
@@ -429,6 +438,13 @@
      <artifactId>gt-imageio-ext-gdal</artifactId>
      <version>${gt.version}</version>
    </dependency>
+   <!-- JAI-Ext-->
+   <dependency>
+     <groupId>it.geosolutions.jaiext.bandmerge</groupId>
+     <artifactId>jt-bandmerge</artifactId>
+     <version>${jaiext.version}</version>
+   </dependency>
+
    <dependency>
      <groupId>org.geotools</groupId>
      <artifactId>gt-arcsde-common</artifactId>
@@ -1517,6 +1533,7 @@
   <poi.version>3.8</poi.version>
   <wicket.version>1.4.12</wicket.version>
   <ant.version>1.8.4</ant.version>
+  <jaiext.version>1.0-SNAPSHOT</jaiext.version>
   <java.awt.headless>true</java.awt.headless>
   <jvm.opts></jvm.opts>
   <jalopy.phase>disabled</jalopy.phase>

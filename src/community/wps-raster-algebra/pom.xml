@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights 
+	reserved. This code is licensed under the GPL 2.0 license, available at the 
+	root application directory. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<!-- set parent pom to community pom -->
+	<parent>
+		<groupId>org.geoserver</groupId>
+		<artifactId>community</artifactId>
+		<version>2.5-SNAPSHOT</version>
+	</parent>
+
+	<groupId>org.geoserver.community</groupId>
+	<artifactId>gs-wps-raster-algebra</artifactId>
+	<packaging>jar</packaging>
+	<version>2.5-SNAPSHOT</version>
+	<name>WPS Raster Algebra Module</name>
+
+	<properties>
+		<jf.version>0.3-SNAPSHOT</jf.version>
+	</properties>
+
+	<repositories>
+		<repository>
+			<id>jaitools-snapshots</id>
+			<name>jaitools snapshots</name>
+			<url>http://oss.sonatype.org/content/repositories/snapshots/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.jaitools</groupId>
+			<artifactId>jt-jiffle-language</artifactId>
+			<version>${jf.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.jaitools</groupId>
+					<artifactId>jt-utils</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ant</groupId>
+			<artifactId>ant</artifactId>
+			<version>1.7.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ant</groupId>
+			<artifactId>ant-launcher</artifactId>
+			<version>1.7.1</version>
+		</dependency>
+		<dependency>
+			<groupId>it.geosolutions.jaiext.bandmerge</groupId>
+			<artifactId>jt-bandmerge</artifactId>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.geoserver</groupId>
+			<artifactId>gs-main</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.geoserver</groupId>
+			<artifactId>main</artifactId>
+			<version>${gs.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.geoserver.extension</groupId>
+			<artifactId>wps-core</artifactId>
+			<version>${gs.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-process</artifactId>
+			<version>${gt.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-process-raster</artifactId>
+			<version>${gt.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.geoserver</groupId>
+			<artifactId>gs-main</artifactId>
+			<version>${gs.version}</version>
+			<classifier>tests</classifier>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.geoserver.extension</groupId>
+			<artifactId>gs-wps-core</artifactId>
+			<version>${gs.version}</version>
+			<classifier>tests</classifier>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.mockrunner</groupId>
+			<artifactId>mockrunner</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+</project>

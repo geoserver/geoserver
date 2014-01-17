@@ -1,0 +1,7 @@
+images {image = read;dest = write;}
+
+if(image>0){
+	dest = 1;
+	}else{
+	dest = 0;
+	}

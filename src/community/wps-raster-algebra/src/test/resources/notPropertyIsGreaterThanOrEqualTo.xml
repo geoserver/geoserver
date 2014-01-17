@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">
+	<ogc:Not>
+		<ogc:PropertyIsGreaterThanOrEqualTo>
+			<ogc:PropertyName>wcs:srtm_39_04_1</ogc:PropertyName>
+			<ogc:Literal>33</ogc:Literal>
+		</ogc:PropertyIsGreaterThanOrEqualTo>
+	</ogc:Not>
+</ogc:Filter>

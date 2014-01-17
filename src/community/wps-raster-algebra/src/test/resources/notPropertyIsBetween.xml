@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">
+	<ogc:Not>
+		<ogc:PropertyIsBetween>
+			<ogc:PropertyName>wcs:srtm_39_04_1</ogc:PropertyName>
+			<ogc:LowerBoundary>
+				<ogc:Literal>0</ogc:Literal>
+			</ogc:LowerBoundary>
+			<ogc:UpperBoundary>
+				<ogc:Literal>63</ogc:Literal>
+			</ogc:UpperBoundary>
+		</ogc:PropertyIsBetween>
+	</ogc:Not>
+</ogc:Filter>

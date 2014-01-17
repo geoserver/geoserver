@@ -112,7 +112,12 @@
         <module>printing</module>
       </modules>
     </profile>
-    
+    <profile>
+      <id>wps-raster-algebra</id>
+      <modules>
+        <module>wps-raster-algebra</module>
+      </modules>
+    </profile>
     <profile>
       <id>dbconfig</id>
       <modules>

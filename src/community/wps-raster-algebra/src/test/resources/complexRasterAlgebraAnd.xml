@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">
+	<ogc:And>
+		<ogc:PropertyIsGreaterThan>
+			<ogc:PropertyName>wcs:srtm_39_04_1</ogc:PropertyName>
+			<ogc:Literal>30</ogc:Literal>
+		</ogc:PropertyIsGreaterThan>
+		<ogc:PropertyIsLessThan>
+			<ogc:PropertyName>wcs:srtm_39_04_2</ogc:PropertyName>
+			<ogc:Literal>50</ogc:Literal>
+		</ogc:PropertyIsLessThan>
+		<ogc:PropertyIsLessThanOrEqualTo>
+			<ogc:PropertyName>wcs:srtm_39_04_3</ogc:PropertyName>
+			<ogc:Literal>36</ogc:Literal>
+		</ogc:PropertyIsLessThanOrEqualTo>
+	</ogc:And>
+</ogc:Filter>

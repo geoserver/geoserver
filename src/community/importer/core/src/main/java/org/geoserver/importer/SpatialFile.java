@@ -20,6 +20,8 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class SpatialFile extends FileData {
+    
+    static EPSGCodeLookupCache EPSG_LOOKUP_CACHE = new EPSGCodeLookupCache();
 
     /**
      * .prj file
@@ -114,18 +116,14 @@ public class SpatialFile extends FileData {
         }
 
         try {
-            Integer epsgCode = CRS.lookupEpsgCode(crs, false);
             CoordinateReferenceSystem epsgCrs = null;
-            
-            if (epsgCode == null) {
-                epsgCode = CRS.lookupEpsgCode(crs, true);
-                if (epsgCode != null) {
-                    epsgCrs = CRS.decode("EPSG:" + epsgCode);
-                }
-                if (epsgCrs != null) {
-                    String epsgWKT = epsgCrs.toWKT();
-                    FileUtils.writeStringToFile(getPrjFile(), epsgWKT);
-                }
+            Integer epsgCode = EPSG_LOOKUP_CACHE.lookupEPSGCode(crs);
+            if (epsgCode != null) {
+                epsgCrs = CRS.decode("EPSG:" + epsgCode);
+            }
+            if (epsgCrs != null) {
+                String epsgWKT = epsgCrs.toWKT();
+                FileUtils.writeStringToFile(getPrjFile(), epsgWKT);
             }
         }
         catch (FactoryException e) {

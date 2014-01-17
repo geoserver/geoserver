@@ -26,8 +26,8 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.FilterFactory;
 
 public class ImportProcessTest extends WPSTestSupport {
-    
-    @After 
+
+    @After
     public void removeNewLayers() {
         removeLayer(SystemTestData.CITE_PREFIX, "Buildings2");
     }
@@ -37,38 +37,39 @@ public class ImportProcessTest extends WPSTestSupport {
      */
     @Test
     public void testImportBuildings() throws Exception {
-        FeatureTypeInfo ti = getCatalog().getFeatureTypeByName(getLayerId(SystemTestData.BUILDINGS));
+        FeatureTypeInfo ti = getCatalog()
+                .getFeatureTypeByName(getLayerId(SystemTestData.BUILDINGS));
         SimpleFeatureCollection rawSource = (SimpleFeatureCollection) ti.getFeatureSource(null,
                 null).getFeatures();
         ForceCoordinateSystemFeatureResults forced = new ForceCoordinateSystemFeatureResults(
                 rawSource, CRS.decode("EPSG:4326"));
 
         ImportProcess importer = new ImportProcess(getCatalog());
-        String result = importer.execute(forced, null, SystemTestData.CITE_PREFIX, SystemTestData.CITE_PREFIX,
-                "Buildings2", null, null, null);
+        String result = importer.execute(forced, null, SystemTestData.CITE_PREFIX,
+                SystemTestData.CITE_PREFIX, "Buildings2", null, null, null);
 
         checkBuildings2(result);
     }
-    
+
     /**
      * Try to re-import buildings as another layer (different name, different projection)
      */
     @Test
     public void testImportBuildingsForceCRS() throws Exception {
-        FeatureTypeInfo ti = getCatalog().getFeatureTypeByName(getLayerId(SystemTestData.BUILDINGS));
+        FeatureTypeInfo ti = getCatalog()
+                .getFeatureTypeByName(getLayerId(SystemTestData.BUILDINGS));
         SimpleFeatureCollection rawSource = (SimpleFeatureCollection) ti.getFeatureSource(null,
                 null).getFeatures();
 
         ImportProcess importer = new ImportProcess(getCatalog());
-        String result = importer.execute(rawSource, null, SystemTestData.CITE_PREFIX, SystemTestData.CITE_PREFIX,
-                "Buildings2", CRS.decode("EPSG:4326"), null, null);
+        String result = importer.execute(rawSource, null, SystemTestData.CITE_PREFIX,
+                SystemTestData.CITE_PREFIX, "Buildings2", CRS.decode("EPSG:4326"), null, null);
 
         checkBuildings2(result);
     }
 
-
-	private void checkBuildings2(String result) throws IOException {
-		assertEquals(SystemTestData.CITE_PREFIX + ":" + "Buildings2", result);
+    private void checkBuildings2(String result) throws IOException {
+        assertEquals(SystemTestData.CITE_PREFIX + ":" + "Buildings2", result);
 
         // check the layer
         LayerInfo layer = getCatalog().getLayerByName(result);
@@ -101,5 +102,5 @@ public class ImportProcessTest extends WPSTestSupport {
         fi.close();
         assertEquals("114", f.getAttribute("FID"));
         assertEquals("215 Main Street", f.getAttribute("ADDRESS"));
-	}
+    }
 }

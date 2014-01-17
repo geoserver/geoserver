@@ -247,6 +247,11 @@
      <artifactId>csw-core</artifactId>
      <version>${project.version}</version>
    </dependency> 
+   <dependency>
+     <groupId>org.geoserver.extension</groupId>
+     <artifactId>libjpeg-turbo</artifactId>
+     <version>${project.version}</version>
+   </dependency>
  </dependencies>
  <build>
   <plugins>

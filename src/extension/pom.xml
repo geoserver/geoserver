@@ -258,6 +258,13 @@
       </modules>
     </profile>
 
+	<profile>
+	  <id>libjpeg-turbo</id>
+	  <modules>
+		<module>libjpeg-turbo</module>
+	  </modules>
+	</profile>    
+	
     <!-- allExtensions profile, includes all modules -->
     <profile>
       <id>allExtensions</id>
@@ -289,6 +296,7 @@
         <module>inspire</module>
         <module>css</module>	
         <module>csw</module>
+        <module>libjpeg-turbo</module>		
       </modules>
     </profile>
 
@@ -323,6 +331,7 @@
         <module>inspire</module>
         <module>css</module>
         <module>csw</module>
+        <module>libjpeg-turbo</module>		
       </modules>
     </profile>
 

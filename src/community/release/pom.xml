@@ -100,11 +100,6 @@
    </dependency>
    <dependency>
      <groupId>org.geoserver.community</groupId>
-     <artifactId>libjpeg-turbo</artifactId>
-     <version>${project.version}</version>
-   </dependency> 
-   <dependency>
-     <groupId>org.geoserver.community</groupId>
      <artifactId>png</artifactId>
      <version>${project.version}</version>
    </dependency> 

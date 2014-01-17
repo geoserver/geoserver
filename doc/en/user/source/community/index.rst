@@ -22,7 +22,6 @@ officially part of the GeoServer releases. They are however built along with the
    python/index
    scripting/index
    spatialite/index
-   libjpeg-turbo/index
    netcdf/index
    netcdf-out/index
    jdbcconfig/index

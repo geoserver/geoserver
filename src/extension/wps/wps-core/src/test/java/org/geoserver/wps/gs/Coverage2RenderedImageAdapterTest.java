@@ -142,7 +142,7 @@ public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
         GridCoverage2D src = createTestCoverage(500,500, 0,0 ,10,10);
         GridCoverage2D dst = createTestCoverage(250,250, 0,0 ,10,10);
 
-        GridCoverage2DRIA cria = GridCoverage2DRIA.create(src, dst, NODATA);
+        GridCoverage2DRIA cria = GridCoverage2DRIA.create(dst, src, NODATA);
 
         //--- internal points should double coords (no interp on coords)
         Point2D psrc = new Point2D.Double(13d,16d); // this is on dst gc
@@ -173,7 +173,7 @@ public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
 
 //        double nodata[] = src.getSampleDimension(0).getNoDataValues();
 
-        GridCoverage2DRIA cria = GridCoverage2DRIA.create(src, dst, NODATA);
+        GridCoverage2DRIA cria = GridCoverage2DRIA.create(dst, src, NODATA);
 
         //--- internal points should halves coords (no interp on coords)
         Point2D psrc = new Point2D.Double(0d,0d);
@@ -203,7 +203,7 @@ public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
         GridCoverage2D src = createTestCoverage(500,500, 0,0 ,5,5);
         GridCoverage2D dst = createTestCoverage(500,500, 2,2 ,5,5);
 
-        GridCoverage2DRIA cria = GridCoverage2DRIA.create(src, dst, NODATA);
+        GridCoverage2DRIA cria = GridCoverage2DRIA.create(dst, src, NODATA);
 
         //--- internal points should halves coords (no interp on coords)
         Point2D psrc = new Point2D.Double(0d,499d); // this is on dst gc

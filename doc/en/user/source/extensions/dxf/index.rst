@@ -1,11 +1,9 @@
 .. _dxf:
 
-DXF OutputFormat for WFS
-========================
-The DXF OutputFormat for WFS adds the support for two additional output formats for 
-WFS GetFeature requests. The new formats, DXF and DXF-ZIP are associated to the 
-"application/dxf" and "application/zip" mime type, respectively.
-They produce a standard DXF file or a DXF file compressed in zip format.
+DXF OutputFormat for WFS and WPS PPIO
+=====================================
+This extension adds two distinct functionalities to GeoServer, both related to DXF format
+support as an output.
 
 DXF is a CAD interchange format, useful to import data in several CAD systems.
 Being a textual format it can be easily compressed to a much smaller version, so
@@ -15,7 +13,15 @@ There have been multiple revisions of the format, so we need to choose a "versio
 of DXF to write. The extension implements version 14, but can be easily extended
 (through SPI providers) to write other versions too.
 
-USAGE
+The DXF OutputFormat for WFS adds the support for two additional output formats for 
+WFS GetFeature requests. The new formats, DXF and DXF-ZIP are associated to the 
+"application/dxf" and "application/zip" mime type, respectively.
+They produce a standard DXF file or a DXF file compressed in zip format.
+
+The WPS PPIO adds dxf as an on output format option for WPS processes.
+The WPS PPIO requires the WPS extension to be installed on GeoServer.
+
+WFS Output Format usage
 ---------------------------
 
 Request Example::
@@ -158,3 +164,9 @@ the handle attribute of Query attributes. So, if specified, the layer
 of a Query will be named as its handle attribute.
 The handle attribute of the GetFeature tag can also be used to override
 the name of the file produced.
+
+WPS PPIO
+---------------------------
+When the WPS PPIO module is installed, together with the WPS extension, WPS processes
+returning a FeatureCollection can use application/dxf or application/zip as output
+mime type to get a DXF (or zipped DXF) in output.

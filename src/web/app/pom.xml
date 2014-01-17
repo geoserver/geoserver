@@ -458,6 +458,16 @@
       </dependencies>
     </profile>
     <profile>
+      <id>libjpeg-turbo</id>
+      <dependencies>
+        <dependency>
+          	<groupId>org.geoserver.extension</groupId>
+		    <artifactId>libjpeg-turbo</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+	</profile>
+    <profile>
       <id>printing</id>
       <dependencies>
         <dependency>
@@ -961,18 +971,9 @@
         </dependency>
       </dependencies>
     </profile>
+
     <profile>
-      <id>libjpeg-turbo</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>libjpeg-turbo</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-		</profile>
-    <profile>
-			<id>netcdf</id>
+	  <id>netcdf</id>
       <dependencies>
         <dependency>
           <groupId>org.geotools</groupId>

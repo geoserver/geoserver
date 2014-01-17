@@ -45,7 +45,6 @@
           <descriptor>release/ext-aggregate.xml</descriptor>
           <descriptor>release/ext-wcs2_0.xml</descriptor>
           <descriptor>release/ext-wms-eo.xml</descriptor>
-          <descriptor>release/ext-libjpeg-turbo.xml</descriptor>
           <descriptor>release/ext-netcdf.xml</descriptor>
           <descriptor>release/ext-netcdf-out.xml</descriptor>
           <descriptor>release/ext-png.xml</descriptor>
@@ -148,7 +147,7 @@
       <id>communityRelease</id>
       <modules>
         <module>authkey</module>
-	<module>dds</module>
+	    <module>dds</module>
         <module>printing</module>
         <module>release</module>
         <module>ftp</module>
@@ -161,7 +160,6 @@
         <module>wcs2_0-eo</module>
         <module>web-wcs2_0-eo</module>
         <module>wms-eo</module>
-        <module>libjpeg-turbo</module>
         <module>netcdf</module>
         <module>netcdf-out</module>
         <module>png</module>
@@ -277,18 +275,6 @@
         <module>kml-old</module>
       </modules>
     </profile>
-		<profile>
-			<id>libjpeg-turbo</id>
-			<activation>
-				<property>
-					<name>all</name>
-					<value>true</value>
-				</property>
-			</activation>
-			<modules>
-				<module>libjpeg-turbo</module>
-			</modules>
-		</profile>    
     <profile>
       <id>importer</id>
       <modules>

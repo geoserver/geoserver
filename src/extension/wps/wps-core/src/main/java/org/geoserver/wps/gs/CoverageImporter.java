@@ -157,10 +157,10 @@ public class CoverageImporter {
 
             // add or update the datastore info
             // if (add) {
-            this.catalog.add((CoverageStoreInfo) storeInfo);
-            /*
-             * } else { this.catalog.save((CoverageStoreInfo) storeInfo); }
-             */
+            //this.catalog.add((CoverageStoreInfo) storeInfo);
+            //} else { 
+             this.catalog.save((CoverageStoreInfo) storeInfo);
+            //}
 
             cb.setStore((CoverageStoreInfo) storeInfo);
 
@@ -177,7 +177,8 @@ public class CoverageImporter {
              */
 
             CoverageInfo cinfo = cb.buildCoverage(reader, customParameters);
-
+            reader.dispose();
+            
             // check if the name of the coverage was specified
             if (name != null) {
                 cinfo.setName(name);
@@ -200,15 +201,6 @@ public class CoverageImporter {
             if (targetStyle != null) {
                 layerInfo.setDefaultStyle(targetStyle);
             }
-            // JD: commenting this out, these sorts of edits should be handled
-            // with a second PUT request on the created coverage
-            /*
-             * String styleName = form.getFirstValue("style"); if ( styleName != null ) { StyleInfo style = catalog.getStyleByName( styleName ); if (
-             * style != null ) { layerInfo.setDefaultStyle( style ); if ( !layerInfo.getStyles().contains( style ) ) { layerInfo.getStyles().add(
-             * style ); } } else { LOGGER.warning( "Client specified style '" + styleName + "'but no such style exists."); } }
-             * 
-             * String path = form.getFirstValue( "path"); if ( path != null ) { layerInfo.setPath( path ); }
-             */
 
             boolean valid = true;
             try {

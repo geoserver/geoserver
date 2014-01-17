@@ -54,7 +54,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 /**
- * Tests the WMS default value support for TIME, ELEVATION and a custom dimension for both
+ * Tests the WMS default value support for TIME dimension for both
  * vector and raster layers.
  * 
  * @author Ilkka Rinne <ilkka.rinne@spatineo.com>
@@ -82,7 +82,7 @@ public class TimeDimensionDefaultValueTest extends WMSTestSupport {
     public void setup() throws Exception {
         wms = getWMS(); //with the initialized application context
         ((SystemTestData)testData).addVectorLayer(TIME_WITH_START_END,Collections.EMPTY_MAP,"TimeElevationWithStartEnd.properties",
-                getClass(),getCatalog());
+                SystemTestData.class, getCatalog());
     }
     
     public void tearDown() throws Exception {
@@ -90,35 +90,35 @@ public class TimeDimensionDefaultValueTest extends WMSTestSupport {
     }
     
     @Test
-    public void testDefaultCurrentTimeVectorSelector() throws Exception {
+    public void testDefaultTimeVectorSelector() throws Exception {
         int fid = 1000;
         
         //Use default DimensionInfo setup:
-        setupFeatureTimeDimension("startTime", "endTime", null);
+        setupFeatureTimeDimension(null);
 
         FeatureTypeInfo timeWithStartEnd = getCatalog().getFeatureTypeByName(
                 TIME_WITH_START_END.getLocalPart());
 
         Date twoDaysAgo = addFeatureWithTimeTwoDaysAgo(fid++);
-        this.addFeature(fid++, twoDaysAgo, null, 0, 0);
+        this.addFeature(fid++, twoDaysAgo,Double.valueOf(0d));
 
-        java.util.Date d = wms.getCurrentTime(timeWithStartEnd);
-        assertTrue("Current time is null", d != null);
-        assertTrue("Current time should be the closest one", d.getTime() == twoDaysAgo.getTime());
+        java.util.Date d = wms.getDefaultTime(timeWithStartEnd);
+        assertTrue("Default time is null", d != null);
+        assertTrue("Default time should be the closest one", d.getTime() == twoDaysAgo.getTime());
         
         // Add some features with timestamps in the future:
         Date dayAfterTomorrow = addFeatureWithTimeDayAfterTomorrow(fid++);
         addFeatureWithTimeOneYearFromNow(fid++);
                
-        d = wms.getCurrentTime(timeWithStartEnd);
-        assertTrue("Current time is null", d != null);
-        assertTrue("The current time should be the closest one", d.getTime() == dayAfterTomorrow.getTime());
+        d = wms.getDefaultTime(timeWithStartEnd);
+        assertTrue("Default time is null", d != null);
+        assertTrue("The Default time should be the closest one", d.getTime() == dayAfterTomorrow.getTime());
         
         Date todayMidnight = addFeatureWithTimeTodayMidnight(fid++);
      
-        d = wms.getCurrentTime(timeWithStartEnd);
-        assertTrue("Current time is null", d != null);
-        assertTrue("Current time should be the closest one", d.getTime() == todayMidnight
+        d = wms.getDefaultTime(timeWithStartEnd);
+        assertTrue("Default time is null", d != null);
+        assertTrue("Default time should be the closest one", d.getTime() == todayMidnight
                 .getTime());
     }
     
@@ -131,31 +131,31 @@ public class TimeDimensionDefaultValueTest extends WMSTestSupport {
         DimensionDefaultValueSetting defaultValueSetting = new DimensionDefaultValueSetting();
         defaultValueSetting.setStrategyType(Strategy.NEAREST);
         defaultValueSetting.setReferenceValue("current");
-        setupFeatureTimeDimension("startTime", "endTime", defaultValueSetting);
+        setupFeatureTimeDimension(defaultValueSetting);
 
         FeatureTypeInfo timeWithStartEnd = getCatalog().getFeatureTypeByName(
                 TIME_WITH_START_END.getLocalPart());
 
         Date twoDaysAgo = addFeatureWithTimeTwoDaysAgo(fid++);
-        this.addFeature(fid++, twoDaysAgo, null, 0, 0);
+        this.addFeature(fid++, twoDaysAgo,Double.valueOf(0d));
 
-        java.util.Date d = wms.getCurrentTime(timeWithStartEnd);
-        assertTrue("Current time is null", d != null);
-        assertTrue("Current time should be the closest one", d.getTime() == twoDaysAgo.getTime());
+        java.util.Date d = wms.getDefaultTime(timeWithStartEnd);
+        assertTrue("Default time is null", d != null);
+        assertTrue("Default time should be the closest one", d.getTime() == twoDaysAgo.getTime());
         
         // Add some features with timestamps in the future:
         Date dayAfterTomorrow = addFeatureWithTimeDayAfterTomorrow(fid++);
         addFeatureWithTimeOneYearFromNow(fid++);
                
-        d = wms.getCurrentTime(timeWithStartEnd);
-        assertTrue("Current time is null", d != null);
-        assertTrue("The current time should be the closest one", d.getTime() == dayAfterTomorrow.getTime());
+        d = wms.getDefaultTime(timeWithStartEnd);
+        assertTrue("Default time is null", d != null);
+        assertTrue("The Default time should be the closest one", d.getTime() == dayAfterTomorrow.getTime());
         
         Date todayMidnight = addFeatureWithTimeTodayMidnight(fid++);
      
-        d = wms.getCurrentTime(timeWithStartEnd);
-        assertTrue("Current time is null", d != null);
-        assertTrue("Current time should be the closest one", d.getTime() == todayMidnight
+        d = wms.getDefaultTime(timeWithStartEnd);
+        assertTrue("Default time is null", d != null);
+        assertTrue("Default time should be the closest one", d.getTime() == todayMidnight
                 .getTime());
     }
     
@@ -167,32 +167,32 @@ public class TimeDimensionDefaultValueTest extends WMSTestSupport {
         DimensionDefaultValueSetting defaultValueSetting = new DimensionDefaultValueSetting();
         defaultValueSetting.setStrategyType(Strategy.MINIMUM);
 
-        setupFeatureTimeDimension("startTime", "endTime", defaultValueSetting);
+        setupFeatureTimeDimension(defaultValueSetting);
 
         FeatureTypeInfo timeWithStartEnd = getCatalog().getFeatureTypeByName(
                 TIME_WITH_START_END.getLocalPart());
         Date smallest = Date.valueOf("2012-02-11");
         
         Date twoDaysAgo = addFeatureWithTimeTwoDaysAgo(fid++);
-        this.addFeature(fid++, twoDaysAgo, null, 0, 0);
+        this.addFeature(fid++, twoDaysAgo,Double.valueOf(0d));
 
-        java.util.Date d = wms.getCurrentTime(timeWithStartEnd);
-        assertTrue("Current time is null", d != null);
-        assertTrue("Current time should be the smallest one", d.getTime() == smallest.getTime());
+        java.util.Date d = wms.getDefaultTime(timeWithStartEnd);
+        assertTrue("Default time is null", d != null);
+        assertTrue("Default time should be the smallest one", d.getTime() == smallest.getTime());
         
         // Add some features with timestamps in the future:
         addFeatureWithTimeDayAfterTomorrow(fid++);
         addFeatureWithTimeOneYearFromNow(fid++);
                
-        d = wms.getCurrentTime(timeWithStartEnd);
-        assertTrue("Current time is null", d != null);
-        assertTrue("The current time should be the smallest one", d.getTime() == smallest.getTime());
+        d = wms.getDefaultTime(timeWithStartEnd);
+        assertTrue("Default time is null", d != null);
+        assertTrue("The Default time should be the smallest one", d.getTime() == smallest.getTime());
         
         addFeatureWithTimeTodayMidnight(fid++);
      
-        d = wms.getCurrentTime(timeWithStartEnd);
-        assertTrue("Current time is null", d != null);
-        assertTrue("Current time should be the smallest one", d.getTime() == smallest
+        d = wms.getDefaultTime(timeWithStartEnd);
+        assertTrue("Default time is null", d != null);
+        assertTrue("Default time should be the smallest one", d.getTime() == smallest
                 .getTime());
     }
     
@@ -204,31 +204,31 @@ public class TimeDimensionDefaultValueTest extends WMSTestSupport {
         DimensionDefaultValueSetting defaultValueSetting = new DimensionDefaultValueSetting();
         defaultValueSetting.setStrategyType(Strategy.MAXIMUM);
 
-        setupFeatureTimeDimension("startTime", "endTime", defaultValueSetting);
+        setupFeatureTimeDimension(defaultValueSetting);
 
         FeatureTypeInfo timeWithStartEnd = getCatalog().getFeatureTypeByName(
                 TIME_WITH_START_END.getLocalPart());
         
         Date twoDaysAgo = addFeatureWithTimeTwoDaysAgo(fid++);
-        this.addFeature(fid++, twoDaysAgo, null, 0, 0);
+        this.addFeature(fid++, twoDaysAgo, Double.valueOf(0d));
 
-        java.util.Date d = wms.getCurrentTime(timeWithStartEnd);
-        assertTrue("Current time is null", d != null);
-        assertTrue("Current time should be the biggest one", d.getTime() == twoDaysAgo.getTime());
+        java.util.Date d = wms.getDefaultTime(timeWithStartEnd);
+        assertTrue("Default time is null", d != null);
+        assertTrue("Default time should be the biggest one", d.getTime() == twoDaysAgo.getTime());
         
         // Add some features with timestamps in the future:
         addFeatureWithTimeDayAfterTomorrow(fid++);
         Date oneYearFromNow = addFeatureWithTimeOneYearFromNow(fid++);
                
-        d = wms.getCurrentTime(timeWithStartEnd);
-        assertTrue("Current time is null", d != null);
-        assertTrue("The current time should be the biggest one", d.getTime() == oneYearFromNow.getTime());
+        d = wms.getDefaultTime(timeWithStartEnd);
+        assertTrue("Default time is null", d != null);
+        assertTrue("The Default time should be the biggest one", d.getTime() == oneYearFromNow.getTime());
         
         addFeatureWithTimeTodayMidnight(fid++);
      
-        d = wms.getCurrentTime(timeWithStartEnd);
-        assertTrue("Current time is null", d != null);
-        assertTrue("Current time should be the biggest one", d.getTime() == oneYearFromNow
+        d = wms.getDefaultTime(timeWithStartEnd);
+        assertTrue("Default time is null", d != null);
+        assertTrue("Default time should be the biggest one", d.getTime() == oneYearFromNow
                 .getTime());
     }
     
@@ -244,31 +244,31 @@ public class TimeDimensionDefaultValueTest extends WMSTestSupport {
 
         long fixedTime = DateUtil.parseDateTime(fixedTimeStr);
         
-        setupFeatureTimeDimension("startTime", "endTime", defaultValueSetting);
+        setupFeatureTimeDimension(defaultValueSetting);
 
         FeatureTypeInfo timeWithStartEnd = getCatalog().getFeatureTypeByName(
                 TIME_WITH_START_END.getLocalPart());
         
         Date twoDaysAgo = addFeatureWithTimeTwoDaysAgo(fid++);
-        this.addFeature(fid++, twoDaysAgo, null, 0, 0);
+        this.addFeature(fid++, twoDaysAgo,Double.valueOf(0d));
 
-        java.util.Date d = wms.getCurrentTime(timeWithStartEnd);
-        assertTrue("Current time is null", d != null);
-        assertTrue("Current time should be the fixed one", d.getTime() == fixedTime);
+        java.util.Date d = wms.getDefaultTime(timeWithStartEnd);
+        assertTrue("Default time is null", d != null);
+        assertTrue("Default time should be the fixed one", d.getTime() == fixedTime);
         
         // Add some features with timestamps in the future:
         addFeatureWithTimeDayAfterTomorrow(fid++);
         addFeatureWithTimeOneYearFromNow(fid++);
                
-        d = wms.getCurrentTime(timeWithStartEnd);
-        assertTrue("Current time is null", d != null);
-        assertTrue("The current time should be the fixed one", d.getTime() == fixedTime);
+        d = wms.getDefaultTime(timeWithStartEnd);
+        assertTrue("Default time is null", d != null);
+        assertTrue("The Default time should be the fixed one", d.getTime() == fixedTime);
         
         addFeatureWithTimeTodayMidnight(fid++);
      
-        d = wms.getCurrentTime(timeWithStartEnd);
-        assertTrue("Current time is null", d != null);
-        assertTrue("Current time should be the fixed one", d.getTime() == fixedTime);
+        d = wms.getDefaultTime(timeWithStartEnd);
+        assertTrue("Default time is null", d != null);
+        assertTrue("Default time should be the fixed one", d.getTime() == fixedTime);
     }
     
     @Test
@@ -284,35 +284,35 @@ public class TimeDimensionDefaultValueTest extends WMSTestSupport {
         //From src/test/resources/org/geoserver/wms/TimeElevationWithStartEnd.properties:
         Date expected = Date.valueOf("2012-02-12"); 
         
-        setupFeatureTimeDimension("startTime", "endTime", defaultValueSetting);
+        setupFeatureTimeDimension(defaultValueSetting);
 
         FeatureTypeInfo timeWithStartEnd = getCatalog().getFeatureTypeByName(
                 TIME_WITH_START_END.getLocalPart());
         
         Date twoDaysAgo = addFeatureWithTimeTwoDaysAgo(fid++);
-        this.addFeature(fid++, twoDaysAgo, null, 0, 0);
+        this.addFeature(fid++, twoDaysAgo, Double.valueOf(0d));
 
-        java.util.Date d = wms.getCurrentTime(timeWithStartEnd);
-        assertTrue("Current time is null", d != null);
-        assertTrue("Current time should be the fixed one", d.getTime() == expected.getTime());
+        java.util.Date d = wms.getDefaultTime(timeWithStartEnd);
+        assertTrue("Default time is null", d != null);
+        assertTrue("Default time should be the fixed one", d.getTime() == expected.getTime());
         
         // Add some features with timestamps in the future:
         addFeatureWithTimeDayAfterTomorrow(fid++);
         addFeatureWithTimeOneYearFromNow(fid++);
                
-        d = wms.getCurrentTime(timeWithStartEnd);
-        assertTrue("Current time is null", d != null);
-        assertTrue("The current time should be the fixed one", d.getTime() == expected.getTime());
+        d = wms.getDefaultTime(timeWithStartEnd);
+        assertTrue("Default time is null", d != null);
+        assertTrue("The Default time should be the fixed one", d.getTime() == expected.getTime());
         
         addFeatureWithTimeTodayMidnight(fid++);
      
-        d = wms.getCurrentTime(timeWithStartEnd);
-        assertTrue("Current time is null", d != null);
-        assertTrue("Current time should be the fixed one", d.getTime() == expected.getTime());
+        d = wms.getDefaultTime(timeWithStartEnd);
+        assertTrue("Default time is null", d != null);
+        assertTrue("Default time should be the fixed one", d.getTime() == expected.getTime());
     }
     
     @Test
-    public void testDefaultCurrentTimeCoverageSelector() throws Exception {
+    public void testDefaultTimeCoverageSelector() throws Exception {
         // Use default default value strategy: 
         setupCoverageTimeDimension(WATTEMP_FUTURE,null);
         
@@ -325,9 +325,9 @@ public class TimeDimensionDefaultValueTest extends WMSTestSupport {
 
         CoverageInfo coverage = getCatalog().getCoverageByName(WATTEMP_FUTURE.getLocalPart());
 
-        java.util.Date d = wms.getCurrentTime(coverage);
-        assertTrue("Returns a valid current time", d != null);
-        assertTrue("The current time should be the closest one", d.getTime() == todayMidnight);
+        java.util.Date d = wms.getDefaultTime(coverage);
+        assertTrue("Returns a valid Default time", d != null);
+        assertTrue("The Default time should be the closest one", d.getTime() == todayMidnight);
     }
     
     @Test
@@ -347,9 +347,9 @@ public class TimeDimensionDefaultValueTest extends WMSTestSupport {
 
         CoverageInfo coverage = getCatalog().getCoverageByName(WATTEMP_FUTURE.getLocalPart());
 
-        java.util.Date d = wms.getCurrentTime(coverage);
-        assertTrue("Returns a valid current time", d != null);
-        assertTrue("The current time should be the closest one", d.getTime() == todayMidnight);
+        java.util.Date d = wms.getDefaultTime(coverage);
+        assertTrue("Returns a valid Default time", d != null);
+        assertTrue("The Default time should be the closest one", d.getTime() == todayMidnight);
     }
     
     @Test
@@ -364,9 +364,9 @@ public class TimeDimensionDefaultValueTest extends WMSTestSupport {
 
         CoverageInfo coverage = getCatalog().getCoverageByName(WATTEMP_FUTURE.getLocalPart());
 
-        java.util.Date d = wms.getCurrentTime(coverage);
-        assertTrue("Returns a valid current time", d != null);
-        assertTrue("The current time should be the smallest one", d.getTime() == expected.getTime());
+        java.util.Date d = wms.getDefaultTime(coverage);
+        assertTrue("Returns a valid Default time", d != null);
+        assertTrue("The Default time should be the smallest one", d.getTime() == expected.getTime());
     }
     
     @Test
@@ -387,9 +387,9 @@ public class TimeDimensionDefaultValueTest extends WMSTestSupport {
 
         CoverageInfo coverage = getCatalog().getCoverageByName(WATTEMP_FUTURE.getLocalPart());
 
-        java.util.Date d = wms.getCurrentTime(coverage);
-        assertTrue("Returns a valid current time", d != null);
-        assertTrue("The current time should be the biggest one", d.getTime() == oneYearInFuture);
+        java.util.Date d = wms.getDefaultTime(coverage);
+        assertTrue("Returns a valid Default time", d != null);
+        assertTrue("The Default time should be the biggest one", d.getTime() == oneYearInFuture);
     }
     
     @Test
@@ -405,9 +405,9 @@ public class TimeDimensionDefaultValueTest extends WMSTestSupport {
                
         CoverageInfo coverage = getCatalog().getCoverageByName(WATTEMP_FUTURE.getLocalPart());
 
-        java.util.Date d = wms.getCurrentTime(coverage);
-        assertTrue("Returns a valid current time", d != null);
-        assertTrue("The current time should be the biggest one", d.getTime() == fixedTime);
+        java.util.Date d = wms.getDefaultTime(coverage);
+        assertTrue("Returns a valid Default time", d != null);
+        assertTrue("The Default time should be the biggest one", d.getTime() == fixedTime);
     }
     
     @Test
@@ -424,19 +424,18 @@ public class TimeDimensionDefaultValueTest extends WMSTestSupport {
         
         CoverageInfo coverage = getCatalog().getCoverageByName(WATTEMP_FUTURE.getLocalPart());
 
-        java.util.Date d = wms.getCurrentTime(coverage);
-        assertTrue("Returns a valid current time", d != null);
-        assertTrue("The current time should be the biggest one", d.getTime() == expected.getTime());
+        java.util.Date d = wms.getDefaultTime(coverage);
+        assertTrue("Returns a valid Default time", d != null);
+        assertTrue("The Default time should be the biggest one", d.getTime() == expected.getTime());
     }
 
     
-    protected void setupFeatureTimeDimension(String start, String end, DimensionDefaultValueSetting defaultValue) {
+    protected void setupFeatureTimeDimension(DimensionDefaultValueSetting defaultValue) {
         FeatureTypeInfo info = getCatalog()
                 .getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
         DimensionInfo di = new DimensionInfoImpl();
         di.setEnabled(true);
-        di.setAttribute(start);
-        di.setEndAttribute(end);
+        di.setAttribute("startTime");
         di.setDefaultValue(defaultValue);
         di.setPresentation(DimensionPresentation.LIST);
         info.getMetadata().put(ResourceInfo.TIME, di);
@@ -454,8 +453,7 @@ public class TimeDimensionDefaultValueTest extends WMSTestSupport {
         getCatalog().save(info);
     }
 
-    protected void addFeature(int id, Date startTime, Date endTime, double startElevation,
-            double endElevation) throws IOException {
+    protected void addFeature(int id, Date time, Double elevation) throws IOException {
         FeatureTypeInfo timeWithStartEnd = getCatalog().getFeatureTypeByName(
                 TIME_WITH_START_END.getLocalPart());
         FeatureStore fs = (FeatureStore) timeWithStartEnd.getFeatureSource(null, null);
@@ -464,15 +462,10 @@ public class TimeDimensionDefaultValueTest extends WMSTestSupport {
         StringBuffer content = new StringBuffer();
         content.append(id);
         content.append('|');
-        content.append(startTime.toString());
+        content.append(time.toString());
+        content.append("||");
+        content.append(elevation);
         content.append('|');
-        if (endTime != null){
-            content.append(endTime.toString());
-        }
-        content.append('|');
-        content.append(startElevation);
-        content.append('|');
-        content.append(endElevation);
         
         SimpleFeature f = DataUtilities.createFeature(type, content.toString());
         coll.add(f);
@@ -551,7 +544,7 @@ public class TimeDimensionDefaultValueTest extends WMSTestSupport {
         cal.set(Calendar.SECOND, cal.getActualMinimum(Calendar.SECOND));
         cal.set(Calendar.MILLISECOND, cal.getActualMinimum(Calendar.MILLISECOND));
         Date todayMidnight = new Date(cal.getTimeInMillis());
-        this.addFeature(fid, todayMidnight, null, 0, 0);
+        this.addFeature(fid, todayMidnight,Double.valueOf(0d));
         return todayMidnight;        
     }
     
@@ -563,7 +556,7 @@ public class TimeDimensionDefaultValueTest extends WMSTestSupport {
         cal.set(Calendar.MILLISECOND, cal.getActualMinimum(Calendar.MILLISECOND));
         cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 2);
         Date twoDaysAgo = new Date(cal.getTimeInMillis());
-        this.addFeature(fid, twoDaysAgo, null, 0, 0);
+        this.addFeature(fid, twoDaysAgo,Double.valueOf(0d));
         return twoDaysAgo;        
     }
     
@@ -576,7 +569,7 @@ public class TimeDimensionDefaultValueTest extends WMSTestSupport {
         cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) + 2);
         
         Date tomorrow = new Date(cal.getTimeInMillis());
-        this.addFeature(fid++, tomorrow, null, 0, 0);
+        this.addFeature(fid++, tomorrow, Double.valueOf(0d));
         return tomorrow;        
     }
     
@@ -589,7 +582,7 @@ public class TimeDimensionDefaultValueTest extends WMSTestSupport {
         cal.set(Calendar.YEAR, cal.get(Calendar.YEAR) + 1);
         
         Date oneYearFromNow = new Date(cal.getTimeInMillis());
-        this.addFeature(fid++, oneYearFromNow, null, 0, 0);
+        this.addFeature(fid++, oneYearFromNow, Double.valueOf(0d));
         return oneYearFromNow;        
     }
     

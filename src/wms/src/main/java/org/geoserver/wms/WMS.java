@@ -836,11 +836,11 @@ public class WMS implements ApplicationContextAware {
         Set<ParameterDescriptor<List>> dynamicParameters = reader.getDynamicParameters();
         parameterDescriptors.addAll(dynamicParameters);
         if (timeInfo != null && timeInfo.isEnabled()) {
-            // handle "current"
+            // handle "default"
             List<Object> fixedTimes = new ArrayList<Object>(times);
             for (int i = 0; i < fixedTimes.size(); i++) {
                 if (fixedTimes.get(i) == null) {
-                    fixedTimes.set(i, getCurrentTime(coverage));
+                    fixedTimes.set(i, getDefaultTime(coverage));
                 }
             }
             // pass down the parameters
@@ -852,7 +852,7 @@ public class WMS implements ApplicationContextAware {
         final DimensionInfo elevationInfo = metadata.get(ResourceInfo.ELEVATION,
                 DimensionInfo.class);
         if (elevationInfo != null && elevationInfo.isEnabled()) {
-            // handle "current"
+            // handle "default"
             List<Object> fixedElevations = new ArrayList<Object>(elevations);
             for (int i = 0; i < fixedElevations.size(); i++) {
                 if (fixedElevations.get(i) == null) {
@@ -920,7 +920,7 @@ public class WMS implements ApplicationContextAware {
                         DimensionInfo.class);
                 if (customInfo != null && customInfo.isEnabled()) {
                     final ArrayList<String> val = new ArrayList<String>(1);
-                    val.add(dimensions.getCustomDomainDefaultValue(name));
+                    val.add(getDefaultCustomDimensionValue(name, coverage, String.class));
                     readParameters = CoverageUtils.mergeParameter(
                         parameterDescriptors, readParameters, val, name);
                 }
@@ -1046,11 +1046,21 @@ public class WMS implements ApplicationContextAware {
     /**
      * Returns the current time for the specified type info
      * 
-     * @param typeInfo
+     * @param resourceInfo
      * @return
-     * @throws IOException
+     * @deprecated this returns the default value for TIME dimension, which is not always "current"
      */
-    public Date getCurrentTime(ResourceInfo resourceInfo) throws IOException {
+    public Date getCurrentTime(ResourceInfo resourceInfo) {
+      return this.getDefaultTime(resourceInfo);
+    }
+    
+    /**
+     * Returns the default value for time dimension.
+     * 
+     * @param resourceInfo
+     * @return
+     */
+    public Date getDefaultTime(ResourceInfo resourceInfo) {
         // check the time metadata
         DimensionInfo time = resourceInfo.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
         if (time == null || !time.isEnabled()) {
@@ -1060,25 +1070,45 @@ public class WMS implements ApplicationContextAware {
         DimensionDefaultValueStrategy strategy = this.getDefaultValueStrategy(resourceInfo, ResourceInfo.TIME, time);        
         return strategy.getDefaultValue(resourceInfo, ResourceInfo.TIME, time, Date.class);
     }
+    
+    
 
     /**
-     * Returns the default elevation (the minimum one)
+     * Returns the default value for elevation dimension.
      * 
-     * @param typeInfo
+     * @param resourceInfo
      * @return
      */
-    Double getDefaultElevation(ResourceInfo resourceInfo) throws IOException {
-        // grab the time metadata
+    public Double getDefaultElevation(ResourceInfo resourceInfo) {
         DimensionInfo elevation = resourceInfo.getMetadata().get(ResourceInfo.ELEVATION,
                 DimensionInfo.class);
         if (elevation == null || !elevation.isEnabled()) {
             throw new ServiceException("Layer " + resourceInfo.prefixedName()
-                    + " does not have time support enabled");
+                    + " does not have elevation support enabled");
         }
         DimensionDefaultValueStrategy strategy = this.getDefaultValueStrategy(resourceInfo, ResourceInfo.ELEVATION, elevation);
         return strategy.getDefaultValue(resourceInfo, ResourceInfo.ELEVATION, elevation, Double.class);               
     }
     
+    /**
+     * Returns the default value for the given custom dimension.
+     * 
+     * @param <T>
+     * @param dimensionName
+     * @param resourceInfo
+     * @param clz
+     * @return
+     */
+    public <T> T getDefaultCustomDimensionValue(String dimensionName, ResourceInfo resourceInfo, Class<T> clz){
+        DimensionInfo customDim = resourceInfo.getMetadata().get(ResourceInfo.CUSTOM_DIMENSION_PREFIX+dimensionName,
+                DimensionInfo.class);
+        if (customDim == null || !customDim.isEnabled()) {
+            throw new ServiceException("Layer " + resourceInfo.prefixedName()
+                    + " does not have support enabled for dimension "+dimensionName);
+        }
+        DimensionDefaultValueStrategy strategy = this.getDefaultValueStrategy(resourceInfo, ResourceInfo.CUSTOM_DIMENSION_PREFIX+dimensionName, customDim);
+        return strategy.getDefaultValue(resourceInfo, ResourceInfo.CUSTOM_DIMENSION_PREFIX+dimensionName, customDim, clz);
+    }
     
     DimensionDefaultValueStrategy getDefaultValueStrategy(ResourceInfo resource,
             String dimensionName, DimensionInfo dimensionInfo){
@@ -1185,8 +1215,8 @@ public class WMS implements ApplicationContextAware {
 
             for (Object datetime : times) {
                 if (datetime == null) {
-                    // this is "current"
-                    datetime = getCurrentTime(typeInfo);
+                    // this is "default"
+                    datetime = getDefaultTime(typeInfo);
                 }
                 timeFilters.add(buildDimensionFilter(datetime, attribute, endAttribute));
             }
@@ -1206,7 +1236,7 @@ public class WMS implements ApplicationContextAware {
                 ff.property(elevationInfo.getEndAttribute());
             for (Object elevation : elevations) {
                 if (elevation == null) {
-                    // this is "current"
+                    // this is "default"
                     elevation = getDefaultElevation(typeInfo);
                 }
                 elevationFilters.add(buildDimensionFilter(elevation, attribute, endAttribute));

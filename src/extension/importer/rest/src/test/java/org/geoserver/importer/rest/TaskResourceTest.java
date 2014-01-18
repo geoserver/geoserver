@@ -4,6 +4,12 @@
  */
 package org.geoserver.importer.rest;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,24 +33,28 @@ import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.io.FileUtils;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.data.util.IOUtils;
-import org.geoserver.security.impl.GeoServerRole;
-import org.geotools.data.Transaction;
-import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.jdbc.JDBCDataStore;
 import org.geoserver.importer.DataFormat;
 import org.geoserver.importer.Directory;
 import org.geoserver.importer.GridFormat;
 import org.geoserver.importer.ImportContext;
+import org.geoserver.importer.ImportContext.State;
 import org.geoserver.importer.ImportData;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.ImporterTestSupport;
 import org.geoserver.importer.SpatialFile;
+import org.geoserver.importer.UpdateMode;
 import org.geoserver.importer.VFSWorker;
-import org.geoserver.importer.ImportContext.State;
-import org.geoserver.importer.ImporterTestSupport.JSONObjectBuilder;
+import org.geoserver.importer.transform.AttributesToPointGeometryTransform;
 import org.geoserver.importer.transform.CreateIndexTransform;
+import org.geoserver.security.impl.GeoServerRole;
+import org.geotools.data.Transaction;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.jdbc.JDBCDataStore;
+import org.junit.Before;
+import org.junit.Test;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
@@ -55,11 +65,6 @@ import org.springframework.security.core.context.SecurityContextImpl;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.importer.transform.AttributesToPointGeometryTransform;
 
 /**
  * @todo extract postgis stuff to online test case
@@ -77,10 +82,8 @@ public class TaskResourceTest extends ImporterTestSupport {
                 new UsernamePasswordAuthenticationToken("admin", "geoserver", l));
     }
 
-    @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
-
+    @Before
+    public void prepareData() throws Exception {
         doLogin();
 
         File dir = unpack("shape/archsites_epsg_prj.zip");
@@ -197,6 +200,7 @@ public class TaskResourceTest extends ImporterTestSupport {
         }
     }
     
+<<<<<<< HEAD
     public void testUploadToPostGISViaFile() throws Exception {
         if (jdbcStore == null) return;
         
@@ -276,6 +280,9 @@ public class TaskResourceTest extends ImporterTestSupport {
         // correctly w/ auto-generated name 
     }
 
+=======
+    @Test
+>>>>>>> 0410421... Migrate importer tests to the new tests infrastructure
     public void testGetAllTasks() throws Exception {
         JSONObject json = (JSONObject) getAsJSON("/rest/imports/0/tasks");
 
@@ -291,6 +298,7 @@ public class TaskResourceTest extends ImporterTestSupport {
         assertTrue(task.getString("href").endsWith("/imports/0/tasks/1"));
     }
 
+    @Test
     public void testGetTask() throws Exception {
         JSONObject json = (JSONObject) getAsJSON("/rest/imports/0/tasks/0");
         JSONObject task = json.getJSONObject("task");
@@ -298,6 +306,7 @@ public class TaskResourceTest extends ImporterTestSupport {
         assertTrue(task.getString("href").endsWith("/imports/0/tasks/0"));
     }
 
+    @Test
     public void testDeleteTask() throws Exception {
         MockHttpServletResponse resp = postAsServletResponse("/rest/imports", "");
         assertEquals(201, resp.getStatusCode());
@@ -343,6 +352,7 @@ public class TaskResourceTest extends ImporterTestSupport {
         assertEquals(1, context.getTasks().size());
     }
 
+    @Test
     public void testPostMultiPartFormData() throws Exception {
         MockHttpServletResponse resp = postAsServletResponse("/rest/imports", "");
         assertEquals(201, resp.getStatusCode());
@@ -417,6 +427,7 @@ public class TaskResourceTest extends ImporterTestSupport {
         assertTrue(format instanceof GridFormat);
     }
 
+    @Test
     public void testPostGeotiffBz2() throws Exception {
         String path = "geotiff/EmissiveCampania.tif.bz2";
         InputStream stream = ImporterTestSupport.class.getResourceAsStream("test-data/" + path);
@@ -425,6 +436,7 @@ public class TaskResourceTest extends ImporterTestSupport {
     }
 
 
+    @Test
     public void testPostGeotiff() throws Exception {
         File tempBase = tmpDir();
         File tempDir = new File(tempBase, "testPostGeotiff");
@@ -451,6 +463,7 @@ public class TaskResourceTest extends ImporterTestSupport {
         uploadGeotiffAndVerify(tifname, fis, "image/tiff");
     }
 
+    @Test
     public void testGetTarget() throws Exception {
         JSONObject json = ((JSONObject) getAsJSON("/rest/imports/0/tasks/0")).getJSONObject("task");
 
@@ -466,6 +479,7 @@ public class TaskResourceTest extends ImporterTestSupport {
         assertNotNull(json.get("dataStore"));
     }
 
+    @Test
     public void testPutTarget() throws Exception {
         JSONObject json = (JSONObject) getAsJSON("/rest/imports/0/tasks/0/target");
         assertEquals("archsites", json.getJSONObject("dataStore").getString("name"));
@@ -477,6 +491,7 @@ public class TaskResourceTest extends ImporterTestSupport {
         assertEquals("foo", json.getJSONObject("dataStore").getString("type"));
     }
 
+    @Test
     public void testPutTargetExisting() throws Exception {
         createH2DataStore(getCatalog().getDefaultWorkspace().getName(), "foo");
 
@@ -488,6 +503,30 @@ public class TaskResourceTest extends ImporterTestSupport {
         assertEquals("H2", json.getJSONObject("dataStore").getString("type"));
     }
 
+<<<<<<< HEAD
+=======
+    @Test
+    public void testUpdateMode() throws Exception {
+        createH2DataStore(getCatalog().getDefaultWorkspace().getName(), "foo");
+
+        ImportContext session = importer.getContext(0);
+        assertEquals(UpdateMode.CREATE, session.getTasks().get(0).getUpdateMode());
+
+        // change to append mode
+        String update = "{\"task\": { \"updateMode\" : \"APPEND\" }}";
+        put("/rest/imports/0/tasks/0", update, MediaType.APPLICATION_JSON.toString());
+        session = importer.getContext(0);
+        assertEquals(UpdateMode.APPEND, session.getTasks().get(0).getUpdateMode());
+
+        // put a dumby and verify the modified updateMode remains
+        update = "{\"task\": {}}";
+        put("/rest/imports/0/tasks/0", update, MediaType.APPLICATION_JSON.toString());
+        session = importer.getContext(0);
+        assertEquals(UpdateMode.APPEND, session.getTasks().get(0).getUpdateMode());
+    }
+
+    @Test
+>>>>>>> 0410421... Migrate importer tests to the new tests infrastructure
     public void testPutItemSRS() throws Exception {
         File dir = unpack("shape/archsites_no_crs.zip");
         importer.createContext(new SpatialFile(new File(dir, "archsites.shp")));
@@ -532,6 +571,7 @@ public class TaskResourceTest extends ImporterTestSupport {
      * (For performance - otherwise too much tear-down/setup)
      * @throws Exception
      */
+    @Test
     public void testErrorHandling() throws Exception {
         JSONObject json = (JSONObject) getAsJSON("/rest/imports/0/tasks/0");
 
@@ -557,6 +597,7 @@ public class TaskResourceTest extends ImporterTestSupport {
         assertErrorResponse(resp, "Invalid date parsing format");
     }
 
+    @Test
     public void testDeleteTask2() throws Exception {
         MockHttpServletResponse response = deleteAsServletResponse("/rest/imports/0/tasks/0");
         assertEquals(204, response.getStatusCode());
@@ -568,6 +609,7 @@ public class TaskResourceTest extends ImporterTestSupport {
         assertEquals(1, items.getJSONObject(0).getInt("id"));
     }
 
+    @Test
     public void testGetLayer() throws Exception {
         String path = "/rest/imports/0/tasks/0";
         JSONObject json = ((JSONObject) getAsJSON(path)).getJSONObject("task");

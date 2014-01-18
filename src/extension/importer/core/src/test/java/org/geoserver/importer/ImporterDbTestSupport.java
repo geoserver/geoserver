@@ -12,29 +12,22 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 
 import org.geoserver.data.test.LiveDbmsData;
-import org.geoserver.data.test.MockData;
-import org.geotools.data.DataStore;
+import org.geoserver.data.test.SystemTestData;
 
 public abstract class ImporterDbTestSupport extends ImporterTestSupport {
 
+    
+    
     @Override
-    public DbTestData buildTestData() throws Exception {
-        return new DbTestData();
+    public SystemTestData createTestData() throws Exception {
+        return new DbmsTestData(getDataDirectory().root(), getFixtureId(), null);
     }
 
-    @Override
-    protected final void setUpInternal() throws Exception {
-        if (getTestData().isTestDataAvailable()) {
-            super.setUpInternal();
-            doSetUpInternal();
-        }
-    }
 
     protected void doSetUpInternal() throws Exception {
     }
@@ -42,11 +35,11 @@ public abstract class ImporterDbTestSupport extends ImporterTestSupport {
     protected abstract String getFixtureId();
 
     protected Connection getConnection() throws Exception  {
-        return ((DbTestData)getTestData()).getConnection();
+        return ((DbmsTestData)getTestData()).getConnection();
     }
 
     protected Map getConnectionParams() throws IOException {
-        return ((DbTestData)getTestData()).getConnectionParams();
+        return ((DbmsTestData)getTestData()).getConnectionParams();
     }
 
     protected void run(String sql, Statement st) throws SQLException {
@@ -73,41 +66,7 @@ public abstract class ImporterDbTestSupport extends ImporterTestSupport {
         public File getFixture() {
             return fixture;
         }
-    }
-    
-    class DbTestData extends MockData {
-
-        DbmsTestData dbTestData;
         
-        public DbTestData() throws IOException {
-            dbTestData = new DbmsTestData(getDataDirectoryRoot(), getFixtureId(), null);
-        } 
-    
-        @Override
-        public void setUp() throws IOException {
-            try {
-                dbTestData.setUp();
-            } catch (Exception e) {
-                throw new IOException(e);
-            }
-            super.setUp();
-        }
-
-        @Override
-        public boolean isTestDataAvailable() {
-            if (dbTestData.isTestDataAvailable()) {
-                //actually try a connection
-                try {
-                    getConnection();
-                    return true;
-                }
-                catch(Exception e) {
-                    LOGGER.log(Level.SEVERE, "Could not obtain connection", e);
-                }
-            }
-            return false;
-        }
-
         public Connection getConnection() throws Exception {
             Map p = getConnectionParams();
             Class.forName((String)p.get("driver"));
@@ -121,7 +80,7 @@ public abstract class ImporterDbTestSupport extends ImporterTestSupport {
 
         public Map getConnectionParams() throws IOException {
             Properties props = new Properties();
-            FileInputStream fin = new FileInputStream(dbTestData.getFixture());
+            FileInputStream fin = new FileInputStream(getFixture());
             try {
                 props.load(fin);
             }
@@ -132,4 +91,6 @@ public abstract class ImporterDbTestSupport extends ImporterTestSupport {
             return new HashMap(props);
         }
     }
+    
+
 }

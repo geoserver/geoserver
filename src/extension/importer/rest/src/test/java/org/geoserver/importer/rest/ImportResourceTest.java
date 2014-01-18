@@ -4,33 +4,38 @@
  */
 package org.geoserver.importer.rest;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
-
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.DataStoreInfo;
-import org.geotools.data.h2.H2DataStoreFactory;
 import org.geoserver.importer.Database;
 import org.geoserver.importer.Directory;
 import org.geoserver.importer.ImportContext;
+import org.geoserver.importer.ImportStore;
 import org.geoserver.importer.ImporterTestSupport;
+import org.geoserver.importer.MemoryImportStore;
 import org.geoserver.importer.SpatialFile;
+import org.geotools.data.h2.H2DataStoreFactory;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
-import java.util.Iterator;
 
 public class ImportResourceTest extends ImporterTestSupport {
 
-    @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
-    
+    @Before
+    public void prepareData() throws Exception {
+        // prepare the contexts used in thsi test
         File dir = unpack("shape/archsites_epsg_prj.zip");
         unpack("shape/bugsites_esri_prj.tar.gz", dir);
         importer.createContext(new Directory(dir));
@@ -41,7 +46,14 @@ public class ImportResourceTest extends ImporterTestSupport {
         dir = unpack("shape/archsites_no_crs.zip");
         importer.createContext(new SpatialFile(new File(dir, "archsites.shp")));
     }
+    
+    @After
+    public void cleanupData() throws Exception {
+        // remove the cookbook store if any
+        removeStore(null, "cookbook");
+    }
 
+    @Test
     public void testGetAllImports() throws Exception {
         JSONObject json = (JSONObject) getAsJSON("/rest/imports?all");
         assertNotNull(json.get("imports"));
@@ -62,12 +74,14 @@ public class ImportResourceTest extends ImporterTestSupport {
         assertTrue(imprt.getString("href").endsWith("/imports/2"));
     }
     
+    @Test
     public void testGetNonExistantImport() throws Exception {
         MockHttpServletResponse resp = getAsServletResponse(("/rest/imports/9999"));
         
         assertEquals(404, resp.getStatusCode());
     }
 
+    @Test
     public void testGetImport() throws Exception {
         JSONObject json = (JSONObject) getAsJSON("/rest/imports/0");
         assertNotNull(json.get("import"));
@@ -82,6 +96,7 @@ public class ImportResourceTest extends ImporterTestSupport {
         assertEquals("READY", tasks.getJSONObject(1).get("state"));
     }
     
+    @Test
     public void testGetImportExpandChildren() throws Exception {
         JSONObject json = (JSONObject) getAsJSON("/rest/imports/0?expand=2");
 
@@ -106,6 +121,7 @@ public class ImportResourceTest extends ImporterTestSupport {
         assertEquals("READY", t.getString("state"));
     }
     
+    @Test
     public void testGetImport2() throws Exception {
         JSONObject json = (JSONObject) getAsJSON("/rest/imports/1?expand=3");
         assertNotNull(json.get("import"));
@@ -130,6 +146,7 @@ public class ImportResourceTest extends ImporterTestSupport {
         assertEquals("EmissiveCampania.tif", source.getString("file"));
     }
 
+    @Test
     public void testGetImport3() throws Exception {
         JSONObject json = (JSONObject) getAsJSON("/rest/imports/2?expand=2");
         assertNotNull(json.get("import"));
@@ -149,6 +166,7 @@ public class ImportResourceTest extends ImporterTestSupport {
         assertEquals("archsites.shp", source.getString("file"));
     }
 
+    @Test
     public void testGetImportDatabase() throws Exception {
         File dir = unpack("h2/cookbook.zip");
 
@@ -171,6 +189,7 @@ public class ImportResourceTest extends ImporterTestSupport {
         assertTrue(tables.contains("polygon"));
     }
 
+    @Test
     public void testPost() throws Exception {
         
         MockHttpServletResponse resp = postAsServletResponse("/rest/imports", "");
@@ -187,6 +206,7 @@ public class ImportResourceTest extends ImporterTestSupport {
         assertEquals(id, imprt.getInt("id"));
     }
     
+    @Test
     public void testPutWithId() throws Exception {
         // propose a new import id
         MockHttpServletResponse resp = putAsServletResponse("/rest/imports/8675309");
@@ -213,6 +233,7 @@ public class ImportResourceTest extends ImporterTestSupport {
         assertEquals(8675310, imprt.getInt("id"));
     }
 
+    @Test
     public void testPostWithTarget() throws Exception {
         createH2DataStore("sf", "skunkworks");
 
@@ -254,16 +275,19 @@ public class ImportResourceTest extends ImporterTestSupport {
         return dispatch(request);
     }
 
+    @Test
     public void testPostNoMediaType() throws Exception {
         MockHttpServletResponse resp = postAsServletResponseNoContentType("/rest/imports", "");
         assertEquals(201, resp.getStatusCode());
     }
 
+    @Test
     public void testImportSessionIdNotInt() throws Exception {
         MockHttpServletResponse resp = postAsServletResponse("/rest/imports/foo", "");
         assertEquals(404, resp.getStatusCode());
     }
 
+    @Test
     public void testContentNegotiation() throws Exception {
         MockHttpServletResponse res = getAsServletResponse("/rest/imports/0");
         assertEquals("application/json", res.getContentType());

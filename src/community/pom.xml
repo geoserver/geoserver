@@ -257,12 +257,6 @@
       </modules>
     </profile>
     <profile>
-      <id>importer</id>
-      <modules>
-        <module>importer</module>
-      </modules>
-    </profile>
-    <profile>
       <id>geopkg</id>
       <modules>
         <module>geopkg</module>

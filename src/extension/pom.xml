@@ -279,6 +279,12 @@
       </modules>
     </profile>
 
+    <profile>
+      <id>importer</id>
+      <modules>
+        <module>importer</module>
+      </modules>
+    </profile>
 
     <!-- allExtensions profile, includes all modules -->
     <profile>
@@ -314,6 +320,7 @@
         <module>dxf</module>
         <module>wcs2_0-eo</module>
         <module>libjpeg-turbo</module>
+        <module>importer</module>
       </modules>
     </profile>
 
@@ -351,6 +358,7 @@
         <module>dxf</module>
         <module>wcs2_0-eo</module>
         <module>libjpeg-turbo</module>
+        <module>importer</module>
       </modules>
     </profile>
 

@@ -1230,6 +1230,8 @@
       <descriptor>release/ext-css.xml</descriptor>      
       <descriptor>release/ext-csw.xml</descriptor>
       <descriptor>release/ext-dxf.xml</descriptor>
+      <descriptor>release/ext-importer.xml</descriptor>
+      <descriptor>release/ext-importer-bdb.xml</descriptor>
      </descriptors>
      <finalName>geoserver-2.4-SNAPSHOT</finalName>
      <outputDirectory>${project.build.directory}/release</outputDirectory>

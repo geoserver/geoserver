@@ -264,6 +264,14 @@
         <module>dxf</module>
       </modules>
     </profile>
+
+    <profile>
+      <id>importer</id>
+      <modules>
+        <module>importer</module>
+      </modules>
+    </profile>
+
     <!-- allExtensions profile, includes all modules -->
     <profile>
       <id>allExtensions</id>
@@ -296,6 +304,7 @@
         <module>css</module>	
         <module>csw</module>
 		<module>dxf</module>
+        <module>importer</module>
       </modules>
     </profile>
 
@@ -331,6 +340,7 @@
         <module>css</module>
         <module>csw</module>
 		<module>dxf</module>
+        <module>importer</module>
       </modules>
     </profile>
 

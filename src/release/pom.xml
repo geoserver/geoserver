@@ -267,6 +267,26 @@
      <artifactId>gs-libjpeg-turbo</artifactId>
      <version>${project.version}</version>
    </dependency>
+   <dependency>
+     <groupId>org.geoserver.importer</groupId>
+     <artifactId>gs-importer-core</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.importer</groupId>
+     <artifactId>gs-importer-rest</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.importer</groupId>
+     <artifactId>gs-importer-bdb</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.importer</groupId>
+     <artifactId>gs-importer-web</artifactId>
+     <version>${project.version}</version>
+   </dependency>
  </dependencies>
  <build>
   <plugins>

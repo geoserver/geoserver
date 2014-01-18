@@ -4,9 +4,18 @@
  */
 package org.geoserver.importer;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -15,6 +24,12 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StoreInfo;
+import org.geoserver.catalog.StyleInfo;
+import org.geoserver.importer.ImportTask.State;
+import org.geoserver.importer.transform.AbstractInlineVectorTransform;
+import org.geoserver.importer.transform.AttributesToPointGeometryTransform;
+import org.geoserver.importer.transform.TransformChain;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
@@ -22,9 +37,8 @@ import org.geotools.data.h2.H2DataStoreFactory;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geoserver.importer.transform.AbstractInlineVectorTransform;
-import org.geoserver.importer.transform.AttributesToPointGeometryTransform;
-import org.geoserver.importer.transform.TransformChain;
+import org.junit.After;
+import org.junit.Test;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -55,7 +69,8 @@ public class ImporterDataTest extends ImporterTestSupport {
             return feature;
         }
     }
-
+    
+    @Test
     public void testImportShapefile() throws Exception {
         File dir = unpack("shape/archsites_epsg_prj.zip");
         
@@ -77,6 +92,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         runChecks("archsites");
     }
 
+    @Test
     public void testImportShapefilesWithExtraFiles() throws Exception {
         File dir = tmpDir();
         unpack("shape/archsites_epsg_prj.zip", dir);
@@ -95,6 +111,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         assertEquals("archsites", task.getLayer().getResource().getName());
     }
     
+    @Test
     public void testImportShapefiles() throws Exception {
         File dir = tmpDir();
         unpack("shape/archsites_epsg_prj.zip", dir);
@@ -124,6 +141,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         runChecks("bugsites");
     }
 
+    @Test
     public void testImportShapefilesWithError() throws Exception {
         File dir = tmpDir();
         unpack("shape/archsites_no_crs.zip", dir);
@@ -152,6 +170,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         runChecks("bugsites");
     }
  
+    @Test
     public void testImportNoCrsLatLonBoundingBox() throws Exception {
         File dir = unpack("shape/archsites_no_crs.zip");
 
@@ -173,6 +192,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         assertNotNull(r.boundingBox().getCoordinateReferenceSystem());
     }
 
+    @Test
     public void testImportUnknownFile() throws Exception {
         File dir = unpack("gml/states_wfs11.xml.gz");
 
@@ -184,6 +204,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         assertNull(task.getData().getFormat());
     }
 
+    @Test
     public void testImportUnknownFileIndirect() throws Exception {
         
         DataStoreInfo ds = createH2DataStore(null, "foo");
@@ -196,6 +217,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         assertNull(task.getData().getFormat());
     }
 
+    @Test
     public void testImportDatabase() throws Exception {
         File dir = unpack("h2/cookbook.zip");
 
@@ -276,6 +298,7 @@ public class ImporterDataTest extends ImporterTestSupport {
 //    }
 //
 
+    @Test
     public void testImportIntoDatabase() throws Exception {
         Catalog cat = getCatalog();
 
@@ -317,6 +340,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         runChecks("bugsites");
     }
     
+    @Test
     public void testImportIntoDatabaseWithEncoding() throws Exception {
         Catalog cat = getCatalog();
 
@@ -346,6 +370,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         it.close();
     }
     
+    @Test
     public void testImportIntoDatabaseUpdateModes() throws Exception {
         testImportIntoDatabase();
         
@@ -382,6 +407,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         }
     }
 
+    @Test
     public void testImportGeoTIFF() throws Exception {
         File dir = unpack("geotiff/EmissiveCampania.tif.bz2");
         
@@ -427,6 +453,7 @@ public class ImporterDataTest extends ImporterTestSupport {
 //        runChecks("states");
 //    }
 
+    @Test
     public void testImportNameClash() throws Exception {
         File dir = unpack("shape/archsites_epsg_prj.zip");
         
@@ -445,6 +472,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         runChecks("archsites0");
     }
 
+    @Test
     public void testArchiveOnIndirectImport() throws Exception {
         File dir = unpack("shape/archsites_epsg_prj.zip");
         assertTrue(dir.exists());
@@ -466,6 +494,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         assertTrue(dir.exists());
     }
 
+    @Test
     public void testImportDatabaseIntoDatabase() throws Exception {
         File dir = unpack("h2/cookbook.zip");
 
@@ -479,6 +508,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         assertEquals(3, context.getTasks().size());
     }
 
+    @Test
     public void testImportCSV() throws Exception {
         File dir = unpack("csv/locations.zip");
         ImportContext context = importer.createContext(new SpatialFile(new File(dir,
@@ -506,6 +536,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         assertEquals(4, featureType.getAttributeCount());
     }
 
+    @Test
     public void testImportCSVIndirect() throws Exception {
         File dir = unpack("csv/locations.zip");
         String wsName = getCatalog().getDefaultWorkspace().getName();
@@ -557,6 +588,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         featureIterator.close();
     }
 
+    @Test
     public void testImportKMLIndirect() throws Exception {
         File dir = unpack("kml/sample.zip");
         String wsName = getCatalog().getDefaultWorkspace().getName();
@@ -590,6 +622,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         assertEquals("Unexpected feature count", 20, featureSource.getCount(Query.ALL));
     }
 
+    @Test
     public void testImportDirectoryWithRasterIndirect() throws Exception {
         
         DataStoreInfo ds = createH2DataStore(getCatalog().getDefaultWorkspace().getName(), "shapes");
@@ -635,6 +668,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         assertEquals("GeoTIFF", task.getData().getFormat().getName());
     }
     
+    @Test
     public void testImportDirectoryWithRasterDirect() throws Exception {
         File dir = tmpDir();
         unpack("shape/archsites_epsg_prj.zip", dir);
@@ -664,6 +698,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         assertEquals("GeoTIFF", task.getData().getFormat().getName());
     }
 
+    @Test
     public void testGeoJSONImport() throws Exception {
         DataStoreInfo h2 = 
             createH2DataStore(getCatalog().getDefaultWorkspace().getName(), "jsontest");
@@ -678,10 +713,19 @@ public class ImporterDataTest extends ImporterTestSupport {
         importer.run(imp);
 
         assertEquals(ImportContext.State.COMPLETE, imp.getState());
+        checkNoErrors(imp);
 
         runChecks("point");
     }
 
+    private void checkNoErrors(ImportContext imp) {
+        for (ImportTask task : imp.getTasks()) {
+            assertNull(task.getError());
+            assertEquals(State.COMPLETE, task.getState());
+        }
+    }
+
+    @Test
     public void testGeoJSONImportDirectory() throws Exception {
         DataStoreInfo h2 = 
             createH2DataStore(getCatalog().getDefaultWorkspace().getName(), "jsontest");

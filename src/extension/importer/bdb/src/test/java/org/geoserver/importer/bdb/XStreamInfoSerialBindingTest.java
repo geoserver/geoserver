@@ -4,6 +4,10 @@
  */
 package org.geoserver.importer.bdb;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.HashMap;
@@ -18,12 +22,14 @@ import org.geoserver.importer.Directory;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.ImporterTestSupport;
+import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.sleepycat.je.DatabaseEntry;
 
 public class XStreamInfoSerialBindingTest extends ImporterTestSupport {
 
+    @Test
     public void testSerializeWithNewStore() throws Exception {
         File dir = unpack("shape/archsites_epsg_prj.zip");
         ImportContext context = importer.createContext(new Directory(dir));
@@ -69,6 +75,7 @@ public class XStreamInfoSerialBindingTest extends ImporterTestSupport {
         return dom(new ByteArrayInputStream(xml.getBytes()));
     }
 
+    @Test
     public void testSerialize2() throws Exception {
         Catalog cat = getCatalog();
 

@@ -4,6 +4,9 @@
  */
 package org.geoserver.importer;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.File;
 import java.sql.Connection;
 import java.sql.Statement;
@@ -11,6 +14,7 @@ import java.sql.Statement;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geotools.data.jdbc.JDBCUtils;
+import org.junit.Test;
 
 public abstract class ImporterDbTestBase extends ImporterDbTestSupport {
 
@@ -45,6 +49,7 @@ public abstract class ImporterDbTestBase extends ImporterDbTestSupport {
         runSafe("DROP TABLE " + tableName(tableName), st);
     }
 
+    @Test
     public void testDirectImport() throws Exception {
         Database db = new Database(getConnectionParams());
     
@@ -57,6 +62,7 @@ public abstract class ImporterDbTestBase extends ImporterDbTestSupport {
         runChecks("gs:" + tableName("widgets"));
     }
     
+    @Test
     public void testIndirectToShapefile() throws Exception {
         File dir = tmpDir();
         unpack("shape/archsites_epsg_prj.zip", dir);
@@ -85,6 +91,7 @@ public abstract class ImporterDbTestBase extends ImporterDbTestSupport {
         runChecks("gs:" + tableName("widgets"));
     }
     
+    @Test
     public void testIndirectToDb() throws Exception {
         Catalog cat = getCatalog();
         DataStoreInfo ds = cat.getFactory().createDataStore();

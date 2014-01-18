@@ -127,9 +127,10 @@ public class MemoryImportStore implements ImportStore {
 
     @Override
     public void destroy() {
+        idseq.set(0);
         imports.clear();
     }
-
+    
     static abstract class ImportCollector implements ImportVisitor {
 
         List<ImportContext> collected = new ArrayList();

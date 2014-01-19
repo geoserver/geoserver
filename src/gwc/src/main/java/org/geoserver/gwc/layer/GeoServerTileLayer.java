@@ -32,6 +32,7 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.gwc.FakeHttpServletResponse;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.platform.GeoServerExtensions;
@@ -55,14 +56,17 @@ import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.grid.GridSubset;
 import org.geowebcache.grid.OutsideCoverageException;
 import org.geowebcache.grid.SRS;
+import org.geowebcache.io.ByteArrayResource;
 import org.geowebcache.io.Resource;
 import org.geowebcache.layer.ExpirationRule;
 import org.geowebcache.layer.LayerListenerList;
 import org.geowebcache.layer.MetaTile;
+import org.geowebcache.layer.ProxyLayer;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.TileLayerListener;
 import org.geowebcache.layer.meta.ContactInformation;
 import org.geowebcache.layer.meta.LayerMetaInformation;
+import org.geowebcache.layer.meta.MetadataURL;
 import org.geowebcache.layer.updatesource.UpdateSourceDefinition;
 import org.geowebcache.locks.LockProvider.Lock;
 import org.geowebcache.mime.FormatModifier;
@@ -75,7 +79,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
-public class GeoServerTileLayer extends TileLayer {
+public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
 
     private static final Logger LOGGER = Logging.getLogger(GeoServerTileLayer.class);
 
@@ -1105,5 +1109,20 @@ public class GeoServerTileLayer extends TileLayer {
             }
         }
         return types;
+    }
+
+    @Override
+    public void proxyRequest(ConveyorTile tile) throws GeoWebCacheException {
+        try {
+            GWC.get().proxyOwsRequest(tile);
+        } catch (Exception e) {
+            throw new GeoWebCacheException("Failed to cascade request", e);
+        }
+    }
+
+    @Override
+    public List<MetadataURL> getMetadataURLs() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

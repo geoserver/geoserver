@@ -83,11 +83,6 @@
      <artifactId>gs-wms-eo</artifactId>
      <version>${project.version}</version>
    </dependency>
-   <dependency>
-     <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-libjpeg-turbo</artifactId>
-     <version>${project.version}</version>
-   </dependency> 
    
  </dependencies>
  <build>

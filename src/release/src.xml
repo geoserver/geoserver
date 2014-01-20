@@ -13,6 +13,7 @@
     <include>org.geoserver:security</include>
     <include>org.geoserver:wfs</include>
     <include>org.geoserver:wms</include>
+    <include>org.geoserver:kml</include>
     <include>org.geoserver:web</include>
     <include>org.geoserver:wcs</include>
     <include>org.geoserver:wcs1_0</include>

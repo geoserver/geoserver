@@ -7,7 +7,6 @@ package org.geoserver.importer.csv;
 import static org.geoserver.importer.ImporterTestUtils.unpack;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-
 import static org.geoserver.importer.ImporterTestUtils.unpack;
 
 import java.io.File;
@@ -17,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureReader;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,9 +34,9 @@ public class CSVDataStoreTest {
 
     @Before
     public void setUp() throws Exception {
-        URL resource = new File(unpack("csv/locations.zip"), "locations.csv").toURI().toURL();
+        URL resource = DataUtilities.fileToURL(new File(unpack("csv/locations.zip"), "locations.csv"));
         assertNotNull("Failure finding locations csv file", resource);
-        File file = new File(resource.getFile());
+        File file = DataUtilities.urlToFile(resource);
         CSVFileState csvFileState = new CSVFileState(file);
         CSVLatLonStrategy csvStrategy = new CSVLatLonStrategy(csvFileState);
         csvDataStore = new CSVDataStore(csvFileState, csvStrategy);

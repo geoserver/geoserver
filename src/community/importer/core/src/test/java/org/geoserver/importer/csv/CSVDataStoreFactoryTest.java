@@ -9,7 +9,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
 import static org.geoserver.importer.ImporterTestUtils.unpack;
 
 import java.io.File;
@@ -21,6 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.geotools.data.DataUtilities;
 import org.geotools.data.FileDataStore;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,10 +41,10 @@ public class CSVDataStoreFactoryTest {
     @Before
     public void setUp() throws Exception {
         csvDataStoreFactory = new CSVDataStoreFactory();
-        locationsResource = new File(unpack("csv/locations.zip"), "locations.csv").toURI().toURL();
+        locationsResource = DataUtilities.fileToURL(new File(unpack("csv/locations.zip"), "locations.csv"));
         //locationsResource = CSVDataStoreFactory.class.getResource("locations.csv");
         assert locationsResource != null : "Could not find locations.csv resource";
-        file = new File(locationsResource.getFile());
+        file = DataUtilities.urlToFile(locationsResource);
     }
 
     @Test

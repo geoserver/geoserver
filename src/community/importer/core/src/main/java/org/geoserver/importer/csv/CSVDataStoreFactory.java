@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 import org.geotools.data.DataStore;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFactorySpi;
 import org.geotools.util.KVP;
@@ -77,7 +78,7 @@ public class CSVDataStoreFactory implements FileDataStoreFactorySpi {
         }
         URL url = (URL) URL_PARAM.lookUp(params);
         if (url != null) {
-            return new File(url.getFile());
+            return DataUtilities.urlToFile(url);
         }
         return null;
     }
@@ -175,7 +176,7 @@ public class CSVDataStoreFactory implements FileDataStoreFactorySpi {
 
     @Override
     public FileDataStore createDataStore(URL url) throws IOException {
-        File file = new File(url.getFile());
+        File file = DataUtilities.urlToFile(url);
         return createDataStoreFromFile(file);
     }
 
@@ -186,7 +187,7 @@ public class CSVDataStoreFactory implements FileDataStoreFactorySpi {
 
     @Override
     public boolean canProcess(URL url) {
-        return canProcessExtension(url.getFile());
+        return canProcessExtension(DataUtilities.urlToFile(url).toString());
     }
 
     @Override

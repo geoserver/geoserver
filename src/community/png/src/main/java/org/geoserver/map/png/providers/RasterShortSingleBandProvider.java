@@ -22,8 +22,8 @@ public final class RasterShortSingleBandProvider extends AbstractScanlineProvide
         this.shorts = ((DataBufferUShort) raster.getDataBuffer()).getData();
     }
     
-    public RasterShortSingleBandProvider(Raster raster, IndexColorModel palette) {
-        super(raster, 16, raster.getWidth() * 2, palette);
+    public RasterShortSingleBandProvider(Raster raster, int bidDepth, int scanlineLength, IndexColorModel palette) {
+        super(raster, bidDepth, scanlineLength, palette);
         this.shorts = ((DataBufferUShort) raster.getDataBuffer()).getData();
     }
 
@@ -35,7 +35,9 @@ public final class RasterShortSingleBandProvider extends AbstractScanlineProvide
         while (i < max) {
             short gray = shorts[shortsIdx++];
             scanline[i++] = (byte) ((gray >> 8) & 0xFF);
-            scanline[i++] = (byte) (gray & 0xFF);
+            if(i < max) {
+                scanline[i++] = (byte) (gray & 0xFF);
+            }
         }
     }
 

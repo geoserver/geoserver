@@ -12,12 +12,14 @@ import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.map.png.providers.PNGJWriter;
 import org.geoserver.map.png.providers.ScanlineProvider;
 import org.geoserver.map.png.providers.ScanlineProviderFactory;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapProducerCapabilities;
+import org.geoserver.wms.RasterCleaner;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.PNGMapResponse;
@@ -119,12 +121,9 @@ public class PNGJMapResponse extends RenderedImageMapResponse {
         // check to see if we have to see a translucent or bitmask quantizer
         image = applyPalette(image, mapContent, "image/png8", true);
 
-        // compute the compression level similarly to what the Clib code does
         float quality = (100 - wms.getPngCompression()) / 100.0f;
-        int level = Math.round(9 * (1f - quality));
-        
-        FilterType filterType = getFilterType(mapContent);
-        writePNG(image, outStream, level, filterType);
+        image = new PNGJWriter().writePNG(image, outStream, quality, mapContent);
+        RasterCleaner.addImage(image);
     }
 
     /**

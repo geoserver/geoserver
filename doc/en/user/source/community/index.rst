@@ -16,7 +16,6 @@ officially part of the GeoServer releases. They are however built along with the
    :maxdepth: 1
 
    authkey/index
-   dxf/index
    dds/index
    printing/index
    python/index

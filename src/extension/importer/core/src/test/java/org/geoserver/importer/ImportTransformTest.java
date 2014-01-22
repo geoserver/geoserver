@@ -4,17 +4,33 @@
  */
 package org.geoserver.importer;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TimeZone;
 
+import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.importer.transform.DateFormatTransform;
+import org.geoserver.importer.transform.IntegerFieldToDateTransform;
+import org.geoserver.importer.transform.NumberFormatTransform;
+import org.geoserver.importer.transform.ReprojectTransform;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.referencing.CRS;
-import org.geoserver.importer.transform.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
@@ -22,10 +38,8 @@ public class ImportTransformTest extends ImporterTestSupport {
 
     DataStoreInfo store;
 
-    @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
-        
+    @Before
+    public void setupStore() {
         Catalog cat = getCatalog();
 
         store = cat.getFactory().createDataStore();
@@ -39,6 +53,13 @@ public class ImportTransformTest extends ImporterTestSupport {
         store.getConnectionParameters().putAll(params);
         store.setEnabled(true);
         cat.add(store);
+    }
+    
+    @After
+    public void dropStore() {
+        Catalog cat = getCatalog();
+        CascadeDeleteVisitor visitor = new CascadeDeleteVisitor(cat);
+        store.accept(visitor);
     }
     
     public void testNumberFormatTransform() throws Exception {
@@ -79,6 +100,7 @@ public class ImportTransformTest extends ImporterTestSupport {
         }
     }
     
+    @Test
     public void testIntegerToDateTransform() throws Exception {
         Catalog cat = getCatalog();
 
@@ -127,6 +149,7 @@ public class ImportTransformTest extends ImporterTestSupport {
         }
     }
 
+    @Test
     public void testDateFormatTransform() throws Exception {
         Catalog cat = getCatalog();
 
@@ -166,6 +189,7 @@ public class ImportTransformTest extends ImporterTestSupport {
         }
     }
 
+    @Test
     public void testReprojectTransform() throws Exception {
         Catalog cat = getCatalog();
 

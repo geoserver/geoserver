@@ -4,10 +4,18 @@
  */
 package org.geoserver.importer.rest;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
@@ -17,30 +25,25 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.importer.Directory;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImporterTestSupport;
+import org.geotools.data.DataStore;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.junit.Test;
+import org.restlet.data.MediaType;
 
 import com.google.common.collect.Lists;
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-import java.io.FileInputStream;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.DataStoreInfo;
-import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.data.test.MockData;
-import org.geoserver.platform.GeoServerExtensions;
-import org.geotools.data.DataStore;
-import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.restlet.data.MediaType;
-
 public class RESTDataTest extends ImporterTestSupport {
 
+    @Test
     public void testSingleFileUpload() throws Exception {
         int i = postNewImport();
         int t = postNewTaskAsMultiPartForm(i, "shape/archsites_epsg_prj.zip");
@@ -52,6 +55,7 @@ public class RESTDataTest extends ImporterTestSupport {
         runChecks("archsites");
     }
 
+    @Test
     public void testTitleAndDescriptionOnUpload() throws Exception {
         int i = postNewImport();
         int t = postNewTaskAsMultiPartForm(i, "shape/archsites_epsg_prj.zip");
@@ -70,6 +74,7 @@ public class RESTDataTest extends ImporterTestSupport {
         assertEquals("Archeological Sites", r.getAbstract());
     }
 
+    @Test
     public void testFilePut() throws Exception {
         int i = postNewImport();
         int t1 = putNewTask(i, "shape/archsites_epsg_prj.zip");
@@ -81,6 +86,7 @@ public class RESTDataTest extends ImporterTestSupport {
         runChecks("archsites");
     }
 
+    @Test
     public void testMultipleFileUpload() throws Exception {
         int i = postNewImport();
         int t1 = postNewTaskAsMultiPartForm(i, "shape/archsites_epsg_prj.zip");
@@ -97,6 +103,7 @@ public class RESTDataTest extends ImporterTestSupport {
         runChecks("bugsites");
     }
 
+    @Test
     public void testFileUploadWithConfigChange() throws Exception {
         int i = postNewImport();
         int t = postNewTaskAsMultiPartForm(i, "shape/archsites_no_crs.zip");
@@ -138,6 +145,7 @@ public class RESTDataTest extends ImporterTestSupport {
         runChecks("archsites");
     }
 
+    @Test
     public void testSingleFileUploadIntoDb() throws Exception {
         DataStoreInfo acme = createH2DataStore("sf", "acme");
 
@@ -172,6 +180,7 @@ public class RESTDataTest extends ImporterTestSupport {
         runChecks("sf:archsites");
     }
 
+    @Test
     public void testSingleFileUploadIntoDb2() throws Exception {
         DataStoreInfo acme = createH2DataStore("sf", "acme");
 
@@ -204,6 +213,7 @@ public class RESTDataTest extends ImporterTestSupport {
         runChecks("sf:archsites");
     }
 
+    @Test
     public void testIndirectUpdateSRS() throws Exception {
         Catalog cat = getCatalog();
         DataStoreInfo ds = createH2DataStore(cat.getDefaultWorkspace().getName(), "spearfish");
@@ -234,6 +244,7 @@ public class RESTDataTest extends ImporterTestSupport {
         assertEquals("archsites", store.getTypeNames()[0]);
     }
 
+    @Test
     public void testMosaicUpload() throws Exception {
         String json = 
                 "{" + 
@@ -254,6 +265,7 @@ public class RESTDataTest extends ImporterTestSupport {
         runChecks(layername);
     }
 
+    @Test
     public void testTimeMosaicUpload() throws Exception {
         String json = 
                 "{" + 
@@ -279,6 +291,7 @@ public class RESTDataTest extends ImporterTestSupport {
         runChecks(l.getName());
     }
 
+    @Test
     public void testTimeMosaicManual() throws Exception {
         String json = 
                 "{" + 
@@ -328,6 +341,7 @@ public class RESTDataTest extends ImporterTestSupport {
         }
     }
 
+    @Test
     public void testTimeMosaicAuto() throws Exception {
         String json = 
                 "{" + 

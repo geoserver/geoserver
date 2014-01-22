@@ -6,6 +6,9 @@ package org.geoserver.importer;
 
 import java.sql.Statement;
 
+import org.junit.Ignore;
+
+@Ignore
 public class OracleImportTest extends ImporterDbTestBase {
 
     @Override

@@ -497,7 +497,7 @@ public abstract class GeoServerLoader {
                                         LOGGER.warning( "Ignoring coverage directory " + cd.getAbsolutePath() );
                                     }
                                 }
-                            } else {
+                            } else if(!isConfigDirectory(f)) {
                                 LOGGER.warning( "Ignoring store directory '" + sd.getName() +  "'");
                                 continue;
                             }
@@ -528,6 +528,17 @@ public abstract class GeoServerLoader {
         return catalog;
     }
     
+    /**
+     * Some config directories in GeoServer are used to store workspace specific configurations, 
+     * identify them so that we don't log complaints about their existence
+     *  
+     * @param f
+     * @return
+     */
+    private boolean isConfigDirectory(File dir) {
+        return "styles".equals(dir.getName()) || "layergroups".equals(dir.getName());
+    }
+
     /**
      * Reads the legacy (1.x) catalog from disk.
      */

@@ -4,6 +4,7 @@
  */
 package org.geoserver.wms.wms_1_1_1;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -36,6 +37,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerGroupInfo.Mode;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -806,5 +808,10 @@ public class GetMapIntegrationTest extends WMSTestSupport {
             geoserverInfo.setXmlExternalEntitiesEnabled(null);
             getGeoServer().save(geoserverInfo);     
         }
-    }     
+    }
+    
+    public void testRssMime() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wms?request=reflect&layers=" + getLayerId(MockData.BASIC_POLYGONS) + "&format=rss");
+        assertEquals("application/rss+xml", response.getContentType());
+    }
 }

@@ -458,7 +458,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 } else {
                     if (LOGGER.isLoggable(Level.WARNING)) {
                         LOGGER.warning("Map output format "
-                                + format.getMimeType()
+                                + format.getMimeType() + " (" + format.getClass() + ")"
                                 + " does "
                                 + "not include mime type in output format names. Will be excluded from"
                                 + " capabilities document.");

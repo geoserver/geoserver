@@ -959,14 +959,14 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
             cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
             cipher.doFinal("This is just an example".getBytes());            
             strongEncryptionAvaialble = true;
-            LOGGER.info("Strong cryptograhpy is available");
+            LOGGER.info("Strong cryptography is available");
         } catch (InvalidKeyException e) {
             strongEncryptionAvaialble = false; 
-            LOGGER.warning("Strong cryptograhpy is NOT available"+
+            LOGGER.warning("Strong cryptography is NOT available"+
             "\nDownload and install of policy files recommended"+
             "\nfrom http://www.oracle.com/technetwork/java/javase/downloads/jce-6-download-429243.html");
         } catch (Exception ex) {
-            LOGGER.log(Level.WARNING, "Strong cryptograhpy is NOT available, unexpected error", ex);
+            LOGGER.log(Level.WARNING, "Strong cryptography is NOT available, unexpected error", ex);
             strongEncryptionAvaialble =false; //should not happen
         }
         return strongEncryptionAvaialble;

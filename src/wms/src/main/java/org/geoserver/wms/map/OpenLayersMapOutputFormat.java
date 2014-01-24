@@ -57,7 +57,7 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
     /**
      * The mime type for the response header
      */
-    private static final String MIME_TYPE = "text/html; subtype=openlayers";
+    public static final String MIME_TYPE = "text/html; subtype=openlayers";
 
     /**
      * The formats accepted in a GetMap request for this producer and stated in getcaps

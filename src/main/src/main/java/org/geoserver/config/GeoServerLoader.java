@@ -497,7 +497,7 @@ public abstract class GeoServerLoader {
                                         LOGGER.warning( "Ignoring coverage directory " + cd.getAbsolutePath() );
                                     }
                                 }
-                            } else if(!isConfigDirectory(f)) {
+                            } else if(!isConfigDirectory(sd)) {
                                 LOGGER.warning( "Ignoring store directory '" + sd.getName() +  "'");
                                 continue;
                             }
@@ -536,7 +536,9 @@ public abstract class GeoServerLoader {
      * @return
      */
     private boolean isConfigDirectory(File dir) {
-        return "styles".equals(dir.getName()) || "layergroups".equals(dir.getName());
+        String name = dir.getName();
+        boolean result = "styles".equals(name) || "layergroups".equals(name);
+        return result;
     }
 
     /**

@@ -57,13 +57,13 @@ public class OpenLayersMapOutputFormat implements GetMapOutputFormat {
     /**
      * The mime type for the response header
      */
-    private static final String MIME_TYPE = "text/html";
+    private static final String MIME_TYPE = "text/html; subtype=openlayers";
 
     /**
      * The formats accepted in a GetMap request for this producer and stated in getcaps
      */
     private static final Set<String> OUTPUT_FORMATS = new HashSet<String>(Arrays.asList(
-            "application/openlayers", "openlayers"));
+            "application/openlayers", "openlayers", MIME_TYPE));
     
     /** 
      * Default capabilities for OpenLayers format.

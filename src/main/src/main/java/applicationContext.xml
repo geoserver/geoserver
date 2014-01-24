@@ -93,9 +93,7 @@
      class="org.springframework.beans.factory.config.CustomEditorConfigurer">
         <property name="customEditors">
           <map>
-              <entry key="org.geotools.util.Version">
-                <bean class="org.geoserver.platform.util.VersionPropertyEditor"/>
-             </entry>
+              <entry key="org.geotools.util.Version" value="org.geoserver.platform.util.VersionPropertyEditor"/>
           </map>
         </property>
     </bean>

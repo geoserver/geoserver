@@ -4,9 +4,6 @@
  */
 package org.geoserver.importer.rest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -17,14 +14,12 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.geoserver.catalog.StoreInfo;
+import org.geoserver.rest.PageInfo;
 import org.geoserver.importer.Directory;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.ImporterTestSupport;
 import org.geoserver.importer.transform.DateFormatTransform;
 import org.geoserver.importer.transform.TransformChain;
-import org.geoserver.rest.PageInfo;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  *
@@ -35,8 +30,10 @@ public class ImportJSONIOTest extends ImporterTestSupport {
 
     private ByteArrayOutputStream buf;
 
-    @Before
-    public void prepareData() throws Exception {
+    @Override
+    protected void setUpInternal() throws Exception {
+        super.setUpInternal();
+
         File dir = unpack("shape/archsites_epsg_prj.zip");
         importer.createContext(new Directory(dir));
         
@@ -70,7 +67,6 @@ public class ImportJSONIOTest extends ImporterTestSupport {
         return new ByteArrayInputStream(json.toString().getBytes());
     }
 
-    @Test
     public void testSettingTargetStore() throws IOException {
         ImportTask task = importer.getContext(0).getTasks().get(0);
         writer.task(task, true, 1);
@@ -93,7 +89,6 @@ public class ImportJSONIOTest extends ImporterTestSupport {
         assertEquals(getCatalog().getDefaultWorkspace().getName(), store.getWorkspace().getName());
     }
 
-    @Test
     public void testAddingDateTransform() throws IOException {
         ImportTask task = importer.getContext(0).getTasks().get(0);
         writer.task(task, true, 1);

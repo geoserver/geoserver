@@ -4,17 +4,12 @@
  */
 package org.geoserver.importer;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Test;
 
 public class DataFormatTest extends ImporterTestSupport {
 
-    @Test
     public void testLookupShapefile() {
         DataFormat format = DataFormat.lookup(new File("foo.shp"));
         assertNotNull("No format found for shape files", format);
@@ -22,7 +17,6 @@ public class DataFormatTest extends ImporterTestSupport {
         assertEquals("Shapefile format not found", "Shapefile", name);
     }
 
-    @Test
     public void testLookupTiff() throws Exception {
         File dir = unpack("geotiff/EmissiveCampania.tif.bz2");
         File tif = new File(dir, "EmissiveCampania.tif");
@@ -32,7 +26,6 @@ public class DataFormatTest extends ImporterTestSupport {
         assertEquals("Tif format not found", "GeoTIFF", name);
     }
 
-    @Test
     public void testLookupCSV() throws Exception {
         DataFormat format = DataFormat.lookup(new File("foo.csv"));
         assertNotNull("No format found for csv files", format);
@@ -40,7 +33,6 @@ public class DataFormatTest extends ImporterTestSupport {
         assertEquals("CSV format not found", "CSV", name);
     }
 
-    @Test
     public void testLookupKML() throws Exception {
         File kmlFile = new File(tmpDir(), "foo.kml");
         FileUtils.touch(kmlFile);

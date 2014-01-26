@@ -4,8 +4,6 @@
  */
 package org.geoserver.importer.mosaic;
 
-import static org.junit.Assert.*;
-
 import java.io.File;
 import java.util.Calendar;
 import java.util.Date;
@@ -65,7 +63,6 @@ public class ImporterMosaicTest extends ImporterTestSupport {
         }
     }
 
-    @Test
     public void testTimeMosaic() throws Exception {
         Mosaic m = new Mosaic(unpack("mosaic/bm_time.zip"));
 
@@ -95,7 +92,6 @@ public class ImporterMosaicTest extends ImporterTestSupport {
         
     }
 
-    @Test
     public void testTimeMosaicAuto() throws Exception {
         Mosaic m = new Mosaic(unpack("mosaic/bm_time.zip"));
         m.setTimeMode(TimeMode.AUTO);

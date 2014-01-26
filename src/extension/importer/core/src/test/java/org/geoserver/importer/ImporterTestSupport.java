@@ -4,20 +4,12 @@
  */
 package org.geoserver.importer;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -25,40 +17,24 @@ import net.sf.json.util.JSONBuilder;
 
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
-import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.StoreInfo;
-import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.data.test.SystemTestData;
-import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.test.GeoServerTestSupport;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
-import org.junit.After;
-import org.junit.Before;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
-public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
-    
-    static final Set<String> DEFAULT_STYLEs = new HashSet<String>() {{
-        add(StyleInfo.DEFAULT_POINT);
-        add(StyleInfo.DEFAULT_LINE);
-        add(StyleInfo.DEFAULT_POLYGON);
-        add(StyleInfo.DEFAULT_RASTER);
-    }};
-    
+public abstract class ImporterTestSupport extends GeoServerTestSupport {
 
     protected Importer importer;
-    
+
     @Override
-    protected void onSetUp(SystemTestData testData) throws Exception {
-        super.onSetUp(testData);
-        
+    protected void oneTimeSetUp() throws Exception {
         ImporterTestUtils.setComparisonTolerance();
 
         // init xmlunit
@@ -68,35 +44,16 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
         namespaces.put("wms", "http://www.opengis.net/wms");
         
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
+
+        super.oneTimeSetUp();
     }
-    
+
     @Override
-    protected void setUpTestData(SystemTestData testData) throws Exception {
-        // no pre-existing test data needed for the importer
-        // super.setUpTestData(testData);
-    }
-    
-    @After
-    public void cleanCatalog() throws IOException {
-        for (StoreInfo s : getCatalog().getStores(StoreInfo.class)) {
-            removeStore(null, s.getName());
-        }
-        for (StyleInfo s : getCatalog().getStyles()) {
-            String styleName = s.getName();
-            if(!DEFAULT_STYLEs.contains(styleName)) {
-                removeStyle(null, styleName);
-            }
-        }
-    }
-    
-    @Before
-    public void setupImporterField() {
+    protected void setUpInternal() throws Exception {
+        super.setUpInternal();
         importer = (Importer) applicationContext.getBean("importer");
-        // clean up the import history (to isolate tests from each other)
-        MemoryImportStore store = (MemoryImportStore) importer.getStore();
-        store.destroy();
     }
-    
+
     protected File tmpDir() throws Exception {
         return ImporterTestUtils.tmpDir();
     }
@@ -159,45 +116,6 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
         cat.add(ds);
         
         return ds;
-    }
-    
-    /**
-     * Adding special treatment for H2 databases, we want to also kill the db itself 
-     */
-    @Override
-    protected void removeStore(String workspaceName, String name) {
-        Catalog cat = getCatalog();
-        StoreInfo store = cat.getStoreByName(workspaceName, name, StoreInfo.class);
-        if (store == null) {
-            return;
-        }
-        
-        // store the database location in case it's a H2 store
-        Map<String, Serializable> params = store.getConnectionParameters();
-        String databaseLocation = null;
-        if("h2".equals(params.get("dbtype"))) {
-            databaseLocation = (String) params.get("database");
-        }
-
-        CascadeDeleteVisitor v = new CascadeDeleteVisitor(getCatalog());
-        store.accept(v);
-        
-        // clean up the database files if needed
-        if(databaseLocation != null) {
-            final File dbFile = new File(databaseLocation);
-            File container = dbFile.getParentFile();
-            File[] dbFiles = container.listFiles(new FilenameFilter() {
-                
-                @Override
-                public boolean accept(File dir, String name) {
-                    return name.startsWith(dbFile.getName());
-                }
-            });
-            for (File f : dbFiles) {
-                assertTrue(f.delete());
-            }
-        }
-    
     }
     
     private String createSRSJSON(String srs) {

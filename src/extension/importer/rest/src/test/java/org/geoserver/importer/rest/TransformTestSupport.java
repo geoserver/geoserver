@@ -4,19 +4,21 @@
  */
 package org.geoserver.importer.rest;
 
-import static org.easymock.classextension.EasyMock.createNiceMock;
-import static org.easymock.classextension.EasyMock.replay;
+import static org.easymock.classextension.EasyMock.*;
 
 import java.beans.PropertyDescriptor;
 import java.io.StringWriter;
-
 import junit.framework.TestCase;
+import net.sf.json.JSONObject;
+import net.sf.json.util.JSONBuilder;
 
+import org.geoserver.rest.PageInfo;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.Importer;
+import org.geoserver.importer.rest.ImportJSONWriter;
+import org.geoserver.importer.rest.ImportJSONReader;
 import org.geoserver.importer.transform.ImportTransform;
-import org.geoserver.rest.PageInfo;
 import org.springframework.beans.BeanUtils;
 
 /**

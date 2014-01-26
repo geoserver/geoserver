@@ -4,8 +4,6 @@
  */
 package org.geoserver.importer;
 
-import static org.junit.Assert.*;
-
 import java.io.File;
 import java.util.HashSet;
 

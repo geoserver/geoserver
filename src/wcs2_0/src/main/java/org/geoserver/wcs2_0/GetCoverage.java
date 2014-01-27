@@ -201,7 +201,8 @@ public class GetCoverage {
                     }
                 }
                 final List<DimensionBean> dimensions = helper.setupDimensions();
-                GranuleStackImpl stack = new GranuleStackImpl(cinfo.getName(), reader.getCoordinateReferenceSystem(), dimensions);
+                String coverageName = cinfo.getNativeCoverageName() != null ? cinfo.getNativeCoverageName() : reader.getGridCoverageNames()[0];
+                GranuleStackImpl stack = new GranuleStackImpl(coverageName, reader.getCoordinateReferenceSystem(), dimensions);
 
                 // Get a coverage for each subrequest
                 for (GridCoverageRequest subRequest: requests) {

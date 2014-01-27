@@ -79,12 +79,12 @@ import com.vividsolutions.jts.geom.Envelope;
  */
 public abstract class CapabilitiesTransformer extends TransformerBase {
     /** logger */
-    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(CapabilitiesTransformer.class.getPackage()
+    protected static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(CapabilitiesTransformer.class.getPackage()
                                                                                        .getName());
 
     /** identifer of a http get + post request */
-    private static final String HTTP_GET = "Get";
-    private static final String HTTP_POST = "Post";
+    protected static final String HTTP_GET = "Get";
+    protected static final String HTTP_POST = "Post";
 
     /** wfs namespace */
     protected static final String WFS_URI = "http://www.opengis.net/wfs";
@@ -147,7 +147,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
     	}
     }
     
-    Set<FunctionName> getAvailableFunctionNames() {
+    protected Set<FunctionName> getAvailableFunctionNames() {
         //Sort them up for easier visual inspection
         SortedSet sortedFunctions = new TreeSet(new Comparator() {
             public int compare(Object o1, Object o2) {
@@ -167,7 +167,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
         return sortedFunctions;
     }
     
-    String[] getAvailableOutputFormatNames(String first) {
+    protected String[] getAvailableOutputFormatNames(String first) {
         List<String> oflist = new ArrayList<String>();
         Collection featureProducers = GeoServerExtensions.extensions(WFSGetFeatureOutputFormat.class);
         for (Iterator i = featureProducers.iterator(); i.hasNext();) {
@@ -184,12 +184,12 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
         return (String[]) oflist.toArray(new String[oflist.size()]);
     }
     
-    void updateSequence(AttributesImpl attributes) {
+    protected void updateSequence(AttributesImpl attributes) {
         attributes.addAttribute("", "updateSequence", "updateSequence", "", 
                 wfs.getGeoServer().getGlobal().getUpdateSequence() + "");
     }
 
-    void registerNamespaces(AttributesImpl attributes) {
+    protected void registerNamespaces(AttributesImpl attributes) {
         List<NamespaceInfo> namespaces = catalog.getNamespaces();
         for (NamespaceInfo namespace : namespaces) {
             String prefix = namespace.getPrefix();
@@ -206,7 +206,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
         }
     }
     
-    AttributesImpl attributes(String... nameValues) {
+    protected AttributesImpl attributes(String... nameValues) {
         AttributesImpl atts = new AttributesImpl();
 
         for (int i = 0; i < nameValues.length; i += 2) {
@@ -219,7 +219,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
         return atts;
     }
 
-    Map.Entry parameter(final String name, final Object value) {
+    protected Map.Entry parameter(final String name, final Object value) {
         return new Map.Entry() {
                 public Object getKey() {
                     return name;
@@ -239,7 +239,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
      * Transformer for wfs 1.0 capabilities document.
      */
     public static class WFS1_0 extends CapabilitiesTransformer {
-        private final boolean skipMisconfigured;
+        protected final boolean skipMisconfigured;
 
         public WFS1_0(WFSInfo wfs, Catalog catalog) {
             super(wfs, WFSInfo.Version.V_10, catalog);
@@ -251,7 +251,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             return new CapabilitiesTranslator1_0(handler);
         }
 
-        class CapabilitiesTranslator1_0 extends TranslatorSupport {
+        protected class CapabilitiesTranslator1_0 extends TranslatorSupport {
             GetCapabilitiesRequest request;
             
             public CapabilitiesTranslator1_0(ContentHandler handler) {
@@ -324,7 +324,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             *         </pre>
             *
             */
-            private void handleService() {
+            protected void handleService() {
                 start("Service");
                 element("Name", wfs.getName());
                 element("Title", wfs.getTitle());
@@ -352,7 +352,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
              * </p>
              *
              */
-            private void handleKeywords(String[] kwlist) {
+            protected void handleKeywords(String[] kwlist) {
                 if (kwlist == null) {
                     handleKeywords((List) null);
                 } else {
@@ -374,7 +374,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
              * </p>
              *
              */
-            private void handleKeywords(List kwlist) {
+            protected void handleKeywords(List kwlist) {
                 StringBuffer kwds = new StringBuffer();
 
                 for (int i = 0; (kwlist != null) && (i < kwlist.size()); i++) {
@@ -410,7 +410,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
              *
              * </p>
              */
-            private void handleCapability() {
+            protected void handleCapability() {
                 start("Capability");
                 start("Request");
                 handleGetCapabilities();
@@ -445,7 +445,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
              *
              * </p>
              */
-            private void handleGetCapabilities() {
+            protected void handleGetCapabilities() {
                 String capName = "GetCapabilities";
                 start(capName);
                 handleDcpType(capName, HTTP_GET);
@@ -468,7 +468,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
              * </pre>
              * </p>
              */
-            private void handleDescribeFT() {
+            protected void handleDescribeFT() {
                 String capName = "DescribeFeatureType";
                 start(capName);
                 start("SchemaDescriptionLanguage");
@@ -490,7 +490,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
              *         &lt;/xsd:sequence&gt;
              * &lt;/xsd:complexType&gt;
              */
-            private void handleGetFeature() {
+            protected void handleGetFeature() {
                 String capName = "GetFeature";
                 start(capName);
 
@@ -535,7 +535,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                             * </pre>
                             * </p>
              */
-            private void handleTransaction() {
+            protected void handleTransaction() {
                 String capName = "Transaction";
                 start(capName);
                 handleDcpType(capName, HTTP_GET);
@@ -555,7 +555,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
              * </pre>
              * </p>
              */
-            private void handleLock() {
+            protected void handleLock() {
                 String capName = "LockFeature";
                 start(capName);
                 handleDcpType(capName, HTTP_GET);
@@ -573,7 +573,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
              *         &lt;/xsd:sequence&gt;
              * &lt;/xsd:complexType&gt;
              */
-            private void handleFeatureWithLock() {
+            protected void handleFeatureWithLock() {
                 String capName = "GetFeatureWithLock";
                 start(capName);
                 start("ResultFormat");
@@ -604,7 +604,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
              * @param httpMethod the URL of the onlineresource for HTTP POST method
              *        requests
              */
-            private void handleDcpType(String capabilityName, String httpMethod) {
+            protected void handleDcpType(String capabilityName, String httpMethod) {
                 String onlineResource;
                 if(HTTP_GET.equals(httpMethod)) {
                    onlineResource = buildURL(request.getBaseUrl(), "wfs", params("request", capabilityName), URLType.SERVICE);
@@ -640,7 +640,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
              *         </pre>
              * </p>
              */
-            private void handleFeatureTypes() {
+            protected void handleFeatureTypes() {
                 if (!wfs.isEnabled()) {
                     // should we return anything if we are disabled?
                 }
@@ -742,7 +742,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
              *
              * @throws RuntimeException For any errors.
              */
-            private void handleFeatureType(FeatureTypeInfo info) {
+            protected void handleFeatureType(FeatureTypeInfo info) {
                 Envelope bbox = null;
                 bbox = info.getLatLonBoundingBox();
 
@@ -785,7 +785,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
              * </pre>
              * </p>
              */
-            private void handleFilterCapabilities() {
+            protected void handleFilterCapabilities() {
                 String ogc = "ogc:";
 
                 //REVISIT: for now I"m just prepending ogc onto the name element.
@@ -836,7 +836,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
              *         &lt;/xsd:complexType&gt;
              *
              */
-            private void handleFunctions(String prefix) {
+            protected void handleFunctions(String prefix) {
                 FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
                 
                 start(prefix + "Functions");
@@ -890,12 +890,12 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             return new CapabilitiesTranslator1_1(handler, baseUrl, wfs, extCapsProviders);
         }
 
-        class CapabilitiesTranslator1_1 extends TranslatorSupport {
-            private static final String GML_3_1_1_FORMAT = "text/xml; subtype=gml/3.1.1";
+        protected class CapabilitiesTranslator1_1 extends TranslatorSupport {
+            protected static final String GML_3_1_1_FORMAT = "text/xml; subtype=gml/3.1.1";
             GetCapabilitiesRequest request;
-			private Collection<WFSExtendedCapabilitiesProvider> extCapsProviders;
-			private final WFSInfo wfs;
-			private final String schemaBaseURL;
+			protected Collection<WFSExtendedCapabilitiesProvider> extCapsProviders;
+			protected final WFSInfo wfs;
+			protected final String schemaBaseURL;
             
             public CapabilitiesTranslator1_1(ContentHandler handler, String baseUrl, WFSInfo wfs, Collection<WFSExtendedCapabilitiesProvider> extCapsProviders) {
                 super(handler, null, null);
@@ -956,7 +956,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 end("wfs:WFS_Capabilities");
             }
 
-            String addExtensionSchemaLocation(StringBuilder schemaLocation) {
+            protected String addExtensionSchemaLocation(StringBuilder schemaLocation) {
                 for (WFSExtendedCapabilitiesProvider cp : extCapsProviders) {
                     String[] locations = cp.getSchemaLocations(schemaBaseURL);
                     try {
@@ -975,7 +975,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 return schemaLocation.toString();
             }
 
-            String schemaLocation(String namespace, String uri) {
+            protected String schemaLocation(String namespace, String uri) {
                 String location = null;
                 try {
                     new URL(uri);
@@ -1036,11 +1036,11 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
              * </p>
              *
              */
-            void serviceIdentification() {
+            protected void serviceIdentification() {
                 serviceIdentification("1.1.0");
             }
             
-            void serviceIdentification(String version) {
+            protected void serviceIdentification(String version) {
                 start("ows:ServiceIdentification");
 
                 element("ows:Title", wfs.getTitle());
@@ -1086,7 +1086,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                  * </p>
                  *
                  */
-            void serviceProvider(GeoServer gs) {
+            protected void serviceProvider(GeoServer gs) {
                 ContactInfo contact = gs.getSettings().getContact();
                 start("ows:ServiceProvider");
 
@@ -1178,7 +1178,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                  * </p>
                  *
                  */
-            void operationsMetadata() {
+            protected void operationsMetadata() {
                 start("ows:OperationsMetadata");
 
                 getCapabilities();
@@ -1204,7 +1204,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                  * Encodes the GetCapabilities ows:Operation element.
                  *
                  */
-            void getCapabilities() {
+            protected void getCapabilities() {
                 Map.Entry[] parameters = new Map.Entry[] {
                         parameter("AcceptVersions", new String[] { "1.0.0", "1.1.0" }),
                         parameter("AcceptFormats", new String[] { "text/xml" })
@@ -1223,7 +1223,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             /**
                  * Encodes the DescribeFeatureType ows:Operation element.
                  */
-            void describeFeatureType() {
+            protected void describeFeatureType() {
                 //TODO: process extension point
                 Map.Entry[] parameters = new Map.Entry[] {
                         parameter("outputFormat", new String[] { GML_3_1_1_FORMAT })
@@ -1235,7 +1235,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             /**
                  * Encodes the GetFeature ows:Operation element.
                  */
-            void getFeature() {
+            protected void getFeature() {
                 String[] oflist = getoutputFormatNames();
                 Map.Entry[] parameters = new Map.Entry[] {
                         parameter("resultType", new String[] { "results", "hits" }),
@@ -1249,14 +1249,14 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 operation("GetFeature", parameters, constraints, true, true);
             }
 
-            private String[] getoutputFormatNames() {
+            protected String[] getoutputFormatNames() {
                 return getAvailableOutputFormatNames(GML_3_1_1_FORMAT);
             }
 
             /**
                  * Encodes the GetFeatureWithLock ows:Operation element.
                  */
-            void getFeatureWithLock() {
+            protected void getFeatureWithLock() {
                 String[] oflist = getoutputFormatNames();
                 Map.Entry[] parameters = new Map.Entry[] {
                         parameter("resultType", new String[] { "results", "hits" }),
@@ -1269,7 +1269,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             /**
                  * Encodes the LockFeature ows:Operation element.
                  */
-            void lockFeature() {
+            protected void lockFeature() {
                 Map.Entry[] parameters = new Map.Entry[] {
                         parameter("releaseAction", new String[] { "ALL", "SOME" })
                     };
@@ -1280,7 +1280,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             /**
                  * Encodes the Transaction ows:Operation element.
                  */
-            void transaction() {
+            protected void transaction() {
                 Map.Entry[] parameters = new Map.Entry[] {
                         parameter("inputFormat", new String[] { GML_3_1_1_FORMAT }),
                         parameter("idgen",
@@ -1295,12 +1295,12 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
              * Encodes the GetGmlObject ows:Operation element.
              *
              */
-            void getGmlObject() {
+            protected void getGmlObject() {
                 Map.Entry[] parameters = new Map.Entry[] {        };
                 operation("GetGmlObject", parameters, true, true);
             }
 
-            private void extendedCapabilities() {
+            protected void extendedCapabilities() {
                 for (WFSExtendedCapabilitiesProvider cp : this.extCapsProviders) {
                     try {
                         cp.encode(new WFSExtendedCapabilitiesProvider.Translator() {
@@ -1348,7 +1348,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                  *</pre>
                  *</p>
                  */
-            void featureTypeList() {
+            protected void featureTypeList() {
                 start("FeatureTypeList");
 
                 start("Operations");
@@ -1380,12 +1380,12 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 end("FeatureTypeList");
             }
 
-            void featureTypes() {
+            protected void featureTypes() {
                 //featureTypes(false, "urn:x-ogc:def:crs:", request.getNamespace());
                 featureTypes(false, request.getNamespace());
             }
             
-            void featureTypes(boolean crs, String namespace) {
+            protected void featureTypes(boolean crs, String namespace) {
                 List featureTypes = new ArrayList(catalog.getFeatureTypes());
                 
                 // filter out disabled feature types
@@ -1517,7 +1517,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                  * </p>
                  * @param featureType
                  */
-            void featureType(FeatureTypeInfo featureType, boolean crs) {
+            protected void featureType(FeatureTypeInfo featureType, boolean crs) {
                 GMLInfo gml = wfs.getGML().get(version);
                 
                 String prefix = featureType.getNamespace().getPrefix();
@@ -1612,7 +1612,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                  *        </pre>
                  *        </p>
                  */
-            void supportsGMLObjectTypeList() {
+            protected void supportsGMLObjectTypeList() {
                 element("SupportsGMLObjectTypeList", null);
             }
 
@@ -1636,7 +1636,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                  * </p>
                  *
                  */
-            void filterCapabilities() {
+            protected void filterCapabilities() {
                 start("ogc:Filter_Capabilities");
 
                 start("ogc:Spatial_Capabilities");
@@ -1698,7 +1698,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 end("ogc:Filter_Capabilities");
             }
 
-            void functions() {
+            protected void functions() {
                 start("ogc:Functions");
 
                 Set<FunctionName> functions = getAvailableFunctionNames();
@@ -1734,7 +1734,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                  * </p>
                  * @param keywords
                  */
-            void keywords(KeywordInfo[] keywords) {
+            protected void keywords(KeywordInfo[] keywords) {
                 if ((keywords == null) || (keywords.length == 0)) {
                     return;
                 }
@@ -1748,7 +1748,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 end("ows:Keywords");
             }
 
-            void keywords(List keywords) {
+            protected void keywords(List keywords) {
                 if(keywords != null){
                     keywords((KeywordInfo[]) keywords.toArray(new KeywordInfo[keywords.size()]));
                 }
@@ -1757,7 +1757,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             /**
              * @see {@link #operation(String, java.util.Map.Entry[], java.util.Map.Entry[], boolean, boolean)}
              */
-            void operation(String name, Map.Entry[] parameters, boolean get, boolean post) {
+            protected void operation(String name, Map.Entry[] parameters, boolean get, boolean post) {
                operation(name,parameters,null,get,post);
             }
             
@@ -1802,7 +1802,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
              * @param get
              * @param post
              */
-            void operation(String name, Map.Entry[] parameters, Map.Entry[] constraints, boolean get, boolean post) {
+            protected void operation(String name, Map.Entry[] parameters, Map.Entry[] constraints, boolean get, boolean post) {
                 start("ows:Operation", attributes(new String[] { "name", name }));
 
                 String serviceURL = buildURL(request.getBaseUrl(), "wfs", null, URLType.SERVICE);
@@ -1841,7 +1841,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 end("ows:Operation");
             }
             
-            void dcp(String serviceURL, boolean get, boolean post) {
+            protected void dcp(String serviceURL, boolean get, boolean post) {
                 start("ows:DCP");
                 start("ows:HTTP");
                 
@@ -1867,13 +1867,13 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
         /** wfs namespace uri */
         static String WFS20_URI = "http://www.opengis.net/wfs/2.0";
         /** gml 3.2 mime type */
-        static final String GML32_FORMAT = "text/xml; subtype=gml/3.2";
+        protected static final String GML32_FORMAT = "text/xml; subtype=gml/3.2";
         
         /** filter namespace + prefix */
         protected static final String FES_PREFIX = "fes";
         protected static final String FES_URI = FES.NAMESPACE;
-        private final Collection<WFSExtendedCapabilitiesProvider> extCapsProviders;
-        private final String baseUrl;
+        protected final Collection<WFSExtendedCapabilitiesProvider> extCapsProviders;
+        protected final String baseUrl;
 
         public WFS2_0(WFSInfo wfs, String baseUrl, Catalog catalog,
                 Collection<WFSExtendedCapabilitiesProvider> extCapsProviders) {
@@ -1887,10 +1887,10 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             return new CapabilitiesTranslator2_0(handler, baseUrl, wfs, this.extCapsProviders);
         }
         
-        class CapabilitiesTranslator2_0 extends TranslatorSupport {
+        protected class CapabilitiesTranslator2_0 extends TranslatorSupport {
 
-            GetCapabilitiesRequest request;
-            WFS1_1.CapabilitiesTranslator1_1 delegate;
+            protected GetCapabilitiesRequest request;
+            protected WFS1_1.CapabilitiesTranslator1_1 delegate;
             
             public CapabilitiesTranslator2_0(ContentHandler handler, String baseUrl, WFSInfo wfs, Collection<WFSExtendedCapabilitiesProvider> extCapsProviders) {
                 super(handler, null, null);
@@ -1982,7 +1982,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 end("wfs:WFS_Capabilities");
             }
 
-            void operationsMetadata() {
+            protected void operationsMetadata() {
                 start("ows:OperationsMetadata");
 
                 getCapabilities();
@@ -2014,7 +2014,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 end("ows:OperationsMetadata");
             }
 
-            void operation(String name, Map.Entry[] parameters, Map.Entry[] constraints,
+            protected void operation(String name, Map.Entry[] parameters, Map.Entry[] constraints,
                     boolean get, boolean post) {
                 start("ows:Operation", attributes(new String[] { "name", name }));
 
@@ -2047,14 +2047,14 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 end("ows:Operation");
             }
             
-            void operation(String name, Map.Entry[] parameters, boolean get, boolean post) {
+            protected void operation(String name, Map.Entry[] parameters, boolean get, boolean post) {
                 operation(name, parameters, null, get, post);
             }
             
             /**
              * Encodes the GetCapabilities ows:Operation element.
              */
-            void getCapabilities() {
+            protected void getCapabilities() {
                 Map.Entry[] parameters = new Map.Entry[] {
                     parameter("AcceptVersions", new String[] { "1.0.0", "1.1.0", "2.0.0" }),
                     parameter("AcceptFormats", new String[] { "text/xml" })
@@ -2065,7 +2065,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             /**
              * Encodes the DescribeFeatureType ows:Operation element.
              */
-            void describeFeatureType() {
+            protected void describeFeatureType() {
                 Map.Entry[] parameters = new Map.Entry[] {
                     parameter("outputFormat", new String[] { GML32_FORMAT })
                 };
@@ -2076,7 +2076,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             /**
              * Encodes the GetFeature ows:Operation element.
              */
-            void getFeature() {
+            protected void getFeature() {
                 String[] oflist = getAvailableOutputFormatNames(GML32_FORMAT);
                 Map.Entry[] parameters = new Map.Entry[] {
                     parameter("resultType", new String[] { "results", "hits" }),
@@ -2085,7 +2085,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 operation("GetFeature", parameters, getFeatureConstraints(), true, true);
             }
 
-            Map.Entry[] getFeatureConstraints() {
+            protected Map.Entry[] getFeatureConstraints() {
                 return new Map.Entry[] {
                     parameter("PagingIsTransactionSafe", false), 
                     parameter("CountDefault", wfs.getMaxFeatures())
@@ -2095,7 +2095,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             /**
              * Encodes the GetFeatureWithLock ows:Operation element.
              */
-            void getFeatureWithLock() {
+            protected void getFeatureWithLock() {
                 String[] oflist = getAvailableOutputFormatNames(GML32_FORMAT);
                 Map.Entry[] parameters = new Map.Entry[] {
                     parameter("resultType", new String[] { "results", "hits" }),
@@ -2105,7 +2105,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 operation("GetFeatureWithLock", parameters, getFeatureConstraints(), true, true);
             }
 
-            void getPropertyValue() {
+            protected void getPropertyValue() {
                 Map.Entry[] parameters = new Map.Entry[] {
                     parameter("resolve", new String[] { "none" }),
                 };
@@ -2115,7 +2115,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             /**
              * Encodes the LockFeature ows:Operation element.
              */
-            void lockFeature() {
+            protected void lockFeature() {
                 Map.Entry[] parameters = new Map.Entry[] {
                     parameter("releaseAction", new String[] { "ALL", "SOME" })
                 };
@@ -2126,7 +2126,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             /**
              * Encodes the Transaction ows:Operation element.
              */
-            void transaction() {
+            protected void transaction() {
                 Map.Entry[] parameters = new Map.Entry[] {
                         parameter("inputFormat", new String[] { GML32_FORMAT }),
                         parameter("releaseAction", new String[] { "ALL", "SOME" })
@@ -2138,35 +2138,35 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             /**
              * Encodes the ListStoredQueries ows:Operation element.
              */
-            void listStoredQueries() {
+            protected void listStoredQueries() {
                 operation("ListStoredQueries", null, true, true);
             }
 
             /**
              * Encodes the ListStoredQueries ows:Operation element.
              */
-            void describeStoredQueries() {
+            protected void describeStoredQueries() {
                 operation("DescribeStoredQueries", null, true, true);
             }
 
             /**
              * Encodes the CreateStoredQuery ows:Operation element.
              */
-            void createStoredQuery() {
+            protected void createStoredQuery() {
                 operation("CreateStoredQuery", null, false, true);
             }
 
             /**
              * Encodes the DropStoredQuery ows:Operation element.
              */
-            void dropStoredQuery() {
+            protected void dropStoredQuery() {
                 operation("DropStoredQuery", null, true, true);
             }
 
             /**
              * Encodes service constraints.
              */
-            void constraints() {
+            protected void constraints() {
                 constraint("ImplementsBasicWFS", true);
                 constraint("ImplementsTransactionalWFS", true);
                 constraint("ImplementsLockingWFS", true);
@@ -2187,7 +2187,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 constraint("QueryExpressions", new String[]{"wfs:Query", "wfs:StoredQuery"});
             }
 
-            void constraint(String name, Object value) {
+            protected void constraint(String name, Object value) {
                 if (value instanceof Boolean) {
                     constraint(name, ((Boolean)value).booleanValue());
                 }
@@ -2196,18 +2196,18 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 }
             }
             
-            void constraint(String name, boolean value) {
+            protected void constraint(String name, boolean value) {
                 constraint(name, String.valueOf(value).toUpperCase());
             }
             
-            void constraint(String name, String value) {
+            protected void constraint(String name, String value) {
                 start("ows:Constraint", attributes(new String[]{"name", name}));
                   element("ows:NoValues", null);
                   element("ows:DefaultValue", value);
                 end("ows:Constraint");
             }
 
-            void constraint(String name, String[] values) {
+            protected void constraint(String name, String[] values) {
                 start("ows:Constraint", attributes(new String[]{"name", name}));
                 start("ows:AllowedValues");
                 for (String v : values) {
@@ -2217,7 +2217,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 end("ows:Constraint");
             }
 
-            void featureTypeList() {
+            protected void featureTypeList() {
                 if (catalog.getFeatureTypes().isEmpty()) {
                     return;
                 }
@@ -2229,7 +2229,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 end("FeatureTypeList");
             }
             
-            void filterCapabilities() {
+            protected void filterCapabilities() {
                 start("fes:Filter_Capabilities");
                 start("fes:Conformance");
                    start("fes:Constraint", attributes(new String[]{"name", "ImplementsQuery"}));
@@ -2438,7 +2438,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             }
         }
 
-        Name lookupTypeName(List<Schema> profiles, Parameter arg) {
+        protected Name lookupTypeName(List<Schema> profiles, Parameter arg) {
             //hack, look up for geometry mae
             if ("geometry".equals(arg.getName())) {
                 return new NameImpl(org.geotools.gml3.v3_2.GML.AbstractGeometryType);

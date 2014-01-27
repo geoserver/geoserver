@@ -394,22 +394,26 @@ public class DimensionDefaultValueStrategyFactoryImpl implements
         String referenceValue = null;
         switch(setting.getStrategyType()){
         case NEAREST: {
-            Number refNumber;
+            Object refValue;
             referenceValue = setting.getReferenceValue();
             try {
-                refNumber = Long.parseLong(referenceValue);
-            } catch (NumberFormatException fne){
+                refValue = new Date(DateUtil.parseDateTime(referenceValue));                            
+            } catch (IllegalArgumentException e){
                 try {
-                    refNumber = Double.parseDouble(referenceValue);
-                } catch (NumberFormatException e){
-                    throw new ServiceException("Unable to parse custom dimension default value reference '"+referenceValue+"' as long or double", e);
+                    refValue = Long.parseLong(referenceValue);
+                } catch (NumberFormatException nfe){
+                    try {
+                        refValue = Double.parseDouble(referenceValue);
+                    } catch (NumberFormatException nfe2){
+                        refValue = referenceValue;
+                    }
                 }
             }
             if (resource instanceof FeatureTypeInfo){
-                retval = new DefaultFeatureNearestValueSelectionStrategy(refNumber);                        
+                retval = new DefaultFeatureNearestValueSelectionStrategy(refValue);                        
             }
             else if (resource instanceof CoverageInfo){
-                retval = new DefaultCoverageNearestValueSelectionStrategy(refNumber);
+                retval = new DefaultCoverageNearestValueSelectionStrategy(refValue);
             }
             break;
         }
@@ -432,18 +436,22 @@ public class DimensionDefaultValueStrategyFactoryImpl implements
             break;
         }                
         case FIXED: {
-            Number refNumber;
+            Object refValue;
             referenceValue = setting.getReferenceValue();
             try {
-                refNumber = Long.parseLong(referenceValue);
-            } catch (NumberFormatException fne){
+                refValue = new Date(DateUtil.parseDateTime(referenceValue));                            
+            } catch (IllegalArgumentException e){
                 try {
-                    refNumber = Double.parseDouble(referenceValue);
-                } catch (NumberFormatException e){
-                    throw new ServiceException("Unable to parse custom dimension default value reference '"+referenceValue+"' as long or double", e);
+                    refValue = Long.parseLong(referenceValue);
+                } catch (NumberFormatException nfe){
+                    try {
+                        refValue = Double.parseDouble(referenceValue);
+                    } catch (NumberFormatException nfe2){
+                        refValue = referenceValue;
+                    }
                 }
             }
-            retval = new FixedValueStrategy(refNumber);
+            retval = new FixedValueStrategy(refValue);
             break;
         }
         }

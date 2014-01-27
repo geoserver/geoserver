@@ -82,10 +82,11 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
 
                 try {
                     CoverageInfo ci = (CoverageInfo) getResourceInfo();
+                    String nativeName = ci.getNativeCoverageName();
                     Catalog catalog = app.getCatalog();
                     CatalogBuilder cb = new CatalogBuilder(catalog);
                     cb.setStore(ci.getStore());
-                    CoverageInfo rebuilt = cb.buildCoverage();
+                    CoverageInfo rebuilt = cb.buildCoverage(nativeName);
                     ci.getDimensions().clear();
                     ci.getDimensions().addAll(rebuilt.getDimensions());
                     target.addComponent(bands);

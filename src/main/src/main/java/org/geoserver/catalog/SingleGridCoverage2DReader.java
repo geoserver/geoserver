@@ -177,7 +177,7 @@ public class SingleGridCoverage2DReader implements GridCoverage2DReader {
     }
 
     public String[] getGridCoverageNames() throws IOException {
-        return delegate.getGridCoverageNames();
+        return new String[]{coverageName}; //Being a singleGridCoverage reader, I can return the only coverage
     }
 
     public int getGridCoverageCount() throws IOException {

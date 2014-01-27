@@ -9,7 +9,7 @@ public class DimensionDefaultValueSetting implements Serializable {
 
     public enum Strategy {MINIMUM, MAXIMUM, NEAREST, FIXED}
     
-    Strategy strategyType;
+    Strategy strategy;
     
     String referenceValue;
 
@@ -17,14 +17,14 @@ public class DimensionDefaultValueSetting implements Serializable {
      * @return the strategyType
      */
     public Strategy getStrategyType() {
-        return strategyType;
+        return strategy;
     }
 
     /**
      * @param strategyType the strategyType to set
      */
     public void setStrategyType(Strategy strategyType) {
-        this.strategyType = strategyType;
+        this.strategy = strategyType;
     }
 
     /**

@@ -36,7 +36,7 @@ public class DimensionInfoImpl implements DimensionInfo {
     
     String unitSymbol;
 
-    DimensionDefaultValueSetting defaultValueSetting;
+    DimensionDefaultValueSetting defaultValue;
     
     public boolean isEnabled() {
         return enabled;
@@ -167,12 +167,12 @@ public class DimensionInfoImpl implements DimensionInfo {
 
     @Override
     public DimensionDefaultValueSetting getDefaultValue() {
-        return this.defaultValueSetting;
+        return this.defaultValue;
     }
 
     @Override
     public void setDefaultValue(DimensionDefaultValueSetting defaultValue) {
-       this.defaultValueSetting = defaultValue;        
+       this.defaultValue = defaultValue;        
     }
 
 }

@@ -5,6 +5,7 @@
 package org.geoserver.wms.dimension;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -35,12 +36,11 @@ class DefaultCoverageMinimumValueSelectionStrategy extends AbstractCapabilitiesD
             if (dimensionName.equals(ResourceInfo.TIME)) {
                 retval = dimAccessor.getMinTime();
             } else if (dimensionName.equals(ResourceInfo.ELEVATION)) {
-                retval = dimAccessor.getMinElevation();
-            } else if (dimensionName.startsWith(ResourceInfo.CUSTOM_DIMENSION_PREFIX)) {
-                retval = dimAccessor.getCustomDomainDefaultValue(dimensionName);
-            } else {
+                retval = dimAccessor.getMinElevation();           
+            } else if (dimensionName.startsWith(ResourceInfo.CUSTOM_DIMENSION_PREFIX)){
+                String custDimName = dimensionName.substring(ResourceInfo.CUSTOM_DIMENSION_PREFIX.length());
                 // see if we have an optimize way to get the minimum
-                String min = reader.getMetadataValue(dimensionName.toUpperCase()
+                String min = reader.getMetadataValue(custDimName.toUpperCase()
                         + "_DOMAIN_MINIMUM");
                 if (min != null) {
                     retval = min;
@@ -48,14 +48,14 @@ class DefaultCoverageMinimumValueSelectionStrategy extends AbstractCapabilitiesD
                 else {                        
 
                 // ok, get the full domain then
-                List<String> domain = dimAccessor.getDomain(dimensionName);
+                List<String> domain = dimAccessor.getDomain(custDimName);
 
-                // Assumes that the values are in ascending order
-                // as is done in ReaderDimensionsAccessor.getCustomDomainDefaultValue()
-                // This seems a bit fishy, but sure is faster than sorting:
                 if (domain.isEmpty()) {
                     retval = null;
                 } else {
+                    //Just a lexical (string) sort. 
+                    //Should we be prepared for numeric and date values?
+                    Collections.sort(domain);
                     retval = domain.get(0);
                 }
                 }

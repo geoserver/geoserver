@@ -5,7 +5,10 @@
 package org.geoserver.wms.dimension;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 import java.util.TreeSet;
 import java.util.logging.Level;
 
@@ -72,7 +75,10 @@ class DefaultCoverageNearestValueSelectionStrategy extends AbstractCapabilitiesD
                     throw new ServiceException(
                             "The default value for elevation dimension is not a number. Cannot find a default elevation value for the layer " + resource.getName());
                 }
+            } else if (dimensionName.startsWith(ResourceInfo.CUSTOM_DIMENSION_PREFIX)){
+                retval = findNearestCustomDimensionValue(dimensionName.substring(ResourceInfo.CUSTOM_DIMENSION_PREFIX.length()), dimAccessor, this.toMatch.toString());
             }
+            
         } catch (IOException e) {
             DimensionDefaultValueStrategyFactoryImpl.LOGGER.log(Level.FINER, e.getMessage(), e);
         }
@@ -193,6 +199,44 @@ class DefaultCoverageNearestValueSelectionStrategy extends AbstractCapabilitiesD
                     break;
                 }
             }
+        }
+        return candidate;
+    }
+    
+    private String findNearestCustomDimensionValue(String dimensionName, ReaderDimensionsAccessor dimAccessor, String toMatch)
+            throws IOException {
+        String candidate = null;
+        List<String> domain = dimAccessor.getDomain(dimensionName);
+        //TODO: decide comparison strategy based on domain data type.
+        
+        //Does any coverage actually return anything else that null for this:
+        //String type = dimAccessor.getDomainDatatype(dimensionname);
+        
+        Comparator<String> comp = String.CASE_INSENSITIVE_ORDER;
+        Collections.sort(domain, comp);
+        long shortestDistance = Long.MAX_VALUE;
+        long currentDistance = 0;
+
+        for (String toCompare : domain) {
+            int compValue = comp.compare(toCompare, toMatch);
+            if (compValue < 0){
+                currentDistance = -compValue;
+                if (currentDistance < shortestDistance){
+                    shortestDistance = currentDistance;
+                    candidate = toCompare;
+                }
+            }
+            else {
+                currentDistance = compValue;
+                if (currentDistance < shortestDistance){
+                    candidate = toCompare;
+                    // the distance can only grow after this
+                    // assuming the values are in ascending order,
+                    // so stop iterating at this point for efficiency:
+                    break;
+                }
+            }
+
         }
         return candidate;
     }

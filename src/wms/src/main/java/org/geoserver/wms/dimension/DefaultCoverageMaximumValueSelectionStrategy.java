@@ -5,6 +5,7 @@
 package org.geoserver.wms.dimension;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -36,23 +37,24 @@ class DefaultCoverageMaximumValueSelectionStrategy extends AbstractCapabilitiesD
                 retval = dimAccessor.getMaxTime();
             } else if (dimensionName.equals(ResourceInfo.ELEVATION)) {
                 retval = dimAccessor.getMaxElevation();
-            } else {
+            } else if (dimensionName.startsWith(ResourceInfo.CUSTOM_DIMENSION_PREFIX)){
+                String custDimName = dimensionName.substring(ResourceInfo.CUSTOM_DIMENSION_PREFIX.length());
                 // see if we have an optimize way to get the minimum
-                String maximum = reader.getMetadataValue(dimensionName.toUpperCase()
+                String maximum = reader.getMetadataValue(custDimName.toUpperCase()
                         + "_DOMAIN_MAXIMUM");
                 if (maximum != null) {
                     retval = maximum;
                 }
                 else {
                     // ok, get the full domain then
-                    List<String> domain = dimAccessor.getDomain(dimensionName);
+                    List<String> domain = dimAccessor.getDomain(custDimName);
 
-                    // Assumes that the values are in ascending order
-                    // as is done in ReaderDimensionsAccessor.getCustomDomainDefaultValue()
-                    // This seems a bit fishy, but sure is faster than sorting:
                     if (domain.isEmpty()) {
                         retval = null;
                     } else {
+                        //Just a lexical (string) sort. 
+                        //Should we be prepared for numeric and date values?
+                        Collections.sort(domain);
                         retval = domain.get(domain.size() - 1);
                     }
                 }

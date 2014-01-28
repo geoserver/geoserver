@@ -427,42 +427,47 @@ public class GetFeature {
                     throw new WFSException(request, "Join query must specify a filter");
                 }
 
-                if (filter != null && meta.getFeatureType() instanceof SimpleFeatureType) {
-                    if (metas.size() > 1) {
-                        //ensure that the filter is allowable
-                        if (!isValidJoinFilter(filter)) {
-                            throw new WFSException(request, 
-                                "Unable to preform join with specified filter: " + filter);
-                        }
-                        //join, need to separate the joining filter from other filters
-                        JoinExtractingVisitor extractor = 
-                            new JoinExtractingVisitor(metas, query.getAliases());
-                        filter.accept(extractor, null);
+                if (filter != null) {
+                    if (meta.getFeatureType() instanceof SimpleFeatureType) {                
+                        if (metas.size() > 1) {
+                            //ensure that the filter is allowable
+                            if (!isValidJoinFilter(filter)) {
+                                throw new WFSException(request, 
+                                        "Unable to preform join with specified filter: " + filter);
+                            }
+                            //join, need to separate the joining filter from other filters
+                            JoinExtractingVisitor extractor = 
+                                    new JoinExtractingVisitor(metas, query.getAliases());
+                            filter.accept(extractor, null);
 
-                        joins = extractor.getJoins();
-                        if (joins.size() != metas.size()-1) {
-                            throw new WFSException(request, String.format("Query specified %d types but %d " +
-                                "join filters were found", metas.size(), extractor.getJoins().size()));
-                        }
+                            joins = extractor.getJoins();
+                            if (joins.size() != metas.size()-1) {
+                                throw new WFSException(request, String.format("Query specified %d types but %d " +
+                                        "join filters were found", metas.size(), extractor.getJoins().size()));
+                            }
 
-                        //validate the filter for each join
-                        for (int j = 1; j < metas.size(); j++) {
-                            Join join = joins.get(j-1);
-                            if (join.getFilter() != null) {
-                                validateFilter(join.getFilter(), query, metas.get(j), request);
+                            //validate the filter for each join
+                            for (int j = 1; j < metas.size(); j++) {
+                                Join join = joins.get(j-1);
+                                if (join.getFilter() != null) {
+                                    validateFilter(join.getFilter(), query, metas.get(j), request);
+                                }
+                            }
+
+                            filter = extractor.getPrimaryFilter();
+                            if (filter != null) {
+                                validateFilter(filter, query, meta, request);
                             }
                         }
-
-                        filter = extractor.getPrimaryFilter();
-                        if (filter != null) {
+                        else {
                             validateFilter(filter, query, meta, request);
                         }
-                    }
-                    else {
-                        validateFilter(filter, query, meta, request);
+                    } else {
+                        BBOXNamespaceSettingVisitor filterVisitor = new BBOXNamespaceSettingVisitor(ns);
+                        filter.accept(filterVisitor, null);
                     }
                 }
-
+                
                 // load primary feature source
                 Hints hints = null;
                 if (joins != null) {

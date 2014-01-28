@@ -35,7 +35,7 @@ The ``format_options`` parameter is a container for other parameters that are fo
 The supported format option is:
 
 * ``callback`` (default is ``parseResponse``)—Specifies the callback function name for the JSONP response format
-
+* ``id_policy`` (default is ``true``)- Specifies id generation for the JSON output format.
 
 Reprojection
 ------------

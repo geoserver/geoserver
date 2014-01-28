@@ -11,6 +11,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,6 +31,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.feature.FeatureCollection;
@@ -45,6 +47,7 @@ import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.referencing.ReferenceIdentifier;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
 import javax.xml.namespace.QName;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -103,6 +106,14 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
         // Generate bounds for every feature?
         WFSInfo wfs = getInfo();
         boolean featureBounding = wfs.isFeatureBounding();
+        
+        // include fid?
+        String id_option = null; // null - default, "" - none, or "property"
+        Request request = Dispatcher.REQUEST.get();
+        if (request != null) {
+            id_option = JSONType.getIdPolicy( request.getKvp() );
+        }
+        
         // prepare to write out
         OutputStreamWriter osw = null;
         Writer outWriter = null;
@@ -141,10 +152,10 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
             // including the lockID
             //
             // execute should also fail if all of the locks could not be aquired
-            List resultsList = featureCollection.getFeature();
+            List<FeatureCollection> resultsList = featureCollection.getFeature();
             CoordinateReferenceSystem crs = null;
             for (int i = 0; i < resultsList.size(); i++) {
-                FeatureCollection collection = (FeatureCollection) resultsList.get(i);
+                FeatureCollection collection = resultsList.get(i);
                 FeatureIterator iterator = collection.features();
 
                 
@@ -156,13 +167,19 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
                         SimpleFeature feature = (SimpleFeature) iterator.next();
                         jsonWriter.object();
                         jsonWriter.key("type").value("Feature");
-                        jsonWriter.key("id").value(feature.getID());
 
                         fType = feature.getFeatureType();
                         types = fType.getAttributeDescriptors();
 
+                        if( id_option == null ){
+                            jsonWriter.key("id").value(feature.getID());
+                        }
+                        else if ( id_option.length() != 0){
+                            Object value = feature.getAttribute(id_option);
+                            jsonWriter.key("id").value(value);
+                        }
                         GeometryDescriptor defaultGeomType = fType.getGeometryDescriptor();
-
+                        
                         if (crs == null && defaultGeomType != null)
                             crs = fType.getGeometryDescriptor().getCoordinateReferenceSystem();
 
@@ -195,7 +212,10 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
                         for (int j = 0; j < types.size(); j++) {
                             Object value = feature.getAttribute(j);
                             AttributeDescriptor ad = types.get(j);
-
+                            
+                            if( id_option != null && id_option.equals(ad.getLocalName()) ){
+                            	continue; // skip this value as it is used as the id
+                            }
                             if (value != null) {
                                 if (value instanceof Geometry) {
                                     // This is an area of the spec where they

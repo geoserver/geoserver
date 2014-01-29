@@ -43,6 +43,14 @@ public enum JSONType {
      * The key value into the optional FORMAT_OPTIONS map
      */
     public final static String CALLBACK_FUNCTION_KEY = "callback";
+    
+    /**
+     * The key value into the optional FORMAT_OPTIONS map.
+     * 
+     * Use <code>null</null> for default feature id generation. Use string to nominate an attribute to use.
+     */
+    public final static String ID_POLICY = "id_policy";
+    
 
     /**
      * The default value of the callback function
@@ -199,7 +207,36 @@ public enum JSONType {
             }
         }
     }
-
+    
+    /**
+     * Can be used when {@link #json} format is specified to resolve the id_policy parameter from FORMAT_OPTIONS map
+     * 
+     * GeoJSON does not require use of an id for each feature, this format option can be used to surpress the use of id (or nominate
+     * an specifc attribtue to use).
+     *  
+     * @param kvp request key value pair map possibly including format options
+     * @return null to use generated feature id, empty string to surpress id generation, or attribute to use
+     */
+    public static String getIdPolicy(Map kvp) {
+        if (!(kvp.get("FORMAT_OPTIONS") instanceof Map)) {
+            return null;
+        } else {
+            Map<String, String> formatOptions = (Map<String, String>) kvp.get("FORMAT_OPTIONS");
+            if (formatOptions == null || formatOptions.isEmpty()) {
+                return null; // use fid as id in output
+            }
+            String id_policy = formatOptions.get(ID_POLICY);
+    
+            if (id_policy == null || "true".equals(id_policy)) {
+                return null; // use fid as id in output
+            }
+            if ("false".equals(id_policy) || id_policy.length() == 0) {
+                return ""; // suppress id from output
+            }
+            return id_policy;
+        }
+    }
+    
     /**
      * Handle Exception in JSON and JSONP format
      * 

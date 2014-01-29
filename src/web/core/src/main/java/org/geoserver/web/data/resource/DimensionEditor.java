@@ -26,6 +26,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.validation.CompoundValidator;
 import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.validator.AbstractValidator;
 import org.apache.wicket.validation.validator.StringValidator;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionDefaultValueSetting;
@@ -213,16 +214,21 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
         }
         
         //default value block
+        DimensionDefaultValueSetting defValueSetting = model.getObject().getDefaultValue();
+        if (defValueSetting == null){
+        	defValueSetting = new DimensionDefaultValueSetting();
+        	model.getObject().setDefaultValue(defValueSetting);
+        }
         final WebMarkupContainer defValueContainer = new WebMarkupContainer("defaultValueContainer");
         defValueContainer.setOutputMarkupId(true);
         configs.add(defValueContainer);
         final WebMarkupContainer referenceValueContainer = new WebMarkupContainer("referenceValue");
         referenceValueContainer.setOutputMarkupId(true);               
-        referenceValueContainer.setVisible((model.getObject().getDefaultValue().getStrategyType() == Strategy.FIXED) || (model.getObject().getDefaultValue().getStrategyType() == Strategy.NEAREST));          
+        referenceValueContainer.setVisible((defValueSetting.getStrategyType() == Strategy.FIXED) || (defValueSetting.getStrategyType() == Strategy.NEAREST));          
         defValueContainer.add(referenceValueContainer);
         
         defaultValueStrategies = new ArrayList<DimensionDefaultValueSetting.Strategy>(Arrays.asList(DimensionDefaultValueSetting.Strategy.values()));
-        IModel<DimensionDefaultValueSetting.Strategy> strategyModel =  new PropertyModel<DimensionDefaultValueSetting.Strategy>(model, "defaultValue.strategy");
+        IModel<DimensionDefaultValueSetting.Strategy> strategyModel =  new PropertyModel<DimensionDefaultValueSetting.Strategy>(model.getObject().getDefaultValue(), "strategy");
         defaultValueStrategy = new DropDownChoice<DimensionDefaultValueSetting.Strategy>("strategy",
                strategyModel, defaultValueStrategies, new DefaultValueStrategyRenderer());
         configs.add(defaultValueStrategy);
@@ -236,13 +242,14 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
             }
 
         });
+        defValueContainer.add(defaultValueStrategy);
         
-        IModel<String> refValueModel = new PropertyModel<String>(model, "defaultValue.referenceValue");
+        IModel<String> refValueModel = new PropertyModel<String>(model.getObject().getDefaultValue(), "referenceValue");
         referenceValue = new TextField<String>("referenceValue", refValueModel);
         referenceValue.add(new ReferenceValueValidator(id, strategyModel));
         referenceValueContainer.add(referenceValue);
         // set "current" for reference value if dimension is time, strategy is NEAREST and value has never been set
-        if ("time".equals(id) && uModel.getObject() == null && strategyModel.getObject() == Strategy.NEAREST) {
+        if ("time".equals(id) && refValueModel.getObject() == null && strategyModel.getObject() == Strategy.NEAREST) {
             refValueModel.setObject(DimensionDefaultValueSetting.TIME_CURRENT);            
         }
     }
@@ -391,7 +398,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
         }
     }
     
-    public class ReferenceValueValidator extends StringValidator {
+    public class ReferenceValueValidator extends AbstractValidator<String> {
         String dimension;
         IModel<DimensionDefaultValueSetting.Strategy> strategyModel;
         
@@ -408,14 +415,14 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
                         DateUtil.parseDateTime(value.getValue());
                     } catch (IllegalArgumentException iae){
                         if (!DimensionDefaultValueSetting.TIME_CURRENT.equalsIgnoreCase(value.getValue())){
-                            //TODO: create IValidatorError
+                        	error(value,"invalidNearestTimeReferenceValue");
                         }
                     }
                 } else {
                     try {
                         DateUtil.parseDateTime(value.getValue());                       
                     } catch (IllegalArgumentException iae){
-                      //TODO: create IValidatorError
+                      error(value, "invalidTimeReferenceValue");
                     }
                 }                
             }

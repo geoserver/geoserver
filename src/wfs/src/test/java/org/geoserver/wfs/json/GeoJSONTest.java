@@ -8,6 +8,8 @@ package org.geoserver.wfs.json;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.util.Collections;
@@ -107,6 +109,55 @@ public class GeoJSONTest extends WFSTestSupport {
         assertEquals(aFeature.getString("geometry_name"),"surfaceProperty");
     }
 
+    @Test
+    public void testGetJsonIdPolicyTrue() throws Exception {    
+        MockHttpServletResponse response = getAsServletResponse("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat="+JSONType.simple_json+"&format_options=" + JSONType.ID_POLICY+":true");
+        assertEquals("application/json", response.getContentType());
+        String out = response.getOutputStreamContent();
+        
+        JSONObject rootObject = JSONObject.fromObject( out );
+        assertEquals(rootObject.get("type"),"FeatureCollection");
+        JSONArray featureCol = rootObject.getJSONArray("features");
+        JSONObject aFeature = featureCol.getJSONObject(0);
+        
+        assertTrue("id", aFeature.containsKey("id"));
+        Object id = aFeature.get("id");
+        assertNotNull("id", id);
+        assertEquals("PrimitiveGeoFeature.f001",id);
+    }
+    @Test
+    public void testGetJsonIdPolicyFalse() throws Exception {    
+        MockHttpServletResponse response = getAsServletResponse("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat="+JSONType.simple_json+"&format_options=" + JSONType.ID_POLICY+":false");
+        assertEquals("application/json", response.getContentType());
+        String out = response.getOutputStreamContent();
+        
+        JSONObject rootObject = JSONObject.fromObject( out );
+        assertEquals(rootObject.get("type"),"FeatureCollection");
+        JSONArray featureCol = rootObject.getJSONArray("features");
+        JSONObject aFeature = featureCol.getJSONObject(0);
+
+        assertFalse("supress id", aFeature.containsKey("id"));
+    }
+
+    @Test
+    public void testGetJsonIdPolicyAttribute() throws Exception {    
+        MockHttpServletResponse response = getAsServletResponse("wfs?request=GetFeature&version=1.0.0&typename=sf:PrimitiveGeoFeature&maxfeatures=1&outputformat="+JSONType.simple_json+"&format_options=" + JSONType.ID_POLICY+":name");
+        assertEquals("application/json", response.getContentType());
+        String out = response.getOutputStreamContent();
+        
+        JSONObject rootObject = JSONObject.fromObject( out );
+        assertEquals(rootObject.get("type"),"FeatureCollection");
+        JSONArray featureCol = rootObject.getJSONArray("features");
+        JSONObject aFeature = featureCol.getJSONObject(0);
+        
+        assertTrue("id", aFeature.containsKey("id"));
+        Object id = aFeature.get("id");
+        assertNotNull("id", id);
+        assertEquals("name-f001", id);
+        JSONObject properties = aFeature.getJSONObject("properties");
+        assertFalse( properties.containsKey("name"));
+    }
+    
     @Test
     public void testPost() throws Exception {
         String xml = "<wfs:GetFeature " + "service=\"WFS\" " + "outputFormat=\""+JSONType.json+"\" "

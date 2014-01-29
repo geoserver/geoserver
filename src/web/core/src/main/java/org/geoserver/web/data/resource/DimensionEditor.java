@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -23,14 +24,20 @@ import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.validation.CompoundValidator;
+import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.validator.StringValidator;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.feature.type.DateUtil;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.type.PropertyDescriptor;
 
@@ -43,6 +50,8 @@ import org.opengis.feature.type.PropertyDescriptor;
 public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
 
     List<DimensionPresentation> presentationModes;
+    
+    List<DimensionDefaultValueSetting.Strategy> defaultValueStrategies;
 
     private CheckBox enabled;
 
@@ -51,7 +60,11 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
     private DropDownChoice<String> endAttribute;
 
     private DropDownChoice<DimensionPresentation> presentation;
+    
+    private DropDownChoice<DimensionDefaultValueSetting.Strategy> defaultValueStrategy;
 
+    private TextField<String> referenceValue;
+    
     private TextField<String> units;
     
     private TextField<String> unitSymbol;
@@ -198,6 +211,40 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
             resTime.setVisible(false);
             resElevation.setRequired(true);
         }
+        
+        //default value block
+        final WebMarkupContainer defValueContainer = new WebMarkupContainer("defaultValueContainer");
+        defValueContainer.setOutputMarkupId(true);
+        configs.add(defValueContainer);
+        final WebMarkupContainer referenceValueContainer = new WebMarkupContainer("referenceValue");
+        referenceValueContainer.setOutputMarkupId(true);               
+        referenceValueContainer.setVisible((model.getObject().getDefaultValue().getStrategyType() == Strategy.FIXED) || (model.getObject().getDefaultValue().getStrategyType() == Strategy.NEAREST));          
+        defValueContainer.add(referenceValueContainer);
+        
+        defaultValueStrategies = new ArrayList<DimensionDefaultValueSetting.Strategy>(Arrays.asList(DimensionDefaultValueSetting.Strategy.values()));
+        IModel<DimensionDefaultValueSetting.Strategy> strategyModel =  new PropertyModel<DimensionDefaultValueSetting.Strategy>(model, "defaultValue.strategy");
+        defaultValueStrategy = new DropDownChoice<DimensionDefaultValueSetting.Strategy>("strategy",
+               strategyModel, defaultValueStrategies, new DefaultValueStrategyRenderer());
+        configs.add(defaultValueStrategy);
+        defaultValueStrategy.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                boolean visible = (defaultValueStrategy.getModelObject() == Strategy.FIXED) || (defaultValueStrategy.getModelObject() == Strategy.NEAREST);
+                referenceValueContainer.setVisible(visible);
+                target.addComponent(defValueContainer);
+            }
+
+        });
+        
+        IModel<String> refValueModel = new PropertyModel<String>(model, "defaultValue.referenceValue");
+        referenceValue = new TextField<String>("referenceValue", refValueModel);
+        referenceValue.add(new ReferenceValueValidator(id, strategyModel));
+        referenceValueContainer.add(referenceValue);
+        // set "current" for reference value if dimension is time, strategy is NEAREST and value has never been set
+        if ("time".equals(id) && uModel.getObject() == null && strategyModel.getObject() == Strategy.NEAREST) {
+            refValueModel.setObject(DimensionDefaultValueSetting.TIME_CURRENT);            
+        }
     }
     
     /**
@@ -265,6 +312,14 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
                     info.setResolution(resElevation.getModelObject());
                 }
             }
+            DimensionDefaultValueSetting defValueSetting = new DimensionDefaultValueSetting();
+            defaultValueStrategy.processInput();            
+            defValueSetting.setStrategyType(defaultValueStrategy.getModelObject());
+            if (defValueSetting.getStrategyType() == Strategy.FIXED || defValueSetting.getStrategyType() == Strategy.NEAREST){
+                referenceValue.processInput();
+                defValueSetting.setReferenceValue(referenceValue.getModelObject());
+            }
+            info.setDefaultValue(defValueSetting);
             setConvertedInput(info);
         }
     };
@@ -315,5 +370,56 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
             return String.valueOf(object.ordinal());
         }
     }
+    
+    /**
+     * Renders a default value strategy into a human readable form
+     * 
+     * @author Ilkka Rinne
+     */
+    public class DefaultValueStrategyRenderer implements IChoiceRenderer<DimensionDefaultValueSetting.Strategy> {
 
+        public DefaultValueStrategyRenderer() {
+            super();
+        }
+
+        public Object getDisplayValue(DimensionDefaultValueSetting.Strategy object) {
+            return new ParamResourceModel(object.name(), DimensionEditor.this).getString();
+        }
+
+        public String getIdValue(DimensionDefaultValueSetting.Strategy object, int index) {
+            return String.valueOf(object.ordinal());
+        }
+    }
+    
+    public class ReferenceValueValidator extends StringValidator {
+        String dimension;
+        IModel<DimensionDefaultValueSetting.Strategy> strategyModel;
+        
+        public ReferenceValueValidator(String dimensionId, IModel<DimensionDefaultValueSetting.Strategy> strategyModel){
+            this.dimension = dimensionId;
+            this.strategyModel = strategyModel;
+        }
+        
+        @Override
+        protected void onValidate(IValidatable<String> value) {
+            if (dimension.equals("time")){
+                if (strategyModel.getObject() == Strategy.NEAREST){
+                    try {
+                        DateUtil.parseDateTime(value.getValue());
+                    } catch (IllegalArgumentException iae){
+                        if (!DimensionDefaultValueSetting.TIME_CURRENT.equalsIgnoreCase(value.getValue())){
+                            //TODO: create IValidatorError
+                        }
+                    }
+                } else {
+                    try {
+                        DateUtil.parseDateTime(value.getValue());                       
+                    } catch (IllegalArgumentException iae){
+                      //TODO: create IValidatorError
+                    }
+                }                
+            }
+        }
+    }
+    
 }

@@ -233,7 +233,7 @@ abstract class DimensionHelper {
         String timeMetadata = getTemporalDomainRepresentation(timeInfo, temporalDomain);
         Date defaultValue = null;
         DimensionDefaultValueSetting defaultSetting = timeInfo.getDefaultValue();
-        if ((defaultSetting != null) && !((defaultSetting.getStrategyType() == Strategy.NEAREST) && defaultSetting.getReferenceValue().equalsIgnoreCase("CURRENT"))){
+        if ((defaultSetting != null) && !((defaultSetting.getStrategyType() == Strategy.NEAREST) && defaultSetting.getReferenceValue().equalsIgnoreCase(DimensionDefaultValueSetting.TIME_CURRENT))){
             defaultValue = wms.getDefaultTime(cvInfo);
         }
         writeTimeDimension(timeMetadata, defaultValue);
@@ -532,7 +532,7 @@ abstract class DimensionHelper {
                 DimensionInfo.class);
             timeMetadata = getTemporalDomainRepresentation(timeInfo, values);
             DimensionDefaultValueSetting defaultSetting = timeInfo.getDefaultValue();
-            if ((defaultSetting != null) && !((defaultSetting.getStrategyType() == Strategy.NEAREST) && defaultSetting.getReferenceValue().equalsIgnoreCase("CURRENT"))){
+            if ((defaultSetting != null) && !((defaultSetting.getStrategyType() == Strategy.NEAREST) && defaultSetting.getReferenceValue().equalsIgnoreCase(DimensionDefaultValueSetting.TIME_CURRENT))){
                 defaultValue = wms.getDefaultTime(typeInfo);                
             }
         } else {
@@ -562,7 +562,7 @@ abstract class DimensionHelper {
 
     private void writeTimeDimension(String timeMetadata, Date defaultValue) {
         AttributesImpl timeDim = new AttributesImpl();
-        String defaultTimeStr = "current";
+        String defaultTimeStr = DimensionDefaultValueSetting.TIME_CURRENT;
         if (defaultValue != null){
             defaultTimeStr = DateUtil.serializeDateTime(defaultValue.getTime(), true);            
         }
@@ -579,20 +579,7 @@ abstract class DimensionHelper {
     }
 
     private void writeElevationDimension(TreeSet<? extends Object> elevations, final String elevationMetadata, 
-            final String units, final String unitSymbol, double defaultValue) {
-        /*
-        double defaultValue;
-        if(elevations == null || elevations.isEmpty()) {
-            defaultValue = 0;
-        } else {
-            Object first = elevations.first();
-            if(first instanceof Double) {
-                defaultValue = (Double) first;
-            } else {
-                defaultValue = ((NumberRange<Double>) first).getMinimum();
-            }
-        }
-        */
+            final String units, final String unitSymbol, double defaultValue) {      
         if (mode == Mode.WMS11) {
             AttributesImpl elevDim = new AttributesImpl();
             elevDim.addAttribute("", "name", "name", "", "elevation");

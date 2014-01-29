@@ -8,6 +8,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
 
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -92,7 +93,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         // check we have the extent
         assertXpathEvaluatesTo("1", "count(//Layer/Extent)", dom);
         assertXpathEvaluatesTo("time", "//Layer/Extent/@name", dom);
-        assertXpathEvaluatesTo("current", "//Layer/Extent/@default", dom);
+        assertXpathEvaluatesTo(DimensionDefaultValueSetting.TIME_CURRENT, "//Layer/Extent/@default", dom);
         // and that it is empty
         assertXpathEvaluatesTo("", "//Layer/Extent", dom);
     }
@@ -191,7 +192,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         // check we have the extent        
         assertXpathEvaluatesTo("1", "count(//Layer/Extent)", dom);
         assertXpathEvaluatesTo("time", "//Layer/Extent/@name", dom);
-        assertXpathEvaluatesTo("current", "//Layer/Extent/@default", dom);
+        assertXpathEvaluatesTo(DimensionDefaultValueSetting.TIME_CURRENT, "//Layer/Extent/@default", dom);
         assertXpathEvaluatesTo("2011-05-01T00:00:00.000Z,2011-05-02T00:00:00.000Z,2011-05-03T00:00:00.000Z,2011-05-04T00:00:00.000Z", "//Layer/Extent", dom);
     }
     
@@ -210,7 +211,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         // check we have the extent        
         assertXpathEvaluatesTo("1", "count(//Layer/Extent)", dom);
         assertXpathEvaluatesTo("time", "//Layer/Extent/@name", dom);
-        assertXpathEvaluatesTo("current", "//Layer/Extent/@default", dom);
+        assertXpathEvaluatesTo(DimensionDefaultValueSetting.TIME_CURRENT, "//Layer/Extent/@default", dom);
         assertXpathEvaluatesTo("2011-05-01T00:00:00.000Z/2011-05-04T00:00:00.000Z/PT1S", "//Layer/Extent", dom);
     }
 
@@ -229,7 +230,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         // check we have the extent        
         assertXpathEvaluatesTo("1", "count(//Layer/Extent)", dom);
         assertXpathEvaluatesTo("time", "//Layer/Extent/@name", dom);
-        assertXpathEvaluatesTo("current", "//Layer/Extent/@default", dom);
+        assertXpathEvaluatesTo(DimensionDefaultValueSetting.TIME_CURRENT, "//Layer/Extent/@default", dom);
         assertXpathEvaluatesTo("2011-05-01T00:00:00.000Z/2011-05-04T00:00:00.000Z/P1D", "//Layer/Extent", dom);
     }
     
@@ -261,7 +262,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
             // check we have the extent        
             assertXpathEvaluatesTo("1", "count(//Layer[Name[text() = 'EO Sample']]/Extent)", dom);
             assertXpathEvaluatesTo("time", "//Layer[Name[text() = 'EO Sample']]/Extent/@name", dom);
-            assertXpathEvaluatesTo("current", "//Layer[Name[text() = 'EO Sample']]/Extent/@default", dom);
+            assertXpathEvaluatesTo(DimensionDefaultValueSetting.TIME_CURRENT, "//Layer[Name[text() = 'EO Sample']]/Extent/@default", dom);
             assertXpathEvaluatesTo("2011-05-01T00:00:00.000Z/2011-05-04T00:00:00.000Z/PT1S", "//Layer[Name[text() = 'EO Sample']]/Extent", dom);
         } finally {
             getCatalog().remove(eoProduct);

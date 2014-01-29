@@ -52,10 +52,10 @@ public class DimensionDefaultValueStrategyFactoryImpl implements
 		if (dimensionName.equals(ResourceInfo.TIME)) {
 			if (resource instanceof FeatureTypeInfo) {
 				retval = new DefaultFeatureNearestValueSelectionStrategy(
-						new Date(), "current");
+						new Date(), DimensionDefaultValueSetting.TIME_CURRENT);
 			} else if (resource instanceof CoverageInfo) {
 				retval = new DefaultCoverageNearestValueSelectionStrategy(
-						new Date(), "current");
+						new Date(), DimensionDefaultValueSetting.TIME_CURRENT);
 			}
 		} else if (dimensionName.equals(ResourceInfo.ELEVATION)) {
 			if (resource instanceof FeatureTypeInfo) {
@@ -294,9 +294,9 @@ public class DimensionDefaultValueStrategyFactoryImpl implements
 			String capabilitiesValue = null;
 			referenceValue = setting.getReferenceValue();
 			if (referenceValue != null) {
-				if (referenceValue.equalsIgnoreCase("current")) {
+				if (referenceValue.equalsIgnoreCase(DimensionDefaultValueSetting.TIME_CURRENT)) {
 					refDate = new Date();
-					capabilitiesValue = "current";
+					capabilitiesValue = DimensionDefaultValueSetting.TIME_CURRENT;
 				} else {
 					try {
 						refDate = new Date(

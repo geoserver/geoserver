@@ -108,7 +108,7 @@ public class VectorTimeDimensionDefaultValueTest extends WMSTestSupport {
         //Use explicit default value DimensionInfo setup:
         DimensionDefaultValueSetting defaultValueSetting = new DimensionDefaultValueSetting();
         defaultValueSetting.setStrategyType(Strategy.NEAREST);
-        defaultValueSetting.setReferenceValue("current");
+        defaultValueSetting.setReferenceValue(DimensionDefaultValueSetting.TIME_CURRENT);
         setupFeatureTimeDimension(defaultValueSetting);
 
         FeatureTypeInfo timeWithStartEnd = getCatalog().getFeatureTypeByName(

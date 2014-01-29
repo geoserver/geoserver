@@ -95,7 +95,7 @@ public class RasterTimeDimensionDefaultValueTest extends WMSTestSupport {
         // Use explicit default value strategy: 
         DimensionDefaultValueSetting defaultValueSetting = new DimensionDefaultValueSetting();
         defaultValueSetting.setStrategyType(Strategy.NEAREST);
-        defaultValueSetting.setReferenceValue("current");
+        defaultValueSetting.setReferenceValue(DimensionDefaultValueSetting.TIME_CURRENT);
         setupCoverageTimeDimension(WATTEMP_FUTURE,defaultValueSetting);
         
         Calendar cal = Calendar.getInstance();

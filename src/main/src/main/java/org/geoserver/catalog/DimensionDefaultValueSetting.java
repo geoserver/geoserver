@@ -7,6 +7,8 @@ public class DimensionDefaultValueSetting implements Serializable {
     /** serialVersionUID */
     private static final long serialVersionUID = 7964431537211881227L;
 
+    public static String TIME_CURRENT = "current";
+    
     public enum Strategy {MINIMUM, MAXIMUM, NEAREST, FIXED}
     
     Strategy strategy;

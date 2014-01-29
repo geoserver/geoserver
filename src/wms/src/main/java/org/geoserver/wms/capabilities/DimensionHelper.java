@@ -233,7 +233,7 @@ abstract class DimensionHelper {
         String timeMetadata = getTemporalDomainRepresentation(timeInfo, temporalDomain);
         Date defaultValue = null;
         DimensionDefaultValueSetting defaultSetting = timeInfo.getDefaultValue();
-        if (! (defaultSetting.getStrategyType() == Strategy.NEAREST && defaultSetting.getReferenceValue().equalsIgnoreCase("CURRENT"))){
+        if ((defaultSetting != null) && !((defaultSetting.getStrategyType() == Strategy.NEAREST) && defaultSetting.getReferenceValue().equalsIgnoreCase("CURRENT"))){
             defaultValue = wms.getDefaultTime(cvInfo);
         }
         writeTimeDimension(timeMetadata, defaultValue);
@@ -532,7 +532,7 @@ abstract class DimensionHelper {
                 DimensionInfo.class);
             timeMetadata = getTemporalDomainRepresentation(timeInfo, values);
             DimensionDefaultValueSetting defaultSetting = timeInfo.getDefaultValue();
-            if (! (defaultSetting.getStrategyType() == Strategy.NEAREST && defaultSetting.getReferenceValue().equalsIgnoreCase("CURRENT"))){
+            if ((defaultSetting != null) && !((defaultSetting.getStrategyType() == Strategy.NEAREST) && defaultSetting.getReferenceValue().equalsIgnoreCase("CURRENT"))){
                 defaultValue = wms.getDefaultTime(typeInfo);                
             }
         } else {

@@ -48,7 +48,6 @@ public class DimensionDefaultValueStrategyFactoryImpl implements
 		if (retval != null) {
 			return retval;
 		}
-		System.out.println("No setting for dim "+dimensionName);
 		// Else just select the default strategy based on the dimension name
 		if (dimensionName.equals(ResourceInfo.TIME)) {
 			if (resource instanceof FeatureTypeInfo) {

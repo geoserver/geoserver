@@ -41,12 +41,12 @@
           <descriptor>release/ext-spatialite.xml</descriptor>
           <descriptor>release/ext-jdbcconfig.xml</descriptor>
           <descriptor>release/ext-sfs.xml</descriptor>
-       	  <descriptor>release/ext-dds.xml</descriptor>
+          <descriptor>release/ext-dds.xml</descriptor>
           <descriptor>release/ext-aggregate.xml</descriptor>
           <descriptor>release/ext-wms-eo.xml</descriptor>
           <descriptor>release/ext-netcdf.xml</descriptor>
           <descriptor>release/ext-netcdf-out.xml</descriptor>
-          
+          <descriptor>release/ext-colormap.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -89,6 +89,12 @@
       </modules>
     </profile>
     <profile>
+      <id>colormap</id>
+      <modules> 
+        <module>colormap</module>
+      </modules>
+    </profile>
+     <profile>
       <id>rest</id>
       <modules> 
         <module>rest</module>
@@ -141,7 +147,7 @@
       <id>communityRelease</id>
       <modules>
         <module>authkey</module>
-	<module>dds</module>
+        <module>dds</module>
         <module>printing</module>
         <module>release</module>
         <module>ftp</module>
@@ -151,10 +157,9 @@
         <module>feature-aggregate</module>
         <module>script</module>
         <module>wms-eo</module>
+        <module>colormap</module>
         <module>netcdf</module>
         <module>netcdf-out</module>
-        
-        
       </modules>
     </profile>
     <profile>

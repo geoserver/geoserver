@@ -23,5 +23,6 @@ officially part of the GeoServer releases. They are however built along with the
    scripting/index
    spatialite/index
    netcdf-out/index
+   colormap/index
    jdbcconfig/index
    importer/index

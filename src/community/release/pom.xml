@@ -83,6 +83,11 @@
      <artifactId>gs-wms-eo</artifactId>
      <version>${project.version}</version>
    </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-colormap</artifactId>
+     <version>${project.version}</version>
+   </dependency>
    
  </dependencies>
  <build>

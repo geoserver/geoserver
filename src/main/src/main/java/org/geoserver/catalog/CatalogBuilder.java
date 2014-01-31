@@ -945,14 +945,21 @@ public class CatalogBuilder {
         if (customParameters != null) {
         	parameters.putAll(customParameters);
         }
-        
+
         // make sure mosaics with many superimposed tiles won't blow up with 
         // a "too many open files" exception
         String maxAllowedTiles = ImageMosaicFormat.MAX_ALLOWED_TILES.getName().toString();
-        if(parameters.keySet().contains(maxAllowedTiles)) {
+        if (parameters.keySet().contains(maxAllowedTiles)) {
             parameters.put(maxAllowedTiles, 1);
         }
-        
+
+        // Since the read sample image won't be greater than 5x5 pixels and we are limiting the
+        // number of granules to 1, we may do direct read instead of using JAI
+        String useJaiImageRead = ImageMosaicFormat.USE_JAI_IMAGEREAD.getName().toString();
+        if (parameters.keySet().contains(useJaiImageRead)) {
+            parameters.put(useJaiImageRead, false);
+        }
+
         parameters.put(AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString(), new GridGeometry2D(testRange, testEnvelope));
 
         // try to read this coverage

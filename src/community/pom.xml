@@ -45,6 +45,7 @@
           <descriptor>release/ext-aggregate.xml</descriptor>
           <descriptor>release/ext-wcs2_0.xml</descriptor>
           <descriptor>release/ext-libjpeg-turbo.xml</descriptor>
+          <descriptor>release/ext-png.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -155,6 +156,7 @@
         <module>script</module>
         <module>wcs2_0</module>
         <module>libjpeg-turbo</module>
+        <module>png</module>
       </modules>
     </profile>
     <profile>
@@ -233,6 +235,12 @@
       <id>w3ds</id>
       <modules>
         <module>w3ds</module>
+      </modules>
+    </profile>
+   <profile>
+      <id>png</id>
+      <modules>
+        <module>png</module>
       </modules>
     </profile>
 		<profile>

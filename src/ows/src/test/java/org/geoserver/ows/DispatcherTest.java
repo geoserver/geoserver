@@ -450,4 +450,67 @@ public class DispatcherTest extends TestCase {
         dispatcher.handleRequest(request, response);
         assertEquals("Hello world!:V2", response.getOutputStreamContent());
     }
+
+    public void testErrorSavedOnRequestOnGenericException() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setContextPath("/geoserver");
+        request.setRequestURI("/geoserver/hello");
+        request.setMethod("get");
+
+        Dispatcher dispatcher = new Dispatcher();
+
+        Request req = new Request();
+        req.httpRequest = request;
+        dispatcher.init(req);
+
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        req.setHttpResponse(response);
+
+        RuntimeException genericError = new RuntimeException("foo");
+        dispatcher.exception(genericError, null, req);
+
+        assertEquals("Exception did not get saved", genericError, req.error);
+    }
+
+    public void testErrorSavedOnRequestOnNon304ErrorCodeException() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setContextPath("/geoserver");
+        request.setRequestURI("/geoserver/hello");
+        request.setMethod("get");
+
+        Dispatcher dispatcher = new Dispatcher();
+
+        Request req = new Request();
+        req.httpRequest = request;
+        dispatcher.init(req);
+
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        req.setHttpResponse(response);
+
+        RuntimeException genericError = new HttpErrorCodeException(500, "Internal Server Error");
+        dispatcher.exception(genericError, null, req);
+
+        assertEquals("Exception did not get saved", genericError, req.error);
+    }
+
+    public void testNoErrorOn304ErrorCodeException() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setContextPath("/geoserver");
+        request.setRequestURI("/geoserver/hello");
+        request.setMethod("get");
+
+        Dispatcher dispatcher = new Dispatcher();
+
+        Request req = new Request();
+        req.httpRequest = request;
+        dispatcher.init(req);
+
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        req.setHttpResponse(response);
+
+        RuntimeException error = new HttpErrorCodeException(304, "Not Modified");
+        dispatcher.exception(error, null, req);
+
+        assertNull("Exception erroneously saved", req.error);
+    }
 }

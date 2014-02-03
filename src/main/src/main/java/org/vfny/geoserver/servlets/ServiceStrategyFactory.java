@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.OutputStrategyFactory;
 import org.geoserver.ows.ServiceStrategy;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.exception.GeoServerException;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -72,7 +74,7 @@ public class ServiceStrategyFactory implements OutputStrategyFactory, Applicatio
 
         if (serviceStrategy == null) {
             // none set, look up in web application context
-            serviceStrategy = getServletContext().getInitParameter("serviceStrategy");
+            serviceStrategy = GeoServerExtensions.getProperty("serviceStrategy");
         }
 
         // do a lookup

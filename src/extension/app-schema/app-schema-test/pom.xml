@@ -227,7 +227,7 @@
 				 <exclude>**/XPathPredicateTest.java</exclude>
                                 <exclude>${test.exclude.pattern}</exclude>
 					        </excludes>
-					        <argLine>-Xmx${test.maxHeapSize} -XX:MaxPermSize=${test.maxPermSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dorg.geotools.image.test.enabled=true</argLine>
+					        <argLine>-Xmx${test.maxHeapSize} -XX:MaxPermSize=${test.maxPermSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=true</argLine>
 				        </configuration>
 			        </plugin>
 		        </plugins>

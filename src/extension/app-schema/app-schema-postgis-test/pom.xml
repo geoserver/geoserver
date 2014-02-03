@@ -165,7 +165,7 @@
 				        <exclude>**/onlineTest/*.java</exclude>
 				        <exclude>${test.exclude.pattern}</exclude>
 				    </excludes>
-				    <argLine>-Xmx${test.maxHeapSize} -XX:MaxPermSize=${test.maxPermSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dapp-schema.joining=true -DtestDatabase=postgis -Dorg.geotools.image.test.enabled=true</argLine>
+				    <argLine>-Xmx${test.maxHeapSize} -XX:MaxPermSize=${test.maxPermSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -DquietTests=${quietTests} -Dapp-schema.joining=true -DtestDatabase=postgis -Dorg.geotools.image.test.enabled=true</argLine>
 				</configuration>
 	        </plugin>
 	   </plugins>

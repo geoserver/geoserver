@@ -27,6 +27,15 @@
             </label>
             <input type="text" wicket:id="unitSymbol" class="field text" />
           </li>
+          <li wicket:id="defaultValueContainer">
+            <label><wicket:message key="defaultValue">default value</wicket:message></label>
+            <li wicket:id="defaultValueTextBoxContainer">
+              <input type="text" wicket:id="defaultValueTextBox" class="field text" />
+            </li>
+            <li wicket:id="defaultValueSelectContainer">
+              <select wicket:id="defaultValueSelect"></select>
+            </li>
+          </li>
           <li><label><wicket:message key="presentation">presentation</wicket:message></label>
             <select id="presentation" wicket:id="presentation"></select>
           </li>

@@ -55,10 +55,16 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
     private TextField<String> units;
     
     private TextField<String> unitSymbol;
-    
+
+    private TextField<String> defaultValueTextBox;
+
+    private DropDownChoice<String> defaultValueSelect;
+
     private PeriodEditor resTime;
 
     private TextField<BigDecimal> resElevation;
+    
+    private static final int MAXIMUM_NUMBER_OF_SELECT_OPTIONS = 1000;
     
     boolean time;
     
@@ -155,6 +161,38 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
         if ("elevation".equals(id) && uModel.getObject() == null) {
             uModel.setObject(DimensionInfo.ELEVATION_UNITS);
             usModel.setObject(DimensionInfo.ELEVATION_UNIT_SYMBOL);
+        }
+
+        // defaultValue
+        // input not required, GeoServer will use minimum numeric value as default if not provided.
+        // choose input style(select or textbox) based on number of options.
+        final WebMarkupContainer defaultValueContainer = new WebMarkupContainer("defaultValueContainer");
+        configs.add(defaultValueContainer);
+        defaultValueContainer.setVisible(false);
+        final WebMarkupContainer defaultValueTextBoxContainer = new WebMarkupContainer("defaultValueTextBoxContainer");
+        defaultValueContainer.add(defaultValueTextBoxContainer);
+        defaultValueTextBoxContainer.setVisible(false);
+        final WebMarkupContainer defaultValueSelectContainer = new WebMarkupContainer("defaultValueSelectContainer");
+        defaultValueContainer.add(defaultValueSelectContainer);
+        defaultValueSelectContainer.setVisible(false);
+        if (resource instanceof CoverageInfo && "elevation".equals(id)) {
+            List<String>elevations = getElevations(resource);
+            if (!elevations.isEmpty()) {
+                defaultValueContainer.setVisible(true);
+                if (elevations.size() > MAXIMUM_NUMBER_OF_SELECT_OPTIONS) {
+                    defaultValueTextBoxContainer.setVisible(true);
+                    defaultValueTextBox = new TextField<String>("defaultValueTextBox", new PropertyModel<String>(model, "defaultValue"));
+                    defaultValueTextBox.setOutputMarkupId(true);
+                    defaultValueTextBox.setRequired(false);
+                    defaultValueTextBoxContainer.add(defaultValueTextBox);
+                } else {
+                    defaultValueSelectContainer.setVisible(true);
+                    defaultValueSelect = new DropDownChoice<String>("defaultValueSelect", new PropertyModel<String>(model, "defaultValue"), elevations);
+                    defaultValueSelect.setOutputMarkupId(true);
+                    defaultValueSelect.setRequired(false);
+                    defaultValueSelectContainer.add(defaultValueSelect);
+                }
+            }
         }
 
         // presentation/resolution block
@@ -255,6 +293,14 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
             info.setUnits(unitsValue);
             unitSymbol.processInput();
             info.setUnitSymbol(unitSymbol.getModelObject());
+            // default value input may be select or textbox.
+            if (defaultValueSelect != null) {
+                defaultValueSelect.processInput();
+                info.setDefaultValue(defaultValueSelect.getModelObject());
+            } else if (defaultValueTextBox != null) {
+                defaultValueTextBox.processInput();
+                info.setDefaultValue(defaultValueTextBox.getModelObject());
+            }
             info.setPresentation(presentation.getModelObject());
             if (info.getPresentation() == DimensionPresentation.DISCRETE_INTERVAL) {
                 if(time) {
@@ -293,6 +339,37 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
             }
         }
 
+        return result;
+    }
+
+    /**
+     * returns List of elevations for a CoverageInfo resource. 
+     * 
+     * @param resource
+     * @return
+     */
+    private List<String> getElevations(ResourceInfo resource) {
+        List<String> result = new ArrayList<String>();
+        
+        if (resource instanceof CoverageInfo) {
+            try {
+                GridCoverageReader reader = ((CoverageInfo) resource).getGridCoverageReader(null, null);
+                String hasElevationAsString = reader.getMetadataValue(GridCoverage2DReader.HAS_ELEVATION_DOMAIN);
+                boolean hasElevation = Boolean.parseBoolean(hasElevationAsString); 
+                if (hasElevation) {
+                    String elevationDomain = reader.getMetadataValue(GridCoverage2DReader.ELEVATION_DOMAIN);
+                    if (elevationDomain != null && !"".equals(elevationDomain)) {
+                        String[] elevations = elevationDomain.split(",");
+                        for (String elevation : elevations) {
+                            result.add(elevation);
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                throw new WicketRuntimeException(e);
+            }
+        }
+        
         return result;
     }
 

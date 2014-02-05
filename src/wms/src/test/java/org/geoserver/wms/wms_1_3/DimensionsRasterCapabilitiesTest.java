@@ -25,17 +25,18 @@ public class DimensionsRasterCapabilitiesTest extends WMSDimensionsTestSupport {
     }
     
     @Test
-    public void testDefaultElevationUnits() throws Exception {
-        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, null, null);
+    public void testDefaultElevationUnitsAndValue() throws Exception {
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, null, null, null);
         Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
         
         assertXpathEvaluatesTo(DimensionInfo.ELEVATION_UNITS, "//wms:Layer/wms:Dimension/@units", dom);
         assertXpathEvaluatesTo(DimensionInfo.ELEVATION_UNIT_SYMBOL, "//wms:Layer/wms:Dimension/@unitSymbol", dom);
+        assertXpathEvaluatesTo(WATERTEMP_LAYER_MIN_ELEVATION_VALUE, "//wms:Layer/wms:Dimension/@default", dom);
     }
 
     @Test
     public void testElevationList() throws Exception {
-        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL, WATERTEMP_LAYER_MAX_ELEVATION_VALUE);
         
         Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
         // print(dom);
@@ -46,14 +47,14 @@ public class DimensionsRasterCapabilitiesTest extends WMSDimensionsTestSupport {
         assertXpathEvaluatesTo(UNITS, "//wms:Layer/wms:Dimension/@units", dom);
         assertXpathEvaluatesTo(UNIT_SYMBOL, "//wms:Layer/wms:Dimension/@unitSymbol", dom);
         // check we have the wms:Dimension        
-        assertXpathEvaluatesTo("0.0", "//wms:Layer/wms:Dimension/@default", dom);
+        assertXpathEvaluatesTo(WATERTEMP_LAYER_MAX_ELEVATION_VALUE, "//wms:Layer/wms:Dimension/@default", dom);
         assertXpathEvaluatesTo("0.0,100.0", "//wms:Layer/wms:Dimension", dom);
     }
-    
+
     @Test 
     public void testElevationContinuous() throws Exception {
         setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, 
-                DimensionPresentation.CONTINUOUS_INTERVAL, null, UNITS, UNIT_SYMBOL);
+                DimensionPresentation.CONTINUOUS_INTERVAL, null, UNITS, UNIT_SYMBOL, null);
         
         Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
         // print(dom);
@@ -72,7 +73,7 @@ public class DimensionsRasterCapabilitiesTest extends WMSDimensionsTestSupport {
     @Test
     public void testElevationDiscreteNoResolution() throws Exception {
         setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, 
-                DimensionPresentation.DISCRETE_INTERVAL, null, UNITS, UNIT_SYMBOL);
+                DimensionPresentation.DISCRETE_INTERVAL, null, UNITS, UNIT_SYMBOL, null);
         
         Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
         // print(dom);
@@ -91,7 +92,7 @@ public class DimensionsRasterCapabilitiesTest extends WMSDimensionsTestSupport {
     @Test
     public void testElevationDiscreteManualResolution() throws Exception {
         setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, 
-                DimensionPresentation.DISCRETE_INTERVAL, 10.0, UNITS, UNIT_SYMBOL);
+                DimensionPresentation.DISCRETE_INTERVAL, 10.0, UNITS, UNIT_SYMBOL, null);
         
         Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
         // print(dom);
@@ -109,7 +110,7 @@ public class DimensionsRasterCapabilitiesTest extends WMSDimensionsTestSupport {
     
     @Test
     public void testTimeList() throws Exception {
-        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
+        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null, null);
         
         Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
         // print(dom);
@@ -126,7 +127,7 @@ public class DimensionsRasterCapabilitiesTest extends WMSDimensionsTestSupport {
     
     @Test 
     public void testTimeContinuous() throws Exception {
-        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.CONTINUOUS_INTERVAL, null, null, null);
+        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.CONTINUOUS_INTERVAL, null, null, null, null);
         
         Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
         //print(dom);
@@ -144,7 +145,7 @@ public class DimensionsRasterCapabilitiesTest extends WMSDimensionsTestSupport {
     @Test
     public void testTimeResolution() throws Exception {
         setupRasterDimension(WATTEMP, ResourceInfo.TIME, 
-                DimensionPresentation.DISCRETE_INTERVAL, new Double(1000 * 60 * 60 * 12), null, null);
+                DimensionPresentation.DISCRETE_INTERVAL, new Double(1000 * 60 * 60 * 12), null, null, null);
         
         Document dom = dom(get("wms?request=getCapabilities&version=1.3.0"), false);
         // print(dom);

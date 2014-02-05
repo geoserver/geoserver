@@ -66,8 +66,8 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
     
     @Test 
     public void testDefaultValues() throws Exception {
-        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
-        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL, null);
+        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null, null);
         
         // this one should be medium
         assertEquals(14.51, getFeatureAt(BASE_URL, 36, 31, "sf:watertemp"), EPS);
@@ -77,8 +77,8 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
     
     @Test 
     public void testElevation() throws Exception {
-        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
-        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL, null);
+        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null, null);
         
         // this one should be the no-data
         String url = BASE_URL + "&elevation=100";
@@ -89,8 +89,8 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
     
     @Test
     public void testTime() throws Exception {
-        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
-        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL, null);
+        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null, null);
         
         String url = BASE_URL + "&time=2008-10-31T00:00:00.000Z";
 
@@ -101,8 +101,8 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
     
     @Test
     public void testTimeElevation() throws Exception {
-        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
-        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL, null);
+        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null, null);
 
         String url = BASE_URL + "&time=2008-10-31T00:00:00.000Z&elevation=100";
         // this one should be the no-data
@@ -113,10 +113,10 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
     
     @Test
     public void testTimeRange() throws Exception {
-        setupRasterDimension(TIMERANGES, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
-        setupRasterDimension(TIMERANGES, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
-        setupRasterDimension(TIMERANGES, "wavelength", DimensionPresentation.LIST, null, null, null);
-        setupRasterDimension(TIMERANGES, "date", DimensionPresentation.LIST, null, null, null);
+        setupRasterDimension(TIMERANGES, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null, null);
+        setupRasterDimension(TIMERANGES, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL, null);
+        setupRasterDimension(TIMERANGES, "wavelength", DimensionPresentation.LIST, null, null, null, null);
+        setupRasterDimension(TIMERANGES, "date", DimensionPresentation.LIST, null, null, null, null);
         
         String layer = getLayerId(TIMERANGES);
         String baseUrl = "wms?LAYERS=" + layer + "&STYLES=temperature&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&SRS=EPSG:4326" +

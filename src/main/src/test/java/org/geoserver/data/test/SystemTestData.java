@@ -392,15 +392,18 @@ public class SystemTestData extends CiteTestData {
      * To set up the style a file named <tt>filename</tt> is copied from the classpath relative
      * to the <tt>scope</tt> parameter.
      * </p>
-     * @param ws The workspace to include the style in.
+     * Example: "../temperature.sld" is copied to "styles/temperature.sld".
+     * 
+     * @param ws The workspace to include the style in
      * @param name The name of the style.
      * @param filename The filename to copy from classpath.
      * @param scope Class from which to load sld resource from.
      */
     public void addStyle(WorkspaceInfo ws, String name, String filename, Class scope, Catalog catalog) throws IOException {
         File styles = catalog.getResourceLoader().findOrCreateDirectory(data, "styles");
-
-        catalog.getResourceLoader().copyFromClassPath(filename, new File(styles, filename), scope);
+        String target = new File( filename ).getName();
+        
+        catalog.getResourceLoader().copyFromClassPath(filename, new File(styles, target ), scope);
 
         StyleInfo style = catalog.getStyleByName(ws, name);
         if (style == null) {
@@ -408,7 +411,7 @@ public class SystemTestData extends CiteTestData {
             style.setName(name);
             style.setWorkspace(ws);
         }
-        style.setFilename(filename);
+        style.setFilename(target);
         if (style.getId() == null) {
             catalog.add(style);
         }

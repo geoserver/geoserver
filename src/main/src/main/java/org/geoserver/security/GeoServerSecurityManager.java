@@ -15,6 +15,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
@@ -62,6 +63,10 @@ import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.filters.GeoServerFilter;
 import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.auth.AuthenticationCache;
 import org.geoserver.security.auth.AuthenticationCacheImpl;
 import org.geoserver.security.auth.GeoServerRootAuthenticationProvider;
@@ -282,8 +287,8 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
          * catalog since we need to decrypt configuration the passwords, the rest of the security 
          * initializes occurs at the end of startup  
          */
-        File masterpw = new File(getSecurityRoot(), MASTER_PASSWD_CONFIG_FILENAME);
-        if (masterpw.exists()) {
+        Resource masterpw = secuirtyRoot().get( MASTER_PASSWD_CONFIG_FILENAME);        
+        if (masterpw.getType() == Type.RESOURCE) {
             init(loadMasterPasswordConfig());
         }
         else {
@@ -649,61 +654,132 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
     public boolean isInitialized() {
         return initialized;
     }
-
+    
     /**
      * Security configuration root directory.
      */
+    public Resource secuirtyRoot(){
+        return dataDir.get("security");
+    }
+    
+    /**
+     * Security configuration root directory.
+     * @deprecated Use {@link #secuirtyRoot()}
+     */
     public File getSecurityRoot() throws IOException {
-        return dataDir.findOrCreateSecurityRoot(); 
+        return dataDir.get("security").dir(); 
     }
 
     /**
      * Role configuration root directory.
      */
-    public File getRoleRoot() throws IOException {
-        return getRoleRoot(true); 
+    public Resource roleRoot(){
+        String path = Paths.path("security", "role");
+        return dataDir.get(path);
     }
-
+    /**
+     * Role configuration root directory.
+     * @deprecated Use {@link #roleRoot()}
+     */
+    public File getRoleRoot() throws IOException {
+        String path = Paths.path("security", "role");
+        return dataDir.get(path).dir(); 
+    }
+    /**
+     * Role configuration root directory.
+     * @deprecated Use {@link #roleRoot()}
+     */
     public File getRoleRoot(boolean create) throws IOException {
-        return create ? 
-            dataDir.findOrCreateSecurityDir("role") : dataDir.findSecurityDir("role");
+        String path = Paths.path("security", "role" );
+        if( create ) { 
+            return dataDir.get(path).dir();
+        }
+        else {
+            return Resources.directory(dataDir.get(path));
+        }
     }
 
     /**
      * Password policy configuration root directory
      */
-    public File getPasswordPolicyRoot() throws IOException {
-        return dataDir.findOrCreateSecurityDir("pwpolicy");
+    public Resource passwordPolicyRoot(){
+        String path = Paths.path("security", "pwpolicy");
+        return dataDir.get(path);
     }
-    
+    /**
+     * Password policy configuration root directory
+     * @deprecated Use {@link #passwordPolicyRoot()}
+     */
+    public File getPasswordPolicyRoot() throws IOException {
+        String path = Paths.path("security", "pwpolicy");
+        return dataDir.get(path).dir();
+    }
 
     /**
      * User/group configuration root directory.
      */
-    public File getUserGroupRoot() throws IOException {
-        return dataDir.findOrCreateSecurityDir("usergroup");
-
+    public Resource userGroupRoot() throws IOException {
+        String path = Paths.path("security", "usergroup");
+        return dataDir.get(path);
     }
 
     /**
-     * authentication configuration root directory.
+     * User/group configuration root directory.
+     * @deprecated Use {@link #userGroupRoot()}
+     */
+    public File getUserGroupRoot() throws IOException {
+        String path = Paths.path("security", "usergroup");
+        return dataDir.get(path).dir();
+    }
+
+    /**
+     * Authentication configuration root directory.
+     */
+    public Resource authRoot() throws IOException {
+        String path = Paths.path("security", "auth");
+        return dataDir.get(path);
+    }
+    
+    /**
+     * Authentication configuration root directory.
+     * @deprecated use {@link #authRoot()}
      */
     public File getAuthRoot() throws IOException {
-        return dataDir.findOrCreateSecurityDir("auth");
+        String path = Paths.path("security", "auth");
+        return dataDir.get(path).dir();
     }
 
     /**
-     * authentication filter root directory.
+     * Authentication filter root directory.
+     */
+    public File filterRoot() throws IOException {
+        String path = Paths.path("security","filter");
+        return dataDir.get(path).dir();
+    }
+    
+    /**
+     * Authentication filter root directory.
+     * @deprecated Use {@link #authRoot()}
      */
     public File getFilterRoot() throws IOException {
-        return dataDir.findOrCreateSecurityDir("filter");
+        String path = Paths.path("security","filter");
+        return dataDir.get(path).dir();
     }
 
     /**
-     * master password provider root
+     * Master password provider root
+     */
+    public Resource masterPasswordProviderRoot() throws IOException {
+        String path = Paths.path("security", "masterpw");
+        return dataDir.get(path);
+    }
+    /**
+     * Master password provider root
+     * @deprecated Use {@link #masterPasswordProviderRoot()}
      */
     public File getMasterPasswordProviderRoot() throws IOException {
-        return dataDir.findOrCreateSecurityDir("masterpw");
+        String path = Paths.path("security", "masterpw");
+        return dataDir.get(path).dir();
     }
 
     /**
@@ -2566,10 +2642,23 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      * loads the master password config
      */
     public MasterPasswordConfig loadMasterPasswordConfig() throws IOException {
-        return (MasterPasswordConfig) 
-            loadConfigFile(getSecurityRoot(), MASTER_PASSWD_CONFIG_FILENAME, globalPersister());
+        Resource resource = secuirtyRoot().get(MASTER_PASSWD_CONFIG_FILENAME);
+        return loadConfig( MasterPasswordConfig.class, resource, globalPersister() );
     }
-
+    
+    /**
+     * reads a config file from the specified directly using the specified xstream persister
+     */
+    <T extends SecurityConfig> T loadConfig( Class<T> config, Resource resource, XStreamPersister xp ) throws IOException {
+        InputStream in = resource.in();
+        try {
+            Object loaded = xp.load(in, SecurityConfig.class);
+            return config.cast( loaded );
+        }
+        finally {
+            in.close();
+        }        
+    }
     /**
      * reads a config file from the specified directly using the specified xstream persister
      */

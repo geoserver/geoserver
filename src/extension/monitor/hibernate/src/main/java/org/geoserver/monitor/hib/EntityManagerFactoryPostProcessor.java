@@ -48,8 +48,9 @@ public class EntityManagerFactoryPostProcessor implements BeanPostProcessor {
                 props.putAll(factory.getJpaVendorAdapter().getJpaPropertyMap());
                 props.putAll(factory.getJpaPropertyMap());
                 
-                FileOutputStream fout = new FileOutputStream(
-                    data.findOrCreateDataDir("monitoring", "hibernate.properties"));
+                File monitoring = data.findOrCreateDataDir("monitoring");
+                File file = new File( monitoring, "hibernate.properties" );
+                FileOutputStream fout = new FileOutputStream(file);
                 
                 props.store(fout, "hibernate configuration");
                 fout.flush();

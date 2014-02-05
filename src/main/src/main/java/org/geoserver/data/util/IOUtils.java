@@ -37,7 +37,7 @@ import org.geotools.util.logging.Logging;
  * @author Andrea Aime - TOPP
  * 
  */
-public class IOUtils {
+public final class IOUtils {
     private static final Logger LOGGER = Logging.getLogger(IOUtils.class);
     
     private IOUtils() {
@@ -207,7 +207,7 @@ public class IOUtils {
      * and finally wipes out the directory itself. For each
      * file that cannot be deleted a warning log will be issued. 
      * 
-     * @param dir
+     * @param directory Directory to delete
      * @throws IOException
      * @returns true if the directory could be deleted, false otherwise
      */

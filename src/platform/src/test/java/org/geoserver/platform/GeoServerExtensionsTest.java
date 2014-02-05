@@ -19,6 +19,7 @@ import static org.easymock.EasyMock.verify;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 
 import javax.servlet.ServletContext;
 
@@ -199,7 +200,14 @@ public class GeoServerExtensionsTest {
         GeoServerExtensions gse = new GeoServerExtensions();
 
         gse.setApplicationContext(null);
-        assertNull(GeoServerExtensions.bean("beanName"));
+        Level level = GeoServerExtensions.LOGGER.getLevel();
+        try {
+            GeoServerExtensions.LOGGER.setLevel( Level.SEVERE );
+            assertNull(GeoServerExtensions.bean("beanName"));
+        }
+        finally {
+            GeoServerExtensions.LOGGER.setLevel( level );
+        }
 
         gse.setApplicationContext(appContext);
 

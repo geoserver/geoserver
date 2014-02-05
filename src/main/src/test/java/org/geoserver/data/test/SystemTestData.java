@@ -51,6 +51,7 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridFormatFinder;
+import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.property.PropertyDataStore;
 import org.geotools.data.property.PropertyDataStoreFactory;
@@ -763,20 +764,32 @@ public class SystemTestData extends CiteTestData {
             CatalogBuilder builder = new CatalogBuilder(catalog);
             builder.setStore(store);
     
-            CoverageInfo coverage = null;
-            
-            try {
-
-                coverage = builder.buildCoverage(reader,null );
-                // coverage read params
-                if (format instanceof ImageMosaicFormat) {
-                    //  make sure we work in immediate mode
-                    coverage.getParameters().put(AbstractGridFormat.USE_JAI_IMAGEREAD.getName().getCode(), Boolean.FALSE);
-                } 
-            } catch (Exception e) {
-                throw new IOException(e);
+            final String coverageNames[] = reader.getGridCoverageNames();
+            if (reader instanceof StructuredGridCoverage2DReader && coverageNames != null && coverageNames.length > 1) {
+                for (String coverageName: coverageNames) {
+                    addCoverage(store, builder, reader, catalog, format, coverageName, qName, props, coverageName);
+                }
+            } else {
+                addCoverage(store, builder, reader, catalog, format, name, qName, props, null);
             }
-    
+        } finally {
+            if(reader != null) {
+                reader.dispose();
+            }
+        }
+    }
+
+    private void addCoverage(CoverageStoreInfo store, CatalogBuilder builder, GridCoverage2DReader reader, Catalog catalog,
+            AbstractGridFormat format, String name, QName qName, Map<LayerProperty, Object> props, String coverageName) throws IOException{
+        CoverageInfo coverage = null;
+        try { 
+            coverage = builder.buildCoverage(reader, coverageName, null);
+            // coverage read params
+            if (format instanceof ImageMosaicFormat) {
+                //  make sure we work in immediate mode
+                coverage.getParameters().put(AbstractGridFormat.USE_JAI_IMAGEREAD.getName().getCode(), Boolean.FALSE);
+            } 
+            
             coverage.setName(name);
             coverage.setTitle(name);
             coverage.setDescription(name);
@@ -810,10 +823,8 @@ public class SystemTestData extends CiteTestData {
             else {
                 catalog.save(layer);
             }
-        } finally {
-            if(reader != null) {
-                reader.dispose();
-            }
+        } catch (Exception e) {
+            throw new IOException(e);
         }
     }
 

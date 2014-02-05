@@ -211,7 +211,9 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
     public <T extends ServiceInfo> T getService(final Class<T> clazz) {
         List<ServiceInfo> all = db.getAll(ServiceInfo.class);
         for (ServiceInfo si : all) {
-            if (clazz.isAssignableFrom(si.getClass())) {
+            WorkspaceInfo wi = si.getWorkspace();
+            // Not in a specific workspace and it's the right class
+            if (wi==null && clazz.isAssignableFrom(si.getClass())) {
                 return clazz.cast(si);
             }
         }

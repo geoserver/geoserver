@@ -741,6 +741,42 @@ public class XStreamPersisterTest {
         assertEquals(1,ft.getMetadata().size());
         
     }
+    
+    /**
+     * Another Test for GEOS-6052
+     * @throws Exception
+     */
+    @Test
+    public void testVirtualTableMissingEscapeSqlDoesntSkipElements() throws Exception {
+        Catalog catalog = new CatalogImpl();
+        CatalogFactory cFactory = catalog.getFactory();
+        
+        WorkspaceInfo ws = cFactory.createWorkspace();
+        ws.setName( "foo" );
+        catalog.add( ws );
+        
+        NamespaceInfo ns = cFactory.createNamespace();
+        ns.setPrefix( "acme" );
+        ns.setURI( "http://acme.org" );
+        catalog.add( ns );
+        
+        DataStoreInfo ds = cFactory.createDataStore();
+        ds.setWorkspace( ws );
+        ds.setName( "foo" );
+        catalog.add( ds );
+        
+        persister.setCatalog( catalog );
+        FeatureTypeInfo ft = persister.load( getClass().getResourceAsStream("/org/geoserver/config/virtualtable_error_2.xml") , FeatureTypeInfo.class );
+        VirtualTable vt2 = (VirtualTable) ft.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE);
+        assertNotNull(vt2);
+        assertEquals(1,ft.getMetadata().size());
+        assertEquals(1, vt2.getGeometries().size());
+        String geometryName = vt2.getGeometries().iterator().next();
+        assertEquals("geometry", geometryName);
+        assertNotNull(vt2.getGeometryType(geometryName));
+        assertNotNull(vt2.getNativeSrid(geometryName));
+        
+    }
 
     @Test
     public void testCRSConverter() throws Exception {

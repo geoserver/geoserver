@@ -38,6 +38,30 @@ public class DimensionInfoImpl implements DimensionInfo {
 
     DimensionDefaultValueSetting defaultValue;
     
+    /**
+     * The default constructor
+     */
+    public DimensionInfoImpl(){
+        super();
+    }
+    
+    /**
+     * Creates a shallow copy of the given Dimension object
+     * @param info
+     */
+    public DimensionInfoImpl(DimensionInfo info){
+        super();
+        this.enabled = info.isEnabled();
+        this.attribute = info.getAttribute();
+        this.endAttribute = info.getEndAttribute();
+        this.presentation = info.getPresentation();
+        this.resolution = info.getResolution();
+        this.units = info.getUnits();
+        this.unitSymbol = info.getUnitSymbol();
+        this.defaultValue = info.getDefaultValue();
+        this.enabled = info.isEnabled();
+    }
+    
     public boolean isEnabled() {
         return enabled;
     }

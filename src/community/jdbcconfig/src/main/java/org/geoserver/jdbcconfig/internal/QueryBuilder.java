@@ -48,6 +48,8 @@ class QueryBuilder<T extends Info> {
 
     private Filter unsupportedFilter;
 
+    private boolean offsetLimitApplied=false;
+
     /**
      * @param clazz
      * @param
@@ -254,13 +256,25 @@ class QueryBuilder<T extends Info> {
 
         return query;
     }
+    
+    /**
+     * When the query was built, were the offset and limit included.
+     */
+    public boolean isOffsetLimitApplied() {
+        return offsetLimitApplied;
+    }
 
     private static String ascDesc(SortBy order) {
         return SortOrder.ASCENDING.equals(order.getSortOrder()) ? "ASC" : "DESC";
     }
     
     protected void applyOffsetLimit(StringBuilder sql) {
-        dialect.applyOffsetLimit(sql, offset, limit);
+        if(unsupportedFilter.equals(Filter.INCLUDE)){
+            dialect.applyOffsetLimit(sql, offset, limit);
+            offsetLimitApplied=true;
+        } else {
+            offsetLimitApplied=false;
+        }
     }
 
 }

@@ -47,12 +47,15 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.FeatureLayer;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.renderer.RenderListener;
+import org.geotools.renderer.lite.GraphicsAwareDpiRescaleStyleVisitor;
 import org.geotools.renderer.lite.MetaBufferEstimator;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleAttributeExtractor;
+import org.geotools.styling.visitor.DpiRescaleStyleVisitor;
+import org.geotools.styling.visitor.UomRescaleStyleVisitor;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
 import org.opengis.feature.FeatureVisitor;
@@ -129,7 +132,6 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
         if (rules.size() == 0) {
             return null;
         }
-
         GetMapRequest getMap = params.getGetMapRequest();
         WMSMapContent mc = new WMSMapContent(getMap);
         try {
@@ -138,7 +140,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             mc.setBuffer(params.getBuffer());
             mc.getViewport().setBounds(new ReferencedEnvelope(getMap.getBbox(), getMap.getCrs()));
             mc.setMapWidth(getMap.getWidth());
-            mc.setMapWidth(getMap.getHeight());
+            mc.setMapHeight(getMap.getHeight());
             FeatureLayer layer = getLayer(params, style);
             mc.addLayer(layer);
             // setup the env variables just like in the original GetMap
@@ -148,6 +150,9 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             AffineTransform worldToScreen = RendererUtilities.worldToScreenTransform(
                     params.getRequestedBounds(), new Rectangle(params.getWidth(), params.getHeight()));
             AffineTransform screenToWorld = worldToScreen.createInverse();
+            
+            // apply uom rescale on the rules
+            rescaleRules(rules, params);
             
             // setup the area we are actually going to paint
             int radius = getSearchRadius(params, rules, layer, getMap, screenToWorld);
@@ -205,6 +210,35 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             return aggregateByFeatureType(features);
         } finally {
             mc.dispose();
+        }
+    }
+
+    private void rescaleRules(List<Rule> rules, FeatureInfoRequestParameters params) {
+        Map<Object, Object> rendererParams = new HashMap<Object, Object>();
+        Integer requestedDpi = ((Integer) params.getGetMapRequest().getFormatOptions().get("dpi"));
+        if(requestedDpi != null) {
+            rendererParams.put(StreamingRenderer.DPI_KEY, requestedDpi);
+        }
+        
+        // apply dpi rescale if necessary
+        double standardDpi = RendererUtilities.getDpi(rendererParams);
+        if(requestedDpi != null && standardDpi != requestedDpi) {
+            double scaleFactor = requestedDpi / standardDpi;
+            DpiRescaleStyleVisitor dpiVisitor = new GraphicsAwareDpiRescaleStyleVisitor(scaleFactor);
+            for (int i = 0; i < rules.size(); i++) {
+                rules.get(i).accept(dpiVisitor);
+                Rule rescaled = (Rule) dpiVisitor.getCopy();
+                rules.set(i, rescaled);
+            }
+        }
+
+        // apply UOM rescaling
+        double pixelsPerMeters = RendererUtilities.calculatePixelsPerMeterRatio(params.getScaleDenominator(), rendererParams);
+        UomRescaleStyleVisitor uomVisitor = new UomRescaleStyleVisitor(pixelsPerMeters);
+        for (int i = 0; i < rules.size(); i++) {
+            rules.get(i).accept(uomVisitor);
+            Rule rescaled = (Rule) uomVisitor.getCopy();
+            rules.set(i, rescaled);
         }
     }
 

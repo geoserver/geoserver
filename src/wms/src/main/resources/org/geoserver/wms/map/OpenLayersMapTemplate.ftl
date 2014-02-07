@@ -149,9 +149,7 @@
                         <#list parameters as param>
                         ${param.name}: '${param.value?js_string}',
                         </#list>
-                        format: format,
-                        tiled: true,
-                        tilesOrigin : map.maxExtent.left + ',' + map.maxExtent.bottom
+                        format: format
                     },
                     {
                         buffer: 0,

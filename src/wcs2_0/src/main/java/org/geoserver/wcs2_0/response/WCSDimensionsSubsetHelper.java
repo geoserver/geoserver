@@ -31,7 +31,6 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
-
 import org.geoserver.wcs2_0.GetCoverage;
 import org.geoserver.wcs2_0.GridCoverageRequest;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
@@ -67,7 +66,6 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
-import org.vfny.geoserver.util.WCSUtils;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
@@ -869,7 +867,7 @@ public class WCSDimensionsSubsetHelper {
         subsettingRequest.setFilter(request.getFilter());
 
         // Handle default values and update subsetting values if needed
-        String coverageName =  coverageInfo.getNativeCoverageName() != null ? coverageInfo.getNativeCoverageName() : reader.getGridCoverageNames()[0];
+        String coverageName =  getCoverageName();
         //TODO consider dealing with the Format instance instead of a String parsing or check against WCSUtils.isSupportedMDOutputFormat(String).
         if (!GetCoverage.formatSupportMDOutput(request.getFormat())) {
 
@@ -881,7 +879,20 @@ public class WCSDimensionsSubsetHelper {
 
         return subsettingRequest;
     }
-    
+
+    /**
+     * Return the coverageName for the underlying {@link CoverageInfo} by accessing the nativeCoverageName if available.
+     * Since the nativeCoverageName may be null for single coverage formats we get the first grid coverage name from 
+     * the reader as backup.
+     * 
+     * @return
+     * @throws IOException
+     */
+    private String getCoverageName() throws IOException {
+        final String nativeName = coverageInfo.getNativeCoverageName();
+        return (nativeName != null ? nativeName : reader.getGridCoverageNames()[0]);
+    }
+
     /**
      * Split the current GridCoverageRequest by creating a list of new GridCoverageRequests: A query will be performed
      * with the current specified subsets, returnin N granules (if any).
@@ -909,7 +920,7 @@ public class WCSDimensionsSubsetHelper {
         }
 
         // Getting the granule source
-        final String coverageName = coverageInfo.getName();
+        final String coverageName = getCoverageName();
         
         final GranuleSource source = structuredReader.getGranules(coverageName, true);
         if (source == null) {
@@ -1267,7 +1278,7 @@ public class WCSDimensionsSubsetHelper {
     private DimensionBean setupDimensionBean(StructuredGridCoverage2DReader structuredReader, String dimensionID) throws IOException {
         Utilities.ensureNonNull("structuredReader", structuredReader);
         // Retrieve the proper dimension descriptor
-        final String coverageName = coverageInfo.getName();
+        final String coverageName = getCoverageName();
         final DimensionDescriptor descriptor = WCSDimensionsHelper.getDimensionDescriptor(structuredReader, coverageName, dimensionID);
         if (descriptor == null) {
            if (LOGGER.isLoggable(Level.FINE)) {

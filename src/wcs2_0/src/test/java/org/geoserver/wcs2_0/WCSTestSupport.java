@@ -160,7 +160,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
                     return null;
                 }
             });
-            WCS20_SCHEMA = factory.newSchema(new File("./src/main/resources/schemas/wcs/2.0/wcsAll.xsd"));
+            WCS20_SCHEMA = factory.newSchema(WCSTestSupport.class.getResource("/schemas/wcs/2.0/wcsAll.xsd"));
         } catch (Exception e) {
             throw new RuntimeException("Could not parse the WCS 2.0 schemas", e);
         }

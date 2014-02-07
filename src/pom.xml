@@ -144,6 +144,12 @@
    </dependency>
    <dependency>
     <groupId>org.geoserver</groupId>
+    <artifactId>gs-wcs2_0</artifactId>
+    <version>${gs.version}</version>
+    <classifier>tests</classifier>
+   </dependency>
+   <dependency>
+    <groupId>org.geoserver</groupId>
     <artifactId>gs-wfs</artifactId>
     <version>${gs.version}</version>
    </dependency>

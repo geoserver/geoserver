@@ -25,6 +25,7 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
         
         testData.addStyle("ranged", "ranged.sld",this.getClass(), getCatalog());
         testData.addStyle("dynamic", "dynamic.sld",this.getClass(), getCatalog());
+        testData.addStyle("symbol-uom", "symbol-uom.sld", this.getClass(), getCatalog());
     }
     
     @After 
@@ -91,5 +92,21 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
         JSONObject result2 = (JSONObject) getAsJSON(url);
         // print(result2);
         assertEquals(1, result2.getJSONArray("features").size());
+    }
+    
+    @Test
+    public void testUom() throws Exception {
+        // this results in a very large symbol (the map 8m wide and 100 pixels), but if you
+        // don't handle uom, you don't get to know that
+        String url = "wms?REQUEST=GetFeatureInfo"
+                + "&BBOX=0.000196%2C0.000696%2C0.000204%2C0.000704&SERVICE=WMS"
+                + "&INFO_FORMAT=application/json&QUERY_LAYERS=cite%3ABridges&FEATURE_COUNT=50"
+                + "&Layers=cite%3ABridges&WIDTH=100&HEIGHT=100&format=image%2Fpng"
+                + "&styles=symbol-uom&srs=EPSG%3A4326&version=1.1.1&x=49&y=60";
+        VectorRenderingLayerIdentifier.RENDERING_FEATUREINFO_ENABLED = true;
+        JSONObject result = (JSONObject) getAsJSON(url);
+        // print(result2);
+        assertEquals(1, result.getJSONArray("features").size());
+        
     }
 }

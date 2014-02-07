@@ -157,12 +157,12 @@ public class JDBCGeoServerImplTest extends GeoServerImplTest {
         // Check that we get the services we expect to
         assertThat(geoServer.getService(org.geoserver.wms.WMSInfo.class), equalTo(gwms));
         assertThat(geoServer.getService(org.geoserver.wfs.WFSInfo.class), equalTo(gwfs));
-        assertThat((Collection<ServiceInfo>)geoServer.getServices(), hasItems(gwms, gwfs, ws1wms, ws1wfs, ws2wms, ws2wfs));
+        assertThat((Collection<ServiceInfo>)geoServer.getServices(), allOf(hasItems(gwms, gwfs), not(hasItems(ws1wms, ws1wfs, ws2wms, ws2wfs))));
         assertThat(geoServer.getService(ws1, org.geoserver.wms.WMSInfo.class), equalTo(ws1wms));
         assertThat(geoServer.getService(ws1, org.geoserver.wfs.WFSInfo.class), equalTo(ws1wfs));
         assertThat((Collection<ServiceInfo>)geoServer.getServices(ws1), allOf(hasItems(ws1wms, ws1wfs), not(hasItems(gwms, gwfs, ws2wms, ws2wfs))));
         assertThat(geoServer.getService(ws2, org.geoserver.wms.WMSInfo.class), equalTo(ws2wms));
         assertThat(geoServer.getService(ws2, org.geoserver.wfs.WFSInfo.class), equalTo(ws2wfs));
-        assertThat((Collection<ServiceInfo>)geoServer.getServices(ws1), allOf(hasItems(ws2wms, ws2wfs), not(hasItems(gwms, gwfs, ws1wms, ws1wfs))));
+        assertThat((Collection<ServiceInfo>)geoServer.getServices(ws2), allOf(hasItems(ws2wms, ws2wfs), not(hasItems(gwms, gwfs, ws1wms, ws1wfs))));
     }
 }

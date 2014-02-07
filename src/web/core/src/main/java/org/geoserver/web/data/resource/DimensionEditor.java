@@ -8,10 +8,10 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang.time.DateUtils;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -24,10 +24,8 @@ import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.validation.CompoundValidator;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.validator.AbstractValidator;
-import org.apache.wicket.validation.validator.StringValidator;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionInfo;
@@ -65,6 +63,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
     private DropDownChoice<DimensionDefaultValueSetting.Strategy> defaultValueStrategy;
 
     private TextField<String> referenceValue;
+    
     
     private TextField<String> units;
     
@@ -164,7 +163,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
         unitsContainer.add(units);
         IModel<String> usModel = new PropertyModel<String>(model, "unitSymbol");
         unitSymbol = new TextField<String>("unitSymbol", usModel);
-        unitsContainer.add(unitSymbol);
+        unitsContainer.add(unitSymbol);        
         // set defaults for elevation if units have never been set
         if ("elevation".equals(id) && uModel.getObject() == null) {
             uModel.setObject(DimensionInfo.ELEVATION_UNITS);
@@ -222,7 +221,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
         final WebMarkupContainer defValueContainer = new WebMarkupContainer("defaultValueContainer");
         defValueContainer.setOutputMarkupId(true);
         configs.add(defValueContainer);
-        final WebMarkupContainer referenceValueContainer = new WebMarkupContainer("referenceValue");
+        final WebMarkupContainer referenceValueContainer = new WebMarkupContainer("referenceValueContainer");
         referenceValueContainer.setOutputMarkupId(true);               
         referenceValueContainer.setVisible((defValueSetting.getStrategyType() == Strategy.FIXED) || (defValueSetting.getStrategyType() == Strategy.NEAREST));          
         defValueContainer.add(referenceValueContainer);
@@ -244,10 +243,34 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
         });
         defValueContainer.add(defaultValueStrategy);
         
-        IModel<String> refValueModel = new PropertyModel<String>(model.getObject().getDefaultValue(), "referenceValue");
+        final Label refValueValidationMessage = new Label("refValueValidationMsg", "");
+        refValueValidationMessage.setVisible(false);
+        
+        IModel<String> refValueModel = new PropertyModel<String>(model.getObject().getDefaultValue(), "referenceValue");        
         referenceValue = new TextField<String>("referenceValue", refValueModel);
+        referenceValue.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+            
+            protected void onUpdate(AjaxRequestTarget target) {
+                refValueValidationMessage.setDefaultModelObject(null);
+                refValueValidationMessage.setVisible(false);
+                target.addComponent(referenceValueContainer);
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target, RuntimeException e) {
+                super.onError(target, e);               
+                if (referenceValue.hasErrorMessage()){
+                    refValueValidationMessage.setDefaultModelObject(referenceValue.getFeedbackMessage().getMessage());
+                    refValueValidationMessage.setVisible(true);
+                }                
+                target.addComponent(referenceValueContainer);
+            }
+        });
         referenceValue.add(new ReferenceValueValidator(id, strategyModel));
+              
         referenceValueContainer.add(referenceValue);
+        referenceValueContainer.add(refValueValidationMessage);
+        
         // set "current" for reference value if dimension is time, strategy is NEAREST and value has never been set
         if ("time".equals(id) && refValueModel.getObject() == null && strategyModel.getObject() == Strategy.NEAREST) {
             refValueModel.setObject(DimensionDefaultValueSetting.TIME_CURRENT);            
@@ -286,10 +309,13 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
     }
 
     protected void convertInput() {
+        //Keep the original attributes
         if (!enabled.getModelObject()) {
             setConvertedInput(new DimensionInfoImpl());
         } else {
-            DimensionInfoImpl info = new DimensionInfoImpl();
+            //To keep the original values for attributes not editable in UI:
+            DimensionInfoImpl info = new DimensionInfoImpl(this.getModelObject());
+            
             info.setEnabled(true);
             attribute.processInput();
             endAttribute.processInput();
@@ -324,12 +350,22 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
             defValueSetting.setStrategyType(defaultValueStrategy.getModelObject());
             if (defValueSetting.getStrategyType() == Strategy.FIXED || defValueSetting.getStrategyType() == Strategy.NEAREST){
                 referenceValue.processInput();
+                if (referenceValue.hasErrorMessage()){
+                    System.out.println("About to accept erroneous value "+referenceValue.getModelObject());
+                }
                 defValueSetting.setReferenceValue(referenceValue.getModelObject());
             }
-            info.setDefaultValue(defValueSetting);
+            if (defValueSetting.getStrategyType() != Strategy.BUILTIN){
+                info.setDefaultValue(defValueSetting);                
+            }
+            else {
+                info.setDefaultValue(null);
+            }
             setConvertedInput(info);
         }
     };
+    
+    
 
     /**
      * Returns all attributes conforming to the specified type
@@ -381,7 +417,7 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
     /**
      * Renders a default value strategy into a human readable form
      * 
-     * @author Ilkka Rinne
+     * @author Ilkka Rinne / Spatineo Inc for the Finnish Meteorological Institute
      */
     public class DefaultValueStrategyRenderer implements IChoiceRenderer<DimensionDefaultValueSetting.Strategy> {
 
@@ -398,6 +434,12 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
         }
     }
     
+    /**
+     * Validator for dimension default value reference values.
+     * 
+     * @author Ilkka Rinne / Spatineo Inc for the Finnish Meteorological Institute
+     *
+     */
     public class ReferenceValueValidator extends AbstractValidator<String> {
         String dimension;
         IModel<DimensionDefaultValueSetting.Strategy> strategyModel;
@@ -409,23 +451,38 @@ public class DimensionEditor extends FormComponentPanel<DimensionInfo> {
         
         @Override
         protected void onValidate(IValidatable<String> value) {
-            if (dimension.equals("time")){
-                if (strategyModel.getObject() == Strategy.NEAREST){
-                    try {
-                        DateUtil.parseDateTime(value.getValue());
-                    } catch (IllegalArgumentException iae){
-                        if (!DimensionDefaultValueSetting.TIME_CURRENT.equalsIgnoreCase(value.getValue())){
-                        	error(value,"invalidNearestTimeReferenceValue");
-                        }
-                    }
-                } else {
-                    try {
-                        DateUtil.parseDateTime(value.getValue());                       
-                    } catch (IllegalArgumentException iae){
-                      error(value, "invalidTimeReferenceValue");
-                    }
-                }                
+            if ( ((strategyModel.getObject() == Strategy.FIXED) || (strategyModel.getObject() == Strategy.NEAREST)) && value.getValue() == null){
+                error(value, "emptyReferenceValue");
             }
+            else if (dimension.equals("time")) {
+                try {
+                    DateUtil.parseDateTime(value.getValue());
+                } catch (IllegalArgumentException iae) {
+                    if (strategyModel.getObject() == Strategy.NEAREST) {
+                        if (!DimensionDefaultValueSetting.TIME_CURRENT.equalsIgnoreCase(value
+                                .getValue())) {
+                            error(value, "invalidNearestTimeReferenceValue", Collections
+                                    .singletonMap("value", (Object) value.getValue()));
+                        }
+                    } else {
+                        error(value, "invalidTimeReferenceValue", Collections.singletonMap("value",
+                                (Object) value.getValue()));
+                    }
+                }
+            }
+            else if (dimension.equals("elevation")) {
+                try {
+                    Double.parseDouble(value.getValue());
+                } catch (NumberFormatException nfe){
+                    error(value, "invalidElevationReferenceValue", Collections.singletonMap("value",
+                            (Object) value.getValue()));
+                }
+            }
+        }
+
+        @Override
+        public boolean validateOnNullValue() {
+            return true;
         }
     }
     

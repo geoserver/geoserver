@@ -40,13 +40,16 @@
           </li>
           <li wicket:id="defaultValueContainer">
             <label for="strategy">
-              <wicket:message key="strategy">strategy</wicket:message>
+              <wicket:message key="defaultValueStrategy">defaultValue</wicket:message>
             </label>
             <select id="strategy" wicket:id="strategy"></select> 
-            <label for="referenceValue">
-              <wicket:message key="referenceValue">referenceValue</wicket:message>
-            </label>
-            <input type="text" wicket:id="referenceValue" class="field text" />
+			<div wicket:id="referenceValueContainer">
+              <label for="referenceValue">
+                <wicket:message key="referenceValue">referenceValue</wicket:message>
+              </label>
+              <input type="text" wicket:id="referenceValue" class="field text" />
+              &nbsp;&nbsp;<em><span class="error" wicket:id="refValueValidationMsg"></span></em>
+			</div>
           </li>
         </ul>
       </li>

@@ -127,6 +127,11 @@ public class WFSKMLOutputFormat extends WFSGetFeatureOutputFormat {
         String outputFileName = request.getQueries().get(0).getTypeNames().get(0).getLocalPart();
         return outputFileName + ".kml";
     }
+    
+    @Override
+    public String getCapabilitiesElementName() {
+        return "KML";
+    }
 
     /**
      * A special KML encoding context for the WFS case

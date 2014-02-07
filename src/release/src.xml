@@ -7,22 +7,25 @@
  <moduleSets>
   <moduleSet>
    <includes>
-    <include>org.geoserver:platform</include>
-    <include>org.geoserver:ows</include>
-    <include>org.geoserver:main</include>
-    <include>org.geoserver:security</include>
-    <include>org.geoserver:wfs</include>
-    <include>org.geoserver:wms</include>
+    <include>org.geoserver:gs-platform</include>
+    <include>org.geoserver:gs-ows</include>
+    <include>org.geoserver:gs-main</include>
+    <include>org.geoserver:gs-security</include>
+    <include>org.geoserver:gs-wfs</include>
+    <include>org.geoserver:gs-wms</include>
+    <include>org.geoserver:gs-kml</include>
     <include>org.geoserver:web</include>
-    <include>org.geoserver:wcs</include>
-    <include>org.geoserver:wcs1_0</include>
-    <include>org.geoserver:wcs1_1</include>
-    <include>org.geoserver:gwc</include>
-    <include>org.geoserver:rest</include>
-    <include>org.geoserver:restconfig</include>
-    <include>org.geoserver:maven</include>
+    <include>org.geoserver:gs-wcs</include>
+    <include>org.geoserver:gs-wcs1_0</include>
+    <include>org.geoserver:gs-wcs1_1</include>
+    <include>org.geoserver:gs-wcs2_0</include>
+    <include>org.geoserver:gs-gwc</include>
+    <include>org.geoserver:gs-rest</include>
+    <include>org.geoserver:gs-restconfig</include>
+    <include>org.geoserver:gs-maven</include>
     <include>org.geoserver:community</include>
     <include>org.geoserver:extension</include>
+    <include>org.geoserver:gs-release</include>
    </includes>
    <sources>
     <outputDirectory>geoserver-2.5-SNAPSHOT/${artifactId}/</outputDirectory>

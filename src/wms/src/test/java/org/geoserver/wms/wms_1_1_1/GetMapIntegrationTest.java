@@ -53,6 +53,8 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class GetMapIntegrationTest extends WMSTestSupport {
     
+    private static final QName ONE_BIT = new QName(MockData.SF_URI, "onebit", MockData.SF_PREFIX);
+
     String bbox = "-130,24,-66,50";
 
     String styles = "states";
@@ -151,6 +153,10 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         properties.put(LayerProperty.STYLE,"raster");
         testData.addRasterLayer(new QName(MockData.SF_URI, "mosaic_holes", MockData.SF_PREFIX),
                 "mosaic_holes.zip", null, properties,GetMapIntegrationTest.class,catalog);
+        
+        testData.addRasterLayer(ONE_BIT,
+                "onebit.zip", null, properties,GetMapIntegrationTest.class,catalog);
+
     }
     
     // protected String getDefaultLogConfiguration() {
@@ -760,7 +766,16 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         } finally {
             catalog.remove(group);
         }
-    }   
+    }
+    
+    @Test
+    public void testOneBit() throws Exception {
+        String url = "wms?LAYERS=" + getLayerId(ONE_BIT)
+                + "&STYLES=&FORMAT=image%2Fpng"
+                + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=10&HEIGHT=10&BBOX=0,0,10,10";
+        // used to crash, should give us back a empty image instead
+        getAsImage(url, "image/png");
+    }
 
     
     @Test
@@ -806,5 +821,10 @@ public class GetMapIntegrationTest extends WMSTestSupport {
             geoserverInfo.setXmlExternalEntitiesEnabled(null);
             getGeoServer().save(geoserverInfo);     
         }
-    }     
+    }
+    
+    public void testRssMime() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wms?request=reflect&layers=" + getLayerId(MockData.BASIC_POLYGONS) + "&format=rss");
+        assertEquals("application/rss+xml", response.getContentType());
+    }
 }

@@ -94,7 +94,7 @@ public class LoggingUtils {
             
             // ... and the std output logging too
             if (suppressStdOutLogging) {
-                LoggingInitializer.LOGGER.warning("Suppressing StdOut logging.  If you want to see GeoServer logs, be sure to look in '" + logFileName + "'");
+                LoggingInitializer.LOGGER.info("Suppressing StdOut logging.  If you want to see GeoServer logs, be sure to look in '" + logFileName + "'");
                 Enumeration allAppenders = org.apache.log4j.Logger.getRootLogger().getAllAppenders();
                 Appender curApp;
                 while (allAppenders.hasMoreElements()) {

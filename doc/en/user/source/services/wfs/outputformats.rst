@@ -73,4 +73,5 @@ GeoServer provides the ``format_options`` vendor-specific parameter to specify p
 The currently supported format option in WFS output is:
 
   * ``filename``—Applies only to the SHAPE-ZIP output format. If a file name is provided, the name is used as the output file name. For example, ``format_options=filename:roads.zip``. If a file name is not specified, the output file name is inferred from the requested feature type name.
-
+  * ``callback``—Applies only to the JSONP output format. See :ref:`wms_vendor_parameters` to change the callback name. Note that this format is disabled by default (See :ref:`wms_global_variables`).  
+  * ``id_policy``—Applies only to the JSON output format and is used to determine if the id values are included in output. If an attribute name is provided it will be used. For example, ``format_options=id_policy:reference_no``. Use ``true`` for feature id generation. To avoid any feature id output use ``false``. If ``id_policy`` is not specified feature id generation is used.

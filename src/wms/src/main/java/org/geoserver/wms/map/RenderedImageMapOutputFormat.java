@@ -986,12 +986,12 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             } else {
             	// we found the background color in the original image palette therefore we set its index as the bkg value.
             	// The final Mosaic will use the IndexColorModel of this image anywa, therefore all we need to do is to force
-            	// the background to point to the right color in the palettte
+            	// the background to point to the right color in the palette
                 bgValues = new double[] { bgColorIndex };
             }
             
             // collect alpha channels if we have them in order to reuse them later on for mosaic operation
-            if (cm.hasAlpha()) {
+            if (cm.hasAlpha() && bgColorIndex == -1) {
                 worker.forceComponentColorModel();
                 final RenderedImage alpha = worker.retainLastBand().getRenderedImage();
                 alphaChannels = new PlanarImage[] { PlanarImage.wrapRenderedImage(alpha) };

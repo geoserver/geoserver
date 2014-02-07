@@ -139,5 +139,23 @@ public class GetRecordByIdTest extends CSWSimpleTestSupport {
         assertXpathEvaluatesTo("http://purl.org/dc/dcmitype/Image", "//csw:BriefRecord/dc:type", dom);    
         assertXpathEvaluatesTo("", "//csw:BriefRecord/dc:subject", dom);
     }
+    
+    @Test 
+    public void testPostSummary() throws Exception {
+        String request = getResourceAsString("GetRecordById.xml");
+        request = request.replace("REC-10", "urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f");
+        Document dom = postAsDOM(BASEPATH, request);
+        print(dom);
+        checkValidationErrors(dom);
+        
+        // check we have the expected results
+        assertXpathEvaluatesTo("urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f", "//csw:SummaryRecord/dc:identifier", dom);     
+        assertXpathEvaluatesTo("Lorem ipsum", "//csw:SummaryRecord/dc:title", dom);    
+        assertXpathEvaluatesTo("http://purl.org/dc/dcmitype/Image", "//csw:SummaryRecord/dc:type", dom);    
+        assertXpathEvaluatesTo("Tourism--Greece", "//csw:SummaryRecord/dc:subject", dom);
+        assertXpathEvaluatesTo("image/svg+xml", "//csw:SummaryRecord/dc:format", dom);
+        assertXpathEvaluatesTo("Quisque lacus diam, placerat mollis, pharetra in, commodo sed, augue. Duis iaculis arcu vel arcu.", "//csw:SummaryRecord/dct:abstract", dom);
+        assertXpathEvaluatesTo("GR-22", "//csw:SummaryRecord/dct:spatial", dom);
+    }
 
 }

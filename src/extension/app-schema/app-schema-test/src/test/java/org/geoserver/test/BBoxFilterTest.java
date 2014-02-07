@@ -128,6 +128,42 @@ public class BBoxFilterTest extends AbstractAppSchemaTestSupport {
         assertXpathEvaluatesTo("2", "/wfs:FeatureCollection/@numberOfFeatures", doc);
         assertXpathCount(2, "//ex:geomContainer", doc);
     }
+    
+    /**
+     * The following performs a WFS request specifying a BBOX parameter of axis ordering latitude
+     * longitude and srsName in URN format using POST request (GEOS-6216). 
+     * This test should return features if the axis ordering behaves similar to queries
+     * to Simple features.
+     */
+    @Test
+    public void testQueryBboxLatLongPost() {
+        
+        String xml = "<wfs:GetFeature service=\"WFS\" version=\"1.1.0\" " //
+                + "xmlns:ogc=\"http://www.opengis.net/ogc\" " //
+                + "xmlns:wfs=\"http://www.opengis.net/wfs\" " //
+                + "xmlns:gml=\"http://www.opengis.net/gml\" " //
+                + "xmlns:ex=\"http://example.com\" " //
+                + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " //
+                + "xsi:schemaLocation=\"" //
+                + "http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd \">" //
+                + "<wfs:Query typeName=\"ex:geomContainer\">" //
+                + "    <ogc:Filter>" //
+                + "        <ogc:BBOX>" //
+                + "            <ogc:PropertyName>ex:geom</ogc:PropertyName>" //
+                + "            <gml:Envelope srsName=\"urn:x-ogc:def:crs:EPSG:4326\">" //
+                + "                  <gml:lowerCorner>-29 130</gml:lowerCorner>" //
+                + "                  <gml:upperCorner>-24 134</gml:upperCorner>" //
+                + "            </gml:Envelope>" //
+                + "        </ogc:BBOX>" //
+                + "    </ogc:Filter>" //
+                + "</wfs:Query>" //
+                + "</wfs:GetFeature>"; //
+        validate(xml);
+        Document doc = postAsDOM("wfs", xml);
+        LOGGER.info(WFS_GET_FEATURE_LOG + " with POST filter " + prettyString(doc));
+        assertXpathEvaluatesTo("2", "/wfs:FeatureCollection/@numberOfFeatures", doc);
+        assertXpathCount(2, "//ex:geomContainer", doc);
+    }
 
     /**
      * The following performs a WFS request specifying a BBOX parameter of axis ordering longitude

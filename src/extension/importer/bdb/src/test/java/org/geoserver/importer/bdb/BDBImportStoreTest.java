@@ -4,28 +4,38 @@
  */
 package org.geoserver.importer.bdb;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.util.Iterator;
+
+import org.apache.commons.io.FileUtils;
 import org.geoserver.importer.Directory;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportStore.ImportVisitor;
 import org.geoserver.importer.Importer;
 import org.geoserver.importer.ImporterTestSupport;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 
 public class BDBImportStoreTest extends ImporterTestSupport {
 
     BDBImportStore store;
+    File dbRoot;
     
-    @Override
-    protected void setUpInternal() throws Exception {
-        super.setUpInternal();
-        
+    @Before
+    public void setupStoreField() throws Exception {
         store = new BDBImportStore(importer);
         store.init();
+        dbRoot = new File(importer.getImportRoot(), "bdb");
     }
     
     // in order to test this, run once, then change the serialVersionUID of ImportContext2
+    @Test
     public void testSerialVersionUIDChange() throws Exception {
         Importer imp =  new Importer(null) {
 
@@ -59,6 +69,7 @@ public class BDBImportStoreTest extends ImporterTestSupport {
         private static final long serialVersionUID = 12345;
     }
 
+    @Test
     public void testAdd() throws Exception {
         File dir = unpack("shape/archsites_epsg_prj.zip");
         ImportContext context = importer.createContext(new Directory(dir));
@@ -102,6 +113,7 @@ public class BDBImportStoreTest extends ImporterTestSupport {
         assertNotNull(context2.getTasks().get(0).getLayer());
     }
 
+    @Test
     public void testSave() throws Exception {
         testAdd();
 
@@ -121,10 +133,12 @@ public class BDBImportStoreTest extends ImporterTestSupport {
         assertEquals(ImportContext.State.COMPLETE, context2.getState());
     }
 
+    @Test
     public void testDatabaseRecovery() throws Exception {
         
     }
     
+    @Test
     public void testIDManagement() throws Exception {
         // verify base - first one is zero
         ImportContext zero = new ImportContext();
@@ -166,14 +180,11 @@ public class BDBImportStoreTest extends ImporterTestSupport {
         }
     }
 
-    @Override
-    protected void tearDownInternal() throws Exception {
-        super.tearDownInternal();
+    @After
+    public void destroyStore() throws Exception {
         store.destroy();
-
-//        Environment env = db.getEnvironment();
-//        db.close();
-//        classDb.close();
-//        env.close();
+        // clean up the databse       
+        FileUtils.deleteDirectory(dbRoot);
+        
     }
 }

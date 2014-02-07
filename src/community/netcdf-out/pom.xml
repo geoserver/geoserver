@@ -22,16 +22,66 @@
  
  <dependencies>
   <dependency>
-    <groupId>org.geoserver.community</groupId>
-    <artifactId>gs-wcs2_0</artifactId>
-    <version>${project.version}</version>
+    <groupId>org.geoserver</groupId>
+    <artifactId>gs-main</artifactId>
   </dependency>
-  
+  <dependency>
+    <groupId>org.geoserver</groupId>
+    <artifactId>gs-main</artifactId>
+    <classifier>tests</classifier>
+    <scope>test</scope>
+  </dependency>
+  <dependency>
+    <groupId>org.geoserver</groupId>
+    <artifactId>gs-wcs</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>org.geoserver</groupId>
+    <artifactId>gs-ows</artifactId>
+    <scope>test</scope>
+  </dependency>
+  <dependency>
+    <groupId>org.geoserver</groupId>
+    <artifactId>gs-wcs1_1</artifactId>
+    <scope>test</scope>
+  </dependency>
+  <dependency>
+    <groupId>org.geotools.ogc</groupId>
+    <artifactId>net.opengis.wcs</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>org.geotools.xsd</groupId>
+    <artifactId>gt-xsd-wcs</artifactId>
+  </dependency>
+   <dependency>
+    <groupId>org.geoserver</groupId>
+    <artifactId>gs-wcs2_0</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>org.geoserver</groupId>
+    <artifactId>gs-wcs2_0</artifactId>
+    <classifier>tests</classifier>
+    <scope>test</scope>
+  </dependency>
+
+  <!--  NetCDF logging dependencies -->
+  <dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-log4j12</artifactId>
+    <version>1.6.4</version>
+    <scope>runtime</scope>
+  </dependency>
+  <dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>log4j-over-slf4j</artifactId>
+    <version>1.6.4</version>
+  </dependency>
+
   <!-- TODO: relax this dependency: just need to depends on NetCDF java library from Unidata -->
   <dependency>
-   <groupId>org.geotools</groupId>
-   <artifactId>gt-netcdf</artifactId>
-   <version>${gt.version}</version>
+    <groupId>org.geotools</groupId>
+    <artifactId>gt-netcdf</artifactId>
+    <version>${gt.version}</version>
     <exclusions>
       <exclusion>
         <groupId>org.slf4j</groupId>

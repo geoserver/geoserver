@@ -233,8 +233,8 @@ public class GeoServerImplTest {
         assertThat(geoServer.getService(ServiceInfo.class), equalTo(globalService));
         assertThat(geoServer.getService(ws1, ServiceInfo.class), equalTo(newService1));
         assertThat(geoServer.getService(ws2, ServiceInfo.class), equalTo(newService2));
-        assertThat((Collection<ServiceInfo>)geoServer.getServices(), hasItem(globalService));
-        assertThat((Collection<ServiceInfo>)geoServer.getServices(ws1), hasItem(newService1));
-        assertThat((Collection<ServiceInfo>)geoServer.getServices(ws2), hasItem(newService2));
+        assertThat((Collection<ServiceInfo>)geoServer.getServices(), allOf(hasItem(globalService), not(hasItems(newService1, newService2))));
+        assertThat((Collection<ServiceInfo>)geoServer.getServices(ws1), allOf(hasItem(newService1), not(hasItems(globalService, newService2))));
+        assertThat((Collection<ServiceInfo>)geoServer.getServices(ws2), allOf(hasItem(newService2), not(hasItems(newService1, globalService))));
     }
 }

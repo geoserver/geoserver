@@ -693,44 +693,55 @@
     
     
   <!-- Dimension default value factory -->  
-  <bean id="dimensionDefaultValueStrategyFactory" class="org.geoserver.wms.dimension.DimensionDefaultValueStrategyFactoryImpl">
+  <bean id="dimensionDefaultValueStrategyFactory" class="org.geoserver.wms.dimension.impl.DimensionDefaultValueSelectionStrategyFactoryImpl">
     <property name="featureTimeMinimumStrategy">
-      <bean class="org.geoserver.wms.dimension.DefaultFeatureMinimumValueSelectionStrategy"/>
+      <bean class="org.geoserver.wms.dimension.impl.FeatureMinimumValueSelectionStrategyImpl"/>
     </property>
     <property name="featureTimeMaximumStrategy">
-      <bean class="org.geoserver.wms.dimension.DefaultFeatureMaximumValueSelectionStrategy"/>
+      <bean class="org.geoserver.wms.dimension.impl.FeatureMaximumValueSelectionStrategyImpl"/>
     </property>    
     <property name="coverageTimeMinimumStrategy">
-      <bean class="org.geoserver.wms.dimension.DefaultCoverageMinimumValueSelectionStrategy"/>
+      <bean class="org.geoserver.wms.dimension.impl.CoverageMinimumValueSelectionStrategyImpl"/>
     </property>
     <property name="coverageTimeMaximumStrategy">
-      <bean class="org.geoserver.wms.dimension.DefaultCoverageMaximumValueSelectionStrategy"/>
+      <bean class="org.geoserver.wms.dimension.impl.CoverageMaximumValueSelectionStrategyImpl"/>
     </property>
     
     <property name="featureElevationMinimumStrategy">
-      <bean class="org.geoserver.wms.dimension.DefaultFeatureMinimumValueSelectionStrategy"/>
+      <bean class="org.geoserver.wms.dimension.impl.FeatureMinimumValueSelectionStrategyImpl"/>
     </property>
     <property name="featureElevationMaximumStrategy">
-      <bean class="org.geoserver.wms.dimension.DefaultFeatureMaximumValueSelectionStrategy"/>
+      <bean class="org.geoserver.wms.dimension.impl.FeatureMaximumValueSelectionStrategyImpl"/>
     </property>
      <property name="coverageElevationMinimumStrategy">
-      <bean class="org.geoserver.wms.dimension.DefaultCoverageMinimumValueSelectionStrategy"/>
+      <bean class="org.geoserver.wms.dimension.impl.CoverageMinimumValueSelectionStrategyImpl"/>
     </property>
     <property name="coverageElevationMaximumStrategy">
-      <bean class="org.geoserver.wms.dimension.DefaultCoverageMaximumValueSelectionStrategy"/>
+      <bean class="org.geoserver.wms.dimension.impl.CoverageMaximumValueSelectionStrategyImpl"/>
     </property>
     
     <property name="featureCustomDimensionMinimumStrategy">
-      <bean class="org.geoserver.wms.dimension.DefaultFeatureMinimumValueSelectionStrategy"/>
+      <bean class="org.geoserver.wms.dimension.impl.FeatureMinimumValueSelectionStrategyImpl"/>
     </property>
     <property name="featureCustomDimensionMaximumStrategy">
-      <bean class="org.geoserver.wms.dimension.DefaultFeatureMaximumValueSelectionStrategy"/>
+      <bean class="org.geoserver.wms.dimension.impl.FeatureMaximumValueSelectionStrategyImpl"/>
     </property>
-     <property name="coverageCustomDimensionMinimumStrategy">
-      <bean class="org.geoserver.wms.dimension.DefaultCoverageMinimumValueSelectionStrategy"/>
+    <property name="coverageCustomDimensionMinimumStrategy">
+      <bean class="org.geoserver.wms.dimension.impl.CoverageMinimumValueSelectionStrategyImpl"/>
     </property>
     <property name="coverageCustomDimensionMaximumStrategy">
-      <bean class="org.geoserver.wms.dimension.DefaultCoverageMaximumValueSelectionStrategy"/>
+      <bean class="org.geoserver.wms.dimension.impl.CoverageMaximumValueSelectionStrategyImpl"/>
+    </property>
+    
+    <property name="featureNearestValueStrategyFactory">
+      <bean class="org.geoserver.wms.dimension.DefaultFeatureNearestValueSelectionStrategyFactory"/>
+    </property>
+    <property name="coverageNearestValueStrategyFactory">
+      <bean class="org.geoserver.wms.dimension.DefaultCoverageNearestValueSelectionStrategyFactory"/>
+    </property>
+    
+    <property name="fixedValueStrategyFactory">
+      <bean class="org.geoserver.wms.dimension.DefaultFixedValueStrategyFactory"/>
     </property>    
   </bean>
   

@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2014 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wms.dimension;
 
 import static org.junit.Assert.*;
@@ -26,35 +30,35 @@ import org.w3c.dom.Document;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 
-public class DimensionInfoPersistenceTest extends WMSTestSupport {
+public class DimensionInfoSerializationTest extends WMSTestSupport {
     
     
     @Test
-    public void testMinStrategyXMLPersistance() throws Exception{
-        assertBackAndForthPersistence(Strategy.MINIMUM);
+    public void testMinStrategyXMLSerialization() throws Exception{
+        assertBackAndForthSerialization(Strategy.MINIMUM);
     }
     
     @Test
-    public void testMaxStrategyXMLPersistance() throws Exception{
-        assertBackAndForthPersistence(Strategy.MAXIMUM);
+    public void testMaxStrategyXMLSerialization() throws Exception{
+        assertBackAndForthSerialization(Strategy.MAXIMUM);
     }
     
     @Test
-    public void testFixedStrategyXMLPersistance() throws Exception{
-       assertBackAndForthPersistence(Strategy.FIXED);             
-       assertBackAndForthPersistence(Strategy.FIXED,"2014-01-24T13:25:00.000Z");
+    public void testFixedStrategyXMLSerialization() throws Exception{
+       assertBackAndForthSerialization(Strategy.FIXED);             
+       assertBackAndForthSerialization(Strategy.FIXED,"2014-01-24T13:25:00.000Z");
     }
     
     @Test
-    public void testNearestStrategyXMLPersistance() throws Exception{
-       assertBackAndForthPersistence(Strategy.NEAREST);
-       assertBackAndForthPersistence(Strategy.NEAREST,"2014-01-24T13:25:00.000Z");
+    public void testNearestStrategyXMLSerialization() throws Exception{
+       assertBackAndForthSerialization(Strategy.NEAREST);
+       assertBackAndForthSerialization(Strategy.NEAREST,"2014-01-24T13:25:00.000Z");
     }
     
-    protected void assertBackAndForthPersistence(Strategy used) throws Exception {
-        assertBackAndForthPersistence(used, null);
+    protected void assertBackAndForthSerialization(Strategy used) throws Exception {
+        assertBackAndForthSerialization(used, null);
     }
-    protected void assertBackAndForthPersistence(Strategy used, String referenceValue) throws Exception {
+    protected void assertBackAndForthSerialization(Strategy used, String referenceValue) throws Exception {
         DimensionDefaultValueSetting setting = new DimensionDefaultValueSetting();
         setting.setStrategyType(used);
         if (referenceValue != null){

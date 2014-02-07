@@ -1,31 +1,39 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2014 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.wms.dimension;
+package org.geoserver.wms.dimension.impl;
 
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.wms.dimension.AbstractFeatureAttributeVisitorSelectionStrategy;
+import org.geoserver.wms.dimension.NearestVisitor;
 import org.geotools.feature.visitor.CalcResult;
 
-class DefaultFeatureNearestValueSelectionStrategy extends
+/**
+ * Default implementation for selecting the default values for dimensions of 
+ * feature (vector) resources using the nearest-domain-value-to-the-reference-value
+ * strategy.
+ *  
+ * @author Ilkka Rinne / Spatineo Inc for the Finnish Meteorological Institute
+ *
+ */
+
+public class FeatureNearestValueSelectionStrategyImpl extends
         AbstractFeatureAttributeVisitorSelectionStrategy {
 
-    /** serialVersionUID */
-    private static final long serialVersionUID = 7974448014127508563L;
     private Object toMatch;
     private String fixedCapabilitiesValue;
-
     
     /**
      * Default constructor.
      */
-    public DefaultFeatureNearestValueSelectionStrategy(Object toMatch){
+    public FeatureNearestValueSelectionStrategyImpl(Object toMatch){
         this(toMatch,null);
     }
-    
-    public DefaultFeatureNearestValueSelectionStrategy(Object toMatch, String capabilitiesValue) {
+        
+    public FeatureNearestValueSelectionStrategyImpl(Object toMatch, String capabilitiesValue) {
         this.toMatch = toMatch;
         this.fixedCapabilitiesValue = capabilitiesValue;
     }
@@ -35,7 +43,7 @@ class DefaultFeatureNearestValueSelectionStrategy extends
         final NearestVisitor<Object> nearest = new NearestVisitor<Object>(dimensionInfo.getAttribute(),
                 this.toMatch);
 
-        CalcResult res = getSelectedValue((FeatureTypeInfo) resource, dimensionInfo, nearest);
+        CalcResult res = getCalculatedResult((FeatureTypeInfo) resource, dimensionInfo, nearest);
         if (res.equals(CalcResult.NULL_RESULT)) {
             return null;
         } else {

@@ -1,28 +1,37 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2014 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.wms.dimension;
+package org.geoserver.wms.dimension.impl;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
+import org.geoserver.wms.dimension.AbstractDefaultValueSelectionStrategy;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.util.logging.Logging;
 
-class DefaultCoverageMinimumValueSelectionStrategy extends AbstractCapabilitiesDefaultValueSelectionStrategy {
-    /** serialVersionUID */
-    private static final long serialVersionUID = -6119387494519619670L;
-
+/**
+ * Default implementation for selecting the default values for dimensions of 
+ * coverage (raster) resources using the minimum domain value strategy.
+ *  
+ * @author Ilkka Rinne / Spatineo Inc for the Finnish Meteorological Institute
+ *
+ */
+public class CoverageMinimumValueSelectionStrategyImpl extends AbstractDefaultValueSelectionStrategy {
+  
+    private static Logger LOGGER = Logging.getLogger(CoverageMinimumValueSelectionStrategyImpl.class);
     /**
      * Default constructor.
      */
-    public DefaultCoverageMinimumValueSelectionStrategy() {
+    public CoverageMinimumValueSelectionStrategyImpl() {
     }
 
     @Override
@@ -61,7 +70,7 @@ class DefaultCoverageMinimumValueSelectionStrategy extends AbstractCapabilitiesD
                 }
             }
         } catch (IOException e) {
-            DimensionDefaultValueStrategyFactoryImpl.LOGGER.log(Level.FINER, e.getMessage(), e);
+            LOGGER.log(Level.FINER, e.getMessage(), e);
         }
         return retval;
     }        

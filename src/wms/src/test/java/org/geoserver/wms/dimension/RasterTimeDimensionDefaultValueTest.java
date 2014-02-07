@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2014 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -42,7 +42,6 @@ import org.geotools.feature.NameImpl;
 import org.geotools.feature.type.DateUtil;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.io.DefaultFileFilter;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -192,6 +191,9 @@ public class RasterTimeDimensionDefaultValueTest extends WMSTestSupport {
     
     protected void setupCoverageTimeDimension(QName name, DimensionDefaultValueSetting defaultValue) {
         CoverageInfo info = getCatalog().getCoverageByName(name.getLocalPart());
+        if (info == null){
+            throw new RuntimeException("Unable to get coverage by name "+name.getLocalPart());
+        }
         DimensionInfo di = new DimensionInfoImpl();
         di.setEnabled(true);
         di.setPresentation(DimensionPresentation.LIST);

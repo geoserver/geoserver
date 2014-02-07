@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2014 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -7,6 +7,7 @@ package org.geoserver.wms.dimension;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -17,13 +18,33 @@ import org.geotools.factory.GeoTools;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.visitor.CalcResult;
 import org.geotools.feature.visitor.FeatureCalc;
+import org.geotools.util.logging.Logging;
 
-abstract class AbstractFeatureAttributeVisitorSelectionStrategy extends AbstractCapabilitiesDefaultValueSelectionStrategy {
+/**
+ * An abstract parent class for a  DefaultValueSelectionStrategy implementations
+ * that use a {@link FeatureCalc} instances for finding the matching default value.
+ *  
+ * @author Ilkka Rinne / Spatineo Inc for the Finnish Meteorological Institute
+ *
+ */
+public abstract class AbstractFeatureAttributeVisitorSelectionStrategy extends AbstractDefaultValueSelectionStrategy {
 
     /** serialVersionUID */
     private static final long serialVersionUID = 3863284347371098095L;
 
-    protected CalcResult getSelectedValue(FeatureTypeInfo typeInfo, DimensionInfo dimension,
+    private static Logger LOGGER = Logging.getLogger(AbstractFeatureAttributeVisitorSelectionStrategy.class);
+    
+    /**
+     * Return the result of iterating through the dimension collection
+     * of the given dimension using given calculator as the attribute
+     * value calculator.
+     * 
+     * @param typeInfo
+     * @param dimension
+     * @param calculator
+     * @return
+     */
+    protected CalcResult getCalculatedResult(FeatureTypeInfo typeInfo, DimensionInfo dimension,
             FeatureCalc calculator) {
         CalcResult retval = null;
         try {
@@ -37,7 +58,7 @@ abstract class AbstractFeatureAttributeVisitorSelectionStrategy extends Abstract
             dimensionCollection.accepts(calculator, null);
             retval = calculator.getResult();
         } catch (IOException e) {
-            DimensionDefaultValueStrategyFactoryImpl.LOGGER.log(Level.FINER, e.getMessage(), e);
+           LOGGER.log(Level.FINER, e.getMessage(), e);
         }
         return retval;
     }

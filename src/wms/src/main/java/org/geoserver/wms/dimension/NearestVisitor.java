@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2014 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -22,14 +22,21 @@ public class NearestVisitor<T> implements FeatureCalc {
 
     double shortestDistance = Double.MAX_VALUE;
 
-    public NearestVisitor(String attributeTypeName, T valueToMatch) {
+    /**
+     * Creates a NearestVisitor instance for the given attribute and a value to match.
+     * 
+     * @param attributeName
+     * @param valueToMatch
+     */
+    public NearestVisitor(String attributeName, T valueToMatch) {
         FilterFactory factory = CommonFactoryFinder.getFilterFactory(null);
-        expr = factory.property(attributeTypeName);
+        expr = factory.property(attributeName);
         this.matchedValue = valueToMatch;
     }
 
     /**
-     * Visitor function, which looks at each feature and finds the value of the attribute given attribute nearest to the given comparison value.
+     * Visitor function, which looks at each feature and finds the value of the 
+     * attribute given attribute nearest to the given comparison value.
      * 
      * @param feature the feature to be visited
      */
@@ -72,6 +79,12 @@ public class NearestVisitor<T> implements FeatureCalc {
         }
     }
 
+    /**
+     * Returns the match after {@link #visit}.
+     * 
+     * @return
+     * @throws IllegalStateException
+     */
     public T getNearestMatch() throws IllegalStateException {
         return this.nearestValueFound;
     }

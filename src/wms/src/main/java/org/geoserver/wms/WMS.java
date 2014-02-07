@@ -44,8 +44,8 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMSInfo.WMSInterpolation;
 import org.geoserver.wms.WatermarkInfo.Position;
-import org.geoserver.wms.dimension.DimensionDefaultValueStrategy;
-import org.geoserver.wms.dimension.DimensionDefaultValueStrategyFactory;
+import org.geoserver.wms.dimension.DimensionDefaultValueSelectionStrategy;
+import org.geoserver.wms.dimension.DimensionDefaultValueSelectionStrategyFactory;
 import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
 import org.geoserver.wms.map.RenderedImageMapResponse;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
@@ -1067,7 +1067,7 @@ public class WMS implements ApplicationContextAware {
             throw new ServiceException("Layer " + resourceInfo.prefixedName()
                     + " does not have time support enabled");
         }        
-        DimensionDefaultValueStrategy strategy = this.getDefaultValueStrategy(resourceInfo, ResourceInfo.TIME, time);        
+        DimensionDefaultValueSelectionStrategy strategy = this.getDefaultValueStrategy(resourceInfo, ResourceInfo.TIME, time);        
         return strategy.getDefaultValue(resourceInfo, ResourceInfo.TIME, time, Date.class);
     }
     
@@ -1086,7 +1086,7 @@ public class WMS implements ApplicationContextAware {
             throw new ServiceException("Layer " + resourceInfo.prefixedName()
                     + " does not have elevation support enabled");
         }
-        DimensionDefaultValueStrategy strategy = this.getDefaultValueStrategy(resourceInfo, ResourceInfo.ELEVATION, elevation);
+        DimensionDefaultValueSelectionStrategy strategy = this.getDefaultValueStrategy(resourceInfo, ResourceInfo.ELEVATION, elevation);
         return strategy.getDefaultValue(resourceInfo, ResourceInfo.ELEVATION, elevation, Double.class);               
     }
     
@@ -1106,13 +1106,13 @@ public class WMS implements ApplicationContextAware {
             throw new ServiceException("Layer " + resourceInfo.prefixedName()
                     + " does not have support enabled for dimension "+dimensionName);
         }
-        DimensionDefaultValueStrategy strategy = this.getDefaultValueStrategy(resourceInfo, ResourceInfo.CUSTOM_DIMENSION_PREFIX+dimensionName, customDim);
+        DimensionDefaultValueSelectionStrategy strategy = this.getDefaultValueStrategy(resourceInfo, ResourceInfo.CUSTOM_DIMENSION_PREFIX+dimensionName, customDim);
         return strategy.getDefaultValue(resourceInfo, ResourceInfo.CUSTOM_DIMENSION_PREFIX+dimensionName, customDim, clz);
     }
     
-    DimensionDefaultValueStrategy getDefaultValueStrategy(ResourceInfo resource,
+    DimensionDefaultValueSelectionStrategy getDefaultValueStrategy(ResourceInfo resource,
             String dimensionName, DimensionInfo dimensionInfo){
-         DimensionDefaultValueStrategyFactory factory = this.applicationContext.getBean(DimensionDefaultValueStrategyFactory.class);
+         DimensionDefaultValueSelectionStrategyFactory factory = this.applicationContext.getBean(DimensionDefaultValueSelectionStrategyFactory.class);
          if (factory != null){
              return factory.getStrategy(resource, dimensionName, dimensionInfo);             
          }

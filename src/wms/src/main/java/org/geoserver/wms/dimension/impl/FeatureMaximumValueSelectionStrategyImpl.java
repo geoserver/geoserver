@@ -1,31 +1,36 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2014 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.wms.dimension;
+package org.geoserver.wms.dimension.impl;
 
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.wms.dimension.AbstractFeatureAttributeVisitorSelectionStrategy;
 import org.geotools.feature.visitor.CalcResult;
 import org.geotools.feature.visitor.MaxVisitor;
 
-class DefaultFeatureMaximumValueSelectionStrategy extends
+/**
+ * Default implementation for selecting the default values for dimensions of 
+ * feature (vector) resources using the maximum domain value strategy.
+ *  
+ * @author Ilkka Rinne / Spatineo Inc for the Finnish Meteorological Institute
+ *
+ */
+public class FeatureMaximumValueSelectionStrategyImpl extends
         AbstractFeatureAttributeVisitorSelectionStrategy {
-
-    /** serialVersionUID */
-    private static final long serialVersionUID = -4662167723177252198L;
 
     /**
      * Default constructor.
      */
-    public DefaultFeatureMaximumValueSelectionStrategy() {
+    public FeatureMaximumValueSelectionStrategyImpl() {
     }
 
     @Override
     protected Object doGetDefaultValue(ResourceInfo resource, String dimensionName, DimensionInfo dim) {
         final MaxVisitor max = new MaxVisitor(dim.getAttribute());
-        CalcResult res = getSelectedValue((FeatureTypeInfo) resource, dim, max);
+        CalcResult res = getCalculatedResult((FeatureTypeInfo) resource, dim, max);
         if (res.equals(CalcResult.NULL_RESULT)) {
             return null;
         } else {

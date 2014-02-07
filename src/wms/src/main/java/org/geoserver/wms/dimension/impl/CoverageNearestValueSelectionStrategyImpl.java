@@ -1,8 +1,8 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2014 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.wms.dimension;
+package org.geoserver.wms.dimension.impl;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -11,31 +11,43 @@ import java.util.Date;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wms.dimension.AbstractDefaultValueSelectionStrategy;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.feature.type.DateUtil;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
+import org.geotools.util.logging.Logging;
 
-class DefaultCoverageNearestValueSelectionStrategy extends AbstractCapabilitiesDefaultValueSelectionStrategy {
-    /** serialVersionUID */
-    private static final long serialVersionUID = 4152837620172625670L;
+/**
+ * Default implementation for selecting the default values for dimensions of 
+ * coverage (raster) resources using the nearest-domain-value-to-the-reference-value
+ * strategy.
+ *  
+ * @author Ilkka Rinne / Spatineo Inc for the Finnish Meteorological Institute
+ *
+ */
+public class CoverageNearestValueSelectionStrategyImpl extends AbstractDefaultValueSelectionStrategy {
+
+    private static Logger LOGGER = Logging.getLogger(CoverageNearestValueSelectionStrategyImpl.class);
+    
     private Object toMatch;
     private String fixedCapabilitiesValue;
 
     /**
      * Default constructor.
      */
-    public DefaultCoverageNearestValueSelectionStrategy(Object toMatch) {
+    public CoverageNearestValueSelectionStrategyImpl(Object toMatch) {
         this(toMatch,null);
     }
     
-    public DefaultCoverageNearestValueSelectionStrategy(Object toMatch, String capabilitiesValue) {
+    public CoverageNearestValueSelectionStrategyImpl(Object toMatch, String capabilitiesValue) {
         this.toMatch = toMatch;
         this.fixedCapabilitiesValue = capabilitiesValue;
     }
@@ -54,7 +66,7 @@ class DefaultCoverageNearestValueSelectionStrategy extends AbstractCapabilitiesD
                 if (this.toMatch instanceof Date) {
                     dateToMatch = (Date) this.toMatch;
                 } else if (this.toMatch instanceof Long) {
-                    // Assume millis time:
+                    // Assume millis time if reference value is given as Long:
                     dateToMatch = new Date(((Long) this.toMatch).longValue());
                 } else {
                     try {
@@ -80,7 +92,7 @@ class DefaultCoverageNearestValueSelectionStrategy extends AbstractCapabilitiesD
             }
             
         } catch (IOException e) {
-            DimensionDefaultValueStrategyFactoryImpl.LOGGER.log(Level.FINER, e.getMessage(), e);
+           LOGGER.log(Level.FINER, e.getMessage(), e);
         }
         return retval;
     }
@@ -207,11 +219,12 @@ class DefaultCoverageNearestValueSelectionStrategy extends AbstractCapabilitiesD
             throws IOException {
         String candidate = null;
         List<String> domain = dimAccessor.getDomain(dimensionName);
-        //TODO: decide comparison strategy based on domain data type.
         
+        //TODO: decide comparison strategy based on domain data type.        
         //Does any coverage actually return anything else that null for this:
         //String type = dimAccessor.getDomainDatatype(dimensionname);
         
+        //Just use a case insensitive lexical string comparison for now:
         Comparator<String> comp = String.CASE_INSENSITIVE_ORDER;
         Collections.sort(domain, comp);
         long shortestDistance = Long.MAX_VALUE;

@@ -1,7 +1,17 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.catalog;
 
 import java.io.Serializable;
 
+/**
+ * Setting for dimension default value selection.
+ * 
+ * @author Ilkka Rinne / Spatineo Inc. for Finnish Meteorological Institute
+ *
+ */
 public class DimensionDefaultValueSetting implements Serializable {
 
     /** serialVersionUID */
@@ -9,7 +19,7 @@ public class DimensionDefaultValueSetting implements Serializable {
 
     public static String TIME_CURRENT = "current";
     
-    public enum Strategy {MINIMUM, MAXIMUM, NEAREST, FIXED}
+    public enum Strategy {MINIMUM, MAXIMUM, NEAREST, FIXED, BUILTIN}
     
     Strategy strategy;
     

@@ -47,7 +47,11 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
 
     protected WPSInfo createServiceFromScratch(GeoServer gs) {
         WPSInfoImpl wps = new WPSInfoImpl();
+        wps.setName("WPS");
         wps.setGeoServer( gs );
+        wps.getVersions().add( new Version( "1.0.0") );
+        wps.setMaxAsynchronousProcesses(Runtime.getRuntime().availableProcessors() * 2);
+        wps.setMaxSynchronousProcesses(Runtime.getRuntime().availableProcessors() * 2);
         return wps;
     }
     
@@ -87,6 +91,9 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
         }
         if (service.getProcessGroups() == null) {
             ((WPSInfoImpl)service).setProcessGroups(new ArrayList());
+        }
+        if(service.getName() == null) {
+            service.setName("WPS");
         }
 
         return service;

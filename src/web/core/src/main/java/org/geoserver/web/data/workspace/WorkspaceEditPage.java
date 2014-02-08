@@ -7,6 +7,7 @@ package org.geoserver.web.data.workspace;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.wicket.AttributeModifier;
@@ -116,7 +117,8 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                 try {
                     saveWorkspace();
                 } catch (RuntimeException e) {
-                    error(e.getMessage());
+                    LOGGER.log(Level.WARNING, "Failed to save workspace", e);
+                    error(e.getMessage() == null ? "Failed to save workspace, no error message available, see logs for details" : e.getMessage());
                 }
             }
         };

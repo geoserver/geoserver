@@ -316,4 +316,8 @@ public class GeoServerDialog extends Panel {
         }
     }
 
+    public void setResizable(boolean resizable) {
+        window.setResizable(resizable);
+    }
+
 }

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -44,7 +45,10 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.web.GeoServerSecuredPage;
+import org.geoserver.web.wicket.GeoServerDialog;
+import org.geoserver.web.wicket.GeoServerDialog.DialogDelegate;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geotools.styling.SLDTransformer;
 import org.geotools.styling.Style;
 
@@ -83,6 +87,7 @@ public class CssDemoPage extends GeoServerSecuredPage {
     public Label sldPreview = null;
     private LayerInfo layer = null;
     private StyleInfo style = null;
+    private GeoServerDialog dialog;
 
     public CssDemoPage() {
         this(new PageParameters());
@@ -229,11 +234,14 @@ public class CssDemoPage extends GeoServerSecuredPage {
     }
 
     private void doMainLayout() {
-        Fragment mainContent = new Fragment("main-content", "normal", this);
+        final Fragment mainContent = new Fragment("main-content", "normal", this);
+        mainContent.setOutputMarkupId(true);
         final ModalWindow popup = new ModalWindow("popup");
         mainContent.add(popup);
-        mainContent.add(new Label("style.name", new StyleNameModel(style)));
-        mainContent.add(new Label("layer.name", new PropertyModel(layer, "prefixedName")));
+        final StyleNameModel styleNameModel = new StyleNameModel(style);
+        mainContent.add(new Label("style.name", styleNameModel));
+        final PropertyModel layerNameModel = new PropertyModel(layer, "prefixedName");
+        mainContent.add(new Label("layer.name", layerNameModel));
         mainContent.add(new AjaxLink("change.style", new ParamResourceModel("CssDemoPage.changeStyle", this)) {
             public void onClick(AjaxRequestTarget target) {
                 target.appendJavascript("Wicket.Window.unloadConfirmation = false;");
@@ -274,6 +282,53 @@ public class CssDemoPage extends GeoServerSecuredPage {
                 popup.show(target);
             }
         });
+        ParamResourceModel associateToLayer = new ParamResourceModel("CssDemoPage.associateDefaultStyle", this, styleNameModel, layerNameModel);
+        final SimpleAjaxLink associateDefaultStyle = new SimpleAjaxLink("associate.default.style", new Model(), associateToLayer) {
+            public void onClick(final AjaxRequestTarget linkTarget) {
+                final Component theComponent = this;
+                dialog.setResizable(false);
+                dialog.setHeightUnit("em");
+                dialog.setWidthUnit("em");
+                dialog.setInitialHeight(7);
+                dialog.setInitialWidth(50);
+                dialog.showOkCancel(linkTarget, new DialogDelegate() {
+                    boolean success = false;
+                    
+                    @Override
+                    protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                        layer.setDefaultStyle(style);
+                        getCatalog().save(layer);
+                        theComponent.setEnabled(false);
+                        success = true;
+                        return true;
+                    }
+                    
+                    @Override
+                    public void onClose(AjaxRequestTarget target) {
+                        super.onClose(target);
+                        target.addComponent(theComponent);
+                        if(success) {
+                            CssDemoPage.this.info(new ParamResourceModel("CssDemoPage.styleAssociated",  CssDemoPage.this, styleNameModel, layerNameModel).getString());
+                            target.addComponent(getFeedbackPanel());                           
+                        }
+                    }
+                    
+                    @Override
+                    protected Component getContents(String id) {
+                        ParamResourceModel confirm = new ParamResourceModel("CssDemoPage.confirmAssocation", CssDemoPage.this, styleNameModel.getObject(), 
+                                layerNameModel.getObject(), layer.getDefaultStyle().getName());
+                        return new Label(id, confirm);
+                    }
+                });
+            }
+        };
+        associateDefaultStyle.setOutputMarkupId(true);
+        if(layer.getDefaultStyle().equals(style)) {
+            associateDefaultStyle.setEnabled(false);
+        }
+        
+        mainContent.add(associateDefaultStyle);
+
 
         final IModel<String> sldModel = new AbstractReadOnlyModel<String>() {
             public String getObject() {
@@ -352,5 +407,6 @@ public class CssDemoPage extends GeoServerSecuredPage {
         mainContent.add(new AjaxTabbedPanel("context", tabs));
 
         add(mainContent);
+        add(dialog = new GeoServerDialog("dialog"));
     }
 }

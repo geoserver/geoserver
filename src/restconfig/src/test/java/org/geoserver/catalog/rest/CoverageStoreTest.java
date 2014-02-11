@@ -114,10 +114,9 @@ public class CoverageStoreTest extends CatalogRESTTestSupport {
         assertEquals( coverages.size(), links.getLength() );
         
         for ( int i = 0; i < coverages.size(); i++ ){
-            CoverageInfo ft = coverages.get( i );
+            CoverageInfo cov = coverages.get( i );
             Element link = (Element) links.item( i );
-            
-            assertTrue( link.getAttribute("href").endsWith( ft.getName() + ".html") );
+            assertTrue( link.getAttribute("href").endsWith("coverages/" + cov.getName() + ".html") );
         }
     }
 

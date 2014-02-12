@@ -1230,9 +1230,9 @@ public class CatalogBuilder {
 
     void parseUOM(StringBuilder label, Unit uom) {
         String uomString = uom.toString();
-        uomString = uomString.replaceAll("�", "^2");
-        uomString = uomString.replaceAll("�", "^3");
-        uomString = uomString.replaceAll("�", "A");
+        uomString = uomString.replaceAll("\u00B2", "^2");
+        uomString = uomString.replaceAll("\u00B3", "^3");
+        uomString = uomString.replaceAll("\u212B", "A");
         uomString = uomString.replaceAll("�", "");
         label.append(uomString);
     }

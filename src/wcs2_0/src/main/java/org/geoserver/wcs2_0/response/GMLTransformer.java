@@ -820,7 +820,7 @@ class GMLTransformer extends TransformerBase {
                 end("swe:constraint");
 
                 // nil values
-                handleSampleDimensionNilValues(gc2d, (GridSampleDimension) sd);
+                handleSampleDimensionNilValues(gc2d, sd.getNoDataValues());
 
                 end("swe:Quantity");
                 end("swe:field");
@@ -835,35 +835,29 @@ class GMLTransformer extends TransformerBase {
          * @param sd
          */
         public void handleSampleDimensionNilValues(GridCoverage2D gc2d, GridSampleDimension sd) {
+            handleSampleDimensionNilValues(gc2d, sd != null ? sd.getNoDataValues() : null);
+        }
+
+        public void handleSampleDimensionNilValues(GridCoverage2D gc2d, double[] nodataValues) {
             start("swe:nilValues");
             start("swe:NilValues");
 
+            if (nodataValues != null && nodataValues.length > 0) {
+                for (double nodata : nodataValues) {
+                    final AttributesImpl nodataAttr = new AttributesImpl();
+                    nodataAttr.addAttribute("", "reason", "reason", "",
+                            "http://www.opengis.net/def/nil/OGC/0/unknown");
+                    element("swe:nilValue", String.valueOf(nodata), nodataAttr);
+                }
+            } else if (gc2d != null) {
             // do we have already a a NO_DATA value at hand?
-            if (gc2d.getProperties().containsKey("GC_NODATA")) {
-
-                String nodata = (String) gc2d.getProperties().get("GC_NODATA"); // TODO test me
-                final AttributesImpl nodataAttr = new AttributesImpl();
-                nodataAttr.addAttribute("", "reason", "reason", "",
-                        "http://www.opengis.net/def/nil/OGC/0/unknown");
-                element("swe:nilValue", nodata, nodataAttr);
-                // done
-                return;
-
-            } else {
-                // check SD
-                final double nodataValues[] = sd.getNoDataValues();
-                if (nodataValues != null && nodataValues.length > 0) {
-
-                    for (double nodata : nodataValues) {
-                        final AttributesImpl nodataAttr = new AttributesImpl();
-                        nodataAttr.addAttribute("", "reason", "reason", "",
-                                "http://www.opengis.net/def/nil/OGC/0/unknown");
-                        element("swe:nilValue", String.valueOf(nodata), nodataAttr);
-                    }
-                    // done
-                    return;
+                if (gc2d.getProperties().containsKey("GC_NODATA")) {
+                    String nodata = (String) gc2d.getProperties().get("GC_NODATA"); // TODO test me
+                    final AttributesImpl nodataAttr = new AttributesImpl();
+                    nodataAttr.addAttribute("", "reason", "reason", "",
+                            "http://www.opengis.net/def/nil/OGC/0/unknown");
+                    element("swe:nilValue", nodata, nodataAttr);
                 } else {
-
                     // let's suggest some meaningful value from the data type of the underlying image
                     Number nodata = CoverageUtilities.suggestNoDataValue(gc2d.getRenderedImage()
                             .getSampleModel().getDataType());
@@ -882,35 +876,56 @@ class GMLTransformer extends TransformerBase {
         /**
          * Tries to encode a meaningful range for a {@link SampleDimension}.
          * 
-         * @param sd the {@link SampleDimension} to encode a meaningful range for.
+         * @param sd the {@link CoverageDimensionInfo} to encode a meaningful range for.
          */
         public void handleSampleDimensionRange(CoverageDimensionInfo sd) {
-            SampleDimensionType sdType = sd.getDimensionType();
-            handleSampleDimension(sdType);
-
+            if (!setRange(sd.getRange())) { 
+                SampleDimensionType sdType = sd.getDimensionType();
+                handleSampleDimensionType(sdType);
+            }
         }
 
-        private void handleSampleDimension(SampleDimensionType sdType) {
+        private void handleSampleDimensionType(SampleDimensionType sdType) {
             // old data dirs upgrading will have this empty
             if(sdType == null) {
                 // pick the one with the largest domain and be done with it
                 sdType = SampleDimensionType.REAL_64BITS;
             }
             final NumberRange<? extends Number> indicativeRange = TypeMap.getRange(sdType);
-            start("swe:interval");
-            chars(indicativeRange.getMinValue() + " " + indicativeRange.getMaxValue());
-            end("swe:interval");
+            setRange(indicativeRange);
         }
-        
+
+        /**
+         * Encode the interval range
+         * @param range
+         */
+        private boolean setRange(NumberRange<? extends Number> range) {
+            if (range != null && !Double.isInfinite(range.getMaximum()) && !Double.isInfinite(range.getMinimum())) {
+                start("swe:interval");
+                chars(range.getMinValue() + " " + range.getMaxValue());
+                end("swe:interval");
+                return true;
+            }
+            return false;
+        }
+
         /**
          * Tries to encode a meaningful range for a {@link SampleDimension}.
          * 
          * @param sd the {@link SampleDimension} to encode a meaningful range for.
          */
         public void handleSampleDimensionRange(SampleDimension sd) {
-            SampleDimensionType sdType = sd.getSampleDimensionType();
-            handleSampleDimension(sdType);
-
+            // look for ranges on the sample dimension
+            boolean setRange = false; 
+            if (sd instanceof GridSampleDimension) {
+                GridSampleDimension gridSd = ((GridSampleDimension) sd);
+                setRange = setRange(gridSd.getRange());
+            }
+            if (!setRange) {
+                // fallback on sampleDimensionType 
+                SampleDimensionType sdType = sd.getSampleDimensionType();
+                handleSampleDimensionType(sdType);
+            }
         }
 
         /**

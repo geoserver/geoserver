@@ -6,6 +6,7 @@
   </head>
   <body>
     <wicket:extend>
+    <div wicket:id="dialog"></div>
     <div wicket:id="main-content"></div>
     <wicket:fragment wicket:id="normal">
     <p>
@@ -19,6 +20,7 @@
         <li><a wicket:id="change.style" href="#">Edit a different style.</a></li>
         <li><a wicket:id="change.layer" href="#">Choose a different layer</a> to preview this style.</li>
         <li><a wicket:id="create.style" href="#">Create a new style</a> and preview with this layer.</li>
+        <li><span wicket:id="associate.default.style"></span></li>
         <li><a wicket:id="associate.styles" href="#">Change layer associations</a> for this style.</li>
       </ul>
     </p>

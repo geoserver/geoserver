@@ -99,7 +99,6 @@ public class PNGJWriter {
             }
             pw.end();
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Failed to encode the PNG", e);
             throw new ServiceException(e);
         } finally {
             pw.close();

@@ -32,7 +32,7 @@ public class AdvancedDispatchFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+    public void doFilter(ServletRequest request, final ServletResponse response, final FilterChain chain)
             throws IOException, ServletException {
         
         if (request instanceof HttpServletRequest) {
@@ -42,27 +42,27 @@ public class AdvancedDispatchFilter implements Filter {
     }
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
+    public void init(final FilterConfig filterConfig) throws ServletException {
     }
     
     static class AdvancedDispatchHttpRequest extends HttpServletRequestWrapper {
         
         String servletPath = null;
         
-        public AdvancedDispatchHttpRequest(HttpServletRequest delegate) {
+        public AdvancedDispatchHttpRequest(final HttpServletRequest delegate) {
             super(delegate);
             
             if (delegate.getClass().getSimpleName().endsWith("MockHttpServletRequest")) {
                 return;
             }
             
-            String path = delegate.getPathInfo();
+           final String path = delegate.getPathInfo();
             
             if (path == null) {
                 return;
             }
             
-            int slash = path.indexOf('/', 1);
+            final int slash = path.indexOf('/', 1);
             if (slash > -1 ) {
                 this.servletPath = path.substring(0, slash);
             }
@@ -70,7 +70,7 @@ public class AdvancedDispatchFilter implements Filter {
                 this.servletPath = path;
             }
             
-            int question = this.servletPath.indexOf('?');
+            final int question = this.servletPath.indexOf('?');
             if (question > -1 ) {
                 this.servletPath = this.servletPath.substring(0, question);
             }
@@ -79,7 +79,7 @@ public class AdvancedDispatchFilter implements Filter {
         
         @Override
         public String getPathInfo() {
-            HttpServletRequest delegate = (HttpServletRequest) getRequest();
+            final HttpServletRequest delegate = (HttpServletRequest) getRequest();
             if(delegate.getPathInfo().startsWith(servletPath))
                 return delegate.getPathInfo().substring(servletPath.length());
             else

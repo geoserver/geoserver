@@ -27,9 +27,11 @@ import javax.servlet.http.HttpServletRequestWrapper;
  */
 public class AdvancedDispatchFilter implements Filter {
 
+    @Override
     public void destroy() {
     }
 
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         
@@ -39,6 +41,7 @@ public class AdvancedDispatchFilter implements Filter {
         chain.doFilter(request, response);
     }
 
+    @Override
     public void init(FilterConfig filterConfig) throws ServletException {
     }
     
@@ -74,6 +77,7 @@ public class AdvancedDispatchFilter implements Filter {
             
         }
         
+        @Override
         public String getPathInfo() {
             HttpServletRequest delegate = (HttpServletRequest) getRequest();
             if(delegate.getPathInfo().startsWith(servletPath))
@@ -82,6 +86,7 @@ public class AdvancedDispatchFilter implements Filter {
                 return delegate.getPathInfo();
         }
 
+        @Override
         public String getServletPath() {
             return servletPath != null ? 
                 servletPath : ((HttpServletRequest)getRequest()).getServletPath();

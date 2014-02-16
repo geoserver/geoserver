@@ -4,8 +4,10 @@
  */
 package org.geoserver.wms.wms_1_1_1;
 
-import static junit.framework.Assert.*;
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
@@ -13,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
+import javax.imageio.spi.ImageReaderSpi;
 import javax.xml.namespace.QName;
 
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -29,6 +32,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.image.io.ImageIOExt;
 import org.junit.After;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -122,7 +126,9 @@ public class CustomDimensionsTest extends WMSTestSupport {
     }
     
     @Test
-    public void testGetMap() throws Exception {
+    public void testGetMap() throws Exception {                
+        ImageIOExt.allowNativeCodec("tif", ImageReaderSpi.class, false);
+        
         setupRasterDimension(DIMENSION_NAME, DimensionPresentation.LIST, "nano meters", "nm");
         
         // check that we get no data when requesting an incorrect value for custom dimension
@@ -140,7 +146,7 @@ public class CustomDimensionsTest extends WMSTestSupport {
                 + "&DIM_" + DIMENSION_NAME + "=CustomDimValueB,CustomDimValueC,CustomDimValueA");
         image = ImageIO.read(getBinaryInputStream(response));
         assertFalse(isEmpty(image));
-        assertTrue("sample model bands", 3 <= image.getSampleModel().getNumBands());
+        assertEquals("sample model bands", 3, image.getSampleModel().getNumBands());
     }
     
     @Test

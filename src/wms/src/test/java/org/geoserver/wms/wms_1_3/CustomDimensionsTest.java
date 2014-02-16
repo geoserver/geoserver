@@ -4,16 +4,18 @@
  */
 package org.geoserver.wms.wms_1_3;
 
-import static junit.framework.Assert.*;
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
+import javax.imageio.spi.ImageReaderSpi;
 import javax.xml.namespace.QName;
 
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -30,6 +32,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.image.io.ImageIOExt;
 import org.junit.After;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -44,7 +47,7 @@ public class CustomDimensionsTest extends WMSTestSupport {
     private static final String DIMENSION_NAME = CustomFormat.CUSTOM_DIMENSION_NAME;
     private static final String BBOX = "0,40,15,45";
     private static final String LAYERS = "gs:watertemp";
-    
+
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
@@ -122,6 +125,8 @@ public class CustomDimensionsTest extends WMSTestSupport {
     
     @Test
     public void testGetMap() throws Exception {
+        ImageIOExt.allowNativeCodec("tif", ImageReaderSpi.class, false);
+        
         setupRasterDimension(DIMENSION_NAME, DimensionPresentation.LIST, null, null);
         // check that we get no data when requesting an incorrect value for custom dimension
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + BBOX + "&styles="
@@ -138,7 +143,7 @@ public class CustomDimensionsTest extends WMSTestSupport {
                 + "&DIM_" + DIMENSION_NAME + "=CustomDimValueB,CustomDimValueC,CustomDimValueA");
         image = ImageIO.read(getBinaryInputStream(response));
         assertFalse(isEmpty(image));
-        assertTrue("sample model bands", 3 <= image.getSampleModel().getNumBands());
+        assertEquals("sample model bands", 3, image.getSampleModel().getNumBands());
     }
     
     private void setupRasterDimension(String metadata, DimensionPresentation presentation, String units, String unitSymbol) {

@@ -41,7 +41,7 @@ public class ClassExclusionFilter implements ExtensionFilter {
     }
 
     @Override
-    public boolean exclude(final String beanId, final Object bean) {
+    public final boolean exclude(final String beanId, final Object bean) {
         boolean ret = false;
         if (this.beanClass != null && bean != null) {
             if(matchSubclasses){

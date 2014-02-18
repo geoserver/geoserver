@@ -79,8 +79,7 @@ public class ClassExclusionFilterTest {
     @Test
     public void testSetMatchSubclasses() {
         System.out.println("setMatchSubclasses");
-
-        ClassExclusionFilter instance = new ClassExclusionFilter();
+        final ClassExclusionFilter instance = new ClassExclusionFilter();
         instance.setMatchSubclasses(true);
         final boolean result = instance.isMatchSubclasses();
         assertEquals("matchSubclasses is not true", true, result);
@@ -93,9 +92,9 @@ public class ClassExclusionFilterTest {
     public void testExclude() {
         System.out.println("exclude");
         final ClassExclusionFilter instance = new ClassExclusionFilter();
-        boolean result = instance.exclude("", null);
+        final boolean result = instance.exclude("", null);
         assertEquals("should return false", false, result);
-        // TODO: Not all cases are covered.
+        //TODO: Not all cases are covered.
         fail("FIXME: The test case is a prototype.");
     }
 }

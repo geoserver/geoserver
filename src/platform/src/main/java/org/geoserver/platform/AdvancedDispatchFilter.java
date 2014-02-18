@@ -83,7 +83,7 @@ public class AdvancedDispatchFilter implements Filter {
             String ret;
             if(delegate.getPathInfo().startsWith(servletPath)){
                 ret = delegate.getPathInfo().substring(servletPath.length());
-        } else {
+            } else {
                 ret = delegate.getPathInfo();}
             return ret;
         }

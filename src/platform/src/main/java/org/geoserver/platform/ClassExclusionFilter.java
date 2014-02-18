@@ -16,6 +16,10 @@ public class ClassExclusionFilter implements ExtensionFilter {
 
     private boolean matchSubclasses;
 
+    /**
+     * FIXME:
+     * @return
+     */
     public final Class getBeanClass() {
         return beanClass;
     }
@@ -28,6 +32,10 @@ public class ClassExclusionFilter implements ExtensionFilter {
         this.beanClass = beanClass;
     }
 
+    /**
+     * FIXME:
+     * @return
+     */
     public final boolean isMatchSubclasses() {
         return matchSubclasses;
     }

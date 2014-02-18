@@ -80,10 +80,12 @@ public class AdvancedDispatchFilter implements Filter {
         @Override
         public String getPathInfo() {
             final HttpServletRequest delegate = (HttpServletRequest) getRequest();
+            String ret;
             if(delegate.getPathInfo().startsWith(servletPath))
-                return delegate.getPathInfo().substring(servletPath.length());
+                ret = delegate.getPathInfo().substring(servletPath.length());
             else
-                return delegate.getPathInfo();
+                ret = delegate.getPathInfo();
+            return ret;
         }
 
         @Override

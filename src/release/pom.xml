@@ -248,6 +248,11 @@
      <version>${project.version}</version>
    </dependency> 
    <dependency>
+     <groupId>org.geoserver.csw</groupId>
+     <artifactId>gs-web-csw</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
      <groupId>org.geoserver.extension</groupId>
      <artifactId>dxf-core</artifactId>
      <version>${project.version}</version>

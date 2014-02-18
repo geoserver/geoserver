@@ -43,10 +43,12 @@ public class ClassExclusionFilter implements ExtensionFilter {
     @Override
     public boolean exclude(final String beanId, final Object bean) {
         if (this.beanClass != null && bean != null) {
-            if(matchSubclasses)
+            if(matchSubclasses){
                 return this.beanClass.isAssignableFrom(bean.getClass());
-            else
+            }
+            else {
                 return this.beanClass.equals(bean.getClass());
+            }
         }
 
         return false;

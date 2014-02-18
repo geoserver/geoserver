@@ -301,7 +301,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         Document doc = getAsDOM( "/rest/layers/states.xml");
         
         XpathEngine xpath = XMLUnit.newXpathEngine();
-        String resourceUrl = xpath.evaluate("//atom:link/@href", doc);
+        String resourceUrl = xpath.evaluate("//resource/atom:link/@href", doc);
         resourceUrl = resourceUrl.substring(resourceUrl.indexOf("/rest"));
         
         doc = getAsDOM(resourceUrl);

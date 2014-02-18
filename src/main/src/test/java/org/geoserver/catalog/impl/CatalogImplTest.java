@@ -2079,6 +2079,26 @@ public class CatalogImplTest {
     }
     
     @Test
+    public void testLayerGroupNullLayerReferences() {
+        addLayer();
+        LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
+        lg.setWorkspace(null);
+        lg.setName("layerGroup2");
+        lg.getLayers().add(null);
+        lg.getStyles().add(null);        
+        lg.getLayers().add(l);
+        lg.getStyles().add(s);
+        lg.getLayers().add(null);
+        lg.getStyles().add(null);
+        
+        catalog.add(lg);
+        LayerGroupInfo resolved = catalog.getLayerGroupByName("layerGroup2");
+        assertEquals(1, resolved.layers().size());
+        assertEquals(1, resolved.styles().size());
+        assertEquals(s, resolved.styles().get(0));
+    }
+    
+    @Test
     public void testLayerGroupRenderingLayers() {
         addDataStore();
         addNamespace();

@@ -153,7 +153,7 @@ public class ImportResource extends BaseResource {
                 if (targetStore != null) {
                     StoreInfo ts = importer.getCatalog().getStoreByName(newContext.getTargetStore().getName(), StoreInfo.class);
                     if (ts == null) {
-                        throw new RestletException("Target storye does not exist : "
+                        throw new RestletException("Target store does not exist : "
                                 + newContext.getTargetStore().getName(), Status.CLIENT_ERROR_BAD_REQUEST);
                     }
                     context.setTargetStore(ts);

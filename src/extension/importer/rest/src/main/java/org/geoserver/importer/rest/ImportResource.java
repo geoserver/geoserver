@@ -21,13 +21,12 @@ import org.geoserver.rest.format.StreamDataFormat;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.ImportFilter;
 import org.geoserver.importer.Importer;
+import org.geoserver.importer.ValidationException;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * REST resource for /contexts[/<id>]
@@ -107,13 +106,30 @@ public class ImportResource extends BaseResource {
         }
         getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
     }
+
+    private void runImport(ImportContext context) throws IOException {
+        //if the import is empty, prep it but leave data as is
+        if (context.getTasks().isEmpty()) {
+            importer.init(context, false);
+        }
+
+        Form query = getRequest().getResourceRef().getQueryAsForm();
+
+        if (query.getNames().contains("async")) {
+            importer.runAsync(context, ImportFilter.ALL);
+        } else {
+            importer.run(context);
+            // @todo revisit - if errors occur, they are logged. A second request
+            // is required to verify success
+        }
+        getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
+    }
     
     private ImportContext createImport(Long id) {
         //create a new import
         ImportContext context;
         try {
             context = importer.createContext(id);
-            context.setUser(getCurrentUser());
 
             if (MediaType.APPLICATION_JSON.equals(getRequest().getEntity().getMediaType())) {
                 //read representation specified by user, use it to read 
@@ -124,10 +140,23 @@ public class ImportResource extends BaseResource {
                 StoreInfo targetStore = newContext.getTargetStore();
 
                 if (targetWorkspace != null) {
-                    context.setTargetWorkspace(targetWorkspace);
+                    // resolve to the 'real' workspace
+                    WorkspaceInfo ws = importer.getCatalog().getWorkspaceByName(
+                            newContext.getTargetWorkspace().getName());
+                    if (ws == null) {
+                        throw new RestletException("Target workspace does not exist : "
+                                + newContext.getTargetStore().getName(), Status.CLIENT_ERROR_BAD_REQUEST);
+
+                    }
+                    context.setTargetWorkspace(ws);
                 }
                 if (targetStore != null) {
-                    context.setTargetStore(targetStore);
+                    StoreInfo ts = importer.getCatalog().getStoreByName(newContext.getTargetStore().getName(), StoreInfo.class);
+                    if (ts == null) {
+                        throw new RestletException("Target storye does not exist : "
+                                + newContext.getTargetStore().getName(), Status.CLIENT_ERROR_BAD_REQUEST);
+                    }
+                    context.setTargetStore(ts);
                 }
                 if (targetStore != null && targetWorkspace == null) {
                     //take it from the store 
@@ -162,25 +191,13 @@ public class ImportResource extends BaseResource {
         if (obj instanceof ImportContext) {
             //run an existing import
             try {
-                context = (ImportContext) obj;
-                
-                //if the import is empty, prep it but leave data as is
-                if (context.getTasks().isEmpty()) {
-                    importer.init(context, false);
-                }
-
-                Form query = getRequest().getResourceRef().getQueryAsForm();
-                
-                if (query.getNames().contains("async")) {
-                    importer.runAsync(context, ImportFilter.ALL);
+                runImport((ImportContext) obj);
+            } catch (Throwable t) {
+                if (t instanceof ValidationException) {
+                    throw new RestletException(t.getMessage(), Status.CLIENT_ERROR_BAD_REQUEST, t);
                 } else {
-                    importer.run(context);
-                    // @todo revisit - if errors occur, they are logged. A second request
-                    // is required to verify success
+                    throw new RestletException("Error occured executing import", Status.SERVER_ERROR_INTERNAL, t);
                 }
-                getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
-            } catch (Exception e) {
-                throw new RestletException("Error occured executing import", Status.SERVER_ERROR_INTERNAL, e);
             }
         }
         else {
@@ -210,31 +227,6 @@ public class ImportResource extends BaseResource {
         }
     }
 
-    private String getCurrentUser() {
-        String user = null;
-        Authentication authentication = null;
-        try {
-            authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication != null) {
-                user = (String) authentication.getCredentials();
-            }
-        } catch (NoClassDefFoundError cnfe) {
-            try {
-                // @todo fix once upgraded to spring3
-                Class clazz = Class.forName("org.springframework.security.core.context.SecurityContextHolder");
-                Object context = clazz.getMethod("getContext").invoke(null);
-                Object auth = context.getClass().getMethod("getAuthentication").invoke(context);
-                user = (String) auth.getClass().getMethod("getCredentials").invoke(auth);
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
-        }
-        if (user == null) {
-            user = "anonymous";
-        }
-        return user;
-    }
-
     Object lookupContext(boolean allowAll, boolean mustExist) {
         String i = getAttribute("import");
         if (i != null) {
@@ -250,12 +242,7 @@ public class ImportResource extends BaseResource {
         }
         else {
             if (allowAll) {
-                Form form = getRequest().getResourceRef().getQueryAsForm();
-                if (form.getNames().contains("all")) {
-                    return importer.getAllContexts();
-                } else {
-                    return importer.getContextsByUser(getCurrentUser());
-                }
+                return importer.getAllContexts();
             }
             throw new RestletException("No import specified", Status.CLIENT_ERROR_BAD_REQUEST);
         }

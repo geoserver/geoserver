@@ -85,7 +85,6 @@ public abstract class ImporterTestSupport extends GeoServerTestSupport {
             assertTrue(source.getCount(Query.ALL) > 0);
             
             //do a wfs request
-            print(get("wfs?request=getFeature&typename=" + featureType.getPrefixedName()));
             Document dom = getAsDOM("wfs?request=getFeature&typename=" + featureType.getPrefixedName());
             assertEquals("wfs:FeatureCollection", dom.getDocumentElement().getNodeName());
             assertEquals(

@@ -33,7 +33,7 @@
     </property>
   </bean>
 
-  <bean id="cssDemo" class="org.geoserver.web.DemoLinkInfo">
+  <bean id="printDemo" class="org.geoserver.web.DemoLinkInfo">
     <property name="id" value="printDemo"/>
     <property name="titleKey" value="printing.title"/>
     <property name="descriptionKey" value="printing.description"/>

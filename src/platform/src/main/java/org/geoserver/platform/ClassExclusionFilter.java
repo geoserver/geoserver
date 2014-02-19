@@ -12,11 +12,15 @@ package org.geoserver.platform;
  * 
  */
 public class ClassExclusionFilter implements ExtensionFilter {
-    Class beanClass;
+    private Class beanClass;
 
-    boolean matchSubclasses;
+    private boolean matchSubclasses;
 
-    public Class getBeanClass() {
+    /**
+     * FIXME:
+     * @return
+     */
+    public final Class getBeanClass() {
         return beanClass;
     }
 
@@ -24,11 +28,15 @@ public class ClassExclusionFilter implements ExtensionFilter {
      * Specifies which class to be filtered away
      * @param beanClass
      */
-    public void setBeanClass(Class beanClass) {
+    public void setBeanClass(final Class beanClass) {
         this.beanClass = beanClass;
     }
 
-    public boolean isMatchSubclasses() {
+    /**
+     * FIXME:
+     * @return
+     */
+    public final boolean isMatchSubclasses() {
         return matchSubclasses;
     }
 
@@ -36,18 +44,21 @@ public class ClassExclusionFilter implements ExtensionFilter {
      * When true enables hierarchy matching. Defaults to false
      * @param matchSubclasses
      */
-    public void setMatchSubclasses(boolean matchSubclasses) {
+    public final void setMatchSubclasses(final boolean matchSubclasses) {
         this.matchSubclasses = matchSubclasses;
     }
 
-    public boolean exclude(String beanId, Object bean) {
+    @Override
+    public final boolean exclude(final String beanId, final Object bean) {
+        boolean ret = false;
         if (this.beanClass != null && bean != null) {
-            if(matchSubclasses)
-                return this.beanClass.isAssignableFrom(bean.getClass());
-            else
-                return this.beanClass.equals(bean.getClass());
+            if(matchSubclasses){
+                ret = this.beanClass.isAssignableFrom(bean.getClass());
+            } else {
+                ret = this.beanClass.equals(bean.getClass());
+            }
         }
 
-        return false;
+        return ret;
     }
 }

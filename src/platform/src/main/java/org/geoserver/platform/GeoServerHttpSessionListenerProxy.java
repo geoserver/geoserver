@@ -42,14 +42,14 @@ public class GeoServerHttpSessionListenerProxy implements HttpSessionListener {
     }
     
     @Override
-    public void sessionCreated(final HttpSessionEvent se) {
+    public final void sessionCreated(final HttpSessionEvent se) {
         for (HttpSessionListener listener : listeners()) {
             listener.sessionCreated(se);
         }
     }
 
     @Override
-    public void sessionDestroyed(final HttpSessionEvent se) {
+    public final void sessionDestroyed(final HttpSessionEvent se) {
         for (HttpSessionListener listener : listeners()) {
             listener.sessionDestroyed(se);
         }
@@ -60,7 +60,7 @@ public class GeoServerHttpSessionListenerProxy implements HttpSessionListener {
      * @param listener
      * @return
      */
-    public boolean contains(final HttpSessionListener listener) {
+    public final boolean contains(final HttpSessionListener listener) {
         return listeners.contains(listener);
     }
 
@@ -68,7 +68,7 @@ public class GeoServerHttpSessionListenerProxy implements HttpSessionListener {
      *
      * @return
      */
-    protected Set<HttpSessionListener> listeners() {
+    private Set<HttpSessionListener> listeners() {
         if (listeners == null) {
            synchronized(this) {
                if (listeners == null) {

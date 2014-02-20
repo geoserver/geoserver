@@ -962,7 +962,7 @@ width:50%;
 
 div.progress-bar span.bar {
 background-image: url(../img/status-bar-bg.png);
-background-repeat:repeat.x;
+background-repeat:repeat-x;
 display:block;
 height:16px;
 overflow:hidden;

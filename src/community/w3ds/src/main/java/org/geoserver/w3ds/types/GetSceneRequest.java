@@ -54,6 +54,7 @@ public class GetSceneRequest extends W3DSRequest {
 		this.addAcceptedFormat(Format.X3D);
 		this.addAcceptedFormat(Format.HTML);
 		this.addAcceptedFormat(Format.KML);
+		this.addAcceptedFormat(Format.XML3D);
 	}
 	
 	public GetSceneRequest() {
@@ -66,6 +67,7 @@ public class GetSceneRequest extends W3DSRequest {
 		this.addAcceptedFormat(Format.X3D);
 		this.addAcceptedFormat(Format.HTML);
 		this.addAcceptedFormat(Format.KML);
+		this.addAcceptedFormat(Format.XML3D);
 	}
 
 	public CoordinateReferenceSystem getCrs() {

@@ -827,4 +827,28 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         MockHttpServletResponse response = getAsServletResponse("wms?request=reflect&layers=" + getLayerId(MockData.BASIC_POLYGONS) + "&format=rss");
         assertEquals("application/rss+xml", response.getContentType());
     }
+
+    /**
+     * Basic sanity tests on a polar stereographic projection (EPSG:5041) WMS response.
+     */
+    @Test
+    public void testPolarStereographic() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wms?" + "service=WMS"
+                + "&version=1.1.1" + "&request=GetMap" + "&layers=sf:states"
+                + "&bbox=-10700000,-10700000,14700000,14700000,EPSG:5041" + "&width=200"
+                + "&height=200" + "&srs=EPSG:5041" + "&format=image%2Fpng");
+        checkImage(response, "image/png", 200, 200);
+        String testName = "testPolarStereographic";
+        BufferedImage image = ImageIO.read(getBinaryInputStream(response));
+        assertNotBlank(testName, image);
+        // top-left quadrant should not be blank
+        assertNotBlank(testName, image.getSubimage(0, 0, 100, 100));
+        // top 25% should be blank
+        assertEquals(0, countNonBlankPixels(testName, image.getSubimage(0, 0, 200, 50), BG_COLOR));
+        // right-hand side should be blank
+        assertEquals(0, countNonBlankPixels(testName, image.getSubimage(100, 0, 100, 200), BG_COLOR));
+        // bottom 35% should be blank
+        assertEquals(0, countNonBlankPixels(testName, image.getSubimage(0, 130, 200, 70), BG_COLOR));
+    }
+
 }

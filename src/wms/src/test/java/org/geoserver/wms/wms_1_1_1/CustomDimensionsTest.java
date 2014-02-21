@@ -146,7 +146,7 @@ public class CustomDimensionsTest extends WMSTestSupport {
                 + "&DIM_" + DIMENSION_NAME + "=CustomDimValueB,CustomDimValueC,CustomDimValueA");
         image = ImageIO.read(getBinaryInputStream(response));
         assertFalse(isEmpty(image));
-        assertEquals("sample model bands", 3, image.getSampleModel().getNumBands());
+        assertTrue("sample model bands", 3 <= image.getSampleModel().getNumBands());
     }
     
     @Test

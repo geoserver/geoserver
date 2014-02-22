@@ -32,11 +32,6 @@ build the application run maven from the ```src``` directory.
 See the [developer guide](http://docs.geoserver.org/stable/en/developer/) 
 for more details.
 
-## Bugs
-
-GeoServer uses [JIRA](http://jira.codehaus.org/browse/GEOS), hosted by 
-[CodeHaus](http://www.codehaus.org/), for issue tracking.
-
 ## Mailing Lists
 
 The [mailing list page](http://geoserver.org/display/GEOS/Mailing+Lists) on the GeoServer web site provides

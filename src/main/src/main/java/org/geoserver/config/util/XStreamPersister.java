@@ -285,6 +285,10 @@ public class XStreamPersister {
         // Default implementations
         initImplementationDefaults(xs);
         
+        // ignore unkonwn fields, this should help using data dirs that has new config elements
+        // with older versions of GeoServer
+        xs.ignoreUnknownElements();
+        
         // Aliases
         xs.alias("global", GeoServerInfo.class);
         xs.alias("settings", SettingsInfo.class);

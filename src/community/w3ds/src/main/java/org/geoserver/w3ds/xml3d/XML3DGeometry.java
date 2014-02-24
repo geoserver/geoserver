@@ -14,6 +14,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geotools.util.logging.Logging;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 import org.geoserver.w3ds.types.Vector3;
 import org.geoserver.w3ds.utilities.Format;
 import org.geoserver.w3ds.x3d.GeometryType;
@@ -44,6 +48,7 @@ private Double bbox[] = null;
 
 public XML3DGeometry(Envelope bBox, GeometryType type, Format format) {
     verticesHashMap = new HashMap<String, Integer>(200000);
+    vertices = new ArrayList<Vector3>();
     requestFormat = format;
     geometryType = type;
 
@@ -56,23 +61,30 @@ public XML3DGeometry(Envelope bBox, GeometryType type, Format format) {
 }
 
 public void addGeometry(Geometry geometry) {
-    if (geometry instanceof Polygon) {
-        triangulateFromCoordinates(geometry.getCoordinates());
-    } else if (geometry instanceof LineString || geometry instanceof MultiLineString) {
-        lineFromCoordinates(geometry.getCoordinates());
+    if (requestFormat == Format.OCTET_STREAM) {
+        List<Vector3> vertexList = filterCoordinates(geometry.getCoordinates());
+        for (int i = 0; i < vertexList.size(); i++) {
+            Vector3 vertex = vertexList.get(i);
+            if (!vertices.contains(vertex)) {
+                vertices.add(vertex);
+            }
+        }
     } else {
-        int geometries = geometry.getNumGeometries();
-
-        for (int i = 0; i < geometries; i++) {
-            triangulateFromCoordinates(geometry.getGeometryN(i).getCoordinates());
+        if (geometry instanceof Polygon) {
+            triangulateFromCoordinates(geometry.getCoordinates());
+        } else if (geometry instanceof LineString || geometry instanceof MultiLineString) {
+            lineFromCoordinates(geometry.getCoordinates());
+        } else {
+            int geometries = geometry.getNumGeometries();
+    
+            for (int i = 0; i < geometries; i++) {
+                triangulateFromCoordinates(geometry.getGeometryN(i).getCoordinates());
+            }
         }
     }
 }
 
 private void lineFromCoordinates(Coordinate[] coordinates) {
-    if (vertices == null) {
-        vertices = new ArrayList<Vector3>();
-    }
     int len = coordinates.length;
     for (int i = 0; i < len; i++) {
         if (coordinates[i].z == Double.NaN) {
@@ -89,9 +101,6 @@ private void lineFromCoordinates(Coordinate[] coordinates) {
 }
 
 private void triangulateFromCoordinates(Coordinate[] coordinates) {
-    if (vertices == null) {
-        vertices = new ArrayList<Vector3>();
-    }
     if (indices == null) {
         indices = new ArrayList<Integer>();
     }
@@ -339,6 +348,126 @@ private XML3DNode createXML3DNode() {
 
     verticesHashMap.clear();
     return rootNode;
+}
+
+private List<List<Vector3> > getVertexGrid() {
+    // At the moment this works only for points that form uniform grid
+    List<List<Vector3> > vertexGrid = new ArrayList<List<Vector3> >();
+
+    for (int i = 0; i < vertices.size(); i++) {
+        Vector3 vertex = vertices.get(i);
+        
+        // Find correct row for vertex and add it there.
+        boolean found = false;
+        for (int j = 0; j < vertexGrid.size(); j++) {
+            // Add first vertex to empty row
+            if (vertexGrid.get(j).size() == 0) {
+                vertexGrid.get(j).add(vertex);
+                found = true;
+                break;
+            } 
+            Vector3 temp =vertexGrid.get(j).get(0); 
+            if (temp.z - 0.01 < vertex.z && temp.z + 0.01 > vertex.z) {
+                vertexGrid.get(j).add(vertex);
+                found = true;
+                break;
+            }
+        }
+        
+        // Row was not yet created
+        if (!found) {
+            vertexGrid.add(new ArrayList<Vector3>());
+            vertexGrid.get(vertexGrid.size()-1).add(vertex);
+        }
+    }
+    
+    return sortVertexGrid(vertexGrid);
+}
+
+private List<List<Vector3> > sortVertexGrid(List<List<Vector3> > vertexGrid) {
+    // Sort columns with insertion sort
+    int size = vertexGrid.size();
+    for (int i = 0; i < size; i++) {
+        // Get row for sorting
+        List<Vector3> row = vertexGrid.get(i);
+        
+        // Sort vertices in that row
+        for (int j = 0; j < row.size(); j++) {
+            Vector3 vertex = row.get(j);
+            int k = j - 1;
+            while (k >= 0 && row.get(k).x < vertex.x) {
+                row.set(k+1, row.get(k));
+                k = k-1;
+            }
+            row.set(k + 1, vertex);
+        }
+    }
+    
+    // Sort rows with insertion sort
+    for (int i = 0; i < size; i++) {
+        List<Vector3> row = vertexGrid.get(i);
+        int j = i - 1;
+        while (j >= 0 && vertexGrid.get(j).get(0).z < row.get(0).z) {
+            vertexGrid.set(j+1, vertexGrid.get(j));
+            j = j-1;
+        }
+        vertexGrid.set(j + 1, row);
+    }
+    return vertexGrid;
+}
+
+public byte[] toByteArray() {
+    List<List<Vector3> > grid = getVertexGrid();
+    
+    int sizeX = grid.get(0).size();
+    int sizeZ = grid.size();
+    
+    // Compute array resolution        
+    float resolutionX = (float)(bbox[2] - bbox[0]) / sizeX;
+    float resolutionZ = (float)(bbox[3] - bbox[1]) / sizeZ;       
+
+    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    DataOutputStream out = null;
+    byte outputByteArray[] = null;
+    try {
+        out = new DataOutputStream(bos);
+        
+        out.writeInt(sizeX);
+        out.writeInt(sizeZ);
+        
+        out.writeFloat(resolutionX);
+        out.writeFloat(resolutionZ);
+
+        for (int i = 0; i < sizeZ; i++) {
+            int len = grid.get(i).size()-1;
+            for (int j = len; j >= 0; j--) {
+                out.writeFloat((float)grid.get(i).get(j).y);
+            }
+        }
+        out.flush();
+
+
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine("Points in first row: " + sizeX + " Rows: " + sizeZ);
+            LOGGER.fine("ByteArray resolution in x: " + resolutionX + " in y: " + resolutionZ + "\n");
+        }
+
+        outputByteArray = bos.toByteArray();
+
+    } catch (IOException e) {
+        // Ignore I/O error exception while writing stream header
+    } finally {
+        try {
+            if (out != null) {
+                out.close();
+            }
+            bos.close();
+        } catch (IOException ex) {
+            // Ignore close exception
+        }
+    }
+    
+    return outputByteArray;
 }
 
 public XML3DNode toXML3DNode() {

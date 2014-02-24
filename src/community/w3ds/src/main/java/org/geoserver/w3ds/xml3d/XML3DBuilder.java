@@ -255,11 +255,28 @@ private void writeHTML() {
     }
 }
 
+/*
+ * Write byte array with size information of planar component, resolution
+ * and elevation data for each point in that planar.
+ */
+private void writeOctetStream() {
+    try {
+        if (outputObject != null) {
+            outputStream.write(outputObject.toByteArray());
+        }
+        outputStream.flush();
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}
+
 public void writeOutput() {
     if (requestFormat == Format.XML3D) {
         writeXML3D();
     } else if (requestFormat == Format.HTML_XML3D) {
         writeHTML();
+    } else if (requestFormat == Format.OCTET_STREAM) {
+        writeOctetStream();
     }
 
     if (LOGGER.isLoggable(Level.INFO))

@@ -37,6 +37,8 @@ public boolean canHandle(Operation operation) {
         GetSceneRequest getSceneRequest = (GetSceneRequest) requestObject;
         if (getSceneRequest.getFormat() == Format.XML3D) {
             return true;
+        } else if (getSceneRequest.getFormat() == Format.OCTET_STREAM) {
+            return true;
         } else {
             return false;
         }

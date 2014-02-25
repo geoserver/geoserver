@@ -5,10 +5,12 @@
 package org.geoserver.wms.dimension.impl;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -102,52 +104,78 @@ public class CoverageNearestValueSelectionStrategyImpl extends AbstractDefaultVa
     private Date findNearestTime(ReaderDimensionsAccessor dimAccessor, Date toMatch)
             throws IOException {
         Date candidate = null;
+        long shortestDistance = Long.MAX_VALUE;        
         TreeSet<Object> timeDomain = dimAccessor.getTimeDomain();
-        long shortestDistance = Long.MAX_VALUE;
-        long currentDistance = 0;
-        for (Object dateOrRange : timeDomain) {
-            if (dateOrRange instanceof Date) {
-                Date d = (Date) dateOrRange;
-                if (d.before(toMatch)) {
-                    currentDistance = toMatch.getTime() - d.getTime();
-                    if (currentDistance < shortestDistance) {
-                        shortestDistance = currentDistance;
-                        candidate = d;
-                    }
-                } else if (d.after(toMatch)) {
-                    currentDistance = d.getTime() - toMatch.getTime();
-                    if (currentDistance < shortestDistance) {
-                        candidate = d;
-                    }
-                    // the distance can only grow after this
-                    // assuming the times are in ascending order,
-                    // so stop iterating at this point for efficiency:
-                    break;
-                } else if (d.equals(toMatch)) {
-                    candidate = d;
-                    break;
+        Object sameOrSmallestGreater = null;
+        Object biggestLesser = null;
+                
+        /*
+        NOTE: if the domain is very big, iterating the values into an array
+        and then searching for the nearest value using Collections.binarySearch
+        may be less efficient than creating 
+        tailSet and headSet and picking the edge values:        
+         try {
+                sameOrSmallestGreater = timeDomain.tailSet(toMatch, true).first();
+            } catch (NoSuchElementException nse){
+                //NOOP
+            }
+            
+            try {
+                biggestLesser = timeDomain.headSet(toMatch).last();
+            } catch (NoSuchElementException nse){
+                //NOOP
+            }
+         */
+        
+        Object[] ordered = timeDomain.toArray();
+        int index = Collections.binarySearch(Arrays.asList(ordered),toMatch,ReaderDimensionsAccessor.TEMPORAL_COMPARATOR);
+        if (index < 0){
+            //No exact match in array
+            int insertationPoint = -index-1;
+            if (insertationPoint < ordered.length){
+                if ( insertationPoint > 0) {
+                    biggestLesser = ordered[insertationPoint - 1];
+                }                
+                sameOrSmallestGreater = ordered[insertationPoint];
+            }
+            else {
+                //All values are less than the matched date
+                biggestLesser = ordered[ordered.length - 1];
+            }
+        }
+        else {
+            sameOrSmallestGreater = ordered[index];
+        }
+
+       if (sameOrSmallestGreater != null){
+            if (sameOrSmallestGreater.equals(toMatch)){
+                candidate = toMatch;
+            }
+            else if (sameOrSmallestGreater instanceof Date){
+                Date d = (Date)sameOrSmallestGreater;
+                shortestDistance = d.getTime() - toMatch.getTime();           
+                candidate = d;
+            }
+            else if (sameOrSmallestGreater instanceof DateRange) {
+                DateRange d = (DateRange) sameOrSmallestGreater;
+                shortestDistance = d.getMinValue().getTime() - toMatch.getTime();
+                candidate = d.getMinValue();
+            }
+        } 
+        
+        if (biggestLesser != null){
+            if (biggestLesser instanceof Date){
+                Date d = (Date)biggestLesser;
+                long currentDistance =  toMatch.getTime() - d.getTime();
+                if (currentDistance < shortestDistance){
+                    candidate = d;                    
                 }
-            } else if (dateOrRange instanceof DateRange) {
-                DateRange d = (DateRange) dateOrRange;
-                if (d.getMaxValue().before(toMatch)) {
-                    currentDistance = toMatch.getTime() - d.getMaxValue().getTime();
-                    if (currentDistance < shortestDistance) {
-                        shortestDistance = currentDistance;
-                        candidate = d.getMaxValue();
-                    }
-                } else if (d.getMinValue().after(toMatch)) {
-                    currentDistance = d.getMinValue().getTime() - toMatch.getTime();
-                    if (currentDistance < shortestDistance) {
-                        candidate = d.getMinValue();
-                    }
-                    // the distance can only grow after this
-                    // assuming the times are in ascending order,
-                    // so stop iterating at this point for efficiency:
-                    break;
-                } else {
-                    // we are within this range, "match" will do:
-                    candidate = toMatch;
-                    break;
+            }
+            else if (biggestLesser instanceof DateRange) {
+                DateRange d = (DateRange) biggestLesser;
+                long currentDistance = toMatch.getTime() - d.getMaxValue().getTime();
+                if (currentDistance < shortestDistance){
+                    candidate = d.getMaxValue();
                 }
             }
         }
@@ -160,60 +188,96 @@ public class CoverageNearestValueSelectionStrategyImpl extends AbstractDefaultVa
         Double candidate = null;
         TreeSet<Object> elevDomain = dimAccessor.getElevationDomain();
         double shortestDistance = Double.MAX_VALUE;
-        double currentDistance = 0d;
-        for (Object doubleOrRange : elevDomain) {
-            if (doubleOrRange instanceof Double) {
-                Double d = (Double) doubleOrRange;
-                int comp = d.compareTo(toMatch);
-                if (comp < 0) {
-                    currentDistance = toMatch.doubleValue() - d.doubleValue();
-                    if (currentDistance < shortestDistance) {
-                        shortestDistance = currentDistance;
-                        candidate = d;
-                    }
-                } else if (comp > 0) {
-                    currentDistance = d.doubleValue() - toMatch.doubleValue();
-                    if (currentDistance < shortestDistance) {
-                        candidate = d;
-                    }
-                    // the distance can only grow after this
-                    // assuming the times are in ascending order,
-                    // so stop iterating at this point for efficiency:
-                    break;
-                } else {
-                    candidate = d;
-                    break;
-                }
-            } else if (doubleOrRange instanceof NumberRange<?>) {
+        Object sameOrSmallestGreater = null;
+        Object biggestLesser = null;
+        
+        /*
+        NOTE: if the domain is very big, iterating the values into an array
+        and then searching for the nearest value using Collections.binarySearch
+        may be less efficient than creating 
+        tailSet and headSet and picking the edge values:        
+         try {
+                sameOrSmallestGreater = elevDomain.tailSet(toMatch, true).first();
+            } catch (NoSuchElementException nse){
+                //NOOP
+            }
+            
+            try {
+                biggestLesser = elevDomain.headSet(toMatch).last();
+            } catch (NoSuchElementException nse){
+                //NOOP
+            }
+         */
+        
+        Object[] ordered = elevDomain.toArray();
+        int index = Collections.binarySearch(Arrays.asList(ordered),toMatch,ReaderDimensionsAccessor.ELEVATION_COMPARATOR);
+        if (index < 0){
+            //No exact match in array
+            int insertationPoint = -index-1;
+            if (insertationPoint < ordered.length){
+                if ( insertationPoint > 0) {
+                    biggestLesser = ordered[insertationPoint - 1];
+                }                
+                sameOrSmallestGreater = ordered[insertationPoint];
+            }
+            else {
+                //All values are less than the matched date
+                biggestLesser = ordered[ordered.length - 1];
+            }
+        }
+        else {
+            sameOrSmallestGreater = ordered[index];
+        }      
+        
+        if (sameOrSmallestGreater != null){
+            sameOrSmallestGreater = elevDomain.tailSet(toMatch, true).first();
+            if (sameOrSmallestGreater.equals(toMatch)){
+                candidate = toMatch;
+            }
+            else if (sameOrSmallestGreater instanceof Double){
+                Double d = (Double) sameOrSmallestGreater;
+                shortestDistance = d.doubleValue() - toMatch.doubleValue();
+                candidate = d;
+            }
+            else if (sameOrSmallestGreater instanceof NumberRange<?>) {
                 NumberRange<Double> d = null;
-                NumberRange<?> maybeD = (NumberRange<?>) doubleOrRange;
+                NumberRange<?> maybeD = (NumberRange<?>) sameOrSmallestGreater;
+                if (maybeD.getElementClass().equals(Double.class)) {
+                    d = (NumberRange<Double>) maybeD;
+                } else {
+                    d = maybeD.castTo(Double.class);
+                }
+                shortestDistance = d.getMinValue().doubleValue() - toMatch.doubleValue();
+                candidate = d.getMinValue();
+            }
+        } 
+        
+        if (biggestLesser != null){
+            biggestLesser = elevDomain.headSet(toMatch).last();
+            if (biggestLesser instanceof Double){
+                Double d = (Double) biggestLesser;
+                double currentDistance = toMatch.doubleValue() - d.doubleValue();
+                if (currentDistance < shortestDistance) {
+                    candidate = d;
+                }
+            }
+            else if (biggestLesser instanceof NumberRange) {
+                NumberRange<Double> d = null;
+                NumberRange<?> maybeD = (NumberRange<?>) biggestLesser;
                 if (maybeD.getElementClass().equals(Double.class)) {
                     d = (NumberRange<Double>) maybeD;
                 } else {
                     d = maybeD.castTo(Double.class);
                 }
                 if (d.getMaxValue().doubleValue() < toMatch.doubleValue()) {
-                    currentDistance = toMatch.doubleValue() - d.getMaxValue().doubleValue();
+                    double currentDistance = toMatch.doubleValue() - d.getMaxValue().doubleValue();
                     if (currentDistance < shortestDistance) {
-                        shortestDistance = currentDistance;
                         candidate = d.getMaxValue();
                     }
-                } else if (d.getMinValue().doubleValue() > toMatch.doubleValue()) {
-                    currentDistance = d.getMinValue().doubleValue() - toMatch.doubleValue();
-                    if (currentDistance < shortestDistance) {
-                        candidate = d.getMinValue();
-                    }
-                    // the distance can only grow after this
-                    // assuming the times are in ascending order,
-                    // so stop iterating at this point for efficiency:
-                    break;
-                } else {
-                    // we are within this range, "match" will do:
-                    candidate = toMatch;
-                    break;
                 }
             }
         }
+        
         return candidate;
     }
     
@@ -224,7 +288,7 @@ public class CoverageNearestValueSelectionStrategyImpl extends AbstractDefaultVa
         
         //TODO: decide comparison strategy based on domain data type.        
         //Does any coverage actually return anything else that null for this:
-        //String type = dimAccessor.getDomainDatatype(dimensionname);
+        //String type = dimAccessor.getDomainDatatype(dimensionName);
         
         //Just use a case insensitive lexical string comparison for now:
         Comparator<String> comp = String.CASE_INSENSITIVE_ORDER;

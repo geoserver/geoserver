@@ -6,11 +6,14 @@
 package org.geoserver.platform;
 
 import java.io.File;
-import java.util.Set;
 import javax.servlet.ServletContext;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -51,39 +54,36 @@ public class GeoServerResourceLoaderTest {
         ApplicationContext applicationContext = null;
         GeoServerResourceLoader instance = new GeoServerResourceLoader();
         instance.setApplicationContext(applicationContext);
-        // TODO review the generated test code and remove the default call to fail.
-        //fail("The test case is a prototype.");
+
+        assertNull("baseDirectory still points to null.", instance.baseDirectory);
+        assertTrue("searchLocations still empty.", instance.searchLocations.isEmpty());
     }
 
     /**
      * Test of addSearchLocation method, of class GeoServerResourceLoader.
      */
     @Test
-    public void testAddSearchLocation() {
+    public final void testAddSearchLocation() {
         System.out.println("addSearchLocation");
-        File searchLocation = null;
-        GeoServerResourceLoader instance = new GeoServerResourceLoader();
+        final GeoServerResourceLoader instance = new GeoServerResourceLoader();
 
         try {
-            instance.addSearchLocation(searchLocation);
+            instance.addSearchLocation(null);
         } catch (NullPointerException npe) {
             fail("The test case to catch NPE in the addSearchLocation");
         }
-        // TODO review the generated test code and remove the default call to fail.
-
     }
 
     /**
      * Test of setSearchLocations method, of class GeoServerResourceLoader.
      */
     @Test
-    public void testSetSearchLocations() {
+    public final void testSetSearchLocations() {
         System.out.println("setSearchLocations");
-        final Set searchLocations = null;
         final GeoServerResourceLoader instance = new GeoServerResourceLoader();
 
         try {
-            instance.setSearchLocations(searchLocations);
+            instance.setSearchLocations(null);
         } catch (NullPointerException npe) {
             fail("The test case to catch NPE in the setSearchLocations.");
         }
@@ -93,59 +93,103 @@ public class GeoServerResourceLoaderTest {
      * Test of getBaseDirectory method, of class GeoServerResourceLoader.
      */
     @Test
-    public void testGetBaseDirectory() {
+    public final void testGetBaseDirectory() {
         System.out.println("getBaseDirectory");
         GeoServerResourceLoader instance = new GeoServerResourceLoader();
         File result = instance.getBaseDirectory();
-        assertEquals(null, result);
-        // TODO review the generated test code and remove the default call to fail.
-        //fail("The test case is a prototype.");
+        assertEquals("baseDirectory is not null", null, result);
+    }
+
+    @Test
+    public final void testSetBaseDirectoryNull() {
+        System.out.println("setBaseDirectory to null");
+        final GeoServerResourceLoader instance = new GeoServerResourceLoader();
+
+        try {
+            instance.setBaseDirectory(null);
+        } catch (NullPointerException npe) {
+            fail("The test case to catch NPE in the setBaseDirectory.");
+        }
     }
 
     /**
      * Test of setBaseDirectory method, of class GeoServerResourceLoader.
      */
     @Test
-    public void testSetBaseDirectory() {
+    public final void testSetBaseDirectory() {
         System.out.println("setBaseDirectory");
-        File baseDirectory = new File("~");
-        GeoServerResourceLoader instance = new GeoServerResourceLoader();
+        final File baseDirectory = new File("~");
+        final GeoServerResourceLoader instance = new GeoServerResourceLoader();
         instance.setBaseDirectory(baseDirectory);
-        File result = instance.getBaseDirectory();
-        assertEquals(baseDirectory, result);
-        // TODO review the generated test code and remove the default call to fail.
-        //fail("The test case is a prototype.");
+        final File result = instance.getBaseDirectory();
+        String msg = "This is test for side Effect of SetBaseDirectory()";
+        assertEquals(msg, baseDirectory, result);
+
+        assertFalse(msg, instance.searchLocations.isEmpty());
+        assertTrue(msg, instance.searchLocations.size() == 1);
+        Object[] arr = instance.searchLocations.toArray();
+        assertEquals(msg, baseDirectory, arr[0]);
     }
 
-    /**
+    
+        /**
      * Test of find method, of class GeoServerResourceLoader.
      */
     @Test
-    public void testFind_String() throws Exception {
+    public final void testFindStringNull() throws Exception {
         System.out.println("find");
-        String location = "";
-        GeoServerResourceLoader instance = new GeoServerResourceLoader();
+        final String location = null;
+        final GeoServerResourceLoader instance = new GeoServerResourceLoader();
         File expResult = null;
-        File result = instance.find(location);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        //fail("The test case is a prototype.");
+
+        try {
+            File result = instance.find(location);
+            assertEquals(expResult, result);
+        } catch (NullPointerException npe) {
+            fail("The test case to catch NPE in the find(String).");
+        }
+    }
+    /**
+     * Test of find method, of class GeoServerResourceLoader.
+     */
+    @Test
+    public final void testFindEmptyString() throws Exception {
+        System.out.println("find empty string");
+        final String location = "";
+        final GeoServerResourceLoader instance = new GeoServerResourceLoader();
+        final File result = instance.find(location);
+        assertNotNull("Something has returned.", result);
+    }
+    
+    /**
+     * Test of find method, of class GeoServerResourceLoader.
+     */
+    @Test
+    public final void testFindString() throws Exception {
+        System.out.println("find");
+        final String location = "~";
+        final GeoServerResourceLoader instance = new GeoServerResourceLoader();
+        final File result = instance.find(location);
+        assertNull("Nothing has returned.", result);
     }
 
     /**
      * Test of find method, of class GeoServerResourceLoader.
      */
     @Test
-    public void testFind_File_String() throws Exception {
+    public final void testFindFileString() throws Exception {
         System.out.println("find");
         File parent = null;
-        String location = "";
+        String location = null;
         GeoServerResourceLoader instance = new GeoServerResourceLoader();
         File expResult = null;
-        File result = instance.find(parent, location);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        //fail("The test case is a prototype.");
+
+        try {
+            File result = instance.find(parent, location);
+            assertEquals(expResult, result);
+        } catch (NullPointerException npe) {
+            fail("The test case to catch NPE in the find(File,String).");
+        }
     }
 
     /**
@@ -247,15 +291,28 @@ public class GeoServerResourceLoaderTest {
      * Test of findOrCreateDirectory method, of class GeoServerResourceLoader.
      */
     @Test
-    public void testFindOrCreateDirectory_String() throws Exception {
+    public void testFindOrCreateDirectoryString() throws Exception {
         System.out.println("findOrCreateDirectory");
         String location = "";
         GeoServerResourceLoader instance = new GeoServerResourceLoader();
         File expResult = null;
         File result = instance.findOrCreateDirectory(location);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        //fail("The test case is a prototype.");
+    }
+
+    @Test
+    public void testFindOrCreateDirectorNullString() throws Exception {
+        System.out.println("findOrCreateDirectory");
+        String location = null;
+        GeoServerResourceLoader instance = new GeoServerResourceLoader();
+        File expResult = null;
+
+        try {
+            File result = instance.findOrCreateDirectory(location);
+            assertEquals(expResult, result);
+        } catch (NullPointerException npe) {
+            fail("The test case to catch NPE in the findOrCreateDirectory");
+        }
     }
 
     /**
@@ -485,4 +542,4 @@ public class GeoServerResourceLoaderTest {
         }
     }
 
-}
+    }

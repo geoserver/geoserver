@@ -29,9 +29,6 @@ import org.geotools.util.logging.Logging;
  */
 public abstract class AbstractFeatureAttributeVisitorSelectionStrategy extends AbstractDefaultValueSelectionStrategy {
 
-    /** serialVersionUID */
-    private static final long serialVersionUID = 3863284347371098095L;
-
     private static Logger LOGGER = Logging.getLogger(AbstractFeatureAttributeVisitorSelectionStrategy.class);
     
     /**

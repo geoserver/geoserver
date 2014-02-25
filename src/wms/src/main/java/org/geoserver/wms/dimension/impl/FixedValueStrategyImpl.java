@@ -7,6 +7,7 @@ package org.geoserver.wms.dimension.impl;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.wms.dimension.AbstractDefaultValueSelectionStrategy;
+import org.geotools.util.Converters;
 
 /**
  * A default value strategy which always return the same fixed value.
@@ -24,10 +25,11 @@ public class FixedValueStrategyImpl extends AbstractDefaultValueSelectionStrateg
     public FixedValueStrategyImpl(Object value){
         this.value = value;
     }
-    
+
     @Override
-    protected Object doGetDefaultValue(ResourceInfo resource, String dimensionName,
-            DimensionInfo dimension) {
-        return this.value;
-    }        
+    public <T> T getDefaultValue(ResourceInfo resource, String dimensionName,
+            DimensionInfo dimension, Class<T> clz) {
+        return Converters.convert(this.value, clz);
+    }
+        
 }

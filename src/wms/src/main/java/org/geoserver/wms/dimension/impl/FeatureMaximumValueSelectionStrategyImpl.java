@@ -10,6 +10,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.wms.dimension.AbstractFeatureAttributeVisitorSelectionStrategy;
 import org.geotools.feature.visitor.CalcResult;
 import org.geotools.feature.visitor.MaxVisitor;
+import org.geotools.util.Converters;
 
 /**
  * Default implementation for selecting the default values for dimensions of 
@@ -28,13 +29,14 @@ public class FeatureMaximumValueSelectionStrategyImpl extends
     }
 
     @Override
-    protected Object doGetDefaultValue(ResourceInfo resource, String dimensionName, DimensionInfo dim) {
-        final MaxVisitor max = new MaxVisitor(dim.getAttribute());
-        CalcResult res = getCalculatedResult((FeatureTypeInfo) resource, dim, max);
+    public <T> T getDefaultValue(ResourceInfo resource, String dimensionName,
+            DimensionInfo dimension, Class<T> clz) {
+        final MaxVisitor max = new MaxVisitor(dimension.getAttribute());
+        CalcResult res = getCalculatedResult((FeatureTypeInfo) resource, dimension, max);
         if (res.equals(CalcResult.NULL_RESULT)) {
             return null;
         } else {
-            return max.getMax();
+            return Converters.convert(max.getMax(),clz);
         }
-    }    
+    }   
 }

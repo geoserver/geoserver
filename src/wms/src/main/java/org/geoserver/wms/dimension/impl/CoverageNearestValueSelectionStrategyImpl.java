@@ -21,6 +21,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.dimension.AbstractDefaultValueSelectionStrategy;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.feature.type.DateUtil;
+import org.geotools.util.Converters;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 import org.geotools.util.logging.Logging;
@@ -54,7 +55,8 @@ public class CoverageNearestValueSelectionStrategyImpl extends AbstractDefaultVa
     
 
     @Override
-    protected Object doGetDefaultValue(ResourceInfo resource, String dimensionName, DimensionInfo dimension) {
+    public <T> T getDefaultValue(ResourceInfo resource, String dimensionName,
+            DimensionInfo dimension, Class<T> clz) {    
         Object retval = null;
         try {
             GridCoverage2DReader reader = (GridCoverage2DReader) ((CoverageInfo) resource)
@@ -94,7 +96,7 @@ public class CoverageNearestValueSelectionStrategyImpl extends AbstractDefaultVa
         } catch (IOException e) {
            LOGGER.log(Level.FINER, e.getMessage(), e);
         }
-        return retval;
+        return Converters.convert(retval, clz);
     }
 
     private Date findNearestTime(ReaderDimensionsAccessor dimAccessor, Date toMatch)
@@ -264,4 +266,6 @@ public class CoverageNearestValueSelectionStrategyImpl extends AbstractDefaultVa
             return super.getCapabilitiesRepresentation(resource, dimensionName, dimensionInfo);
         }
     }
+
+   
 }

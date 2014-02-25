@@ -10,6 +10,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.wms.dimension.AbstractFeatureAttributeVisitorSelectionStrategy;
 import org.geotools.feature.visitor.CalcResult;
 import org.geotools.feature.visitor.MinVisitor;
+import org.geotools.util.Converters;
 
 /**
  * Default implementation for selecting the default values for dimensions of 
@@ -28,13 +29,14 @@ public class FeatureMinimumValueSelectionStrategyImpl extends
     }
 
     @Override
-    protected Object doGetDefaultValue(ResourceInfo resource, String dimensionName, DimensionInfo dimensionInfo) {
-        final MinVisitor max = new MinVisitor(dimensionInfo.getAttribute());
-        CalcResult res = getCalculatedResult((FeatureTypeInfo) resource, dimensionInfo, max);
+    public <T> T getDefaultValue(ResourceInfo resource, String dimensionName,
+            DimensionInfo dimension, Class<T> clz) {
+        final MinVisitor min = new MinVisitor(dimension.getAttribute());
+        CalcResult res = getCalculatedResult((FeatureTypeInfo) resource, dimension, min);
         if (res.equals(CalcResult.NULL_RESULT)) {
             return null;
         } else {
-            return max.getMin();
+            return Converters.convert(min.getMin(), clz);
         }
-    }              
+    }    
 }

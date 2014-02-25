@@ -4,12 +4,18 @@
  */
 package org.geoserver.wms.dimension.impl;
 
+import java.io.IOException;
+import java.util.List;
+
+import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.wms.dimension.AbstractFeatureAttributeVisitorSelectionStrategy;
-import org.geoserver.wms.dimension.NearestVisitor;
+import org.geoserver.wms.dimension.NearestVisitorFactory;
 import org.geotools.feature.visitor.CalcResult;
+import org.geotools.feature.visitor.FeatureCalc;
+import org.geotools.util.Converters;
 
 /**
  * Default implementation for selecting the default values for dimensions of 
@@ -39,18 +45,35 @@ public class FeatureNearestValueSelectionStrategyImpl extends
     }
 
     @Override
-    protected Object doGetDefaultValue(ResourceInfo resource, String dimensionName, DimensionInfo dimensionInfo) {
-        final NearestVisitor<Object> nearest = new NearestVisitor<Object>(dimensionInfo.getAttribute(),
-                this.toMatch);
+    public <T> T getDefaultValue(ResourceInfo resource, String dimensionName,
+            DimensionInfo dimension, Class<T> clz) {        
+        String attrName = dimension.getAttribute();
+        Class<?> attrType = String.class;
+        if (resource instanceof FeatureTypeInfo){
+            List<AttributeTypeInfo> attrTypes;
+            try {
+                attrTypes = ((FeatureTypeInfo)resource).attributes();
+                for (AttributeTypeInfo attr:attrTypes){
+                    if (attr.getName().equals(attrName)){
+                        attrType = attr.getBinding();
+                        break;
+                    }
+                }
+            } catch (IOException e) {
+            }                       
+        }
 
-        CalcResult res = getCalculatedResult((FeatureTypeInfo) resource, dimensionInfo, nearest);
+        final FeatureCalc nearest = NearestVisitorFactory.getNearestVisitor(dimension.getAttribute(),
+                this.toMatch, attrType);
+        
+        CalcResult res = getCalculatedResult((FeatureTypeInfo) resource, dimension, nearest);
         if (res.equals(CalcResult.NULL_RESULT)) {
             return null;
         } else {
-            return res.getValue();
+            return Converters.convert(res.getValue(),clz);
         }
     }
-    
+
     @Override
     public String getCapabilitiesRepresentation(ResourceInfo resource, String dimensionName, DimensionInfo dimensionInfo) {
         if (fixedCapabilitiesValue != null){
@@ -60,4 +83,6 @@ public class FeatureNearestValueSelectionStrategyImpl extends
             return super.getCapabilitiesRepresentation(resource, dimensionName, dimensionInfo);
         }
     }
+
+  
 }

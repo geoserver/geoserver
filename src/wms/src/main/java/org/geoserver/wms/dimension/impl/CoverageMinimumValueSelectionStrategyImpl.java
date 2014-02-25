@@ -16,6 +16,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.wms.dimension.AbstractDefaultValueSelectionStrategy;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -35,7 +36,8 @@ public class CoverageMinimumValueSelectionStrategyImpl extends AbstractDefaultVa
     }
 
     @Override
-    protected Object doGetDefaultValue(ResourceInfo resource, String dimensionName, DimensionInfo dimensionInfo) {
+    public <T> T getDefaultValue(ResourceInfo resource, String dimensionName,
+            DimensionInfo dimension, Class<T> clz) {
         Object retval = null;
         try {
             GridCoverage2DReader reader = (GridCoverage2DReader) ((CoverageInfo) resource)
@@ -72,7 +74,7 @@ public class CoverageMinimumValueSelectionStrategyImpl extends AbstractDefaultVa
         } catch (IOException e) {
             LOGGER.log(Level.FINER, e.getMessage(), e);
         }
-        return retval;
+        return Converters.convert(retval, clz);
     }        
     
 }

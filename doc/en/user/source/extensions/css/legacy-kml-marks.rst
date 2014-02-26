@@ -36,5 +36,5 @@ marks to generate the desired output:
     
 Which results in the following Google Earth output:
 
-.. figure:: .images/kml-eyesbull-mark.png
+.. figure:: ./images/kml-eyesbull-mark.png
    :align: center

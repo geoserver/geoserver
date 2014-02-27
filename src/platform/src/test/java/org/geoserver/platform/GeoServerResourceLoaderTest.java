@@ -6,17 +6,11 @@
 package org.geoserver.platform;
 
 import java.io.File;
-import java.io.IOException;
-import org.junit.After;
-import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
@@ -86,12 +80,66 @@ public class GeoServerResourceLoaderTest {
      * Test of find method, of class GeoServerResourceLoader.
      */
     @Test
-    public final void testFindString() throws Exception {
+    public final void testFindMalformedString() throws Exception {
         System.out.println("find");
-        final String location = "~";
+        final String location = "~/23\t/";
         final GeoServerResourceLoader instance = new GeoServerResourceLoader();
         final File result = instance.find(location);
         assertNull("Nothing has returned.", result);
+    }
+
+    /**
+     * Test of find method, of class GeoServerResourceLoader.
+     */
+    @Test
+    public final void testFindString() throws Exception {
+        System.out.println("find");
+        final String location = System.getProperty("user.home");
+        final GeoServerResourceLoader instance = new GeoServerResourceLoader();
+        final File result = instance.find(location);
+        assertEquals(location, result.getAbsolutePath());
+    }
+
+    /**
+     * Test of find method, of class GeoServerResourceLoader.
+     */
+    @Test
+    public final void testFindFileString() throws Exception {
+        System.out.println("find");
+        final File parent = new File(System.getProperty("user.home"));
+        final String location = java.util.UUID.randomUUID().toString();
+        final GeoServerResourceLoader instance = new GeoServerResourceLoader();
+        final File result = instance.find(parent, location);
+        assertNull(result);
+    }
+
+    /**
+     * Test of find method, of class GeoServerResourceLoader.
+     */
+    @Test
+    public final void testFindFileRelationUUIDString() throws Exception {
+        System.out.println("find");
+        final File parent = null;
+        final String location = java.util.UUID.randomUUID().toString();
+        final GeoServerResourceLoader instance = new GeoServerResourceLoader();
+        instance.addSearchLocation(new File(System.getProperty("user.home")));
+        final File result = instance.find(parent, location);
+        assertNull(result);
+    }
+
+    /**
+     * Test of find method, of class GeoServerResourceLoader.
+     */
+    @Test
+    public final void testFindFileRelationString() throws Exception {
+        System.out.println("find");
+        final File parent = null;
+        final String location = "s";
+        final GeoServerResourceLoader instance = new GeoServerResourceLoader();
+        instance.addSearchLocation(new File(System.getProperty("user.home")));
+        final File exResult = new File(System.getProperty("user.home"), "s");
+        final File result = instance.find(parent, location);
+        assertEquals(exResult, result);
     }
 
     /**

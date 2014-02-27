@@ -7,12 +7,8 @@ package org.geoserver.platform;
 
 import java.io.File;
 import javax.servlet.ServletContext;
-import org.junit.After;
-import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -21,7 +17,7 @@ import org.junit.Test;
  */
 public class GeoServerResourceLoaderNPETest {
 
-     /**
+    /**
      * Test of addSearchLocation method, of class GeoServerResourceLoader.
      */
     @Test

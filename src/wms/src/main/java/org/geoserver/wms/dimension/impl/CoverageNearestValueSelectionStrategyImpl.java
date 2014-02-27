@@ -224,7 +224,7 @@ public class CoverageNearestValueSelectionStrategyImpl extends AbstractDefaultVa
         
         //TODO: decide comparison strategy based on domain data type.        
         //Does any coverage actually return anything else that null for this:
-        //String type = dimAccessor.getDomainDatatype(dimensionname);
+        //String type = dimAccessor.getDomainDatatype(dimensionName);
         
         //Just use a case insensitive lexical string comparison for now:
         Comparator<String> comp = String.CASE_INSENSITIVE_ORDER;

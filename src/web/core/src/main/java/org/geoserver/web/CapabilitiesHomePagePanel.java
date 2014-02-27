@@ -59,7 +59,19 @@ public class CapabilitiesHomePagePanel extends Panel {
             return capsLink;
         }
 
+        @Override
+        public int hashCode() {
+            int hash = 3;
+            hash = 29 * hash + (this.service != null ? this.service.hashCode() : 0);
+            hash = 29 * hash + (this.version != null ? this.version.hashCode() : 0);
+            hash = 29 * hash + (this.capsLink != null ? this.capsLink.hashCode() : 0);
+            return hash;
+        }
+
         public boolean equals(Object o) {
+            if (o == null) {
+                return false;
+            }
             if (!(o instanceof CapsInfo)) {
                 return false;
             }

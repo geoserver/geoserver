@@ -419,8 +419,27 @@ public class FeatureWrapper extends BeansWrapper {
          * Override so asking for the hashCode does not implies traversing the
          * whole map and thus calling entrySet() prematurely
          */
+        @Override
         public int hashCode() {
             return attributeName.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final AttributeMap other = (AttributeMap) obj;
+            if (this.attributeName != other.attributeName && (this.attributeName == null || !this.attributeName.equals(other.attributeName))) {
+                return false;
+            }
+            if (this.feature != other.feature && (this.feature == null || !this.feature.equals(other.feature))) {
+                return false;
+            }
+            return this.entrySet == other.entrySet || (this.entrySet != null && this.entrySet.equals(other.entrySet));
         }
 
         /**

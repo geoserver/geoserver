@@ -39,8 +39,17 @@ public class GetCapabilitiesRequest extends WMSRequest {
      * 
      * @return <tt>true</tt> if o is equal to this request.
      */
+    @Override
     public boolean equals(Object o) {
         return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 83 * hash + (this.updateSequence != null ? this.updateSequence.hashCode() : 0);
+        hash = 83 * hash + (this.namespace != null ? this.namespace.hashCode() : 0);
+        return hash;
     }
 
     /**

@@ -8,4 +8,5 @@ The following pages contain CSS styling examples, groped by topics
 
    random-fills
    kml
+   legacy-kml-marks
    assorted-examples

@@ -1056,6 +1056,11 @@
    <artifactId>junit</artifactId>
    <scope>test</scope>
   </dependency>
+  <dependency>
+   <groupId>org.codehaus.sonar</groupId>
+   <artifactId>sonar-maven-plugin</artifactId>
+   <version>4.1.2</version>
+  </dependency>
  </dependencies>
 
  <build>

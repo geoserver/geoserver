@@ -21,14 +21,14 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.kvp.PaletteManager;
 import org.geoserver.wms.map.PNGMapResponse.QuantizeMethod;
-import org.geoserver.wms.map.quantize.CachingColorIndexer;
-import org.geoserver.wms.map.quantize.ColorIndexer;
-import org.geoserver.wms.map.quantize.ColorIndexerDescriptor;
-import org.geoserver.wms.map.quantize.LRUColorIndexer;
-import org.geoserver.wms.map.quantize.Quantizer;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.image.ImageWorker;
+import org.geotools.image.palette.CachingColorIndexer;
+import org.geotools.image.palette.ColorIndexer;
+import org.geotools.image.palette.ColorIndexerDescriptor;
 import org.geotools.image.palette.InverseColorMapOp;
+import org.geotools.image.palette.LRUColorIndexer;
+import org.geotools.image.palette.Quantizer;
 import org.springframework.util.Assert;
 
 /**

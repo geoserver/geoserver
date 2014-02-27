@@ -4,8 +4,8 @@
  */
 package org.geoserver.wms.map.png;
 
-import java.awt.image.ColorModel;
-import java.awt.image.IndexColorModel;
+import it.geosolutions.imageio.plugins.png.PNGWriter;
+
 import java.awt.image.RenderedImage;
 import java.io.OutputStream;
 import java.util.logging.Level;
@@ -21,10 +21,6 @@ import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
 
 import ar.com.hjg.pngj.FilterType;
-import ar.com.hjg.pngj.ImageInfo;
-import ar.com.hjg.pngj.PngWriter;
-import ar.com.hjg.pngj.chunks.PngChunkPLTE;
-import ar.com.hjg.pngj.chunks.PngChunkTRNS;
 
 /**
  * Encodes the image in PNG using the PNGJ library
@@ -37,85 +33,27 @@ public class PNGJWriter {
 
     public RenderedImage writePNG(RenderedImage image, OutputStream outStream, float quality,
             WMSMapContent mapContent) {
-        // compute the compression level similarly to what the Clib code does
-        int level = Math.round(9 * (1f - quality));
-
         // what kind of scaline filtering are we going to use?
         FilterType filterType = getFilterType(mapContent);
-
-        return writePNG(image, outStream, level, filterType);
-    }
-
-    RenderedImage writePNG(RenderedImage image, OutputStream outStream, int level,
-            FilterType filterType) {
-        // get the optimal scanline provider for this image
-        RenderedImage original = image;
-        ScanlineProvider scanlines = ScanlineProviderFactory.getProvider(image);
-        if(scanlines == null) {
-            image = new ImageWorker(image).rescaleToBytes().forceComponentColorModel().getRenderedImage();
-            scanlines = ScanlineProviderFactory.getProvider(image);
-        }
-        if(scanlines == null) {
-            throw new IllegalArgumentException("Could not find a scanline extractor for " + original);
-        }
-
-        // encode using the PNGJ library and the GeoServer own scanline providers
-        ColorModel colorModel = image.getColorModel();
-        boolean indexed = colorModel instanceof IndexColorModel;
-        ImageInfo ii = getImageInfo(image, scanlines, colorModel, indexed);
-        PngWriter pw = new PngWriter(outStream, ii);
-        pw.setShouldCloseStream(false);
-        try {
-            pw.setCompLevel(level);
-            pw.setFilterType(filterType);
-
-            if (indexed) {
-                IndexColorModel icm = (IndexColorModel) colorModel;
-                PngChunkPLTE palette = pw.getMetadata().createPLTEChunk();
-                int ncolors = icm.getMapSize();
-                palette.setNentries(ncolors);
-                for (int i = 0; i < ncolors; i++) {
-                    final int red = icm.getRed(i);
-                    final int green = icm.getGreen(i);
-                    final int blue = icm.getBlue(i);
-                    palette.setEntry(i, red, green, blue);
-                }
-                if (icm.hasAlpha()) {
-                    PngChunkTRNS transparent = new PngChunkTRNS(ii);
-                    int[] alpha = new int[ncolors];
-                    for (int i = 0; i < ncolors; i++) {
-                        final int a = icm.getAlpha(i);
-                        alpha[i] = a;
-                    }
-                    transparent.setPalletteAlpha(alpha);
-                    pw.getChunksList().queue(transparent);
-
-                }
-            }
-
-            // write out the actual image lines
-            for (int row = 0; row < image.getHeight(); row++) {
-                pw.writeRow(scanlines);
-            }
-            pw.end();
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        } finally {
-            pw.close();
+        // Creation of a new PNGWriter object
+        PNGWriter writer = new PNGWriter();
+        // Check if a Scanline is supported by the writer
+        boolean isScanlineSupported = writer.isScanlineSupported(image);
+        // If it is not supported, then the image is rescaled to bytes
+        if(!isScanlineSupported){
+            image = new ImageWorker(image).rescaleToBytes().forceComponentColorModel().getRenderedImage();           
         }
         
-        return image;
-    }
-
-    private ImageInfo getImageInfo(RenderedImage image, ScanlineProvider scanlines,
-            ColorModel colorModel, boolean indexed) {
-        int numColorComponents = colorModel.getNumColorComponents();
-        boolean grayscale = !indexed && numColorComponents < 3;
-        byte bitDepth = scanlines.getBitDepth();
-        boolean hasAlpha = !indexed && colorModel.hasAlpha();
-        ImageInfo ii = new ImageInfo(image.getWidth(), image.getHeight(), bitDepth, hasAlpha,
-                grayscale, indexed);
-        return ii;
+        RenderedImage output = null;
+        // Image writing
+        try {
+            output =  writer.writePNG(image, outStream, quality, filterType);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Failed to encode the PNG", e);
+            throw new ServiceException(e);
+        }
+        
+        return output;
     }
 
     /**

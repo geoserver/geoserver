@@ -166,6 +166,11 @@ public class LockFile  {
             writeUnLock();
             LOGGER.warning("Unlocking due to garbage collection for "+lockFile.getCanonicalPath());
         }
+        try {
+            super.finalize();
+        } catch (Throwable ex) {
+            LOGGER.severe(ex.getMessage());
+        }
     }
 
 }

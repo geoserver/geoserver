@@ -86,6 +86,11 @@ public class CloseableIteratorAdapter<T> implements CloseableIterator<T> {
                 LOGGER.warning("There is code not closing CloseableIterator!!! Auto closing at finalize().");
             }
         }
+        try {
+            super.finalize();
+        } catch (Throwable ex) {
+            LOGGER.severe(ex.getMessage());
+        }
     }
 
     public static <T> CloseableIterator<T> filter(final Iterator<T> iterator, final Filter filter) {

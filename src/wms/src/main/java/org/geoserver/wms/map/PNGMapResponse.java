@@ -20,8 +20,8 @@ import org.geoserver.wms.RasterCleaner;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.png.PNGJWriter;
-import org.geoserver.wms.map.quantize.ColorIndexerDescriptor;
 import org.geotools.image.ImageWorker;
+import org.geotools.image.palette.ColorIndexerDescriptor;
 import org.geotools.util.logging.Logging;
 
 /**

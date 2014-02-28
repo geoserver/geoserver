@@ -9,6 +9,8 @@ package org.geoserver.w3ds.responses;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
@@ -20,8 +22,12 @@ import org.geoserver.w3ds.types.W3DSLayer;
 import org.geoserver.w3ds.types.W3DSLayerInfo;
 import org.geoserver.w3ds.utilities.Format;
 import org.geoserver.w3ds.xml3d.XML3DBuilder;
+import org.geotools.util.logging.Logging;
 
 public class XML3DResponse extends Response {
+
+private final static Logger LOGGER = Logging.getLogger(XML3DResponse.class);
+        
 public XML3DResponse() {
     super(Scene.class);
 }
@@ -94,6 +100,15 @@ private void writeGetScene(Scene scene, OutputStream outputStream, GetSceneReque
         throws IOException {
     XML3DBuilder xml3dBuilder = new XML3DBuilder(getSceneRequest.getBbox(), outputStream,
             getSceneRequest.getFormat());
+    
+    // Set LOD if it is requested
+    if (getSceneRequest.getKpvPrs().containsKey("LOD")) {
+        int LOD = Integer.parseInt(getSceneRequest.getKpvPrs().get("LOD"));
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine("LOD Request with LOD value: " + LOD);
+        }
+        xml3dBuilder.setLOD(LOD);
+    }
 
     // Add layers
     for (W3DSLayer layer : scene.getLayers()) {

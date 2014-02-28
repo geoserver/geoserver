@@ -46,8 +46,25 @@ private Format requestFormat;
 
 private Double bbox[] = null;
 
+private Integer LOD = null;
+
+public XML3DGeometry(Envelope bBox, GeometryType type, Format format, Integer lod) {
+    verticesHashMap = new HashMap<String, Integer>(64000);
+    vertices = new ArrayList<Vector3>();
+    requestFormat = format;
+    geometryType = type;
+    LOD = lod;
+
+    bbox = new Double[4];
+    bbox[0] = bBox.getLowerCorner().getCoordinate()[0]; // Min X
+    bbox[1] = bBox.getLowerCorner().getCoordinate()[1]; // Min Z
+
+    bbox[2] = bBox.getUpperCorner().getCoordinate()[0]; // Max X
+    bbox[3] = bBox.getUpperCorner().getCoordinate()[1]; // Max Z
+}
+
 public XML3DGeometry(Envelope bBox, GeometryType type, Format format) {
-    verticesHashMap = new HashMap<String, Integer>(200000);
+    verticesHashMap = new HashMap<String, Integer>(64000);
     vertices = new ArrayList<Vector3>();
     requestFormat = format;
     geometryType = type;
@@ -186,13 +203,18 @@ private List<Double> createNormalsArray() {
 
 private List<Vector3> filterCoordinates(Coordinate[] coordinates) {
     List<Vector3> filtered = new ArrayList<Vector3>();
+    if (LOD == null) {
+        LOD = 10;
+    }
 
     // First and last one are the same coordinates in the coordinates list
     for (int i = 0; i < coordinates.length; i++) {
         // Offset is needed because in the client side it is impossible to seamlessly clue
         // requested terrain planes together if returned plane doesn't match bounding box
         // or plane is larger than bounding box.
-        int offset = 5;
+        
+        //TODO: we need some better way to estimate this offset
+        int offset = (12 - LOD) * 5 - 5;
         if (coordinates[i].x < bbox[0] - offset || coordinates[i].x > bbox[2] + offset) {
             continue;
         }

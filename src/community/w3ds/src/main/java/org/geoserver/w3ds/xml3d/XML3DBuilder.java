@@ -16,9 +16,12 @@ import java.util.logging.Logger;
 
 import org.geoserver.platform.ServiceException;
 import org.geoserver.w3ds.types.W3DSLayer;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.util.logging.Logging;
+import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory2;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -56,6 +59,8 @@ private GeometryType geometryType = null;
 private XML3DGeometry outputObject = null;
 
 private Long startTime;
+
+private Integer LOD = null;
 
 public XML3DBuilder(Envelope bbox, OutputStream output, Format format) {
     boundingBox = bbox;
@@ -113,19 +118,27 @@ private XML3DNode newObject(String id, String className) {
 
 public void addGeometry(Geometry geometry, String id, String mesh_ref, String className)
         throws IOException {
-
+    
     if (geometry instanceof Polygon || geometry instanceof MultiPolygon) {
         // Initialize output geometry object.
         if (outputObject == null) {
             geometryType = GeometryType.POLYGON;
-            outputObject = new XML3DGeometry(boundingBox, geometryType, requestFormat);
+            if (LOD != null) {
+                outputObject = new XML3DGeometry(boundingBox, geometryType, requestFormat, LOD);
+            } else {
+                outputObject = new XML3DGeometry(boundingBox, geometryType, requestFormat);
+            }
         }
         outputObject.addGeometry(geometry);
 
     } else if (geometry instanceof LineString || geometry instanceof MultiLineString) {
         if (outputObject == null) {
             geometryType = GeometryType.LINESTRING;
-            outputObject = new XML3DGeometry(boundingBox, geometryType, requestFormat);
+            if (LOD != null) {
+                outputObject = new XML3DGeometry(boundingBox, geometryType, requestFormat, LOD);
+            } else {
+                outputObject = new XML3DGeometry(boundingBox, geometryType, requestFormat);
+            }
         }
         outputObject.addGeometry(geometry);
 
@@ -172,10 +185,31 @@ public void addGeometry(Geometry geometry, String id, String mesh_ref, String cl
 
 }
 
+public void setLOD(int lod) {
+    LOD = lod;
+}
+
 public void addW3DSLayer(W3DSLayer layer) {
     startTime = System.currentTimeMillis();
-    FeatureCollection<?, ?> collection = layer.getFeatures();
+    FeatureCollection<?, ?> collection = null;
+    
+    if (layer.haveLODs()) {
+        if (LOD != null) {
+            FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+            Filter filter = ff.equals(ff.property("lod"), ff.literal(LOD));
 
+            collection = layer.getFeatures(filter);
+        } else {
+            // If LOD is available but it's not requested, use maximum LOD level as a default
+            FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+            Filter filter = ff.equals(ff.property("lod"), ff.literal(10));
+
+            collection = layer.getFeatures(filter);
+        }
+    } else {
+        collection = layer.getFeatures();
+    }
+    
     FeatureIterator<?> iterator = collection.features();
 
     try {

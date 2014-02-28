@@ -57,9 +57,13 @@ public class CommonJSEngine extends AbstractScriptEngine implements Invocable {
             filename = "<Unknown Source>";
         }
         Object result;
-        EngineScope scope = getRuntimeScope(context);
+        EngineScope scope = new EngineScope(context);
+        Global global = getGlobal();
+        scope.setParentScope(global);
+        scope.setPrototype(global);
         Context cx = enterContext();
         try {
+            scope.put("exports", scope, cx.newObject(global));
             result = cx.evaluateReader(scope, reader, filename, 1, null);
         } catch (EcmaError e) {
             throw new ScriptException(e.getMessage(), e.sourceName(), e.lineNumber(), e.columnNumber());
@@ -78,20 +82,6 @@ public class CommonJSEngine extends AbstractScriptEngine implements Invocable {
     
     private Global getGlobal() {
         return factory.getGlobal();
-    }
-
-    private EngineScope getRuntimeScope(ScriptContext context) {
-        EngineScope scope = new EngineScope(context);
-        Global global = getGlobal();
-        scope.setParentScope(global);
-        scope.setPrototype(global);
-        Context cx = enterContext();
-        try {
-            scope.put("exports", scope, cx.newObject(global));
-        } finally {
-            Context.exit();
-        }
-        return scope;
     }
 
     @Override

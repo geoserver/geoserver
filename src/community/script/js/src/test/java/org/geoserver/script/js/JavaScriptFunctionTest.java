@@ -33,9 +33,11 @@ public class JavaScriptFunctionTest extends ScriptIntTestSupport {
     
     @SuppressWarnings("unchecked")
     public void testFactorial() {
-        Function f = functionFactory.function("factorial", Collections.EMPTY_LIST, null);
-        assertNotNull(f);
-        assertEquals(120, ((Number)f.evaluate(5)).intValue());
+        Function factorial = functionFactory.function("factorial", Collections.EMPTY_LIST, null);
+        assertNotNull(factorial);
+        assertEquals(120, ((Number) factorial.evaluate(5)).intValue());
+        // confirm we can do repeat calls
+        assertEquals(720, ((Number) factorial.evaluate(6)).intValue());
     }
 
 }

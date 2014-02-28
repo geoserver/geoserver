@@ -4,7 +4,6 @@
  */
 package org.geoserver.script.js.engine;
 
-import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 

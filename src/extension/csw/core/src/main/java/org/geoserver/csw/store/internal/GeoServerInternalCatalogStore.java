@@ -16,6 +16,7 @@ import org.geoserver.data.util.IOUtils;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.security.PropertyFileWatcher;
 import org.geotools.util.logging.Logging;
+import org.opengis.feature.type.Name;
 
 /**
  * Internal Catalog Store that automatically loads mappings from mapping files in GeoServer Data Directory.
@@ -60,7 +61,8 @@ public class GeoServerInternalCatalogStore extends InternalCatalogStore {
         super( geoserver.getCatalog());
         GeoServerResourceLoader loader = geoserver.getCatalog().getResourceLoader();
         File dir = loader.findOrCreateDirectory("csw");
-        for (String typeName : descriptorByType.keySet()) {
+        for (Name name : descriptorByType.keySet()) {
+            String typeName = name.getLocalPart();
             File f = new File(dir, typeName + ".properties");
 
             PropertyFileWatcher watcher = new PropertyFileWatcher(f);

@@ -15,8 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.opengis.cat.csw20.ElementSetType;
-
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.csw.records.AbstractRecordDescriptor;
@@ -25,6 +23,7 @@ import org.geoserver.csw.records.RecordDescriptor;
 import org.geotools.data.Query;
 import org.geotools.data.Transaction;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.NameImpl;
 import org.opengis.feature.Feature;
 import org.opengis.feature.FeatureVisitor;
 import org.opengis.feature.Property;
@@ -42,11 +41,11 @@ import org.opengis.filter.identity.FeatureId;
  */
 public abstract class AbstractCatalogStore implements CatalogStore {
 
-    protected Map<String, RecordDescriptor> descriptorByType = new HashMap<String, RecordDescriptor>();
+    protected Map<Name, RecordDescriptor> descriptorByType = new RecordDescriptorsMap();
     protected Map<String, RecordDescriptor> descriptorByOutputSchema = new HashMap<String, RecordDescriptor>();
 
     protected void support(RecordDescriptor descriptor) {
-        descriptorByType.put(descriptor.getFeatureDescriptor().getName().getLocalPart(), descriptor);
+        descriptorByType.put(descriptor.getFeatureDescriptor().getName(), descriptor);
         descriptorByOutputSchema.put(descriptor.getOutputSchema(), descriptor);
     }
 
@@ -58,11 +57,10 @@ public abstract class AbstractCatalogStore implements CatalogStore {
 
     @Override
     public CloseableIterator<String> getDomain(Name typeName, final Name attributeName) throws IOException {
-		
-	final RecordDescriptor rd = descriptorByType.get(typeName.getLocalPart());
-	        
+        final RecordDescriptor rd = descriptorByType.get(typeName);
+
         if (rd==null) {
-            throw new IOException(typeName.getLocalPart() + " is not a supported type");
+            throw new IOException(typeName + " is not a supported type");
         }
 		
         // do we have such attribute?
@@ -102,11 +100,15 @@ public abstract class AbstractCatalogStore implements CatalogStore {
     @Override
     public FeatureCollection getRecords(Query q, Transaction t, String outputSchema) throws IOException {
         RecordDescriptor rd;
+        Name typeName = null;
         if (q.getTypeName() == null) {
-            rd = descriptorByType.get("Record");
+            typeName = CSWRecordDescriptor.RECORD_DESCRIPTOR.getName();
+        } else if(q.getNamespace() != null) {
+            typeName = new NameImpl(q.getNamespace().toString(), q.getTypeName());
         } else {
-            rd = descriptorByType.get(q.getTypeName());
+            typeName = new NameImpl(q.getTypeName());
         }
+        rd = descriptorByType.get(typeName);
         
         RecordDescriptor rdOutput;
         if (outputSchema == null || "".equals(outputSchema)) {
@@ -160,7 +162,7 @@ public abstract class AbstractCatalogStore implements CatalogStore {
     
     @Override
     public CatalogStoreCapabilities getCapabilities() {
-        return new CatalogStoreCapabilities(descriptorByType) ;
+        return new CatalogStoreCapabilities(descriptorByType);
     }
     
     @Override

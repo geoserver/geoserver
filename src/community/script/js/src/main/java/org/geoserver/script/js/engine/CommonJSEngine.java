@@ -116,9 +116,8 @@ public class CommonJSEngine extends AbstractScriptEngine implements Invocable {
         if (name == null) {
             throw new NullPointerException("Method name is null");
         }
-        EngineScope engineScope = getRuntimeScope(context);
         if (thisObj == null) {
-            thisObj = engineScope;
+            thisObj = getGlobal();
         } else {
             if (!(thisObj instanceof Scriptable)) {
                 thisObj = Context.toObject(thisObj, getGlobal());
@@ -131,7 +130,7 @@ public class CommonJSEngine extends AbstractScriptEngine implements Invocable {
         Function method = (Function) methodObj;
         Scriptable scope = method.getParentScope();
         if (scope == null) {
-            scope = engineScope;
+            scope = getGlobal();
         }
         Context cx = enterContext();
         Object result;

@@ -24,7 +24,7 @@ import org.geoserver.platform.GeoServerExtensions;
 
 public class GeoServerExceptions {
 
-    static Logger LOGGER = Logger.getLogger("org.geoserver.platform.exception");
+    private static final Logger LOGGER = Logger.getLogger("org.geoserver.platform.exception");
 
     static Control control = new Control();
 

@@ -68,7 +68,7 @@ public class GeoServerHttpSessionListenerProxy implements HttpSessionListener {
      *
      * @return
      */
-    private Set<HttpSessionListener> listeners() {
+    protected Set<HttpSessionListener> listeners() {
         if (listeners == null) {
            synchronized(this) {
                if (listeners == null) {

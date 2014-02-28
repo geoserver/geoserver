@@ -621,6 +621,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
                 }
             } catch(IOException e) {
                 // we tried...
+                LOGGER.severe(e.getMessage());
             }
         }
     }

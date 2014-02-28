@@ -5,13 +5,28 @@
 package org.geoserver.script.js;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collections;
 
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.script.ScriptIntTestSupport;
 import org.geoserver.script.function.ScriptFunctionFactory;
+import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.filter.FilterFactory;
+import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Function;
+import org.opengis.filter.expression.PropertyName;
+
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.PrecisionModel;
 
 public class JavaScriptFunctionTest extends ScriptIntTestSupport {
 
@@ -38,6 +53,42 @@ public class JavaScriptFunctionTest extends ScriptIntTestSupport {
         assertEquals(120, ((Number) factorial.evaluate(5)).intValue());
         // confirm we can do repeat calls
         assertEquals(720, ((Number) factorial.evaluate(6)).intValue());
+    }
+
+    public void testBuffer() {
+        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+        builder.setCRS(null);
+        builder.add("geometry", Polygon.class);
+        builder.add("distance", Float.class);
+        builder.setName("schema");
+        SimpleFeatureType schema = builder.buildFeatureType();
+
+        Coordinate[] coords = new Coordinate[5];
+        coords[0] = new Coordinate(0, 0);
+        coords[1] = new Coordinate(10, 0);
+        coords[2] = new Coordinate(10, 10);
+        coords[3] = new Coordinate(0, 10);
+        coords[4] = new Coordinate(0, 0);
+
+        Object[] attributes = new Object[2];
+        GeometryFactory gf = new GeometryFactory(new PrecisionModel());
+        LinearRing ring = gf.createLinearRing(coords);
+        attributes[0] = gf.createPolygon(ring, null);
+        attributes[1] = new Float(100.0);
+
+        SimpleFeature feature = SimpleFeatureBuilder.build(schema, attributes, null);
+
+        FilterFactory filterFactory = CommonFactoryFinder.getFilterFactory(null);
+        PropertyName geometryProperty = filterFactory.property("geometry");
+        PropertyName distanceProperty = filterFactory.property("distance");
+
+        Expression[] expressions = new Expression[] {geometryProperty, distanceProperty};
+        Function buffer = functionFactory.function("buffer", Arrays.asList(expressions), null);
+
+        assertNotNull(buffer);
+        Object result = buffer.evaluate(feature);
+        assertTrue(result instanceof Polygon);
+        assertTrue(((Polygon) result).getArea() > 35314);
     }
 
 }

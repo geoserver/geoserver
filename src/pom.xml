@@ -1519,12 +1519,13 @@
  <properties>
   <gs.version>2.6-SNAPSHOT</gs.version>
   <gt.version>12-SNAPSHOT</gt.version>
-  <gwc.version>1.5-SNAPSHOT</gwc.version>
+  <gwc.version>1.6-SNAPSHOT</gwc.version>
   <spring.version>3.1.4.RELEASE</spring.version>
   <spring.security.version>3.1.0.RELEASE</spring.security.version> 
   <poi.version>3.8</poi.version>
   <wicket.version>1.4.12</wicket.version>
   <ant.version>1.8.4</ant.version>
+  <imageio-ext.version>1.1-SNAPSHOT</imageio-ext.version>
   <java.awt.headless>true</java.awt.headless>
   <jvm.opts></jvm.opts>
   <jalopy.phase>disabled</jalopy.phase>

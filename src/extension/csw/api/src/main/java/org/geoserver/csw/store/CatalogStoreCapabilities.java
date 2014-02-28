@@ -16,9 +16,9 @@ import org.opengis.feature.type.Name;
  */
 public class CatalogStoreCapabilities {
     
-    protected Map<String, RecordDescriptor> descriptors;
+    protected Map<Name, RecordDescriptor> descriptors;
     
-    public CatalogStoreCapabilities (Map<String, RecordDescriptor> descriptors) {
+    public CatalogStoreCapabilities (Map<Name, RecordDescriptor> descriptors) {
         this.descriptors = descriptors;
     }
 
@@ -37,7 +37,7 @@ public class CatalogStoreCapabilities {
      * @return
      */
     public List<Name> getQueriables(Name typeName) {
-        return descriptors.get(typeName.getLocalPart()).getQueryables();
+        return descriptors.get(typeName).getQueryables();
     }
     
     /**
@@ -47,7 +47,7 @@ public class CatalogStoreCapabilities {
      * @return
      */
     public List<Name> getDomainQueriables(Name typeName) {        
-        return descriptors.get(typeName.getLocalPart()).getQueryables();
+        return descriptors.get(typeName).getQueryables();
     }
     
     /**

@@ -296,25 +296,8 @@ public class GetFeature {
             viewParams = (List<Map<String, String>>) request.getViewParams();
         }
 
-        int count = 0; //should probably be long
-
-        // total count represents the total count of the features matched for this query in cases
-        // where the client has limited the result set size, as an optimization we only calculate
-        // this if the following conditions hold
-        // 1. the request is wfs 2.0
-        // 2. maxFeatures != Integer.MAX_VALUE
-        //TODO: we could actually add a third a optimization that when the count of features is 
-        // less than maxFeatures we don't have to calculate it since it is the same as count, but 
-        // this requires that we do that check post query loop which requires a bit of code 
-        // refactoring
-
+        int count = 0; // should probably be long
         int totalCount = 0;
-        if (!request.getVersion().startsWith("2")) {
-            totalCount = -1;
-        }
-        if (totalCount > -1 && maxFeatures == Integer.MAX_VALUE) {
-            totalCount = -1;
-        }
 
         //offset into result set in which to return features
         int totalOffset = request.getStartIndex() != null ? request.getStartIndex().intValue() : -1;
@@ -329,6 +312,7 @@ public class GetFeature {
         int offset = totalOffset;
 
         List results = new ArrayList();
+        List<CountExecutor> totalCountExecutors = new ArrayList<CountExecutor>();
         try {
             for (int i = 0; (i < queries.size()) && (count < maxFeatures); i++) {
 
@@ -544,18 +528,15 @@ public class GetFeature {
                     }
                 }
 
-                //numberMatched/totalSize
-                if (totalCount > -1) {
-                    //check maxFeatures and offset, if they are unset we can use the size we 
-                    // calculated above
-                    if (calculateSize && queryMaxFeatures == Integer.MAX_VALUE && offset == 0) {
-                        totalCount += size;
-                    }
-                    else {
-                        org.geotools.data.Query q2 = toDataQuery(query, filter, 0, Integer.MAX_VALUE, 
+                // collect queries required to return numberMatched/totalSize
+                // check maxFeatures and offset, if they are unset we can use the size we 
+                // calculated above
+                if (calculateSize && queryMaxFeatures == Integer.MAX_VALUE && offset == 0) {
+                    totalCountExecutors.add(new CountExecutor(size));
+                } else {
+                    org.geotools.data.Query qTotal = toDataQuery(query, filter, 0, Integer.MAX_VALUE, 
                             source, request, allPropNames.get(0), viewParam, joins);
-                        totalCount += source.getFeatures(q2).size();
-                    }
+                    totalCountExecutors.add(new CountExecutor(source, qTotal));
                 }
 
                 // we may need to shave off geometries we did load only to make bounds
@@ -596,11 +577,46 @@ public class GetFeature {
                 }
             }
             
+            // total count represents the total count of the features matched for this query in cases
+            // where the client has limited the result set size, as an optimization we only calculate
+            // this if the following conditions hold
+            // 1. the request is wfs 2.0
+            // 2. maxFeatures != Integer.MAX_VALUE
+            //TODO: we could actually add a third a optimization that when the count of features is 
+            // less than maxFeatures we don't have to calculate it since it is the same as count, but 
+            // this requires that we do that check post query loop which requires a bit of code 
+            // refactoring
+
+            // we need the total count only for WFS 2.0
+            if (!request.getVersion().startsWith("2")) {
+                totalCount = -1;
+            } else {
+                // optimization: if count < max features then total count == count
+                if(count < maxFeatures) {
+                    totalCount = count;
+                } else {
+                    // ok, in this case we're forced to run the queries to discover the actual total count
+                    for (CountExecutor q : totalCountExecutors) {
+                        int result = q.getCount();
+                        // if the count is unknown for one, we don't know the total, period 
+                        if(result == -1) {
+                            totalCount = -1;
+                            break;
+                        } else {
+                            totalCount += result;
+                        }
+                    }
+                }
+            }
+            
         } catch (IOException e) {
             throw new WFSException(request, "Error occurred getting features", e, request.getHandle());
         } catch (SchemaException e) {
             throw new WFSException(request, "Error occurred getting features", e, request.getHandle());
         }
+        
+        
+        
 
         //locking
         String lockId = null;

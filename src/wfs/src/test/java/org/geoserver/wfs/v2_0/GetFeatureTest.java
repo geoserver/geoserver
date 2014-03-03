@@ -22,7 +22,6 @@ import org.geoserver.wfs.StoredQuery;
 import org.geoserver.wfs.WFSInfo;
 import org.geotools.filter.v2_0.FES;
 import org.geotools.gml3.v3_2.GML;
-
 import org.geotools.wfs.v2_0.WFS;
 import org.junit.Before;
 import org.junit.Test;
@@ -380,6 +379,82 @@ public class GetFeatureTest extends WFS20TestSupport {
 
         assertEquals("7", doc.getDocumentElement().getAttribute("numberMatched"));
         assertEquals("0", doc.getDocumentElement().getAttribute("numberReturned"));
+    }
+
+    @Test
+    public void testResultTypeHitsNumReturnedMatchedWithMaxFeatures() throws Exception {
+        WFSInfo wfs = getWFS();
+        int oldMaxFeatures = wfs.getMaxFeatures();
+        boolean hitsIgnoreMaxFeatures = wfs.isHitsIgnoreMaxFeatures();
+        
+        try {
+            
+            wfs.setMaxFeatures(1);
+            wfs.setHitsIgnoreMaxFeatures(true);
+            getGeoServer().save( wfs );
+
+            Document doc = getAsDOM("wfs?request=GetFeature&typename=cdf:Seven&version=2.0.0&resultType=hits&service=wfs");
+            print(doc);
+            assertGML32(doc);
+
+            assertEquals("7", doc.getDocumentElement().getAttribute("numberMatched"));
+            assertEquals("0", doc.getDocumentElement().getAttribute("numberReturned"));
+
+        } finally {
+            wfs.setMaxFeatures(oldMaxFeatures);
+            wfs.setHitsIgnoreMaxFeatures(hitsIgnoreMaxFeatures);
+            getGeoServer().save( wfs );
+        }
+    }
+
+    @Test
+    public void testResultTypeHitsNumReturnedMatchedWithMaxFeaturesLimit() throws Exception {
+        WFSInfo wfs = getWFS();
+        int oldMaxFeatures = wfs.getMaxFeatures();
+        boolean oldHitsIgnoreMaxFeatures = wfs.isHitsIgnoreMaxFeatures();
+        
+        try {
+            
+            wfs.setMaxFeatures(1);
+            wfs.setHitsIgnoreMaxFeatures(false);
+            getGeoServer().save( wfs );
+
+            Document doc = getAsDOM("wfs?request=GetFeature&typename=cdf:Seven&version=2.0.0&resultType=hits&service=wfs");
+            assertGML32(doc);
+
+            assertEquals("1", doc.getDocumentElement().getAttribute("numberMatched"));
+            assertEquals("0", doc.getDocumentElement().getAttribute("numberReturned"));
+
+        } finally {
+            wfs.setMaxFeatures(oldMaxFeatures);
+            wfs.setHitsIgnoreMaxFeatures(oldHitsIgnoreMaxFeatures);
+            getGeoServer().save( wfs );
+        }
+    }
+
+    @Test
+    public void testNumReturnedMatchedWithMaxFeatures() throws Exception {
+        WFSInfo wfs = getWFS();
+        int oldMaxFeatures = wfs.getMaxFeatures();
+        boolean oldHitsIgnoreMaxFeatures = wfs.isHitsIgnoreMaxFeatures();
+        
+        try {
+            
+            wfs.setMaxFeatures(1);
+            wfs.setHitsIgnoreMaxFeatures(true);
+            getGeoServer().save( wfs );
+
+            Document doc = getAsDOM("wfs?request=GetFeature&typename=cdf:Seven&version=2.0.0&resultType=results&service=wfs");
+            assertGML32(doc);
+
+            assertEquals("7", doc.getDocumentElement().getAttribute("numberMatched"));
+            assertEquals("1", doc.getDocumentElement().getAttribute("numberReturned"));
+
+        } finally {
+            wfs.setMaxFeatures(oldMaxFeatures);
+            wfs.setHitsIgnoreMaxFeatures(oldHitsIgnoreMaxFeatures);
+            getGeoServer().save( wfs );
+        }
     }
 
     @Test

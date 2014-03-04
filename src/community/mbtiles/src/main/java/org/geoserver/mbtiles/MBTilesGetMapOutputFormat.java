@@ -14,9 +14,9 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.gwc.GWC;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.tiles.AbstractTilesGetMapOutputFormat;
+import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
-import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMapService;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.mbtiles.MBTilesTile;
@@ -133,10 +133,10 @@ public class MBTilesGetMapOutputFormat extends AbstractTilesGetMapOutputFormat {
     }
 
     @Override
-    protected ReferencedEnvelope bounds(WMSMapContent map) {
+    protected ReferencedEnvelope bounds(GetMapRequest req) {
         if (convertedBounds == null) {
             try {
-                convertedBounds = new ReferencedEnvelope(map.getRequest().getBbox(), map.getCoordinateReferenceSystem()).transform(SPHERICAL_MERCATOR, true);
+                convertedBounds = new ReferencedEnvelope(req.getBbox(), req.getCrs()).transform(SPHERICAL_MERCATOR, true);
             } catch (Exception e) {
                 throw new ServiceException(e);
             } 
@@ -145,12 +145,12 @@ public class MBTilesGetMapOutputFormat extends AbstractTilesGetMapOutputFormat {
     }
 
     @Override
-    protected CoordinateReferenceSystem getCoordinateReferenceSystem(WMSMapContent map) {
+    protected CoordinateReferenceSystem getCoordinateReferenceSystem(GetMapRequest req) {
         return SPHERICAL_MERCATOR;
     }
     
     @Override
-    protected String getSRS(WMSMapContent map) {
+    protected String getSRS(GetMapRequest req) {
         return "EPSG:900913";
     }
 

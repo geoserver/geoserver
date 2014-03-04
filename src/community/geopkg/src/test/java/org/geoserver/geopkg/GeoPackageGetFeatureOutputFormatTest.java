@@ -173,7 +173,7 @@ public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
     
     protected GeoPackage createGeoPackage(byte[] inMemory) throws IOException {
         
-        File f = File.createTempFile("geopkg", "geopackage", new File("target"));
+        File f = File.createTempFile("temp", ".gpkg", new File("target"));
         FileOutputStream fout = new FileOutputStream(f);
         fout.write(inMemory);
         fout.flush(); 

@@ -16,7 +16,7 @@ import org.springframework.context.event.ApplicationContextEvent;
  */
 public class ContextLoadedEvent extends ApplicationContextEvent {
 
-    public ContextLoadedEvent(ApplicationContext source) {
+    public ContextLoadedEvent(final ApplicationContext source) {
         super(source);
     }
 

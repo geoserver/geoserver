@@ -197,7 +197,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
         //first to an existance check
         File file = parent != null ? new File(parent,location) : new File(location);
         
-        if (file.exists()) {
+        if (parent != null && file.exists()) {
             return file;
         }
         

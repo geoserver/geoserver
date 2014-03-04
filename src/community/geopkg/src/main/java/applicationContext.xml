@@ -16,5 +16,14 @@
     <bean id="geopkgGetFeatureOutputFormat" class="org.geoserver.geopkg.GeoPackageGetFeatureOutputFormat">
       <constructor-arg ref="geoServer" />
     </bean>
-
+    
+    <bean id="geopkgProcess" class="org.geoserver.geopkg.wps.GeoPackageProcess">
+	  <constructor-arg index="0" ref="geoServer"/>
+      <constructor-arg index="1" ref="geopkgGetMapOutputFormat" />
+      <constructor-arg index="2" ref="wpsStorageCleaner"/>
+      <constructor-arg index="3" ref="filterFactory"/>
+    </bean>
+    
+    <bean id="geopkgProcessRequestPPIO" class="org.geoserver.geopkg.wps.GeoPackageProcessRequestPPIO" />
+    
 </beans>

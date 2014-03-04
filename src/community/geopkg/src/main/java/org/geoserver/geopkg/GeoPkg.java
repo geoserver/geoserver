@@ -18,15 +18,15 @@ public class GeoPkg {
     /**
      * package file extension
      */
-    static final String EXTENSION = "gpkg";
+    public static final String EXTENSION = "gpkg";
 
     /**
      * format mime type
      */
-    static final String MIME_TYPE = "application/x-sqlite3";
+    public static final String MIME_TYPE = "application/x-gpkg";
 
     /**
      * names/aliases for the format
      */
-    static final Collection<String> NAMES = Lists.newArrayList("geopackage", "geopkg", "gpkg");
+    public static final Collection<String> NAMES = Lists.newArrayList("geopackage", "geopkg", "gpkg");
 }

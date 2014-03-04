@@ -4,26 +4,16 @@
  */
 package org.geoserver.platform;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.Principal;
-import java.util.Enumeration;
-import java.util.Locale;
-import java.util.Map;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpSession;
 
 /**
  * A servlet filter that allows for advanced dispatching. 
@@ -37,10 +27,12 @@ import javax.servlet.http.HttpSession;
  */
 public class AdvancedDispatchFilter implements Filter {
 
+    @Override
     public void destroy() {
     }
 
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+    @Override
+    public void doFilter(ServletRequest request, final ServletResponse response, final FilterChain chain)
             throws IOException, ServletException {
         
         if (request instanceof HttpServletRequest) {
@@ -49,27 +41,28 @@ public class AdvancedDispatchFilter implements Filter {
         chain.doFilter(request, response);
     }
 
-    public void init(FilterConfig filterConfig) throws ServletException {
+    @Override
+    public void init(final FilterConfig filterConfig) throws ServletException {
     }
     
     static class AdvancedDispatchHttpRequest extends HttpServletRequestWrapper {
         
         String servletPath = null;
         
-        public AdvancedDispatchHttpRequest(HttpServletRequest delegate) {
+        public AdvancedDispatchHttpRequest(final HttpServletRequest delegate) {
             super(delegate);
             
             if (delegate.getClass().getSimpleName().endsWith("MockHttpServletRequest")) {
                 return;
             }
             
-            String path = delegate.getPathInfo();
+           final String path = delegate.getPathInfo();
             
             if (path == null) {
                 return;
             }
             
-            int slash = path.indexOf('/', 1);
+            final int slash = path.indexOf('/', 1);
             if (slash > -1 ) {
                 this.servletPath = path.substring(0, slash);
             }
@@ -77,21 +70,25 @@ public class AdvancedDispatchFilter implements Filter {
                 this.servletPath = path;
             }
             
-            int question = this.servletPath.indexOf('?');
+            final int question = this.servletPath.indexOf('?');
             if (question > -1 ) {
                 this.servletPath = this.servletPath.substring(0, question);
             }
             
         }
         
+        @Override
         public String getPathInfo() {
-            HttpServletRequest delegate = (HttpServletRequest) getRequest();
-            if(delegate.getPathInfo().startsWith(servletPath))
-                return delegate.getPathInfo().substring(servletPath.length());
-            else
-                return delegate.getPathInfo();
+            final HttpServletRequest delegate = (HttpServletRequest) getRequest();
+            String ret;
+            if(delegate.getPathInfo().startsWith(servletPath)){
+                ret = delegate.getPathInfo().substring(servletPath.length());
+            } else {
+                ret = delegate.getPathInfo();}
+            return ret;
         }
 
+        @Override
         public String getServletPath() {
             return servletPath != null ? 
                 servletPath : ((HttpServletRequest)getRequest()).getServletPath();

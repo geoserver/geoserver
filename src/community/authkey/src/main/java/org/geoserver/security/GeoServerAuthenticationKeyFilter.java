@@ -161,9 +161,8 @@ public class GeoServerAuthenticationKeyFilter extends  GeoServerSecurityFilter
                        
             
         Collection<GeoServerRole> roles= new ArrayList<GeoServerRole>();
-        for (GrantedAuthority auth: user.getAuthorities()) {
-            roles.add((GeoServerRole)auth);
-        }        
+        roles.addAll(getSecurityManager().getActiveRoleService().getRolesForUser(user.getUsername()));
+        
         if (roles.contains(GeoServerRole.AUTHENTICATED_ROLE)==false)
             roles.add(GeoServerRole.AUTHENTICATED_ROLE);            
         KeyAuthenticationToken result = new KeyAuthenticationToken(authKey,  authKeyParamName,user, roles);

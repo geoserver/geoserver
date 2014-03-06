@@ -60,7 +60,7 @@ public class QueryResourceTest extends ResourceTest {
         
         assertTrue("Points layer should have a field list", jsonObject.get("fields") instanceof JSONArray);
         JSONArray fields = (JSONArray) jsonObject.get("fields");
-        assertEquals("Points layer should have two non-geometry fields", 1, fields.size());
+        assertEquals("Points layer should have two non-geometry fields", 2, fields.size());
         
         assertTrue("Points layer should have a feature list", jsonObject.get("features") instanceof JSONArray);
         JSONArray features = (JSONArray) jsonObject.get("features");

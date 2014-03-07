@@ -12,13 +12,13 @@
 	<parent>
 		<groupId>org.geoserver</groupId>
 		<artifactId>web</artifactId>
-		<version>2.4-SNAPSHOT</version>
+		<version>2.4.5</version>
 	</parent>
 
 	<groupId>org.geoserver.web</groupId>
 	<artifactId>web-sec</artifactId>
 	<packaging>pom</packaging>
-	<version>2.4-SNAPSHOT</version>
+	<version>2.4.5</version>
 	<name>Security UI Modules</name>
 
   <dependencies>

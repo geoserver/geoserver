@@ -94,7 +94,7 @@ final class SimulatedRequestBuilder implements RequestBuilderJUnit {
 
 	@Override
 	public Response post(String url, String xml) throws IOException {
-		if (m_outputFormat.equals("SyncGML")) {
+		if (m_outputFormat.equals("GML3")) {
 			List<Expression> args = new ArrayList<Expression>();
 			args.add(ff.literal(m_atts));
 			args.add(ff.literal(m_json));

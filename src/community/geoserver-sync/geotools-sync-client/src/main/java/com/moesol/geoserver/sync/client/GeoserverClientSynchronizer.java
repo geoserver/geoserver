@@ -78,7 +78,7 @@ public class GeoserverClientSynchronizer {
 	private static final int INITIAL_LIST_SIZE = 4096;
 	private static final int MAX_ROUNDS = 21;
 	private static final String SHA1_SYNC_OUTPUT_FORMAT = "SyncChecksum";
-	private static final String GML3_OUTPUT_FORMAT = "SyncGML";
+	private static final String GML3_OUTPUT_FORMAT = "GML3";
 	public static PrintStream TRACE_POST = null;
 	private final FeatureSha1 m_featureSha1Sync = new FeatureSha1();
 	private final Configuration m_configuration;

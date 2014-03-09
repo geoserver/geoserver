@@ -7,6 +7,7 @@ import java.io.File;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.io.FileUtils;
+import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.WMSTestSupport;
 import org.junit.After;
@@ -26,6 +27,8 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
         testData.addStyle("ranged", "ranged.sld",this.getClass(), getCatalog());
         testData.addStyle("dynamic", "dynamic.sld",this.getClass(), getCatalog());
         testData.addStyle("symbol-uom", "symbol-uom.sld", this.getClass(), getCatalog());
+        testData.addStyle("two-rules", "two-rules.sld", this.getClass(), getCatalog());
+        testData.addStyle("two-fts", "two-fts.sld", this.getClass(), getCatalog());
     }
     
     @After 
@@ -39,7 +42,7 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
         VectorRenderingLayerIdentifier.RENDERING_FEATUREINFO_ENABLED = false;
         String url = "wms?REQUEST=GetFeatureInfo&BBOX=1.9E-4,6.9E-4,2.1E-4,7.1E-4&SERVICE=WMS&INFO_FORMAT=application/json"
                 + "&QUERY_LAYERS=cite%3ABridges&Layers=cite%3ABridges&WIDTH=100&HEIGHT=100"
-                + "&format=image%2Fpng&styles=box-offset&srs=EPSG%3A4326&version=1.1.1&x=50&y=63";
+                + "&format=image%2Fpng&styles=box-offset&srs=EPSG%3A4326&version=1.1.1&x=50&y=63&feature_count=50";
         JSONObject result1 = (JSONObject) getAsJSON(url);
         // print(result1);
         assertEquals(1, result1.getJSONArray("features").size());
@@ -57,7 +60,7 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
         // actually painted with a much smaller one
         String url = "wms?REQUEST=GetFeatureInfo&BBOX=0.000196%2C0.000696%2C0.000204%2C0.000704"
         + "&SERVICE=WMS&INFO_FORMAT=application/json&QUERY_LAYERS=cite%3ABridges&FEATURE_COUNT=50&Layers=cite%3ABridges"
-        + "&WIDTH=100&HEIGHT=100&format=image%2Fpng&styles=ranged&srs=EPSG%3A4326&version=1.1.1&x=49&y=65";
+        + "&WIDTH=100&HEIGHT=100&format=image%2Fpng&styles=ranged&srs=EPSG%3A4326&version=1.1.1&x=49&y=65&feature_count=50";
         
         VectorRenderingLayerIdentifier.RENDERING_FEATUREINFO_ENABLED = false;
         JSONObject result1 = (JSONObject) getAsJSON(url);
@@ -79,7 +82,7 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
                 + "&BBOX=0.000196%2C0.000696%2C0.000204%2C0.000704&SERVICE=WMS"
                 + "&INFO_FORMAT=application/json&QUERY_LAYERS=cite%3ABridges&FEATURE_COUNT=50"
                 + "&Layers=cite%3ABridges&WIDTH=100&HEIGHT=100&format=image%2Fpng"
-                + "&styles=dynamic&srs=EPSG%3A4326&version=1.1.1&x=49&y=60";
+                + "&styles=dynamic&srs=EPSG%3A4326&version=1.1.1&x=49&y=60&feature_count=50";
         
         // the default buffer is not large enough to realize we clicked on the mark
         VectorRenderingLayerIdentifier.RENDERING_FEATUREINFO_ENABLED = false;
@@ -102,11 +105,38 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
                 + "&BBOX=0.000196%2C0.000696%2C0.000204%2C0.000704&SERVICE=WMS"
                 + "&INFO_FORMAT=application/json&QUERY_LAYERS=cite%3ABridges&FEATURE_COUNT=50"
                 + "&Layers=cite%3ABridges&WIDTH=100&HEIGHT=100&format=image%2Fpng"
-                + "&styles=symbol-uom&srs=EPSG%3A4326&version=1.1.1&x=49&y=60";
+                + "&styles=symbol-uom&srs=EPSG%3A4326&version=1.1.1&x=49&y=60&feature_count=50";
         VectorRenderingLayerIdentifier.RENDERING_FEATUREINFO_ENABLED = true;
         JSONObject result = (JSONObject) getAsJSON(url);
         // print(result2);
         assertEquals(1, result.getJSONArray("features").size());
-        
+    }
+    
+    @Test
+    public void testTwoRules() throws Exception {
+        String layer = getLayerId(MockData.FORESTS);
+        String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&format=jpeg"
+                + "&request=GetFeatureInfo&layers=" + layer + "&query_layers=" + layer
+                + "&styles=two-rules"
+                + "&width=20&height=20&x=10&y=10" + "&info_format=application/json&feature_count=50";
+
+        JSONObject result = (JSONObject) getAsJSON(request);
+        // we used to get two results when two rules matched the same feature
+        // print(result);
+        assertEquals(1, result.getJSONArray("features").size());
+    }
+    
+    @Test
+    public void testTwoFeatureTypeStyles() throws Exception {
+        String layer = getLayerId(MockData.FORESTS);
+        String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&format=jpeg"
+                + "&request=GetFeatureInfo&layers=" + layer + "&query_layers=" + layer
+                + "&styles=two-fts"
+                + "&width=20&height=20&x=10&y=10" + "&info_format=application/json&feature_count=50";
+
+        JSONObject result = (JSONObject) getAsJSON(request);
+        // we used to get two results when two rules matched the same feature
+        // print(result);
+        assertEquals(1, result.getJSONArray("features").size());
     }
 }

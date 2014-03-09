@@ -5,8 +5,10 @@
 package org.geoserver.wms.featureinfo;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.geoserver.wms.SymbolizerFilteringVisitor;
@@ -18,6 +20,7 @@ import org.geotools.styling.PolygonSymbolizer;
 import org.geotools.styling.Rule;
 import org.geotools.styling.RuleImpl;
 import org.geotools.styling.Stroke;
+import org.geotools.styling.Style;
 import org.geotools.styling.StyleBuilder;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
@@ -124,6 +127,35 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
             return false;
         }
         return gd.getLocalName().equals(pn.getPropertyName());
+    }
+    
+    @Override
+    public void visit(Style style) {
+        super.visit(style);
+        Style copy = (Style) pages.peek();
+        // merge the feature type styles sharing the same transformation
+        List<FeatureTypeStyle> featureTypeStyles = copy.featureTypeStyles();
+        List<FeatureTypeStyle> reduced = new ArrayList<FeatureTypeStyle>();
+        FeatureTypeStyle current = null;
+        for (FeatureTypeStyle fts : featureTypeStyles) {
+            if(current == null || !sameTranformation(current.getTransformation(), fts.getTransformation())) {
+                current = fts;
+                reduced.add(current);
+            } else {
+                // flatten, we don't need to draw a pretty picture and having multiple FTS
+                // would result in the feature being returned twice, since we cannot
+                // assume feature ids to be stable either
+                current.rules().addAll(fts.rules());
+            } 
+        }
+        
+        // replace
+        copy.featureTypeStyles().clear();
+        copy.featureTypeStyles().addAll(reduced);
+    }
+
+    private boolean sameTranformation(Expression t1, Expression t2) {
+        return (t1 == null && t2 == null) || t1.equals(t2);
     }
 
     @Override

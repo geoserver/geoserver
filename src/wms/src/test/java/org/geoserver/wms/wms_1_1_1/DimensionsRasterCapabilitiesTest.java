@@ -8,6 +8,7 @@ import static org.junit.Assert.*;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -134,7 +135,7 @@ public class DimensionsRasterCapabilitiesTest extends WMSDimensionsTestSupport {
         // check we have the extent        
         assertXpathEvaluatesTo("1", "count(//Layer/Extent)", dom);
         assertXpathEvaluatesTo("time", "//Layer/Extent/@name", dom);
-        assertXpathEvaluatesTo("current", "//Layer/Extent/@default", dom);
+        assertXpathEvaluatesTo(DimensionDefaultValueSetting.TIME_CURRENT, "//Layer/Extent/@default", dom);
         assertXpathEvaluatesTo("2008-10-31T00:00:00.000Z,2008-11-01T00:00:00.000Z", "//Layer/Extent", dom);
     }
     
@@ -152,7 +153,7 @@ public class DimensionsRasterCapabilitiesTest extends WMSDimensionsTestSupport {
         // check we have the extent        
         assertXpathEvaluatesTo("1", "count(//Layer/Extent)", dom);
         assertXpathEvaluatesTo("time", "//Layer/Extent/@name", dom);
-        assertXpathEvaluatesTo("current", "//Layer/Extent/@default", dom);
+        assertXpathEvaluatesTo(DimensionDefaultValueSetting.TIME_CURRENT, "//Layer/Extent/@default", dom);
         assertXpathEvaluatesTo("2008-10-31T00:00:00.000Z/2008-11-01T00:00:00.000Z/PT1S", "//Layer/Extent", dom);
     }
     
@@ -171,7 +172,7 @@ public class DimensionsRasterCapabilitiesTest extends WMSDimensionsTestSupport {
         // check we have the extent        
         assertXpathEvaluatesTo("1", "count(//Layer/Extent)", dom);
         assertXpathEvaluatesTo("time", "//Layer/Extent/@name", dom);
-        assertXpathEvaluatesTo("current", "//Layer/Extent/@default", dom);
+        assertXpathEvaluatesTo(DimensionDefaultValueSetting.TIME_CURRENT, "//Layer/Extent/@default", dom);
         assertXpathEvaluatesTo("2008-10-31T00:00:00.000Z/2008-11-01T00:00:00.000Z/PT12H", "//Layer/Extent", dom);
     }
     
@@ -202,7 +203,7 @@ public class DimensionsRasterCapabilitiesTest extends WMSDimensionsTestSupport {
             // check we have the extent        
             assertXpathEvaluatesTo("1", "count(//Layer[Name[text() = 'EO Sample']]/Extent)", dom);
             assertXpathEvaluatesTo("time", "//Layer[Name[text() = 'EO Sample']]/Extent/@name", dom);
-            assertXpathEvaluatesTo("current", "//Layer[Name[text() = 'EO Sample']]/Extent/@default", dom);
+            assertXpathEvaluatesTo(DimensionDefaultValueSetting.TIME_CURRENT, "//Layer[Name[text() = 'EO Sample']]/Extent/@default", dom);
             assertXpathEvaluatesTo("2008-10-31T00:00:00.000Z/2008-11-01T00:00:00.000Z/PT1S", "//Layer[Name[text() = 'EO Sample']]/Extent", dom);
         } finally {
             getCatalog().remove(eoProduct);
@@ -223,7 +224,7 @@ public class DimensionsRasterCapabilitiesTest extends WMSDimensionsTestSupport {
         // check we have the extent, we should get a single range as times do overlap
         assertXpathEvaluatesTo("1", "count(//Layer/Extent)", dom);
         assertXpathEvaluatesTo("time", "//Layer/Extent/@name", dom);
-        assertXpathEvaluatesTo("current", "//Layer/Extent/@default", dom);
+        assertXpathEvaluatesTo(DimensionDefaultValueSetting.TIME_CURRENT, "//Layer/Extent/@default", dom);
         assertXpathEvaluatesTo("2008-10-31T00:00:00.000Z/2008-11-04T00:00:00.000Z/PT1S,2008-11-05T00:00:00.000Z/2008-11-07T00:00:00.000Z/PT1S", "//Layer/Extent", dom);
     }
     

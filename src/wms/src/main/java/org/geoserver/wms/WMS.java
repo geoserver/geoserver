@@ -44,6 +44,8 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMSInfo.WMSInterpolation;
 import org.geoserver.wms.WatermarkInfo.Position;
+import org.geoserver.wms.dimension.DimensionDefaultValueSelectionStrategy;
+import org.geoserver.wms.dimension.DimensionDefaultValueSelectionStrategyFactory;
 import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
 import org.geoserver.wms.map.RenderedImageMapResponse;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
@@ -834,11 +836,11 @@ public class WMS implements ApplicationContextAware {
         Set<ParameterDescriptor<List>> dynamicParameters = reader.getDynamicParameters();
         parameterDescriptors.addAll(dynamicParameters);
         if (timeInfo != null && timeInfo.isEnabled()) {
-            // handle "current"
+            // handle "default"
             List<Object> fixedTimes = new ArrayList<Object>(times);
             for (int i = 0; i < fixedTimes.size(); i++) {
                 if (fixedTimes.get(i) == null) {
-                    fixedTimes.set(i, getCurrentTime(coverage, dimensions));
+                    fixedTimes.set(i, getDefaultTime(coverage));
                 }
             }
             // pass down the parameters
@@ -850,11 +852,11 @@ public class WMS implements ApplicationContextAware {
         final DimensionInfo elevationInfo = metadata.get(ResourceInfo.ELEVATION,
                 DimensionInfo.class);
         if (elevationInfo != null && elevationInfo.isEnabled()) {
-            // handle "current"
+            // handle "default"
             List<Object> fixedElevations = new ArrayList<Object>(elevations);
             for (int i = 0; i < fixedElevations.size(); i++) {
                 if (fixedElevations.get(i) == null) {
-                    fixedElevations.set(i, getDefaultElevation(coverage, dimensions));
+                    fixedElevations.set(i, getDefaultElevation(coverage));
                 }
             }
             readParameters = CoverageUtils.mergeParameter(parameterDescriptors, readParameters,
@@ -918,7 +920,7 @@ public class WMS implements ApplicationContextAware {
                         DimensionInfo.class);
                 if (customInfo != null && customInfo.isEnabled()) {
                     final ArrayList<String> val = new ArrayList<String>(1);
-                    val.add(dimensions.getCustomDomainDefaultValue(name));
+                    val.add(getDefaultCustomDimensionValue(name, coverage, String.class));
                     readParameters = CoverageUtils.mergeParameter(
                         parameterDescriptors, readParameters, val, name);
                 }
@@ -1044,88 +1046,79 @@ public class WMS implements ApplicationContextAware {
     /**
      * Returns the current time for the specified type info
      * 
-     * @param typeInfo
+     * @param resourceInfo
      * @return
-     * @throws IOException
+     * @deprecated this returns the default value for TIME dimension, which is not always "current"
      */
-    public Date getCurrentTime(FeatureTypeInfo typeInfo) throws IOException {
-        // check the time metadata
-        DimensionInfo time = typeInfo.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
-        if (time == null || !time.isEnabled()) {
-            throw new ServiceException("Layer " + typeInfo.getPrefixedName()
-                    + " does not have time support enabled");
-        }
-
-        // current is the max time we have
-        FeatureCollection collection = getDimensionCollection(typeInfo, time);
-        final MaxVisitor max = new MaxVisitor(time.getAttribute());
-        collection.accepts(max, null);
-        if (max.getResult() != CalcResult.NULL_RESULT) {
-            return (Date) max.getMax();
-        } else {
-            return null;
-        }
+    public Date getCurrentTime(ResourceInfo resourceInfo) {
+      return this.getDefaultTime(resourceInfo);
     }
-
+    
     /**
-     * Returns the current time for the specified coverage
-     */
-    Date getCurrentTime(CoverageInfo coverage, ReaderDimensionsAccessor dimensions)
-            throws IOException {
-        // check the time metadata
-        DimensionInfo time = coverage.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
-        String name = coverage.getPrefixedName();
-        if (time == null || !time.isEnabled()) {
-            throw new ServiceException("Layer " + name + " does not have time support enabled");
-        }
-
-        // get and parse the current time
-        return dimensions.getMaxTime();
-    }
-
-    /**
-     * Returns the default elevation (the minimum one)
+     * Returns the default value for time dimension.
      * 
-     * @param typeInfo
+     * @param resourceInfo
      * @return
      */
-    Double getDefaultElevation(FeatureTypeInfo typeInfo) throws IOException {
-        // grab the time metadata
-        DimensionInfo elevation = typeInfo.getMetadata().get(ResourceInfo.ELEVATION,
+    public Date getDefaultTime(ResourceInfo resourceInfo) {
+        // check the time metadata
+        DimensionInfo time = resourceInfo.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
+        if (time == null || !time.isEnabled()) {
+            throw new ServiceException("Layer " + resourceInfo.prefixedName()
+                    + " does not have time support enabled");
+        }        
+        DimensionDefaultValueSelectionStrategy strategy = this.getDefaultValueStrategy(resourceInfo, ResourceInfo.TIME, time);        
+        return strategy.getDefaultValue(resourceInfo, ResourceInfo.TIME, time, Date.class);
+    }
+    
+    
+
+    /**
+     * Returns the default value for elevation dimension.
+     * 
+     * @param resourceInfo
+     * @return
+     */
+    public Double getDefaultElevation(ResourceInfo resourceInfo) {
+        DimensionInfo elevation = resourceInfo.getMetadata().get(ResourceInfo.ELEVATION,
                 DimensionInfo.class);
         if (elevation == null || !elevation.isEnabled()) {
-            throw new ServiceException("Layer " + typeInfo.getPrefixedName()
-                    + " does not have time support enabled");
+            throw new ServiceException("Layer " + resourceInfo.prefixedName()
+                    + " does not have elevation support enabled");
         }
-
-        FeatureCollection collection = getDimensionCollection(typeInfo, elevation);
-        final MinVisitor min = new MinVisitor(elevation.getAttribute());
-        collection.accepts(min, null);
-        if (min.getResult() == CalcResult.NULL_RESULT) {
-            return null;
-        } else {
-            return ((Number) min.getMin()).doubleValue();
-        }
+        DimensionDefaultValueSelectionStrategy strategy = this.getDefaultValueStrategy(resourceInfo, ResourceInfo.ELEVATION, elevation);
+        return strategy.getDefaultValue(resourceInfo, ResourceInfo.ELEVATION, elevation, Double.class);               
     }
-
+    
     /**
-     * Returns the default elevation (the minimum one)
+     * Returns the default value for the given custom dimension.
      * 
-     * @param typeInfo
+     * @param <T>
+     * @param dimensionName
+     * @param resourceInfo
+     * @param clz
      * @return
      */
-    Double getDefaultElevation(CoverageInfo coverage, ReaderDimensionsAccessor dimensions)
-            throws IOException {
-        // check the time metadata
-        DimensionInfo elevation = coverage.getMetadata().get(ResourceInfo.ELEVATION,
+    public <T> T getDefaultCustomDimensionValue(String dimensionName, ResourceInfo resourceInfo, Class<T> clz){
+        DimensionInfo customDim = resourceInfo.getMetadata().get(ResourceInfo.CUSTOM_DIMENSION_PREFIX+dimensionName,
                 DimensionInfo.class);
-        if (elevation == null || !coverage.isEnabled()) {
-            throw new ServiceException("Layer " + coverage.getPrefixedName()
-                    + " does not have time support enabled");
+        if (customDim == null || !customDim.isEnabled()) {
+            throw new ServiceException("Layer " + resourceInfo.prefixedName()
+                    + " does not have support enabled for dimension "+dimensionName);
         }
-
-        // get and parse the lowest elevation
-        return dimensions.getMinElevation();
+        DimensionDefaultValueSelectionStrategy strategy = this.getDefaultValueStrategy(resourceInfo, ResourceInfo.CUSTOM_DIMENSION_PREFIX+dimensionName, customDim);
+        return strategy.getDefaultValue(resourceInfo, ResourceInfo.CUSTOM_DIMENSION_PREFIX+dimensionName, customDim, clz);
+    }
+    
+    DimensionDefaultValueSelectionStrategy getDefaultValueStrategy(ResourceInfo resource,
+            String dimensionName, DimensionInfo dimensionInfo){
+         DimensionDefaultValueSelectionStrategyFactory factory = this.applicationContext.getBean(DimensionDefaultValueSelectionStrategyFactory.class);
+         if (factory != null){
+             return factory.getStrategy(resource, dimensionName, dimensionInfo);             
+         }
+         else {
+             return null;
+         }
     }
 
     /**
@@ -1222,8 +1215,8 @@ public class WMS implements ApplicationContextAware {
 
             for (Object datetime : times) {
                 if (datetime == null) {
-                    // this is "current"
-                    datetime = getCurrentTime(typeInfo);
+                    // this is "default"
+                    datetime = getDefaultTime(typeInfo);
                 }
                 timeFilters.add(buildDimensionFilter(datetime, attribute, endAttribute));
             }
@@ -1243,7 +1236,7 @@ public class WMS implements ApplicationContextAware {
                 ff.property(elevationInfo.getEndAttribute());
             for (Object elevation : elevations) {
                 if (elevation == null) {
-                    // this is "current"
+                    // this is "default"
                     elevation = getDefaultElevation(typeInfo);
                 }
                 elevationFilters.add(buildDimensionFilter(elevation, attribute, endAttribute));

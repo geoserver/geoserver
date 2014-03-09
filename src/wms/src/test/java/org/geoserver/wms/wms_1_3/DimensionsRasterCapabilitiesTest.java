@@ -6,6 +6,7 @@ package org.geoserver.wms.wms_1_3;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
+import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
@@ -120,7 +121,7 @@ public class DimensionsRasterCapabilitiesTest extends WMSDimensionsTestSupport {
         assertXpathEvaluatesTo("ISO8601", "//wms:Layer/wms:Dimension/@units", dom);
         // check we have the wms:Dimension        
         assertXpathEvaluatesTo("time", "//wms:Layer/wms:Dimension/@name", dom);
-        assertXpathEvaluatesTo("current", "//wms:Layer/wms:Dimension/@default", dom);
+        assertXpathEvaluatesTo(DimensionDefaultValueSetting.TIME_CURRENT, "//wms:Layer/wms:Dimension/@default", dom);
         assertXpathEvaluatesTo("2008-10-31T00:00:00.000Z,2008-11-01T00:00:00.000Z", "//wms:Layer/wms:Dimension", dom);
     }
     
@@ -137,7 +138,7 @@ public class DimensionsRasterCapabilitiesTest extends WMSDimensionsTestSupport {
         assertXpathEvaluatesTo("ISO8601", "//wms:Layer/wms:Dimension/@units", dom);
         // check we have the wms:Dimension        
         assertXpathEvaluatesTo("time", "//wms:Layer/wms:Dimension/@name", dom);
-        assertXpathEvaluatesTo("current", "//wms:Layer/wms:Dimension/@default", dom);
+        assertXpathEvaluatesTo(DimensionDefaultValueSetting.TIME_CURRENT, "//wms:Layer/wms:Dimension/@default", dom);
         assertXpathEvaluatesTo("2008-10-31T00:00:00.000Z/2008-11-01T00:00:00.000Z/PT1S", "//wms:Layer/wms:Dimension", dom);
     }
     
@@ -155,7 +156,7 @@ public class DimensionsRasterCapabilitiesTest extends WMSDimensionsTestSupport {
         assertXpathEvaluatesTo("ISO8601", "//wms:Layer/wms:Dimension/@units", dom);
         // check we have the wms:Dimension        
         assertXpathEvaluatesTo("time", "//wms:Layer/wms:Dimension/@name", dom);
-        assertXpathEvaluatesTo("current", "//wms:Layer/wms:Dimension/@default", dom);
+        assertXpathEvaluatesTo(DimensionDefaultValueSetting.TIME_CURRENT, "//wms:Layer/wms:Dimension/@default", dom);
         assertXpathEvaluatesTo("2008-10-31T00:00:00.000Z/2008-11-01T00:00:00.000Z/PT12H", "//wms:Layer/wms:Dimension", dom);
     }
     

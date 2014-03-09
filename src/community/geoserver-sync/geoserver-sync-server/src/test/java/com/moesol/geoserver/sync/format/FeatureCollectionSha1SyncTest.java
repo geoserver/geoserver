@@ -119,7 +119,7 @@ public class FeatureCollectionSha1SyncTest {
 		m_sha1Sync.setCollection(featureCollectionResponse);
 		Sha1SyncJson json = m_sha1Sync.computeZero();
 		
-		assertEquals("f8aff4d2381ad249d96e74b16a4f9184e586fd15", json.h.get(0).s);
+		assertEquals("c641af26a0df8b93aa86387e12b4c81d37df5834", json.h.get(0).s);
 
 	}
 	

@@ -12,9 +12,9 @@ import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.wms.dimension.AbstractFeatureAttributeVisitorSelectionStrategy;
-import org.geoserver.wms.dimension.NearestVisitorFactory;
 import org.geotools.feature.visitor.CalcResult;
 import org.geotools.feature.visitor.FeatureCalc;
+import org.geotools.feature.visitor.NearestVisitor;
 import org.geotools.util.Converters;
 
 /**
@@ -63,8 +63,8 @@ public class FeatureNearestValueSelectionStrategyImpl extends
             }                       
         }
 
-        final FeatureCalc nearest = NearestVisitorFactory.getNearestVisitor(dimension.getAttribute(),
-                this.toMatch, attrType);
+        final FeatureCalc nearest = new NearestVisitor(dimension.getAttribute(),
+                this.toMatch);
         
         CalcResult res = getCalculatedResult((FeatureTypeInfo) resource, dimension, nearest);
         if (res.equals(CalcResult.NULL_RESULT)) {

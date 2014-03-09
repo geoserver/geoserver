@@ -40,6 +40,9 @@ import com.moesol.geoserver.sync.json.Sha1SyncPositionHash;
 
 public class Sha1SyncOutputFormatTest extends WFSTestSupport {
 	
+	private static final String EXPECTED1_SHA1 = "3899037c4e439b97e9f7f5b8cd593b86b0359340";
+	private static final String EXPECTED2_SHA1 = "628244c320602d507c5093117c962ae7a458ad0b";
+	
 	protected void tearDownInternal() throws Exception {
 		setRequestAuth("admin", "password");
 		SyncChecksumOutputFormat.JUNIT_SHA1_SYNC.set(null);
@@ -84,10 +87,10 @@ public class Sha1SyncOutputFormatTest extends WFSTestSupport {
         	"&outputFormat=SyncChecksum&format_options=ATTRIBUTES:-all");
     	Sha1SyncJson sync = new Gson().fromJson(result, Sha1SyncJson.class);
         assertEquals(1, sync.level());
-        assertEquals("14", sync.hashes().get(0).position());
-        assertEquals("6e772c327cc8944c9f6d8ccfc82a6e6aabb4b840", sync.hashes().get(0).summary());
-        assertEquals("88", sync.hashes().get(1).position());
-        assertEquals("a667c90bedff19ec580e9d32a9572408ca4af94b", sync.hashes().get(1).summary());
+        assertEquals("1b", sync.hashes().get(0).position());
+        assertEquals(EXPECTED1_SHA1, sync.hashes().get(0).summary());
+        assertEquals("52", sync.hashes().get(1).position());
+        assertEquals(EXPECTED2_SHA1, sync.hashes().get(1).summary());
         assertEquals(1L, sync.max());
     }
     @Test
@@ -96,46 +99,46 @@ public class Sha1SyncOutputFormatTest extends WFSTestSupport {
 //    	Logger.getLogger("").getHandlers()[0].setLevel(Level.ALL);
     	// Version 2.0.1 of geoserver does not support : in the format_options value via \\
     	// "&outputFormat=sha1Sync&format_options=ATTRIBUTES:-all;SYNC:{l\\:1}");
-    	SyncChecksumOutputFormat.JUNIT_SHA1_SYNC.set("{l:1,h:[{p:'14'},{p:'88'}]}");
+    	SyncChecksumOutputFormat.JUNIT_SHA1_SYNC.set("{l:1,h:[{p:'1b'},{p:'52'}]}");
         String result = getAsString("wfs?request=GetFeature&typeName=cite:Buildings" + 
         		"&outputFormat=SyncChecksum&format_options=ATTRIBUTES:-all");
         Sha1SyncJson sync = new Gson().fromJson(result, Sha1SyncJson.class);
         assertEquals(2, sync.level());
         assertEquals(2, sync.hashes().size());
-        assertEquals("1442", sync.hashes().get(0).position());
-        assertEquals("6e772c327cc8944c9f6d8ccfc82a6e6aabb4b840", sync.hashes().get(0).summary());
-        assertEquals("88da", sync.hashes().get(1).position());
-        assertEquals("a667c90bedff19ec580e9d32a9572408ca4af94b", sync.hashes().get(1).summary());
+        assertEquals("1bc8", sync.hashes().get(0).position());
+        assertEquals(EXPECTED1_SHA1, sync.hashes().get(0).summary());
+        assertEquals("5259", sync.hashes().get(1).position());
+        assertEquals(EXPECTED2_SHA1, sync.hashes().get(1).summary());
         assertEquals(1L, sync.max());
     }
     @Test
     public void testOutputFormatLevel2() throws Exception {
     	// Version 2.0.1 of geoserver does not support : in the format_options value via \\
     	// "&outputFormat=sha1Sync&format_options=ATTRIBUTES:-all;SYNC:{l\\:2}");
-    	SyncChecksumOutputFormat.JUNIT_SHA1_SYNC.set("{l:2,h:[{p:'1442'},{p:'88da'}]}");
+    	SyncChecksumOutputFormat.JUNIT_SHA1_SYNC.set("{l:2,h:[{p:'1bc8'},{p:'5259'}]}");
         String result = getAsString("wfs?request=GetFeature&typeName=cite:Buildings" + 
         "&outputFormat=SyncChecksum&format_options=ATTRIBUTES:-all");
         Sha1SyncJson sync = new Gson().fromJson(result, Sha1SyncJson.class);
         assertEquals(3, sync.level());
         assertEquals(2, sync.hashes().size());
-        assertEquals("14429b", sync.hashes().get(0).position());
-        assertEquals("6e772c327cc8944c9f6d8ccfc82a6e6aabb4b840", sync.hashes().get(0).summary());
-        assertEquals("88dacc", sync.hashes().get(1).position());
-        assertEquals("a667c90bedff19ec580e9d32a9572408ca4af94b", sync.hashes().get(1).summary());
+        assertEquals("1bc80f", sync.hashes().get(0).position());
+        assertEquals(EXPECTED1_SHA1, sync.hashes().get(0).summary());
+        assertEquals("525983", sync.hashes().get(1).position());
+        assertEquals(EXPECTED2_SHA1, sync.hashes().get(1).summary());
         assertEquals(1L, sync.max());
     }
     @Test
     public void testOutputFormatLevel2_Partial() throws Exception {
     	// Version 2.0.1 of geoserver does not support : in the format_options value via \\
     	// "&outputFormat=sha1Sync&format_options=ATTRIBUTES:-all;SYNC:{l\\:2}");
-    	SyncChecksumOutputFormat.JUNIT_SHA1_SYNC.set("{l:2,h:[{p:'1442'}]}");
+    	SyncChecksumOutputFormat.JUNIT_SHA1_SYNC.set("{l:2,h:[{p:'1bc8'}]}");
         String result = getAsString("wfs?request=GetFeature&typeName=cite:Buildings" + 
         	"&outputFormat=SyncChecksum&format_options=ATTRIBUTES:-all");
         Sha1SyncJson sync = new Gson().fromJson(result, Sha1SyncJson.class);
         assertEquals(3, sync.level());
         assertEquals(1, sync.hashes().size());
-        assertEquals("14429b", sync.hashes().get(0).position());
-        assertEquals("6e772c327cc8944c9f6d8ccfc82a6e6aabb4b840", sync.hashes().get(0).summary());
+        assertEquals("1bc80f", sync.hashes().get(0).position());
+        assertEquals(EXPECTED1_SHA1, sync.hashes().get(0).summary());
         assertEquals(1L, sync.max());
     }
     @Test
@@ -162,7 +165,7 @@ public class Sha1SyncOutputFormatTest extends WFSTestSupport {
         assertEquals(0, sync.level());
         assertEquals(1, sync.hashes().size());
         assertEquals("", sync.hashes().get(0).position());
-        assertEquals("3bb70037fe7b35290b10a880d65563a76c34a378", sync.hashes().get(0).summary());
+        assertEquals("103d2f424918116a0e95dffd91f9ca36e1657ad0", sync.hashes().get(0).summary());
         assertEquals(2L, sync.max());
     }
     @Test
@@ -212,8 +215,8 @@ public class Sha1SyncOutputFormatTest extends WFSTestSupport {
         Sha1SyncJson sync = new Gson().fromJson(result, Sha1SyncJson.class);
         assertEquals(1, sync.level());
         assertEquals(2, sync.hashes().size());
-        assertEquals("14", sync.hashes().get(0).position());
-        assertEquals("6e772c327cc8944c9f6d8ccfc82a6e6aabb4b840", sync.hashes().get(0).summary());
+        assertEquals("1b", sync.hashes().get(0).position());
+        assertEquals(EXPECTED1_SHA1, sync.hashes().get(0).summary());
         assertEquals(1L, sync.max());
     }
     @Test

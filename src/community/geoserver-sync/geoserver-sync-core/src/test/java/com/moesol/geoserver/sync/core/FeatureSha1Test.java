@@ -63,7 +63,7 @@ public class FeatureSha1Test extends TestCase {
 		
 		sync.parseAttributesToInclude("-all");
 		sha1 = sync.computeValueSha1(feature);
-		assertEquals("ee99b7fbcfd28b5a84fd478d8c92d574d3e4875a", sha1.toString());
+		assertEquals("db90c50160c32f3517b7d3b1c78be70a7f2ba992", sha1.toString());
 		
 		sync.parseAttributesToInclude("name");
 		sha1 = sync.computeValueSha1(feature);
@@ -71,16 +71,16 @@ public class FeatureSha1Test extends TestCase {
 
 		sync.parseAttributesToInclude("name,classification");
 		sha1 = sync.computeValueSha1(feature);
-		assertEquals("c417ad12c0d5c8783e15cd6a1dcc333925febd4e", sha1.toString());
+		assertEquals("c905e1c6c7eb6bad1eedae0509b7da286dbd7b48", sha1.toString());
 		
 
 		sync.parseAttributesToInclude("classification,name");
 		sha1 = sync.computeValueSha1(feature);
-		assertEquals("c417ad12c0d5c8783e15cd6a1dcc333925febd4e", sha1.toString());
+		assertEquals("c905e1c6c7eb6bad1eedae0509b7da286dbd7b48", sha1.toString());
 
 		sync.parseAttributesToInclude("name,classification,height");
 		sha1 = sync.computeValueSha1(feature);
-		assertEquals("ee99b7fbcfd28b5a84fd478d8c92d574d3e4875a", sha1.toString());
+		assertEquals("db90c50160c32f3517b7d3b1c78be70a7f2ba992", sha1.toString());
 	}
 	
 	public void testValueIdValue() throws ParseException {

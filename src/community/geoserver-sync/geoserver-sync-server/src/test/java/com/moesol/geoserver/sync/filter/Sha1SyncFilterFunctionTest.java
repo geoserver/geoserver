@@ -51,7 +51,8 @@ import com.moesol.geoserver.sync.samples.Samples;
 import com.vividsolutions.jts.io.ParseException;
 
 public class Sha1SyncFilterFunctionTest {
-    private final FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(null);
+    private static final String EXPECTED_SHA1 = "db90c50160c32f3517b7d3b1c78be70a7f2ba992";
+	private final FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2(null);
     private final Samples m_samples = new Samples();
     
 	@Before
@@ -97,14 +98,14 @@ public class Sha1SyncFilterFunctionTest {
 		System.out.println("EVALUATE OBJECT: " + func.getFeatureSha1s());
 		//
 		assertEquals("feature: " + feature + ",sha1s: " + func.getFeatureSha1s(),
-				"ee99b7fbcfd28b5a84fd478d8c92d574d3e4875a", 
+				EXPECTED_SHA1, 
 				v1(func.getFeatureSha1s().get(0)).toString());
 		result = func.evaluate(feature);
 		assertEquals("true", result.toString());
 		
 		assertEquals(2, func.getFeatureSha1s().size());
-		assertEquals("ee99b7fbcfd28b5a84fd478d8c92d574d3e4875a", v1(func.getFeatureSha1s().get(0)).toString());
-		assertEquals("ee99b7fbcfd28b5a84fd478d8c92d574d3e4875a", v1(func.getFeatureSha1s().get(1)).toString());
+		assertEquals(EXPECTED_SHA1, v1(func.getFeatureSha1s().get(0)).toString());
+		assertEquals(EXPECTED_SHA1, v1(func.getFeatureSha1s().get(1)).toString());
 	}
 
     @Test
@@ -125,14 +126,14 @@ public class Sha1SyncFilterFunctionTest {
 		System.out.println("EVALUATE OBJECT: " + func.getFeatureSha1s());
 		//
 		assertEquals("feature: " + feature + ",sha1s: " + func.getFeatureSha1s(),
-				"ee99b7fbcfd28b5a84fd478d8c92d574d3e4875a", 
+				EXPECTED_SHA1, 
 				v1(func.getFeatureSha1s().get(0)).toString());
 		result = func.evaluate(feature);
 		assertEquals("true", result.toString());
 		
 		assertEquals(2, func.getFeatureSha1s().size());
-		assertEquals("ee99b7fbcfd28b5a84fd478d8c92d574d3e4875a", v1(func.getFeatureSha1s().get(0)).toString());
-		assertEquals("ee99b7fbcfd28b5a84fd478d8c92d574d3e4875a", v1(func.getFeatureSha1s().get(1)).toString());
+		assertEquals(EXPECTED_SHA1, v1(func.getFeatureSha1s().get(0)).toString());
+		assertEquals(EXPECTED_SHA1, v1(func.getFeatureSha1s().get(1)).toString());
 	}
 	
     @Test
@@ -165,7 +166,7 @@ public class Sha1SyncFilterFunctionTest {
     
     @Test
 	public void testSha1Match() throws ParseException, NoSuchAlgorithmException {
-		Sha1Value featureSha1 = new Sha1Value("ee99b7fbcfd28b5a84fd478d8c92d574d3e4875a");
+		Sha1Value featureSha1 = new Sha1Value(EXPECTED_SHA1);
 		MessageDigest SHA1 = MessageDigest.getInstance("SHA-1");
 		Sha1Value sha1OfSha1 = new Sha1Value(SHA1.digest(featureSha1.get()));
 		List<Sha1SyncPositionHash> hashes = new ArrayList<Sha1SyncPositionHash>();
@@ -182,14 +183,14 @@ public class Sha1SyncFilterFunctionTest {
 		result = func.evaluate(feature());
 		assertEquals("false", result.toString());
 		assertEquals(1, func.getFeatureSha1s().size());
-		assertEquals("ee99b7fbcfd28b5a84fd478d8c92d574d3e4875a", v1(func.getFeatureSha1s().get(0)).toString());
+		assertEquals(EXPECTED_SHA1, v1(func.getFeatureSha1s().get(0)).toString());
 		
 		result = func.evaluate(feature());
 		assertEquals("false", result.toString());
 		assertEquals(2, func.getFeatureSha1s().size());
-		assertEquals("ee99b7fbcfd28b5a84fd478d8c92d574d3e4875a", v1(func.getFeatureSha1s().get(0)).toString());
+		assertEquals(EXPECTED_SHA1, v1(func.getFeatureSha1s().get(0)).toString());
 
-		assertEquals("ee99b7fbcfd28b5a84fd478d8c92d574d3e4875a", v1(func.getFeatureSha1s().get(1)).toString());
+		assertEquals(EXPECTED_SHA1, v1(func.getFeatureSha1s().get(1)).toString());
 	}
 
 // TODO Code for this check was removed...	
@@ -229,13 +230,13 @@ public class Sha1SyncFilterFunctionTest {
 		result = func.evaluate(feature());
 		assertEquals("true", result.toString());
 		assertEquals(1, func.getFeatureSha1s().size());
-		assertEquals("ee99b7fbcfd28b5a84fd478d8c92d574d3e4875a", v1(func.getFeatureSha1s().get(0)).toString());
+		assertEquals("db90c50160c32f3517b7d3b1c78be70a7f2ba992", v1(func.getFeatureSha1s().get(0)).toString());
 		
 		result = func.evaluate(feature());
 		assertEquals("true", result.toString());
 		assertEquals(2, func.getFeatureSha1s().size());
-		assertEquals("ee99b7fbcfd28b5a84fd478d8c92d574d3e4875a", v1(func.getFeatureSha1s().get(0)).toString());
-		assertEquals("ee99b7fbcfd28b5a84fd478d8c92d574d3e4875a", v1(func.getFeatureSha1s().get(1)).toString());
+		assertEquals(EXPECTED_SHA1, v1(func.getFeatureSha1s().get(0)).toString());
+		assertEquals(EXPECTED_SHA1, v1(func.getFeatureSha1s().get(1)).toString());
 	}
 	
 	private Sha1Value v1(IdAndValueSha1s pair) {
@@ -261,15 +262,13 @@ public class Sha1SyncFilterFunctionTest {
 		result = func.evaluate(feature());
 		assertEquals("true", result.toString());
 		assertEquals(1, func.getFeatureSha1s().size());
-		assertEquals("ee99b7fbcfd28b5a84fd478d8c92d574d3e4875a", v1(func.getFeatureSha1s().get(0)).toString());
+		assertEquals(EXPECTED_SHA1, v1(func.getFeatureSha1s().get(0)).toString());
 
 		result = func.evaluate(feature());
 		assertEquals("true", result.toString());
 		assertEquals(2, func.getFeatureSha1s().size());
-		assertEquals("ee99b7fbcfd28b5a84fd478d8c92d574d3e4875a", v1(func.getFeatureSha1s().get(0)).toString());
-		
-		assertEquals("ee99b7fbcfd28b5a84fd478d8c92d574d3e4875a", v1(func.getFeatureSha1s().get(1)).toString());
-	
+		assertEquals(EXPECTED_SHA1, v1(func.getFeatureSha1s().get(0)).toString());
+		assertEquals(EXPECTED_SHA1, v1(func.getFeatureSha1s().get(1)).toString());
 	}
 	
 	private Object feature() throws ParseException {

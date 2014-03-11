@@ -19,7 +19,7 @@ import org.springframework.web.context.ContextLoaderListener;
 public class GeoServerContextLoaderListener extends ContextLoaderListener {
 
     @Override
-    public void contextInitialized(final ServletContextEvent event) {
+    public final void contextInitialized(final ServletContextEvent event) {
         super.contextInitialized(event);
         final ApplicationContext appContext = ContextLoader.getCurrentWebApplicationContext();
         if (appContext != null) {

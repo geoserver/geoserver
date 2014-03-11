@@ -42,6 +42,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import org.opengis.feature.ComplexAttribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
@@ -179,7 +181,10 @@ public class FeatureSha1 {
 		}
 		if (value instanceof Calendar) {
 			Calendar cal = (Calendar) value;
-			value = cal.getTime(); // Make sure we use UTC
+			value = cal.getTime().getTime(); // Make sure we use UTC
+		}
+		if (value instanceof XMLGregorianCalendar) {
+			value = ((XMLGregorianCalendar) value).toGregorianCalendar().getTime().getTime();
 		}
 		if (value instanceof Date) {
 			Date date = (Date) value;
@@ -196,10 +201,12 @@ public class FeatureSha1 {
 	}
 
 	private boolean shouldSha1Property(Property p) {
-		if (m_attributesToInclude.contains(p.getName().toString())) {
+		String localName = p.getName().getLocalPart();
+
+		if (m_attributesToInclude.contains(localName)) {
 			return true;
 		}
-		if (m_attributesToInclude.contains("-" + p.getName().toString())) {
+		if (m_attributesToInclude.contains("-" + localName)) {
 			return false;
 		}
 		if (m_attributesToInclude.contains("-all")) { // deprecated
@@ -208,7 +215,7 @@ public class FeatureSha1 {
 		if (m_attributesToInclude.contains("*")) {
 			return true;
 		}
-		LOGGER.log(Level.FINER, "Skipping: {0}", p.getName());
+		LOGGER.log(Level.FINER, "Skipping: {0}", localName);
 		return false;
 	}
 

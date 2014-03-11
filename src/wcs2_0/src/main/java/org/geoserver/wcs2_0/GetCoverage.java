@@ -56,6 +56,7 @@ import org.geoserver.wcs2_0.util.RequestUtils;
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
@@ -192,7 +193,8 @@ public class GetCoverage {
             GridCoverageRequest gcr = helper.getGridCoverageRequest();
 
             //TODO consider dealing with the Format instance instead of a String parsing or check against WCSUtils.isSupportedMDOutputFormat(String).
-            if (reader instanceof StructuredGridCoverage2DReader && formatSupportMDOutput(request.getFormat())) { 
+            final GridCoverageFactory coverageFactory = CoverageFactoryFinder.getGridCoverageFactory(hints);
+            if (reader instanceof StructuredGridCoverage2DReader && formatSupportMDOutput(request.getFormat())) {
                 // Split the main request into a List of requests in order to read more coverages to be stacked 
                 final List<GridCoverageRequest> requests = helper.splitRequest();
                 if (requests == null || requests.isEmpty()) {
@@ -217,7 +219,7 @@ public class GetCoverage {
                 int numRequests = requests.size();
                 GridCoverageRequest firstRequest = requests.remove(0);
                 GridCoverage2D firstCoverage = setupCoverage(helper, firstRequest, request, reader, hints, extensions, dimensions,
-                        incrementalOutputSize, incrementalInputSize);
+                        incrementalOutputSize, incrementalInputSize, coverageFactory);
                 // check the first coverage memory usage
                 long actual = incrementalInputSize.finalSize();
                 // Estimated size
@@ -235,13 +237,13 @@ public class GetCoverage {
                 // Get a coverage for each subrequest
                 for (GridCoverageRequest subRequest: requests) {
                     GridCoverage2D singleCoverage = setupCoverage(helper, subRequest, request, reader, hints, extensions, dimensions,
-                            incrementalOutputSize, incrementalInputSize);
+                            incrementalOutputSize, incrementalInputSize, coverageFactory);
                     stack.addCoverage(singleCoverage);
                 }
                 coverage = stack;
             } else {
                 // IncrementalSize not used
-                coverage = setupCoverage(helper, gcr, request, reader, hints, extensions, null, null, null);
+                coverage = setupCoverage(helper, gcr, request, reader, hints, extensions, null, null, null, coverageFactory);
             }
         } catch(ServiceException e) {
             throw e;
@@ -265,6 +267,7 @@ public class GetCoverage {
      * @param reader the Reader to be used to perform the read operation
      * @param hints hints to be used by the involved operations
      * @param extensions 
+     * @param coverageFactory 
      * @param dimensions 
      * @return
      * @throws Exception
@@ -278,7 +281,8 @@ public class GetCoverage {
             final Map<String, ExtensionItemType> extensions, 
             final List<DimensionBean> coverageDimensions,
             ImageSizeRecorder incrementalOutputSize,
-            ImageSizeRecorder incrementalInputSize) throws Exception {
+            ImageSizeRecorder incrementalInputSize,
+            final GridCoverageFactory coverageFactory) throws Exception {
         GridCoverage2D coverage = null;
         //
         // we setup the params to force the usage of imageread and to make it use
@@ -348,7 +352,7 @@ public class GetCoverage {
                 helper.setCoverageDimensionProperty(map, gridCoverageRequest, coverageDimension);
             }
             // Need to recreate the coverage in order to update the properties since the getProperties method returns a copy
-            coverage = CoverageFactoryFinder.getGridCoverageFactory(hints).create(coverage.getName(), coverage.getRenderedImage(), coverage.getEnvelope(), coverage.getSampleDimensions(), null, map);
+            coverage = coverageFactory.create(coverage.getName(), coverage.getRenderedImage(), coverage.getEnvelope(), coverage.getSampleDimensions(), null, map);
         }
         
         return coverage;

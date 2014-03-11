@@ -1307,14 +1307,28 @@ public class ResourcePool {
         }
         
         // wrap it if we are dealing with a multi-coverage reader
-        if(coverageName != null) {
+        if (coverageName != null) {
             // force the result to work against a single coverage, so that the OGC service portion of
             // GeoServer does not need to be updated to the multicoverage stuff
             // (we might want to introduce a hint later for code that really wants to get the
             // multi-coverage reader)
-            return SingleGridCoverage2DReader.wrap((GridCoverage2DReader) reader, coverageName);
+            return CoverageDimensionCustomizerReader.wrap((GridCoverage2DReader) reader, coverageName, info);
         } else {
+            // In order to deal with Bands customization, we need to get a CoverageInfo.
+            // Therefore we won't wrap the reader into a CoverageDimensionCustomizerReader in case 
+            // we don't have the coverageName and the underlying reader has more than 1 coverage.
+            // Indeed, there are cases (as during first initialization) where a multi-coverage reader is requested
+            // to the resourcePool without specifying the coverageName: No way to get the proper coverageInfo in
+            // that case so returning the simple reader.
+            final int numCoverages = ((GridCoverage2DReader) reader).getGridCoverageCount();
+            if (numCoverages == 1) {
+                return CoverageDimensionCustomizerReader.wrap((GridCoverage2DReader) reader, null, info);
+            }
+            // Avoid dimensions wrapping since we have a multi-coverage reader 
+            // but no coveragename have been specified
             return (GridCoverage2DReader) reader;
+
+            
         }
     }
     

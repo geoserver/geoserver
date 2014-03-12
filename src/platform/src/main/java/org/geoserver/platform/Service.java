@@ -27,27 +27,27 @@ public final class Service {
     /**
      * Identifier for the service.
      */
-    final String id;
+    private final String id;
 
     /**
      * Namespace for the service
      */
-    final String namespace;
+    private final String namespace;
 
     /**
      * The service implementation.
      */
-    final Object service;
+    private final Object service;
 
     /**
      * The service version
      */
-    final Version version;
+    private final Version version;
 
     /**
      * List of operations provided by the service
      */
-    final List<String> operations;
+    private final List<String> operations;
 
     /**
      * Creates a new service descriptor.
@@ -56,7 +56,7 @@ public final class Service {
      * @param service The object implementing the service.
      * @param version The version of the service.
      */
-    public Service(String id, Object service, Version version, List<String> operations) {
+    public Service(final String id, final Object service, final Version version, final List<String> operations) {
         this(id, null, service, version, operations);
     }
 
@@ -69,7 +69,7 @@ public final class Service {
      * @param version The version of the service.
      * @param operations The list of operations the service provides 
      */
-    public Service(String id, String namespace, Object service, Version version, List<String> operations) {
+    public Service(final String id, final String namespace, final Object service, final Version version, final List<String> operations) {
         this.id = id;
         this.service = service;
         this.version = version;
@@ -80,32 +80,37 @@ public final class Service {
         }
     }
 
-    public String getId() {
+    public final String getId() {
         return id;
     }
 
-    public String getNamespace() {
+    public final String getNamespace() {
         return namespace;
     }
 
-    public Object getService() {
+    public final Object getService() {
         return service;
     }
 
-    public Version getVersion() {
+    public final Version getVersion() {
         return version;
     }
 
-    public List<String> getOperations() {
+    public final List<String> getOperations() {
         return operations;
     }
 
-    public boolean equals(Object obj) {
+    @Override
+    public boolean equals(final Object obj) {
+        if(obj == null){
+            return false;
+        }
+        
         if (!(obj instanceof Service)) {
             return false;
         }
 
-        Service other = (Service) obj;
+        final Service other = (Service) obj;
 
         if (!id.equals(other.id)) {
             return false;
@@ -124,10 +129,9 @@ public final class Service {
         return operations.equals( other.operations );
     }
 
+    @Override
     public int hashCode() {
-        int result = 0;
-
-        result = id.hashCode();
+        int result = id.hashCode();
 
         if (version != null) {
             result = (result * 17) + version.hashCode();
@@ -138,6 +142,7 @@ public final class Service {
         return result;
     }
 
+    @Override
     public String toString() {
         return "Service( " + id + ", " + version + " )";
     }

@@ -6,25 +6,19 @@ Committing
 Getting commit access
 ---------------------
 
-We also have a code contribution agreement for working on the project:
+All contributors are asked to provide an assignment agreement for working on the project:
 
 * :download:`assignment_agreement.pdf`
 
-There are two stages of commit access:
+This agreement can be printed, signed, scanned and emailed to `Ellen McDermott <mailto:emcdermott@openplans.org>`_ at OpenPlans. `OpenPlans <http://openplans.org/about/>`_
+is the  non-profit which holds the GeoServer codebase for the community.
 
-#. community module or extension commit access
-#. core commit access
+Community commit access
+^^^^^^^^^^^^^^^^^^^^^^^
 
 The first stage of access allows a developer to commit only to the community
 module or extension for which they are the maintainer. This stage of access can
 be obtained quite easily.
-
-The second allows a developer to make commits to the core modules of geoserver.
-Being granted this stage of access takes time, and is obtained only after the
-developer has gained the trust of the other core committers.
-
-Community commit access
-^^^^^^^^^^^^^^^^^^^^^^^
 
 The process of getting community commit access is as follows:
 
@@ -38,7 +32,13 @@ The process of getting community commit access is as follows:
 #. **Sign up for a GitHub account**
 
    GeoServer source code is hosted on Github and you'll need an account in
-   order to access it. You can sign-up `here <https://github.com/signup/>`_.
+   order to access it. You can sign-up [here <https://github.com/signup/>`_.
+
+#. **Print, sign, scan and send the contributor agreement**
+   
+   * :download:`assignment_agreement.pdf`
+   
+   Scanned assignment agreement can be emailed to `Ellen McDermott <mailto:emcdermott@openplans.org>`_ at OpenPlans.
 
 #. **Notify the developer list**
 
@@ -57,6 +57,10 @@ The process of getting community commit access is as follows:
 
 Core commit access
 ^^^^^^^^^^^^^^^^^^
+
+The second allows a developer to make commits to the core modules of geoserver.
+Being granted this stage of access takes time, and is obtained only after the
+developer has gained the trust of the other core committers.
 
 The process of obtaining core commit access is far less mechanical than the one
 to obtain community commit access. It is based soley on trust. To obtain core
@@ -79,12 +83,19 @@ Commit Guidelines
 There is not much in the way of strict commit policies when it comes to committing
 in GeoServer. But over time some rules and conventions have emerged:
 
-#. **Add copyright headers for new files**
+#. **Update copyright headers**
 
    When adding new source files to the repository remember to add the standard
    copyright header::
 
-     /* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+     /* Copyright (c) 2014 OpenPlans - www.openplans.org. All rights reserved.
+      * This code is licensed under the GPL 2.0 license, available at the root
+      * application directory.
+      */
+
+   When updating a file update the header::
+
+     /* Copyright (c) 2003-2014 OpenPlans - www.openplans.org. All rights reserved.
       * This code is licensed under the GPL 2.0 license, available at the root
       * application directory.
       */

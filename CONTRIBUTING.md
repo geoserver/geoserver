@@ -1,16 +1,13 @@
 # Contributing
 
-All contributors are asked to provide an assignment agreement for working on the project:
+Contributors are asked to provide an assignment agreement for working on the project:
 
 * [assignment_agreement.pdf](http://docs.geoserver.org/latest/en/developer/_downloads/assignment_agreement.pdf)
 
 This agreement can be printed, signed, scanned and emailed to [Ellen McDermott ](mailto:emcdermott@openplans.org>) at OpenPlans. [OpenPlans](http://openplans.org/about/>)
 is the  non-profit which holds the GeoServer codebase for the community.
 
-References:
-
-* [Submitting Patches - GeoServer Developers Guide](http://docs.geoserver.org/latest/en/developer/policies/patches.html)
-* [Committing - GeoServer Developers Guide](http://docs.geoserver.org/latest/en/developer/policies/committing.html)
+For more information please review our developers guide on  [submitting patches](http://docs.geoserver.org/latest/en/developer/policies/patches.html) and [committing](http://docs.geoserver.org/latest/en/developer/policies/committing.html).
 
 ## Pull Requests
 
@@ -21,27 +18,22 @@ your own account.
 Assuming that `origin` points to your github repo the the patch workflow then becomes:
 
 1. Make the change.
-
+   `````
        git checkout -b my_bugfix master
        git add .
        git commit-m "fixed bug xyz"
-
+   ````
 2. Push the change up to your github repository.
-   
+   ````  
        git push origin my_bugfix
-
+   ````
 3. Visit your github repo page and issue the pull request. 
 
-4. At this point the core developers will be notified of the pull request and review it at the earliest  convenience. Core developers will review the patch and might require changes or improvements to it, it will be up to the submitter to amend the pull request and keep it alive until it gets merged.
+4. At this point the core developers will be notified of the pull request and review it at the earliest convenience. Core developers will review the patch and might require changes or improvements to it, it will be up to the submitter to amend the pull request and keep it alive until it gets merged.
    
    Please be patient, pull requests are often reviewed in spare time so turn-around can be a little slow. If a pull request becomes stale with no feedback from the submitter for a couple of months long, it will linked  form a JIRA issue (to avoid losing the partial work) and then be closed.
 
-# Guidelines
-
 ## Pull Request Guidelines
-
-Patch guidelines
-----------------
 
 The following guidelines are meant to ensure that your pull request is as easy as possible to  review.
 
@@ -67,50 +59,34 @@ The following guidelines are meant to ensure that your pull request is as easy a
   
   [JIRA Issue](http://jira.codehaus.org/browse/GEOS) are used to list your fix in the release notes each release. You can link to the JIRA ticket in your pull request description.
 
-
 ## Commit Guidelines
 
 There is not much in the way of strict commit policies when it comes to committing
 in GeoServer. But over time some rules and conventions have emerged:
 
-1. **Update copyright headers**
+1. **Update copyright headers:** When adding new source files to the repository remember to add the standard copyright header:
 
-   When adding new source files to the repository remember to add the standard
-   copyright header:
-
-     /* Copyright (c) 2014 OpenPlans - www.openplans.org. All rights reserved.
-      * This code is licensed under the GPL 2.0 license, available at the root
-      * application directory.
-      */
-
+   ```
+   /* Copyright (c) 2014 OpenPlans - www.openplans.org. All rights reserved.
+    * This code is licensed under the GPL 2.0 license, available at the root
+    * application directory.
+    */
+   ```
    When updating a file update the header:
 
-     /* Copyright (c) 2003-2014 OpenPlans - www.openplans.org. All rights reserved.
-      * This code is licensed under the GPL 2.0 license, available at the root
-      * application directory.
-      */
+   ```
+   /* Copyright (c) 2003-2014 OpenPlans - www.openplans.org. All rights reserved.
+    * This code is licensed under the GPL 2.0 license, available at the root
+    * application directory.
+    */
+   ```
+2. **Do not commit large amounts of binary data:** In general do not commit any binary data to the repository. There are cases where it is appropriate like some data for a test case, but in these cases the files should be kept as small as possible.
 
-2. **Do not commit large amounts of binary data**
+3. **Do not commit jars or libs, use Maven instead:** In general never commit a depending library directly into the repository, this is what we use Maven for. If you have a jar that is not present in any maven repositories, ask on the developer list to get it uploaded to one of the project maven repositories.
 
-   In general do not commit any binary data to the repository. There are cases where
-   it is appropriate like some data for a test case, but in these cases the files
-   should be kept as small as possible.
-
-3. **Do not commit jars or libs, use Maven instead**
-
-   In general never commit a depending library directly into the repository, this is
-   what we use Maven for. If you have a jar that is not present in any maven
-   repositories, ask on the developer list to get it uploaded to one of the project
-   maven repositories.
-
-4. **Ensure code is properly formatted**
-
-   Ensure that the IDE or editor used to edit source files is setup with proper
-   formatting rules. This means spaces instead of tabs, 100 character line break,
-   etc...
-
-   If using Eclipse ensure you have configured it with the [template and formatter ](http://docs.geotools.org/latest/developer/conventions/code/style.html#use-of-formatting-tools>)
-   used for GeoTools.
+4. **Ensure code is properly formatted:** Ensure that the IDE or editor used to edit source files is setup with proper
+   formatting rules. This means spaces instead of tabs, 100 character line break, etc...
+   If using Eclipse ensure you have configured it with the [template and formatter ](http://docs.geotools.org/latest/developer/conventions/code/style.html#use-of-formatting-tools>) used for GeoTools.
    
 ## Community commit access
 
@@ -120,38 +96,20 @@ be obtained quite easily.
 
 The process of getting community commit access is as follows:
 
-#. **Email the developer list**
+1. **Email the developer list:** This first step is all about communication. In order to grant commit access the other developers on the project must first know what the intention is. Therefore any developer looking for commit access must first describe what they want to commit (usually a community module), and what it does.
 
-   This first step is all about communication. In order to grant commit access
-   the other developers on the project must first know what the intention is.
-   Therefore any developer looking for commit access must first describe what
-   they want to commit (usually a community module), and what it does.
+2. **Sign up for a GitHub account:** GeoServer source code is hosted on Github and you'll need an account in order to access it. You can sign-up [here](https://github.com/signup/>).
 
-#. **Sign up for a GitHub account**
-
-   GeoServer source code is hosted on Github and you'll need an account in
-   order to access it. You can sign-up [here](https://github.com/signup/>).
-
-#. **Print, sign, scan and send the contributor agreement**
-   
-   * [assignment_agreement.pdf](http://docs.geoserver.org/latest/en/developer/_downloads/assignment_agreement.pdf)
+3. **Print, sign, scan and send the contributor agreement:**
+   * [assignment_agreement.pdf](http://docs.geoserver.org/latest/en/developer/_downloads/assignment_agreement.pdf) )
    
    Scanned assignment agreement can be emailed to [Ellen McDermott ](mailto:emcdermott@openplans.org>) at OpenPlans.
    
-#. **Notify the developer list**
+4. **Notify the developer list:** After a developer has signed up on Github they must notify the developer list. A project despot will then add them to the group of GeoServer committers and grant write access to the canonical repository.
 
-   After a developer has signed up on Github they must notify the developer
-   list. A project despot will then add them to the group of GeoServer
-   committers and grant write access to the canonical repository.
+5. **Fork the canonical GeoServer repository:** All committers maintain a fork of the GeoServer repository that they work from. Fork the canonical repository into your own account.
 
-#. **Fork the canonical GeoServer repository**
-
-   All committers maintain a fork of the GeoServer repository that they work
-   from. Fork the canonical repository into your own account.
-
-#. **Configure your local setup**
-
-   Follow this [guide](http://docs.geoserver.org/latest/en/developer/source.html#source) in the developer manual.
+6. **Configure your local setup:** Follow this [guide](http://docs.geoserver.org/latest/en/developer/source.html#source) in the developer manual.
 
 ### Core commit access
 

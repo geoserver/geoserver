@@ -117,7 +117,7 @@ public class OWS20ServiceExceptionHandler extends ServiceExceptionHandler {
             if(exCode != null) {
                 ows2ex = new OWS20Exception(exception.getMessage(), exception, exCode, exception.getLocator());
             } else {
-                ows2ex = new OWS20Exception(exception.getMessage(), exception, OWSExceptionCode.NoApplicableCode, exception.getLocator());
+                ows2ex = new OWS20Exception(exception.getMessage(), exception, OWSExceptionCode.NO_APPLICABLE_CODE, exception.getLocator());
             }
         }
 

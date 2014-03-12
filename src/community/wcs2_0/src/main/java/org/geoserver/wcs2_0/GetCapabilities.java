@@ -62,7 +62,7 @@ public class GetCapabilities {
             return capsTransformer;
         } else {
             throw new WCS20Exception("Internal error: Could not understand version:" + negotiatedVersion, 
-                    OWS20Exception.OWSExceptionCode.VersionNegotiationFailed, negotiatedVersion);
+                    OWS20Exception.OWSExceptionCode.VERSION_NEGOTIATION_FAILED, negotiatedVersion);
         }
 
     }

@@ -221,7 +221,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
                     } catch (SecurityException e) {
                         final String msg = java.text.MessageFormat.format(
                                 RESOURCE_BUNDLE.getString("FAILED_ATTEMP_TO_CHECK_EXISTANCE"), file.getAbsolutePath(), e.getMessage());
-                        LOGGER.log(Level.WARNING, msg);
+                        LOGGER.log(Level.WARNING, msg, e);
                     }
                 }
             }
@@ -439,7 +439,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
             } catch (SecurityException se) {
                 final String msg = java.text.MessageFormat.format(
                         RESOURCE_BUNDLE.getString("PROBABLY_YOU_DO_NOT_HAVE_APPROPRIATE_RIGHTS"), se.getMessage());
-                LOGGER.log(Level.SEVERE, msg);
+                LOGGER.log(Level.SEVERE, msg, se);
                 throw se;
             }
             return file;
@@ -473,7 +473,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
         } catch (SecurityException se) {
             final String msg = java.text.MessageFormat.format(
                     RESOURCE_BUNDLE.getString("PROBABLY_YOU_DO_NOT_HAVE_APPROPRIATE_RIGHTS"), se.getMessage());
-            LOGGER.log(Level.SEVERE, msg);
+            LOGGER.log(Level.SEVERE, msg, se);
             throw se;
         }
         return file;
@@ -570,12 +570,12 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
             } catch (IOException ioe) {
                 final String msg = java.text.MessageFormat.format(
                         RESOURCE_BUNDLE.getString("THERE_ARE_SOME_PROBLEMS_WHEN_CREATING_A_FILE2"), file.getAbsolutePath(), ioe.getMessage());
-                LOGGER.log(Level.SEVERE, msg);
+                LOGGER.log(Level.SEVERE, msg, ioe);
                 throw new IOException(msg);
             } catch (SecurityException se) {                
                 final String msg = java.text.MessageFormat.format(
                         RESOURCE_BUNDLE.getString("PROBABLY_YOU_DO_NOT_HAVE_APPROPRIATE_RIGHTS"), se.getMessage());
-                LOGGER.log(Level.SEVERE, msg);
+                LOGGER.log(Level.SEVERE, msg, se);
                 throw se;
             }
 
@@ -603,7 +603,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
                 } catch (SecurityException se) {
                     final String msg = java.text.MessageFormat.format(RESOURCE_BUNDLE
                             .getString("PROBABLY_YOU_DO_NOT_HAVE_APPROPRIATE_RIGHTS"), file.getParentFile().getAbsolutePath());
-                    LOGGER.log(Level.SEVERE, msg);
+                    LOGGER.log(Level.SEVERE, msg, se);
                     throw se;
                 }
             }
@@ -619,12 +619,12 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
             } catch (IOException ioe) {
                 final String msg = java.text.MessageFormat.format(
                         RESOURCE_BUNDLE.getString("THERE_ARE_SOME_PROBLEMS_WHEN_CREATING_A_FILE2"), file.getAbsolutePath(), ioe.getMessage());
-                LOGGER.log(Level.SEVERE, msg);
+                LOGGER.log(Level.SEVERE, msg, ioe);
                 throw new IOException(msg);
             } catch (SecurityException se) {                
                 final String msg = java.text.MessageFormat.format(
                         RESOURCE_BUNDLE.getString("PROBABLY_YOU_DO_NOT_HAVE_APPROPRIATE_RIGHTS"), se.getMessage());
-                LOGGER.log(Level.SEVERE, msg);
+                LOGGER.log(Level.SEVERE, msg, se);
                 throw se;
             }
             
@@ -697,12 +697,12 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
             } catch (FileNotFoundException targetException) {
                 final String msg = MessageFormat.format(
                         RESOURCE_BUNDLE.getString("CAN'T_WRITE_TO_FILE"), target.getAbsolutePath(), System.getProperty("user.name"), targetException.getMessage());
-                LOGGER.log(Level.SEVERE, msg);
+                LOGGER.log(Level.SEVERE, msg, targetException);
                 throw new IOException(msg);
             } catch (IOException e) {
                 final String msg = MessageFormat.format(
                         RESOURCE_BUNDLE.getString("ERROR_TRYING_TO_COPY"), e.getMessage());
-                LOGGER.log(Level.WARNING, msg);
+                LOGGER.log(Level.WARNING, msg, e);
                 throw new IOException(msg);
             }
         } finally {
@@ -718,7 +718,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
                 // we tried...
                 final String msg = MessageFormat.format(
                         RESOURCE_BUNDLE.getString("ERROR_TRYING_TO_CLOSING"), e.getMessage());
-                LOGGER.log(Level.WARNING, msg);
+                LOGGER.log(Level.WARNING, msg, e);
             }
         }
     }
@@ -798,7 +798,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
                 if (!fh.canWrite()) {
                     final String msg = MessageFormat.format(
                              RESOURCE_BUNDLE.getString("FOUND_SET_TO3"), obj);
-                    LOGGER.log(Level.FINE,msg);
+                    LOGGER.log(Level.FINE, msg);
                     continue;
                 }
 

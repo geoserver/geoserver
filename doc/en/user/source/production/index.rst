@@ -15,3 +15,4 @@ GeoServer is geared towards many different uses, from a simple test server to th
    linuxscript
    misc
    troubleshooting
+   identify

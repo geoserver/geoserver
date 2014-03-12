@@ -264,7 +264,14 @@
     <profile>
       <id>geopkg</id>
       <modules>
+        <module>mbtiles</module>
         <module>geopkg</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>mbtiles</id>
+      <modules>
+        <module>mbtiles</module>
       </modules>
     </profile>
     <profile>

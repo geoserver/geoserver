@@ -68,7 +68,7 @@ public class UserPropertyAuthenticationKeyMapper extends AbstractAuthenticationK
                     ", but this user is disabled");
             return null;
         }
-        return user;
+        return (GeoServerUser) getUserGroupService().loadUserByUsername(user.getUsername());
     }
 
 

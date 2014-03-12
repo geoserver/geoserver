@@ -120,22 +120,8 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
 
     @Override
     public WebMap produceMap(WMSMapContent map) throws ServiceException, IOException {
-        GetMapRequest req = map.getRequest();
-
-        List<Layer> layers = map.layers();
-        List<MapLayerInfo> mapLayers = req.getLayers();
-
-        Preconditions.checkState(layers.size() == mapLayers.size(),
-                "Number of map layers not same as number of rendered layers");
-
-        // list of layers to render directly and include as tiles
-        List<MapLayerInfo> tileLayers = new ArrayList<MapLayerInfo>();
-
-        // tiled mode means render all as map tile layer
-        tileLayers.addAll(mapLayers);
-
         TilesFile tiles = createTilesFile();
-        addTiles(tiles, tileLayers, map);
+        addTiles(tiles, map);
         tiles.close();
 
         final File dbFile = tiles.getFile();
@@ -174,6 +160,30 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
      * @throws IOException
      */
     protected abstract TilesFile createTilesFile() throws IOException;
+        
+    protected void addTiles(TilesFile tiles, WMSMapContent map) throws ServiceException, IOException {
+        GetMapRequest req = map.getRequest();
+
+        List<Layer> layers = map.layers();
+        List<MapLayerInfo> mapLayers = req.getLayers();
+
+        Preconditions.checkState(layers.size() == mapLayers.size(),
+                "Number of map layers not same as number of rendered layers");
+
+        addTiles(tiles, req, map.getTitle());
+    }
+    
+    protected void addTiles(TilesFile tiles, GetMapRequest req, String name) throws ServiceException, IOException {
+        List<MapLayerInfo> mapLayers = req.getLayers();
+        
+        // list of layers to render directly and include as tiles
+        List<MapLayerInfo> tileLayers = new ArrayList<MapLayerInfo>();
+
+        // tiled mode means render all as map tile layer
+        tileLayers.addAll(mapLayers);
+
+        addTiles(tiles, tileLayers, req, name);
+    }
 
     /**
      * Add the tiles
@@ -184,7 +194,7 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
      * @throws IOException
      * @throws ServiceException
      */
-    protected void addTiles(TilesFile tiles, List<MapLayerInfo> mapLayers, WMSMapContent map)
+    protected void addTiles(TilesFile tiles, List<MapLayerInfo> mapLayers, GetMapRequest request, String name)
             throws IOException, ServiceException {
 
         if (mapLayers.isEmpty()) {
@@ -193,12 +203,12 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
 
         // figure out a name for the file entry
         String tileEntryName = null;
-        Map formatOpts = map.getRequest().getFormatOptions();
+        Map formatOpts = request.getFormatOptions();
         if (formatOpts.containsKey("tileset_name")) {
             tileEntryName = (String) formatOpts.get("tileset_name");
         }
-        if (tileEntryName == null) {
-            tileEntryName = map.getTitle();
+        if (name != null) {
+            tileEntryName = name;
         }
         if (tileEntryName == null) {
             Iterator<MapLayerInfo> it = mapLayers.iterator();
@@ -210,29 +220,44 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         } 
 
         // figure out the actual bounds of the tiles to be renderered
-        BoundingBox bbox = bbox(map);
-        GridSubset gridSubset = findBestGridSubset(map);
-        int[] minmax = findMinMaxZoom(gridSubset, map);
+        BoundingBox bbox = bbox(request);
+        GridSubset gridSubset = findBestGridSubset(request);
+        int[] minmax = findMinMaxZoom(gridSubset, request);
         //ReferencedEnvelope bounds = new ReferencedEnvelope(findTileBounds(gridSubset, bbox,
         //        minmax[0]), getCoordinateReferenceSystem(map));
 
         // create a prototype getmap request
         GetMapRequest req = new GetMapRequest();
-        OwsUtils.copy(map.getRequest(), req, GetMapRequest.class);
+        OwsUtils.copy(request, req, GetMapRequest.class);
         req.setLayers(mapLayers);
 
         String imageFormat = formatOpts.containsKey("format") ? parseFormatFromOpts(formatOpts)
-                : findBestFormat(map);
+                : findBestFormat(request);
 
         req.setFormat(imageFormat);
         req.setWidth(gridSubset.getTileWidth());
         req.setHeight(gridSubset.getTileHeight());
-        req.setCrs(getCoordinateReferenceSystem(map));
+        req.setCrs(getCoordinateReferenceSystem(request));
 
         // store metadata
-        tiles.setMetadata(tileEntryName, bounds(map), imageFormat, srid(map), mapLayers, minmax,
+        tiles.setMetadata(tileEntryName, bounds(request), imageFormat, srid(request), mapLayers, minmax,
                 gridSubset);
-
+        
+        //column and row bounds
+        Integer minColumn = null, maxColumn = null, minRow = null, maxRow = null;
+        if (formatOpts.containsKey("min_column")) {
+            minColumn = Integer.parseInt(formatOpts.get("min_column").toString());
+        }
+        if (formatOpts.containsKey("max_column")) {
+            maxColumn = Integer.parseInt(formatOpts.get("max_column").toString());
+        }
+        if (formatOpts.containsKey("min_row")) {
+            minRow = Integer.parseInt(formatOpts.get("min_row").toString());
+        }
+        if (formatOpts.containsKey("max_row")) {
+            maxRow = Integer.parseInt(formatOpts.get("max_row").toString());
+        }
+        
         // count tiles as we generate them
         int ntiles = 0;
 
@@ -240,11 +265,14 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         boolean flipy = Boolean.valueOf((String) formatOpts.get("flipy"));
         for (int z = minmax[0]; z < minmax[1]; z++) {
             long[] intersect = gridSubset.getCoverageIntersection(z, bbox);
-            for (long x = intersect[0]; x <= intersect[2]; x++) {
-                for (long y = intersect[1]; y <= intersect[3]; y++) {
+            long minX = minColumn == null? intersect[0] : Math.max(minColumn, intersect[0]);
+            long maxX = maxColumn == null? intersect[2] : Math.min(maxColumn, intersect[2]);
+            long minY = minRow == null? intersect[1] : Math.max(minRow, intersect[1]);
+            long maxY = maxRow == null? intersect[3] : Math.min(maxRow, intersect[3]);
+            for (long x = minX; x <= maxX; x++) {
+                for (long y = minY; y <= maxY; y++) {
                     BoundingBox box = gridSubset.boundsFromIndex(new long[] { x, y, z });
-                    req.setBbox(new Envelope(box.getMinX(), box.getMaxX(), box.getMinY(), box
-                            .getMaxY()));
+                    req.setBbox(new Envelope(box.getMinX(), box.getMaxX(), box.getMinY(), box.getMaxY()));
 
                     WebMap result = webMapService.getMap(req);
                     tiles.addTile(z, (int) x, (int) (flipy ? gridSubset.getNumTilesHigh(z)
@@ -260,32 +288,33 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         }
     }
 
-    protected ReferencedEnvelope bounds(WMSMapContent map) {
-        return new ReferencedEnvelope(map.getRequest().getBbox(),
-                map.getCoordinateReferenceSystem());
+    protected ReferencedEnvelope bounds(GetMapRequest req) {
+        return new ReferencedEnvelope(req.getBbox(), req.getCrs());
     }
 
-    protected CoordinateReferenceSystem getCoordinateReferenceSystem(WMSMapContent map) {
-        return map.getCoordinateReferenceSystem();
+    protected CoordinateReferenceSystem getCoordinateReferenceSystem(GetMapRequest req) {
+        return req.getCrs();
     }
     
-    protected String getSRS(WMSMapContent map) {
-        return map.getRequest().getSRS().toUpperCase();
+    protected String getSRS(GetMapRequest req) {
+        return req.getSRS() != null? req.getSRS().toUpperCase() : null;
     }
 
     // utility methods:
 
-    protected BoundingBox bbox(WMSMapContent map) {
-        Envelope bnds = bounds(map);
+    protected BoundingBox bbox(GetMapRequest req) {
+        Envelope bnds = bounds(req);
         return new BoundingBox(bnds.getMinX(), bnds.getMinY(), bnds.getMaxX(), bnds.getMaxY());
     }
 
-    Integer srid(WMSMapContent map) {
+    protected Integer srid(GetMapRequest req) {
         Integer srid = null;
         try {
-            srid = CRS.lookupEpsgCode(getCoordinateReferenceSystem(map), false);
+            if (getCoordinateReferenceSystem(req) != null){
+                srid = CRS.lookupEpsgCode(getCoordinateReferenceSystem(req), false);
+            }
             if (srid == null) {
-                srid = Integer.parseInt(getSRS(map).split(":")[1]);
+                srid = Integer.parseInt(getSRS(req).split(":")[1]);
             }
         } catch (Exception ex) {
             LOGGER.log(Level.WARNING, "Error determining srid", ex);
@@ -304,8 +333,7 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
                 b2.getMaxY()));
     }
 
-    protected GridSubset findBestGridSubset(WMSMapContent map) {
-        GetMapRequest req = map.getRequest();
+    protected GridSubset findBestGridSubset(GetMapRequest req) {
         Map formatOpts = req.getFormatOptions();
 
         GridSetBroker gridSetBroker = gwc.getGridSetBroker();
@@ -317,15 +345,15 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         }
 
         // next check srs
-        if (gridSet == null) {
-            gridSet = gridSetBroker.get( getSRS(map) );
+        if (gridSet == null && getSRS(req) != null) {
+            gridSet = gridSetBroker.get( getSRS(req) );
         }
 
         if (gridSet != null) {
             return GridSubsetFactory.createGridSubSet(gridSet);
         }
 
-        CoordinateReferenceSystem crs = getCoordinateReferenceSystem(map);
+        CoordinateReferenceSystem crs = getCoordinateReferenceSystem(req);
 
         // look up epsg code
         Integer epsgCode = null;
@@ -376,16 +404,16 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         return gridSubsets.iterator().next();
     }
 
-    protected int[] findMinMaxZoom(GridSubset gridSubset, WMSMapContent map) {
+    protected int[] findMinMaxZoom(GridSubset gridSubset, GetMapRequest req) {
         GridSet gridSet = gridSubset.getGridSet();
-        Map formatOpts = map.getRequest().getFormatOptions();
+        Map formatOpts = req.getFormatOptions();
 
         Integer minZoom = null;
         if (formatOpts.containsKey("min_zoom")) {
             minZoom = Integer.parseInt(formatOpts.get("min_zoom").toString());
         }
         if (minZoom == null) {
-            minZoom = findClosestZoom(gridSet, map);
+            minZoom = findClosestZoom(gridSet, req);
         }
 
         Integer maxZoom = null;
@@ -397,7 +425,7 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
 
         if (maxZoom == null) {
             // walk down until we hit too many tiles
-            maxZoom = findMaxZoomAuto(gridSubset, minZoom, map);
+            maxZoom = findMaxZoomAuto(gridSubset, minZoom, req);
         }
 
         if (maxZoom < minZoom) {
@@ -415,8 +443,8 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         return new int[] { minZoom, maxZoom };
     }
 
-    protected Integer findClosestZoom(GridSet gridSet, WMSMapContent map) {
-        double reqScale = RendererUtilities.calculateOGCScale(bounds(map), gridSet.getTileWidth(),
+    protected Integer findClosestZoom(GridSet gridSet, GetMapRequest req) {
+        double reqScale = RendererUtilities.calculateOGCScale(bounds(req), gridSet.getTileWidth(),
                 null);
 
         int i = 0;
@@ -436,8 +464,8 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         return Math.max(i, 0);
     }
 
-    protected Integer findMaxZoomAuto(GridSubset gridSubset, Integer minZoom, WMSMapContent map) {
-        BoundingBox bbox = bbox(map);
+    protected Integer findMaxZoomAuto(GridSubset gridSubset, Integer minZoom, GetMapRequest req) {
+        BoundingBox bbox = bbox(req);
 
         int zoom = minZoom;
         int ntiles = 0;
@@ -455,9 +483,9 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         return format.contains("/") ? format : "image/" + format;
     }
 
-    protected String findBestFormat(WMSMapContent map) {
+    protected String findBestFormat(GetMapRequest req) {
         // if request is a single coverage layer return jpeg, otherwise use just png
-        List<MapLayerInfo> layers = map.getRequest().getLayers();
+        List<MapLayerInfo> layers = req.getLayers();
         if (layers.size() == 1 && layers.get(0).getType() == MapLayerInfo.TYPE_RASTER) {
             return JPEG_MIME_TYPE;
         }

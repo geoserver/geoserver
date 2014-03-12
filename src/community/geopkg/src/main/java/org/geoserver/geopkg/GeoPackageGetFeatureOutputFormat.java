@@ -13,6 +13,8 @@ import java.io.OutputStream;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
@@ -22,8 +24,11 @@ import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.request.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.NameImpl;
 import org.geotools.geopkg.FeatureEntry;
 import org.geotools.geopkg.GeoPackage;
+import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.Name;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
@@ -80,7 +85,7 @@ public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat 
     @Override
     protected void write(FeatureCollectionResponse featureCollection, OutputStream output,
             Operation getFeature) throws IOException, ServiceException {
-        
+
         GeoPackage geopkg = new GeoPackage();
         
         for (FeatureCollection collection: featureCollection.getFeatures()) {
@@ -90,8 +95,16 @@ public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat 
             if (! (collection instanceof SimpleFeatureCollection)) {
                 throw new ServiceException("GeoPackage OutputFormat does not support Complex Features.");
             }
-           
-            geopkg.add(e, (SimpleFeatureCollection)  collection);
+
+            SimpleFeatureCollection features = (SimpleFeatureCollection)  collection;
+            FeatureTypeInfo meta = lookupFeatureType(features);
+            if (meta != null) {
+                // initialize entry metadata
+                e.setIdentifier(meta.getTitle());
+                e.setDescription(abstractOrDescription(meta));
+            }
+
+            geopkg.add(e, features);
         }
         
         geopkg.close();
@@ -104,4 +117,25 @@ public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat 
         geopkg.getFile().delete();
     }
 
+    FeatureTypeInfo lookupFeatureType(SimpleFeatureCollection features) {
+        FeatureType featureType = features.getSchema();
+        if (featureType != null) {
+            Catalog cat = gs.getCatalog();
+            FeatureTypeInfo meta = cat.getFeatureTypeByName(featureType.getName());
+            if (meta != null) {
+                return meta;
+            }
+
+            LOGGER.fine("Unable to load feature type metadata for: " + featureType.getName());
+        }
+        else {
+            LOGGER.fine("No feature type for collection, unable to load metadata");
+        }
+
+        return null;
+    }
+
+    String abstractOrDescription(FeatureTypeInfo meta) {
+        return meta.getAbstract() != null ? meta.getAbstract() : meta.getDescription();
+    }
 }

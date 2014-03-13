@@ -39,7 +39,6 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 
@@ -49,9 +48,11 @@ public class GeoJSONFormat extends VectorFormat {
 
     @Override
     public FeatureReader read(ImportData data, ImportTask item) throws IOException {
-        final FeatureType featureType = 
-            (FeatureType) item.getMetadata().get(FeatureType.class);
-        final FeatureIterator it = new FeatureJSON().streamFeatureCollection(file(data, item));
+        final SimpleFeatureType featureType =
+            (SimpleFeatureType) item.getMetadata().get(FeatureType.class);
+        FeatureJSON json = new FeatureJSON();
+        json.setFeatureType(featureType);
+        final FeatureIterator it = json.streamFeatureCollection(file(data, item));
 
         return new FeatureReader() {
 
@@ -115,7 +116,7 @@ public class GeoJSONFormat extends VectorFormat {
                 it.close();
             }
         } catch (Exception e) {
-            LOG.log(Level.FINER, "Error reading fiel as json", e);
+            LOG.log(Level.FINER, "Error reading file as json", e);
         }
         return null;
     }
@@ -145,13 +146,10 @@ public class GeoJSONFormat extends VectorFormat {
 
     ImportTask task(ImportData data, Catalog catalog) throws IOException {
         File file = maybeFile(data).get();
-        
-        // grab first feature to check its crs
-        SimpleFeature first = sniff(file);
-        Preconditions.checkNotNull(first);
 
-        // get the raw feature type, and rename it 
-        SimpleFeatureType featureType = first.getFeatureType();
+        // get the composite feature type
+        SimpleFeatureType featureType = new FeatureJSON().readFeatureCollectionSchema(file, false);
+        System.out.println(featureType);
 
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.init(featureType);
@@ -185,7 +183,9 @@ public class GeoJSONFormat extends VectorFormat {
         // bounds
         ReferencedEnvelope bounds = new ReferencedEnvelope(crs);
 
-        FeatureIterator<SimpleFeature> it = new FeatureJSON().streamFeatureCollection(file);
+        FeatureJSON reader = new FeatureJSON();
+        reader.setFeatureType(featureType);
+        FeatureIterator<SimpleFeature> it = reader.streamFeatureCollection(file);
         while(it.hasNext()) {
             SimpleFeature f = it.next();
             bounds.include(f.getBounds());

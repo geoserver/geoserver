@@ -105,9 +105,9 @@ public class RequestUtils {
 
         // from the spec: "If the list does not contain any version numbers that the server
         // supports, the server shall return an Exception with
-        // exceptionCode="VersionNegotiationFailed"
+        // exceptionCode="VERSION_NEGOTIATION_FAILED"
         if(negotiated == null)
-            throw new OWS20Exception("Could not find any matching version", OWS20Exception.OWSExceptionCode.VersionNegotiationFailed);
+            throw new OWS20Exception("Could not find any matching version", OWS20Exception.OWSExceptionCode.VERSION_NEGOTIATION_FAILED);
 
         return negotiated.toString();
     }
@@ -122,7 +122,7 @@ public class RequestUtils {
     public static void checkVersionNumber20(String v, String locator) throws ServiceException {
         if (!v.matches("[0-9]{1,2}\\.[0-9]{1,2}(\\.[0-9]{1,2})?")) {
             String msg = v + " is an invalid version number";
-            throw new OWS20Exception("Could not find any matching version,"+msg, OWS20Exception.OWSExceptionCode.VersionNegotiationFailed, locator);
+            throw new OWS20Exception("Could not find any matching version,"+msg, OWS20Exception.OWSExceptionCode.VERSION_NEGOTIATION_FAILED, locator);
         }
     }
 
@@ -343,7 +343,7 @@ public class RequestUtils {
      */
     public static void checkVersion(String version) {
         if(version == null) {
-            throw new WCS20Exception("Missing version", OWS20Exception.OWSExceptionCode.MissingParameterValue, version);
+            throw new WCS20Exception("Missing version", OWS20Exception.OWSExceptionCode.MISSING_PARAMETER_VALUE, version);
         }
 
         if ( ! WCS20Const.V201.equals(version) && ! WCS20Const.V20.equals(version)) {
@@ -357,10 +357,10 @@ public class RequestUtils {
      */
     public static void checkService(String serviceName) {
         if( serviceName == null ) {
-            throw new WCS20Exception("Missing service name", OWS20Exception.OWSExceptionCode.MissingParameterValue, "service");
+            throw new WCS20Exception("Missing service name", OWS20Exception.OWSExceptionCode.MISSING_PARAMETER_VALUE, "service");
         }
         if( ! "WCS".equals(serviceName)) {
-            throw new WCS20Exception("Error in service name, epected value: WCS", OWS20Exception.OWSExceptionCode.InvalidParameterValue, serviceName);
+            throw new WCS20Exception("Error in service name, epected value: WCS", OWS20Exception.OWSExceptionCode.INVALID_PARAMETER_VALUE, serviceName);
         }
     }
 }

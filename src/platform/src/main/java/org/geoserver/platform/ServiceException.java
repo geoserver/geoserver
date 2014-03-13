@@ -51,14 +51,14 @@ public class ServiceException extends RuntimeException {
     /**
      * List of text recording information about the exception
      */
-    List exceptionText = new ArrayList();
+    private final List exceptionText = new ArrayList();
 
     /**
      * Constructs the exception from a message.
      *
      * @param message The message describing the exception.
      */
-    public ServiceException(String message) {
+    public ServiceException(final String message) {
         super(message);
     }
 
@@ -68,7 +68,7 @@ public class ServiceException extends RuntimeException {
      * @param message The message describing the exception.
      * @param cause The case of the exception.
      */
-    public ServiceException(String message, Throwable cause) {
+    public ServiceException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
@@ -79,7 +79,7 @@ public class ServiceException extends RuntimeException {
      * @param cause The case of the exception.
      * @param code The application specific exception code for the exception.
      */
-    public ServiceException(String message, Throwable cause, String code) {
+    public ServiceException(final String message, final Throwable cause, final String code) {
         this(message, cause);
         this.code = code;
     }
@@ -93,7 +93,7 @@ public class ServiceException extends RuntimeException {
      * @param code The application specific exception code for the exception.
      * @param locator The application specific locator for the exception.
      */
-    public ServiceException(String message, Throwable cause, String code, String locator) {
+    public ServiceException(final String message, final Throwable cause, final String code, String locator) {
         this(message, cause, code);
         this.locator = locator;
     }
@@ -104,7 +104,7 @@ public class ServiceException extends RuntimeException {
      * @param message The message describing the exception.
      * @param code The application specific exception code for the exception.
      */
-    public ServiceException(String message, String code) {
+    public ServiceException(final String message, final String code) {
         super(message);
         this.code = code;
     }
@@ -117,7 +117,7 @@ public class ServiceException extends RuntimeException {
      * @param code The application specific exception code for the exception.
      * @param locator The application specific locator for the exception.
      */
-    public ServiceException(String message, String code, String locator) {
+    public ServiceException(final String message, final String code, final String locator) {
         this(message, code);
         this.locator = locator;
     }
@@ -127,7 +127,7 @@ public class ServiceException extends RuntimeException {
      *
      * @param cause The case of the exception.
      */
-    public ServiceException(Throwable cause) {
+    public ServiceException(final Throwable cause) {
         super(cause);
     }
 
@@ -137,7 +137,7 @@ public class ServiceException extends RuntimeException {
      * @param cause The case of the exception.
      * @param code The application specific exception code for the exception.
      */
-    public ServiceException(Throwable cause, String code) {
+    public ServiceException(final Throwable cause, final String code) {
         this(cause);
         this.code = code;
     }
@@ -149,7 +149,7 @@ public class ServiceException extends RuntimeException {
      * @param code The application specific exception code for the exception.
      * @param locator The application specific locator for the exception.
      */
-    public ServiceException(Throwable cause, String code, String locator) {
+    public ServiceException(final Throwable cause, final String code, final String locator) {
         this(cause, code);
         this.locator = locator;
     }
@@ -157,7 +157,7 @@ public class ServiceException extends RuntimeException {
     /**
      * @return The application specifc code of the exception.
      */
-    public String getCode() {
+    public final String getCode() {
         return code;
     }
 
@@ -166,7 +166,7 @@ public class ServiceException extends RuntimeException {
      *
      * @param code The application specific code.
      */
-    public void setCode(String code) {
+    public final void setCode(final String code) {
         this.code = code;
     }
 
@@ -179,7 +179,7 @@ public class ServiceException extends RuntimeException {
      * </pre></code> 
      * </p>
      */
-    public ServiceException code(String code) {
+    public final ServiceException code(final String code) {
         setCode(code);
         return this;
     }
@@ -196,7 +196,7 @@ public class ServiceException extends RuntimeException {
      *
      * @return The application specific locator.
      */
-    public void setLocator(String locator) {
+    public final void setLocator(final String locator) {
         this.locator = locator;
     }
 
@@ -209,7 +209,7 @@ public class ServiceException extends RuntimeException {
      * </pre></code> 
      * </p>
      */
-    public ServiceException locator(String locator) {
+    public final ServiceException locator(final String locator) {
         setLocator(locator);
         return this;
     }
@@ -225,19 +225,19 @@ public class ServiceException extends RuntimeException {
      * </p>
      * @return A list of String recording information about the exception.
      */
-    public List getExceptionText() {
+    public final List getExceptionText() {
         return exceptionText;
     }
     
     @Override
     public String toString() {
-        String msg = super.toString();
-        if(exceptionText == null || exceptionText.size() == 0)
-            return msg;
+        final String msg = super.toString();
+        if(exceptionText == null || exceptionText.isEmpty()){
+            return msg;}
         
-        StringBuffer sb = new StringBuffer(msg);
-        for (Iterator it = exceptionText.iterator(); it.hasNext();) {
-            String extraMessage = (String) it.next();
+        final StringBuilder sb = new StringBuilder(msg);
+        for (final Iterator it = exceptionText.iterator(); it.hasNext();) {
+            final String extraMessage = (String) it.next();
             sb.append(NEW_LINE).append(extraMessage);
         }
         return sb.toString();

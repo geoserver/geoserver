@@ -7,6 +7,7 @@ package org.geoserver.platform;
 import javax.servlet.ServletContextEvent;
 
 import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.ContextLoaderListener;
 
 /**
@@ -18,9 +19,9 @@ import org.springframework.web.context.ContextLoaderListener;
 public class GeoServerContextLoaderListener extends ContextLoaderListener {
 
     @Override
-    public void contextInitialized(ServletContextEvent event) {
+    public final void contextInitialized(final ServletContextEvent event) {
         super.contextInitialized(event);
-        ApplicationContext appContext = getContextLoader().getCurrentWebApplicationContext();
+        final ApplicationContext appContext = ContextLoader.getCurrentWebApplicationContext();
         if (appContext != null) {
             appContext.publishEvent(new ContextLoadedEvent(appContext));
         }

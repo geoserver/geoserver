@@ -16,7 +16,7 @@ package org.geoserver.platform.exception;
 public class GeoServerException extends Exception implements IGeoServerException {
 
     /** serialVersionUID */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -3184793452416951375L;
 
     /** id for the exception, used to locate localized message for the exception */
     private String id;

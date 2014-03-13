@@ -80,23 +80,23 @@ public final class Service {
         }
     }
 
-    public final String getId() {
+    public String getId() {
         return id;
     }
 
-    public final String getNamespace() {
+    public String getNamespace() {
         return namespace;
     }
 
-    public final Object getService() {
+    public Object getService() {
         return service;
     }
 
-    public final Version getVersion() {
+    public Version getVersion() {
         return version;
     }
 
-    public final List<String> getOperations() {
+    public List<String> getOperations() {
         return operations;
     }
 

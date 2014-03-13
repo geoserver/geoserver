@@ -94,10 +94,13 @@ public class GeoServerExceptions {
         }
         catch(MissingResourceException ex) {
             //next try with the non qualifiied
+            LOGGER.log(Level.SEVERE, ex.getClassName(), ex);
             try {
                 localized = bundle.getString(clazz.getSimpleName() + "." + id);
             }
-            catch(MissingResourceException ex2) {}
+            catch(MissingResourceException ex2) {
+            LOGGER.log(Level.SEVERE, ex2.getClassName(), ex2);
+            }
         }
         if (localized == null) {
             if (LOGGER.isLoggable(Level.FINER)) {
@@ -154,7 +157,7 @@ public class GeoServerExceptions {
                     props.load(in);
                 }
                 catch(IOException ex) {
-                    LOGGER.log(Level.WARNING, "Error loading properties from: ", url);
+                    LOGGER.log(Level.WARNING, "Error loading properties from: " + url, ex);
                 }
                 finally {
                     if (in != null) {
@@ -173,7 +176,7 @@ public class GeoServerExceptions {
     
     static class PropResourceBundle extends ResourceBundle {
 
-        private Properties props;
+        private final Properties props;
 
         PropResourceBundle(final Properties props) {
             this.props = props;

@@ -12,20 +12,15 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.StoreInfo;
-import org.geoserver.catalog.StyleInfo;
 import org.geoserver.importer.ImportTask.State;
 import org.geoserver.importer.transform.AbstractInlineVectorTransform;
 import org.geoserver.importer.transform.AttributesToPointGeometryTransform;
@@ -37,7 +32,6 @@ import org.geotools.data.h2.H2DataStoreFactory;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.junit.After;
 import org.junit.Test;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
@@ -716,6 +710,22 @@ public class ImporterDataTest extends ImporterTestSupport {
         checkNoErrors(imp);
 
         runChecks("point");
+    }
+
+    @Test
+    public void testJaggedGeoJSON() throws Exception {
+        File json = file("geojson/jagged.json");
+        ImportContext ctx = importer.createContext(new SpatialFile(json));
+        assertEquals(1, ctx.getTasks().size());
+        SimpleFeatureType info = (SimpleFeatureType) ctx.getTasks().get(0).getMetadata().get(FeatureType.class);
+        assertEquals(4, info.getAttributeCount());
+        int cnt = 0;
+        for (int i = 0; i < info.getAttributeCount(); i++) {
+            if (info.getDescriptor(i).getLocalName().equals("geometry")) {
+                cnt++;
+            }
+        }
+        assertEquals(1, cnt);
     }
 
     private void checkNoErrors(ImportContext imp) {

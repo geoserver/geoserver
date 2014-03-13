@@ -26,7 +26,7 @@ public class NameExclusionFilter implements ExtensionFilter {
     }
 
     @Override
-    public final boolean exclude(final String beanId, final Object bean) {
+    public boolean exclude(final String beanId, final Object bean) {
         if (this.beanId != null) {
             if (beanId == null) {
                 return false;

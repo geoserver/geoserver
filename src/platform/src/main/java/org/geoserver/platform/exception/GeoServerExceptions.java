@@ -4,7 +4,6 @@
  */
 package org.geoserver.platform.exception;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -15,25 +14,23 @@ import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.Properties;
-import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.geoserver.platform.GeoServerExtensions;
 
 public class GeoServerExceptions {
 
-    static Logger LOGGER = Logger.getLogger("org.geoserver.platform.exception");
+    private static final Logger LOGGER = Logger.getLogger("org.geoserver.platform.exception");
 
-    static Control control = new Control();
+    private static final Control CONTROL = new Control();
 
     /**
      * Returns a localized message for the specific exception for the default system locale.
      * 
      * @see #localize(GeoServerException, Locale)
      */
-    public static String localize(IGeoServerException e) {
+    public static String localize(final IGeoServerException e) {
         return localize(e, Locale.getDefault());
     }
 
@@ -51,10 +48,10 @@ public class GeoServerExceptions {
      * 
      * @return The localized message, or <code>null</code> if none could be found.
      */
-    public static String localize(IGeoServerException e, Locale locale) {
+    public static String localize(final IGeoServerException e, final Locale locale) {
         Class<? extends IGeoServerException> clazz = e.getClass();
         while(clazz != null) {
-            String localized = doLocalize(e.getId(), e.getArgs(), clazz, locale);
+            final String localized = doLocalize(e.getId(), e.getArgs(), clazz, locale);
             if (localized != null) {
                 return localized;
             }
@@ -72,15 +69,17 @@ public class GeoServerExceptions {
         return null;
     }
     
-    static String doLocalize(String id, Object[] args, Class<? extends IGeoServerException> clazz, 
-            Locale locale) {
+    private static String doLocalize(final String id, final Object[] args, final Class<? extends IGeoServerException> clazz, 
+            final Locale locale) {
         
         ResourceBundle bundle = null;
         try {
-            bundle = ResourceBundle.getBundle("GeoServerException", locale, control);
-            //bundle = ResourceBundle.getBundle(clazz.getCanonicalName(), locale, control);
+            bundle = ResourceBundle.getBundle("GeoServerException", locale, CONTROL);
+            //bundle = ResourceBundle.getBundle(clazz.getCanonicalName(), locale, CONTROL);
         }
-        catch(MissingResourceException ex) {}
+        catch (MissingResourceException ex) {
+            LOGGER.log(Level.SEVERE, ex.getClassName(), ex);
+        }
         
         if (bundle == null) {
             //could not locate a bundle
@@ -102,7 +101,7 @@ public class GeoServerExceptions {
         }
         if (localized == null) {
             if (LOGGER.isLoggable(Level.FINER)) {
-                LOGGER.finer("Resource lookup failed for key" + id + ", class = " + clazz);
+                LOGGER.log(Level.FINER, "Resource lookup failed for key{0}, class = {1}", new Object[]{id, clazz});
             }
             return null;
         }
@@ -116,43 +115,45 @@ public class GeoServerExceptions {
     }
 
     static class Control extends ResourceBundle.Control {
-        static final List<String> FORMATS = Arrays.asList("java.properties");
+        private static final List<String> FORMATS = Arrays.asList("java.properties");
 
         @Override
-        public List<String> getFormats(String baseName) {
+        public List<String> getFormats(final String baseName) {
             if (baseName == null) {
+                LOGGER.log(Level.SEVERE, "NullPointerException {0}", baseName);
                 throw new NullPointerException();
             }
             return FORMATS;
         }
 
         @Override
-        public ResourceBundle newBundle(String baseName, Locale locale,
-                String format, ClassLoader loader, boolean reload)
+        public ResourceBundle newBundle(final String baseName, final Locale locale,
+                final String format, final ClassLoader loader, final boolean reload)
                 throws IllegalAccessException, InstantiationException,
                 IOException {
 
             //look for properties file
-            String lang = locale.getLanguage();
-            String filename = baseName;
+            final String lang = locale.getLanguage();
+            final StringBuilder filename = new StringBuilder(baseName);
+            
             if (lang != null && !"".equals(lang)) {
-                filename += "_" + lang;
+                filename.append("_").append(lang);
             }
-            filename += ".properties";
+            filename.append(".properties");
 
-            Enumeration<URL> e = loader.getResources(filename);
+            final Enumeration<URL> e = loader.getResources(filename.toString());
             Properties props = null; 
             while (e.hasMoreElements()) {
                 if (props == null) {
                     props = new Properties();
                 }
 
-                URL url = e.nextElement();
-                InputStream in = url.openStream();
+                final URL url = e.nextElement();
+                final InputStream in = url.openStream();
                 try {
                     props.load(in);
                 }
-                catch(Exception ex) {
+                catch(IOException ex) {
                     LOGGER.log(Level.WARNING, "Error loading properties from: ", url);
                 }
                 finally {
@@ -160,7 +161,7 @@ public class GeoServerExceptions {
                         try {
                             in.close();
                         }
-                        catch(Exception ex2) {
+                        catch(IOException ex2) {
                             LOGGER.log(Level.FINEST, ex2.getMessage(), ex2);
                         }
                     }
@@ -172,14 +173,14 @@ public class GeoServerExceptions {
     
     static class PropResourceBundle extends ResourceBundle {
 
-        Properties props;
+        private Properties props;
 
-        PropResourceBundle(Properties props) {
+        PropResourceBundle(final Properties props) {
             this.props = props;
         }
 
         @Override
-        protected Object handleGetObject(String key) {
+        protected Object handleGetObject(final String key) {
             return props.get(key);
         }
 

@@ -22,16 +22,16 @@ import java.io.InputStream;
  */
 public class FileWatcher<T> {
 
-    File file;
+    private final File file;
     private long lastModified = Long.MIN_VALUE;
     private long lastCheck;
     private boolean stale;
 
-    public FileWatcher(File file) {
+    public FileWatcher(final File file) {
         this.file = file;
     }
     
-    public File getFile() {
+    public final File getFile() {
         return file;
     }
     
@@ -45,7 +45,7 @@ public class FileWatcher<T> {
     public T read() throws IOException {
         T result = null;
         
-        if (file.exists()) {
+        if (file != null && file.exists()) {
             InputStream is = null;
 
             try {
@@ -71,18 +71,18 @@ public class FileWatcher<T> {
      * Subclasses should override.
      * </p>
      */
-    protected T parseFileContents(InputStream in) throws IOException {
+    protected T parseFileContents(final InputStream in) throws IOException {
         return null;
     }
     
     /**
      * Determines if the underlying file has been modified since the last check.
      */
-    public boolean isModified() {
-        long now = System.currentTimeMillis();
+    public final boolean isModified() {
+        final long now = System.currentTimeMillis();
         if((now - lastCheck) > 1000) {
             lastCheck = now;
-            stale = file.exists() && (file.lastModified() != lastModified);
+            stale = file != null && file.exists() && (file.lastModified() != lastModified);
         }
         return stale;
     }
@@ -95,7 +95,7 @@ public class FileWatcher<T> {
      * 
      * @param lastModified
      */
-    public void setKnownLastModified(long lastModified) {
+    public final void setKnownLastModified(final long lastModified) {
         this.lastModified = lastModified;
     }
 

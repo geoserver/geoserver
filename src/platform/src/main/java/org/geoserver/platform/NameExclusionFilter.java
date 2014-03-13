@@ -11,9 +11,9 @@ package org.geoserver.platform;
  * 
  */
 public class NameExclusionFilter implements ExtensionFilter {
-    String beanId;
+    private String beanId;
 
-    public String getBeanId() {
+    public final String getBeanId() {
         return beanId;
     }
 
@@ -21,16 +21,18 @@ public class NameExclusionFilter implements ExtensionFilter {
      * Sets the bean to be filtered out
      * @param beanId
      */
-    public void setBeanId(String beanId) {
+    public final void setBeanId(final String beanId) {
         this.beanId = beanId;
     }
 
-    public boolean exclude(String beanId, Object bean) {
+    @Override
+    public boolean exclude(final String beanId, final Object bean) {
         if (this.beanId != null) {
-            if (beanId == null)
+            if (beanId == null) {
                 return false;
-            else
+            } else {
                 return this.beanId.equals(beanId);
+            }
         }
 
         return false;

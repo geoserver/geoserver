@@ -5,6 +5,8 @@
 package org.geoserver.platform;
 
 import java.lang.reflect.Method;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -17,25 +19,26 @@ import java.lang.reflect.Method;
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
 public final class Operation {
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(Operation.class);
     /**
      * Unique identifier withing service of the operation.
      */
-    final String id;
+    private final String id;
 
     /**
      * Service this operation is a component of.
      */
-    final Service service;
+    private final Service service;
 
     /**
      * The method implementing the operation
      */
-    final Method method;
+    private final Method method;
 
     /**
      * Parameters of the operation
      */
-    final Object[] parameters;
+    private final Object[] parameters;
 
     /**
      * Creates a new operation descriptor.
@@ -46,39 +49,49 @@ public final class Operation {
      * @param parameters The parameters of the operation, may be <code>null</code>
      *
      */
-    public Operation(String id, Service service, Method method, Object[] parameters) {
+    public Operation(final String id, final Service service, final Method method, final Object[] parameters) {
         this.id = id;
         this.service = service;
         this.method = method;
         this.parameters = parameters;
 
         if (id == null) {
+            LOGGER.log(Level.SEVERE, "NullPointerException {0}", "id");
             throw new NullPointerException("id");
         }
 
         if (service == null) {
+            LOGGER.log(Level.SEVERE, "NullPointerException {0}", "service");
             throw new NullPointerException("service");
+        }
+        if (method == null) {
+            LOGGER.log(Level.SEVERE, "NullPointerException {0}", "method");
+            throw new NullPointerException("method");
+        }
+        if (parameters == null) {
+            LOGGER.log(Level.SEVERE, "NullPointerException {0}", "parameters");
+            throw new NullPointerException("parameters");
         }
     }
 
     /**
      * @return The id of the operation.
      */
-    public String getId() {
+    public final String getId() {
         return id;
     }
 
     /**
      * @return The service implementing the operation.
      */
-    public Service getService() {
+    public final Service getService() {
         return service;
     }
 
     /**
      * @return The method implementing the operation.
      */
-    public Method getMethod() {
+    public final Method getMethod() {
         return method;
     }
 
@@ -89,7 +102,8 @@ public final class Operation {
         return parameters;
     }
 
-    public boolean equals(Object obj) {
+    @Override
+    public boolean equals(final Object obj) {
         if (obj == null) {
             return false;
         }
@@ -98,24 +112,22 @@ public final class Operation {
             return false;
         }
 
-        Operation other = (Operation) obj;
+        final Operation other = (Operation) obj;
 
         if (!id.equals(other.id)) {
             return false;
         }
 
-        if (!service.equals(other.service)) {
-            return false;
-        }
-
-        return true;
+        return service.equals(other.service);
     }
 
-    public int hashCode() {
+    @Override
+    public final int hashCode() {
         return (id.hashCode() * 17) + service.hashCode();
     }
 
-    public String toString() {
+    @Override
+    public final String toString() {
         return "Operation( " + id + ", " + service.getId() + " )";
     }
 }

@@ -70,14 +70,18 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
 
         @Override
         public Double convertToObject(String value, Locale locale) {
-            final Number number = parse(value, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, locale);
+            final Number number = parse(value, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Locale.US);
             if (number == null) {
                 return null;
             }
 
             return new Double(number.doubleValue());
         }
-        
+
+        @Override
+        public String convertToString(Object value, Locale locale) {
+            return super.convertToString(value, Locale.US);
+        }
     }
 
     /**

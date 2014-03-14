@@ -466,6 +466,8 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
         BufferedImage bi;
         
         StreamingRenderer renderer;
+        
+        Feature previous;
 
         public FeatureInfoRenderListener(BufferedImage bi, Rectangle hitArea, int maxFeatures) {
             verifyColorModel(bi);
@@ -513,6 +515,13 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
         @Override
         public void featureRenderer(SimpleFeature feature) {
             // TODO: handle the case the feature became a grid due to rendering transformations?
+            
+            // feature caught by more than one rule?
+            if(feature == previous) {
+                return;
+            } else {
+                previous = feature;
+            }
             
             // note: we need to extract the raster here, caching it will make us
             // get the old version of it if hw acceleration kicks in

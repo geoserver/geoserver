@@ -7,7 +7,9 @@ package org.geoserver.wcs2_0;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
+import java.awt.image.SampleModel;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -54,6 +56,7 @@ import org.geoserver.wcs2_0.util.RequestUtils;
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
@@ -83,6 +86,7 @@ import org.opengis.referencing.crs.CRSAuthorityFactory;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.PixelInCell;
 import org.vfny.geoserver.util.WCSUtils;
+import org.vfny.geoserver.wcs.WcsException;
 
 /**
  * Implementation of the WCS 2.0.1 GetCoverage request
@@ -189,8 +193,8 @@ public class GetCoverage {
             GridCoverageRequest gcr = helper.getGridCoverageRequest();
 
             //TODO consider dealing with the Format instance instead of a String parsing or check against WCSUtils.isSupportedMDOutputFormat(String).
+            final GridCoverageFactory coverageFactory = CoverageFactoryFinder.getGridCoverageFactory(hints);
             if (reader instanceof StructuredGridCoverage2DReader && formatSupportMDOutput(request.getFormat())) {
-
                 // Split the main request into a List of requests in order to read more coverages to be stacked 
                 final List<GridCoverageRequest> requests = helper.splitRequest();
                 if (requests == null || requests.isEmpty()) {
@@ -204,15 +208,42 @@ public class GetCoverage {
                 final String nativeName = cinfo.getNativeCoverageName();
                 final String coverageName = nativeName != null ? nativeName : reader.getGridCoverageNames()[0];
                 final GranuleStackImpl stack = new GranuleStackImpl(coverageName, reader.getCoordinateReferenceSystem(), dimensions);
-
+                // Geoserver max memory limit definition
+                long outputLimit = wcs.getMaxOutputMemory() * 1024;
+                long inputLimit = wcs.getMaxInputMemory() * 1024;
+                // Object value used for storing the sum of the output size of each internal coverage
+                ImageSizeRecorder incrementalOutputSize=new ImageSizeRecorder(outputLimit,false);
+                // Object used for storing the sum of the output size of each internal coverage
+                ImageSizeRecorder incrementalInputSize=new ImageSizeRecorder(inputLimit,true);
+                // Image size estimation
+                int numRequests = requests.size();
+                GridCoverageRequest firstRequest = requests.remove(0);
+                GridCoverage2D firstCoverage = setupCoverage(helper, firstRequest, request, reader, hints, extensions, dimensions,
+                        incrementalOutputSize, incrementalInputSize, coverageFactory);
+                // check the first coverage memory usage
+                long actual = incrementalInputSize.finalSize();
+                // Estimated size
+                long estimatedSize = actual*numRequests;
+                //Check if the estimated size is greater than that of the maximum output memory
+                // Limit check is performed only when the limit is defined
+                if(outputLimit > 0 && estimatedSize > outputLimit){
+                    throw new WcsException("This request is trying to generate too much data, " +
+                            "the limit is " + formatBytes(outputLimit) + " but the estimated amount of bytes to be " +
+                                    "written in the output is " + formatBytes(estimatedSize));
+                }
+                // If the estimated size does not exceed the limit, the first coverage is added to the GranuleStack
+                stack.addCoverage(firstCoverage);
+                
                 // Get a coverage for each subrequest
                 for (GridCoverageRequest subRequest: requests) {
-                    GridCoverage2D singleCoverage = setupCoverage(helper, subRequest, request, reader, hints, extensions, dimensions);
+                    GridCoverage2D singleCoverage = setupCoverage(helper, subRequest, request, reader, hints, extensions, dimensions,
+                            incrementalOutputSize, incrementalInputSize, coverageFactory);
                     stack.addCoverage(singleCoverage);
                 }
                 coverage = stack;
             } else {
-                coverage = setupCoverage(helper, gcr, request, reader, hints, extensions, null);
+                // IncrementalSize not used
+                coverage = setupCoverage(helper, gcr, request, reader, hints, extensions, null, null, null, coverageFactory);
             }
         } catch(ServiceException e) {
             throw e;
@@ -236,6 +267,7 @@ public class GetCoverage {
      * @param reader the Reader to be used to perform the read operation
      * @param hints hints to be used by the involved operations
      * @param extensions 
+     * @param coverageFactory 
      * @param dimensions 
      * @return
      * @throws Exception
@@ -247,7 +279,10 @@ public class GetCoverage {
             final GridCoverage2DReader reader, 
             final Hints hints, 
             final Map<String, ExtensionItemType> extensions, 
-            final List<DimensionBean> coverageDimensions) throws Exception {
+            final List<DimensionBean> coverageDimensions,
+            ImageSizeRecorder incrementalOutputSize,
+            ImageSizeRecorder incrementalInputSize,
+            final GridCoverageFactory coverageFactory) throws Exception {
         GridCoverage2D coverage = null;
         //
         // we setup the params to force the usage of imageread and to make it use
@@ -255,7 +290,8 @@ public class GetCoverage {
         // we really try to subset before reading with a grid geometry
         // we specify to work in streaming fashion
         // TODO elevation
-        coverage = readCoverage(helper.getCoverageInfo(), gridCoverageRequest, reader, hints);
+        coverage = readCoverage(helper.getCoverageInfo(), gridCoverageRequest, reader, hints,
+                incrementalInputSize);
         if(coverage == null) {
             throw new IllegalStateException("Unable to read a coverage for the current request" + coverageType.toString());
         }
@@ -290,10 +326,18 @@ public class GetCoverage {
             coverage = enforceLatLongOrder(coverage, hints, gridCoverageRequest.getOutputCRS());
         }
 
-        // 
+        //
         // Output limits checks
         // We need to enforce them once again as it might be that no scaling or rangesubsetting is requested
-        WCSUtils.checkOutputLimits(wcs, coverage.getGridGeometry().getGridRange2D(), coverage.getRenderedImage().getSampleModel());
+        // Direct check is made only for single dimensional coverages
+        if (incrementalOutputSize == null) {
+            WCSUtils.checkOutputLimits(wcs, coverage.getGridGeometry().getGridRange2D(), coverage
+                    .getRenderedImage().getSampleModel());
+        } else {
+            // Check for each coverage added if the total coverage dimension exceeds the maximum limit
+            // If the size is exceeded an exception is thrown
+            incrementalOutputSize.addSize(coverage);
+        }
 
 //        // add the originator -- FOR THE MOMENT DON'T, NOT CLEAR WHAT EO METADATA WE SHOULD ADD TO THE OUTPUT
 //        Map<String, Object> properties = new HashMap<String, Object>(coverage.getProperties());
@@ -308,7 +352,7 @@ public class GetCoverage {
                 helper.setCoverageDimensionProperty(map, gridCoverageRequest, coverageDimension);
             }
             // Need to recreate the coverage in order to update the properties since the getProperties method returns a copy
-            coverage = CoverageFactoryFinder.getGridCoverageFactory(hints).create(coverage.getName(), coverage.getRenderedImage(), coverage.getEnvelope(), coverage.getSampleDimensions(), null, map);
+            coverage = coverageFactory.create(coverage.getName(), coverage.getRenderedImage(), coverage.getEnvelope(), coverage.getSampleDimensions(), null, map);
         }
         
         return coverage;
@@ -459,7 +503,8 @@ public class GetCoverage {
             CoverageInfo cinfo, 
             GridCoverageRequest request, 
             GridCoverage2DReader reader, 
-            Hints hints) throws Exception {
+            Hints hints,
+            ImageSizeRecorder incrementalInputSize) throws Exception {
         // checks
         Interpolation spatialInterpolation = request.getSpatialInterpolation();
         Utilities.ensureNonNull("interpolation", spatialInterpolation);
@@ -601,8 +646,14 @@ public class GetCoverage {
                 spatialInterpolation,
                 hints);
         // check limits again
-        if(coverage!=null){
-            WCSUtils.checkInputLimits(wcs, coverage);
+        if (coverage != null) {
+            if (incrementalInputSize == null) {
+                WCSUtils.checkInputLimits(wcs, coverage);
+            } else {
+                // Check for each coverage added if the total coverage dimension exceeds the maximum limit
+                // If the size is exceeded an exception is thrown
+                incrementalInputSize.addSize(coverage);
+            }
         }
 
         // return
@@ -1048,4 +1099,110 @@ public class GetCoverage {
 
     }
 
+    /**
+     * Helper class used for storing and checking the size of each image
+     * 
+     * @author Nicola Lagomarsini
+     * 
+     */
+    static class ImageSizeRecorder {
+        /** Incremental value for the size */
+        private long incrementalSize = 0;
+
+        private final long limit;
+        
+        private final boolean input;
+
+        ImageSizeRecorder(long limit, boolean input) {
+            this.limit = limit;
+            this.input = input;
+        }
+
+        /**
+         * Increment the total size value if not disabled
+         * 
+         * @param GridCoverage2D
+         */
+        public void addSize(GridCoverage2D coverage) {
+            incrementalSize += getCoverageSize(coverage.getGridGeometry().getGridRange2D(),
+                    coverage.getRenderedImage().getSampleModel());
+            isSizeExceeded();
+        }
+
+        /**
+         * Return the total size accumulated
+         * 
+         * @return
+         */
+        public long finalSize() {
+            return incrementalSize;
+        }
+
+        private void isSizeExceeded() {
+            if (limit > 0 && incrementalSize > limit) {
+                throw new WcsException("This request is trying to " + (input ? "read" : "generate")
+                        + " too much data, the limit is " + formatBytes(limit)
+                        + " but the actual amount of bytes to be " + (input ? "read" : "written")
+                        + " is " + formatBytes(incrementalSize));
+            }
+        }
+
+        /**
+         * Reset the total size stored to 0
+         */
+        public void reset() {
+            incrementalSize = 0;
+        }
+
+        /**
+         * Computes the size of a grid coverage in bytes given its grid envelope and the target sample model
+         * (code from WCSUtils)
+         * @param envelope
+         * @param sm
+         * @return
+         */
+        private static long getCoverageSize(GridEnvelope2D envelope, SampleModel sm) {
+            // === compute the coverage memory usage and compare with limit
+            final long pixelsNumber = computePixelsNumber(envelope);
+
+            long pixelSize = 0;
+            final int numBands = sm.getNumBands();
+            for (int i = 0; i < numBands; i++) {
+                pixelSize += sm.getSampleSize(i);
+            }
+            return pixelsNumber * pixelSize / 8;
+        }
+
+        /**
+         * Computes the number of pixels for this {@link GridEnvelope2D}.
+         * (code from WCSUtils)
+         * @param rasterEnvelope the {@link GridEnvelope2D} to compute the number of pixels for
+         * @return the number of pixels for the provided {@link GridEnvelope2D}
+         */
+        private static long computePixelsNumber(GridEnvelope2D rasterEnvelope) {
+            // pixels
+            long pixelsNumber = 1;
+            final int dimensions = rasterEnvelope.getDimension();
+            for (int i = 0; i < dimensions; i++) {
+                pixelsNumber *= rasterEnvelope.getSpan(i);
+            }
+            return pixelsNumber;
+        }
+    }
+    
+    /**
+     * Utility function to format a byte amount into a human readable string
+     * (code from WCSUtils)
+     * @param bytes
+     * @return a formatted string
+     */
+    private static String formatBytes(long bytes) {
+        if (bytes < 1024) {
+            return bytes + "B";
+        } else if (bytes < 1024 * 1024) {
+            return new DecimalFormat("#.##").format(bytes / 1024.0) + "KB";
+        } else {
+            return new DecimalFormat("#.##").format(bytes / 1024.0 / 1024.0) + "MB";
+        }
+    }
 }

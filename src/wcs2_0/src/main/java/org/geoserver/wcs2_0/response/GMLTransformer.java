@@ -882,35 +882,56 @@ class GMLTransformer extends TransformerBase {
         /**
          * Tries to encode a meaningful range for a {@link SampleDimension}.
          * 
-         * @param sd the {@link SampleDimension} to encode a meaningful range for.
+         * @param sd the {@link CoverageDimensionInfo} to encode a meaningful range for.
          */
         public void handleSampleDimensionRange(CoverageDimensionInfo sd) {
-            SampleDimensionType sdType = sd.getDimensionType();
-            handleSampleDimension(sdType);
-
+            if (!setRange(sd.getRange())) { 
+                SampleDimensionType sdType = sd.getDimensionType();
+                handleSampleDimensionType(sdType);
+            }
         }
 
-        private void handleSampleDimension(SampleDimensionType sdType) {
+        private void handleSampleDimensionType(SampleDimensionType sdType) {
             // old data dirs upgrading will have this empty
             if(sdType == null) {
                 // pick the one with the largest domain and be done with it
                 sdType = SampleDimensionType.REAL_64BITS;
             }
             final NumberRange<? extends Number> indicativeRange = TypeMap.getRange(sdType);
-            start("swe:interval");
-            chars(indicativeRange.getMinValue() + " " + indicativeRange.getMaxValue());
-            end("swe:interval");
+            setRange(indicativeRange);
         }
-        
+
+        /**
+         * Encode the interval range
+         * @param range
+         */
+        private boolean setRange(NumberRange<? extends Number> range) {
+            if (range != null && !Double.isInfinite(range.getMaximum()) && !Double.isInfinite(range.getMinimum())) {
+                start("swe:interval");
+                chars(range.getMinValue() + " " + range.getMaxValue());
+                end("swe:interval");
+                return true;
+            }
+            return false;
+        }
+
         /**
          * Tries to encode a meaningful range for a {@link SampleDimension}.
          * 
          * @param sd the {@link SampleDimension} to encode a meaningful range for.
          */
         public void handleSampleDimensionRange(SampleDimension sd) {
-            SampleDimensionType sdType = sd.getSampleDimensionType();
-            handleSampleDimension(sdType);
-
+            // look for ranges on the sample dimension
+            boolean setRange = false; 
+            if (sd instanceof GridSampleDimension) {
+                GridSampleDimension gridSd = ((GridSampleDimension) sd);
+                setRange = setRange(gridSd.getRange());
+            }
+            if (!setRange) {
+                // fallback on sampleDimensionType 
+                SampleDimensionType sdType = sd.getSampleDimensionType();
+                handleSampleDimensionType(sdType);
+            }
         }
 
         /**

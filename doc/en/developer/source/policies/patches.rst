@@ -134,3 +134,10 @@ Be patient
 The core developers review community patches in spare time. Be cognizant of this and realize that just 
 as you are contributing your own free time to the project, so is the developer who is reviewing and 
 applying your patch.
+
+Tips
+^^^^
+
+Include a test case that shows your patch fixes an issue (or adds new functionality). If you do not include a test case the developer reviewing your work will need to create one.
+
+`JIRA Issue <http://jira.codehaus.org/browse/GEOS>`_ are used to list your fix in the release notes each release. You can link to the JIRA ticket in your pull request description.

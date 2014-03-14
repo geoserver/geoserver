@@ -58,11 +58,83 @@ public class WCSNetCDFTest extends WCSTestSupport {
         setupRasterDimension(getLayerId(NO2), ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
     }
 
+    /**
+     * This test checks if an exception is not thrown when is requested an image with a total size lower than the maximum 
+     * geoserver output size.
+     * 
+     * @throws Exception
+     */
     @Test
     public void testCoverageNames() throws Exception {
+     // Setting of the output limit to 40 Kb
+        setOutputLimit(40);
+        // http response from the request inside the string
         MockHttpServletResponse response = getAsServletResponse("ows?request=GetCoverage&service=WCS&version=2.0.1" +
                 "&coverageId=wcs__NO2&format=application/x-netcdf&subset=http://www.opengis.net/def/axis/OGC/0/elevation(450)");
+        // The status code should be correct
         assertEquals(200, response.getStatusCode());
+        // The output format should be netcdf
         assertEquals("application/x-netcdf", response.getContentType());
+        // Reset output limit
+        setOutputLimit(-1);
+    }   
+    
+    /**
+     * This test checks if an exception is thrown when is requested an image with a total size greater than the maximum
+     * geoserver output memory allowed.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testOutputMemoryExceeded() throws Exception {
+        // Setting of the output limit to 40 Kb
+        setOutputLimit(40);
+        // http response from the request inside the string
+        MockHttpServletResponse response = getAsServletResponse("ows?request=GetCoverage&service=WCS&version=2.0.1" +
+                "&coverageId=wcs__NO2&format=application/x-netcdf");
+        // The output format should be xml because an exception must be thrown
+        assertEquals("application/xml", response.getContentType());
+        // Reset output limit
+        setOutputLimit(-1);
+    }
+    
+    /**
+     * This test checks if an exception is not thrown when is requested an image with a total size lower than the maximum 
+     * geoserver input size.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testInputMemoryCorrect() throws Exception {
+        // Setting of the input limit to 40 Kb
+        setInputLimit(40);
+        // http response from the request inside the string
+        MockHttpServletResponse response = getAsServletResponse("ows?request=GetCoverage&service=WCS&version=2.0.1" +
+                "&coverageId=wcs__NO2&format=application/x-netcdf&subset=http://www.opengis.net/def/axis/OGC/0/elevation(450)");
+        // The status code should be correct
+        assertEquals(200, response.getStatusCode());
+        // The output format should be netcdf
+        assertEquals("application/x-netcdf", response.getContentType());
+        // Reset input limit
+        setInputLimit(-1);
+    }   
+    
+    /**
+     * This test checks if an exception is thrown when is requested an image with a total size greater than the maximum
+     * geoserver input memory allowed.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testInputMemoryExceeded() throws Exception {
+        // Setting of the input limit to 40 Kb
+        setInputLimit(40);
+        // http response from the request inside the string
+        MockHttpServletResponse response = getAsServletResponse("ows?request=GetCoverage&service=WCS&version=2.0.1" +
+                "&coverageId=wcs__NO2&format=application/x-netcdf");
+        // The output format should be xml because an exception must be thrown
+        assertEquals("application/xml", response.getContentType());
+        // Reset input limit
+        setInputLimit(-1);
     }
 }

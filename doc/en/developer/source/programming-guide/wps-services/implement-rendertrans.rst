@@ -120,7 +120,7 @@ For example, the code below shows the process metadata specified for the ``gs:He
 
    @DescribeProcess(title = "Heatmap", 
                 description = "Computes a heatmap surface over a set of irregular data points as a GridCoverage.")
-   public class HeatmapProcess implements GSProcess {
+   public class HeatmapProcess implements GeoServerProcess {
 
 
 GeoServer instantiates a **single instance** of each rendering transformation class.

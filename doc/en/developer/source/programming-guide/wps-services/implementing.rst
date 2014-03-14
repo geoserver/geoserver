@@ -44,18 +44,18 @@ For this example the project will be called "hello_wps".
        <groupId>org.geoserver</groupId>  
        <artifactId>hello_wps</artifactId>
        <packaging>jar</packaging>
-       <version>2.2-SNAPSHOT</version>
+       <version>2.4-SNAPSHOT</version>
        <name>hello_wps</name>
        <dependencies>
-	<dependency>
-	  <groupId>org.geotools</groupId>
-     	  <artifactId>gt-process</artifactId>
-     	  <version>8-SNAPSHOT</version>
-   	</dependency>
-	<dependency>
+         <dependency>
+           <groupId>org.geotools</groupId>
+           <artifactId>gt-process</artifactId>
+           <version>10-SNAPSHOT</version>
+         </dependency>
+         <dependency>
            <groupId>org.geoserver</groupId>
            <artifactId>main</artifactId>
-           <version>2.2-SNAPSHOT</version>
+           <version>2.4-SNAPSHOT</version>
            <classifier>tests</classifier>
            <scope>test</scope>
          </dependency>
@@ -78,19 +78,19 @@ For this example the project will be called "hello_wps".
            <plugin>
              <artifactId>maven-compiler-plugin</artifactId>
              <configuration>
-               <source>1.5</source>
-               <target>1.5</target>
+               <source>1.6</source>
+               <target>1.6</target>
              </configuration>
           </plugin>
         </plugins>
        </build>
 
        <repositories>
-	 <repository>
-	   <id>opengeo</id>
+         <repository>
+           <id>opengeo</id>
        	   <name>opengeo</name>
        	   <url>http://repo.opengeo.org</url>
-    	 </repository>
+        </repository>
        </repositories>
 
     </project>  
@@ -104,9 +104,8 @@ For this example the project will be called "hello_wps".
      hello_wps/
       + pom.xml
        + src/	
-	 + main/
-	   + java/ 
-
+         + main/
+           + java/ 
 
 
 Create the process class
@@ -114,15 +113,10 @@ Create the process class
 
 #. Create the package that will contain the custom WPS process.
 
-   Package naming plays an important role in creating a WPS process. The rightmost
-   part of the package name is the **namespace** for the WPS process.
-   For this example,
-   create a package named ``org.geoserver.wps.gs`` inside the *src/main/java* directory
-   structure. The namespace for the new WPS process is ``gs``::
-   
-   [hello_wps]% mkdir -p src/main/java/org/geoserver/wps/gs
+   For this example, create a package named ``org.geoserver.hello.wps`` inside the 
+   *src/main/java* directory structure.
 
-
+   [hello_wps]% mkdir -p src/main/java/org/geoserver/hello/wps
 
 #. Create the Java class that implements the custom WPS process.
 
@@ -130,30 +124,29 @@ Create the process class
 
   .. code-block:: java
  
-     package org.geoserver.wps.gs;
+     package org.geoserver.hello.wps;
  
      import org.geotools.process.factory.DescribeParameter;
      import org.geotools.process.factory.DescribeProcess;
      import org.geotools.process.factory.DescribeResult;
-     import org.geotools.process.gs.GSProcess;	
+     import org.geoserver.wps.gs.GeoServerProcess;
      	
      @DescribeProcess(title="helloWPS", description="Hello WPS Sample")
-     public class HelloWPS implements GSProcess {
+     public class HelloWPS implements GeoServerProcess {
   
-	@DescribeResult(name="result", description="output result")
-	public String execute(@DescribeParameter(name="name", description="name to return") String name) {
-	  return "Hello, " + name;
-	}
-  
+        @DescribeResult(name="result", description="output result")
+        public String execute(@DescribeParameter(name="name", description="name to return") String name) {
+             return "Hello, " + name;
+        }
      }
 
 
 Register the process in GeoServer
 ---------------------------------
 
-GeoServer uses the `Spring Framework <http://www.springsource.org/spring-framework/>`_ to manage instantiation of components.  
-This mechanism is used to register the process with GeoServer when it starts, 
-which will make it discoverable via the WPS service interface. 
+GeoServer uses the `Spring Framework <http://www.springsource.org/spring-framework/>`_ to manage 
+instantiation of components. This mechanism is used to register the process with GeoServer when it 
+starts, which will make it discoverable via the WPS service interface. 
 
 #. Create a directory ``src/main/resources`` under the root of the new module::
 
@@ -177,9 +170,11 @@ which will make it discoverable via the WPS service interface.
       <?xml version="1.0" encoding="UTF-8"?>
         <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
         <beans>
-          <bean id="helloWPS" class="org.geoserver.wps.gs.HelloWPS"/>
+          <bean id="helloWPS" class="org.geoserver.hello.wps.HelloWPS"/>
         </beans>
 
+.. note:: A process registered in the GeoServer spring context will be assigned to the "gs" 
+          process namespace.
 
 Build and Deploy
 ----------------
@@ -192,7 +187,7 @@ To build the custom process, run the following command from the root of the proj
 
 This cleans the build area, compiles the code, and creates a JAR file in the ``target`` directory.
 The JAR file name is determined by the name and version given to the project in the ``pom.xml`` file.
-(for this example it is ``hello_wps-2.2-SNAPSHOT.jar``).
+(for this example it is ``hello_wps-2.6-SNAPSHOT.jar``).
 
 
 To deploy the process module, copy this JAR file into the ``/WEB-INF/lib`` directory of GeoServer and then restart the instance.

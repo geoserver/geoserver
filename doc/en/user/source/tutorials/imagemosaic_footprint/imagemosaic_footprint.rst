@@ -23,10 +23,10 @@ Configuration
 Footprint can be configured in three different ways:
 
 1.	By using for each mosaic granule a *Sidecar File*, a Shapefile with the same name of the granule which contains the footprint for it;
-2.  By using a single Shapefile called *footprint.shp* which contains all the footprints for each granule; each footprint is associated to a granule with the **location** attribute;
-3.  By using a file called **footprint.properties** . 
+2.  By using a single Shapefile called *footprints.shp* which contains all the footprints for each granule; each footprint is associated to a granule with the **location** attribute;
+3.  By using a file called **footprints.properties** . 
 
-The last option should be used when the first two are not available and requires to write the following piece of code inside the **footprint.properties** file::
+The last option should be used when the first two are not available and requires to write the following piece of code inside the **footprints.properties** file::
 	
 	footprint_source=*location of the Shapefile*
 	footprint_filter=*filter on the Shapefile searching for the attribute associated to each granule*
@@ -42,7 +42,7 @@ And the associated granules are:
 	* ortho_1-1_1n_s_la103_2010_1.tif
 	* and so on ...
 	
-The associated **footprint.properties** file must be like this::
+The associated **footprints.properties** file must be like this::
 	
 	footprint_source=fakeShapeFile.shp
 	footprint_filter=Name=strSubstring(granule.location, 0, strLength(granule.location) - 4)
@@ -58,7 +58,7 @@ There are three possible behaviours for Footprint:
 The behaviour must be set directly on the Layer configuration page.
 
 Another feature of the *Footprint* is the possibility to calculate an **Inset** of the image. *Inset* is a reduction of the footprint border by a value defined by the user which 
-is typically used for removing the compression artifacts. This feature can be achieved by adding the following code inside **footprint.properties** (in case of the first two configurations this file 
+is typically used for removing the compression artifacts. This feature can be achieved by adding the following code inside **footprints.properties** (in case of the first two configurations this file 
 must be added)::
 
 	footprint_inset=*value in the shapefile u.o.m.*
@@ -67,7 +67,7 @@ must be added)::
 **Full** inset type calculates the inset for each footprint side while **Border** does the same operation but those straight lines that overlap the image bounds are avoided; this last parameter is useful for
 images already cut in a regular grid.
 
-Each modification of the **footprint.properties** file requires to *Reload* GeoServer. This operation can be achieved by going to :guilabel:`Server Status` and cliking on the 
+Each modification of the **footprints.properties** file requires to *Reload* GeoServer. This operation can be achieved by going to :guilabel:`Server Status` and cliking on the 
 :guilabel:`Reload` button on the bottom-right side of the page.
 
 The two datasets used in the tutorial can be downloaded here: `Mosaic with a single image <https://drive.google.com/file/d/0B_H-B1p4qGi6TjBqV196TndhX3c/edit?usp=sharing>`_  which represents Boulder (Colorado), `Mosaic with multiple images <https://drive.google.com/file/d/0B_H-B1p4qGi6QWtTcXE3Y3AwZ1E/edit?usp=sharing>`_ which represents Italy. 
@@ -92,7 +92,7 @@ Step 2: Configuring a new Layer for the Mosaic
 
 Inside the new page the only field which is interesting for this tutorial is *FootprintBehavior*:
 
-	.. figure:: img/footprint_behav.png
+.. figure:: img/footprint_behav.png
 	
 The user can set one of the three values for the Footprint behaviour as described above.
 	
@@ -121,18 +121,18 @@ If an Inset is added, the final mosaic is:
 	.. figure:: img/footprint_cut_inset.png
 	
 	
-The **footprint.properties** file is::
+The **footprints.properties** file is::
 
 	footprint_inset=0.01
 	footprint_inset_type=full
 
-.. note:: Remember that each modification on **footprint.properties** requires a *Reload* of GeoServer for seeing the results.
+.. note:: Remember that each modification on **footprints.properties** requires a *Reload* of GeoServer for seeing the results.
 	
 .. note:: When configuring this mosaic you must set the *declared CRS* field to "EPSG:4326".
 
 
-Footprint configured with *footprint.shp*
-"""""""""""""""""""""""""""""""""""""""""
+Footprint configured with *footprints.shp*
+""""""""""""""""""""""""""""""""""""""""""
 
 This is another example of mosaic without Footprint:
 
@@ -142,16 +142,16 @@ And now after setting **FootprintBehavior** to *Transparent* (no Inset is used) 
 
 	.. figure:: img/footprint_mosaic.png
 	
-Footprint configured with *footprint.properties*
-""""""""""""""""""""""""""""""""""""""""""""""""
+Footprint configured with *footprints.properties*
+"""""""""""""""""""""""""""""""""""""""""""""""""
 
-.. note:: For testing this functionality the user must rename all the *footprint.xxx* files to *mask.xxx*.
+.. note:: For testing this functionality the user must rename all the *footprints.xxx* files to *mask.xxx*.
 
-The result of setting **FootprintBehavior** to *Transparent*, Inset type to *border* and Inset value to 0.3 is:
+The result of setting **FootprintBehavior** to *Transparent*, Inset type to *border* and Inset value to 0.00001 is:
 
 	.. figure:: img/footprint_mosaic_prop.png
 	
-The **footprint.properties** file is::
+The **footprints.properties** file is::
 
 	footprint_source=mask.shp
 	footprint_inset=0.00001

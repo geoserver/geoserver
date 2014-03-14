@@ -47,6 +47,8 @@
           <descriptor>release/ext-netcdf.xml</descriptor>
           <descriptor>release/ext-netcdf-out.xml</descriptor>
           <descriptor>release/ext-colormap.xml</descriptor>
+          <descriptor>release/ext-mbtiles.xml</descriptor>
+          <descriptor>release/ext-geopkg.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -160,6 +162,8 @@
         <module>colormap</module>
         <module>netcdf</module>
         <module>netcdf-out</module>
+        <module>mbtiles</module>
+        <module>geopkg</module>
       </modules>
     </profile>
     <profile>

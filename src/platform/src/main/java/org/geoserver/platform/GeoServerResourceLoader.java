@@ -658,7 +658,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
             // Loop over variable access methods
             for (int j = 0; j < typeStrs.length && dataDirStr == null; j++) {
                 String value = null;
-                String varStr = new String(varStrs[i]);
+                String varStr = varStrs[i];
                 String typeStr = typeStrs[j];
 
                 // Lookup section

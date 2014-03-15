@@ -48,7 +48,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
     /**
      * logger 
      */
-    public static Logger LOGGER = Logging.getLogger( "org.geoserver.platform" );
+    private static final Logger LOGGER = Logging.getLogger( "org.geoserver.platform" );
     
     /**
      * Caches the names of the beans for a particular type, so that the lookup (expensive)

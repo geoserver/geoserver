@@ -51,7 +51,7 @@ public abstract class DataStoreUtils {
     /**
      * logger
      */
-    static Logger LOGGER = Logging.getLogger("org.geoserver.data");
+    private static final Logger LOGGER = Logging.getLogger("org.geoserver.data");
     
     /**
      * Uses the standard datastore factory mechanism, but first manipulates the
@@ -212,7 +212,7 @@ public abstract class DataStoreUtils {
                 }
                 catch( Throwable t ) {
                     String msg = "Error occured processing extension: " + initer.getClass().getName();
-                    GeoServerExtensions.LOGGER.log( Level.WARNING, msg, t );
+                    LOGGER.log( Level.WARNING, msg, t );
                 }
             }
         }

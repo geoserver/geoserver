@@ -5,11 +5,9 @@
 package org.geoserver.catalog.impl;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
+import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.styling.Style;
@@ -26,6 +24,8 @@ public class StyleInfoImpl implements StyleInfo {
     protected Version sldVersion = new Version("1.0.0");
     
     protected String filename;
+    
+    protected LegendInfo legend;
 
     protected transient Catalog catalog;
 
@@ -82,6 +82,14 @@ public class StyleInfoImpl implements StyleInfo {
 
     public Style getStyle() throws IOException {
         return catalog.getResourcePool().getStyle( this );
+    }
+    
+    public LegendInfo getLegend() {
+        return legend;
+    }
+    
+    public void setLegend(LegendInfo legend) {
+        this.legend = legend;
     }
 
     public void accept(CatalogVisitor visitor) {

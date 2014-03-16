@@ -202,21 +202,21 @@ public abstract class DataStoreUtils {
      * extension point.
      *
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     static DataAccessFactory initializeDataStoreFactory( DataAccessFactory factory ) {
-        List initializers = GeoServerExtensions.extensions( DataStoreFactoryInitializer.class );
-        for ( Iterator i = initializers.iterator(); i.hasNext(); ) {
-            DataStoreFactoryInitializer initer = (DataStoreFactoryInitializer) i.next();
+        List<DataStoreFactoryInitializer> initializers = GeoServerExtensions.extensions( DataStoreFactoryInitializer.class );
+        for ( DataStoreFactoryInitializer initer : initializers ) {
             if ( initer.getFactoryClass().isAssignableFrom( factory.getClass() ) ) {
                 try {
                     initer.initialize( factory );
                 }
                 catch( Throwable t ) {
+                    final Logger LOGGER2 = Logging.getLogger( "org.geoserver.platform" );
                     String msg = "Error occured processing extension: " + initer.getClass().getName();
-                    GeoServerExtensions.LOGGER.log( Level.WARNING, msg, t );
+                    LOGGER2.log( Level.WARNING, msg, t );
                 }
             }
-        }
-        
+        }        
         return factory;
     }
     

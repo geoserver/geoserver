@@ -1,9 +1,13 @@
 package org.geoserver.platform.resource;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 
 import org.junit.Before;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.rules.TemporaryFolder;
 
@@ -33,5 +37,16 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
         (new File(c, "FileD")).createNewFile();
         folder.newFolder("DirE");
         store = new FileSystemResourceStore(folder.getRoot());
+    }
+    
+    @Test
+    public void invalid(){
+        try {
+            Resource resource = store.get("foo|");
+            assertNotNull( resource );
+            fail("| invalid");
+        }
+        catch( IllegalArgumentException expected){            
+        }
     }
 }

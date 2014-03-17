@@ -44,14 +44,23 @@ package org.geoserver.platform.resource;
  */
 public interface ResourceStore {
     /**
+     * Empty placeholder for ResourceStore.
+     * <p>
+     * Empty placeholder intended for test cases (used as spring context default when a base directory is not provided).
+     * This implementation prevents client code from requiring null checks on {@link ResourceStore#get(String)}. IllegalStateException
+     * are thrown by in(), out() and file() which are the usual methods clients require error handling.  
+     */
+    public static ResourceStore EMPTY = new NullResourceStore();
+
+    /**
      * Path based resource access.
      * 
      * The returned Resource acts as a handle, and may be UNDEFINED. In general Resources are created
      * in a lazy fashion when used for the first time.
      * 
-     * @param path 
-     * @return Resource at the indicated location
-     * @throws
+     * @param path Path (using unix conventions) of requested resource
+     * @return Resource at the indicated location (null is never returned although Resource may be UNDEFINED).
+     * @throws IllegalArgumentException If path is invalid
      */
     Resource get(String path);
     
@@ -62,7 +71,7 @@ public interface ResourceStore {
      * from being removed <code>false</code> is returned.
      * </p>
      * 
-     * @param path
+     * @param path Path of resource to remove
      * @return <code>false</code> if unable to remove and resource is still present, <code>true</code> if resource is now UNDEFINED.
      */
     boolean remove( String path);

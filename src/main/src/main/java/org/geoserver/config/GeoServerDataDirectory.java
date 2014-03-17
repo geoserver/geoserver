@@ -111,16 +111,15 @@ public class GeoServerDataDirectory implements ResourceStore {
      * @return directory (created if needed)
      */
     public File findOrCreateDir(String... location) throws IOException {
-        String path = Paths.path(location);
-        return get(path).dir();
+        return get(Paths.path(location)).dir();
     }
 
     /**
      * Returns a file under the {@link #root()} directory, if the file does not exist null is returned.
      */
     public File findFile(String... location) throws IOException {
-        String path = Paths.path(location);
-        return Resources.find(get(path));
+        Resource resource = get(Paths.path(location));
+        return Resources.find(resource);
     }
 
     /**
@@ -130,7 +129,8 @@ public class GeoServerDataDirectory implements ResourceStore {
      * </p>
      */
     public File findDataRoot() throws IOException {
-        return Resources.directory(get("data"));
+        Resource directory = get("data");
+        return Resources.directory(directory);
     }
 
     /**
@@ -140,23 +140,24 @@ public class GeoServerDataDirectory implements ResourceStore {
      * </p>
      */
     public File findOrCreateDataRoot() throws IOException {
-        return get("data").dir(); // will create directory as needed
+        Resource directory = get("data");
+        return directory.dir(); // will create directory as needed
     }
 
     /**
      * Returns a directory under the {@link #dataRoot()} directory, if the directory does not exist null will be returned.
      */
     public File findDataDir(String... location) throws IOException {
-        String path = Paths.path("data", Paths.path(location));
-        return Resources.directory(get(path));
+        Resource resource = get(Paths.path("data", Paths.path(location)));
+        return Resources.directory(resource);
     }
 
     /**
      * Returns a directory under the {@link #dataRoot()} directory, if the directory does not exist it will be created.
      */
     public File findOrCreateDataDir(String... location) throws IOException {
-        String path = Paths.path("data", Paths.path(location));
-        return get(path).dir();
+        Resource resource = get(Paths.path("data", Paths.path(location)));
+        return resource.dir();
     }
 
     /**
@@ -168,12 +169,11 @@ public class GeoServerDataDirectory implements ResourceStore {
      * @deprecated Unused
      */
     private File dataDir(boolean create, String... location) throws IOException {
-        String path = Paths.path("data", Paths.path(location));
-        Resource dataDir = get(path);
+        Resource directory = get(Paths.path("data", Paths.path(location)));
         if (create) {
-            return dataDir.dir();
+            return directory.dir();
         } else {
-            return Resources.directory(dataDir);
+            return Resources.directory(directory);
         }
     }
 
@@ -181,8 +181,8 @@ public class GeoServerDataDirectory implements ResourceStore {
      * Returns a file under the {@link #dataRoot()} directory, if the file does not exist null is returned.
      */
     public File findDataFile(String... location) throws IOException {
-        String path = Paths.path("data", Paths.path(location));
-        return Resources.file(get(path));
+        Resource resource = get(Paths.path("data", Paths.path(location)));
+        return Resources.file(resource);
     }
 
     /**
@@ -191,8 +191,8 @@ public class GeoServerDataDirectory implements ResourceStore {
      * @deprecated Unused
      */
     public File findOrResolveDataFile(String... location) throws IOException {
-        String path = Paths.path("data", Paths.path(location));
-        return get(path).file();
+        Resource resource = get(Paths.path("data", Paths.path(location)));
+        return resource.file();
     }
 
     /**
@@ -204,12 +204,11 @@ public class GeoServerDataDirectory implements ResourceStore {
      * @deprecated Unused
      */
     private File dataFile(boolean create, String... location) throws IOException {
-        String path = Paths.path("data", Paths.path(location));
-        Resource dataFile = get(path);
+        Resource resource = get(Paths.path("data", Paths.path(location)));
         if (create) {
-            return dataFile.file();
+            return resource.file();
         } else {
-            return Resources.file(dataFile);
+            return Resources.file(resource);
         }
     }
 
@@ -220,7 +219,8 @@ public class GeoServerDataDirectory implements ResourceStore {
      * </p>
      */
     public File findSecurityRoot() throws IOException {
-        return Resources.directory(get("security"));
+        Resource directory = get("security");
+        return Resources.directory(directory);
     }
 
     /**
@@ -230,7 +230,8 @@ public class GeoServerDataDirectory implements ResourceStore {
      * </p>
      */
     public File findOrCreateSecurityRoot() throws IOException {
-        return get("security").dir(); // will create directory as needed
+        Resource direcrtory = get("security");
+        return direcrtory.dir(); // will create directory as needed
     }
 
     /**
@@ -239,10 +240,11 @@ public class GeoServerDataDirectory implements ResourceStore {
      * @Unused
      */
     private File securityRoot(boolean create) throws IOException {
+        Resource directory = get("security");
         if (create) {
-            return get("security").dir();
+            return directory.dir();
         } else {
-            return Resources.directory(get("security"));
+            return Resources.directory(directory);
         }
     }
 
@@ -250,16 +252,16 @@ public class GeoServerDataDirectory implements ResourceStore {
      * Returns a directory under the {@link #securityRoot()} directory, if the directory does not exist null will be returned.
      */
     public File findSecurityDir(String... location) throws IOException {
-        String path = Paths.path("security", Paths.path(location));
-        return Resources.directory(get(path));
+        Resource resource = get(Paths.path("security", Paths.path(location)));
+        return Resources.directory(resource);
     }
 
     /**
      * Returns a directory under the {@link #securityRoot()} directory, if the directory does not exist it will be created.
      */
     public File findOrCreateSecurityDir(String... location) throws IOException {
-        String path = Paths.path("security", Paths.path(location));
-        return get(path).dir();
+        Resource resource = get(Paths.path("security", Paths.path(location)));
+        return resource.dir();
     }
 
     /**
@@ -267,8 +269,7 @@ public class GeoServerDataDirectory implements ResourceStore {
      */
     @Deprecated
     private File securityDir(boolean create, String... location) throws IOException {
-        String path = Paths.path("security", Paths.path(location));
-        Resource directory = get(path);
+        Resource directory = get(Paths.path("security", Paths.path(location)));
         if (create) {
             return directory.dir(); // will create directory as needed
         } else {
@@ -433,8 +434,8 @@ public class GeoServerDataDirectory implements ResourceStore {
      * Returns the directory in which a stores configuration is persisted, if the directory does not exists null is returned.
      */
     public File findStoreDir(StoreInfo store) throws IOException {
-        Resource resource = get(path(store));
-        return Resources.directory(resource);
+        Resource directory = get(path(store));
+        return Resources.directory(directory);
     }
 
     private String path(StoreInfo store) {
@@ -498,8 +499,7 @@ public class GeoServerDataDirectory implements ResourceStore {
 
     @Deprecated
     private File storeFile(boolean create, StoreInfo store) throws IOException {
-        String path = pathStoreFile(store);
-        Resource resource = get(path);
+        Resource resource = get(pathStoreFile(store));
         if (create) {
             return resource.file();
         } else {
@@ -527,8 +527,7 @@ public class GeoServerDataDirectory implements ResourceStore {
      * </p>
      */
     public void copyToStoreDir(StoreInfo store, File file) throws IOException {
-        String path = path(store);
-        Resource directory = get(path);
+        Resource directory = get(path(store));
         FileUtils.copyFileToDirectory(file, directory.dir());
     }
 
@@ -540,8 +539,7 @@ public class GeoServerDataDirectory implements ResourceStore {
      */
     public void copyToStoreDir(StoreInfo store, InputStream data, String filename)
             throws IOException {
-        String path = path(store);
-        Resource directory = get(path);
+        Resource directory = get(path(store));
         copy(data, directory.dir(), filename);
     }
 
@@ -604,9 +602,8 @@ public class GeoServerDataDirectory implements ResourceStore {
     private String path(ResourceInfo resource) {
         StoreInfo store = resource.getStore();
         WorkspaceInfo workspace = store.getWorkspace();
-        String path = Paths.path("workspaces", workspace.getName(), store.getName(),
+        return Paths.path("workspaces", workspace.getName(), store.getName(),
                 resource.getName());
-        return path;
     }
 
     private String path(ResourceInfo resource, String filename) {

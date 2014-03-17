@@ -85,7 +85,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
      */
     public GeoServerResourceLoader() {
         baseDirectory = null;
-        resources = Resources.EMPTY;
+        resources = ResourceStore.EMPTY;
     }
 
     /**
@@ -215,8 +215,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
             LOGGER.finest("Looking up resource " + location + " with parent " 
                 + (parentFile != null ? parentFile.getPath() : "null"));
         }
-        String path = Paths.convert(getBaseDirectory(), parentFile, location );
-        Resource resource = get( path);
+        Resource resource = get( Paths.convert(getBaseDirectory(), parentFile, location ));
         return Resources.find( resource );
     }
 
@@ -258,8 +257,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
      * @throws IOException Any I/O errors that occur.
      */
     public File find( File parentFile, String... location ) throws IOException {
-        String path = Paths.convert(getBaseDirectory(), parentFile, location);
-        Resource resource = get(path);
+        Resource resource = get(Paths.convert(getBaseDirectory(), parentFile, location));
         return Resources.find(resource);
     }
 
@@ -282,8 +280,8 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
      *  find or create.
      */
     public File findOrCreateDirectory( String... location ) throws IOException {
-        Resource resource = get( Paths.path(location) );        
-        return resource.dir(); // will create directory as needed
+        Resource directory = get( Paths.path(location) );        
+        return directory.dir(); // will create directory as needed
     }
     
     /**
@@ -294,9 +292,8 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
      *  find or create.
      */
     public File findOrCreateDirectory( File parentFile, String... location ) throws IOException {
-        String path = Paths.convert(getBaseDirectory(), parentFile, location);
-        Resource resource = get(path);
-        return resource.dir(); // will create directory as needed
+        Resource directory = get(Paths.convert(getBaseDirectory(), parentFile, location));
+        return directory.dir(); // will create directory as needed
     }
     
     /**
@@ -309,8 +306,8 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
      * @throws IOException If any i/o errors occur.
      */
     public File findOrCreateDirectory( String location ) throws IOException {
-        Resource resource = get( Paths.convert(location) );        
-        return resource.dir(); // will create directory as needed
+        Resource directory = get( Paths.convert(location) );        
+        return directory.dir(); // will create directory as needed
     }
     
     /**
@@ -324,9 +321,8 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
      * @throws IOException If any i/o errors occur.
      */
     public File findOrCreateDirectory( File parentFile, String location ) throws IOException {
-        String path = Paths.convert(getBaseDirectory(),parentFile,location);
-        Resource resource = get( path );
-        return resource.dir(); // will create directory as needed
+        Resource directory = get( Paths.convert(getBaseDirectory(),parentFile,location) );
+        return directory.dir(); // will create directory as needed
     }
     
     /**
@@ -336,9 +332,8 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
      * </p>
      */
     public File createDirectory(String... location) throws IOException {
-        Resource resource = get( Paths.path(location) );
-        return Resources.createNewDirectory(resource);
-        //return createDirectory(null,location);
+        Resource directory = get( Paths.path(location) );
+        return Resources.createNewDirectory(directory);
     }
     
     /**
@@ -351,10 +346,8 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
      * @return newly created directory
      */
     public File createDirectory(File parentFile, String... location) throws IOException {
-        String path = Paths.convert(getBaseDirectory(), parentFile, location);
-        Resource resource = get(path);
-        return Resources.createNewDirectory(resource);
-        //return createDirectory(parentFile,concat(location));
+        Resource directory = get(Paths.convert(getBaseDirectory(), parentFile, location));
+        return Resources.createNewDirectory(directory);
     }
     
     /**
@@ -374,8 +367,8 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
      * @throws IOException
      */
     public File createDirectory(String location) throws IOException {
-        Resource resource = get( Paths.convert(location) );
-        return Resources.createNewDirectory(resource);
+        Resource directory = get( Paths.convert(location) );
+        return Resources.createNewDirectory(directory);
     }
     
     /**
@@ -396,9 +389,8 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
      * @throws IOException
      */
     public File createDirectory(File parentFile, String location) throws IOException {
-        String path = Paths.convert(getBaseDirectory(), parentFile, location);
-        Resource resource = get(path);
-        return Resources.createNewDirectory(resource);
+        Resource directory = get(Paths.convert(getBaseDirectory(), parentFile, location));
+        return Resources.createNewDirectory(directory);
     }
 
     /**
@@ -447,8 +439,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
      * @throws IOException In the event of an I/O error.
      */
     public File createFile(File parentFile, String... location) throws IOException{
-        String path = Paths.convert(getBaseDirectory(), parentFile, location );
-        Resource resource = get( path);
+        Resource resource = get( Paths.convert(getBaseDirectory(), parentFile, location ));
         return Resources.createNewFile(resource);
     }
     
@@ -470,8 +461,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
      * @throws IOException In the event of an I/O error.
      */
     public File createFile(File parentFile, String location) throws IOException{
-        String path = Paths.convert(getBaseDirectory(), parentFile, location );
-        Resource resource = get( path);
+        Resource resource = get( Paths.convert(getBaseDirectory(), parentFile, location ));
         return Resources.createNewFile(resource);
     }
     
@@ -484,11 +474,11 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
       </p>
      * 
      * @param resource The resource to copy.
-     * @param to The destination to copy to.
+     * @param location The destination to copy to.
      */
-    public void copyFromClassPath( String resource, String to ) throws IOException {
-        Resource res = get(Paths.convert(to));
-        copyFromClassPath( resource, res.file() );
+    public void copyFromClassPath( String classpathResource, String location ) throws IOException {
+        Resource resource = get(Paths.convert(location));
+        copyFromClassPath( classpathResource, resource.file() );
     }
     
     /**

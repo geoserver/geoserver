@@ -28,20 +28,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.LinkedHashMap;
 import java.util.Properties;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.StringTokenizer;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -60,15 +56,13 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
-import org.geoserver.filters.GeoServerFilter;
 import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.auth.AuthenticationCache;
-import org.geoserver.security.auth.AuthenticationCacheImpl;
 import org.geoserver.security.auth.GeoServerRootAuthenticationProvider;
 import org.geoserver.security.auth.LRUAuthenticationCacheImpl;
 import org.geoserver.security.auth.UsernamePasswordAuthenticationProvider;
@@ -81,7 +75,6 @@ import org.geoserver.security.config.ExceptionTranslationFilterConfig;
 import org.geoserver.security.config.FileBasedSecurityServiceConfig;
 import org.geoserver.security.config.J2eeAuthenticationBaseFilterConfig;
 import org.geoserver.security.config.J2eeAuthenticationBaseFilterConfig.J2EERoleSource;
-import org.geoserver.security.config.J2eeAuthenticationFilterConfig;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource;
 import org.geoserver.security.config.RoleFilterConfig;
@@ -104,8 +97,6 @@ import org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfi
 import org.geoserver.security.file.FileWatcher;
 import org.geoserver.security.file.RoleFileWatcher;
 import org.geoserver.security.file.UserGroupFileWatcher;
-import org.geoserver.security.filter.GeoServerJ2eeAuthenticationFilter;
-import org.geoserver.security.filter.GeoServerPreAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerAnonymousAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerBasicAuthenticationFilter;
 import org.geoserver.security.filter.GeoServerExceptionTranslationFilter;
@@ -147,7 +138,6 @@ import org.geoserver.security.validation.SecurityConfigValidator;
 import org.geoserver.security.xml.XMLConstants;
 import org.geoserver.security.xml.XMLRoleService;
 import org.geoserver.security.xml.XMLRoleServiceConfig;
-import org.geoserver.security.xml.XMLRoleStore;
 import org.geoserver.security.xml.XMLUserGroupService;
 import org.geoserver.security.xml.XMLUserGroupServiceConfig;
 import org.geotools.util.logging.Logging;
@@ -158,7 +148,6 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
-import org.springframework.security.authentication.AnonymousAuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.RememberMeAuthenticationProvider;
@@ -170,9 +159,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.memory.UserAttribute;
 import org.springframework.security.core.userdetails.memory.UserAttributeEditor;
 import org.springframework.security.web.authentication.RememberMeServices;
-import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.util.StringUtils;
-import org.vfny.geoserver.crs.GeoserverGridShiftLocator;
 
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
@@ -190,7 +177,7 @@ import com.thoughtworks.xstream.mapper.Mapper;
  *
  */
 public class GeoServerSecurityManager extends ProviderManager implements ApplicationContextAware, 
-    ApplicationListener {
+    ApplicationListener, ResourceStore {
 
     static Logger LOGGER = Logging.getLogger("org.geoserver.security");
 
@@ -287,7 +274,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
          * catalog since we need to decrypt configuration the passwords, the rest of the security 
          * initializes occurs at the end of startup  
          */
-        Resource masterpw = secuirtyRoot().get( MASTER_PASSWD_CONFIG_FILENAME);        
+        Resource masterpw = security().get( MASTER_PASSWD_CONFIG_FILENAME);        
         if (masterpw.getType() == Type.RESOURCE) {
             init(loadMasterPasswordConfig());
         }
@@ -655,131 +642,144 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         return initialized;
     }
     
+    @Override
+    public Resource get(String path) {
+        return dataDir.get(path);
+    }
+
+    @Override
+    public boolean remove(String path) {
+        return dataDir.remove(path);
+    }
+
+    @Override
+    public boolean move(String path, String target) {
+        return dataDir.move(path, target);
+    }
+
     /**
      * Security configuration root directory.
      */
-    public Resource secuirtyRoot(){
-        return dataDir.get("security");
+    public Resource security() {
+        return get("security");
     }
     
     /**
      * Security configuration root directory.
+     * 
      * @deprecated Use {@link #secuirtyRoot()}
      */
     public File getSecurityRoot() throws IOException {
-        return dataDir.get("security").dir(); 
+        Resource directory = get("security");
+        return directory.dir();
     }
 
     /**
      * Role configuration root directory.
      */
-    public Resource roleRoot(){
-        String path = Paths.path("security", "role");
-        return dataDir.get(path);
+    public Resource role() {
+        return get("security/role");
     }
+
     /**
      * Role configuration root directory.
-     * @deprecated Use {@link #roleRoot()}
+     * 
+     * @deprecated Use {@link #role()}
      */
     public File getRoleRoot() throws IOException {
-        String path = Paths.path("security", "role");
-        return dataDir.get(path).dir(); 
+        Resource directory = get("security/role");
+        return directory.dir();
     }
+
     /**
      * Role configuration root directory.
-     * @deprecated Use {@link #roleRoot()}
+     * 
+     * @deprecated Use {@link #role()}
      */
     public File getRoleRoot(boolean create) throws IOException {
-        String path = Paths.path("security", "role" );
-        if( create ) { 
-            return dataDir.get(path).dir();
-        }
-        else {
-            return Resources.directory(dataDir.get(path));
+        Resource directory = get("security/role");
+        if (create) {
+            return directory.dir();
+        } else {
+            return Resources.directory(directory);
         }
     }
 
     /**
      * Password policy configuration root directory
      */
-    public Resource passwordPolicyRoot(){
-        String path = Paths.path("security", "pwpolicy");
-        return dataDir.get(path);
+    public Resource passwordPolicy(){
+        return get("security/pwpolicy");
     }
     /**
      * Password policy configuration root directory
-     * @deprecated Use {@link #passwordPolicyRoot()}
+     * @deprecated Use {@link #passwordPolicy()}
      */
     public File getPasswordPolicyRoot() throws IOException {
-        String path = Paths.path("security", "pwpolicy");
-        return dataDir.get(path).dir();
+        return get("security/pwpolicy").dir();
     }
 
     /**
      * User/group configuration root directory.
      */
-    public Resource userGroupRoot() throws IOException {
-        String path = Paths.path("security", "usergroup");
-        return dataDir.get(path);
+    public Resource userGroup() throws IOException {
+        return get("security/usergroup");
     }
 
     /**
      * User/group configuration root directory.
-     * @deprecated Use {@link #userGroupRoot()}
+     * @deprecated Use {@link #userGroup()}
      */
     public File getUserGroupRoot() throws IOException {
-        String path = Paths.path("security", "usergroup");
-        return dataDir.get(path).dir();
+        Resource directory = get("security/usergroup");
+        return directory.dir();
     }
 
     /**
      * Authentication configuration root directory.
      */
-    public Resource authRoot() throws IOException {
-        String path = Paths.path("security", "auth");
-        return dataDir.get(path);
+    public Resource auth() throws IOException {
+        return get("security/auth");
     }
     
     /**
      * Authentication configuration root directory.
-     * @deprecated use {@link #authRoot()}
+     * @deprecated use {@link #auth()}
      */
     public File getAuthRoot() throws IOException {
-        String path = Paths.path("security", "auth");
-        return dataDir.get(path).dir();
+        Resource directory = get("security/auth");
+        return directory.dir();
     }
 
     /**
      * Authentication filter root directory.
      */
-    public File filterRoot() throws IOException {
-        String path = Paths.path("security","filter");
-        return dataDir.get(path).dir();
+    public Resource filterRoot() throws IOException {
+        return get("security/filter");
     }
     
     /**
      * Authentication filter root directory.
-     * @deprecated Use {@link #authRoot()}
+     * @deprecated Use {@link #auth()}
      */
     public File getFilterRoot() throws IOException {
-        String path = Paths.path("security","filter");
-        return dataDir.get(path).dir();
+        Resource directory = get("security/filter");
+        return directory.dir();
     }
 
     /**
      * Master password provider root
      */
-    public Resource masterPasswordProviderRoot() throws IOException {
-        String path = Paths.path("security", "masterpw");
-        return dataDir.get(path);
+    public Resource masterPasswordProvider() throws IOException {
+        return get("security/masterpw");
     }
     /**
      * Master password provider root
-     * @deprecated Use {@link #masterPasswordProviderRoot()}
+     * @deprecated Use {@link #masterPasswordProvider()}
      */
     public File getMasterPasswordProviderRoot() throws IOException {
-        String path = Paths.path("security", "masterpw");
-        return dataDir.get(path).dir();
+        Resource resource = get("security/masterpw");
+        return resource.dir();
     }
 
     /**
@@ -2642,7 +2642,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
      * loads the master password config
      */
     public MasterPasswordConfig loadMasterPasswordConfig() throws IOException {
-        Resource resource = secuirtyRoot().get(MASTER_PASSWD_CONFIG_FILENAME);
+        Resource resource = security().get(MASTER_PASSWD_CONFIG_FILENAME);
         return loadConfig( MasterPasswordConfig.class, resource, globalPersister() );
     }
     

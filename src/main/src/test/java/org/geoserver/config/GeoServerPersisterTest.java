@@ -646,9 +646,16 @@ public class GeoServerPersisterTest extends GeoServerSystemTestSupport {
         assertTrue( f.exists() );
     }
     
+    private File file( File base, String unixPath ){
+        File file = base;
+        for( String item : unixPath.split("/")){
+           file = new File( file, item ); 
+        }
+        return file;
+    }
     @Test
     public void testAddLayerGroupWithWorkspace() throws Exception {
-        File f = new File( testData.getDataDirectoryRoot(), "workspaces/acme/layergroups/foolayergroup.xml");
+        File f = file( testData.getDataDirectoryRoot(), "workspaces/acme/layergroups/foolayergroup.xml");
         assertFalse( f.exists() );
 
         testAddLayer();
@@ -700,22 +707,27 @@ public class GeoServerPersisterTest extends GeoServerSystemTestSupport {
         catalog.save(lg);
         
         assertFalse(f.exists());
-        assertTrue(new File( testData.getDataDirectoryRoot(), 
-            "workspaces/acme/layergroups/lg.xml").exists());
+        
+        String path = testData.getDataDirectoryRoot().getAbsolutePath();
+        assertTrue("data directory "+path,testData.getDataDirectoryRoot().exists());
+        File file = new File( testData.getDataDirectoryRoot(), 
+            "workspaces/acme/layergroups/lg.xml");
+        assertTrue(file.getPath(),file.exists());
     }
 
     @Test
     public void testRemoveLayerGroup() throws Exception {
         testAddLayerGroup();
         
-        File f = new File( testData.getDataDirectoryRoot(), 
+        File dataDirectoryRoot = testData.getDataDirectoryRoot();
+        File f = new File( dataDirectoryRoot, 
             "layergroups/lg.xml");
         assertTrue( f.exists() );
         
         LayerGroupInfo lg = catalog.getLayerGroupByName( "lg" );
         catalog.remove( lg );
         
-        assertFalse( f.exists() );
+        assertFalse( "removed lg",f.exists() );
     }
 
     @Test

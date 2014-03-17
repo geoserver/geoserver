@@ -17,8 +17,10 @@ import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.wcs2_0.GetCoverage;
 import org.geoserver.wcs2_0.WCSTestSupport;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
@@ -61,7 +63,9 @@ public class GetCoverageTest extends WCSTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         testData.addRasterLayer(WATTEMP, "watertemp.zip", null, null, SystemTestData.class, getCatalog());
-        File data = getDataDirectory().findDataDir("watertemp");
+        GeoServerDataDirectory dataDirectory = getDataDirectory();
+        Resource watertemp = dataDirectory.getResourceLoader().get("watertemp");
+        File data = watertemp.dir();
         FilenameFilter groundElevationFilter = new FilenameFilter() {
 			
 			@Override

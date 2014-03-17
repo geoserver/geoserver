@@ -7,14 +7,18 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
  
 <beans>
-
-    <!--  
+	<!--  
         resources
      -->
-    <bean id="resourceLoader" class="org.geoserver.platform.GeoServerResourceLoader"/>
+    <bean id="resourceStore" class="org.geoserver.platform.resource.DataDirectoryResourceStore"/>
+    <bean id="resourceLoader" class="org.geoserver.platform.GeoServerResourceLoader">
+	    <constructor-arg ref="resourceStore"/>
+    </bean>
+    
     <bean id="dataDirectory" class="org.geoserver.config.GeoServerDataDirectory">
        <constructor-arg ref="resourceLoader"/>
     </bean>
+    
     <bean id="manifestLoader" class="org.geoserver.ManifestLoader">
        <constructor-arg ref="resourceLoader"/>
     </bean>

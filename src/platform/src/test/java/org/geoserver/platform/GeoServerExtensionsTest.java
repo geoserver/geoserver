@@ -20,9 +20,11 @@ import static org.easymock.EasyMock.verify;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 
+import org.geotools.util.logging.Logging;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -200,13 +202,14 @@ public class GeoServerExtensionsTest {
         GeoServerExtensions gse = new GeoServerExtensions();
 
         gse.setApplicationContext(null);
-        Level level = GeoServerExtensions.LOGGER.getLevel();
+        Logger LOGGER = Logging.getLogger( "org.geoserver.platform" );
+        Level level = LOGGER.getLevel();
         try {
-            GeoServerExtensions.LOGGER.setLevel( Level.SEVERE );
+            LOGGER.setLevel( Level.SEVERE );
             assertNull(GeoServerExtensions.bean("beanName"));
         }
         finally {
-            GeoServerExtensions.LOGGER.setLevel( level );
+            LOGGER.setLevel( level );
         }
 
         gse.setApplicationContext(appContext);

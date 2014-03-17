@@ -7,6 +7,7 @@ package org.geoserver.platform.resource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -17,12 +18,50 @@ import java.util.List;
  * Implementation of ResourceStore backed by the file system.
  */
 public class FileSystemResourceStore implements ResourceStore {
+    
+    /** LockProvider used to secure resources for exclusive access */
+    protected LockProvider lockProvider = new NullLockProvider();
+    
+    /** Base directory for ResourceStore content */
+    protected File baseDirectory = null;
 
-    protected File baseDirectory;
-
-    protected FileSystemResourceStore() {
+    protected FileSystemResourceStore(){
+        // Used by Spring, baseDirectory set by subclass
     }
-
+    
+    /**
+     * LockProvider used during {@link Resource#out()}.
+     * 
+     * Client code that insists on using {@link Resource#file()} can do us using:
+     * <pre><code>
+     * Resource resource = resoures.get( "example.txt" );
+     * Lock lock = resources.getLockProvider().acquire( resource.path() );
+     * try {
+     *    File file = resoruce.file();
+     *    .. 
+     * }
+     * finally {
+     *    lock.release();
+     * }
+     * </code></pre>
+     * 
+     * @return LockProvider used for {@link Resource#out}
+     */    
+    public LockProvider getLockProvider() {
+        return lockProvider;
+    }
+    
+    /**
+     * Configure LockProvider used during {@link Resource#out()}.
+     * 
+     * @param lockProvider LockProvider used for Resource#out()    
+     */
+    public void setLockProvider(LockProvider lockProvider) {
+        this.lockProvider = lockProvider;
+    }
+    
+    
+    
     public FileSystemResourceStore(File resourceDirectory) {
         if (resourceDirectory == null) {
             throw new NullPointerException("root resource directory required");
@@ -45,14 +84,6 @@ public class FileSystemResourceStore implements ResourceStore {
         }
     }
 
-    private static File file(File file, String path) {
-        for (String item : Paths.names(path)) {
-            file = new File(file, item);
-        }
-
-        return file;
-    }
-
     @Override
     public Resource get(String path) {
         path = Paths.valid(path);
@@ -63,7 +94,7 @@ public class FileSystemResourceStore implements ResourceStore {
     public boolean remove(String path) {
         path = Paths.valid(path);
 
-        File file = FileSystemResourceStore.file(baseDirectory, path);
+        File file = Paths.toFile(baseDirectory, path);
 
         return Files.delete(file);
     }
@@ -73,8 +104,8 @@ public class FileSystemResourceStore implements ResourceStore {
         path = Paths.valid(path);
         target = Paths.valid(target);
 
-        File file = FileSystemResourceStore.file(baseDirectory, path);
-        File dest = FileSystemResourceStore.file(baseDirectory, target);
+        File file = Paths.toFile(baseDirectory, path);
+        File dest = Paths.toFile(baseDirectory, target);
 
         if (!file.exists() && !dest.exists()) {
             return true; // moving an undefined resource
@@ -104,7 +135,7 @@ public class FileSystemResourceStore implements ResourceStore {
 
         public FileSystemResource(String path) {
             this.path = path;
-            this.file = FileSystemResourceStore.file(baseDirectory, path);
+            this.file = Paths.toFile(baseDirectory, path);
         }
 
         @Override
@@ -118,26 +149,82 @@ public class FileSystemResourceStore implements ResourceStore {
         }
 
         @Override
+        public Lock lock() {
+            return lockProvider.acquire(path);
+        }
+        
+        @Override
         public InputStream in() {
             File actualFile = file();
             if (!actualFile.exists()) {
                 throw new IllegalStateException("File not found " + actualFile);
             }
+            final Lock lock = lock();
             try {
-                return new FileInputStream(file);
+                return new FileInputStream(file) {
+                    @Override
+                    public void close() throws IOException {
+                        super.close();
+                        lock.release();
+                    }
+                };
             } catch (FileNotFoundException e) {
+                lock.release();
                 throw new IllegalStateException("File not found " + actualFile, e);
             }
         }
 
         @Override
         public OutputStream out() {
-            File actualFile = file();
+            final File actualFile = file();
             if (!actualFile.exists()) {
                 throw new IllegalStateException("Cannot access " + actualFile);
             }
             try {
-                return Files.out(actualFile);
+                // first save to a temp file
+                final File temp = new File(actualFile.getParentFile(), actualFile.getName() + ".tmp");
+                
+                if (temp.exists()) {
+                    temp.delete();
+                }
+                // OutputStream wrapper used to write to a temporary file
+                // (and only lock during move to actualFile)
+                return new OutputStream() {
+                    FileOutputStream delegate = new FileOutputStream(temp);
+                
+                    @Override
+                    public void close() throws IOException {
+                        delegate.close();
+                        Lock lock = lock();
+                        try {
+                            // no errors, overwrite the original file
+                            Files.move(temp, actualFile);
+                        }
+                        finally {
+                            lock.release();
+                        }
+                    }
+                
+                    @Override
+                    public void write(byte[] b, int off, int len) throws IOException {
+                        delegate.write(b, off, len);
+                    }
+                
+                    @Override
+                    public void flush() throws IOException {
+                        delegate.flush();
+                    }
+                
+                    @Override
+                    public void write(byte[] b) throws IOException {
+                        delegate.write(b);
+                    }
+                
+                    @Override
+                    public void write(int b) throws IOException {
+                        delegate.write(b);
+                    }
+                };
             } catch (FileNotFoundException e) {
                 throw new IllegalStateException("Cannot access " + actualFile, e);
             }
@@ -156,7 +243,14 @@ public class FileSystemResourceStore implements ResourceStore {
                         }
                     }
                     if (parent.isDirectory()) {
-                        boolean created = file.createNewFile();
+                        Lock lock = lock();
+                        boolean created;
+                        try {
+                            created = file.createNewFile();
+                        }
+                        finally {
+                            lock.release();
+                        }
                         if (!created) {
                             throw new FileNotFoundException("Unable to create "
                                     + file.getAbsolutePath());
@@ -189,7 +283,14 @@ public class FileSystemResourceStore implements ResourceStore {
                         }
                     }
                     if (parent.isDirectory()) {
-                        boolean created = file.mkdir();
+                        Lock lock = lock();
+                        boolean created;
+                        try {
+                            created = file.mkdir();
+                        }
+                        finally {
+                            lock.release();
+                        }
                         if (!created) {
                             throw new FileNotFoundException("Unable to create "
                                     + file.getAbsolutePath());

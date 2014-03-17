@@ -16,8 +16,8 @@ package org.geoserver.platform.resource;
  */
 public class NullLockProvider implements LockProvider {
 
-    public Lock acquire(final String lockKey) {
-        return new Lock() {
+    public Resource.Lock acquire(final String lockKey) {
+        return new Resource.Lock() {
             public void release() {
                 // nothing to do
             }

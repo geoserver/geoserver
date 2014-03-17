@@ -23,7 +23,7 @@ public class GeoServerLockProvider implements org.geowebcache.locks.LockProvider
     @Override
     public Lock getLock(String lockKey) throws GeoWebCacheException {
         String path = Paths.convert(lockKey);
-        final org.geoserver.platform.resource.LockProvider.Lock lock = delegate.acquire(path);
+        final org.geoserver.platform.resource.Resource.Lock lock = delegate.acquire(path);
         return new Lock() {
 
             @Override

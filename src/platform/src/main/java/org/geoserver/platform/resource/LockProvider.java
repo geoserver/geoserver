@@ -28,18 +28,6 @@ public interface LockProvider {
      * 
      * @param path Resource path used as lock key
      */
-    public Lock acquire(String path);
-
-    /**
-     * Token used to reserve resource for use.
-     */
-    public interface Lock {
-        /**
-         * Releases the lock on the specified key
-         * 
-         * @param lockKey
-         */
-        public void release();
-    }
+    public Resource.Lock acquire(String path);
 
 }

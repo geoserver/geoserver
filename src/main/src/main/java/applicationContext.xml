@@ -10,7 +10,10 @@
 	<!--  
         resources
      -->
-    <bean id="resourceStore" class="org.geoserver.platform.resource.DataDirectoryResourceStore"/>
+    <bean id="lockProvider" class="org.geoserver.platform.resource.MemoryLockProvider"/>
+    <bean id="resourceStore" class="org.geoserver.platform.resource.DataDirectoryResourceStore">
+      <property name="lockProvider" ref="lockProvider"/>
+    </bean>
     <bean id="resourceLoader" class="org.geoserver.platform.GeoServerResourceLoader">
 	    <constructor-arg ref="resourceStore"/>
     </bean>

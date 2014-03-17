@@ -32,10 +32,10 @@ public class MemoryLockProvider implements LockProvider {
         }
     }
 
-    public Lock acquire(String lockKey) {
+    public Resource.Lock acquire(String lockKey) {
         final int idx = getIndex(lockKey);
         locks[idx].lock();
-        return new Lock() {
+        return new Resource.Lock() {
 
             boolean released = false;
 

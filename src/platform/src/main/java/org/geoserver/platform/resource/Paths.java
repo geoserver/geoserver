@@ -173,41 +173,6 @@ public class Paths {
     static final Set<String> INVALID = new HashSet<String>(
             Arrays.asList(new String[] { "..", "." }));
 
-    /**
-     * Path construction relative to directory.
-     * 
-     * @param directory Directory Path
-     * @param path items
-     * @return path
-     */
-    // public static String relative( String directory, String... path ){
-    // ArrayList<String> names = new ArrayList<String>();
-    // if( directory != null ){
-    // names.addAll( names(directory));
-    // }
-    // if( path != null ){
-    // for( String item : path ){
-    // names.addAll( names( item ) );
-    // }
-    // }
-    // ArrayList<String> resolvedPath = new ArrayList<String>( names.size());
-    // for( String item : names ){
-    // if( item == null ) continue;
-    // if( item.equals(".")) continue;
-    // if( item.equals("..")){
-    // if( !resolvedPath.isEmpty() ){
-    // resolvedPath.remove( resolvedPath.size()-1);
-    // continue;
-    // }
-    // else {
-    // throw new IllegalStateException("Path location "+item+" outside of "+directory);
-    // }
-    // }
-    // resolvedPath.add(item);
-    // }
-    // return toPath( resolvedPath );
-    // }
-
     public static List<String> names(String path) {
         if (path == null || path.length() == 0) {
             return Collections.emptyList();
@@ -401,6 +366,23 @@ public class Paths {
             resolvedPath.add(item);
         }
         return toPath(resolvedPath);
+    }
+
+    /**
+     * Convert a Resource path to file reference for provided base directory.
+     * <p>
+     * This method requires the base directory of the ResourceStore.
+     * Note ResourceStore implementations may not create the file until needed.
+     * 
+     * @param base Base directory, often GeoServer Data Directory
+     * @param path Resource path reference
+     * @return File reference
+     */
+    public static File toFile( File base, String path ){
+        for( String item : Paths.names(path) ){
+            base = new File( base, item );           
+        }        
+        return base;
     }
 
 }

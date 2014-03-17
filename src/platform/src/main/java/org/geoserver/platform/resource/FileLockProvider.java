@@ -45,10 +45,10 @@ public class FileLockProvider implements LockProvider {
         this.root = basePath;
     }
 
-    public LockProvider.Lock acquire(final String lockKey) {
+    public Resource.Lock acquire(final String lockKey) {
         // first off, synchronize among threads in the same jvm (the nio locks won't lock 
         // threads in the same JVM)
-        final LockProvider.Lock memoryLock = memoryProvider.acquire(lockKey);
+        final Resource.Lock memoryLock = memoryProvider.acquire(lockKey);
         
         // then synch up between different processes
         final File file = getFile(lockKey);
@@ -100,7 +100,7 @@ public class FileLockProvider implements LockProvider {
                 currFos = null;
                 currLock = null;
                 
-                return new LockProvider.Lock() {
+                return new Resource.Lock() {
                     
                     boolean released;
 

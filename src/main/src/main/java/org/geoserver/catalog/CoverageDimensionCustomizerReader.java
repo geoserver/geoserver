@@ -57,7 +57,7 @@ import org.opengis.util.InternationalString;
  */
 public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
 
-    final static String lineSeparator = System.getProperty("line.separator", "\n");
+    final static String LINE_SEPARATOR = System.getProperty("line.separator", "\n");
 
     private CoverageInfo info;
 
@@ -379,7 +379,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
                     + ", the only valid value is: " + this.coverageName);
         }
     }
-    
+
     /**
      * Wraps a GridCoverage by overriding its sampleDimensions and properties 
      */
@@ -546,10 +546,10 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
                 StringBuilder builder = new StringBuilder(Classes.getShortClassName(this));
                 builder.append('(');
                 builder = formatRange(builder, null);
-                builder.append(')').append(lineSeparator);
+                builder.append(')').append(LINE_SEPARATOR);
                 for (final Category category : customCategories) {
                     builder.append("  ").append(/*category == main ? '\u2023' : */' ').append(' ')
-                          .append(category).append(lineSeparator);
+                          .append(category).append(LINE_SEPARATOR);
                 }
                 return builder.toString();
             } else {
@@ -577,18 +577,21 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
 
         public WrappedSampleDimension(GridSampleDimension sampleDim, CoverageDimensionInfo info) {
             super(sampleDim);
-            this.configuredDescription = sampleDim.getDescription();
             this.name = info.getName();
+            final InternationalString sampleDimDescription = sampleDim.getDescription();
+            this.configuredDescription = (sampleDimDescription == null || !sampleDimDescription.toString()
+                    .equalsIgnoreCase(name)) ? 
+                    new SimpleInternationalString(name) : sampleDimDescription;
             this.sampleDim = sampleDim;
-            List<Category> categories = sampleDim.getCategories();
+            final List<Category> categories = sampleDim.getCategories();
             this.configuredRange = info.getRange();
             this.customCategories = categories;
 
             // custom null values 
-            List<Double> nullValues = info.getNullValues();
+            final List<Double> nullValues = info.getNullValues();
             if (nullValues != null) {
                 final int size = nullValues.size();
-                configuredNoDataValues = new double[] {size};
+                configuredNoDataValues = new double[size];
                 for (int i = 0; i < size ; i++) {
                     configuredNoDataValues[i] = nullValues.get(i);
                 }

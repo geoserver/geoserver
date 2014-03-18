@@ -3,12 +3,16 @@ package org.geoserver.wcs2_0.kvp;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.xml.namespace.QName;
 
 import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.impl.CoverageDimensionImpl;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wcs2_0.WCSTestSupport;
@@ -74,7 +78,26 @@ public class DescribeCoverageTest extends WCSTestSupport {
         assertXpathEvaluatesTo("rain", "//wcs:CoverageDescription/gmlcov:rangeType//swe:DataRecord/swe:field/@name", dom);
         assertXpathEvaluatesTo("mm", "//wcs:CoverageDescription/gmlcov:rangeType/swe:DataRecord/swe:field/swe:Quantity/swe:uom/@code", dom);
     }
-    
+
+    @Test
+    public void testCustomNullValue() throws Exception {
+        CoverageInfo ciRain = getCatalog().getCoverageByName(getLayerId(RAIN));
+        CoverageDimensionImpl dimension = (CoverageDimensionImpl) ciRain.getDimensions().get(0);
+        List<Double> nullValues = new ArrayList<Double>();
+        nullValues.add(-999.9);
+        dimension.setNullValues(nullValues);
+        getCatalog().save(ciRain);
+
+        Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=sf__rain");
+        assertNotNull(dom);
+        // print(dom, System.out);
+
+        checkValidationErrors(dom, WCS20_SCHEMA);
+        assertXpathEvaluatesTo("1", "count(//wcs:CoverageDescription/gmlcov:rangeType/swe:DataRecord/swe:field)", dom);
+        assertXpathEvaluatesTo("rain", "//wcs:CoverageDescription/gmlcov:rangeType//swe:DataRecord/swe:field/@name", dom);
+        assertXpathEvaluatesTo("-999.9", "//wcs:CoverageDescription/gmlcov:rangeType/swe:DataRecord/swe:field/swe:Quantity/swe:nilValues/swe:NilValues/swe:nilValue", dom);
+    }
+
     @Test
     public void testMultiBandKVP() throws Exception {
         Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=wcs__multiband");

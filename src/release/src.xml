@@ -28,7 +28,7 @@
     <include>org.geoserver:gs-release</include>
    </includes>
    <sources>
-    <outputDirectory>geoserver-2.5-SNAPSHOT/${artifactId}/</outputDirectory>
+    <outputDirectory>geoserver-2.5/${artifactId}/</outputDirectory>
     <excludes>
       <exclude>target</exclude>
       <exclude>**/target</exclude>
@@ -39,7 +39,7 @@
  <fileSets>
   <fileSet>
    <directory>.</directory>
-   <outputDirectory>geoserver-2.5-SNAPSHOT/</outputDirectory>
+   <outputDirectory>geoserver-2.5/</outputDirectory>
    <includes>
     <include>pom.xml</include>
    </includes>
@@ -55,7 +55,7 @@
   </fileSet>
   <fileSet>
    <directory>target</directory>
-   <outputDirectory>geoserver-2.5-SNAPSHOT</outputDirectory>
+   <outputDirectory>geoserver-2.5</outputDirectory>
    <includes>
     <include>VERSION.txt</include>
    </includes>

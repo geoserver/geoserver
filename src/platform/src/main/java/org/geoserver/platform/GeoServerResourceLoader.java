@@ -609,15 +609,15 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
                 msgPrefix = "Found " + typeStr + varStr + " set to " + value;
 
                 if (!fh.exists()) {
-                    LOGGER.fine(msgPrefix + " , but this path does not exist");
+                    LOGGER.warning(msgPrefix + " , but this path does not exist");
                     continue;
                 }
                 if (!fh.isDirectory()) {
-                    LOGGER.fine(msgPrefix + " , which is not a directory");
+                    LOGGER.warning(msgPrefix + " , which is not a directory");
                     continue;
                 }
                 if (!fh.canWrite()) {
-                    LOGGER.fine(msgPrefix + " , which is not writeable");
+                    LOGGER.warning(msgPrefix + " , which is not writeable");
                     continue;
                 }
 
@@ -627,8 +627,10 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
         }
         
         // fall back to embedded data dir
-        if(dataDirStr == null)
+        if(dataDirStr == null) {
             dataDirStr = servContext.getRealPath("/data");
+            LOGGER.info("Falling back to embedded data directory: " + dataDirStr);
+        }
         
         return dataDirStr;
     }

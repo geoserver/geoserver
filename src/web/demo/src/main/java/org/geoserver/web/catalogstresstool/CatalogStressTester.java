@@ -337,8 +337,8 @@ public class CatalogStressTester extends GeoServerSecuredPage {
 
         final Class<? extends CatalogInfo> clazz = interfaceOf(original);
 
-        Stopwatch globalTime = new Stopwatch();
-        Stopwatch sw = new Stopwatch();
+        Stopwatch globalTime = Stopwatch.createUnstarted();
+        Stopwatch sw = Stopwatch.createUnstarted();
         sw.start();
         final int padLength = (int) Math.ceil(Math.log10(numCopies));
         for (int curr = 0; curr < numCopies; curr++) {

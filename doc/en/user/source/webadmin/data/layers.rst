@@ -166,6 +166,37 @@ The list will be used only for the capabilities document generation, but will no
 * *native-sorting* — Uses the default sorting algorithm of the backend where the data is hosted. It is faster than external-sorting, but will only work with PostGIS datastores.
 * *random* — Uses the existing order of the data and does not sort
 
+Edit Dimensions
+---------------
+Geoserver supports adding dimensions to WMS layers, as specified in WMS 1.1.1 and WMS 1.3.0 standards. Enabling dimension for a layer allows users to specify the combination of dimensions to be used for creating a 2D map or animation from the underlying multi-dimensional data. There are two pre-defined dimensions in the WMS standards mentioned above, TIME and ELEVATION. These dimensions can be enabled and configured on the "Dimensions" tab. Depending on the Geoserver configuration other so called custom dimensions may also be configurable on this tab.
+
+.. figure:: ../images/data_layers_dimension_editor_time.png
+   :align: center
+   
+   *TIME dimension enabled for a WMS layer*
+
+For each enabled dimension the following configuration options are available:
+
+**Attribute**—Attribute name for picking the value for this dimension (vector only). This is treated at start of the range if *End attribute* is also given.
+
+**End attribute**—Attribute name for picking the end of the value range for this dimension (optional, vector only).
+
+**Presentation**—The presentation type for the available values in the capabilities document. Either each value separately (list), interval and resolution, or continuous interval.
+
+**Default value**—Default value to use for this dimension if none is provided with the request. Select one of from four strategies:
+
+* **smallest domain value** uses the smallest available value from the data,
+* **biggest domain value** uses the biggest available value from the data,
+* **nearest to the reference value** selects the data value closest to the given reference value, and
+* **reference value** tries to use the given reference value as-is, regardless of whether its actually available in the data or not.
+
+**Reference value**—The default value specifier. Only shown for the default value strategies where it's used.
+
+* For time dimension the value must be either an ISO 8601 DateTime in format ``yyyy-MM-ddThh:mm:ss.SSSZ``, or a special value "current" evaluated as the current system time of the server at the time of each request.
+* For elevation dimension, the value must be and integer of floating point number.
+
+It's also possible to let Geoserver decide the default value strategy based on the dimension: For time dimension the default is *nearest* with reference value "current", and for elevation the *smallest domain value* strategy is used by default. 
+
 Add or Delete a Layer
 ---------------------     
 At the upper left-hand corner of the layers view page there are two buttons for the adding and deletion of layers. The green plus button allows you to add a new layer, referred to as resource. The red minus button allows you to remove selected layers. 

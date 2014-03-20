@@ -21,6 +21,7 @@ public class DataDirectoryResourceStore extends FileSystemResourceStore implemen
         ServletContextAware {
 
     public DataDirectoryResourceStore() {
+        // base directory obtained from servlet context
     }
 
     @Override

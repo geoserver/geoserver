@@ -16,6 +16,7 @@ import java.util.List;
  */
 final class NullResourceStore implements ResourceStore {
     final long MODIFIED = System.currentTimeMillis();
+    final LockProvider locks = new NullLockProvider();
 
     @Override
     public Resource get(final String resourcePath) {
@@ -37,6 +38,11 @@ final class NullResourceStore implements ResourceStore {
                 throw new IllegalStateException("Unable to read from ResourceStore.EMPTY");
             }
 
+            @Override
+            public Lock lock() {
+                return locks.acquire(path);
+            }
+            
             @Override
             public OutputStream out() {
                 throw new IllegalStateException("Unable to write to ResourceStore.EMPTY");

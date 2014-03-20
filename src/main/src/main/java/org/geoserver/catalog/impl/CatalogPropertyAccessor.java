@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.Predicates;
@@ -24,6 +26,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.ows.util.OwsUtils;
 import org.geotools.filter.expression.PropertyAccessor;
 import org.geotools.util.Converters;
+import org.geotools.util.logging.Logging;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
@@ -44,6 +47,8 @@ import com.google.common.io.Closeables;
  */
 public class CatalogPropertyAccessor implements PropertyAccessor {
 
+    private static final Logger LOGGER = Logging.getLogger(CatalogPropertyAccessor.class);
+    
     @Override
     public boolean canHandle(Object object, String xpath, Class<?> target) {
         return object instanceof Info;
@@ -260,7 +265,12 @@ public class CatalogPropertyAccessor implements PropertyAccessor {
         } catch (IOException e) {
             throw Throwables.propagate(e);
         } finally {
-            Closeables.closeQuietly(stream);
+            try {
+                Closeables.close(stream, false);
+            } catch (IOException e) {
+                LOGGER.log(Level.FINE, "Ignoring exception thrown while closing " + resource
+                        + " in CatalogPropertyAccessor", e);
+            }
         }
         Map<String, String> map = Maps.fromProperties(properties);
         for (Map.Entry<String, String> e : map.entrySet()) {

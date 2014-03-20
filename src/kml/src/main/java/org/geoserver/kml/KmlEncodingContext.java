@@ -20,6 +20,7 @@ import org.geoserver.kml.sequence.CompositeList;
 import org.geoserver.kml.utils.LookAtOptions;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
@@ -39,6 +40,9 @@ import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
+import com.vividsolutions.jts.geom.Envelope;
 
 import de.micromata.opengis.kml.v_2_2_0.Document;
 import de.micromata.opengis.kml.v_2_2_0.Feature;
@@ -542,5 +546,35 @@ public class KmlEncodingContext {
     }
 
     
+
+	public Envelope getRequestBoxWGS84() {
+		try {
+			Envelope env = request.getBbox();
+			ReferencedEnvelope re;
+			if(env instanceof ReferencedEnvelope) {
+				re = (ReferencedEnvelope) env;
+				if(re.getCoordinateReferenceSystem() == null) {
+					re = new ReferencedEnvelope(re, DefaultGeographicCRS.WGS84);
+				}
+			} else {
+				if(request.getCrs() != null) {
+					re = new ReferencedEnvelope(env, request.getCrs());
+				} else if(request.getSRS() != null) {
+					CoordinateReferenceSystem crs = CRS.decode(request.getSRS());
+					re = new ReferencedEnvelope(env, crs);
+				} else {
+					re = new ReferencedEnvelope(env, DefaultGeographicCRS.WGS84);
+				}
+			}
+			
+			if(!CRS.equalsIgnoreMetadata(re.getCoordinateReferenceSystem(), DefaultGeographicCRS.WGS84)) {
+				return re.transform(DefaultGeographicCRS.WGS84, true);
+			} else {
+				return re;
+			}
+		} catch(Exception e) {
+			throw new ServiceException("Requested bounding box " + request.getBbox() + " could not be tranformed to WGS84", e);
+		}
+	}
 
 }

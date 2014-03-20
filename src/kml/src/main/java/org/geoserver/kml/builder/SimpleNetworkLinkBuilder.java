@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.decorator.LookAtDecoratorFactory;
 import org.geoserver.kml.utils.LookAtOptions;
@@ -17,6 +19,8 @@ import org.geoserver.wms.WMSRequests;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
+
+import com.vividsolutions.jts.geom.Envelope;
 
 import de.micromata.opengis.kml.v_2_2_0.Document;
 import de.micromata.opengis.kml.v_2_2_0.Link;
@@ -69,18 +73,20 @@ public class SimpleNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
             nl.setOpen(true);
 
             // look at for this layer
-            ReferencedEnvelope latLongBoundingBox = layerBounds.get(i);
-            if (latLongBoundingBox != null) {
-                LookAt la = lookAtFactory.buildLookAt(latLongBoundingBox, lookAtOptions, false);
+            Envelope requestBox = context.getRequestBoxWGS84();
+            
+            if (requestBox != null) {
+                LookAt la = lookAtFactory.buildLookAt(requestBox, lookAtOptions, false);
                 nl.setAbstractView(la);
             }
 
             // set bbox to null so its not included in the request, google
             // earth will append it for us
-            request.setBbox(null);
+            GetMapRequest requestCopy = (GetMapRequest) request.clone();
+            requestCopy.setBbox(null);
 
             String style = i < styles.size() ? styles.get(i).getName() : null;
-            String href = WMSRequests.getGetMapUrl(request, layers.get(i).getName(), i, style,
+            String href = WMSRequests.getGetMapUrl(requestCopy, layers.get(i).getName(), i, style,
                     null, null);
             try {
                 // WMSRequests.getGetMapUrl returns a URL encoded query string, but GoogleEarth

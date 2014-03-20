@@ -8,13 +8,14 @@ import java.io.File;
 import java.io.Reader;
 import java.io.StringReader;
 
-import org.eel.kitchen.jsonschema.main.JsonSchema;
-import org.eel.kitchen.jsonschema.main.JsonSchemaFactory;
-import org.eel.kitchen.jsonschema.ref.SchemaContainer;
-import org.eel.kitchen.jsonschema.report.ValidationReport;
-import org.eel.kitchen.jsonschema.util.JsonLoader;
-
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.fge.jsonschema.cfg.LoadingConfiguration;
+import com.github.fge.jsonschema.exceptions.ProcessingException;
+import com.github.fge.jsonschema.main.JsonSchema;
+import com.github.fge.jsonschema.main.JsonSchemaFactory;
+import com.github.fge.jsonschema.report.ProcessingMessage;
+import com.github.fge.jsonschema.report.ProcessingReport;
+import com.github.fge.jsonschema.util.JsonLoader;
 
 /**
  * 
@@ -25,16 +26,17 @@ public class JSONValidator {
 
     public static boolean isValidSchema(String json, File schemaFile) {
         boolean isValid = false;
-        ValidationReport report = null;
         final String baseURI = "file:///" + schemaFile.getAbsolutePath();
         
         JsonSchema schema;
         try {
-            JsonSchemaFactory factory = new JsonSchemaFactory.Builder().setNamespace(baseURI)
-                    .build();
+            JsonSchemaFactory factory = JsonSchemaFactory
+                    .newBuilder()
+                    .setLoadingConfiguration(
+                            LoadingConfiguration.newBuilder().setNamespace(baseURI).freeze())
+                    .freeze();
             JsonNode rawSchema = JsonLoader.fromFile(schemaFile);
-            SchemaContainer schemaContainer = factory.registerSchema(rawSchema);
-            schema = factory.createSchema(schemaContainer);
+            schema = factory.getJsonSchema(rawSchema);
         } catch (Exception e) {
             throw new RuntimeException("Failed to load JSON Schema from " + baseURI, e);
         }
@@ -47,11 +49,18 @@ public class JSONValidator {
             throw new RuntimeException("Couldn't load (" + json + ") as JSON", e);
         }
 
-        report = schema.validate(jsonNode);
+        ProcessingReport report;
+        try {
+            report = schema.validate(jsonNode);
+        } catch (ProcessingException e) {
+            e.printStackTrace();
+            return false;
+        }
+
         isValid = report.isSuccess();
         if (!isValid) {
             System.out.println("ERROR validating Json Schema in " + schemaFile);
-            for (String msg : report.getMessages()) {
+            for (ProcessingMessage msg : report) {
                 System.out.println(msg);
             }
         }

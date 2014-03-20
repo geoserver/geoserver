@@ -1,9 +1,10 @@
-GeoServer 2.5+ H2 Data Store Extension
+GeoServer 2.6+ H2 Data Store Extension
 ======================================
 
 This package contains a H2 DataStore implementation that is
 distributed as a separate plug-in.
 
+For more information http://docs.geoserver.org/latest/en/user/data/database/h2.html
 
 Installation
 ------------

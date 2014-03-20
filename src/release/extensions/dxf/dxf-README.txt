@@ -1,4 +1,6 @@
-DXFOutputFormat WFS Output and WPS PPIO for GeoServer 2.5.x
+DXFOutputFormat WFS Output and WPS PPIO for GeoServer 2.6.x
+
+For more information http://docs.geoserver.org/latest/en/user/extensions/dxf/index.html
 
 INSTALLATION
 ---------------------------

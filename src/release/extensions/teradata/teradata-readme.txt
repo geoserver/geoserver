@@ -1,4 +1,4 @@
-GeoServer 2.5+ Teradata Extension
+GeoServer 2.6+ Teradata Extension
 ---------------------------------
 
 This package contains a Teradata DataStore implementation that is 
@@ -19,4 +19,3 @@ Installation
      https://downloads.teradata.com/download/connectivity/jdbc-driver
 
 3. Restart GeoServer.
-

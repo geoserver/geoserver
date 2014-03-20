@@ -32,7 +32,7 @@ import com.vividsolutions.jts.geom.Envelope;
  * @author Simone Giannecchini
  * @version $Id$
  */
-public class GetMapRequest extends WMSRequest {
+public class GetMapRequest extends WMSRequest implements Cloneable {
 
     static final Color DEFAULT_BG = Color.white;
 
@@ -548,7 +548,7 @@ public class GetMapRequest extends WMSRequest {
         this.optionalParams.angle = rotation;
     }
 
-    private class MandatoryParameters {
+    private class MandatoryParameters implements Cloneable {
         /** ordered list of requested layers */
         List<MapLayerInfo> layers = Collections.emptyList();
 
@@ -565,9 +565,15 @@ public class GetMapRequest extends WMSRequest {
         int height;
 
         String format;
+        
+        @Override
+        public Object clone() throws CloneNotSupportedException {
+        	return super.clone();
+        } 
+
     }
 
-    private class OptionalParameters {
+    private class OptionalParameters implements Cloneable {
     	
         /**
          * Tells us whether or not we should loop forever in an ani,mated gif
@@ -671,6 +677,13 @@ public class GetMapRequest extends WMSRequest {
 
         /** map rotation */
         double angle;
+        
+        @Override
+        public Object clone() throws CloneNotSupportedException {
+        	return super.clone();
+        	
+        } 
+
     }
 
     /**
@@ -720,4 +733,17 @@ public class GetMapRequest extends WMSRequest {
         }
         httpRequestHeaders.put(headerName, value);
     }
+    
+    @Override
+    public Object clone() {
+    	try {
+			GetMapRequest copy = (GetMapRequest) super.clone();
+			copy.mandatoryParams = (MandatoryParameters) mandatoryParams.clone();
+			copy.optionalParams = (OptionalParameters) optionalParams.clone();
+			
+			return copy;
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException("Unexpected, could not clone GetMapRequest", e);
+		}
+    } 
 }

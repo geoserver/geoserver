@@ -60,4 +60,8 @@ public class MemoryLockProvider implements LockProvider {
         return idx;
     }
 
+    @Override
+    public String toString() {
+        return "MemoryLockProvider";
+    }
 }

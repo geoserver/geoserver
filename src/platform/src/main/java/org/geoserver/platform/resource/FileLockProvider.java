@@ -15,17 +15,21 @@ import java.io.IOException;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
 
+import javax.servlet.ServletContext;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.springframework.web.context.ServletContextAware;
 
 /**
  * A lock provider based on file system locks
  * 
  * @author Andrea Aime - GeoSolutions
  */
-public class FileLockProvider implements LockProvider {
+public class FileLockProvider implements LockProvider, ServletContextAware {
     
     public static Log LOGGER = LogFactory.getLog(FileLockProvider.class);
 
@@ -41,6 +45,10 @@ public class FileLockProvider implements LockProvider {
 
     MemoryLockProvider memoryProvider = new MemoryLockProvider();
 
+    public FileLockProvider() {
+        // base directory obtained from servletContext
+    }
+    
     public FileLockProvider(File basePath) {
         this.root = basePath;
     }
@@ -164,4 +172,18 @@ public class FileLockProvider implements LockProvider {
         return new File(locks, sha1 + ".lock");
     }
     
+    @Override
+    public void setServletContext(ServletContext servletContext) {
+        String data = GeoServerResourceLoader.lookupGeoServerDataDirectory(servletContext);
+        if (data != null) {
+            root = new File(data);
+        } else {
+            throw new IllegalStateException("Unable to determine data directory");
+        }
+    }
+    
+    @Override
+    public String toString() {
+        return "FileLockProvider "+root;
+    }
 }

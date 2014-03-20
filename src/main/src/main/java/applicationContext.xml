@@ -7,10 +7,16 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
  
 <beans>
-	<!--  
-        resources
-     -->
-    <bean id="lockProvider" class="org.geoserver.platform.resource.MemoryLockProvider"/>
+    <!--  lock providers -->
+    <bean id="nullLockProvider" class="org.geoserver.platform.resource.NullLockProvider"/>
+    <bean id="memoryLockProvider" class="org.geoserver.platform.resource.MemoryLockProvider"/>
+    <bean id="fileLockProvider" class="org.geoserver.platform.resource.FileLockProvider"/>
+    <bean id="lockProvider" class="org.geoserver.platform.resource.GlobalLockProvider">
+        <property name="delegate" ref="nullLockProvider"/>
+    </bean>
+    <bean id="lockProviderInitializer" class="org.geoserver.config.LockProviderInitializer"/>
+    
+	<!-- resources -->
     <bean id="resourceStore" class="org.geoserver.platform.resource.DataDirectoryResourceStore">
       <property name="lockProvider" ref="lockProvider"/>
     </bean>

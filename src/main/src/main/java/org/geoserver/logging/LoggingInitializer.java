@@ -19,7 +19,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 /**
- * Initializes GeoServer logging funcionality based on configuration settings.
+ * Initializes GeoServer logging functionality based on configuration settings.
  * 
  * @author Justin Deoliveira, The Open Planning Project
  *

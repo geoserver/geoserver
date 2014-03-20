@@ -16,8 +16,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.management.RuntimeErrorException;
-
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.KvpParser;
 import org.geoserver.ows.URLMangler.URLType;
@@ -347,6 +345,15 @@ public class WMSRequests {
             } else if (req.getRawKvp().get("featureid") != null) {
                 // semantics of feature id slightly different, replicate entire value
                 params.put("featureid", req.getRawKvp().get("featureid"));
+            }
+            // Jira: #GEOS-6411: adding time and elevation support in case of a timeserie layer
+            if (req.getRawKvp().get("time") != null) {
+              // semantics of feature id slightly different, replicate entire value
+              params.put("time", req.getRawKvp().get("time"));
+            } 
+            if (req.getRawKvp().get("elevation") != null) {
+              // semantics of feature id slightly different, replicate entire value
+              params.put("elevation", req.getRawKvp().get("elevation"));
             }
 
         } else {

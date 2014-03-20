@@ -43,6 +43,18 @@ public interface Resource {
     }
 
     /**
+     * Token used to reserve resource for use.
+     */
+    public interface Lock {
+        /**
+         * Releases the lock on the specified key
+         * 
+         * @param lockKey
+         */
+        public void release();
+    }
+
+    /**
      * Resource path used by {@link ResourceStore.get}.
      * 
      * @return resource path
@@ -56,6 +68,13 @@ public interface Resource {
      */
     String name();
 
+    /**
+     * Acquires an exclusive lock on resource content.
+     * 
+     * @return an exlusive lock
+     */
+    Lock lock();
+    
     /**
      * Steam access to resource contents.
      * 

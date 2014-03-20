@@ -26,10 +26,10 @@ public final class Files {
     
     private static final Logger LOGGER = Logging.getLogger(Files.class);
    
-    private Files(){
+    private Files() {
         // utility class do not subclass
     }
-    
+
     /**
      * Safe buffered output stream to temp file, output stream close used to renmae file into place.
      * 

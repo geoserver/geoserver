@@ -18,7 +18,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -32,6 +34,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -672,5 +675,46 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         getGeoServer().reload();
         // grab the config, make sure it was saved as expected
         assertEquals(100, GWC.get().getConfig().getGutter());
+    }
+    
+    @Test
+    public void testRenameWorkspace() throws Exception {
+        String wsName = MockData.CITE_PREFIX;
+        String wsRenamed = MockData.CITE_PREFIX + "Renamed";
+        Catalog catalog = getCatalog();
+        WorkspaceInfo ws = catalog.getWorkspaceByName(wsName);
+        
+        try {
+            // collect all the layer names that are in the CITE workspace
+            List<String> layerNames = new ArrayList<String>();
+            for (LayerInfo layer : catalog.getLayers()) {
+                if(wsName.equals(layer.getResource().getStore().getWorkspace().getName())) {
+                    String prefixedName = layer.prefixedName();
+                    try {
+                        // filter out geometryless layers and other stuff that cannot be hanlded by GWC
+                        GWC.get().getTileLayerByName(prefixedName);
+                        layerNames.add(layer.getName());
+                    } catch(IllegalArgumentException e) {
+                        // fine, we are skipping layers that cannot be handled
+                    }
+                }
+            }
+            
+            // rename the workspace
+            
+            ws.setName(wsRenamed);
+            catalog.save(ws);
+            
+            // check all the preview layers have been renamed too
+            for (String name : layerNames) {
+                String prefixedName = wsRenamed + ":" + name; 
+                GWC.get().getTileLayerByName(prefixedName);
+            }
+        } finally {
+            if(wsRenamed.equals(ws.getName())) {
+                ws.setName(wsName);
+                catalog.save(ws);
+            }
+        }
     }
 }

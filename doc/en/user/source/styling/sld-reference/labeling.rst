@@ -582,9 +582,8 @@ If this option is used the ``graphic-margin`` option may also be specified.
      
 .. cssclass:: no-border
 
-   =============================================  ================================================
-   .. figure:: img/label_graphic-resize_none.png  .. figure:: img/label_graphic-resize_stretch.png
-   =============================================  ================================================
+   .. figure:: img/label_graphic-resize_none.png  
+   .. figure:: img/label_graphic-resize_stretch.png
   
 *Labeling with a Graphic Mark "square" - L) at native size; R) with "graphic-resize"=stretch and "graphic-margin"=3* 
      

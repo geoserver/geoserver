@@ -594,8 +594,6 @@ public class KMLReflectorTest extends WMSTestSupport {
                 + "&styles=polygon&mode=download" +
                 "&format_options=lookatbbox:-20,-20,20,20;altitude:10;heading:0;tilt:30;range:100;altitudemode:absolute";
         Document doc = getAsDOM(requestUrl);
-        
-        
         // print(doc);
 
         // overlay location
@@ -606,8 +604,6 @@ public class KMLReflectorTest extends WMSTestSupport {
         XMLAssert.assertXpathEvaluatesTo("30.0", "//kml:Document/kml:LookAt/kml:tilt", doc);
         XMLAssert.assertXpathEvaluatesTo("100.0", "//kml:Document/kml:LookAt/kml:range", doc);
         XMLAssert.assertXpathEvaluatesTo("absolute", "//kml:Document/kml:LookAt/kml:altitudeMode", doc);
-        
-        XMLAssert.assertXpathValuesNotEqual("/kml/Document/LookAt/altitude","/kml/Document/Folder/LookAt/altitude", doc);
     }
     
     @Test
@@ -966,5 +962,4 @@ public class KMLReflectorTest extends WMSTestSupport {
         // we expect that those values should not be the same, because first value is obtained from initial bbox of the layer, while the second value from the bbox of the request
         XMLAssert.assertXpathValuesNotEqual("//kml:Document/kml:LookAt/kml:altitude","//kml:Document/kml:NetworkLink/kml:LookAt/kml:altitude", doc);
     }
-    
 }

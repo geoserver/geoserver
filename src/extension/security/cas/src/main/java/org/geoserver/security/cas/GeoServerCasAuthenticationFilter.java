@@ -80,7 +80,7 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
         
         casLogoutURL=GeoServerCasConstants.createCasURl(authConfig.getCasServerUrlPrefix(), GeoServerCasConstants.LOGOUT_URI);
         if (StringUtils.hasLength(authConfig.getUrlInCasLogoutPage()))
-                casLogoutURL+=GeoServerCasConstants.LOGOUT_URL_PARAM+"="+URLEncoder.encode(authConfig.getUrlInCasLogoutPage(),"utf-8");
+                casLogoutURL+="?"+GeoServerCasConstants.LOGOUT_URL_PARAM+"="+URLEncoder.encode(authConfig.getUrlInCasLogoutPage(),"utf-8");
                 
         singleSignOut=authConfig.isSingleSignOut();
         aep = new GeoServerCasAuthenticationEntryPoint(authConfig);
@@ -107,7 +107,15 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
     }
     
     protected static String retrieveService(HttpServletRequest request) {
-        StringBuffer buff  = new StringBuffer(request.getRequestURL().toString());
+        String serviceBaseUrl = null;
+        String proxyBaseUrl = request.getSession(true).getServletContext().getInitParameter("PROXY_BASE_URL");
+        if (StringUtils.hasLength(proxyBaseUrl)) {
+            serviceBaseUrl = proxyBaseUrl;
+        } else {
+            serviceBaseUrl = request.getRequestURL().toString();
+        }
+        StringBuffer buff  = new StringBuffer(serviceBaseUrl);
+
         if (StringUtils.hasLength(request.getQueryString())) {
             String query = request.getQueryString();
             String[] params = query.split("&");

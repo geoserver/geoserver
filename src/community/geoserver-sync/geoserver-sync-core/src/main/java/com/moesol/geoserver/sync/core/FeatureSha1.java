@@ -36,10 +36,13 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.opengis.feature.ComplexAttribute;
 import org.opengis.feature.Feature;
@@ -110,36 +113,28 @@ public class FeatureSha1 {
 	}
 
 	void sha1Properties(Collection<Property> properties) {
-//		List<Property> sortedProperties = new ArrayList<Property>(properties.size());
-//		for (Property p : properties) {
-//			sortedProperties.add(p);
-//		}
-//		
-//		Collections.sort(sortedProperties, new Comparator<Property>() {
-//			@Override
-//			public int compare(Property o1, Property o2) {
-//				int r = o1.getName().getLocalPart().compareTo(o2.getName().getLocalPart());
-//				if (r != 0) {
-//					return r;
-//				}
-//				String ns1 = o1.getName().getNamespaceURI();
-//				String ns2 = o2.getName().getNamespaceURI();
-//				if (ns1 == null) {
-//					return ns2 == null ? 0 : -1;
-//				}
-//				return ns1.compareTo(ns2);
-//			}
-//		});
-//		
-//		for (Property p : sortedProperties) {
-//			if (p instanceof ComplexAttribute) {
-//				ComplexAttribute complex = (ComplexAttribute) p;
-//				sha1Properties(complex.getProperties());
-//			} else {
-//				sha1Property(p);
-//			}
-//		}
+		List<Property> sortedProperties = new ArrayList<Property>(properties.size());
 		for (Property p : properties) {
+			sortedProperties.add(p);
+		}
+		
+		Collections.sort(sortedProperties, new Comparator<Property>() {
+			@Override
+			public int compare(Property o1, Property o2) {
+				int r = o1.getName().getLocalPart().compareTo(o2.getName().getLocalPart());
+				if (r != 0) {
+					return r;
+				}
+				String ns1 = o1.getName().getNamespaceURI();
+				String ns2 = o2.getName().getNamespaceURI();
+				if (ns1 == null) {
+					return ns2 == null ? 0 : -1;
+				}
+				return ns1.compareTo(ns2);
+			}
+		});
+		
+		for (Property p : sortedProperties) {
 			if (p instanceof ComplexAttribute) {
 				ComplexAttribute complex = (ComplexAttribute) p;
 				sha1Properties(complex.getProperties());
@@ -186,7 +181,10 @@ public class FeatureSha1 {
 		}
 		if (value instanceof Calendar) {
 			Calendar cal = (Calendar) value;
-			value = cal.getTime(); // Make sure we use UTC
+			value = cal.getTime().getTime(); // Make sure we use UTC
+		}
+		if (value instanceof XMLGregorianCalendar) {
+			value = ((XMLGregorianCalendar) value).toGregorianCalendar().getTime().getTime();
 		}
 		if (value instanceof Date) {
 			Date date = (Date) value;
@@ -203,10 +201,12 @@ public class FeatureSha1 {
 	}
 
 	private boolean shouldSha1Property(Property p) {
-		if (m_attributesToInclude.contains(p.getName().toString())) {
+		String localName = p.getName().getLocalPart();
+
+		if (m_attributesToInclude.contains(localName)) {
 			return true;
 		}
-		if (m_attributesToInclude.contains("-" + p.getName().toString())) {
+		if (m_attributesToInclude.contains("-" + localName)) {
 			return false;
 		}
 		if (m_attributesToInclude.contains("-all")) { // deprecated
@@ -215,7 +215,7 @@ public class FeatureSha1 {
 		if (m_attributesToInclude.contains("*")) {
 			return true;
 		}
-		LOGGER.log(Level.FINER, "Skipping: {0}", p.getName());
+		LOGGER.log(Level.FINER, "Skipping: {0}", localName);
 		return false;
 	}
 

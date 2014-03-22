@@ -51,14 +51,14 @@
         </dependency>
         <dependency>
             <groupId>org.geoserver</groupId>
-            <artifactId>wfs</artifactId>
+            <artifactId>gs-wfs</artifactId>
             <classifier>tests</classifier>
             <scope>test</scope>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.geoserver</groupId>
-            <artifactId>main</artifactId>
+            <artifactId>gs-main</artifactId>
             <classifier>tests</classifier>
             <scope>test</scope>
             <version>${project.version}</version>

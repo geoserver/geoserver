@@ -24,12 +24,14 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -54,9 +56,13 @@ import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.util.xml.SimpleNamespaceContext;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -962,4 +968,78 @@ public class KMLReflectorTest extends WMSTestSupport {
         // we expect that those values should not be the same, because first value is obtained from initial bbox of the layer, while the second value from the bbox of the request
         XMLAssert.assertXpathValuesNotEqual("//kml:Document/kml:LookAt/kml:altitude","//kml:Document/kml:NetworkLink/kml:LookAt/kml:altitude", doc);
     }
+    
+    @Test
+    /**
+     * Jira: #GEOS-6411
+     * <p>Method testWMSTimeRequest tests if the time parameter of the request is also passed to the KML WMS request.</p>
+     * @throws Exception
+     */
+    public void testWMSTimeRequest() throws Exception {
+        String layerId = getLayerId(MockData.BASIC_POLYGONS);
+        String expectedTS = "time=2014-03-01";
+        final String requestUrl = "wms/kml?layers=" + layerId + "&styles=polygon&mode=refresh&bbox=10.56,46.99,11.50,47.26&" + expectedTS ;
+        Document doc = getAsDOM(requestUrl);
+        // we expect that those values should not be the same, because first value is obtained from initial bbox of the layer, while the second value from the bbox of the request
+        
+        NodeList nodes = doc.getElementsByTagName("href");
+        for (int i = 0; i < nodes.getLength(); ++i) {
+          Element e = (Element) nodes.item(i);
+          String actualTS = e.getTextContent();
+          Assert.assertTrue("Time parameter missing", actualTS.contains(expectedTS));
+        }
+    }
+    
+    @Test
+    /**
+     * Jira: #GEOS-6411
+     * <p>Method testWMSElevationRequest tests if the elevation parameter of the request is also passed to the KML WMS request.</p>
+     * @throws Exception
+     */
+    public void testWMSElevationRequest() throws Exception {
+        String layerId = getLayerId(MockData.BASIC_POLYGONS);
+        String expectedTS = "elevation=500";
+        final String requestUrl = "wms/kml?layers=" + layerId + "&styles=polygon&mode=refresh&bbox=10.56,46.99,11.50,47.26&" + expectedTS ;
+        Document doc = getAsDOM(requestUrl);
+        // we expect that those values should not be the same, because first value is obtained from initial bbox of the layer, while the second value from the bbox of the request
+        
+        NodeList nodes = doc.getElementsByTagName("href");
+        for (int i = 0; i < nodes.getLength(); ++i) {
+          Element e = (Element) nodes.item(i);
+          String actualTS = e.getTextContent();
+          Assert.assertTrue("Elevation parameter missing", actualTS.contains(expectedTS));
+        }
+    }
+    
+    private static boolean skipNL;
+    
+    private static String printXML(Node rootNode, String tab) {
+      String print = "";
+      if(rootNode.getNodeType()==Node.ELEMENT_NODE) {
+          print += "\n"+tab+"<"+rootNode.getNodeName()+">";
+      }
+      NodeList nl = rootNode.getChildNodes();
+      if(nl.getLength()>0) {
+          for (int i = 0; i < nl.getLength(); i++) {
+              print += printXML(nl.item(i), tab+"  ");    // \t
+          }
+      } else {
+          if(rootNode.getNodeValue()!=null) {
+              print = rootNode.getNodeValue();
+          }
+          skipNL = true;
+      }
+      if(rootNode.getNodeType()==Node.ELEMENT_NODE) {
+          if(!skipNL) {
+              print += "\n"+tab;
+          }
+          skipNL = false;
+          print += "</"+rootNode.getNodeName()+">";
+      }
+      return(print);
+  }
+    
+    
+    
+    
 }

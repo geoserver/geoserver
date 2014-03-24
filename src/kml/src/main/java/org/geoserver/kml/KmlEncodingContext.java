@@ -6,9 +6,12 @@ package org.geoserver.kml;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.kml.decorator.KmlDecoratorFactory;
@@ -22,6 +25,8 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.featureinfo.FeatureTemplate;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
@@ -31,6 +36,7 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
 import org.geotools.util.Converters;
+import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
@@ -45,6 +51,8 @@ import de.micromata.opengis.kml.v_2_2_0.Folder;
  * @author Andrea Aime - GeoSolutions
  */
 public class KmlEncodingContext {
+    
+    static final Logger LOGGER = Logging.getLogger(KmlEncodingContext.class);
     
     protected boolean kmz;
 
@@ -89,6 +97,12 @@ public class KmlEncodingContext {
     protected int layerIndex;
     
     protected String mode;
+    
+    /**
+     * Holds the feature iterators that have been opened, but not yet closed, to make sure
+     * they get disposed at the end of the encoding even in case of exceptions during the encoding
+     */
+    protected IdentityHashMap<FeatureIterator, FeatureIterator> iterators = new IdentityHashMap<FeatureIterator, FeatureIterator>();
 
     public final static ReferencedEnvelope WORLD_BOUNDS_WGS84 = new ReferencedEnvelope(-180, 180, -90, 90, DefaultGeographicCRS.WGS84);
     protected boolean liveIcons;
@@ -496,5 +510,37 @@ public class KmlEncodingContext {
     public String getMode() {
         return mode;
     }
+    
+    public FeatureIterator openIterator(FeatureCollection fc) {
+        FeatureIterator fi = fc.features();
+        iterators.put(fi, fi);
+        return fi;
+    }
+    
+    public void closeIterator(FeatureIterator fi) {
+        try {
+            fi.close();
+        } catch(Exception e) {
+            LOGGER.log(Level.FINE, "An exception occurred while closing a feature iterator "
+                    + "during the cleanup phases of the KML encoding", e);
+        } finally {
+            iterators.remove(fi);
+        }
+    }
+
+    public void closeIterators() {
+        // clean up any un-closed iterator
+        for (FeatureIterator fi : iterators.keySet()) {
+            try {
+                fi.close();
+            } catch(Exception e) {
+                LOGGER.log(Level.FINE, "An exception occurred while closing a feature iterator "
+                        + "during the cleanup phases of the KML encoding", e);
+            }
+        }
+        iterators.clear();
+    }
+
+    
 
 }

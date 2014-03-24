@@ -13,7 +13,7 @@ import org.geoserver.kml.utils.ScaleStyleVisitor;
 import org.geoserver.kml.utils.SymbolizerCollector;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureIterator;
+import org.geotools.feature.FeatureIterator;
 import org.geotools.filter.function.EnvFunction;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
@@ -73,14 +73,14 @@ public class FeatureSequenceFactory implements SequenceFactory<Feature> {
 
     @Override
     public Sequence<Feature> newSequence() {
-        return new FeatureGenerator(simplified != null ? features.features() : null);
+        return new FeatureGenerator(simplified != null ? context.openIterator(features) : null);
     }
 
     public class FeatureGenerator implements Sequence<Feature> {
 
-        private SimpleFeatureIterator fi;
+        private FeatureIterator fi;
 
-        public FeatureGenerator(SimpleFeatureIterator fi) {
+        public FeatureGenerator(FeatureIterator fi) {
             if(fi != null) {
                 // until we are scrolling this generator we are in vector mode
                 EnvFunction.setLocalValue(OUTPUT_MODE, VECTOR_MODE);
@@ -128,9 +128,8 @@ public class FeatureSequenceFactory implements SequenceFactory<Feature> {
                 } finally {
                     if (!featureRetrieved) {
                         // an exception has occurred, release the feature iterator
-                        fi.close();
+                        context.closeIterator(fi);
                         EnvFunction.setLocalValue(OUTPUT_MODE, null);
-                        fi = null;
                     }
                 }
             }
@@ -139,7 +138,7 @@ public class FeatureSequenceFactory implements SequenceFactory<Feature> {
             if (!fi.hasNext()) {
                 // clean up the output mode, the next layer might be encoded as a raster overlay
                 EnvFunction.setLocalValue(OUTPUT_MODE, null);
-                fi.close();
+                context.closeIterator(fi);
             }
             return null;
         }

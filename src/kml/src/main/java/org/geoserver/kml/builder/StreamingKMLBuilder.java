@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.kml.decorator.KmlDecoratorFactory.KmlDecorator;
-import org.geoserver.kml.sequence.CompositeList;
 import org.geoserver.kml.sequence.PlainFolderSequenceFactory;
 import org.geoserver.kml.sequence.SequenceFactory;
 import org.geoserver.kml.sequence.SequenceList;

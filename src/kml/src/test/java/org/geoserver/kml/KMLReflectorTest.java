@@ -24,14 +24,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
-import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -61,7 +59,6 @@ import org.junit.Test;
 import org.springframework.util.xml.SimpleNamespaceContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
@@ -959,6 +956,16 @@ public class KMLReflectorTest extends WMSTestSupport {
         }
     }
     
+    /**
+     * 
+     * <p>Method testLookatOptionsWithRefreshMode tests if the two altitude values are obtained from the corresponding bounding box.
+     * The first value (//kml:Document/kml:LookAt/kml:altitude) is calculated from the initial bounding box.
+     * The second value (//kml:Document/kml:NetworkLink/kml:LookAt/kml:altitude) is calculated from the bounding box passed to the WMS request.
+     * Test fails if those values are identical.
+     * @see http://jira.codehaus.org/browse/GEOS-6410
+     * </p>
+     * @throws Exception
+     */
     @Test
     public void testLookatOptionsWithRefreshMode() throws Exception {
         String layerId = getLayerId(MockData.BASIC_POLYGONS);
@@ -969,12 +976,13 @@ public class KMLReflectorTest extends WMSTestSupport {
         XMLAssert.assertXpathValuesNotEqual("//kml:Document/kml:LookAt/kml:altitude","//kml:Document/kml:NetworkLink/kml:LookAt/kml:altitude", doc);
     }
     
-    @Test
+    
     /**
-     * Jira: #GEOS-6411
      * <p>Method testWMSTimeRequest tests if the time parameter of the request is also passed to the KML WMS request.</p>
+     * @see http://jira.codehaus.org/browse/GEOS-6411
      * @throws Exception
      */
+    @Test
     public void testWMSTimeRequest() throws Exception {
         String layerId = getLayerId(MockData.BASIC_POLYGONS);
         String expectedTS = "time=2014-03-01";
@@ -990,12 +998,13 @@ public class KMLReflectorTest extends WMSTestSupport {
         }
     }
     
-    @Test
+    
     /**
-     * Jira: #GEOS-6411
      * <p>Method testWMSElevationRequest tests if the elevation parameter of the request is also passed to the KML WMS request.</p>
+     * @see http://jira.codehaus.org/browse/GEOS-6411
      * @throws Exception
      */
+    @Test
     public void testWMSElevationRequest() throws Exception {
         String layerId = getLayerId(MockData.BASIC_POLYGONS);
         String expectedTS = "elevation=500";
@@ -1010,36 +1019,5 @@ public class KMLReflectorTest extends WMSTestSupport {
           Assert.assertTrue("Elevation parameter missing", actualTS.contains(expectedTS));
         }
     }
-    
-    private static boolean skipNL;
-    
-    private static String printXML(Node rootNode, String tab) {
-      String print = "";
-      if(rootNode.getNodeType()==Node.ELEMENT_NODE) {
-          print += "\n"+tab+"<"+rootNode.getNodeName()+">";
-      }
-      NodeList nl = rootNode.getChildNodes();
-      if(nl.getLength()>0) {
-          for (int i = 0; i < nl.getLength(); i++) {
-              print += printXML(nl.item(i), tab+"  ");    // \t
-          }
-      } else {
-          if(rootNode.getNodeValue()!=null) {
-              print = rootNode.getNodeValue();
-          }
-          skipNL = true;
-      }
-      if(rootNode.getNodeType()==Node.ELEMENT_NODE) {
-          if(!skipNL) {
-              print += "\n"+tab;
-          }
-          skipNL = false;
-          print += "</"+rootNode.getNodeName()+">";
-      }
-      return(print);
-  }
-    
-    
-    
     
 }

@@ -96,7 +96,7 @@ public class WFSKMLOutputFormat extends WFSGetFeatureOutputFormat {
         }
         
         // write out the output
-        encoder.encode(kml, output);
+        encoder.encode(kml, output, context);
     }
 
     private List<SimpleFeatureCollection> getFeatureCollections(FeatureCollectionResponse featureCollection) {

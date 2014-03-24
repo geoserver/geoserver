@@ -811,7 +811,7 @@ public class KMLReflectorTest extends WMSTestSupport {
         KMLMap map = of.produceMap(mapContent);
 
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        new KMLEncoder().encode(map.getKml(), bout);
+        new KMLEncoder().encode(map.getKml(), bout, null);
 
         Document document = dom(new ByteArrayInputStream(bout.toByteArray()));
        

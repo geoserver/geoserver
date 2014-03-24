@@ -61,7 +61,7 @@ public class KMLMapResponse extends AbstractMapResponse {
             if (context != null && context.isKmz()) {
                 encodeAsKmz(kml, context, operation, output);
             } else {
-                encoder.encode(kml, output);
+                encoder.encode(kml, output, context);
             }
         } finally {
             kmlMap.dispose();
@@ -76,7 +76,7 @@ public class KMLMapResponse extends AbstractMapResponse {
         // first create an entry for the kml
         ZipEntry entry = new ZipEntry("wms.kml");
         zip.putNextEntry(entry);
-        encoder.encode(kml, zip);
+        encoder.encode(kml, zip, context);
 
         // prepare for the ground overlays
         final RenderedImageMapOutputFormat pngProducer = new RenderedImageMapOutputFormat(

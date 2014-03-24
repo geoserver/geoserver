@@ -125,7 +125,7 @@ public class GeoSearchLayer extends AbstractResource {
         }
         
         KmlEncodingContext encodingContext = new KmlEncodingContext(webMap.getMapContent(), wms, true);
-        Kml kml = buildKml(encodingContext);
+        KmlEncodingBundle kml = buildKml(encodingContext);
 
         DataFormat format = getFormatGet();
         Representation representation = format.toRepresentation(kml);
@@ -133,7 +133,7 @@ public class GeoSearchLayer extends AbstractResource {
         response.setEntity(representation);
     }
 
-    private Kml buildKml(KmlEncodingContext encodingContext) {
+    private KmlEncodingBundle buildKml(KmlEncodingContext encodingContext) {
         SimpleNetworkLinkBuilder nlBuilder = new SimpleNetworkLinkBuilder(encodingContext);
         Kml kml = nlBuilder.buildKMLDocument();
 
@@ -166,7 +166,7 @@ public class GeoSearchLayer extends AbstractResource {
             encodingContext.addFeatures(doc, folders);
         }
         
-        return kml;
+        return new KmlEncodingBundle(kml, encodingContext);
     }
     
     private String buildDescription(WMSMapContent mapContent) {

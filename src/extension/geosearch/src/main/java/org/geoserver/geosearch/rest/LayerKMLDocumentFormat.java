@@ -14,8 +14,6 @@ import org.geoserver.rest.format.StreamDataFormat;
 import org.restlet.data.MediaType;
 import org.springframework.util.Assert;
 
-import de.micromata.opengis.kml.v_2_2_0.Kml;
-
 public class LayerKMLDocumentFormat extends StreamDataFormat {
 
     private static final MediaType MEDIA_TYPE = new MediaType(
@@ -48,10 +46,10 @@ public class LayerKMLDocumentFormat extends StreamDataFormat {
      */
     @Override
     protected void write(final Object object, OutputStream out) throws IOException {
-        Assert.isInstanceOf(Kml.class, object);
+        Assert.isInstanceOf(KmlEncodingBundle.class, object);
         
-        Kml kml = (Kml) object;
-        encoder.encode(kml, out);
+        KmlEncodingBundle bundle = (KmlEncodingBundle) object;
+        encoder.encode(bundle.kml, out, bundle.context);
     }
 
 }

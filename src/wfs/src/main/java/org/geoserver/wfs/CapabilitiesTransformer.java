@@ -1531,20 +1531,30 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 keywords(featureType.getKeywords());
 
                 String srs = featureType.getSRS();
-                if (srs != null && srs.matches("(?ui)EPSG:[0-9]+")) {
-                    srs = gml.getSrsNameStyle().getPrefix() + srs.substring(5); 
-                }
+                srs = applySRSNameStyle(gml, srs);
 
-                //default srs
+                // default srs
                 if (crs) {
                     //wfs 2.0
                     element("DefaultCRS", srs);
-                }
-                else {
+                } else {
                     element("DefaultSRS", srs);
                 }
                 
-                //TODO: other srs's
+                // other srs
+                List<String> otherSRSes = getOtherSRS(featureType);
+                for (String otherSRS : otherSRSes) {
+                    if(otherSRS != null) {
+                        otherSRS = applySRSNameStyle(gml, otherSRS);
+                        if(!otherSRS.equals(srs)) {
+                            if (crs) {
+                                element("OtherCRS", otherSRS);
+                            } else {
+                                element("OtherSRS", otherSRS);
+                            }
+                        }
+                    }
+                }
 
                 Envelope bbox = null;
                 bbox = featureType.getLatLonBoundingBox();
@@ -1564,6 +1574,29 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 }
 
                 end("FeatureType");
+            }
+
+            private String applySRSNameStyle(GMLInfo gml, String srs) {
+                if (srs != null) {
+                    String prefix = gml.getSrsNameStyle().getPrefix();
+                    if(srs.matches("(?ui)EPSG:[0-9]+")) {
+                        srs = prefix + srs.substring(5);
+                    } else {
+                        srs = prefix + srs;
+                    }
+                }
+                return srs;
+            }
+
+            protected List<String> getOtherSRS(FeatureTypeInfo featureType) {
+                List<String> extraSRS;
+                if(featureType.isOverridingServiceSRS()) {
+                    extraSRS = featureType.getResponseSRS();
+                } else {
+                    extraSRS = wfs.getSRS();
+                }
+                
+                return extraSRS;
             }
 
             protected void metadataLink(MetadataLinkInfo link) {

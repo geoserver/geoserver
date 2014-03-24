@@ -95,6 +95,24 @@ public interface FeatureTypeInfo extends ResourceInfo {
     void setNumDecimals( int numDecimals );
     
     /**
+     * True if this feature type info is overriding the WFS global SRS list
+     * @return
+     */
+    boolean isOverridingServiceSRS();
+    
+    /**
+     * Set to true if this feature type info is overriding the WFS global SRS list
+     * @return
+     */
+    void setOverridingServiceSRS(boolean overridingServiceSRS);
+    
+    /**
+     * The srs's that the WFS service will advertise in the capabilities document for this feature type
+     * (overriding the global WFS settings)
+     */
+    List<String> getResponseSRS();
+    
+    /**
      * Returns the derived set of attributes for the feature type.
      * <p>
      * This value is derived from the underlying feature, and any 

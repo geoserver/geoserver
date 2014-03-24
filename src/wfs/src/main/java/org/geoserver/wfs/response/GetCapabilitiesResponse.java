@@ -11,12 +11,8 @@ import java.util.List;
 
 import javax.xml.transform.TransformerException;
 
-import net.opengis.wfs.GetCapabilitiesType;
-
 import org.geoserver.ows.Response;
-import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.Operation;
-import org.geoserver.wfs.GetCapabilities;
 import org.geoserver.wfs.request.GetCapabilitiesRequest;
 import org.geotools.xml.transform.TransformerBase;
 

@@ -4,7 +4,9 @@
  */
 package org.geoserver.wfs;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.geoserver.config.impl.ServiceInfoImpl;
@@ -18,6 +20,7 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
     protected boolean canonicalSchemaLocation = false;
     protected boolean encodeFeatureMember = false;    
     protected boolean hitsIgnoreMaxFeatures = false;
+    protected List<String> srs = new ArrayList<String>();
     
     public WFSInfoImpl() {
     }
@@ -83,17 +86,35 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
     }
    
     @Override
+    public boolean isHitsIgnoreMaxFeatures() {
+        return hitsIgnoreMaxFeatures;
+    }
+
+    @Override
+    public void setHitsIgnoreMaxFeatures(boolean hitsIgnoreMaxFeatures) {
+        this.hitsIgnoreMaxFeatures = hitsIgnoreMaxFeatures;
+    }
+    
+    public List<String> getSRS() {
+        return srs;
+    }
+
+    public void setSRS(List<String> srs) {
+        this.srs = srs;
+    }
+
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + ((gml == null) ? 0 : gml.hashCode());
-        result = prime * result + maxFeatures;
+        result = prime * result + (canonicalSchemaLocation ? 1231 : 1237);
+        result = prime * result + (encodeFeatureMember ? 1231 : 1237);
         result = prime * result + (featureBounding ? 1231 : 1237);
-        result = prime * result + (canonicalSchemaLocation ? 53 : 67);
-        result = prime * result
-                + ((serviceLevel == null) ? 0 : serviceLevel.hashCode());
-        result = prime * result + (encodeFeatureMember ? 83 : 87);
-        result = prime * result + (hitsIgnoreMaxFeatures ? 29 : 197);
+        result = prime * result + ((gml == null) ? 0 : gml.hashCode());
+        result = prime * result + (hitsIgnoreMaxFeatures ? 1231 : 1237);
+        result = prime * result + maxFeatures;
+        result = prime * result + ((serviceLevel == null) ? 0 : serviceLevel.hashCode());
+        result = prime * result + ((srs == null) ? 0 : srs.hashCode());
         return result;
     }
 
@@ -126,16 +147,14 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
             return false;
         if (hitsIgnoreMaxFeatures != other.isHitsIgnoreMaxFeatures())
             return false;
+        if (srs == null) {
+            if (other.getSRS() != null)
+                return false;
+        } else if (!srs.equals(other.getSRS()))
+            return false;
+        
         return true;
     }
-
-    @Override
-    public boolean isHitsIgnoreMaxFeatures() {
-        return hitsIgnoreMaxFeatures;
-    }
-
-    @Override
-    public void setHitsIgnoreMaxFeatures(boolean hitsIgnoreMaxFeatures) {
-        this.hitsIgnoreMaxFeatures = hitsIgnoreMaxFeatures;
-    }
+    
+    
 }

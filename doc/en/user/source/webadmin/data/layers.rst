@@ -41,15 +41,15 @@ Basic Info
 ````````````
 The beginning sections--Basic Resource Info, Keywords and Metadata link are analogous to the :ref:`service_metadata` section for WCS, WFS and WMS. These sections provide "data about the data," specifically textual information that make the layer data easier to work with it. 
 
-**Name**—Identifier used to reference the layer in WMS requests 
+**Name** — Identifier used to reference the layer in WMS requests 
 
-**Title**—Human-readable description to briefly identify the layer to clients (required)   
+**Title** — Human-readable description to briefly identify the layer to clients (required)   
    
-**Abstract**—Describes the layer
+**Abstract** — Describes the layer
    
-**Keywords**—List of short words associated with the layer to assist catalog searching
+**Keywords** — List of short words associated with the layer to assist catalog searching
  
-**Metadata Link**—Allows linking to external documents that describe the data layer. Currently only two standard format types are valid: TC211 and FGDC. TC211 refers to the metadata structure established by the `ISO Technical Committee for Geographic Information/Geomatics <http://www.isotc211.org/>`_ (ISO/TC 211) while FGDC refers to those set out by the `Federal Geographic Data Committee <http://www.fgdc.gov/>`_ (FGDC) of the United States. 
+**Metadata Link** — Allows linking to external documents that describe the data layer. Currently only two standard format types are valid: TC211 and FGDC. TC211 refers to the metadata structure established by the `ISO Technical Committee for Geographic Information/Geomatics <http://www.isotc211.org/>`_ (ISO/TC 211) while FGDC refers to those set out by the `Federal Geographic Data Committee <http://www.fgdc.gov/>`_ (FGDC) of the United States. 
 
 .. figure:: ../images/data_layers_meta.png
    :align: center
@@ -65,11 +65,11 @@ A coordinate reference system (CRS) defines how your georeferenced spatial data 
    
    *Adding a metadata link n FGDC format*  
 
-**Native SRS**—Refers to the projection the layer is stored in. Clicking the projection link displays a description of the SRS.
+**Native SRS** — Refers to the projection the layer is stored in. Clicking the projection link displays a description of the SRS.
 
-**Declared SRS**—Refers to what GeoServer gives to clients 
+**Declared SRS** — Refers to what GeoServer gives to clients 
 
-**SRS Handling:**—Determines how GeoServer should handle projection when the two SRS differ 
+**SRS Handling:** — Determines how GeoServer should handle projection when the two SRS differ 
 
 Bounding Boxes
 ````````````````
@@ -106,55 +106,65 @@ The publishing tab is for configuring HTTP and WCS settings.
    
    *Editing Publishing Data*
    
-* *Enabled*—A layer that is not enabled won't be available to any kind of request, it will just show up in the configuration (and in REST-config)
-* *Additional styles*—A layer is advertised by default. A non-advertised layer will be available in all data access requests (for example, WMS GetMap, WMS GetFeature) but won't appear in any capabilities document or in the layer preview. 
+* *Enabled* — A layer that is not enabled won't be available to any kind of request, it will just show up in the configuration (and in REST-config)
+* *Additional styles* — A layer is advertised by default. A non-advertised layer will be available in all data access requests (for example, WMS GetMap, WMS GetFeature) but won't appear in any capabilities document or in the layer preview. 
 
-**HTTP Settings**—Cache parameters that apply to the HTTP response from client requests. If :guilabel:`Response Cache Headers` is selected, GeoServer will not request the same tile twice within the time specified in :guilabel:`Cache Time`. One hour measured in seconds (3600), is the default value for :guilabel:`Cache Time`.
+**HTTP Settings** — Cache parameters that apply to the HTTP response from client requests. If :guilabel:`Response Cache Headers` is selected, GeoServer will not request the same tile twice within the time specified in :guilabel:`Cache Time`. One hour measured in seconds (3600), is the default value for :guilabel:`Cache Time`.
 
-**WMS Settings**—Sets the WMS specific publishing parameters
+**WMS Settings** — Sets the WMS specific publishing parameters
 
 .. figure:: ../images/wms_settings.png
    :align: center
  
    *WMS Settings*
 
-* *Default style*:—Style that will be used when the client does not specify a named style in GetMap requests
-* *Additional styles*—Other styles that can be associated to this layers. Some clients (and the GeoServer own preview) will present those as styling alternatives for that layer to the end user
+* *Default style*: — Style that will be used when the client does not specify a named style in GetMap requests
+* *Additional styles* — Other styles that can be associated to this layers. Some clients (and the GeoServer own preview) will present those as styling alternatives for that layer to the end user
 * *Default rendering buffer* (available since version 2.0.3)—the default value of the ``buffer`` GetMap/GetFeatureInfo vendor parameter. See the :ref:`wms_vendor_parameters` for more details 
-* *Default WMS path*—Location of the layer in the WMS capabilities layer tree. Useful to build non-opaque layer groups
+* *Default WMS path* — Location of the layer in the WMS capabilities layer tree. Useful to build non-opaque layer groups
 
-**WMS Attribution**—Sets publishing information about data providers
+**WMS Attribution** — Sets publishing information about data providers
 
 .. figure:: ../images/data_layers_WMS.png
    :align: center
    
    *WMS Attribution*
 
-* *Attribution Text*—Human-readable text describing the data provider. This might be used as the text for a hyperlink to the data provider's web site.
-* *Attribution Link*—URL to the data provider's website.
-* *Logo URL*—URL to an image that serves as a logo for the data provider.
+* *Attribution Text* — Human-readable text describing the data provider. This might be used as the text for a hyperlink to the data provider's web site.
+* *Attribution Link* — URL to the data provider's website.
+* *Logo URL* — URL to an image that serves as a logo for the data provider.
 * *Logo Content Type, Width, and Height* —These fields provide information about the logo image that clients may use to assist with layout. GeoServer will auto-detect these values if you click the :guilabel:`Auto-detect image size and type` link at the bottom of the section.
 
 The text, link, and URL are each advertised in the WMS Capabilities document if they are provided. Some WMS clients will display this information to advise users which providers provide a particular dataset. If you omit some of the fields, those that are provided will be published and those that are not will be omitted from the Capabilities document.
 
-**WFS Settings**—Sets the maximum number of features for a layer a WFS GetFeature operation should generate (regardless of the actual number of query hits)
+**WFS Settings** — Sets the maximum number of features for a layer a WFS GetFeature operation should generate (regardless of the actual number of query hits) and the maximum number of decimals in GML otuputs.
 
-**WCS Settings**—Provides a list the SRS the layer can be converted to. :guilabel:`New Request SRS` allows you to add an SRS to that list. 
+It is also possible to override the ``OtherSRS/OtherCRS`` list configured in the WFS service, including overriding it with an empty list if need be. The input area will accept a comma separated list of EPSG codes:
 
-**Interpolation Methods**—Sets the raster rendering process 
+.. figure:: ../images/data_layers_WFS.png
+   :align: center
+   
+   *WFS otherSRS/otherCRS override*
 
-**Formats**—Lists which output formats a layers supports 
+The list will be used only for the capabilities document generation, but will not be used to limit the actual target SRS usage in GetFeature requests.
 
-**Default Title**—Assigns a style to a layer. Additional styles are ones published with the layer in the capabilities document. 
 
-**Geosearch**—When enabled, allows the Google Geo search crawler to index from this particular layer. See `What is a Geo Sitemap? <http://www.google.com/support/webmasters/bin/answer.py?hl=en&answer=94554>`_ for more information.
+**WCS Settings** — Provides a list the SRS the layer can be converted to. :guilabel:`New Request SRS` allows you to add an SRS to that list. 
 
-**KML Format Settings**—Limits features based on certain criteria, otherwise known as *regionation*. Choose which feature should show up more prominently than others with the guilabel:`Default Regionating Attribute`. There are four types of :guilabel:`Regionating Methods`:
+**Interpolation Methods** — Sets the raster rendering process 
 
-* *external-sorting*—Creates a temporary auxiliary database within GeoServer. The first request to build an index takes longer than subsequent requests. 
-* *geometry*—Externally sorts by length (if lines) or area (if polygons)
-* *native-sorting*—Uses the default sorting algorithm of the backend where the data is hosted. It is faster than external-sorting, but will only work with PostGIS datastores.
-* *random*—Uses the existing order of the data and does not sort
+**Formats** — Lists which output formats a layers supports 
+
+**Default Title** — Assigns a style to a layer. Additional styles are ones published with the layer in the capabilities document. 
+
+**Geosearch**— When enabled, allows the Google Geo search crawler to index from this particular layer. See `What is a Geo Sitemap? <http://www.google.com/support/webmasters/bin/answer.py?hl=en&answer=94554>`_ for more information.
+
+**KML Format Settings** — Limits features based on certain criteria, otherwise known as *regionation*. Choose which feature should show up more prominently than others with the guilabel:`Default Regionating Attribute`. There are four types of :guilabel:`Regionating Methods`:
+
+* *external-sorting* - Creates a temporary auxiliary database within GeoServer. The first request to build an index takes longer than subsequent requests. 
+* *geometry* — Externally sorts by length (if lines) or area (if polygons)
+* *native-sorting* — Uses the default sorting algorithm of the backend where the data is hosted. It is faster than external-sorting, but will only work with PostGIS datastores.
+* *random* — Uses the existing order of the data and does not sort
 
 Add or Delete a Layer
 ---------------------     

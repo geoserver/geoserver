@@ -348,7 +348,7 @@ public class WMSRequests {
                 // semantics of feature id slightly different, replicate entire value
                 params.put("featureid", req.getRawKvp().get("featureid"));
             }
-  			// adding time and elevation support in case of a timeserie layer
+            // Jira: #GEOS-6411: adding time and elevation support in case of a timeserie layer
             if (req.getRawKvp().get("time") != null) {
               // semantics of feature id slightly different, replicate entire value
               params.put("time", req.getRawKvp().get("time"));
@@ -356,7 +356,7 @@ public class WMSRequests {
             if (req.getRawKvp().get("elevation") != null) {
               // semantics of feature id slightly different, replicate entire value
               params.put("elevation", req.getRawKvp().get("elevation"));
-            } 
+            }
 
         } else {
             // include all

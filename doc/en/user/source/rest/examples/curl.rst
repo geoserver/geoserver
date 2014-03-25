@@ -3,7 +3,9 @@
 cURL
 ====
 
-The examples in this section use `cURL <http://curl.haxx.se/>`_, a command line tool for executing HTTP requests and transferring files, to generate requests to GeoServer’s REST interface. Although the examples are based on cURL, they could be adapted for any HTTP-capable tool or library.
+The examples in this section use `cURL <http://curl.haxx.se/>`_, a command line tool for executing HTTP requests and transferring files, to generate requests to GeoServer's REST interface. Although the examples are based on cURL, they could be adapted for any HTTP-capable tool or library.
+Please be aware, that cURL acts not entirely the same as a web-browser. In contrast to Mozilla Firefox or Google Chrome cURL will not escape special characters in your request-string automatically. To make sure, that your requests can be processed correctly, make sure, that characters like paranthesis, commas and the like are escaped before sending them via cURL.
+If you use libcurl in PHP 5.5 or newer you can prepare the url-string using the function curl_escape. In older versions of PHP hmlspecialchars should do the job also.
 
 .. todo::
 
@@ -665,7 +667,7 @@ The following command uploads a zip file containing the definition of a mosaic (
 
 .. code-block:: console
 
-   curl ­-u admin:geoserver -XPUT ­H "Content­type:application/zip"­--data-binary @polyphemus.zip
+   curl -u admin:geoserver -XPUT -H "Content-type:application/zip" --data-binary @polyphemus.zip
       http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/polyphemus/file.imagemosaic
 
 The following instead instructs the mosaic to harvest (or re-harvest) a single file into the mosaic, collecting its properties and updating the mosaic index:
@@ -818,3 +820,61 @@ Removing all the granules originating from a particular file (a NetCDF file can 
 .. code-block:: console
    
    curl -v -u admin:geoserver -XDELETE "http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/polyphemus-v1/coverages/NO2/index/granules.xml?filter=location='polyphemus_20130301.nc'"
+   
+Creating an empty mosaic and harvest granules
+---------------------------------------------
+
+The next command uploads an :download:`empty.zip` file. 
+This archive contains the definition of an empty mosaic (no granules in this case) through the following files::
+
+      datastore.properties (the postgis datastore connection params)
+      indexer.xml (The mosaic Indexer, note the CanBeEmpty=true parameter)
+      polyphemus-test.xml (The auxiliary file used by the NetCDF reader to parse schemas and tables)
+
+.. note:: **Make sure to update the datastore.properties file** with your connection params and refresh the zip when done, before uploading it. 
+.. note:: The code blocks below contain a single command that is extended over multiple lines.
+.. note:: The configure=none parameter allows for future configuration after harvesting
+
+.. code-block:: console
+
+   curl -u admin:geoserver -XPUT -H "Content-type:application/zip" --data-binary @empty.zip
+      http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/empty/file.imagemosaic?configure=none
+
+The following instead instructs the mosaic to harvest a single :download:`polyphemus_20120401.nc` file into the mosaic, collecting its properties and updating the mosaic index:
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XPOST -H "Content-type: text/plain" -d "file:///path/to/the/file/polyphemus_20120401.nc" 
+      "http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/empty/external.imagemosaic"
+
+Once done you can get the list of coverages/granules available on that store.
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XGET 
+       "http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/empty/coverages.xml?list=all"
+
+which will result in the following:
+
+.. code-block:: json
+
+      <list>
+        <coverageName>NO2</coverageName>
+        <coverageName>O3</coverageName>
+      </list>
+
+Next step is configuring ONCE for coverage (as an instance NO2), an available coverage. 
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XPOST -H "Content-type: text/xm" -d @"/path/to/coverageconfig.xml" "http://localhost:8080/geoserver/rest/workspaces/topp/coveragestores/empty/coverages"
+
+Where coverageconfig.xml may look like this
+
+.. code-block:: json
+
+    <coverage>
+      <name>NO2</name>
+    </coverage>
+
+.. note:: When specifying only the coverage name, the coverage will be automatically configured

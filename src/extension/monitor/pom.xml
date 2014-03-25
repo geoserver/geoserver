@@ -9,10 +9,10 @@
  <parent>
   <groupId>org.geoserver</groupId>
   <artifactId>extension</artifactId>
-  <version>2.5-SNAPSHOT</version>
+  <version>2.6-SNAPSHOT</version>
  </parent>
  <groupId>org.geoserver.extension</groupId>
- <artifactId>monitor</artifactId>
+ <artifactId>gs-monitor</artifactId>
  <packaging>pom</packaging>
  <name>GeoServer Monitor Extensions</name>
 
@@ -25,27 +25,27 @@
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>main</artifactId>
-   <version>2.5-SNAPSHOT</version>
+   <artifactId>gs-main</artifactId>
+   <version>2.6-SNAPSHOT</version>
    <scope>test</scope>
    <classifier>tests</classifier>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>wfs</artifactId>
-   <version>2.5-SNAPSHOT</version>
+   <artifactId>gs-wfs</artifactId>
+   <version>2.6-SNAPSHOT</version>
    <scope>test</scope>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>wcs1_0</artifactId>
-   <version>2.5-SNAPSHOT</version>
+   <artifactId>gs-wcs1_0</artifactId>
+   <version>2.6-SNAPSHOT</version>
    <scope>test</scope>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>wcs1_1</artifactId>
-   <version>2.5-SNAPSHOT</version>
+   <artifactId>gs-wcs1_1</artifactId>
+   <version>2.6-SNAPSHOT</version>
    <scope>test</scope>
   </dependency>
   <dependency>

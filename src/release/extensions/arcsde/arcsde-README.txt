@@ -46,15 +46,14 @@ INSTALLATION
 
 COMPATIBILITY
 
-This jar should work with any version of GeoServer based on GeoTools 11.x  
-Currently this is anything in 2.5.x. 
+This jar should work with any version of GeoServer based on GeoTools 12.x  
+Currently this is anything in 2.6.x. 
 
 For more information see on needed libraries and parameters, see:
-http://geoserver.org/display/GEOSDOC/ArcSDE+DataStore
+http://docs.geoserver.org/latest/en/user/data/database/arcsde.html
 
 For more Geotools related information: 
-http://docs.codehaus.org/display/GEOTDOC/ArcSDE+DataStore
-
+http://docs.geotools.org/latest/userguide/library/data/arcsde.html
 
 Please report any bugs with jira (http://jira.codehaus.org/browse/GEOS). 
 

@@ -77,7 +77,7 @@ Controls a particular coverage store in a given workspace.
      -
      -
      -
-     - :ref:`recurse <rest_api_coveragestores_recurse>`
+     - :ref:`recurse <rest_api_coveragestores_recurse>`, :ref:`purge <rest_api_coveragestores_purge>`
 
 Exceptions
 ~~~~~~~~~~
@@ -105,6 +105,19 @@ Parameters
 ^^^^^^^^^^^
 
 The ``recurse`` parameter recursively deletes all layers referenced by the coverage store. Allowed values for this parameter are "true" or "false". The default value is "false".
+
+
+.. _rest_api_coveragestores_purge:
+
+``purge``
+^^^^^^^^^
+
+The ``purge`` parameter is used to customize the delete of files on disk (in case the underlying reader implements a delete method).
+It can take one of the three values:
+
+* ``none``-(*Default*) Do not delete any store's file from disk.
+* ``metadata``-Delete only auxiliary files and metadata. It's recommended when data files (such as granules) should not be deleted from disk.
+* ``all``-Purge everything related to that store (metadata and granules).
 
 
 ``/workspaces/<ws>/coveragestores/<cs>/file[.<extension>]``

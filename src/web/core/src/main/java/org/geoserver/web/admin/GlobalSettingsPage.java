@@ -30,9 +30,13 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ResourceErrorHandling;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.LockProvider;
 import org.geoserver.web.GeoServerApplication;
+import org.geoserver.web.wicket.LocalizedChoiceRenderer;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.springframework.context.ApplicationContext;
 
 public class GlobalSettingsPage extends ServerAdminPage {
 
@@ -74,6 +78,16 @@ public class GlobalSettingsPage extends ServerAdminPage {
         form.add(new CheckBox("xmlExternalEntitiesEnabled"));    
         
         form.add(new TextField<Integer>("featureTypeCacheSize").add(new MinimumValidator<Integer>(0)));
+       
+        IModel<String> lockProviderModel = new PropertyModel<String>(globalInfoModel, "lockProviderName");
+        ApplicationContext applicationContext = GeoServerApplication.get().getApplicationContext();
+        List<String> providers = new ArrayList<String>( Arrays.asList(applicationContext.getBeanNamesForType( LockProvider.class )));
+        providers.remove("lockProvider"); // remove the global lock provider
+        Collections.sort(providers);;
+        
+        DropDownChoice<String> lockProviderChoice = new DropDownChoice<String>("lockProvider", lockProviderModel, providers, new LocalizedChoiceRenderer(this));
+        
+        form.add( lockProviderChoice );
         
         Button submit = new Button("submit", new StringResourceModel("submit", this, null)) {
             @Override

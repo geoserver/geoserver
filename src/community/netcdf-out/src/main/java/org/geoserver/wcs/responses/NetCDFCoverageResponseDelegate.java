@@ -95,18 +95,6 @@ public class NetCDFCoverageResponseDelegate extends BaseCoverageResponseDelegate
             }
             manager.close();
         }
-        // Initialize the outputFile
-        // setVariables(writer, mapper, granuleStack, latLonCoordinates);
-
-        // if (gzipOut != null) {
-        // gzipOut.finish();
-        // gzipOut.flush();
-        // }
-
-        // if (gzipOut != null)
-        // IOUtils.closeQuietly(gzipOut);
-
-       
     }
 
     /**

@@ -37,6 +37,10 @@ Point Symbology
       * angle 
       * A rotation to be applied (clockwise) to the mark image.
       * yes
+    - * z-index
+      * integer
+      * Controls the z ordering of output
+      * no
     - * -gt-mark-label-obstacle
       * boolean
       * If true the point symbol will be consider an obstable for labels, no label will overlap it
@@ -106,6 +110,10 @@ Line Symbology
         appropriately to match the line's direction).  If stipple, then the line
         is treated as a polygon to be filled.
       * yes
+    - * z-index
+      * integer
+      * Controls the z ordering of output
+      * no
     - * -gt-stroke-label-obstacle
       * boolean
       * If true the line will be consider an obstable for labels, no label will overlap it
@@ -145,15 +153,15 @@ Polygon Symbology
       * angle             
       * A rotation to be applied (clockwise) to the fill image. 
       * yes
+    - * z-index
+      * integer
+      * Controls the z ordering of output
+      * no
     - * -gt-fill-label-obstacle
       * boolean
       * If true the polygon will be consider an obstable for labels, no label will overlap it
       * no
-    - * -gt-graphic-marging
-      * List of lengths
-      * A list of 1 to 4 values, specifying the space between repeated graphics in a texture paint. One value is uniform spacing in all directions, two values are considered top/bottom and right/left, three values are considered top, right/left, bottom, four values are read as top,right,bottom,left.
-      * no
-    - * -gt-graphic-marging
+    - * -gt-graphic-margin
       * List of lengths
       * A list of 1 to 4 values, specifying the space between repeated graphics in a texture paint. One value is uniform spacing in all directions, two values are considered top/bottom and right/left, three values are considered top, right/left, bottom, four values are read as top,right,bottom,left.
       * no

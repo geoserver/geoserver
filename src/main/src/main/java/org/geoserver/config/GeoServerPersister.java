@@ -191,7 +191,7 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
                     WorkspaceInfo defWorkspace = (WorkspaceInfo) event.getNewValues().get( i );
                     // SG don't bother with a default workspace if we do not have one
                     if (defWorkspace != null) {
-                        File d = rl.createDirectory("workspaces");
+                        File d = rl.findOrCreateDirectory("workspaces");
                         persist(defWorkspace, new File(d, "default.xml"));
                     }
                 }

@@ -11,11 +11,11 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>extension</artifactId>
-    <version>2.5-SNAPSHOT</version>
+    <version>2.6-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.extension</groupId>
-  <artifactId>oracle</artifactId>
+  <artifactId>gs-oracle</artifactId>
   <packaging>jar</packaging>
   <name>Oracle DataStore Extension</name>
 

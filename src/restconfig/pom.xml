@@ -11,29 +11,29 @@
  <parent>
   <groupId>org.geoserver</groupId>
   <artifactId>geoserver</artifactId>
-  <version>2.5-SNAPSHOT</version>
+  <version>2.6-SNAPSHOT</version>
  </parent>
 
  <groupId>org.geoserver</groupId>
- <artifactId>restconfig</artifactId>
+ <artifactId>gs-restconfig</artifactId>
  <packaging>jar</packaging>
  <name>REST Configuration Service Module</name>
 
  <dependencies>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>main</artifactId>
-   <version>2.5-SNAPSHOT</version>
+   <artifactId>gs-main</artifactId>
+   <version>2.6-SNAPSHOT</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>rest</artifactId>
-   <version>2.5-SNAPSHOT</version>
+   <artifactId>gs-rest</artifactId>
+   <version>2.6-SNAPSHOT</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>wms</artifactId>
-   <version>2.5-SNAPSHOT</version>
+   <artifactId>gs-wms</artifactId>
+   <version>2.6-SNAPSHOT</version>
   </dependency>
   <dependency>
    <groupId>org.geotools</groupId>
@@ -53,20 +53,20 @@
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>main</artifactId>
+   <artifactId>gs-main</artifactId>
    <version>${project.version}</version>
    <classifier>tests</classifier>
    <scope>test</scope>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>wcs1_0</artifactId>
+   <artifactId>gs-wcs1_0</artifactId>
    <version>${project.version}</version>
    <scope>test</scope>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>wcs1_1</artifactId>
+   <artifactId>gs-wcs1_1</artifactId>
    <version>${project.version}</version>
    <scope>test</scope>
   </dependency>

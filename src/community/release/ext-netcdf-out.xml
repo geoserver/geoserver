@@ -9,6 +9,7 @@
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
+        <include>gs-netcdf*.jar</include>
         <include>netcdf*.jar</include>
         <include>udunits*.jar</include>
         <include>joda-time*.jar</include>

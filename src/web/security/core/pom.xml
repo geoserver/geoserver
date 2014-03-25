@@ -11,30 +11,30 @@
 
 	<parent>
 		<groupId>org.geoserver.web</groupId>
-		<artifactId>web-sec</artifactId>
-		<version>2.5-SNAPSHOT</version>
+		<artifactId>gs-web-sec</artifactId>
+		<version>2.6-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.geoserver.web</groupId>
-	<artifactId>web-sec-core</artifactId>
+	<artifactId>gs-web-sec-core</artifactId>
 	<packaging>jar</packaging>
-	<version>2.5-SNAPSHOT</version>
+	<version>2.6-SNAPSHOT</version>
 	<name>Security UI Core Module</name>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.geoserver</groupId>
-			<artifactId>wms</artifactId>
+			<artifactId>gs-wms</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.geoserver.web</groupId>
-			<artifactId>web-core</artifactId>
+			<artifactId>gs-web-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.geoserver.web</groupId>
-			<artifactId>web-core</artifactId>
+			<artifactId>gs-web-core</artifactId>
 			<version>${project.version}</version>
 			<classifier>tests</classifier>
 			<scope>test</scope>
@@ -49,7 +49,7 @@
         </dependency>
 		<dependency>
 			<groupId>org.geoserver</groupId>
-			<artifactId>main</artifactId>
+			<artifactId>gs-main</artifactId>
 			<version>${project.version}</version>
 			<classifier>tests</classifier>
 			<scope>test</scope>

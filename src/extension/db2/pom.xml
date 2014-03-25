@@ -11,11 +11,11 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>extension</artifactId>
-    <version>2.5-SNAPSHOT</version>
+    <version>2.6-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.extension</groupId>
-  <artifactId>db2</artifactId>
+  <artifactId>gs-db2</artifactId>
   <packaging>jar</packaging>
   <name>DB2 DataStore Extension</name>
 

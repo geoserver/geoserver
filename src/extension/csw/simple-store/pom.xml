@@ -11,19 +11,19 @@
 
   <parent>
     <groupId>org.geoserver</groupId>		
-  	<artifactId>csw</artifactId>
-  	<version>2.5-SNAPSHOT</version>
+  	<artifactId>gs-csw</artifactId>
+  	<version>2.6-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.csw</groupId>
-  <artifactId>csw-simple-store</artifactId>
+  <artifactId>gs-csw-simple-store</artifactId>
   <packaging>jar</packaging>
   <name>Catalog Services for the Web - Simple CatalogStore implementation</name>
 
   <dependencies>
     <dependency>
       <groupId>org.geoserver.csw</groupId>
-      <artifactId>csw-api</artifactId>
+      <artifactId>gs-csw-api</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

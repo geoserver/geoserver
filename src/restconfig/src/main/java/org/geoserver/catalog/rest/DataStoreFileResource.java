@@ -54,7 +54,7 @@ import org.vfny.geoserver.util.DataStoreUtils;
 
 public class DataStoreFileResource extends StoreFileResource {
 
-    protected static HashMap<String,String> formatToDataStoreFactory = new HashMap();
+    protected static final HashMap<String,String> formatToDataStoreFactory = new HashMap();
     static {
         formatToDataStoreFactory.put( "shp", "org.geotools.data.shapefile.ShapefileDataStoreFactory");
         formatToDataStoreFactory.put( "properties", "org.geotools.data.property.PropertyDataStoreFactory");
@@ -62,7 +62,7 @@ public class DataStoreFileResource extends StoreFileResource {
         formatToDataStoreFactory.put( "spatialite", "org.geotools.data.spatialite.SpatiaLiteDataStoreFactory");
     }
     
-    protected static HashMap<String,Map> dataStoreFactoryToDefaultParams = new HashMap();
+    protected static final HashMap<String,Map> dataStoreFactoryToDefaultParams = new HashMap();
     static {
         HashMap map = new HashMap();
         map.put("database", "@DATA_DIR@/@NAME@");
@@ -140,7 +140,6 @@ public class DataStoreFileResource extends StoreFileResource {
     public void handleGet() {
         String workspace = getAttribute("workspace");
         String datastore = getAttribute("datastore");
-        String format = getAttribute("format");
 
         //find the directory from teh datastore connection parameters
         DataStoreInfo info = catalog.getDataStoreByName(workspace, datastore);

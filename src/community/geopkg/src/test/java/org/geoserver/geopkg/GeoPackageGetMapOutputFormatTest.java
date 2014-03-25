@@ -13,7 +13,6 @@ import java.io.IOException;
 
 import javax.xml.namespace.QName;
 
-import org.apache.commons.io.FileUtils;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.GWC;
 import org.geoserver.wms.GetMapRequest;
@@ -22,9 +21,6 @@ import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.RawMap;
 import org.geotools.geopkg.GeoPackage;
-import org.geotools.geopkg.Tile;
-import org.geotools.geopkg.TileEntry;
-import org.geotools.geopkg.TileReader;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -66,14 +62,14 @@ public class GeoPackageGetMapOutputFormatTest extends WMSTestSupport {
         assertTrue(geopkg.features().isEmpty());
         assertTrue(geopkg.rasters().isEmpty());
         assertEquals(1, geopkg.tiles().size());
-        assertNotNull(geopkg.tile("tiles"));
+        assertNotNull(geopkg.tile("World_Lakes"));
     }
 
     GeoPackage createGeoPackage(WebMap map) throws IOException {
         assertTrue(map instanceof RawMap);
 
         RawMap rawMap = (RawMap) map;
-        File f = File.createTempFile("geopkg", "geopackage", new File("target"));
+        File f = File.createTempFile("temp", ".gpkg", new File("target"));
         FileOutputStream fout = new FileOutputStream(f);
         rawMap.writeTo(fout);
         fout.flush(); 
@@ -114,7 +110,7 @@ public class GeoPackageGetMapOutputFormatTest extends WMSTestSupport {
         return map;
     }
 
-    public static void main(String[] args) throws Exception {
+    /*public static void main(String[] args) throws Exception {
         GeoPackage geopkg = new GeoPackage(new File(
             "/Users/jdeolive/geopkg.db"));;
         File d = new File("/Users/jdeolive/tiles");
@@ -128,5 +124,5 @@ public class GeoPackageGetMapOutputFormatTest extends WMSTestSupport {
 
             FileUtils.writeByteArrayToFile(f, t.getData());
         }
-    }
+    }*/
 }

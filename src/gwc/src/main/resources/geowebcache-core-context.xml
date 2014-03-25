@@ -155,7 +155,11 @@
   <bean id="nioLock" class="org.geowebcache.locks.NIOLockProvider">
     <constructor-arg ref="gwcDefaultStorageFinder"/>
   </bean>
-
+  
+  <bean id="globalLock" class="org.geoserver.gwc.GeoServerLockProvider">
+      <property name="delegate" ref="lockProvider"/>
+  </bean>
+  
   <!-- The tool performing the automatic migration between metastore and fs hashes -->
   <bean id="metastoreRemover" class="org.geowebcache.storage.MetastoreRemover">
     <constructor-arg ref="gwcDefaultStorageFinder"/>

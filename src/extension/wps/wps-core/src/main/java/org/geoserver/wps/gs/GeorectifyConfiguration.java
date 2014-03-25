@@ -11,18 +11,20 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.tools.ant.types.Environment.Variable;
 import org.geotools.util.logging.Logging;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 import org.vfny.geoserver.global.GeoserverDataDirectory;
+
+import com.google.common.collect.Maps;
 
 /**
  * @author Daniele Romagnoli, GeoSolutions SAS
@@ -108,7 +110,7 @@ public class GeorectifyConfiguration implements ApplicationListener {
     /** Wait this time when executing an ant task to do gdal processing before give up */
     private long executionTimeout = GRDefaults.EXECUTION_TIMEOUT;
 
-    private List<Variable> envVariables;
+    private Map<String,String> envVariables;
 
     /** Set on this String any parameter used by gdalwarp */
     private String gdalWarpingParameters = GRDefaults.GDAL_WARPING_PARAMETERS;
@@ -144,7 +146,7 @@ public class GeorectifyConfiguration implements ApplicationListener {
                 fis = new FileInputStream(configFile);
                 props.load(fis);
                 Iterator<Object> keys = props.keySet().iterator();
-                envVariables = new ArrayList<Variable>();
+                envVariables = Maps.newHashMap();
                 while (keys.hasNext()) {
                     String key = (String) keys.next();
                     if (key.equalsIgnoreCase(GRKeys.GDAL_CACHEMAX)) {
@@ -154,10 +156,7 @@ public class GeorectifyConfiguration implements ApplicationListener {
                             cacheMax = (String) props.get(GRKeys.GDAL_CACHEMAX);
                             if (cacheMax != null) {
                                 int gdalCacheMaxMemory = Integer.parseInt(cacheMax); // Only for validation
-                                Variable var = new Variable();
-                                var.setKey(GRKeys.GDAL_CACHEMAX);
-                                var.setValue(cacheMax);
-                                envVariables.add(var);
+                                envVariables.put(GRKeys.GDAL_CACHEMAX, cacheMax);
                             }
                         } catch (NumberFormatException nfe) {
                             if (LOGGER.isLoggable(Level.WARNING)) {
@@ -174,11 +173,7 @@ public class GeorectifyConfiguration implements ApplicationListener {
                             final File directory = new File(path);
                             if (directory.exists() && directory.isDirectory()
                                     && ((key.equalsIgnoreCase(GRKeys.GDAL_DATA) && directory.canRead()) || directory.canWrite())) {
-                                Variable var = new Variable();
-                                var.setKey(key);
-                                var.setValue(path);
-                                envVariables.add(var);
-
+                                envVariables.put(key, path);
                             } else {
                                 if (LOGGER.isLoggable(Level.WARNING)) {
                                     LOGGER.log(Level.WARNING, "The specified folder for " + key + " variable isn't valid, "
@@ -216,10 +211,7 @@ public class GeorectifyConfiguration implements ApplicationListener {
                         // Dealing with properties like LD_LIBRARY_PATH, PATH, ...
                         String param = (String) props.get(key);
                         if (param != null) {
-                            Variable var = new Variable();
-                            var.setKey(key);
-                            var.setValue(param);
-                            envVariables.add(var);
+                            envVariables.put(key, param);
                         }
                     }
                 }
@@ -295,11 +287,11 @@ public class GeorectifyConfiguration implements ApplicationListener {
         this.executionTimeout = executionTimeout;
     }
 
-    public List<Variable> getEnvVariables() {
+    public Map<String,String> getEnvVariables() {
         return envVariables;
     }
 
-    public void setEnvVariables(List<Variable> envVariables) {
+    public void setEnvVariables(Map<String,String> envVariables) {
         this.envVariables = envVariables;
     }
 

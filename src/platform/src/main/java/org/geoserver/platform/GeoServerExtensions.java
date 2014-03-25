@@ -4,6 +4,7 @@
  */
 package org.geoserver.platform;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -15,6 +16,7 @@ import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 
+import org.geoserver.platform.resource.Paths;
 import org.geotools.factory.FactoryRegistry;
 import org.geotools.util.SoftValueHashMap;
 import org.geotools.util.logging.Logging;
@@ -48,7 +50,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
     /**
      * logger 
      */
-    public static Logger LOGGER = Logging.getLogger( "org.geoserver.platform" );
+    private static final Logger LOGGER = Logging.getLogger( "org.geoserver.platform" );
     
     /**
      * Caches the names of the beans for a particular type, so that the lookup (expensive)
@@ -108,6 +110,9 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
             if ( context != null ) {
                 try {
                     names = context.getBeanNamesForType(extensionPoint);
+                    if( names == null ){
+                        names = new String[0];
+                    }
                     //update cache only if dealing with the same context
                     if(GeoServerExtensions.context == context){
                         extensionsCache.put(extensionPoint, names);
@@ -400,6 +405,47 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         }
 
         return result;
+    }
+    
+    /**
+     * Search the context for indicated file.
+     * 
+     * Example:
+     * <pre><code>
+     * File webXML = GeoServerExtensions.file("WEB-INF/web.xml");
+     * </code></pre>
+     * @param path File name to search for
+     * @return Requested file, or null if not found
+     */ 
+    public static File file(String path) {
+        if( context instanceof WebApplicationContext){
+            ServletContext servletContext = ((WebApplicationContext)context).getServletContext();
+            String filepath = servletContext.getRealPath( path );
+            if( filepath != null ){
+                File file = new File( filepath );
+                if( file.exists() ){
+                    return file;
+                }
+            }
+            else {
+                List<String> items = Paths.names(path);
+                int index = 0;
+                if( index < items.size() ){
+                    
+                    filepath = servletContext.getRealPath( items.get(index) );
+                    index++;
+                    if( filepath != null ){
+                        File file = new File(filepath);
+                        while(index < items.size() ){
+                            file = new File( file, items.get(index) );
+                            index++;
+                        }
+                        return file;
+                    }
+                }
+            }
+        }
+        return null; // unavaialble
     }
     
 }

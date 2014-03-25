@@ -11,12 +11,12 @@
 
     <parent>
         <groupId>org.geoserver.extension</groupId>
-        <artifactId>wps</artifactId>
-        <version>2.5-SNAPSHOT</version>
+        <artifactId>gs-wps</artifactId>
+        <version>2.6-SNAPSHOT</version>
     </parent>
 
     <groupId>org.geoserver.extension</groupId>
-    <artifactId>wps-core</artifactId>
+    <artifactId>gs-wps-core</artifactId>
     <packaging>jar</packaging>
     <version>${gs.version}</version>
     <name>Web Processing Service Module</name>
@@ -35,17 +35,17 @@
     <dependencies>
         <dependency>
             <groupId>org.geoserver</groupId>
-            <artifactId>wfs</artifactId>
+            <artifactId>gs-wfs</artifactId>
             <version>${gs.version}</version>
         </dependency>
         <dependency>
             <groupId>org.geoserver</groupId>
-            <artifactId>wcs1_1</artifactId>
+            <artifactId>gs-wcs1_1</artifactId>
             <version>${gs.version}</version>
         </dependency>
         <dependency>
             <groupId>org.geoserver</groupId>
-            <artifactId>wcs1_0</artifactId>
+            <artifactId>gs-wcs1_0</artifactId>
             <version>${gs.version}</version>
         </dependency>
         <dependency>
@@ -107,16 +107,6 @@
           <groupId>com.google.guava</groupId>
           <artifactId>guava</artifactId>
         </dependency>
-        <dependency>
-	        <groupId>org.apache.ant</groupId>
-	        <artifactId>ant</artifactId>
-	        <version>${ant.version}</version>
-	    </dependency>
-	    <dependency>
-	        <groupId>org.apache.ant</groupId>
-	        <artifactId>ant-launcher</artifactId>
-	        <version>${ant.version}</version>
-	    </dependency>
         
         <!-- test dependencies -->
         <dependency>
@@ -136,7 +126,7 @@
         </dependency>
         <dependency>
            <groupId>org.geoserver</groupId>
-           <artifactId>main</artifactId>
+           <artifactId>gs-main</artifactId>
            <version>${gs.version}</version>
            <classifier>tests</classifier>
            <scope>test</scope>

@@ -12,18 +12,18 @@
  <parent>
   <groupId>org.geoserver</groupId>
   <artifactId>geoserver</artifactId>
-  <version>2.5-SNAPSHOT</version>
+  <version>2.6-SNAPSHOT</version>
  </parent>
  
  <groupId>org.geoserver</groupId>
- <artifactId>wcs</artifactId>
+ <artifactId>gs-wcs</artifactId>
  <packaging>jar</packaging>
  <name>Web Coverage Service Module</name>
  
  <dependencies>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>main</artifactId>
+   <artifactId>gs-main</artifactId>
   </dependency>
   <dependency>
    <groupId>org.geotools</groupId>
@@ -55,7 +55,7 @@
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>main</artifactId>
+   <artifactId>gs-main</artifactId>
    <classifier>tests</classifier>
    <scope>test</scope>
   </dependency>

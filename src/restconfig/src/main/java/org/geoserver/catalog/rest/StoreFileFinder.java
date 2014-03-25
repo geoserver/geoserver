@@ -19,7 +19,7 @@ import org.restlet.resource.Resource;
 public class StoreFileFinder extends AbstractCatalogFinder {
 
     
-    protected static HashMap<String,String> formatToCoverageStoreFormat = new HashMap();
+    protected static final HashMap<String,String> formatToCoverageStoreFormat = new HashMap();
     static {
         for (Format format : CoverageStoreUtils.formats) {
             formatToCoverageStoreFormat.put(format.getName().toLowerCase(), format.getName());
@@ -36,7 +36,6 @@ public class StoreFileFinder extends AbstractCatalogFinder {
         //figure out what kind of store this maps to
         String format = getAttribute(request, "format");
         String datastore = getAttribute(request, "datastore");
-        String coveragestore = getAttribute(request, "coveragestore");
         
         if ( datastore != null ) {
             return new DataStoreFileResource(request,response,format,catalog);

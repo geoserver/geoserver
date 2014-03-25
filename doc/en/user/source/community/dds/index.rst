@@ -15,7 +15,7 @@ mime-types supported are:
 Installing the DDS/BIL extension
 -----------------------------------
 
- #. Download the DDS/BIL extension from the `nightly GeoServer community module builds <http://gridlock.opengeo.org/geoserver/trunk/community-latest/>`_. A prebuilt version for Geoserver 2.0.x can be found on Jira - `GEOS-3586 <http://jira.codehaus.org/browse/GEOS-3586>`_.
+ #. Download the DDS/BIL extension from the `nightly GeoServer community module builds <http://ares.boundlessgeo.com/geoserver/master/community-latest/>`_. A prebuilt version for Geoserver 2.0.x can be found on Jira - `GEOS-3586 <http://jira.codehaus.org/browse/GEOS-3586>`_.
 
     .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance!
 

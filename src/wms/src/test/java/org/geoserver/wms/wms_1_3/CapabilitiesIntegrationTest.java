@@ -34,6 +34,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
+import org.geoserver.wms.map.OpenLayersMapOutputFormat;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -466,5 +467,12 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
         assertXpathEvaluatesTo("http://localhost/metadata?" + query, xpath, doc);
         
+    }
+    
+    // [GEOS-6312] OpenLayers output format is not listed in WMS 1.3 capabilities document
+    @Test
+    public void testOpenlayersFormat() throws Exception {
+        Document doc = getAsDOM("wms?service=WMS&request=getCapabilities&version=1.3.0", true);
+        assertXpathEvaluatesTo("1", "count(//wms:GetMap[wms:Format = '" + OpenLayersMapOutputFormat.MIME_TYPE + "'])", doc);
     }
 }

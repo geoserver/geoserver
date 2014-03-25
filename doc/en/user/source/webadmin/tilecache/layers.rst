@@ -9,13 +9,12 @@ This page shows a listing of all of the layers known to the integrated GeoWebCac
 .. figure:: img/tilelayers.png
    :align: center
 
-.. note:: There is also a link to the `GeoWebCache standalone demo page <webadmin_tilecaching_demopage>`.
+.. note:: There is also a link to the :ref:`GeoWebCache standalone demo page <webadmin_tilecaching_demo>`.
 
 Layer information
 -----------------
 
 For each layer cached by GeoWebCache, the following information is available.
-
 
 Disk Quota
 ~~~~~~~~~~
@@ -26,6 +25,8 @@ Disk Used
 ~~~~~~~~~
 
 The current disk space being used by tiles for this particular layer.
+
+.. note:: **This counter will only be updated if disk quotas are enabled.** If disk quotas are not enabled, tiles will still be saved to disk, but the counter will remain as ``0.0 B``.
 
 Enabled
 ~~~~~~~

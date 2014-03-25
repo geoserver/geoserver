@@ -1,4 +1,5 @@
-GEOSERVER 2.5+ DATA STORE EXTRAS README
+GEOSERVER 2.6+ DATA STORE EXTRAS README
+---------------------------------------
 
 This package contains an Oracle DataStore implementation that is 
 distributed as a separate plug-in.  It is released just after GeoServer
@@ -21,9 +22,9 @@ INSTALLATION
 Note the Oracle jars must be on your classpath for the Oracle datastore
 to show up on the menu.  For more information see on needed libraries
 and parameters, see: 
-http://geoserver.org/display/GEOSDOC/Oracle+DataStore
+http://docs.geoserver.org/latest/en/user/data/database/oracle.html
 
 COMPATIBILITY
 
-This jar should work with any version of GeoServer based on GeoTools 11.x  
-Currently this is anything in 2.5.x.
+This jar should work with any version of GeoServer based on GeoTools 12.x  
+Currently this is anything in 2.6.x.

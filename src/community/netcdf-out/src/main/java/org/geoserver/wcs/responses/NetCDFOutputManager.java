@@ -464,10 +464,14 @@ public class NetCDFOutputManager {
 
         // Setup resolutions and bbox extrema to populate regularly gridded coordinate data
         //TODO: investigate whether we need to do some Y axis flipping
-        final double xmin = (axisOrder == AxisOrder.NORTH_EAST) ? envelope.getMinimum(1) : envelope.getMinimum(0);
-        final double ymin = (axisOrder == AxisOrder.NORTH_EAST) ? envelope.getMinimum(0) : envelope.getMinimum(1);
+        double xmin = (axisOrder == AxisOrder.NORTH_EAST) ? envelope.getMinimum(1) : envelope.getMinimum(0);
+        double ymin = (axisOrder == AxisOrder.NORTH_EAST) ? envelope.getMinimum(0) : envelope.getMinimum(1);
         final double periodY = ((axisOrder == AxisOrder.NORTH_EAST) ? XAffineTransform.getScaleX0(at) : XAffineTransform.getScaleY0(at));
         final double periodX = (axisOrder == AxisOrder.NORTH_EAST) ? XAffineTransform.getScaleY0(at) : XAffineTransform.getScaleX0(at);
+
+        // NetCDF coordinates are relative to center. Envelopes are relative to corners: apply an half pixel shift to go back to center
+        xmin += (periodX / 2d);
+        ymin += (periodY / 2d);
 
         // Adding lat lon dimensions
         final Dimension latDim = writer.addDimension(null, NCUtilities.LAT, numLat);

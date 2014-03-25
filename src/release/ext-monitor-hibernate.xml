@@ -9,7 +9,7 @@
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
-        <include>monitor-hibernate-*.jar</include>
+        <include>gs-monitor-hibernate-*.jar</include>
         <include>antlr-*.jar</include>
         <include>asm*.jar</include>
         <include>dom4j-*.jar</include>

@@ -114,8 +114,11 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
             boolean firsttime=true;
             for (String param : params)  
             {  
-                String name = param.split("=")[0];  
-                String value = param.split("=")[1];  
+                                
+                String[] keyValue = param.split("=");
+                if (keyValue.length == 0) continue;
+                String name = keyValue[0];
+                
                 if (GeoServerCasConstants.ARTIFACT_PARAMETER.equals(name.trim()))
                     continue;
                 if (GeoServerCasAuthenticationEntryPoint.CAS_REDIRECT.equals(name.trim()))
@@ -126,7 +129,7 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
                 } else {
                     buff.append("&");
                 }                                    
-                buff.append(name).append("=").append(value);
+                buff.append(param);
             }                            
         }
         String serviceUrl = buff.toString();

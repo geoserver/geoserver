@@ -11,22 +11,22 @@
 
 	<parent>
 		<groupId>org.geoserver.extension</groupId>
-		<artifactId>app-schema</artifactId>
-		<version>2.5-SNAPSHOT</version>
+		<artifactId>gs-app-schema</artifactId>
+		<version>2.6-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.geoserver.extension</groupId>
-	<artifactId>sample-data-access-test</artifactId>
+	<artifactId>gs-sample-data-access-test</artifactId>
 	<name>Sample DataAccess Integration Test</name>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.geoserver</groupId>
-			<artifactId>main</artifactId>
+			<artifactId>gs-main</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.geoserver</groupId>
-			<artifactId>main</artifactId>
+			<artifactId>gs-main</artifactId>
 			<classifier>tests</classifier>
 		</dependency>
 		<dependency>
@@ -35,7 +35,7 @@
 				compile but will not run.
 			-->
 			<groupId>org.geoserver</groupId>
-			<artifactId>wfs</artifactId>
+			<artifactId>gs-wfs</artifactId>
 		</dependency>
 		<dependency>
 			<!-- text-feature-list runtime dependency -->

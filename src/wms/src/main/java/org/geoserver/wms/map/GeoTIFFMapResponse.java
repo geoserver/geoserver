@@ -4,8 +4,6 @@
  */
 package org.geoserver.wms.map;
 
-import java.awt.Transparency;
-import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -15,24 +13,16 @@ import java.util.logging.Logger;
 import javax.imageio.stream.ImageOutputStream;
 
 import org.geoserver.platform.ServiceException;
-import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.RasterCleaner;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
-import org.geoserver.wms.kvp.PaletteManager;
-import org.geoserver.wms.map.PNGMapResponse.QuantizeMethod;
-import org.geoserver.wms.map.quantize.CachingColorIndexer;
-import org.geoserver.wms.map.quantize.ColorIndexer;
-import org.geoserver.wms.map.quantize.ColorIndexerDescriptor;
-import org.geoserver.wms.map.quantize.LRUColorIndexer;
 import org.geotools.coverage.CoverageFactoryFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.gce.geotiff.GeoTiffWriter;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.image.io.ImageIOExt;
-import org.geotools.image.palette.InverseColorMapOp;
 import org.geotools.util.logging.Logging;
 
 /**

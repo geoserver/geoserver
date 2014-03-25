@@ -11,11 +11,11 @@
   <parent>
     <groupId>org.geoserver</groupId>		
     <artifactId>community</artifactId>
-    <version>2.5-SNAPSHOT</version>
+    <version>2.6-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
-  <artifactId>app-schema-community</artifactId>
+  <artifactId>gs-app-schema-community</artifactId>
   <packaging>pom</packaging>
   <name>Application Schema Community</name>
 

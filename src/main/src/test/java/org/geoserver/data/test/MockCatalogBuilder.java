@@ -365,6 +365,7 @@ public class MockCatalogBuilder {
     
         final CoverageInfo c = createNiceMock(CoverageInfo.class);
         coverages.add(c);
+        final List<CoverageInfo> coverageList = coverages;
     
         if (srs == null) {
             srs = real.getSRS();
@@ -397,6 +398,7 @@ public class MockCatalogBuilder {
         //    .andReturn(ft).anyTimes();
     
         //expect(catalog.getCoverageByStore(cs, name)).andReturn(c).anyTimes();
+        expect(catalog.getCoveragesByStore(cs)).andReturn(coverageList).anyTimes();
         expect(catalog.getCoverageByCoverageStore(cs, name)).andReturn(c).anyTimes();
     
         c.accept((CatalogVisitor)anyObject());

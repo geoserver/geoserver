@@ -9,7 +9,7 @@
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
-        <include>ogr-*.jar</include>
+        <include>gs-ogr-*.jar</include>
       </includes>
     </fileSet>
     <fileSet>

@@ -13,7 +13,7 @@
  <groupId>org.geoserver</groupId>
  <artifactId>geoserver</artifactId>
  <packaging>pom</packaging>
- <version>2.5-SNAPSHOT</version>
+ <version>2.6-SNAPSHOT</version>
  <name>GeoServer</name>
 
  <scm>
@@ -97,65 +97,76 @@
   <dependencies>
    <dependency>
     <groupId>org.geoserver</groupId>
-    <artifactId>platform</artifactId>
+    <artifactId>gs-platform</artifactId>
     <version>${gs.version}</version>
    </dependency>
    <dependency>
     <groupId>org.geoserver</groupId>
-    <artifactId>ows</artifactId>
+    <artifactId>gs-ows</artifactId>
     <version>${gs.version}</version>
    </dependency>
    <dependency>
     <groupId>org.geoserver</groupId>
-    <artifactId>ows</artifactId>
-    <version>${gs.version}</version>
-    <classifier>tests</classifier>
-   </dependency>
-   <dependency>
-    <groupId>org.geoserver</groupId>
-    <artifactId>main</artifactId>
-    <version>${gs.version}</version>
-   </dependency>
-   <dependency>
-    <groupId>org.geoserver</groupId>
-    <artifactId>main</artifactId>
+    <artifactId>gs-ows</artifactId>
     <version>${gs.version}</version>
     <classifier>tests</classifier>
    </dependency>
    <dependency>
     <groupId>org.geoserver</groupId>
-    <artifactId>wcs</artifactId>
+    <artifactId>gs-main</artifactId>
     <version>${gs.version}</version>
    </dependency>
    <dependency>
     <groupId>org.geoserver</groupId>
-    <artifactId>wcs1_0</artifactId>
-    <version>${gs.version}</version>
-   </dependency>
-   <dependency>
-    <groupId>org.geoserver</groupId>
-    <artifactId>wcs1_1</artifactId>
-    <version>${gs.version}</version>
-   </dependency>
-   <dependency>
-    <groupId>org.geoserver</groupId>
-    <artifactId>wfs</artifactId>
-    <version>${gs.version}</version>
-   </dependency>
-   <dependency>
-    <groupId>org.geoserver</groupId>
-    <artifactId>wms</artifactId>
-    <version>${gs.version}</version>
-   </dependency>
-   <dependency>
-    <groupId>org.geoserver</groupId>
-    <artifactId>wms</artifactId>
+    <artifactId>gs-main</artifactId>
     <version>${gs.version}</version>
     <classifier>tests</classifier>
    </dependency>
    <dependency>
     <groupId>org.geoserver</groupId>
-    <artifactId>gwc</artifactId>
+    <artifactId>gs-wcs</artifactId>
+    <version>${gs.version}</version>
+   </dependency>
+   <dependency>
+    <groupId>org.geoserver</groupId>
+    <artifactId>gs-wcs1_0</artifactId>
+    <version>${gs.version}</version>
+   </dependency>
+   <dependency>
+    <groupId>org.geoserver</groupId>
+    <artifactId>gs-wcs1_1</artifactId>
+    <version>${gs.version}</version>
+   </dependency>
+   <dependency>
+    <groupId>org.geoserver</groupId>
+    <artifactId>gs-wcs2_0</artifactId>
+    <version>${gs.version}</version>
+   </dependency>
+   <dependency>
+    <groupId>org.geoserver</groupId>
+    <artifactId>gs-wcs2_0</artifactId>
+    <version>${gs.version}</version>
+    <classifier>tests</classifier>
+   </dependency>
+   <dependency>
+    <groupId>org.geoserver</groupId>
+    <artifactId>gs-wfs</artifactId>
+    <version>${gs.version}</version>
+   </dependency>
+   <dependency>
+    <groupId>org.geoserver</groupId>
+    <artifactId>gs-wms</artifactId>
+    <version>${gs.version}</version>
+   </dependency>
+   <dependency>
+    <groupId>org.geoserver</groupId>
+    <artifactId>gs-wms</artifactId>
+    <version>${gs.version}</version>
+    <classifier>tests</classifier>
+   </dependency>
+   <dependency>
+    <groupId>org.geoserver</groupId>
+    <artifactId>gs-gwc</artifactId>
     <version>${gs.version}</version>
     <exclusions>
     	<exclusion>
@@ -166,12 +177,12 @@
    </dependency>
    <dependency>
     <groupId>org.geoserver</groupId>
-    <artifactId>rest</artifactId>
+    <artifactId>gs-rest</artifactId>
     <version>${gs.version}</version>
    </dependency>
    <dependency>
     <groupId>org.geoserver.web</groupId>
-    <artifactId>web-core</artifactId>
+    <artifactId>gs-web-core</artifactId>
     <version>${gs.version}</version>
    </dependency>
    <dependency>
@@ -666,6 +677,11 @@
     <version>2.1</version>
    </dependency>
    <dependency>
+    <groupId>commons-codec</groupId>
+    <artifactId>commons-codec</artifactId>
+    <version>1.9</version>
+   </dependency>
+   <dependency>
     <groupId>commons-httpclient</groupId>
     <artifactId>commons-httpclient</artifactId>
     <version>3.1</version>
@@ -975,7 +991,7 @@
     <dependency>
       <groupId>com.thoughtworks.xstream</groupId>
       <artifactId>xstream</artifactId>
-      <version>1.4.3</version>
+      <version>1.4.7</version>
     </dependency>
     <dependency>
       <groupId>com.h2database</groupId>
@@ -1006,6 +1022,11 @@
       <groupId>jfree</groupId>
       <artifactId>jfreechart</artifactId>
       <version>1.0.10</version>
+    </dependency>
+    <dependency>
+      <groupId>ar.com.hjg</groupId>
+      <artifactId>pngj</artifactId>
+      <version>2.0.1</version>
     </dependency>
   </dependencies>
  </dependencyManagement>
@@ -1228,8 +1249,13 @@
       <descriptor>release/ext-inspire.xml</descriptor>
       <descriptor>release/ext-css.xml</descriptor>      
       <descriptor>release/ext-csw.xml</descriptor>
+      <descriptor>release/ext-dxf.xml</descriptor>
+      <descriptor>release/ext-wcs2_0-eo.xml</descriptor>
+      <descriptor>release/ext-libjpeg-turbo.xml</descriptor>
+      <descriptor>release/ext-importer.xml</descriptor>
+      <descriptor>release/ext-importer-bdb.xml</descriptor>
      </descriptors>
-     <finalName>geoserver-2.5-SNAPSHOT</finalName>
+     <finalName>geoserver-2.6-SNAPSHOT</finalName>
      <outputDirectory>${project.build.directory}/release</outputDirectory>
     </configuration>
    </plugin>
@@ -1482,6 +1508,7 @@
   <module>wcs</module>
   <module>wcs1_0</module>
   <module>wcs1_1</module>
+  <module>wcs2_0</module>
   <module>wfs</module>
   <module>wms</module>
   <module>kml</module>
@@ -1492,17 +1519,18 @@
   <module>web</module>
   <module>community</module>
   <module>extension</module>
- </modules>
+</modules>
 
  <properties>
-  <gs.version>2.5-SNAPSHOT</gs.version>
-  <gt.version>11-SNAPSHOT</gt.version>
-  <gwc.version>1.5.0</gwc.version>
+  <gs.version>2.6-SNAPSHOT</gs.version>
+  <gt.version>12-SNAPSHOT</gt.version>
+  <gwc.version>1.6-SNAPSHOT</gwc.version>
   <spring.version>3.1.4.RELEASE</spring.version>
   <spring.security.version>3.1.0.RELEASE</spring.security.version> 
   <poi.version>3.8</poi.version>
   <wicket.version>1.4.12</wicket.version>
   <ant.version>1.8.4</ant.version>
+  <imageio-ext.version>1.1.9</imageio-ext.version>
   <java.awt.headless>true</java.awt.headless>
   <jvm.opts></jvm.opts>
   <jalopy.phase>disabled</jalopy.phase>

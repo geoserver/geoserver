@@ -12,19 +12,19 @@
   <parent>
     <groupId>org.geoserver</groupId>		
 	<artifactId>extension</artifactId>
-	<version>2.5-SNAPSHOT</version>
+	<version>2.6-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
-  <artifactId>csw</artifactId>
+  <artifactId>gs-csw</artifactId>
   <packaging>pom</packaging>
   <name>Catalog Services for the Web parent</name>
 
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
-      <version>2.5-SNAPSHOT</version>
+      <artifactId>gs-main</artifactId>
+      <version>2.6-SNAPSHOT</version>
     </dependency>
   </dependencies>
 

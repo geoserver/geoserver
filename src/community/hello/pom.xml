@@ -12,11 +12,11 @@
   <parent>
     <groupId>org.geoserver</groupId>		
 	<artifactId>community</artifactId>
-	<version>2.5-SNAPSHOT</version>
+	<version>2.6-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
-  <artifactId>hello</artifactId>
+  <artifactId>gs-hello</artifactId>
   <packaging>jar</packaging>
   <version>1.0</version>
   <name>Hello World Service Module</name>
@@ -24,8 +24,8 @@
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
-      <version>2.5-SNAPSHOT</version>
+      <artifactId>gs-main</artifactId>
+      <version>2.6-SNAPSHOT</version>
     </dependency>
   </dependencies>
 

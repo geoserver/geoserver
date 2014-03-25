@@ -19,7 +19,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.geotools.util.logging.Logging;
 
-class FakeHttpServletResponse implements HttpServletResponse {
+/**
+ * A HTTP response used when calling back into the GeoServer dispatcher
+ */
+public class FakeHttpServletResponse implements HttpServletResponse {
 
     private static Logger log = Logging.getLogger(HttpServletResponse.class.toString());
 

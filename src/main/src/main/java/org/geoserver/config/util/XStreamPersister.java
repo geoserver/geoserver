@@ -285,6 +285,10 @@ public class XStreamPersister {
         // Default implementations
         initImplementationDefaults(xs);
         
+        // ignore unkonwn fields, this should help using data dirs that has new config elements
+        // with older versions of GeoServer
+        xs.ignoreUnknownElements();
+        
         // Aliases
         xs.alias("global", GeoServerInfo.class);
         xs.alias("settings", SettingsInfo.class);
@@ -1943,17 +1947,8 @@ public class XStreamPersister {
         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
             String name = readValue("name", String.class, reader);
             String sql = readValue("sql", String.class, reader);
-            
-            // escapeSql value may be missing from existing definitions.  In this 
-            // case set it to false to prevent changing behaviour
-            boolean escapeSql;
-            try {
-                escapeSql = Boolean.valueOf(readValue("escapeSql", String.class, reader));
-            } catch (IllegalArgumentException e) {
-                escapeSql = false;
-            }
                 
-            VirtualTable vt = new VirtualTable(name, sql, escapeSql);
+            VirtualTable vt = new VirtualTable(name, sql, false);
             List<String> primaryKeys = new ArrayList<String>();
             while(reader.hasMoreChildren()) {
                 reader.moveDown();
@@ -1980,6 +1975,8 @@ public class XStreamPersister {
                     }
                     
                     vt.addParameter(new VirtualTableParameter(pname, defaultValue, validator));
+                } else if(reader.getNodeName().equals("escapeSql")) {
+            		vt.setEscapeSql(Boolean.valueOf(reader.getValue()));
                 }
                 reader.moveUp();
             }

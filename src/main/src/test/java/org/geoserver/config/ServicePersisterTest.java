@@ -9,14 +9,18 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.SystemTest;
+import org.geotools.util.logging.Logging;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -73,10 +77,18 @@ public class ServicePersisterTest extends GeoServerSystemTestSupport {
 
         File f = new File(dataDirRoot, "workspaces"+"/"+ws.getName()+"/service.xml");
         assertTrue(f.exists());
-
-        ServiceInfo s = geoServer.getServiceByName(ws, "foo", ServiceInfo.class);
-        geoServer.remove(s);
-        assertFalse(f.exists());
+        
+        Logger logger = Logging.getLogger(GeoServerImpl.class);
+        Level level = logger.getLevel();
+        try {
+            logger.setLevel(Level.OFF);
+            ServiceInfo s = geoServer.getServiceByName(ws, "foo", ServiceInfo.class);
+            geoServer.remove(s);
+            assertFalse(f.exists());
+        }
+        finally {
+            logger.setLevel(level);
+        }
     }
     
     @Test

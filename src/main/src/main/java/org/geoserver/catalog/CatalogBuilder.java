@@ -765,10 +765,20 @@ public class CatalogBuilder {
      * Initialize a coverage object and set any unset info.
      */
     public void initCoverage(CoverageInfo cinfo) throws Exception {
+        initCoverage(cinfo, null);
+    }
+    
+    /**
+     * Initialize a coverage object and set any unset info.
+     */
+    public void initCoverage(CoverageInfo cinfo, final String coverageName) throws Exception {
     	CoverageStoreInfo csinfo = (CoverageStoreInfo) store;
         GridCoverage2DReader reader = (GridCoverage2DReader) catalog
             	.getResourcePool().getGridCoverageReader(csinfo, GeoTools.getDefaultHints());
-
+        if(coverageName != null) {
+            reader = SingleGridCoverage2DReader.wrap(reader, coverageName);
+        }
+        
         initResourceInfo(cinfo);
 
         if (reader == null)
@@ -935,14 +945,21 @@ public class CatalogBuilder {
         if (customParameters != null) {
         	parameters.putAll(customParameters);
         }
-        
+
         // make sure mosaics with many superimposed tiles won't blow up with 
         // a "too many open files" exception
         String maxAllowedTiles = ImageMosaicFormat.MAX_ALLOWED_TILES.getName().toString();
-        if(parameters.keySet().contains(maxAllowedTiles)) {
+        if (parameters.keySet().contains(maxAllowedTiles)) {
             parameters.put(maxAllowedTiles, 1);
         }
-        
+
+        // Since the read sample image won't be greater than 5x5 pixels and we are limiting the
+        // number of granules to 1, we may do direct read instead of using JAI
+        String useJaiImageRead = ImageMosaicFormat.USE_JAI_IMAGEREAD.getName().toString();
+        if (parameters.keySet().contains(useJaiImageRead)) {
+            parameters.put(useJaiImageRead, false);
+        }
+
         parameters.put(AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString(), new GridGeometry2D(testRange, testEnvelope));
 
         // try to read this coverage
@@ -1213,9 +1230,9 @@ public class CatalogBuilder {
 
     void parseUOM(StringBuilder label, Unit uom) {
         String uomString = uom.toString();
-        uomString = uomString.replaceAll("�", "^2");
-        uomString = uomString.replaceAll("�", "^3");
-        uomString = uomString.replaceAll("�", "A");
+        uomString = uomString.replaceAll("\u00B2", "^2");
+        uomString = uomString.replaceAll("\u00B3", "^3");
+        uomString = uomString.replaceAll("\u212B", "A");
         uomString = uomString.replaceAll("�", "");
         label.append(uomString);
     }

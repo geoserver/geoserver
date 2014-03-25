@@ -111,6 +111,15 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     }
     
     @Test 
+    public void testGetLegendGraphics() throws Exception {
+        String layerId = getLayerId(MockData.BASIC_POLYGONS);
+        MockHttpServletResponse sr = getAsServletResponse("gwc/service/wms?service=wms&version=1.1.1&request=GetLegendGraphic&layer="
+                + layerId + "&style=&format=image/png");
+        assertEquals(200, sr.getErrorCode());
+        assertEquals("image/png", sr.getContentType());
+    }
+    
+    @Test 
     public void testCachingHeadersSingleLayer() throws Exception {
         String layerId = getLayerId(MockData.BASIC_POLYGONS);
         setCachingMetadata(layerId, true, 7200);
@@ -576,9 +585,9 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         quota.setQuotaStore("H2");
         gwc.saveDiskQuotaConfig(quota, null);
         GeoServerDataDirectory dd = GeoServerExtensions.bean(GeoServerDataDirectory.class);
-        File jdbcConfigFile = dd.findDataFile("gwc/geowebcache-diskquota-jdbc.xml");
+        File jdbcConfigFile = dd.findFile("gwc/geowebcache-diskquota-jdbc.xml");
         assertNull("jdbc config should not be there", jdbcConfigFile);
-        File h2DefaultStore = dd.findDataFile("gwc/diskquota_page_store_h2");
+        File h2DefaultStore = dd.findFile("gwc/diskquota_page_store_h2");
         assertNotNull("jdbc store should be there", h2DefaultStore);
         assertTrue(getActualStore(provider) instanceof JDBCQuotaStore);
         
@@ -602,7 +611,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         pool.setMaxOpenPreparedStatements(50);
         jdbc.setConnectionPool(pool);
         gwc.saveDiskQuotaConfig(quota, jdbc);
-        jdbcConfigFile = dd.findDataFile("gwc/geowebcache-diskquota-jdbc.xml");
+        jdbcConfigFile = dd.findFile("gwc/geowebcache-diskquota-jdbc.xml");
         assertNotNull("jdbc config should be there", jdbcConfigFile);
         assertNull("jdbc store should be there", dd.findDataFile("gwc/diskquota_page_store_h2"));
         File newQuotaStore = new File("./target/quota-h2.data.db");

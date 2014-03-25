@@ -4,7 +4,6 @@
  */
 package org.geoserver.catalog;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -56,6 +55,17 @@ public class StructuredSingleGridCoverage2DReader extends SingleGridCoverage2DRe
     public boolean removeCoverage(String coverageName) throws IOException,
             UnsupportedOperationException {
         return structuredDelegate.removeCoverage(coverageName);
+    }
+
+    @Override
+    public boolean removeCoverage(String coverageName, boolean delete) throws IOException,
+            UnsupportedOperationException {
+        return structuredDelegate.removeCoverage(coverageName, delete);
+    }
+
+    @Override
+    public void delete(boolean deleteData) throws IOException, UnsupportedOperationException {
+        structuredDelegate.delete(deleteData);
     }
 
     @Override

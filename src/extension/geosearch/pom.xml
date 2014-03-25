@@ -11,39 +11,39 @@
  <parent>
   <groupId>org.geoserver</groupId>
   <artifactId>extension</artifactId>
-  <version>2.5-SNAPSHOT</version>
+  <version>2.6-SNAPSHOT</version>
  </parent>
 
  <groupId>org.geoserver.extension</groupId>
- <artifactId>geosearch</artifactId>
+ <artifactId>gs-geosearch</artifactId>
  <packaging>jar</packaging>
  <name>GeoSearch Index Module</name>
 
  <dependencies>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>rest</artifactId>
-   <version>2.5-SNAPSHOT</version>
+   <artifactId>gs-rest</artifactId>
+   <version>2.6-SNAPSHOT</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>main</artifactId>
-   <version>2.5-SNAPSHOT</version>
+   <artifactId>gs-main</artifactId>
+   <version>2.6-SNAPSHOT</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver.web</groupId>
-   <artifactId>web-core</artifactId>
-   <version>2.5-SNAPSHOT</version>
+   <artifactId>gs-web-core</artifactId>
+   <version>2.6-SNAPSHOT</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>kml</artifactId>
-   <version>2.5-SNAPSHOT</version>
+   <artifactId>gs-kml</artifactId>
+   <version>2.6-SNAPSHOT</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>main</artifactId>
-   <version>2.5-SNAPSHOT</version>
+   <artifactId>gs-main</artifactId>
+   <version>2.6-SNAPSHOT</version>
    <classifier>tests</classifier>
    <scope>test</scope>
   </dependency>

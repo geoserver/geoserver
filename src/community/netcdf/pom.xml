@@ -11,11 +11,11 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>community</artifactId>
-    <version>2.5-SNAPSHOT</version>
+    <version>2.6-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.community</groupId>
-  <artifactId>netcdf</artifactId>
+  <artifactId>gs-netcdf</artifactId>
   <packaging>jar</packaging>
   <name>NetCDF Coverage format</name>
 
@@ -25,5 +25,4 @@
       <artifactId>gt-netcdf</artifactId>
     </dependency>
   </dependencies>
-
 </project>

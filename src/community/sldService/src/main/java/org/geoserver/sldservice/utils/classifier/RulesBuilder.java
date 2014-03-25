@@ -360,7 +360,7 @@ public class RulesBuilder {
 					list.add(r);
 				} else {
 					f = CQL.toFilter(att + (i == 0 ? ">=" : ">") + ff.literal(groups.getMin(i)) + " AND " + att + " <=" + ff.literal(groups.getMax(i)));
-					r.setTitle(" > " + ff.literal(groups.getMin(i)) + " AND <= " + ff.literal(groups.getMax(i)));
+					r.setTitle((i == 0 ? " >= " : " > ") + ff.literal(groups.getMin(i)) + " AND <= " + ff.literal(groups.getMax(i)));
 					r.setFilter(f);
 					list.add(r);
 				}

@@ -51,6 +51,7 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridFormatFinder;
+import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.property.PropertyDataStore;
 import org.geotools.data.property.PropertyDataStoreFactory;
@@ -391,15 +392,18 @@ public class SystemTestData extends CiteTestData {
      * To set up the style a file named <tt>filename</tt> is copied from the classpath relative
      * to the <tt>scope</tt> parameter.
      * </p>
-     * @param ws The workspace to include the style in.
+     * Example: "../temperature.sld" is copied to "styles/temperature.sld".
+     * 
+     * @param ws The workspace to include the style in
      * @param name The name of the style.
      * @param filename The filename to copy from classpath.
      * @param scope Class from which to load sld resource from.
      */
     public void addStyle(WorkspaceInfo ws, String name, String filename, Class scope, Catalog catalog) throws IOException {
         File styles = catalog.getResourceLoader().findOrCreateDirectory(data, "styles");
-
-        catalog.getResourceLoader().copyFromClassPath(filename, new File(styles, filename), scope);
+        String target = new File( filename ).getName();
+        
+        catalog.getResourceLoader().copyFromClassPath(filename, new File(styles, target ), scope);
 
         StyleInfo style = catalog.getStyleByName(ws, name);
         if (style == null) {
@@ -407,7 +411,7 @@ public class SystemTestData extends CiteTestData {
             style.setName(name);
             style.setWorkspace(ws);
         }
-        style.setFilename(filename);
+        style.setFilename(target);
         if (style.getId() == null) {
             catalog.add(style);
         }
@@ -763,20 +767,32 @@ public class SystemTestData extends CiteTestData {
             CatalogBuilder builder = new CatalogBuilder(catalog);
             builder.setStore(store);
     
-            CoverageInfo coverage = null;
-            
-            try {
-
-                coverage = builder.buildCoverage(reader,null );
-                // coverage read params
-                if (format instanceof ImageMosaicFormat) {
-                    //  make sure we work in immediate mode
-                    coverage.getParameters().put(AbstractGridFormat.USE_JAI_IMAGEREAD.getName().getCode(), Boolean.FALSE);
-                } 
-            } catch (Exception e) {
-                throw new IOException(e);
+            final String coverageNames[] = reader.getGridCoverageNames();
+            if (reader instanceof StructuredGridCoverage2DReader && coverageNames != null && coverageNames.length > 1) {
+                for (String coverageName: coverageNames) {
+                    addCoverage(store, builder, reader, catalog, format, coverageName, qName, props, coverageName);
+                }
+            } else {
+                addCoverage(store, builder, reader, catalog, format, name, qName, props, null);
             }
-    
+        } finally {
+            if(reader != null) {
+                reader.dispose();
+            }
+        }
+    }
+
+    private void addCoverage(CoverageStoreInfo store, CatalogBuilder builder, GridCoverage2DReader reader, Catalog catalog,
+            AbstractGridFormat format, String name, QName qName, Map<LayerProperty, Object> props, String coverageName) throws IOException{
+        CoverageInfo coverage = null;
+        try { 
+            coverage = builder.buildCoverage(reader, coverageName, null);
+            // coverage read params
+            if (format instanceof ImageMosaicFormat) {
+                //  make sure we work in immediate mode
+                coverage.getParameters().put(AbstractGridFormat.USE_JAI_IMAGEREAD.getName().getCode(), Boolean.FALSE);
+            } 
+            
             coverage.setName(name);
             coverage.setTitle(name);
             coverage.setDescription(name);
@@ -810,10 +826,8 @@ public class SystemTestData extends CiteTestData {
             else {
                 catalog.save(layer);
             }
-        } finally {
-            if(reader != null) {
-                reader.dispose();
-            }
+        } catch (Exception e) {
+            throw new IOException(e);
         }
     }
 

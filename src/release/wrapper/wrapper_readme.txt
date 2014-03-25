@@ -1,5 +1,5 @@
-Java Service Wrapper package for GeoServer 1.4
-----------------------------------------------
+Java Service Wrapper package for GeoServer
+------------------------------------------
 
 This package allows GeoServer to be installed as a service under
 Windows NT/2000/XP. The 

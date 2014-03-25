@@ -96,7 +96,7 @@ public class WFSKMLOutputFormat extends WFSGetFeatureOutputFormat {
         }
         
         // write out the output
-        encoder.encode(kml, output);
+        encoder.encode(kml, output, context);
     }
 
     private List<SimpleFeatureCollection> getFeatureCollections(FeatureCollectionResponse featureCollection) {
@@ -126,6 +126,11 @@ public class WFSKMLOutputFormat extends WFSGetFeatureOutputFormat {
         GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
         String outputFileName = request.getQueries().get(0).getTypeNames().get(0).getLocalPart();
         return outputFileName + ".kml";
+    }
+    
+    @Override
+    public String getCapabilitiesElementName() {
+        return "KML";
     }
 
     /**

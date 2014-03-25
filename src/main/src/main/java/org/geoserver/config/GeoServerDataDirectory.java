@@ -23,12 +23,19 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.ResourceStore;
+import org.geoserver.platform.resource.Resources;
 
 /**
- * Abstracts access to the geoserver data directory.
+ * File or Resource access to GeoServer data directory. In addition to paths Catalog obhjects such as workspace or FeatureTypeInfo can be used to
+ * locate resources.
  * <p>
  * Example usage:
+ * 
  * <pre>
+ * <code>
  *   GeoServerDataDirectory dd = new GeoServerDataDirectory(resourceLoader);
  * 
  *   //find some data
@@ -40,32 +47,33 @@ import org.geoserver.platform.GeoServerResourceLoader;
  *   //find a template file for a feature type
  *   FeatureTypeInfo ftinfo = ...;
  *   File template = dd.findSuppResourceFile(ftinfo,"title.ftl");
- *   
+ * </code>
  * </pre>
+ * 
  * </p>
  * 
  * @author Justin Deoliveira, OpenGeo
- *
  */
-public class GeoServerDataDirectory {
+@SuppressWarnings("unused")
+public class GeoServerDataDirectory implements ResourceStore {
 
     /**
      * resource loader
      */
     GeoServerResourceLoader resourceLoader;
-    
+
     /**
      * Creates the data directory specifying the resource loader.
      */
-    public GeoServerDataDirectory( GeoServerResourceLoader resourceLoader ) {
+    public GeoServerDataDirectory(GeoServerResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
     }
-    
+
     /**
      * Creates the data directory specifying the base directory.
      */
-    public GeoServerDataDirectory( File baseDirectory ) {
-        this( new GeoServerResourceLoader( baseDirectory ) );
+    public GeoServerDataDirectory(File baseDirectory) {
+        this(new GeoServerResourceLoader(baseDirectory));
     }
 
     /**
@@ -73,6 +81,21 @@ public class GeoServerDataDirectory {
      */
     public GeoServerResourceLoader getResourceLoader() {
         return resourceLoader;
+    }
+
+    @Override
+    public Resource get(String path) {
+        return resourceLoader.get(path);
+    }
+
+    @Override
+    public boolean move(String path, String target) {
+        return resourceLoader.move(path, target);
+    }
+
+    @Override
+    public boolean remove(String path) {
+        return resourceLoader.remove(path);
     }
 
     /**
@@ -83,140 +106,175 @@ public class GeoServerDataDirectory {
     }
 
     /**
-     * Returns a directory under the {@link #root()} directory, if the directory does not exist
-     * null will be returned.
+     * Returns a directory under the {@link #root()} directory, if the directory does not exist it will be created.
+     * 
+     * @return directory (created if needed)
      */
     public File findOrCreateDir(String... location) throws IOException {
-        return resourceLoader.findOrCreateDirectory(location);
+        return get(Paths.path(location)).dir();
     }
 
     /**
-     * Returns a file under the {@link #root()} directory, if the file does not exist null is 
-     * returned.
+     * Returns a file under the {@link #root()} directory, if the file does not exist null is returned.
      */
     public File findFile(String... location) throws IOException {
-        return resourceLoader.find(location);
+        Resource resource = get(Paths.path(location));
+        return Resources.find(resource);
     }
 
     /**
-     * Returns the root of the directory which contains spatial data files, if the directory does
-     * exist, null is returned.
+     * Returns the root of the directory which contains spatial data files, if the directory does exist, null is returned.
      * <p>
      * This directory is called 'data', and is located directly under {@link #root()}
      * </p>
      */
     public File findDataRoot() throws IOException {
-        return dataRoot(false);
+        Resource directory = get("data");
+        return Resources.directory(directory);
     }
-    
+
     /**
-     * Returns the root of the directory which contains spatial data
-     * files, if the directory does not exist it will be created.
+     * Returns the root of the directory which contains spatial data files, if the directory does not exist it will be created.
      * <p>
      * This directory is called 'data', and is located directly under {@link #root()}
      * </p>
      */
     public File findOrCreateDataRoot() throws IOException {
-        return dataRoot(true);
+        Resource directory = get("data");
+        return directory.dir(); // will create directory as needed
     }
-    
-    File dataRoot(boolean create) throws IOException {
-        return create ? resourceLoader.findOrCreateDirectory( "data" ) 
-            : resourceLoader.find( "data");
-    }
-    
+
     /**
-     * Returns a directory under the {@link #dataRoot()} directory, if the directory does not exist
-     * null will be returned.
+     * Returns a directory under the {@link #dataRoot()} directory, if the directory does not exist null will be returned.
      */
-    public File findDataDir( String... location ) throws IOException {
-        return dataDir( false, location );
+    public File findDataDir(String... location) throws IOException {
+        Resource resource = get(Paths.path("data", Paths.path(location)));
+        return Resources.directory(resource);
     }
-    
+
     /**
-     * Returns a directory under the {@link #dataRoot()} directory, if the directory does not exist 
-     * it will be created.
+     * Returns a directory under the {@link #dataRoot()} directory, if the directory does not exist it will be created.
      */
-    public File findOrCreateDataDir( String... location ) throws IOException {
-        return dataDir(true, location);
+    public File findOrCreateDataDir(String... location) throws IOException {
+        Resource resource = get(Paths.path("data", Paths.path(location)));
+        return resource.dir();
     }
-    
-    protected File dataDir( boolean create, String... location ) throws IOException {
-        return create ? resourceLoader.findOrCreateDirectory(dataRoot(create), location) 
-            : resourceLoader.find( dataRoot(create), location );
-    }
-    
+
     /**
-     * Returns a file under the {@link #dataRoot()} directory, if the file does not exist null is 
-     * returned.
+     * Returns a directory under the {@link #dataRoot()} directory.
+     * 
+     * @param create Create directory if needed
+     * @param location directory location
+     * @return Directory (which may be newly created) or null if not found
+     * @deprecated Unused
      */
-    public File findDataFile( String... location ) throws IOException {
-        return dataFile(false,location);
+    private File dataDir(boolean create, String... location) throws IOException {
+        Resource directory = get(Paths.path("data", Paths.path(location)));
+        if (create) {
+            return directory.dir();
+        } else {
+            return Resources.directory(directory);
+        }
     }
-    
+
     /**
-     * Returns a file under the {@link #dataRoot()} directory, if the file does not exist it a file
-     * object will still be returned.
+     * Returns a file under the {@link #dataRoot()} directory, if the file does not exist null is returned.
      */
-    public File findOrResolveDataFile( String... location ) throws IOException {
-        return dataFile(true,location);
+    public File findDataFile(String... location) throws IOException {
+        Resource resource = get(Paths.path("data", Paths.path(location)));
+        return Resources.file(resource);
     }
-    
-    File dataFile( boolean create, String... location ) throws IOException {
-        return create ? resourceLoader.createFile(dataRoot(create), location) 
-            : resourceLoader.find( dataRoot(create), location );
-    }
-    
+
     /**
-     * Returns the root of the directory which contains security configuration files, if the 
-     * directory does exist, null is returned.
+     * Returns a file under the {@link #dataRoot()} directory, if the file does not exist it a file object will still be returned.
+     * 
+     * @deprecated Unused
+     */
+    public File findOrResolveDataFile(String... location) throws IOException {
+        Resource resource = get(Paths.path("data", Paths.path(location)));
+        return resource.file();
+    }
+
+    /**
+     * Returns a file under the {@link #dataRoot()} directory.
+     * 
+     * @param create Create file (if required)
+     * @param location file location
+     * @return File (created if needed) or null if not found
+     * @deprecated Unused
+     */
+    private File dataFile(boolean create, String... location) throws IOException {
+        Resource resource = get(Paths.path("data", Paths.path(location)));
+        if (create) {
+            return resource.file();
+        } else {
+            return Resources.file(resource);
+        }
+    }
+
+    /**
+     * Returns the root of the directory which contains security configuration files, if the directory does exist, null is returned.
      * <p>
      * This directory is called 'security', and is located directly under {@link #root()}
      * </p>
      */
     public File findSecurityRoot() throws IOException {
-        return securityRoot(false);
+        Resource directory = get("security");
+        return Resources.directory(directory);
     }
-    
+
     /**
-     * Returns the root of the directory which contains security configuration files, if the 
-     * directory does exist it is created.
+     * Returns the root of the directory which contains security configuration files, if the directory does exist it is created.
      * <p>
      * This directory is called 'security', and is located directly under {@link #root()}
      * </p>
      */
     public File findOrCreateSecurityRoot() throws IOException {
-        return securityRoot(true);
-    }
-
-    File securityRoot(boolean create) throws IOException {
-        return create ? resourceLoader.findOrCreateDirectory( "security" ) 
-                : resourceLoader.find( "security");
+        Resource direcrtory = get("security");
+        return direcrtory.dir(); // will create directory as needed
     }
 
     /**
-     * Returns a directory under the {@link #securityRoot()} directory, if the directory does not 
-     * exist null will be returned.
+     * Access to security directory.
+     * 
+     * @Unused
+     */
+    private File securityRoot(boolean create) throws IOException {
+        Resource directory = get("security");
+        if (create) {
+            return directory.dir();
+        } else {
+            return Resources.directory(directory);
+        }
+    }
+
+    /**
+     * Returns a directory under the {@link #securityRoot()} directory, if the directory does not exist null will be returned.
      */
     public File findSecurityDir(String... location) throws IOException {
-        return securityDir( false, location );
+        Resource resource = get(Paths.path("security", Paths.path(location)));
+        return Resources.directory(resource);
     }
 
     /**
-     * Returns a directory under the {@link #securityRoot()} directory, if the directory does not 
-     * exist it will be created.
+     * Returns a directory under the {@link #securityRoot()} directory, if the directory does not exist it will be created.
      */
     public File findOrCreateSecurityDir(String... location) throws IOException {
-        return securityDir(true, location);
+        Resource resource = get(Paths.path("security", Paths.path(location)));
+        return resource.dir();
     }
 
-    File securityDir(boolean create, String... location) throws IOException {
-// TODO, mcr ???        
-//        return create ? resourceLoader.findOrCreateDirectory(securityRoot(create), location) 
-//            : resourceLoader.find( securityRoot(create), location );
-      return create ? resourceLoader.findOrCreateDirectory(new File("security"), location) 
-              : resourceLoader.find( securityRoot(create), location );
-        
+    /**
+     * Access to "security" folder.
+     */
+    @Deprecated
+    private File securityDir(boolean create, String... location) throws IOException {
+        Resource directory = get(Paths.path("security", Paths.path(location)));
+        if (create) {
+            return directory.dir(); // will create directory as needed
+        } else {
+            return Resources.directory(directory);
+        }
     }
 
     /**
@@ -225,8 +283,11 @@ public class GeoServerDataDirectory {
      * If the security configuration directory does exist it will be created.
      * </p>
      */
-    public void copyToSecurityDir( File f ) throws IOException {
-        FileUtils.copyFileToDirectory( f, securityRoot( true ) );
+    public void copyToSecurityDir(File f) throws IOException {
+        Resource resource = get("security");
+        File securityRoot = resource.dir();
+
+        FileUtils.copyFileToDirectory(f, securityRoot);
     }
 
     /**
@@ -235,95 +296,112 @@ public class GeoServerDataDirectory {
      * If the security configuration directory does exist it will be created
      * </p>
      */
-    public void copyToSecurityDir( InputStream data, String filename ) 
-        throws IOException {
-        copy( data, securityRoot( true ), filename );
+    public void copyToSecurityDir(InputStream data, String filename) throws IOException {
+        Resource resource = get("security");
+        File securityRoot = resource.dir();
+
+        copy(data, securityRoot, filename);
     }
-    
+
     /**
-     * Returns the directory for the specified workspace, if the directory does not exist null is
-     * returned.
+     * Returns the directory for the specified workspace, if the directory does not exist null is returned.
      */
-    public File findWorkspaceDir( WorkspaceInfo ws ) throws IOException {
-        return workspaceDir(false,ws); 
+    public File findWorkspaceDir(WorkspaceInfo ws) throws IOException {
+        Resource directory = get(path(ws));
+        return Resources.directory(directory);
     }
-    
+
     /**
-     * Returns the directory for the specified workspace, if the directory does not exist it will be
-     * created.
+     * Returns the directory for the specified workspace, if the directory does not exist it will be created.
      * 
      * @param create If set to true the directory will be created when it does not exist.
      */
-    public File findOrCreateWorkspaceDir( WorkspaceInfo ws ) throws IOException {
-        return workspaceDir(true,ws); 
+    public File findOrCreateWorkspaceDir(WorkspaceInfo ws) throws IOException {
+        Resource directory = get(path(ws));
+        return directory.dir();
     }
-    
-    File workspaceDir( boolean create, WorkspaceInfo ws ) throws IOException {
-        File workspaces = create ? resourceLoader.findOrCreateDirectory( "workspaces" ) 
-           : resourceLoader.find( "workspaces" );
-        if ( workspaces != null ) {
-            return dir(new File( workspaces, ws.getName() ), create);
+
+    @Deprecated
+    private File workspaceDir(boolean create, WorkspaceInfo ws) throws IOException {
+        if (create) {
+            Resource directory = get(path(ws));
+            return directory.dir();
+        } else {
+            Resource directory = get(path(ws));
+            return Resources.directory(directory);
         }
-        return null;
     }
-    
-    File workspacesDir( boolean create ) throws IOException {
-        return create ? resourceLoader.findOrCreateDirectory( "workspaces" ) 
-                : resourceLoader.find( "workspaces" );
+
+    @Deprecated
+    private File workspacesDir(boolean create) throws IOException {
+        if (create) {
+            Resource directory = get("workspaces");
+            return directory.dir();
+        } else {
+            Resource directory = get("workspaces");
+            return Resources.directory(directory);
+        }
     }
-    
+
     /**
-     * Returns the configuration file for the specified workspace, if the file does not exist null 
-     * is returned.
+     * Returns the configuration file for the specified workspace, if the file does not exist null is returned.
      */
-    public File findWorkspaceFile( WorkspaceInfo ws ) throws IOException {
-        return workspaceFile(false,ws);
+    public File findWorkspaceFile(WorkspaceInfo ws) throws IOException {
+        Resource workspaceFile = get(path(ws, "workspace.xml"));
+        return Resources.file(workspaceFile);
     }
-    
+
     /**
-     * Returns the configuration file for the specified workspace, if the file does not exist a 
-     * file object will still be returned.
+     * Returns the configuration file for the specified workspace, if the file does not exist a file object will still be returned.
      * 
      */
-    public File findOrResolveWorkspaceFile( WorkspaceInfo ws ) throws IOException {
-        return workspaceFile(true,ws);
+    public File findOrResolveWorkspaceFile(WorkspaceInfo ws) throws IOException {
+        Resource workspaceFile = get(path(ws, "workspace.xml"));
+        return workspaceFile.file();
     }
-    
-    File workspaceFile( boolean create, WorkspaceInfo ws ) throws IOException {
-        File wsdir = workspaceDir(create, ws);
-        return wsdir != null ? file(new File( wsdir, "workspace.xml" ), create) : null;
-    }
-    
-    /**
-     * Returns a supplementary configuration file for a workspace, if the file does not exist null
-     * is returned.
-     */
-    public File findSuppWorkspaceFile( WorkspaceInfo ws, String filename ) throws IOException {
-        File wsdir = findWorkspaceDir( ws );
-        return wsdir != null ? file(new File( wsdir, filename ), false) : null;
-    }
-    
-    /**
-     * Returns a supplementary configuration file in the workspaces directory, if the file 
-     * does not exist null is returned.
-     */
-    public File findSuppWorkspacesFile( WorkspaceInfo ws, String filename ) throws IOException {
-        File workspaces = resourceLoader.find( "workspaces" );
-        if(workspaces == null) {
-            return null;
+
+    @Deprecated
+    private File workspaceFile(boolean create, WorkspaceInfo ws) throws IOException {
+        Resource workspaceFile = get(path(ws, "workspace.xml"));
+        if (create) {
+            return workspaceFile.file();
         } else {
-            return file(new File(workspaces, filename), false);
+            return Resources.file(workspaceFile);
         }
     }
-    
+
+    /**
+     * Returns a supplementary configuration file for a workspace, if the file does not exist null is returned.
+     */
+    public File findSuppWorkspaceFile(WorkspaceInfo ws, String filename) throws IOException {
+        Resource resource = get(path(ws, filename));
+        return Resources.file(resource);
+    }
+
+    private String path(WorkspaceInfo workspace, String filename) {
+        return Paths.path("workspaces", workspace.getName(), filename);
+    }
+
+    /**
+     * Returns a supplementary configuration file in the workspaces directory, if the file does not exist null is returned.
+     */
+    public File findSuppWorkspacesFile(WorkspaceInfo ws, String filename) throws IOException {
+        Resource resource = get(Paths.path("workspaces", filename));
+        return Resources.file(resource);
+    }
+
     /**
      * Copies a file into a workspace configuration directory.
      * <p>
      * If the workspace configuration directory does exist it will be created.
      * </p>
+     * 
+     * @param ws Target workspace for copied file
+     * @param file File to copy
      */
-    public void copyToWorkspaceDir( WorkspaceInfo ws, File f ) throws IOException {
-        FileUtils.copyFileToDirectory( f, workspaceDir( true, ws ) );
+    public void copyToWorkspaceDir(WorkspaceInfo ws, File file) throws IOException {
+        Resource directory = get(path(ws));
+        FileUtils.copyFileToDirectory(file, directory.dir());
     }
 
     /**
@@ -332,91 +410,125 @@ public class GeoServerDataDirectory {
      * If the workspace configuration directory does exist it will be created
      * </p>
      */
-    public void copyToWorkspaceDir( WorkspaceInfo ws, InputStream data, String filename ) 
-        throws IOException {
-        copy( data, workspaceDir( true, ws ), filename );
+    public void copyToWorkspaceDir(WorkspaceInfo ws, InputStream data, String filename)
+            throws IOException {
+        Resource directory = get(path(ws));
+        copy(data, directory.dir(), filename);
     }
-    
+
+    private String path(WorkspaceInfo workspace) {
+        return Paths.path("workspaces", workspace.getName());
+    }
+
     /**
      * Copies data into the root workspaces configuration directory.
      * <p>
      * If the workspace configuration directory does exist it will be created
      * </p>
      */
-    public void copyToWorkspacesDir( InputStream data, String filename ) 
-        throws IOException {
-        copy( data, workspacesDir( true ), filename );
+    public void copyToWorkspacesDir(InputStream data, String filename) throws IOException {
+        copy(data, get("workspaces").dir(), filename);
     }
-    
+
     /**
-     * Returns the directory in which a stores configuration is persisted, if the directory does 
-     * not exists null is returned.
+     * Returns the directory in which a stores configuration is persisted, if the directory does not exists null is returned.
      */
-    public File findStoreDir( StoreInfo s ) throws IOException {
-        return storeDir( false, s );
+    public File findStoreDir(StoreInfo store) throws IOException {
+        Resource directory = get(path(store));
+        return Resources.directory(directory);
     }
-    
+
+    private String path(StoreInfo store) {
+        WorkspaceInfo workspace = store.getWorkspace();
+        return Paths.path("workspaces", workspace.getName(), store.getName());
+    }
+
     /**
-     * Returns the directory in which a stores configuration is persisted, if the directory does 
-     * not exist it is created.
+     * Returns the directory in which a stores configuration is persisted, if the directory does not exist it is created.
      */
-    public File findOrCreateStoreDir( StoreInfo s ) throws IOException {
-        return storeDir( true, s );
+    public File findOrCreateStoreDir(StoreInfo store) throws IOException {
+        Resource resource = get(path(store));
+        return resource.dir();
     }
-    
-    File storeDir( boolean create, StoreInfo s ) throws IOException {
-        File wsdir = workspaceDir(create,s.getWorkspace());
-        return wsdir != null ? dir(new File( wsdir, s.getName() ),create) : null ;   
-    }
-    
-    /**
-     * Returns the configuration file for the specified store, if the file does not exist null is 
-     * returned.
-     */
-    public File findStoreFile( StoreInfo s ) throws IOException {
-        return storeFile(false,s);
-    }
-    
-    /**
-     * Returns the configuration file for the specified store, if the file does not exist a file 
-     * object is still returned.
-     */
-    public File findOrResolveStoreFile( StoreInfo s ) throws IOException {
-        return storeFile(true,s);
-    }
-    
-    File storeFile( boolean create, StoreInfo s ) throws IOException {
-        File sdir = storeDir(create, s);
-        if ( sdir == null ) {
-            return null;
+
+    @Deprecated
+    private File storeDir(boolean create, StoreInfo store) throws IOException {
+        if (create) {
+            Resource directory = get(path(store));
+            return directory.dir();
+        } else {
+            Resource directory = get(path(store));
+            return Resources.directory(directory);
         }
-        
-        if ( s instanceof DataStoreInfo ) {
-            return file(new File( sdir, "datastore.xml"), create);
-        }
-        else if ( s instanceof CoverageStoreInfo ) {
-            return file(new File( sdir, "coveragestore.xml"), create);
-        }
-        return null;
     }
-    
+
     /**
-     * Returns a supplementary configuration file for a store, if the file does not exist null is 
-     * returned.
+     * Returns the configuration file for the specified store, if the file does not exist null is returned.
      */
-    public File findSuppStoreFile( StoreInfo ws, String filename ) throws IOException {
-        File sdir = findStoreDir( ws );
-        return sdir != null ? file(new File( sdir, filename ), false) : null;
+    public File findStoreFile(StoreInfo store) throws IOException {
+        Resource resource = get(pathStoreFile(store));
+        return Resources.file(resource);
     }
-    
+
+    /**
+     * Returns the configuration file for the specified store, if the file does not exist a file object is still returned.
+     */
+    public File findOrResolveStoreFile(StoreInfo store) throws IOException {
+        Resource resource = get(pathStoreFile(store));
+        return resource.file();
+    }
+
+    /**
+     * Determines the appropriate XML resource file for DataStoreInfo or CoverageStoreInfo.
+     * 
+     * @param store
+     * @return datastore.xml or coveragestore.xml as appropriate
+     */
+    private String pathStoreFile(StoreInfo store) {
+        WorkspaceInfo workspace = store.getWorkspace();
+        if (store instanceof DataStoreInfo) {
+            return Paths.path("workspaces", workspace.getName(), store.getName(), "datastore.xml");
+        } else if (store instanceof CoverageStoreInfo) {
+            return Paths.path("workspaces", workspace.getName(), store.getName(),
+                    "coveragestore.xml");
+        } else {
+            throw new IllegalStateException("Unsupported Store " + store.getType() + " "
+                    + store.getClass().getSimpleName());
+        }
+    }
+
+    @Deprecated
+    private File storeFile(boolean create, StoreInfo store) throws IOException {
+        Resource resource = get(pathStoreFile(store));
+        if (create) {
+            return resource.file();
+        } else {
+            return Resources.file(resource);
+        }
+    }
+
+    /**
+     * Returns a supplementary configuration file for a store, if the file does not exist null is returned.
+     */
+    public File findSuppStoreFile(StoreInfo store, String filename) throws IOException {
+        Resource resource = get(path(store, filename));
+        return Resources.file(resource);
+    }
+
+    private String path(StoreInfo store, String filename) {
+        WorkspaceInfo workspace = store.getWorkspace();
+        return Paths.path("workspaces", workspace.getName(), store.getName(), filename);
+    }
+
     /**
      * Copies a file into a store configuration directory.
      * <p>
      * If the store configuration directory does exist it will be created
      * </p>
      */
-    public void copyToStoreDir( StoreInfo s, File f ) throws IOException {
-        FileUtils.copyFileToDirectory( f, storeDir( true, s ) );
+    public void copyToStoreDir(StoreInfo store, File file) throws IOException {
+        Resource directory = get(path(store));
+        FileUtils.copyFileToDirectory(file, directory.dir());
     }
 
     /**
@@ -425,120 +537,158 @@ public class GeoServerDataDirectory {
      * If the store configuration directory does exist it will be created
      * </p>
      */
-    public void copyToStoreDir( StoreInfo s, InputStream data, String filename ) 
-        throws IOException {
-        copy( data, storeDir( true, s ), filename );
+    public void copyToStoreDir(StoreInfo store, InputStream data, String filename)
+            throws IOException {
+        Resource directory = get(path(store));
+        copy(data, directory.dir(), filename);
     }
-    
 
     /**
-     * Returns the directory in which a resources configuration is persisted, if the directory does
-     * not exist null is returned.
+     * Returns the directory in which a resources configuration is persisted, if the directory does not exist null is returned.
      */
-    public File findResourceDir( ResourceInfo r ) throws IOException {
-        return resourceDir(false,r);
+    public File findResourceDir(ResourceInfo resource) throws IOException {
+        Resource directory = get(path(resource));
+        return Resources.directory(directory);
     }
-    
+
     /**
      * Finds the directory for the resource assuming a 1.x style data directory.
      * <p>
      * Something like:
+     * 
      * <pre>
      * featureTypes/states_shapefile_states
      * coverages/sfdem_dem
      * </pre>
+     * 
      * </p>
      * 
-     * @param r The resource.
+     * @param resource The resource.
      * 
      * @return The directory for the resource, or null if it could not be found.
      */
-    public File findLegacyResourceDir( ResourceInfo r ) throws IOException {
-        String dirname = r.getStore().getName() + "_" + r.getName();
+    public File findLegacyResourceDir(ResourceInfo resource) throws IOException {
+        StoreInfo store = resource.getStore();
+        String dirname = store.getName() + "_" + resource.getName();
         File dir = null;
-        if ( r instanceof FeatureTypeInfo ) {
+        if (resource instanceof FeatureTypeInfo) {
             dir = resourceLoader.find("featureTypes", dirname);
-        }
-        else if ( r instanceof CoverageInfo ) {
+        } else if (resource instanceof CoverageInfo) {
             dir = resourceLoader.find("coverages", dirname);
         }
-        
+
         return dir != null ? dir : null;
     }
-    
+
     /**
-     * Returns the directory in which a resources configuration is persisted, if the directory does
-     * not exist it will be created.
+     * Returns the directory in which a resources configuration is persisted, if the directory does not exist it will be created.
      */
-    public File findOrCreateResourceDir( ResourceInfo r ) throws IOException {
-        return resourceDir(true,r);
+    public File findOrCreateResourceDir(ResourceInfo r) throws IOException {
+        Resource directory = get(path(r));
+        return directory.dir();
     }
-    
-    File resourceDir( boolean create, ResourceInfo r ) throws IOException {
-        File sdir = storeDir(create, r.getStore());
-        return sdir != null ? dir(new File( sdir, r.getName() ), create) : null;
+
+    @Deprecated
+    private File resourceDir(boolean create, ResourceInfo resource) throws IOException {
+        if (create) {
+            Resource directory = get(path(resource));
+            return directory.dir();
+        } else {
+            Resource directory = get(path(resource));
+            return Resources.directory(directory);
+        }
     }
-    
-    
+
+    private String path(ResourceInfo resource) {
+        StoreInfo store = resource.getStore();
+        WorkspaceInfo workspace = store.getWorkspace();
+        return Paths.path("workspaces", workspace.getName(), store.getName(),
+                resource.getName());
+    }
+
+    private String path(ResourceInfo resource, String filename) {
+        StoreInfo store = resource.getStore();
+        WorkspaceInfo workspace = store.getWorkspace();
+        String path = Paths.path("workspaces", workspace.getName(), store.getName(),
+                resource.getName(), filename);
+        return path;
+    }
+
     /**
-     * Returns the configuration file for the specified resource, if the file does not exist null is
-     * returned.
+     * Returns the configuration file for the specified resource, if the file does not exist null is returned.
      */
-    public File findResourceFile( ResourceInfo r ) throws IOException {
-        return resourceFile(false,r);
+    public File findResourceFile(ResourceInfo r) throws IOException {
+        String path = pathResourceFile(r);
+        Resource resource = get(path);
+        return Resources.file(resource);
     }
-    
+
     /**
-     * Returns the configuration file for the specified resource, if the file does not exist a file
-     * object is still returned.
+     * Returns the configuration file for the specified resource, if the file does not exist a file object is still returned.
      * 
      */
-    public File findOrResolveResourceFile( ResourceInfo r ) throws IOException {
-        return resourceFile(true,r);
+    public File findOrResolveResourceFile(ResourceInfo r) throws IOException {
+        String path = pathResourceFile(r);
+        Resource resource = get(path);
+        return resource.file();
     }
-    
-    File resourceFile( boolean create, ResourceInfo r ) throws IOException {
-        File rdir = resourceDir( create, r );
-        if ( rdir == null ) {
+
+    private String pathResourceFile(ResourceInfo resource) {
+        StoreInfo store = resource.getStore();
+        WorkspaceInfo workspace = store.getWorkspace();
+        if (resource instanceof FeatureTypeInfo) {
+            return Paths.path("workspaces", workspace.getName(), store.getName(),
+                    resource.getName(), "featuretype.xml");
+        } else if (resource instanceof CoverageInfo) {
+            return Paths.path("workspaces", workspace.getName(), store.getName(),
+                    resource.getName(), "coverage");
+        } else {
+            throw new IllegalArgumentException("Unsupported resource " + resource.getName() + " "
+                    + resource.getClass().getName());
+        }
+    }
+
+    @Deprecated
+    private File resourceFile(boolean create, ResourceInfo r) throws IOException {
+        String path = pathResourceFile(r);
+        Resource resource = get(path);
+        if (create) {
+            return resource.file();
+        } else {
+            return Resources.file(resource);
+        }
+    }
+
+    /**
+     * Returns a supplementary configuration file for a resource, if the file does not exist null is returned.
+     */
+    public File findSuppResourceFile(ResourceInfo r, String filename) throws IOException {
+        Resource resource = get(path(r, filename));
+        return Resources.file(resource);
+    }
+
+    /**
+     * Returns a supplementary configuration file for a resource in a 1.x data directory format. If the file does not exist null is returned.
+     */
+    public File findSuppLegacyResourceFile(ResourceInfo r, String filename) throws IOException {
+        File rdir = findLegacyResourceDir(r);
+        if (rdir != null) {
+            File file = new File(rdir, filename);
+            return file.exists() ? file : null;
+        } else {
             return null;
         }
-        
-        if ( r instanceof FeatureTypeInfo ) {
-            return file(new File( rdir, "featuretype.xml"), create);
-        }
-        else if ( r instanceof CoverageInfo ) {
-            return file(new File( rdir, "coverage"), create);
-        }
-        
-        return null;
     }
-   
-    /**
-     * Returns a supplementary configuration file for a resource, if the file does not exist null
-     * is returned.
-     */
-    public File findSuppResourceFile( ResourceInfo r, String filename ) throws IOException {
-        File rdir = findResourceDir( r );
-        return rdir != null ? file(new File( rdir, filename ), false) : null;
-    }
-    
-    /**
-     * Returns a supplementary configuration file for a resource in a 1.x data directory format. If 
-     * the file does not exist null is returned.
-     */
-    public File findSuppLegacyResourceFile( ResourceInfo r, String filename ) throws IOException {
-        File rdir = findLegacyResourceDir( r );
-        return rdir != null ? file(new File( rdir, filename ), false ) : null;
-    }
-    
+
     /**
      * Copies a file into a feature type configuration directory.
      * <p>
      * If the resource directory does exist it will be created
      * </p>
      */
-    public void copyToResourceDir( ResourceInfo r, File f ) throws IOException {
-        FileUtils.copyFileToDirectory( f, resourceDir( true, r ) );
+    public void copyToResourceDir(ResourceInfo resource, File file) throws IOException {
+        Resource directory = get(path(resource));
+        FileUtils.copyFileToDirectory(file, directory.dir());
     }
 
     /**
@@ -547,130 +697,249 @@ public class GeoServerDataDirectory {
      * If the resource directory does exist it will be created
      * </p>
      */
-    public void copyToResourceDir( ResourceInfo r, InputStream data, String filename ) 
-        throws IOException {
-        copy( data, resourceDir( true, r ), filename );
+    public void copyToResourceDir(ResourceInfo resource, InputStream data, String filename)
+            throws IOException {
+        Resource directory = get(path(resource));
+        copy(data, directory.dir(), filename);
     }
-    
+
     /**
-     * Returns the configuration file for the specified namespace, if the file does not exist null
-     * is returned.
+     * Returns the configuration file for the specified namespace, if the file does not exist null is returned.
      */
-    public File findNamespaceFile( WorkspaceInfo ws ) throws IOException {
-        return workspaceDir(false,ws);
+    public File findNamespaceFile(WorkspaceInfo ws) throws IOException {
+        Resource directory = get(pathNamespaceFile(ws));
+        return Resources.directory(directory);
     }
-    
+
     /**
-     * Returns the configuration file for the specified namespace, if the file does not exist a file
-     * object is still returned.
+     * Returns the configuration file for the specified namespace, if the file does not exist a file object is still returned.
      */
-    public File findOrResolveNamespaceFile( WorkspaceInfo ws ) throws IOException {
-        return workspaceDir(true,ws);
+    public File findOrResolveNamespaceFile(WorkspaceInfo ws) throws IOException {
+        Resource directory = get(pathNamespaceFile(ws));
+        return directory.dir();
     }
-    
-    File namespaceFile( boolean create, WorkspaceInfo ws ) throws IOException {
-        File wsdir = workspaceDir(create, ws);
-        return wsdir != null ? file(new File( wsdir, "namespace.xml"), create) : null;
+
+    @Deprecated
+    private File namespaceFile(boolean create, WorkspaceInfo ws) throws IOException {
+        if (create) {
+            Resource resource = get(pathNamespaceFile(ws));
+            return resource.file();
+        } else {
+            Resource resource = get(pathNamespaceFile(ws));
+            return Resources.file(resource);
+        }
     }
-    
+
+    private String pathNamespaceFile(WorkspaceInfo ws) {
+        return Paths.path("workspaces", ws.getName(), "namespace.xml");
+    }
+
     /**
-     * Returns the configuration file for the specified layer, if the file does not exist null is 
-     * returned.
+     * Returns the configuration file for the specified layer, if the file does not exist null is returned.
      */
-    public File findLayerFile( LayerInfo l ) throws IOException {
-        return layerFile(false,l);
+    public File findLayerFile(LayerInfo layer) throws IOException {
+        Resource resource = get(pathLayerFile(layer));
+        return Resources.file(resource);
     }
-    
+
     /**
-     * Returns the configuration file for the specified layer, if the file does not exist a file
-     * object is still returned.
+     * Returns the configuration file for the specified layer, if the file does not exist a file object is still returned.
      * 
      */
-    public File findOrResolveLayerFile( LayerInfo l ) throws IOException {
-        return layerFile(true,l);
+    public File findOrResolveLayerFile(LayerInfo layer) throws IOException {
+        Resource resource = get(pathLayerFile(layer));
+        return resource.file();
     }
-    
-    File layerFile( boolean create, LayerInfo l ) throws IOException {
-        File rdir = resourceDir(create, l.getResource());
-        return rdir != null ? file(new File( rdir, "layer.xml"), create) : null;
+
+    @Deprecated
+    private File layerFile(boolean create, LayerInfo layer) throws IOException {
+        if (create) {
+            Resource resource = get(pathLayerFile(layer));
+            return resource.file();
+        } else {
+            Resource resource = get(pathLayerFile(layer));
+            return Resources.file(resource);
+        }
     }
-    
+
+    private String pathLayerFile(LayerInfo layer) {
+        ResourceInfo resource = layer.getResource();
+        StoreInfo store = resource.getStore();
+        WorkspaceInfo workspace = store.getWorkspace();
+        return Paths.path("workspaces", workspace.getName(), store.getName(), resource.getName(),
+                "layer.xml");
+    }
+
     /**
-     * Returns the directory in which global styles are persisted, if the directory does not exist 
-     * null is returned.
+     * Returns the directory in which global styles are persisted, if the directory does not exist null is returned.
      */
     public File findStyleDir() throws IOException {
-        return styleDir(false, (WorkspaceInfo)null);
+        Resource styles = get("styles");
+        return Resources.directory(styles);
     }
 
     /**
-     * Returns the directory in which global styles are persisted, if the directory does not exist 
-     * it will be created.
+     * Returns the directory in which global styles are persisted, if the directory does not exist it will be created.
      */
     public File findOrCreateStyleDir() throws IOException {
-        return styleDir(true, (WorkspaceInfo)null);
+        Resource styles = get("styles");
+        return styles.dir();
     }
 
-    File styleDir(boolean create, StyleInfo s) throws IOException {
-        return styleDir(create, s.getWorkspace());
-    }
-
-    File styleDir(boolean create, WorkspaceInfo ws) throws IOException {
-        File base = ws != null ? workspaceDir(true, ws) : null;
-        File d = resourceLoader.find( base, "styles" );
-        if ( d == null && create ) {
-            d = resourceLoader.createDirectory( base, "styles" );
+/**
+     * Styles directory (using StyleInfo).
+     * 
+     * Package visibility {@link GeoServerPersister#dir(StyleInfo).
+     * 
+     * @param create Create if needed
+     * @param styleInfo
+     * @return
+     * @throws IOException
+     */
+    File styleDir(boolean create, StyleInfo styleInfo) throws IOException {
+        Resource styles = get(pathStyles(styleInfo));
+        if (create) {
+            return styles.dir();
+        } else {
+            return Resources.directory(styles);
         }
-        return d;
     }
 
     /**
-     * Returns the configuration file for the specified style, if the file does not exist null is
-     * returned.
+     * Access to styles directory for provided workspace (or global styles directory if workspace not provided).
+     * 
+     * Package visibility for {@link GeoServerPersister}.
+     * 
+     * @param create Create directory if required
+     * @param workspaceInfo Workspace used to access styles directory
+     * @return styles directory
+     * @throws IOException
      */
-    public File findStyleFile( StyleInfo s ) throws IOException {
-        return styleFile(false,s);
+    File styleDir(boolean create, WorkspaceInfo workspaceInfo) throws IOException {
+        Resource styles = get(pathStyles(workspaceInfo));
+        if (create) {
+            return styles.dir();
+        } else {
+            return Resources.directory(styles);
+        }
+    }
+
+    /**
+     * Style directory for the provided workspace (or global styles directory if workspace not provided).
+     * 
+     * @param workspace
+     * @return Path to styles directory
+     */
+    private String pathStyles(StyleInfo style) {
+        WorkspaceInfo workspace = style != null ? style.getWorkspace() : null;
+        if (workspace == null) {
+            return "styles";
+        } else {
+            return Paths.path("workspaces", workspace.getName(), "styles");
+        }
+    }
+
+    /**
+     * Style directory for the provided workspace (or global styles directory if workspace not provided).
+     * 
+     * @param workspace
+     * @return Path to styles directory
+     */
+    private String pathStyles(WorkspaceInfo workspace) {
+        if (workspace == null) {
+            return "styles";
+        } else {
+            return Paths.path("workspaces", workspace.getName(), "styles");
+        }
+    }
+
+    /**
+     * Returns the configuration file for the specified style, if the file does not exist null is returned.
+     */
+    public File findStyleFile(StyleInfo s) throws IOException {
+        Resource resource = get(pathStyleFile(s));
+        return Resources.file(resource);
     }
 
     /**
      * Returns the SLD file for the specified style, if the file does not exist null is returned.
      */
     public File findStyleSldFile(StyleInfo s) throws IOException {
-        return styleSldFile(false, s);
+        Resource resource = get(pathSldFile(s));
+        return Resources.file(resource);
     }
 
     /**
-     * Returns the configuration file for the specified style, if the file does not exist a file 
-     * object is still returned.
+     * Returns the configuration file for the specified style, if the file does not exist a file object is still returned.
      */
-    public File findOrCreateStyleFile( StyleInfo s ) throws IOException {
-        return styleFile(true,s);
+    public File findOrCreateStyleFile(StyleInfo s) throws IOException {
+        Resource resource = get(pathStyleFile(s));
+        return resource.file();
     }
 
     /**
-     * Returns the SLD file for the specified style, if the file does not exist a file object is 
-     * still returned.
+     * Returns the SLD file for the specified style, if the file does not exist a file object is still returned.
      */
     public File findOrCreateStyleSldFile(StyleInfo s) throws IOException {
-        return styleSldFile(true, s);
+        Resource resource = get(pathSldFile(s));
+        return resource.file();
     }
 
-    File styleFile( boolean create, StyleInfo s ) throws IOException {
-        File sdir = styleDir(create, s);
-        if (sdir == null) {
-            return null;
+    @Deprecated
+    private File styleFile(boolean create, StyleInfo s) throws IOException {
+        Resource resource = get(pathStyleFile(s));
+        if (create) {
+            return resource.file();
+        } else {
+            return Resources.file(resource);
         }
+    }
 
-        String configFileName = s.getName()+".xml";
-        if (configFileName.equals(s.getFilename())) {
+    /**
+     * Path to generated style file, style directory used based on {@link StyleInfo#getWorkspace()}.
+     * 
+     * @param style
+     * @return
+     */
+    String pathStyleFile(StyleInfo style) {
+        String configFileName = style.getName() + ".xml";
+        if (configFileName.equals(style.getFilename())) {
             configFileName = configFileName + ".xml";
         }
-        return file(new File(sdir, configFileName), create);
+        WorkspaceInfo workspace = style != null ? style.getWorkspace() : null;
+        if (workspace == null) {
+            return Paths.convert("styles", configFileName);
+        } else {
+            return Paths.convert(Paths.path("workspaces", workspace.getName(), "styles"),
+                    configFileName);
+        }
     }
 
-    File styleSldFile(boolean create, StyleInfo s) throws IOException {
-        File sdir = styleDir(create, s);
-        return sdir != null ? file(new File( sdir, s.getFilename()),create) : null;
+    /**
+     * Path to generated style file, style directory used based on {@link StyleInfo#getWorkspace()}.
+     * 
+     * @param style
+     * @return
+     */
+    String pathSldFile(StyleInfo style) {
+        WorkspaceInfo workspace = style != null ? style.getWorkspace() : null;
+        if (workspace == null) {
+            return Paths.convert("styles", style.getFilename());
+        } else {
+            return Paths.convert(Paths.path("workspaces", workspace.getName(), "styles"),
+                    style.getFilename());
+        }
+    }
+
+    @Deprecated
+    private File styleSldFile(boolean create, StyleInfo s) throws IOException {
+        if (create) {
+            Resource resource = get(pathSldFile(s));
+            return resource.file();
+        } else {
+            Resource resource = get(pathSldFile(s));
+            return Resources.file(resource);
+        }
     }
 
     /**
@@ -678,14 +947,25 @@ public class GeoServerDataDirectory {
      * <p>
      * If the resource directory does exist it will be created
      * </p>
+     * 
      * @deprecated use {@link #copyToStyleDir(File, StyleInfo)}
      */
-    public void copyToStyleDir( File f ) throws IOException {
-        FileUtils.copyFileToDirectory( f, styleDir(true, (WorkspaceInfo)null) );
+    public void copyToStyleDir(File f) throws IOException {
+        Resource styles = get("styles");
+        FileUtils.copyFileToDirectory(f, styles.dir());
     }
 
-    public void copyToStyleDir(File f, StyleInfo s) throws IOException {
-        FileUtils.copyFileToDirectory( f, styleDir( true, s ) );
+    /**
+     * Copy file to styles directory (determined using {@link StyleInfo#getWorkspace()}).
+     * 
+     * @param file
+     * @param style
+     * @throws IOException
+     */
+    @Deprecated
+    public void copyToStyleDir(File file, StyleInfo style) throws IOException {
+        Resource styles = get(pathStyles(style));
+        FileUtils.copyFileToDirectory(file, styles.dir());
     }
 
     /**
@@ -694,73 +974,97 @@ public class GeoServerDataDirectory {
      * If the style directory does exist it will be created
      * </p>
      */
-    public void copyToStyleDir( InputStream data, String filename ) throws IOException {
-        copy( data, styleDir(true, (WorkspaceInfo)null), filename );
+    public void copyToStyleDir(InputStream data, String filename) throws IOException {
+        Resource styles = get("styles");
+        copy(data, styles.dir(), filename);
     }
 
-    
     /**
-     * Returns the directory in which global layer groups are persisted, if the directory does not
-     * exist null is returned.
+     * Style directory for the provided workspace (or global styles directory if workspace not provided).
+     * 
+     * @param workspace
+     * @return Path to styles directory
      */
-    public File finLayerGroupDir() throws IOException {
-        return layerGroupDir(false, (WorkspaceInfo)null);
+    private String pathLayerGroup(LayerGroupInfo layerGroup) {
+        WorkspaceInfo workspace = layerGroup.getWorkspace();
+        if (workspace == null) {
+            return "layergroups";
+        } else {
+            return Paths.path("workspaces", workspace.getName(), "layergroups");
+        }
     }
 
     /**
-     * Returns the directory in which global layer groups are persisted, if the directory does not 
-     * exist it will be created.
+     * Style directory for the provided workspace (or global styles directory if workspace not provided).
+     * 
+     * @param workspace
+     * @return Path to styles directory
+     */
+    private String pathLayerGroup(WorkspaceInfo workspace) {
+        if (workspace == null) {
+            return "layergroups";
+        } else {
+            return Paths.path("workspaces", workspace.getName(), "layergroups");
+        }
+    }
+
+    /**
+     * Returns the directory in which global layer groups are persisted, if the directory does not exist null is returned.
+     */
+    public File findLayerGroupDir() throws IOException {
+        Resource resource = get("layergroups");
+        return Resources.directory(resource);
+    }
+
+    /**
+     * Returns the directory in which global layer groups are persisted, if the directory does not exist it will be created.
      */
     public File findOrCreateLayerGroupDir() throws IOException {
-        return layerGroupDir(true, (WorkspaceInfo)null);
+        Resource resource = get("layergroups");
+        return resource.dir();
     }
 
+    /** Package visibility for {@link GeoServerPersister#dir(LayerGroupInfo)  */
     File layerGroupDir(boolean create, LayerGroupInfo lg) throws IOException {
-        return layerGroupDir(create, lg.getWorkspace());
+        if (create) {
+            Resource resource = get(pathLayerGroup(lg));
+            return resource.dir();
+        } else {
+            Resource resource = get(pathLayerGroup(lg));
+            return Resources.directory(resource);
+        }
     }
 
+    /** Package visibility for {@link GeoServerPersister} */
     File layerGroupDir(boolean create, WorkspaceInfo ws) throws IOException {
-        File base = ws != null ? workspaceDir(true, ws) : null;
-        File d = resourceLoader.find( base, "layergroups" );
-        if ( d == null && create ) {
-            d = resourceLoader.createDirectory( base, "layergroups" );
+        if (create) {
+            Resource resource = get(pathLayerGroup(ws));
+            return resource.dir();
+        } else {
+            Resource resource = get(pathLayerGroup(ws));
+            return Resources.directory(resource);
         }
-        return d;
     }
 
     //
     // Helper methods
     //
-    void copy( InputStream data, File targetDir, String filename ) throws IOException {
+    /**
+     * Utility method to copy an InputStream to a new file.
+     * 
+     * @param data Input stream to copy to a new file
+     * @param targetDir Directory for target file
+     * @param filename Name of target file
+     */
+    private void copy(InputStream data, File targetDir, String filename) throws IOException {
         OutputStream out = null;
         try {
-            out = new FileOutputStream(new File( targetDir, filename ));
-            IOUtils.copy( data, out );
+            out = new FileOutputStream(new File(targetDir, filename));
+            IOUtils.copy(data, out);
             out.flush();
         } finally {
             IOUtils.closeQuietly(out);
         }
-    }
-    
-    File file( File f ) {
-        return file(f,true);
-    }
-    
-    File file( File f, boolean create) {
-        if ( create ) {
-            return f;
-        }
-        
-        return f.exists() ? f : null;
-    }
-    
-    File dir( File d, boolean create ) {
-        if ( create ) {
-            d.mkdirs();
-            return d;
-        }
-        
-        return d.exists() ? d : null;
     }
 
 }

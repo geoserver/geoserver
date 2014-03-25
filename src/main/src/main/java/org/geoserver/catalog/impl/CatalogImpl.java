@@ -4,18 +4,21 @@
  */
 package org.geoserver.catalog.impl;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.CatalogFacade;
 import org.geoserver.catalog.CatalogFactory;
@@ -373,9 +376,10 @@ public class CatalogImpl implements Catalog {
         if ( resource.getNativeName() == null ) {
             resource.setNativeName(resource.getName());
         }
-        validate(resource,true);
+        ResourceInfo resolved = resolve(resource);
+        validate(resolved,true);
         
-        ResourceInfo added = facade.add(resolve(resource));
+        ResourceInfo added = facade.add(resolved);
         added(added);
     }
 
@@ -613,6 +617,7 @@ public class CatalogImpl implements Catalog {
 
     // Layer methods
     public void add(LayerInfo layer) {
+        layer = resolve(layer);
         validate(layer,true);
         
         if ( layer.getType() == null ) {
@@ -628,7 +633,7 @@ public class CatalogImpl implements Catalog {
             }
         }
         
-        LayerInfo added = facade.add(resolve(layer));
+        LayerInfo added = facade.add(layer);
         added(added);
     }
 
@@ -660,10 +665,26 @@ public class CatalogImpl implements Catalog {
             }
         }
         
-        //(JD): not sure if default style should be mandatory
-        //if ( layer.getDefaultStyle() == null ){
-        //    throw new NullPointerException( "Layer default style must not be null" );
-        //}
+        // if the style is missing associate a default one, to avoid breaking WMS
+        if ( layer.getDefaultStyle() == null ) {
+            try {
+                LOGGER.log(Level.INFO, "Layer " + layer.prefixedName() + " is missing the default style, assigning one automatically");
+                StyleInfo style = new CatalogBuilder(this).getDefaultStyle(layer.getResource());
+                layer.setDefaultStyle(style);
+            } catch(IOException e) {
+                LOGGER.log(Level.WARNING, "Layer " + layer.prefixedName() + " is missing the default style, "
+                        + "failed to associate one automatically", e);
+            }
+        }
+        
+        // clean up eventual dangling references to missing alternate styles
+        Set<StyleInfo> styles = layer.getStyles();
+        for (Iterator it = styles.iterator(); it.hasNext();) {
+            StyleInfo styleInfo = (StyleInfo) it.next();
+            if(styleInfo == null) {
+                it.remove();
+            }
+        }
 
         return postValidate(layer, isNew);
     }
@@ -768,8 +789,8 @@ public class CatalogImpl implements Catalog {
     }
 
     public void add(LayerGroupInfo layerGroup) {
+        layerGroup = resolve(layerGroup);
         validate(layerGroup,true);
-        resolve(layerGroup);
         
         if ( layerGroup.getStyles().isEmpty() ) {
             for ( PublishedInfo l : layerGroup.getLayers() ) {
@@ -799,6 +820,18 @@ public class CatalogImpl implements Catalog {
                     msg += " in workspace " + ws.getName();
                 }
                 throw new IllegalArgumentException(msg);
+            }
+        }
+        
+        // sanitize a bit broken layer references
+        List<PublishedInfo> layers = layerGroup.getLayers();
+        List<StyleInfo> styles = layerGroup.getStyles();
+        for (int i = 0; i < layers.size(); ) {
+            if(layers.get(i) == null) {
+                layers.remove(i);
+                styles.remove(i);
+            } else {
+                i++;
             }
         }
 
@@ -1127,6 +1160,7 @@ public class CatalogImpl implements Catalog {
 
     // Workspace methods
     public void add(WorkspaceInfo workspace) {
+        workspace = resolve(workspace);
         validate(workspace,true);
         
         if ( getWorkspaceByName(workspace.getName()) != null ) {
@@ -1135,7 +1169,7 @@ public class CatalogImpl implements Catalog {
         
         WorkspaceInfo added;
         synchronized (facade) {
-            added = facade.add(resolve(workspace));
+            added = facade.add(workspace);
             // if there is no default workspace use this one as the default
             if ( getDefaultWorkspace() == null ) {
                 setDefaultWorkspace(workspace);
@@ -1287,8 +1321,9 @@ public class CatalogImpl implements Catalog {
     }
 
     public void add(StyleInfo style) {
+        style = resolve(style);
         validate(style,true);
-        StyleInfo added = facade.add(resolve(style));
+        StyleInfo added = facade.add(style);
         added(added);
     }
 
@@ -1579,7 +1614,7 @@ public class CatalogImpl implements Catalog {
     }
     
     protected LayerGroupInfo resolve(LayerGroupInfo layerGroup) {
-        resolveCollections(layerGroup);
+        resolveCollections(layerGroup);        
         return layerGroup; 
     }
     

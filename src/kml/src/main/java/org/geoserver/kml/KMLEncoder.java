@@ -29,11 +29,15 @@ public class KMLEncoder {
         context = JAXBContext.newInstance((Kml.class));
     }
 
-    public void encode(Kml kml, OutputStream output) {
+    public void encode(Kml kml, OutputStream output, KmlEncodingContext context) {
         try {
             createMarshaller().marshal(kml, output);
         } catch (JAXBException e) {
             throw new ServiceException(e);
+        } finally {
+            if(context != null) {
+                context.closeIterators();
+            }
         }
     }
 

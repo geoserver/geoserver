@@ -10,70 +10,82 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 
+import org.geoserver.platform.resource.FileSystemResourceStore;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.ResourceStore;
+import org.geoserver.platform.resource.Resources;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
 import org.springframework.web.context.WebApplicationContext;
 
-
 /**
- * Manages resources in GeoServer.
+ * Access to resources in GeoServer including configuration information and unmanaged cache or log files.
  * <p>
  * The loader maintains a search path in which it will use to look up resources.
- * The {@link #baseDirectory} is a member of this path.
- * </p>
- * <p>
- * Files and directories created by the resource loader are made relative to
+ * <ul>
+ * <li>Configuration is accessed using {@link ResourceStore#get(String)} which provides stream based access. If required configuration can be unpacked
+ * into a file in the data directory. The most common example is for use as a template.
+ * <li>Files in the data directory can also be used as a temporary cache. These files should be considered temporary and may need to be recreated
+ * (when upgrading or for use on different nodes in a cluster).</li>
+ * <li>
+ * </ul>
+ * The {@link #baseDirectory} is a member of this path. Files and directories created by the resource loader are made relative to
  * {@link #baseDirectory}.
  * </p>
  * <p>
+ * 
  * <pre>
- *         <code>
+ * <code>
  * File dataDirectory = ...
  * GeoServerResourceLoader loader = new GeoServerResourceLoader( dataDirectory );
- * loader.addSearchLocation( new File( "/WEB-INF/" ) );
- * loader.addSearchLocation( new File( "/data" ) );
  * ...
- * File catalog = loader.find( "catalog.xml" );
- *         </code>
+ * Resource catalog = loader.get("catalog.xml");
+ * File log = loader.find("logs/geoserver.log");
+ * </code>
  * </pre>
+ * 
  * </p>
- *
+ * 
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
- *
+ * 
  */
-public class GeoServerResourceLoader extends DefaultResourceLoader implements ApplicationContextAware {
+public class GeoServerResourceLoader extends DefaultResourceLoader implements ResourceStore {
     private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.global");
-
-    /** "path" for resource lookups */
-    Set searchLocations;
+    static {
+        LOGGER.setLevel(Level.FINER);
+    }
+    
+    /**
+     * ResourceStore used for configuration resources.
+     * 
+     * Initially this is configured to access resources in the base directory, however spring may inject an external implementation (jdbc database
+     * blob, github, ...).
+     */
+    ResourceStore resources;
 
     /**
-     * Base directory
+     * Base directory used to access unmanaged files.
      */
     File baseDirectory;
 
     /**
-     * Creates a new resource loader with no base directory.
+     * Creates a new resource loader (with no base directory).
      * <p>
-     * Such a constructed resource loader is not capable of creating resources
-     * from relative paths.
+     * Used to construct a GeoServerResourceLoader for test cases (and is unable to create resources from relative paths.
      * </p>
      */
     public GeoServerResourceLoader() {
-        searchLocations = new TreeSet();
+        baseDirectory = null;
+        resources = ResourceStore.EMPTY;
     }
 
     /**
@@ -82,65 +94,59 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
      * @param baseDirectory The directory in which
      */
     public GeoServerResourceLoader(File baseDirectory) {
-        this();
         this.baseDirectory = baseDirectory;
-        setSearchLocations(Collections.EMPTY_SET);
+        this.resources = new FileSystemResourceStore( baseDirectory );
     }
     
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        if (baseDirectory == null) {
-            //lookup the data directory
-            if (applicationContext instanceof WebApplicationContext) {
-                String data = lookupGeoServerDataDirectory(
-                        ((WebApplicationContext)applicationContext).getServletContext());
-                if (data != null) {
-                    setBaseDirectory(new File(data)); 
-                }
-            }
-        }
-        
-        //add additional lookup locations
-        if (baseDirectory != null) {
-            addSearchLocation(new File(baseDirectory, "data"));
-        }
-
-        if (applicationContext instanceof WebApplicationContext) {
-            ServletContext servletContext = 
-                ((WebApplicationContext)applicationContext).getServletContext();
-            if (servletContext != null) {
-                String path = servletContext.getRealPath("WEB-INF");
-                if (path != null) {
-                    addSearchLocation(new File(path));
-                }
-                path = servletContext.getRealPath("/");
-                if (path != null) {
-                    addSearchLocation(new File(path));
-                }
-            }
-        }
+    /**
+     * Creates a new resource loader.
+     *
+     * @param baseDirectory The directory in which
+     */
+    public GeoServerResourceLoader(ResourceStore resourceStore) {
+        this.baseDirectory = resourceStore.get(Paths.BASE).dir();
+        this.resources = resourceStore;
     }
+    
+    
+// public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+//        if (baseDirectory == null) {
+//            //lookup the data directory
+//            if (applicationContext instanceof WebApplicationContext) {
+//                String data = lookupGeoServerDataDirectory(
+//                        ((WebApplicationContext)applicationContext).getServletContext());
+//                if (data != null) {
+//                    setBaseDirectory(new File(data)); 
+//                }
+//            }
+//        }
+//        if( resources == Resources.EMPTY ){
+//            // lookup the configuration resources
+//            if( baseDirectory != null ){
+//                resources = new FileSystemResourceStore( baseDirectory );
+//            }
+//        }
+//    }
     
     /**
      * Adds a location to the path used for resource lookups.
      *
      * @param A directory containing resources.
+     * @deprecated No longert used
      */
     public void addSearchLocation(File searchLocation) {
-        searchLocations.add(searchLocation);
+        //searchLocations.add(searchLocation);
     }
 
     /**
      * Sets the search locations used for resource lookups.
+     * 
+     * The {@link #baseDirectory} is always incuded in {@link #searchLocations}.
      *
      * @param searchLocations A set of {@link File}.
+     * @deprecated No longer used
      */
-    public void setSearchLocations(Set searchLocations) {
-        this.searchLocations = new HashSet(searchLocations);
-
-        //always add the base directory
-        if (baseDirectory != null) {
-            this.searchLocations.add(baseDirectory);
-        }
+    public void setSearchLocations(Set<File> searchLocations) {
     }
 
     /**
@@ -152,17 +158,32 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
 
     /**
      * Sets the base directory.
+     * 
+     * The base directory is included in {@link #searchLocations}.
      *
      * @param baseDirectory
      */
     public void setBaseDirectory(File baseDirectory) {
         this.baseDirectory = baseDirectory;
-
-        searchLocations.add(baseDirectory);
+        this.resources = new FileSystemResourceStore( baseDirectory );
     }
 
+    @Override
+    public Resource get(String path) {
+        return resources.get(path);
+    }
+    @Override
+    public boolean move(String path, String target) {
+        return resources.move(path, target);
+    }
+    @Override
+    public boolean remove(String path) {
+        return resources.remove( path );
+    }
+    
+    
     /**
-     * Performs a resource lookup.
+     * Performs file lookup.
      *
      * @param location The name of the resource to lookup, can be absolute or
      * relative.
@@ -173,13 +194,14 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
      * @throws IOException In the event of an I/O error.
      */
     public File find( String location ) throws IOException {
-        return find( null, location );
+        Resource resource = get( Paths.convert(location) );
+        return Resources.find( resource );
     }
     
     /**
      * Performs a resource lookup, optionally specifying the containing directory.
      *
-     * @param parent The containing directory, optionally null. 
+     * @param parentFile The containing directory, optionally null. 
      * @param location The name of the resource to lookup, can be absolute or
      * relative.
      *
@@ -188,57 +210,15 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
      *
      * @throws IOException In the event of an I/O error.
      */
-    public File find(File parent, String location) throws IOException {
+    public File find(File parentFile, String location) throws IOException {
         if (LOGGER.isLoggable(Level.FINEST)) {
             LOGGER.finest("Looking up resource " + location + " with parent " 
-                + (parent != null ? parent.getPath() : "null"));
+                + (parentFile != null ? parentFile.getPath() : "null"));
         }
-        
-        //first to an existance check
-        File file = parent != null ? new File(parent,location) : new File(location);
-        
-        if (file.exists()) {
-            return file;
-        }
-        
-        if (file.isAbsolute()) {
-            return file.exists() ? file : null;
-        } else {
-            //try a relative url if no parent specified
-            if ( parent == null ) {
-                for (Iterator f = searchLocations.iterator(); f.hasNext();) {
-                    File base = (File) f.next();
-                    file = new File(base, location);
-    
-                    try {
-                        if (file.exists()) {
-                            return file;
-                        }
-                    } catch (SecurityException e) {
-                        LOGGER.warning("Failed attemp to check existance of " + file.getAbsolutePath());
-                    }
-                }
-            }
-            else {
-                //try relative to base dir
-                file = new File(baseDirectory, file.getPath());
-                if (file.exists()) {
-                    return file;
-                }
-            }
-        }
-
-        //look for a generic resource if no parent specified
-        if ( parent == null ) {
-            Resource resource = getResource(location);
-    
-            if (resource.exists()) {
-                return resource.getFile();
-            }
-        }
-
-        return null;
+        Resource resource = get( Paths.convert(getBaseDirectory(), parentFile, location ));
+        return Resources.find( resource );
     }
+
     
     /**
      * Performs a resource lookup.
@@ -255,8 +235,9 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
      *  
      * @throws IOException Any I/O errors that occur.
      */
-    public File find( String... location ) throws IOException {
-        return find( null, location );
+    public File find( String... location ) throws IOException {        
+        Resource resource = get( Paths.path(location) );
+        return Resources.find( resource );
     }
 
     /**
@@ -267,7 +248,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
      *   File f = resourceLoader.find( "data", "shapefiles", "foo.shp" );
      * </pre> 
      * </p>
-     * @param parent The parent directory, may be null.
+     * @param parentFile The parent directory, may be null.
      * @param location The components of the path of the resource to lookup.
      * 
      * @return The file handle representing the resource, or null if the
@@ -275,8 +256,9 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
      *  
      * @throws IOException Any I/O errors that occur.
      */
-    public File find( File parent, String... location ) throws IOException {
-        return find( parent, concat( location ) );
+    public File find( File parentFile, String... location ) throws IOException {
+        Resource resource = get(Paths.convert(getBaseDirectory(), parentFile, location));
+        return Resources.find(resource);
     }
 
     /**
@@ -298,18 +280,20 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
      *  find or create.
      */
     public File findOrCreateDirectory( String... location ) throws IOException {
-        return findOrCreateDirectory(null,location);
+        Resource directory = get( Paths.path(location) );        
+        return directory.dir(); // will create directory as needed
     }
     
     /**
      * Performs a directory lookup, creating the file if it does not exist.
      * 
-     * @param parent The containing directory, possibly null.
+     * @param parentFile The containing directory, possibly null.
      * @param location The components of the path that make up the location of the directory to
      *  find or create.
      */
-    public File findOrCreateDirectory( File parent, String... location ) throws IOException {
-        return findOrCreateDirectory(parent, concat(location));
+    public File findOrCreateDirectory( File parentFile, String... location ) throws IOException {
+        Resource directory = get(Paths.convert(getBaseDirectory(), parentFile, location));
+        return directory.dir(); // will create directory as needed
     }
     
     /**
@@ -322,32 +306,23 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
      * @throws IOException If any i/o errors occur.
      */
     public File findOrCreateDirectory( String location ) throws IOException {
-        return findOrCreateDirectory(null,location);
+        Resource directory = get( Paths.convert(location) );        
+        return directory.dir(); // will create directory as needed
     }
     
     /**
      * Performs a directory lookup, creating the file if it does not exist.
      * 
-     * @param parent The containing directory, may be null.
+     * @param parentFile The containing directory, may be null.
      * @param location The location of the directory to find or create.
      * 
      * @return The file handle.
      * 
      * @throws IOException If any i/o errors occur.
      */
-    public File findOrCreateDirectory( File parent, String location ) throws IOException {
-        File dir = find( parent, location );
-        if ( dir != null ) {
-            if ( !dir.isDirectory() ) {
-                //location exists, but is a file
-                throw new IllegalArgumentException( "Location '" + location + "' specifies a file");
-            }
-            
-            return dir;
-        }
-        
-        //create it
-        return createDirectory( parent, location );
+    public File findOrCreateDirectory( File parentFile, String location ) throws IOException {
+        Resource directory = get( Paths.convert(getBaseDirectory(),parentFile,location) );
+        return directory.dir(); // will create directory as needed
     }
     
     /**
@@ -357,7 +332,8 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
      * </p>
      */
     public File createDirectory(String... location) throws IOException {
-        return createDirectory(null,location);
+        Resource directory = get( Paths.path(location) );
+        return Resources.createNewDirectory(directory);
     }
     
     /**
@@ -365,9 +341,13 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
      * <p>
      * Calls through to {@link #createDirectory(String)}
      * </p>
+     * @param parentFile The containing directory, possibly null.
+     * @param location The components of the path that make up the location of the directory to create
+     * @return newly created directory
      */
-    public File createDirectory(File parent, String... location) throws IOException {
-        return createDirectory(parent,concat(location));
+    public File createDirectory(File parentFile, String... location) throws IOException {
+        Resource directory = get(Paths.convert(getBaseDirectory(), parentFile, location));
+        return Resources.createNewDirectory(directory);
     }
     
     /**
@@ -387,7 +367,8 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
      * @throws IOException
      */
     public File createDirectory(String location) throws IOException {
-        return createDirectory(null,location);
+        Resource directory = get( Paths.convert(location) );
+        return Resources.createNewDirectory(directory);
     }
     
     /**
@@ -407,42 +388,9 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
      *
      * @throws IOException
      */
-    public File createDirectory(File parent, String location) throws IOException {
-        File file = find(parent,location);
-
-        if (file != null) {
-            if (!file.isDirectory()) {
-                String msg = location + " already exists and is not directory";
-                throw new IOException(msg);
-            }
-        }
-
-        file = parent != null ? new File(parent,location) : new File(location);
-
-        if (file.isAbsolute()) {
-            file.mkdirs();
-
-            return file;
-        }
-
-        //no base directory set, cannot create a relative path
-        if (baseDirectory == null) {
-             String msg = "No base location set, could not create directory: " + location;
-             throw new IOException(msg);
-        }
-
-        if (parent != null && parent.getPath().startsWith(baseDirectory.getPath())) {
-            //parent contains base directory path, make relative to it
-            file = new File(parent, location);
-        }
-        else {
-            //base relative to base directory
-            file = parent != null ? new File(new File(baseDirectory, parent.getPath()), location)
-                : new File(baseDirectory, location);
-        }
-
-        file.mkdirs();
-        return file;
+    public File createDirectory(File parentFile, String location) throws IOException {
+        Resource directory = get(Paths.convert(getBaseDirectory(), parentFile, location));
+        return Resources.createNewDirectory(directory);
     }
 
     /**
@@ -458,7 +406,8 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
      * @throws IOException In the event of an I/O error.
      */
     public File createFile(String ...location) throws IOException {
-        return createFile( concat(location) );
+        Resource resource = get( Paths.path(location) );
+        return Resources.createNewFile( resource );
     }
     
     /**
@@ -473,7 +422,8 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
      * @throws IOException In the event of an I/O error.
      */
     public File createFile(String location) throws IOException {
-        return createFile(null,location);
+        Resource resource = get( Paths.convert(location) );
+        return Resources.createNewFile( resource );
     }
     
     /**
@@ -482,14 +432,15 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
      * Calls through to {@link #createFile(File, String)}
      * </p>
      * @param location Location of file to create, either absolute or relative.
-     * @param parent The containing directory for the file.
+     * @param parentFile The containing directory for the file.
      * 
      * @return The file handle of the created file.
      *
      * @throws IOException In the event of an I/O error.
      */
-    public File createFile(File parent, String... location) throws IOException{
-        return createFile(parent,concat(location));
+    public File createFile(File parentFile, String... location) throws IOException{
+        Resource resource = get( Paths.convert(getBaseDirectory(), parentFile, location ));
+        return Resources.createNewFile(resource);
     }
     
     /**
@@ -503,47 +454,15 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
      * If <code>location</code> already exists as a directory, an IOException is thrown.
      * </p>
      * @param location Location of file to create, either absolute or relative.
-     * @param parent The containing directory for the file.
+     * @param parentFile The containing directory for the file.
      * 
      * @return The file handle of the created file.
      *
      * @throws IOException In the event of an I/O error.
      */
-    public File createFile(File parent, String location) throws IOException{
-        File file = find(parent,location);
-
-        if (file != null) {
-            if (file.isDirectory()) {
-                String msg = location + " already exists and is a directory";
-                throw new IOException(msg);
-            }
-
-            return file;
-        }
-
-        file = parent != null ? new File(parent,location) : new File(location);
-
-        if (file.isAbsolute()) {
-            file.createNewFile();
-
-            return file;
-        }
-
-        if ( parent == null ) {
-            //no base directory set, cannot create a relative path
-            if (baseDirectory == null) {
-                String msg = "No base location set, could not create file: " + location;
-                throw new IOException(msg);
-            }
-
-            file = new File(baseDirectory, location);
-            if (!file.getParentFile().exists()) {
-                file.getParentFile().mkdirs();
-            }
-            file.createNewFile();
-        }
-        
-        return file;
+    public File createFile(File parentFile, String location) throws IOException{
+        Resource resource = get( Paths.convert(getBaseDirectory(), parentFile, location ));
+        return Resources.createNewFile(resource);
     }
     
     /**
@@ -555,29 +474,32 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
       </p>
      * 
      * @param resource The resource to copy.
-     * @param to The destination to copy to.
+     * @param location The destination to copy to.
      */
-    public void copyFromClassPath( String resource, String to ) throws IOException {
-        File target = new File( to );
-        if ( !target.isAbsolute() ) {
-            target = new File( getBaseDirectory(), to );
-        }
-        
-        copyFromClassPath(resource, target);
+    public void copyFromClassPath( String classpathResource, String location ) throws IOException {
+        Resource resource = get(Paths.convert(location));
+        copyFromClassPath( classpathResource, resource.file() );
     }
     
     /**
      * Copies a resource from the classpath to a specified file.
      * 
+     * @param classpathResource Path to classpath content to be copied
+     * @param target File to copy content into (must be already created)
      */
-    public void copyFromClassPath( String resource, File target ) throws IOException {
-        copyFromClassPath( resource, target, null );
+    public void copyFromClassPath( String classpathResource, File target ) throws IOException {
+        copyFromClassPath( classpathResource, target, null );
     }
     
     /**
      * Copies a resource relative to a particular class from the classpath to the specified file. 
+     * 
+     * @param classpathResource Path to classpath content to be copied
+     * @param target File to copy content into (must be already created)
+     * @param scope Class used as base for classpathResource
      */
-    public void copyFromClassPath( String resource, File target, Class scope ) throws IOException {
+    
+    public void copyFromClassPath( String classpathResource, File target, Class<?> scope ) throws IOException {
         InputStream is = null; 
         OutputStream os = null;
         byte[] buffer = new byte[4096];
@@ -586,15 +508,15 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
         try{
             // Get the resource
             if (scope == null) {
-                is = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);    
+                is = Thread.currentThread().getContextClassLoader().getResourceAsStream(classpathResource);    
                 if(is==null) {
-                    throw new IOException("Could not load " + resource + " from scope "+
+                    throw new IOException("Could not load " + classpathResource + " from scope "+
                             Thread.currentThread().getContextClassLoader().toString()+".");
                 }
             } else {
-                is = scope.getResourceAsStream(resource);
+                is = scope.getResourceAsStream(classpathResource);
                 if(is==null) {
-                    throw new IOException("Could not load " + resource + " from scope "+
+                    throw new IOException("Could not load " + classpathResource + " from scope "+
                                  scope.toString()+".");
                 }
             }
@@ -651,14 +573,14 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
 
         String dataDirStr = null;
         String msgPrefix = null;
-        int iVar = 0;
+        
         // Loop over variable names
         for (int i = 0; i < varStrs.length && dataDirStr == null; i++) {
             
             // Loop over variable access methods
             for (int j = 0; j < typeStrs.length && dataDirStr == null; j++) {
                 String value = null;
-                String varStr = new String(varStrs[i]);
+                String varStr = varStrs[i];
                 String typeStr = typeStrs[j];
 
                 // Lookup section
@@ -687,28 +609,30 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
                 msgPrefix = "Found " + typeStr + varStr + " set to " + value;
 
                 if (!fh.exists()) {
-                    LOGGER.fine(msgPrefix + " , but this path does not exist");
+                    LOGGER.warning(msgPrefix + " , but this path does not exist");
                     continue;
                 }
                 if (!fh.isDirectory()) {
-                    LOGGER.fine(msgPrefix + " , which is not a directory");
+                    LOGGER.warning(msgPrefix + " , which is not a directory");
                     continue;
                 }
                 if (!fh.canWrite()) {
-                    LOGGER.fine(msgPrefix + " , which is not writeable");
+                    LOGGER.warning(msgPrefix + " , which is not writeable");
                     continue;
                 }
 
                 // Sweet, we can work with this
                 dataDirStr = value;
-                iVar = i;
             }
         }
         
         // fall back to embedded data dir
-        if(dataDirStr == null)
+        if(dataDirStr == null) {
             dataDirStr = servContext.getRealPath("/data");
+            LOGGER.info("Falling back to embedded data directory: " + dataDirStr);
+        }
         
         return dataDirStr;
     }
+
 }

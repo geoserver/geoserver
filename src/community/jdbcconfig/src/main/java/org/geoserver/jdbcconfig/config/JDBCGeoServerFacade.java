@@ -8,11 +8,14 @@ import static org.geoserver.catalog.CatalogFacade.ANY_WORKSPACE;
 import static org.geoserver.catalog.Predicates.acceptAll;
 import static org.geoserver.catalog.Predicates.and;
 import static org.geoserver.catalog.Predicates.equal;
+import static org.geoserver.catalog.Predicates.isNull;
 
 import java.lang.reflect.Proxy;
 import java.rmi.server.UID;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -22,6 +25,7 @@ import org.geoserver.catalog.Info;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerFacade;
 import org.geoserver.config.GeoServerInfo;
@@ -30,12 +34,17 @@ import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.jdbcconfig.internal.ConfigDatabase;
 import org.geoserver.ows.util.OwsUtils;
+import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
+import org.opengis.filter.sort.SortBy;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Predicate;
 
 @ParametersAreNonnullByDefault
 public class JDBCGeoServerFacade implements GeoServerFacade {
+
+    static final Logger LOGGER = Logging.getLogger(JDBCGeoServerFacade.class);
 
     private static final String GLOBAL_ID = "GeoServerInfo.global";
 
@@ -197,19 +206,40 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
         return getServices((WorkspaceInfo) null);
     }
 
+    private Filter filterForWorkspace(WorkspaceInfo workspace) {
+        if (workspace != null && workspace != ANY_WORKSPACE) {
+            return equal("workspace.id", workspace.getId());
+        } else {
+            return filterForGlobal();
+        }
+    }
+    private Filter filterForGlobal() {
+        return isNull("workspace.id");
+    }
+    
+    @SuppressWarnings("unchecked")
+    private <T extends ServiceInfo> CloseableIterator<T> filterServices(final Class<T> clazz, CloseableIterator<ServiceInfo> it) {
+        return (CloseableIterator<T>) CloseableIteratorAdapter.filter(it, new Predicate<ServiceInfo>(){
+            
+            @Override
+            public boolean apply(@Nullable ServiceInfo input) {
+                return clazz.isAssignableFrom(input.getClass());
+            }
+            
+        });
+    }
+    
     @Override
     public Collection<? extends ServiceInfo> getServices(WorkspaceInfo workspace) {
-
-        Filter filter = acceptAll();
-        if (workspace != null && workspace != ANY_WORKSPACE) {
-            filter = equal("workspace.id", workspace.getId());
-        }
+        
+        Filter filter = filterForWorkspace(workspace);
         return db.queryAsList(ServiceInfo.class, filter, null, null, null);
     }
 
     @Override
     public <T extends ServiceInfo> T getService(final Class<T> clazz) {
-        List<ServiceInfo> all = db.getAll(ServiceInfo.class);
+        Filter filter = filterForGlobal();
+        List<ServiceInfo> all = db.queryAsList(ServiceInfo.class, filter, null, null, null);
         for (ServiceInfo si : all) {
             if (clazz.isAssignableFrom(si.getClass())) {
                 return clazz.cast(si);
@@ -220,16 +250,27 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
 
     @Override
     public <T extends ServiceInfo> T getService(final WorkspaceInfo workspace, final Class<T> clazz) {
-
-        Filter filter = acceptAll();
-        if (workspace != null && workspace != ANY_WORKSPACE) {
-            filter = equal("workspace.id", workspace.getId());
-        }
-        try {
-            return get(clazz, filter);
-        } catch (IllegalArgumentException multipleResults) {
+        
+        Filter filter = filterForWorkspace(workspace);
+        
+        // In order to handle new service types, get all services, deserialize them, and then filter
+        // by checking if the implement the given interface.  Since there shouldn't be too many per
+        // workspace, this shouldn't be a significant performance problem.
+        CloseableIterator<T> it = filterServices(clazz, db.query(ServiceInfo.class, filter, null, null, (SortBy)null));
+        
+        T service;
+        if (it.hasNext()){
+            service = it.next();
+        } else {
+            if(LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Could not find service of type "+clazz+" in "+workspace);
             return null;
         }
+        
+        if(it.hasNext()) {
+            LOGGER.log(Level.WARNING, "Found multiple services of type "+clazz+" in "+ workspace);
+            return null;
+        }
+        return service;
     }
 
     @Override

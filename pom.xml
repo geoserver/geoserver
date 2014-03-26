@@ -54,19 +54,19 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>ows</artifactId>
+      <artifactId>gs-ows</artifactId>
       <version>${gs.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>rest</artifactId>
+      <artifactId>gs-rest</artifactId>
       <version>${gs.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>restconfig</artifactId>
+      <artifactId>gs-restconfig</artifactId>
       <version>${gs.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -128,13 +128,13 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
+      <artifactId>gs-main</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>restconfig</artifactId>
+      <artifactId>gs-restconfig</artifactId>
       <version>${gs.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>

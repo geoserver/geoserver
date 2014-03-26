@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.opengeo</groupId>
     <artifactId>geoserver-exts</artifactId>
-    <version>2.4-SNAPSHOT</version>
+    <version>2.5-SNAPSHOT</version>
   </parent>
 
   <groupId>org.opengeo.geoserver</groupId>

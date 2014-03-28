@@ -21,7 +21,27 @@
         </ul>
       </fieldset>
     </li>
+    <li>
+      <fieldset>
+        <legend>
+          <span><wicket:message key="otherSRS">otherSRS</wicket:message></span>
+          <a href="#" wicket:id="otherSRSHelp" class="help-link"></a>
+        </legend>
+        <ul>
+            <li>
+              <input id="basic-enabled" class="field checkbox" wicket:id="overridingServiceSRS" type="checkbox"></input>
+              <label for="basic-enabled" class="choice"><wicket:message key="overridingServiceSRS">overridingServiceSRS</wicket:message></label>
+            </li>
+            <ul>
+              <li wicket:id="otherSRSContainer">
+                <textarea class="input textarea" rows="10" cols="30" wicket:id="srs"></textarea>
+              </li>
+            </ul>
+        </ul>
+      </fieldset>
+    </li>
     </ul>
+    <div wicket:id="wfsDialog"></div>
   </wicket:panel>
 </form>
 </body>

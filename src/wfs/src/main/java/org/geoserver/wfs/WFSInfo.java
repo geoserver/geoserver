@@ -246,4 +246,10 @@ public interface WFSInfo extends ServiceInfo {
      */
     void setHitsIgnoreMaxFeatures(boolean hitsIgnoreMaxFeatures);
     
+    /**
+     * The srs's that the WFS service will advertise in the capabilities document
+     */
+    List<String> getSRS();
+
+    
 }

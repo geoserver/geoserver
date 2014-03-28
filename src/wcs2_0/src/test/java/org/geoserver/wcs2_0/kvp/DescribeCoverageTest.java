@@ -90,7 +90,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
 
         Document dom = getAsDOM(DESCRIBE_URL + "&coverageId=sf__rain");
         assertNotNull(dom);
-        // print(dom, System.out);
+        print(dom, System.out);
 
         checkValidationErrors(dom, WCS20_SCHEMA);
         assertXpathEvaluatesTo("1", "count(//wcs:CoverageDescription/gmlcov:rangeType/swe:DataRecord/swe:field)", dom);

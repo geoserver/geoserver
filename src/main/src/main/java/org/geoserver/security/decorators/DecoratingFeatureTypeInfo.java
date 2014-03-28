@@ -271,4 +271,18 @@ public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<Featur
         delegate.setAdvertised(advertised);
     }
 
+    @Override
+    public List<String> getResponseSRS() {
+        return delegate.getResponseSRS();
+    }
+    
+    @Override
+    public boolean isOverridingServiceSRS() {
+        return delegate.isOverridingServiceSRS();
+    }
+    
+    @Override
+    public void setOverridingServiceSRS(boolean overridingServiceSRS) {
+        delegate.setOverridingServiceSRS(overridingServiceSRS);
+    }
 }

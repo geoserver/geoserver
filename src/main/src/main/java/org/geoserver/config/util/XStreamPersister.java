@@ -1674,6 +1674,9 @@ public class XStreamPersister {
             if ( featureType.getAttributes() == null ){
                 featureType.setAttributes(new ArrayList());
             }
+            if ( featureType.getResponseSRS() == null) {
+                featureType.setResponseSRS(new ArrayList());
+            }
             if( featureType.getMetadata() == null) {
                 featureType.setMetadata(new MetadataMap());
             }

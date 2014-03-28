@@ -14,6 +14,7 @@ import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.behavior.AbstractBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.basic.Label;
@@ -21,6 +22,7 @@ import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
+import org.apache.wicket.markup.repeater.OddEvenItem;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -29,7 +31,9 @@ import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
+import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
+import org.geoserver.web.wicket.HelpLink;
 import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
@@ -44,6 +48,7 @@ public class LayerGroupEntryPanel extends Panel {
     LayerGroupEntryProvider entryProvider;
     GeoServerTablePanel<LayerGroupEntry> layerTable;
     List<LayerGroupEntry> items;
+    GeoServerDialog dialog;
     
     public LayerGroupEntryPanel( String id, LayerGroupInfo layerGroup ) {
         super( id );
@@ -56,6 +61,8 @@ public class LayerGroupEntryPanel extends Panel {
         }
         
         add( popupWindow = new ModalWindow( "popup" ) );
+        add(dialog = new GeoServerDialog("dialog"));
+        add(new HelpLink("layersHelp").setDialog(dialog));
         
         //layers
         entryProvider = new LayerGroupEntryProvider( items );
@@ -79,9 +86,27 @@ public class LayerGroupEntryPanel extends Panel {
                 if ( property == LayerGroupEntryProvider.POSITION ) {
                     return positionPanel( id, itemModel ); 
                 }
+                if ( property == LayerGroupEntryProvider.RENDERING_ORDER ) {
+                    return new Label(id, new Model()); 
+                }
                 
                 return null;
             }
+            
+            protected void onPopulateItem(GeoServerDataProvider.Property<LayerGroupEntry> property, org.apache.wicket.markup.html.list.ListItem item) {
+                if ( property == LayerGroupEntryProvider.RENDERING_ORDER ) {
+                    Label label = (Label) item.get(0);
+                    OddEvenItem rowContainer = (OddEvenItem) item.getParent().getParent();
+                    label.setDefaultModel(new Model(rowContainer.getIndex() + 1));
+                    item.add(new AbstractBehavior() {
+                        
+                        public void onComponentTag(Component component, ComponentTag tag) {
+                            tag.put("style", "width:1%");
+                        }
+                    });
+                }
+            };
+            
         }.setFilterable( false ));
         layerTable.setItemReuseStrategy(new DefaultItemReuseStrategy());
         layerTable.setOutputMarkupId( true );
@@ -236,8 +261,12 @@ public class LayerGroupEntryPanel extends Panel {
         
         public static Property<LayerGroupEntry> POSITION = 
             new PropertyPlaceholder<LayerGroupEntry>( "position" );
+        
+        public static Property<LayerGroupEntry> RENDERING_ORDER = 
+                new PropertyPlaceholder<LayerGroupEntry>( "rendering_order" );
 
-        static List PROPERTIES = Arrays.asList( POSITION, LAYER, DEFAULT_STYLE, STYLE, REMOVE );
+
+        static List PROPERTIES = Arrays.asList( RENDERING_ORDER, POSITION, LAYER, DEFAULT_STYLE, STYLE, REMOVE );
         
         List<LayerGroupEntry> items;
         
@@ -282,6 +311,7 @@ public class LayerGroupEntryPanel extends Panel {
                 
                 @Override
                 protected void onComponentTag(ComponentTag tag) {
+                    tag.put("title", new ParamResourceModel("moveToBottom", this).getString());
                     if ( items.indexOf( entry ) == 0 ) {
                         tag.put("style", "visibility:hidden");
                     } else {
@@ -307,6 +337,7 @@ public class LayerGroupEntryPanel extends Panel {
                 
                 @Override
                 protected void onComponentTag(ComponentTag tag) {
+                    tag.put("title", new ParamResourceModel("moveToTop", this).getString());
                     if ( items.indexOf( entry ) == items.size() - 1) {
                         tag.put("style", "visibility:hidden");
                     } else {

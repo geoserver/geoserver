@@ -45,11 +45,9 @@ import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.CompoundPropertyModel;
-import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.lang.Bytes;
-import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleGenerator;
 import org.geoserver.catalog.StyleHandler;
@@ -115,7 +113,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
     String rawStyle;
 
-    private Image legend;
+    private Image legendImg;
 
     String lastStyle;
 
@@ -131,12 +129,17 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         initUI(style);
     }
 
-    protected void initUI(final StyleInfo style) {
-        IModel<StyleInfo> styleModel = new CompoundPropertyModel(style != null ? 
+    protected void initUI(StyleInfo style) {
+        CompoundPropertyModel<StyleInfo> styleModel = new CompoundPropertyModel(style != null ? 
             new StyleDetachableModel(style) : getCatalog().getFactory().createStyle());
         
         format = style != null ? style.getFormat() : getCatalog().getFactory().createStyle()
                 .getFormat();
+
+        // Make sure the legend object isn't null
+        if (null == styleModel.getObject().getLegend()) {
+            styleModel.getObject().setLegend(getCatalog().getFactory().createLegend());
+        }
 
         styleForm = new Form("form", styleModel) {
             @Override
@@ -193,6 +196,11 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         editor.setOutputMarkupId(true);
         editor.setRequired(true);
         styleForm.add(editor);
+
+        // add the Legend fields        
+        ExternalGraphicPanel legendPanel = new ExternalGraphicPanel("legendPanel", styleModel, styleForm);
+        legendPanel.setOutputMarkupId(true);
+        styleForm.add(legendPanel);
 
         if (style != null) {
             try {
@@ -260,11 +268,11 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         legendContainer = new WebMarkupContainer("legendContainer");
         legendContainer.setOutputMarkupId(true);
         add(legendContainer);
-        legend = new Image("legend");
-        legendContainer.add(legend);
-        legend.setVisible(false);
-        legend.setOutputMarkupId(true);
-        legend.setImageResource(new DynamicWebResource() {
+        this.legendImg = new Image("legendImg");
+        legendContainer.add(this.legendImg);
+        this.legendImg.setVisible(false);
+        this.legendImg.setOutputMarkupId(true);
+        this.legendImg.setImageResource(new DynamicWebResource() {
 
             @Override
             protected ResourceState getResourceState() {
@@ -288,8 +296,8 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                             Style style = dd.parsedStyle(si);
                             if (style != null) {
                                 GetLegendGraphicRequest request = new GetLegendGraphicRequest();
-                                request.setStyle(style);
                                 request.setLayer(null);
+                                request.setStyle(style);
                                 request.setStrict(false);
                                 Map<String, String> legendOptions = new HashMap<String, String>();
                                 legendOptions.put("forceLabels", "on");
@@ -394,7 +402,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                 wsChoice.processInput();
                 lastStyle = editor.getInput();
 
-                legend.setVisible(true);
+                legendImg.setVisible(true);
                 target.addComponent(legendContainer);
             }
 

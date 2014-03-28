@@ -1,4 +1,4 @@
-/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2015 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
@@ -8,12 +8,9 @@ package org.geoserver.wms.web.data;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-
 import java.io.ByteArrayInputStream;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.util.tester.FormTester;
@@ -58,6 +55,16 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         tester.assertComponent("form:name", TextField.class);
         tester.assertComponent("form:styleEditor:editorContainer:editorParent:editor", TextArea.class);
         
+        //Load the legend
+        tester.executeAjaxEvent("form:legendPanel:container:showhide:show", "onclick");
+        
+        tester.assertComponent("form:legendPanel", ExternalGraphicPanel.class);
+        
+        tester.assertComponent("form:legendPanel:container:list:onlineResource", TextField.class);
+        tester.assertComponent("form:legendPanel:container:list:width", TextField.class);
+        tester.assertComponent("form:legendPanel:container:list:height", TextField.class);
+        tester.assertComponent("form:legendPanel:container:list:format", TextField.class);
+        
         tester.assertModelValue("form:name", "Buildings");
         
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
@@ -77,6 +84,11 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
             .getBytes()));
 
         assertXMLEqual(d1, d2);
+    }
+    
+    @Test
+    public void testLoadLegend() {
+        
     }
     
     @Test

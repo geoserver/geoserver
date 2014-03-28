@@ -38,6 +38,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.GetLegendGraphic;
 import org.geoserver.wms.GetLegendGraphicRequest;
+import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.legendgraphic.Cell.ColorMapEntryLegendBuilder;
 import org.geoserver.wms.legendgraphic.Cell.SingleColorMapEntryLegendBuilder;
@@ -253,15 +254,8 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         
         FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName(
                 MockData.ROAD_SEGMENTS.getNamespaceURI(), MockData.ROAD_SEGMENTS.getLocalPart());
-        List<FeatureType> layers=new ArrayList<FeatureType>();
-        layers.add(ftInfo.getFeatureType());
-        
-        req.setLayers(layers);
-        
-        List<Style> styles=new ArrayList<Style>();
-        styles.add(getCatalog().getStyleByName(
-                MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
-        req.setStyles(styles);
+        req.setLayer(ftInfo.getFeatureType());
+        req.setStyle(getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
         
         this.legendProducer.buildLegendGraphic(req);
 
@@ -271,9 +265,10 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         assertNotBlank("testMultipleLayers", image, LegendUtils.DEFAULT_BG_COLOR);
         int height=image.getHeight();
         
-        layers.add(ftInfo.getFeatureType());
-        styles.add(getCatalog().getStyleByName(
-                MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
+        LegendRequest legend = req.new LegendRequest(ftInfo.getFeatureType());
+        legend.setStyle(getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
+        req.getLegends().add( legend );
+        
         this.legendProducer.buildLegendGraphic(req);
 
         image = this.legendProducer.buildLegendGraphic(req);        
@@ -312,22 +307,20 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
      */
     @org.junit.Test
     public void testForceTitlesOff() throws Exception {        
+        Catalog cat = getCatalog();
         
         GetLegendGraphicRequest req = new GetLegendGraphicRequest();
         Map<String,String> options = new HashMap<String,String>();
         options.put("forceTitles", "off");
         req.setLegendOptions(options);
-        FeatureTypeInfo ftInfo = getCatalog().getFeatureTypeByName(
+        
+        FeatureTypeInfo ftInfo = cat.getFeatureTypeByName(
                 MockData.ROAD_SEGMENTS.getNamespaceURI(), MockData.ROAD_SEGMENTS.getLocalPart());
         List<FeatureType> layers=new ArrayList<FeatureType>();
-        layers.add(ftInfo.getFeatureType());
+        req.setLayer(ftInfo.getFeatureType());
         
-        req.setLayers(layers);
-        
-        List<Style> styles = new ArrayList<Style>();
-        styles.add(getCatalog().getStyleByName(
+        req.setStyle(cat.getStyleByName(
                 MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
-        req.setStyles(styles);
         
         this.legendProducer.buildLegendGraphic(req);
 
@@ -337,9 +330,10 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         assertNotBlank("testMultipleLayers", image, LegendUtils.DEFAULT_BG_COLOR);
         int height=image.getHeight();
         
-        layers.add(ftInfo.getFeatureType());
-        styles.add(getCatalog().getStyleByName(
-                MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
+        LegendRequest legend = req.new LegendRequest(ftInfo.getFeatureType());
+        legend.setStyle(cat.getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
+        req.getLegends().add(legend);
+        
         this.legendProducer.buildLegendGraphic(req);
 
         image = this.legendProducer.buildLegendGraphic(req);        
@@ -595,17 +589,10 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
                 .getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(),
                         MockData.MPOINTS.getLocalPart());
     
-        List<FeatureType> layers = new ArrayList<FeatureType>();
-        layers.add(ftInfo.getFeatureType());
-        req.setLayers(layers);
+        req.setLayer(ftInfo.getFeatureType());
+        req.setStyle(readSLD("BigSymbol.sld"));
     
-        List<Style> styles = new ArrayList<Style>();
-        req.setStyles(styles);
-    
-        styles.add(readSLD("BigSymbol.sld"));
-    
-        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
-        
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);        
         
         assertNotBlank("testSymbolSize", image, LegendUtils.DEFAULT_BG_COLOR);
     
@@ -628,14 +615,8 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
                 .getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(),
                         MockData.MPOINTS.getLocalPart());
     
-        List<FeatureType> layers = new ArrayList<FeatureType>();
-        layers.add(ftInfo.getFeatureType());
-        req.setLayers(layers);
-    
-        List<Style> styles = new ArrayList<Style>();
-        req.setStyles(styles);
-    
-        styles.add(readSLD("SymbolExpression.sld"));
+        req.setLayer(ftInfo.getFeatureType());
+        req.setStyle(readSLD("SymbolExpression.sld"));
     
         BufferedImage image = this.legendProducer.buildLegendGraphic(req);
         
@@ -646,8 +627,6 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
     
         // symbol in the center
         assertPixel(image, 10, 10, new Color(255, 0, 0));
-        
-        
     }
     
     /**
@@ -661,14 +640,8 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
                 .getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(),
                         MockData.MPOINTS.getLocalPart());
     
-        List<FeatureType> layers = new ArrayList<FeatureType>();
-        layers.add(ftInfo.getFeatureType());
-        req.setLayers(layers);
-    
-        List<Style> styles = new ArrayList<Style>();
-        req.setStyles(styles);
-    
-        styles.add(readSLD("ProportionalSymbols.sld"));
+        req.setLayer(ftInfo.getFeatureType());    
+        req.setStyle(readSLD("ProportionalSymbols.sld"));
     
         BufferedImage image = this.legendProducer.buildLegendGraphic(req);
         
@@ -708,14 +681,8 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
                 .getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(),
                         MockData.MPOINTS.getLocalPart());
     
-        List<FeatureType> layers = new ArrayList<FeatureType>();
-        layers.add(ftInfo.getFeatureType());
-        req.setLayers(layers);
-    
-        List<Style> styles = new ArrayList<Style>();
-        req.setStyles(styles);
-    
-        styles.add(readSLD("ProportionalSymbolsUOM.sld"));
+        req.setLayer(ftInfo.getFeatureType());    
+        req.setStyle(readSLD("ProportionalSymbolsUOM.sld"));
     
         BufferedImage image = this.legendProducer.buildLegendGraphic(req);
                 
@@ -759,14 +726,8 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
                 .getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(),
                         MockData.MPOINTS.getLocalPart());
     
-        List<FeatureType> layers = new ArrayList<FeatureType>();
-        layers.add(ftInfo.getFeatureType());
-        req.setLayers(layers);
-    
-        List<Style> styles = new ArrayList<Style>();
-        req.setStyles(styles);
-    
-        styles.add(readSLD("ProportionalSymbolsPartialUOM.sld"));
+        req.setLayer(ftInfo.getFeatureType());
+        req.setStyle(readSLD("ProportionalSymbolsPartialUOM.sld"));
     
         BufferedImage image = this.legendProducer.buildLegendGraphic(req);
         
@@ -798,15 +759,9 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         options.put("minSymbolSize", "10");
         req.setLegendOptions(options);
         
-        List<FeatureType> layers = new ArrayList<FeatureType>();
-        layers.add(ftInfo.getFeatureType());
-        req.setLayers(layers);
-    
-        List<Style> styles = new ArrayList<Style>();
-        req.setStyles(styles);
-    
-        styles.add(readSLD("ProportionalSymbols.sld"));
-    
+        req.setLayer(ftInfo.getFeatureType());
+        req.setStyle(readSLD("ProportionalSymbols.sld"));
+        
         BufferedImage image = this.legendProducer.buildLegendGraphic(req);
         
         assertNotBlank("testProportionalSymbolSize", image, LegendUtils.DEFAULT_BG_COLOR);
@@ -836,16 +791,9 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
         FeatureTypeInfo ftInfo = getCatalog()
                 .getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(),
                         MockData.MPOINTS.getLocalPart());
-    
         
-        List<FeatureType> layers = new ArrayList<FeatureType>();
-        layers.add(ftInfo.getFeatureType());
-        req.setLayers(layers);
-    
-        List<Style> styles = new ArrayList<Style>();
-        req.setStyles(styles);
-    
-        styles.add(readSLD("Internationalized.sld"));
+        req.setLayer(ftInfo.getFeatureType());
+        req.setStyle(readSLD("Internationalized.sld"));
     
         BufferedImage image = this.legendProducer.buildLegendGraphic(req);
         int noLocalizedWidth = image.getWidth();        
@@ -1037,8 +985,10 @@ public class AbstractLegendGraphicOutputFormatTest extends WMSTestSupport {
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
         try {
-            req.setStyle(externalGraphicStyle);
-            req.setLayer(null);
+            LegendRequest legend = req.new LegendRequest();
+            legend.setStyle(externalGraphicStyle);
+            
+            req.getLegends().add( legend );
             req.setScale(1.0);
             
             final int HEIGHT_HINT = 30;

@@ -22,7 +22,7 @@ public class LayerGroupEntry implements Serializable {
     String layerId;
     String layerGroupId;
     
-    public LayerGroupEntry( PublishedInfo layer, StyleInfo style ) {
+    public LayerGroupEntry(PublishedInfo layer, StyleInfo style ) {
         setLayer(layer);
         setStyle(style);
     }

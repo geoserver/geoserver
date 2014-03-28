@@ -534,7 +534,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
      * Called each time a new table item/column is created.
      * <p>
      * By default this method does nothing, subclasses may override for instance to add an attribute
-     * to the &lt;td> element created for the column.
+     * to the &lt;td&gt; element created for the column.
      * </p>
      */
     protected void onPopulateItem(Property<T> property, ListItem item) {

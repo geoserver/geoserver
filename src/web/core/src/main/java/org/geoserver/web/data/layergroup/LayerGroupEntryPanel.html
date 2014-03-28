@@ -1,15 +1,21 @@
 <html>
   <body>
     <wicket:panel>
+      <fieldset>
+        <legend>
+              <span><wicket:message key="layers">Layers</wicket:message></span>
+              <a href="#" wicket:id="layersHelp" class="help-link"></a>
+        </legend>
       <ul>
-       <li><label><wicket:message key="layers">Layers</wicket:message></label></li>
        <li><a class="add-link" wicket:id="addLayer"><wicket:message key="addLayer">Add Layer...</wicket:message></a></li>
        <li><a class="add-link" wicket:id="addLayerGroup"><wicket:message key="addLayerGroup">Add Layer Group...</wicket:message></a></li>       
        <li>
          <div wicket:id="layers"></div>
        </li>
      </ul>
+     </fieldset>
      <div wicket:id="popup"></div>
+     <div wicket:id="dialog"></div>
     </wicket:panel>
     
     <wicket:fragment wicket:id="defaultStyle">

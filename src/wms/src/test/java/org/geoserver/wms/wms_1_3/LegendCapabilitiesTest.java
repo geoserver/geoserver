@@ -5,9 +5,12 @@
 package org.geoserver.wms.wms_1_3;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.xml.namespace.QName;
+
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.catalog.LegendInfo;
@@ -16,6 +19,7 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
 import org.junit.Test;
@@ -34,11 +38,10 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
     private static final String STYLE_NAME = "temperature";
     private static final String STYLE_FILE = "../temperature.sld";
     
-    private static final int LEGEND_WIDTH = 550;
-    private static final int LEGEND_HEIGHT = 384;
+    private static final int LEGEND_WIDTH = 22;
+    private static final int LEGEND_HEIGHT = 22;
     private static final String LEGEND_FORMAT = "image/jpeg";
-    private static final String IMAGE_URL =
-            "http://visual.merriam-webster.com/images/earth/meteorology/station-model.jpg";
+    private static final String IMAGE_URL = "styles/legend.png";
     
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -50,6 +53,10 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
         legend.setFormat(LEGEND_FORMAT);
         legend.setOnlineResource(IMAGE_URL);
         
+        // add legend.png to styles directory
+        Resource resource = getResourceLoader().get("styles/legend.png");        
+        getResourceLoader().copyFromClassPath( "../legend.png", resource.file(),  getClass() );
+
         // add layer
         testData.addStyle(null, STYLE_NAME, STYLE_FILE, getClass(), getCatalog(), legend);
         Map<SystemTestData.LayerProperty, Object> propertyMap =

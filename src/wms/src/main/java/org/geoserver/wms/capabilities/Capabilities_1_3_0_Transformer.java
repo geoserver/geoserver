@@ -12,6 +12,7 @@ import static org.geoserver.ows.util.ResponseUtils.appendQueryString;
 import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 import static org.geoserver.ows.util.ResponseUtils.params;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -29,6 +30,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.AuthorityURLInfo;
@@ -82,6 +84,7 @@ import org.vfny.geoserver.util.ResponseUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
+
 import com.google.common.collect.Iterables;
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -1301,7 +1304,10 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 attrs.clear();
                 attrs.addAttribute("", "xmlns:xlink", "xmlns:xlink", "", XLINK_NS);
                 attrs.addAttribute(XLINK_NS, "type", "xlink:type", "", "simple");
-                attrs.addAttribute(XLINK_NS, "href", "xlink:href", "", legend.getOnlineResource());
+                
+                String legendUrl = buildURL(request.getBaseUrl(), "styles/"+legend.getOnlineResource(), null, URLType.RESOURCE);
+                attrs.addAttribute(XLINK_NS, "href", "xlink:href", "", legendUrl);               
+                //attrs.addAttribute(XLINK_NS, "href", "xlink:href", "", legend.getOnlineResource());
 
                 element("OnlineResource", null, attrs);
 

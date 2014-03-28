@@ -425,6 +425,7 @@ public class SystemTestData extends CiteTestData {
     public void addStyle(WorkspaceInfo ws, String name, String filename, Class scope, Catalog catalog,
             LegendInfo legend) throws IOException {
         File styles = catalog.getResourceLoader().findOrCreateDirectory(data, "styles");
+        
         String target = new File( filename ).getName();
         
         catalog.getResourceLoader().copyFromClassPath(filename, new File(styles, target ), scope);
@@ -435,7 +436,7 @@ public class SystemTestData extends CiteTestData {
             style.setName(name);
             style.setWorkspace(ws);
         }
-        style.setFilename(filename);
+        style.setFilename(target);
         style.setLegend(legend);
         if (style.getId() == null) {
             catalog.add(style);

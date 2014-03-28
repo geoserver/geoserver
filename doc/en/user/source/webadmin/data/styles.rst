@@ -3,7 +3,7 @@
 Styles
 ======
 
-Styles render, or make available, geospatial data. Styles for GeoServer are written in Styled Layer Descriptor (SLD), a subset of XML. Please see the section on :ref:`styling` for more information on working with styles. 
+Styles are used to control the appearance of geospatial data. Styles for GeoServer are written in Styled Layer Descriptor (SLD), a subset of XML. Please see the section on :ref:`styling` for more information on working with styles. 
 
 On the Styles page, you can add a new style, view or edit an existing style, or remove a style.
 
@@ -15,7 +15,7 @@ On the Styles page, you can add a new style, view or edit an existing style, or 
 Edit a Style
 ------------
 
-To view or edit a style, click the style name. A :guilabel:`Style Editor` page will be diplayed.  The page presents options for configuring a style's name, code, and other attributes. Style names are specified at the top in the name field. The style's workspace can be chosen using workspace selector. Styles are edited using a plain text editor with some basic utilities.
+The :guilabel:`Style Editor` page presents options for configuring a style's name, code, and other attributes. SLD   names are specified at the top in the name field. The style's workspace can be chosen using the workspace selector. Styles are edited using a plain text editor with some basic utilities.
 
 .. figure:: ../images/data_style_editor.png
    :align: center
@@ -100,3 +100,19 @@ To remove a style, select it by clicking the checkbox next to the style. Multipl
    :align: center
    
    *Confirmation prompt for removing styles*
+
+Add a Legend
+------------
+
+By default GeoServer will generate a legend based on your SLD file. You can use the :guilabel:`Add legend` link to provide a custom legend.
+
+.. figure:: ../images/data_style_add_legend.png
+   
+   *Legend*
+
+Use :guilabel:`Online Resource` to reference one of the images in your styles folder. See  :ref:`data_dir_structure` for a description of the styles folder. 
+     
+Use :guilabel:`Width`, :guilabel:`Height` and :guilabel:`Format` to describe your image or click :guilabel:`Auto-detect image size and type` to fill in these fields.
+
+Use :guilabel:`Discard legend` to remove your custom legend and revert to legend generation based on your SLD file.
+

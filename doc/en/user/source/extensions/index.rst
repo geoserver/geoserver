@@ -29,3 +29,4 @@ see the :ref:`data_vector`, :ref:`data_raster`, and :ref:`data_database` section
    csw/index
    wcs20eo/index
    libjpeg-turbo/index
+   jp2k

@@ -368,7 +368,7 @@ public class ImportPage extends GeoServerSecuredPage {
 
     static class DataTitleModel extends LoadableDetachableModel<String> {
 
-        ImportContext imp;
+        long contextId;
         boolean abbrev;
         
         DataTitleModel(ImportContext imp) {
@@ -376,14 +376,15 @@ public class ImportPage extends GeoServerSecuredPage {
         }
 
         DataTitleModel(ImportContext imp, boolean abbrev) {
-            this.imp = imp;
+            this.contextId = imp.getId();
             this.abbrev = abbrev;
         }
 
         @Override
         protected String load() {
-            ImportData data = imp.getData();
-            String title =  data != null ? data.toString() : imp.toString();
+            ImportContext ctx = importer().getContext(contextId);
+            ImportData data = ctx.getData();
+            String title =  data != null ? data.toString() : ctx.toString();
 
             if (abbrev && title.length() > 70) {
                 //shorten it

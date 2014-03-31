@@ -98,10 +98,10 @@ public interface GeoServerFacade {
     Collection<? extends ServiceInfo> getServices(WorkspaceInfo workspace);
 
     /**
-     * GeoServer services filtered by class.
+     * GeoServer global service filtered by class.
      * 
      * @param clazz
-     *                The class of the services to return.
+     *                The class of the service to return.
      */
     <T extends ServiceInfo> T getService(Class<T> clazz);
 

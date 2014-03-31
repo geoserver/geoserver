@@ -91,6 +91,12 @@ public class CloseableIteratorAdapter<T> implements CloseableIterator<T> {
     public static <T> CloseableIterator<T> filter(final Iterator<T> iterator, final Filter filter) {
 
         Predicate<T> predicate = filterAdapter(filter);
+        return filter(iterator, predicate);
+        
+    }
+    
+    public static <T> CloseableIterator<T> filter(final Iterator<T> iterator, final Predicate<T> predicate) {
+        
         UnmodifiableIterator<T> filteredNotCloseable = Iterators.filter(iterator, predicate);
         Closeable closeable = iterator instanceof Closeable ? (Closeable) iterator : null;
 

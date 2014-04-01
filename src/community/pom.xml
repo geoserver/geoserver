@@ -162,8 +162,8 @@
         <module>colormap</module>
         <module>netcdf</module>
         <module>netcdf-out</module>
-        <module>mbtiles</module>
-        <module>geopkg</module>
+        <!-- <module>mbtiles</module> -->
+        <!-- <module>geopkg</module> -->
       </modules>
     </profile>
     <profile>

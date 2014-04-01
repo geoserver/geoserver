@@ -88,6 +88,7 @@
      <artifactId>gs-colormap</artifactId>
      <version>${project.version}</version>
    </dependency>
+<!--
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-geopkg</artifactId>
@@ -98,7 +99,7 @@
      <artifactId>gs-mbtiles</artifactId>
      <version>${project.version}</version>
    </dependency>
-   
+   -->
  </dependencies>
  <build>
   <plugins>

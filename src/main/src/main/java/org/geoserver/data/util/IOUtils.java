@@ -388,37 +388,46 @@ public class IOUtils {
         }
     }
 
-    /**
-     * Performs serialization with an {@link XStreamPersister} in a safe manner in which a temp
-     * file is used for the serialization so that the true destination file is not partially 
-     * written in the case of an error. 
-     * 
-     * @param f The file to write to, only modified if the temp file serialization was error free.
-     * @param obj The object to serialize.
-     * @param xp The persister.
-     * 
-     * @throws Exception
-     */
-    public static void xStreamPersist(File f, Object obj, XStreamPersister xp) throws IOException {
-        //first save to a temp file
-        File temp = new File(f.getParentFile(),f.getName()+".tmp");
-        if ( temp.exists() ) {
-            temp.delete();
-        }
-        
-        BufferedOutputStream out = null;
-        try{
-            out=new BufferedOutputStream( new FileOutputStream( temp ) );
-            xp.save( obj, out );
-            out.flush();
-        } finally {
-            if (out != null)
-                org.apache.commons.io.IOUtils.closeQuietly(out);
-        }
-        
-        //no errors, overwrite the original file
-        rename(temp,f);
-    }
+	/**
+	 * Performs serialization with an {@link XStreamPersister} in a safe manner
+	 * in which a temp file is used for the serialization so that the true
+	 * destination file is not partially written in the case of an error.
+	 * 
+	 * @param f
+	 *            The file to write to, only modified if the temp file
+	 *            serialization was error free.
+	 * @param obj
+	 *            The object to serialize.
+	 * @param xp
+	 *            The persister.
+	 * 
+	 * @throws Exception
+	 */
+	public static void xStreamPersist(File f, Object obj, XStreamPersister xp)
+			throws IOException {
+		// first save to a temp file
+		final File temp = File.createTempFile(f.getName(), null,
+				f.getParentFile());
+
+		BufferedOutputStream out = null;
+		try {
+			out = new BufferedOutputStream(new FileOutputStream(temp));
+			xp.save(obj, out);
+			out.flush();
+		} finally {
+			if (out != null)
+				org.apache.commons.io.IOUtils.closeQuietly(out);
+		}
+
+		// no errors, overwrite the original file
+		try {
+			rename(temp, f);
+		} finally {
+			if (temp.exists()) {
+				temp.delete();
+			}
+		}
+	}
 
     /**
      * Backs up a directory <tt>dir</tt> by creating a .bak next to it.

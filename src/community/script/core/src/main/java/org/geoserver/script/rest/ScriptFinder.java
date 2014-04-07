@@ -4,6 +4,7 @@
  */
 package org.geoserver.script.rest;
 
+import org.apache.commons.io.FilenameUtils;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.script.ScriptManager;
 import org.restlet.data.Request;
@@ -35,7 +36,16 @@ public class ScriptFinder extends FinderSupport {
         }
         else {
             // collection of scripts
-            return new ScriptListResource(scriptMgr, path, request, response);
+            return new ScriptListResource(scriptMgr, stripExtension(path), request, response);
         }
+    }
+    
+    private String stripExtension(String path) {
+    	int i = path.lastIndexOf(".");
+    	if (i > -1) {
+    		return path.substring(0, i);
+    	} else {
+    		return path;
+    	}
     }
 }

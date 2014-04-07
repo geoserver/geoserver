@@ -29,6 +29,7 @@
   <bean id="scriptRestMapping" class="org.geoserver.rest.RESTMapping">
     <property name="routes">
       <map>
+      	<!-- Scripting Apps -->
         <entry>
           <key><value>/apps/{app}</value></key>
           <value>appFinder</value>
@@ -37,6 +38,7 @@
           <key><value>/apps/{app}/</value></key>
           <value>appFinder</value>
         </entry>
+        <!-- WPS -->
         <entry>
           <key><value>/scripts/wps</value></key>
           <value>scriptFinder</value>
@@ -45,12 +47,36 @@
           <key><value>/scripts/wps/{name}.{ext}</value></key>
           <value>scriptFinder</value>
         </entry>
+        <!-- Function -->
+		<entry>
+		  <key><value>/scripts/function</value></key>
+		  <value>scriptFinder</value>
+		</entry>
+		<entry>
+		  <key><value>/scripts/function/{name}.{ext}</value></key>
+		  <value>scriptFinder</value>
+		</entry>
+		<!-- WFS TX -->
+		<entry>
+			<key><value>/scripts/wfs/tx</value></key>
+			<value>scriptFinder</value>
+		</entry>
+		<entry>
+			<key><value>/scripts/wfs/tx/{name}.{ext}</value></key>
+			<value>scriptFinder</value>
+		</entry>
+		<!-- Apps -->
+		<entry>
+			<key><value>/scripts/apps</value></key>
+			<value>scriptFinder</value>
+		</entry>
+		<entry>
+			<key><value>/scripts/apps/{name}/main.{ext}</value></key>
+			<value>scriptFinder</value>
+		</entry>
+		<!-- Scripting Sessions -->
         <entry>
           <key><value>/sessions</value></key>
-          <value>sessionFinder</value>
-        </entry>
-        <entry>
-          <key><value>/sessions/{ext}</value></key>
           <value>sessionFinder</value>
         </entry>
         <entry>
@@ -64,7 +90,7 @@
       </map>
     </property>
   </bean>
-
+  
   <bean id="appFinder" class="org.geoserver.script.app.AppFinder">
     <constructor-arg ref="scriptMgr"/>
   </bean>

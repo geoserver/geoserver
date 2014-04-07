@@ -53,13 +53,7 @@ public class AppFinder extends FinderSupport {
         }
 
         //look for main script
-        File main = null;
-        for (File f : appDir.listFiles()) {
-            if ("main".equals(FilenameUtils.getBaseName(f.getName()))) {
-                main = f;
-                break;
-            }
-        }
+        File main = scriptMgr.findAppMainScript(appDir);
         if (main == null) {
             throw new RestletException(format("No main file for app %s", app), Status.CLIENT_ERROR_NOT_FOUND);
         }

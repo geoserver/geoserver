@@ -10,7 +10,7 @@ import junit.framework.TestCase;
 
 import org.geoserver.config.GeoServerDataDirectory;
 
-public class ScriptTestSupport extends TestCase {
+public abstract class ScriptTestSupport extends TestCase {
 
     protected ScriptManager scriptMgr;
 

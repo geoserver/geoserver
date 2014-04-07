@@ -143,6 +143,9 @@ public class ScriptManager implements InitializingBean {
      */
     public File findOrCreateScriptFile(String path) throws IOException {
         File f = new File(getScriptRoot(), path);
+        if (!f.getParentFile().exists()) {
+            f.getParentFile().mkdirs();
+        }
         return f;
     }
 
@@ -167,6 +170,20 @@ public class ScriptManager implements InitializingBean {
         return findOrCreateScriptDir("apps" + File.separator + app);
     }
 
+    /**
+     * Find the main script File
+     */
+    public File findAppMainScript(File appDir) {
+        File main = null;
+        for (File f : appDir.listFiles()) {
+            if ("main".equals(FilenameUtils.getBaseName(f.getName()))) {
+                main = f;
+                break;
+            }
+        }
+        return main;
+    }
+    
     /**
      * The root "wps" directory, located directly under {@link #getScriptRoot()} 
      */

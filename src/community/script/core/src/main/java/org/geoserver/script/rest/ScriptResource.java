@@ -92,4 +92,36 @@ public class ScriptResource extends Resource {
                 Status.SERVER_ERROR_INTERNAL, e);
         }
     }
+
+    @Override
+    public boolean allowDelete() {
+        return true;
+    }
+
+    @Override
+    public void handleDelete() {
+        File script;
+        try {
+            script = scriptMgr.findScriptFile(path);
+            if (script == null) {
+                throw new IOException(format("Unable to find script file %s", path));
+            }
+        } catch (IOException e) {
+            throw new RestletException(format("Error finding script file %s", path),
+                    Status.SERVER_ERROR_INTERNAL, e);
+        }
+
+        boolean success = false;
+        if (script != null && script.exists()) {
+            success = script.delete();
+            if (path.startsWith("apps")) {
+                success = script.getParentFile().delete();
+            }
+        }
+
+        if (!success) {
+            throw new RestletException(format("Error deleting script file %s", path),
+                    Status.SERVER_ERROR_INTERNAL);
+        }
+    }
 }

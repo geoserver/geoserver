@@ -11,11 +11,11 @@
   <!-- set parent pom to community pom -->
   <parent>
     <groupId>org.geoserver</groupId>
-    <artifactId>community</artifactId>
+    <artifactId>extension</artifactId>
     <version>2.6-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.geoserver.community</groupId>
+  <groupId>org.geoserver.extension</groupId>
   <artifactId>gs-printing</artifactId>
   <packaging>jar</packaging>
   <version>2.6-SNAPSHOT</version>
@@ -55,8 +55,16 @@
     <dependency>
       <groupId>org.mapfish.print</groupId>
       <artifactId>print-lib</artifactId>
-      <version>1.2-20101018133712</version>
+      <version>2.0.0</version>
     </dependency>
+      
+    <dependency>
+      <groupId>org.geoserver.web</groupId>
+      <artifactId>gs-web-core</artifactId>
+      <version>${project.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>    
   </dependencies>
 
 </project>

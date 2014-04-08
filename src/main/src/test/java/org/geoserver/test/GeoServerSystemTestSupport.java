@@ -1855,7 +1855,16 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             myBody = body.getBytes();
         }
         
-        public ServletInputStream getInputStream(){
+        
+        
+        @Override
+        public BufferedReader getReader() throws IOException {
+            if (null == myBody)
+                return null;
+            return new BufferedReader(new StringReader(new String(myBody)));
+        }
+        
+        public ServletInputStream getInputStream() {
             return new GeoServerMockServletInputStream(myBody);
         }
     }

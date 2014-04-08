@@ -259,6 +259,11 @@
    </dependency>
    <dependency>
      <groupId>org.geoserver.extension</groupId>
+     <artifactId>gs-printing</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.extension</groupId>
      <artifactId>gs-wcs2_0-eo-core</artifactId>
      <version>${project.version}</version>
    </dependency>

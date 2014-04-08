@@ -264,6 +264,13 @@
         <module>dxf</module>
       </modules>
     </profile>
+    
+    <profile>
+      <id>printing</id>
+      <modules>
+        <module>printing</module>
+      </modules>
+    </profile>
 
     <profile>
       <id>wcs2_0-eo</id>
@@ -318,6 +325,7 @@
         <module>css</module>	
         <module>csw</module>
         <module>dxf</module>
+        <module>printing</module>
         <module>wcs2_0-eo</module>
         <module>libjpeg-turbo</module>
         <module>importer</module>
@@ -356,6 +364,7 @@
         <module>css</module>
         <module>csw</module>
         <module>dxf</module>
+        <module>printing</module>
         <module>wcs2_0-eo</module>
         <module>libjpeg-turbo</module>
         <module>importer</module>

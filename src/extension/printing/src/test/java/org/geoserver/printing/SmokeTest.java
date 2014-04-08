@@ -4,25 +4,43 @@
  */
 package org.geoserver.printing;
 
-import static org.junit.Assert.*;
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Test;
 
-public class SmokeTest extends GeoServerSystemTestSupport  {
-    
+import static org.junit.Assert.assertTrue;
+
+
+public class SmokeTest extends GeoServerSystemTestSupport
+{
+
     @Test
-    public void testServiceExists() throws Exception {
+    public void testServiceExists() throws Exception
+    {
         JSON json = getAsJSON("/pdf/info.json");
 
         assertTrue(json instanceof JSONObject);
+
         JSONObject obj = (JSONObject) json;
         assertTrue(obj.containsKey("scales"));
         assertTrue(obj.containsKey("dpis"));
         assertTrue(obj.containsKey("layouts"));
         assertTrue(obj.containsKey("printURL"));
         assertTrue(obj.containsKey("createURL"));
+
+        json = json(postAsServletResponse(
+                "/pdf/create.json",
+                "{\"units\":\"m\",\"srs\":\"EPSG:900913\",\"layout\":\"A4 portrait\",\"dpi\":75,\"outputFilename\":\"mapstore-print\",\"layers\":[],\"legends\":[],\"pages\":[{\"mapTitle\":\"\",\"center\":[1263949.7576605,5859225.6448425],\"scale\":200000,\"rotation\":0,\"comment\":\"\"}]}",
+                "application/json"));
+
+
+        assertTrue(json instanceof JSONObject);
+
+        obj = (JSONObject) json;
+        assertTrue(obj.containsKey("getURL"));
     }
+
+
 }

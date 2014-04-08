@@ -17,9 +17,9 @@ Ext.onReady(function() {
     var mapPanel = new GeoExt.MapPanel({
         region: "center",
         layers: [new OpenLayers.Layer.WMS("Natural Earth",
-            "http://demo.opengeo.org/geoserver/wms",
-            {layers: "ne:ne"})] ,
-        center: [16,48],
+            "/geoserver/wms",
+            {layers: "topp:states"})] ,
+        center: [-98,40],
         zoom: 5
     });
 
@@ -36,9 +36,9 @@ Ext.onReady(function() {
     });
     var geom = OpenLayers.Geometry.fromWKT, Vec = OpenLayers.Feature.Vector;
     redline.addFeatures([
-        new Vec(geom("POLYGON(15 47, 16 48, 14 49)")),
-        new Vec(geom("LINESTRING(15 48, 16 47, 17 46)")),
-        new Vec(geom("POINT(16 46)"))
+        new Vec(geom("POLYGON(-97 39,-98 40, -96 41)")),
+        new Vec(geom("LINESTRING(-97 40, -98 39, -99 38)")),
+        new Vec(geom("POINT(-98 38)"))
     ]);
     mapPanel.map.addLayer(redline);
     

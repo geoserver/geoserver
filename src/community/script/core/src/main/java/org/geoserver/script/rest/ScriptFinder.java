@@ -41,11 +41,11 @@ public class ScriptFinder extends FinderSupport {
     }
     
     private String stripExtension(String path) {
-    	int i = path.lastIndexOf(".");
-    	if (i > -1) {
-    		return path.substring(0, i);
-    	} else {
-    		return path;
-    	}
+        int i = path.lastIndexOf(".");
+        if (i > -1) {
+            return path.substring(0, i);
+        } else {
+            return path;
+        }
     }
 }

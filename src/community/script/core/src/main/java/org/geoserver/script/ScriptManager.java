@@ -174,14 +174,14 @@ public class ScriptManager implements InitializingBean {
      * Find the main script File
      */
     public File findAppMainScript(File appDir) {
-    	File main = null;
-    	for(File f: appDir.listFiles()) {
-    		if ("main".equals(FilenameUtils.getBaseName(f.getName()))) {
-    			main = f;
-    			break;
-    		}
-    	}
-    	return main;
+        File main = null;
+        for (File f : appDir.listFiles()) {
+            if ("main".equals(FilenameUtils.getBaseName(f.getName()))) {
+                main = f;
+                break;
+            }
+        }
+        return main;
     }
     
     /**

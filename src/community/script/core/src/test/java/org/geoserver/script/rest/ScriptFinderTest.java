@@ -4,7 +4,6 @@
  */
 package org.geoserver.script.rest;
 
-
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,355 +24,355 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class ScriptFinderTest extends ScriptIntTestSupport {
 
-	protected XpathEngine xp;
-	
-	@Override
+    protected XpathEngine xp;
+
+    @Override
     protected void oneTimeSetUp() throws Exception {
         super.oneTimeSetUp();
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("html", "http://www.w3.org/1999/xhtml");
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
-    	xp = XMLUnit.newXpathEngine();
-	}
-	
-	// Apps
-
-	public void testGetApp() throws Exception {
-		MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/apps/app1/main.py");
-		assertEquals(404, resp.getStatusCode());
-
-		File dir = scriptMgr.findOrCreateScriptDir("apps/app1");
-		FileUtils.writeStringToFile(new File(dir, "main.py"), "print 'foo'");
-
-		resp = getAsServletResponse("/rest/scripts/apps/app1/main.py");
-		assertEquals(200, resp.getStatusCode());
-		assertEquals("print 'foo'", resp.getOutputStreamContent());
-	}
-
-	public void testPutApp() throws Exception {
-		assertNull(scriptMgr.findScriptFile("apps/app1/main.py"));
-
-		String body = "print 'hello';";
-		MockHttpServletResponse resp = putAsServletResponse(
-				"/rest/scripts/apps/app1/main.py", body, "text/plain");
-		assertEquals(201, resp.getStatusCode());
-
-		assertNotNull(scriptMgr.findScriptFile("apps/app1/main.py"));
-	}
-
-	public void testGetAllApps() throws Exception {
-		// Make sure we get an empty response
-		JSON json = getAsJSON("/rest/scripts/apps.json");
-		assertTrue(((JSONObject)json).getString("scripts").isEmpty());
-
-		// Add two Functions scripts
-		File dir = scriptMgr.findOrCreateScriptDir("apps");
-		FileUtils.writeStringToFile(new File(new File(dir,"foo"), "main.py"), "print 'foo'");
-		FileUtils.writeStringToFile(new File(new File(dir, "bar"), "main.py"), "print 'bar'");
-
-		// JSON
-		json = getAsJSON("/rest/scripts/apps.json");
-		JSONArray scripts = ((JSONObject)json).getJSONObject("scripts").getJSONArray("script");
-		assertEquals(2, scripts.size());
-		for(int i = 0; i<scripts.size(); i++) {
-			JSONObject script = scripts.getJSONObject(i); 
-			assertTrue(script.containsKey("name"));
-			assertTrue(script.containsKey("href"));
-			String name = script.getString("name");
-			assertTrue(name.equals("foo/main.py") || name.equals("bar/main.py"));
-			String href = script.getString("href");
-			assertTrue(href.equals("http://localhost/geoserver/rest/scripts/apps/foo/main.py") || 
-					href.equals("http://localhost/geoserver/rest/scripts/apps/bar/main.py"));
-		}
-		
-		// XML
-		Document doc = getAsDOM("/rest/scripts/apps.xml");
-		assertEquals("scripts",doc.getDocumentElement().getTagName());
-		NodeList scriptNodes = doc.getElementsByTagName("script"); 
-		assertEquals(2, scriptNodes.getLength());
-		
-		// HTML
-		Document htmlDom = getAsDOM( "/rest/scripts/apps.html" );
-        NodeList links = xp.getMatchingNodes("//html:a", htmlDom);
-        assertEquals(2, links.getLength());
-        
-        // HTML - No extension
-		htmlDom = getAsDOM( "/rest/scripts/apps" );
-        links = xp.getMatchingNodes("//html:a", htmlDom);
-        assertEquals(2, links.getLength());	
+        xp = XMLUnit.newXpathEngine();
     }
 
-	public void testDeleteApp() throws Exception {
-		MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/apps/app1/main.py");
-		assertEquals(404, resp.getStatusCode());
+    // Apps
 
-		File dir = scriptMgr.findOrCreateScriptDir("apps/app1");
-		FileUtils.writeStringToFile(new File(dir, "main.py"), "print 'foo'");
+    public void testGetApp() throws Exception {
+        MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/apps/app1/main.py");
+        assertEquals(404, resp.getStatusCode());
 
-		resp = getAsServletResponse("/rest/scripts/apps/app1/main.py");
-		assertEquals(200, resp.getStatusCode());
-		assertEquals("print 'foo'", resp.getOutputStreamContent());
+        File dir = scriptMgr.findOrCreateScriptDir("apps/app1");
+        FileUtils.writeStringToFile(new File(dir, "main.py"), "print 'foo'");
 
-		resp = deleteAsServletResponse("/rest/scripts/apps/app1/main.py");
-		assertEquals(200, resp.getStatusCode());
+        resp = getAsServletResponse("/rest/scripts/apps/app1/main.py");
+        assertEquals(200, resp.getStatusCode());
+        assertEquals("print 'foo'", resp.getOutputStreamContent());
+    }
 
-		resp = getAsServletResponse("/rest/scripts/apps/app1/main.py");
-		assertEquals(404, resp.getStatusCode());
-		assertFalse(dir.exists());
-	}
+    public void testPutApp() throws Exception {
+        assertNull(scriptMgr.findScriptFile("apps/app1/main.py"));
 
-	// WFS TX
+        String body = "print 'hello';";
+        MockHttpServletResponse resp = putAsServletResponse("/rest/scripts/apps/app1/main.py",
+                body, "text/plain");
+        assertEquals(201, resp.getStatusCode());
 
-	public void testGetWfsTx() throws Exception {
-		MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/wfs/tx/foo.py");
-		assertEquals(404, resp.getStatusCode());
+        assertNotNull(scriptMgr.findScriptFile("apps/app1/main.py"));
+    }
 
-		File dir = scriptMgr.findOrCreateScriptDir("wfs/tx");
-		FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
+    public void testGetAllApps() throws Exception {
+        // Make sure we get an empty response
+        JSON json = getAsJSON("/rest/scripts/apps.json");
+        assertTrue(((JSONObject) json).getString("scripts").isEmpty());
 
-		resp = getAsServletResponse("/rest/scripts/wfs/tx/foo.py");
-		assertEquals(200, resp.getStatusCode());
-		assertEquals("print 'foo'", resp.getOutputStreamContent());
-	}
+        // Add two Functions scripts
+        File dir = scriptMgr.findOrCreateScriptDir("apps");
+        FileUtils.writeStringToFile(new File(new File(dir, "foo"), "main.py"), "print 'foo'");
+        FileUtils.writeStringToFile(new File(new File(dir, "bar"), "main.py"), "print 'bar'");
 
-	public void testPutWfsTx() throws Exception {
-		assertNull(scriptMgr.findScriptFile("wfs/tx/bar.py"));
+        // JSON
+        json = getAsJSON("/rest/scripts/apps.json");
+        JSONArray scripts = ((JSONObject) json).getJSONObject("scripts").getJSONArray("script");
+        assertEquals(2, scripts.size());
+        for (int i = 0; i < scripts.size(); i++) {
+            JSONObject script = scripts.getJSONObject(i);
+            assertTrue(script.containsKey("name"));
+            assertTrue(script.containsKey("href"));
+            String name = script.getString("name");
+            assertTrue(name.equals("foo/main.py") || name.equals("bar/main.py"));
+            String href = script.getString("href");
+            assertTrue(href.equals("http://localhost/geoserver/rest/scripts/apps/foo/main.py")
+                    || href.equals("http://localhost/geoserver/rest/scripts/apps/bar/main.py"));
+        }
 
-		String body = "print 'hello';";
-		MockHttpServletResponse resp = putAsServletResponse(
-				"/rest/scripts/wfs/tx/bar.py", body, "text/plain");
-		assertEquals(201, resp.getStatusCode());
+        // XML
+        Document doc = getAsDOM("/rest/scripts/apps.xml");
+        assertEquals("scripts", doc.getDocumentElement().getTagName());
+        NodeList scriptNodes = doc.getElementsByTagName("script");
+        assertEquals(2, scriptNodes.getLength());
 
-		assertNotNull(scriptMgr.findScriptFile("wfs/tx/bar.py"));
-	}
-
-	public void testGetAllWfsTx() throws Exception {
-		// Make sure we get an empty response
-		JSON json = getAsJSON("/rest/scripts/wfs/tx.json");
-		assertTrue(((JSONObject)json).getString("scripts").isEmpty());
-
-		// Add two Functions scripts
-		File dir = scriptMgr.findOrCreateScriptDir("wfs/tx");
-		FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
-		FileUtils.writeStringToFile(new File(dir, "bar.py"), "print 'bar'");
-
-		// JSON
-		json = getAsJSON("/rest/scripts/wfs/tx.json");
-		JSONArray scripts = ((JSONObject)json).getJSONObject("scripts").getJSONArray("script");
-		assertEquals(2, scripts.size());
-		for(int i = 0; i<scripts.size(); i++) {
-			JSONObject script = scripts.getJSONObject(i); 
-			assertTrue(script.containsKey("name"));
-			assertTrue(script.containsKey("href"));
-			String name = script.getString("name");
-			assertTrue(name.equals("foo.py") || name.equals("bar.py"));
-			String href = script.getString("href");
-			assertTrue(href.equals("http://localhost/geoserver/rest/scripts/wfs/tx/foo.py") || 
-					href.equals("http://localhost/geoserver/rest/scripts/wfs/tx/bar.py"));
-		}
-		
-		// XML
-		Document doc = getAsDOM("/rest/scripts/wfs/tx.xml");
-		assertEquals("scripts",doc.getDocumentElement().getTagName());
-		NodeList scriptNodes = doc.getElementsByTagName("script"); 
-		assertEquals(2, scriptNodes.getLength());
-		
-		// HTML
-		Document htmlDom = getAsDOM( "/rest/scripts/wfs/tx.html" );
+        // HTML
+        Document htmlDom = getAsDOM("/rest/scripts/apps.html");
         NodeList links = xp.getMatchingNodes("//html:a", htmlDom);
         assertEquals(2, links.getLength());
-        
+
         // HTML - No extension
-		htmlDom = getAsDOM( "/rest/scripts/wfs/tx" );
+        htmlDom = getAsDOM("/rest/scripts/apps");
         links = xp.getMatchingNodes("//html:a", htmlDom);
         assertEquals(2, links.getLength());
     }
 
-	public void testDeleteWfsTx() throws Exception {
-		MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/wfs/tx/foo.py");
-		assertEquals(404, resp.getStatusCode());
+    public void testDeleteApp() throws Exception {
+        MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/apps/app1/main.py");
+        assertEquals(404, resp.getStatusCode());
 
-		File dir = scriptMgr.findOrCreateScriptDir("wfs/tx");
-		FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
+        File dir = scriptMgr.findOrCreateScriptDir("apps/app1");
+        FileUtils.writeStringToFile(new File(dir, "main.py"), "print 'foo'");
 
-		resp = getAsServletResponse("/rest/scripts/wfs/tx/foo.py");
-		assertEquals(200, resp.getStatusCode());
-		assertEquals("print 'foo'", resp.getOutputStreamContent());
+        resp = getAsServletResponse("/rest/scripts/apps/app1/main.py");
+        assertEquals(200, resp.getStatusCode());
+        assertEquals("print 'foo'", resp.getOutputStreamContent());
 
-		resp = deleteAsServletResponse("/rest/scripts/wfs/tx/foo.py");
-		assertEquals(200, resp.getStatusCode());
+        resp = deleteAsServletResponse("/rest/scripts/apps/app1/main.py");
+        assertEquals(200, resp.getStatusCode());
 
-		resp = getAsServletResponse("/rest/scripts/wfs/tx/foo.py");
-		assertEquals(404, resp.getStatusCode());
-	}
+        resp = getAsServletResponse("/rest/scripts/apps/app1/main.py");
+        assertEquals(404, resp.getStatusCode());
+        assertFalse(dir.exists());
+    }
 
-	// Function
+    // WFS TX
 
-	public void testGetFunction() throws Exception {
-		MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/function/foo.py");
-		assertEquals(404, resp.getStatusCode());
+    public void testGetWfsTx() throws Exception {
+        MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/wfs/tx/foo.py");
+        assertEquals(404, resp.getStatusCode());
 
-		File dir = scriptMgr.findOrCreateScriptDir("function");
-		FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
+        File dir = scriptMgr.findOrCreateScriptDir("wfs/tx");
+        FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
 
-		resp = getAsServletResponse("/rest/scripts/function/foo.py");
-		assertEquals(200, resp.getStatusCode());
-		assertEquals("print 'foo'", resp.getOutputStreamContent());
-	}
+        resp = getAsServletResponse("/rest/scripts/wfs/tx/foo.py");
+        assertEquals(200, resp.getStatusCode());
+        assertEquals("print 'foo'", resp.getOutputStreamContent());
+    }
 
-	public void testPutFunction() throws Exception {
-		assertNull(scriptMgr.findScriptFile("function/bar.py"));
+    public void testPutWfsTx() throws Exception {
+        assertNull(scriptMgr.findScriptFile("wfs/tx/bar.py"));
 
-		String body = "print 'hello';";
-		MockHttpServletResponse resp = putAsServletResponse(
-				"/rest/scripts/function/bar.py", body, "text/plain");
-		assertEquals(201, resp.getStatusCode());
+        String body = "print 'hello';";
+        MockHttpServletResponse resp = putAsServletResponse("/rest/scripts/wfs/tx/bar.py", body,
+                "text/plain");
+        assertEquals(201, resp.getStatusCode());
 
-		assertNotNull(scriptMgr.findScriptFile("function/bar.py"));
-	}
+        assertNotNull(scriptMgr.findScriptFile("wfs/tx/bar.py"));
+    }
 
-	public void testGetAllFunctions() throws Exception {
-		// Make sure we get an empty response
-		JSON json = getAsJSON("/rest/scripts/function.json");
-		assertTrue(((JSONObject)json).getString("scripts").isEmpty());
+    public void testGetAllWfsTx() throws Exception {
+        // Make sure we get an empty response
+        JSON json = getAsJSON("/rest/scripts/wfs/tx.json");
+        assertTrue(((JSONObject) json).getString("scripts").isEmpty());
 
-		// Add two Functions scripts
-		File dir = scriptMgr.findOrCreateScriptDir("function");
-		FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
-		FileUtils.writeStringToFile(new File(dir, "bar.py"), "print 'bar'");
+        // Add two Functions scripts
+        File dir = scriptMgr.findOrCreateScriptDir("wfs/tx");
+        FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
+        FileUtils.writeStringToFile(new File(dir, "bar.py"), "print 'bar'");
 
-		// JSON
-		json = getAsJSON("/rest/scripts/function.json");
-		JSONArray scripts = ((JSONObject)json).getJSONObject("scripts").getJSONArray("script");
-		assertEquals(2, scripts.size());
-		for(int i = 0; i<scripts.size(); i++) {
-			JSONObject script = scripts.getJSONObject(i); 
-			assertTrue(script.containsKey("name"));
-			assertTrue(script.containsKey("href"));
-			String name = script.getString("name");
-			assertTrue(name.equals("foo.py") || name.equals("bar.py"));
-			String href = script.getString("href");
-			assertTrue(href.equals("http://localhost/geoserver/rest/scripts/function/foo.py") || 
-					href.equals("http://localhost/geoserver/rest/scripts/function/bar.py"));
-		}
-		
-		// XML
-		Document doc = getAsDOM("/rest/scripts/function.xml");
-		assertEquals("scripts",doc.getDocumentElement().getTagName());
-		NodeList scriptNodes = doc.getElementsByTagName("script"); 
-		assertEquals(2, scriptNodes.getLength());
-		
-		// HTML
-		Document htmlDom = getAsDOM( "/rest/scripts/function.html" );
+        // JSON
+        json = getAsJSON("/rest/scripts/wfs/tx.json");
+        JSONArray scripts = ((JSONObject) json).getJSONObject("scripts").getJSONArray("script");
+        assertEquals(2, scripts.size());
+        for (int i = 0; i < scripts.size(); i++) {
+            JSONObject script = scripts.getJSONObject(i);
+            assertTrue(script.containsKey("name"));
+            assertTrue(script.containsKey("href"));
+            String name = script.getString("name");
+            assertTrue(name.equals("foo.py") || name.equals("bar.py"));
+            String href = script.getString("href");
+            assertTrue(href.equals("http://localhost/geoserver/rest/scripts/wfs/tx/foo.py")
+                    || href.equals("http://localhost/geoserver/rest/scripts/wfs/tx/bar.py"));
+        }
+
+        // XML
+        Document doc = getAsDOM("/rest/scripts/wfs/tx.xml");
+        assertEquals("scripts", doc.getDocumentElement().getTagName());
+        NodeList scriptNodes = doc.getElementsByTagName("script");
+        assertEquals(2, scriptNodes.getLength());
+
+        // HTML
+        Document htmlDom = getAsDOM("/rest/scripts/wfs/tx.html");
         NodeList links = xp.getMatchingNodes("//html:a", htmlDom);
         assertEquals(2, links.getLength());
-        
+
         // HTML - No extension
-		htmlDom = getAsDOM( "/rest/scripts/function" );
+        htmlDom = getAsDOM("/rest/scripts/wfs/tx");
         links = xp.getMatchingNodes("//html:a", htmlDom);
-        assertEquals(2, links.getLength());	
-	}
+        assertEquals(2, links.getLength());
+    }
 
-	public void testDeleteFunction() throws Exception {
-		MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/function/foo.py");
-		assertEquals(404, resp.getStatusCode());
+    public void testDeleteWfsTx() throws Exception {
+        MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/wfs/tx/foo.py");
+        assertEquals(404, resp.getStatusCode());
 
-		File dir = scriptMgr.findOrCreateScriptDir("function");
-		FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
+        File dir = scriptMgr.findOrCreateScriptDir("wfs/tx");
+        FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
 
-		resp = getAsServletResponse("/rest/scripts/function/foo.py");
-		assertEquals(200, resp.getStatusCode());
-		assertEquals("print 'foo'", resp.getOutputStreamContent());
+        resp = getAsServletResponse("/rest/scripts/wfs/tx/foo.py");
+        assertEquals(200, resp.getStatusCode());
+        assertEquals("print 'foo'", resp.getOutputStreamContent());
 
-		resp = deleteAsServletResponse("/rest/scripts/function/foo.py");
-		assertEquals(200, resp.getStatusCode());
+        resp = deleteAsServletResponse("/rest/scripts/wfs/tx/foo.py");
+        assertEquals(200, resp.getStatusCode());
 
-		resp = getAsServletResponse("/rest/scripts/function/foo.py");
-		assertEquals(404, resp.getStatusCode());
-	}
+        resp = getAsServletResponse("/rest/scripts/wfs/tx/foo.py");
+        assertEquals(404, resp.getStatusCode());
+    }
 
-	// WPS
+    // Function
 
-	public void testGetWps() throws Exception {
-		MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/wps/foo.py");
-		assertEquals(404, resp.getStatusCode());
+    public void testGetFunction() throws Exception {
+        MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/function/foo.py");
+        assertEquals(404, resp.getStatusCode());
 
-		File dir = scriptMgr.findOrCreateScriptDir("wps");
-		FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
+        File dir = scriptMgr.findOrCreateScriptDir("function");
+        FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
 
-		resp = getAsServletResponse("/rest/scripts/wps/foo.py");
-		assertEquals(200, resp.getStatusCode());
-		assertEquals("print 'foo'", resp.getOutputStreamContent());
-	}
+        resp = getAsServletResponse("/rest/scripts/function/foo.py");
+        assertEquals(200, resp.getStatusCode());
+        assertEquals("print 'foo'", resp.getOutputStreamContent());
+    }
 
-	public void testPutWps() throws Exception {
-		assertNull(scriptMgr.findScriptFile("wps/bar.py"));
+    public void testPutFunction() throws Exception {
+        assertNull(scriptMgr.findScriptFile("function/bar.py"));
 
-		String body = "print 'hello';";
-		MockHttpServletResponse resp = putAsServletResponse(
-				"/rest/scripts/wps/bar.py", body, "text/plain");
-		assertEquals(201, resp.getStatusCode());
+        String body = "print 'hello';";
+        MockHttpServletResponse resp = putAsServletResponse("/rest/scripts/function/bar.py", body,
+                "text/plain");
+        assertEquals(201, resp.getStatusCode());
 
-		assertNotNull(scriptMgr.findScriptFile("wps/bar.py"));
-	}
+        assertNotNull(scriptMgr.findScriptFile("function/bar.py"));
+    }
 
-	public void testGetAllWps() throws Exception {
-		// Make sure we get an empty response
-		JSON json = getAsJSON("/rest/scripts/wps.json");
-		assertTrue(((JSONObject)json).getString("scripts").isEmpty());
+    public void testGetAllFunctions() throws Exception {
+        // Make sure we get an empty response
+        JSON json = getAsJSON("/rest/scripts/function.json");
+        assertTrue(((JSONObject) json).getString("scripts").isEmpty());
 
-		// Add two WPS scripts
-		File dir = scriptMgr.findOrCreateScriptDir("wps");
-		FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
-		FileUtils.writeStringToFile(new File(dir, "bar.py"), "print 'bar'");
+        // Add two Functions scripts
+        File dir = scriptMgr.findOrCreateScriptDir("function");
+        FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
+        FileUtils.writeStringToFile(new File(dir, "bar.py"), "print 'bar'");
 
-		// JSON
-		json = getAsJSON("/rest/scripts/wps.json");
-		JSONArray scripts = ((JSONObject)json).getJSONObject("scripts").getJSONArray("script");
-		assertEquals(2, scripts.size());
-		for(int i = 0; i<scripts.size(); i++) {
-			JSONObject script = scripts.getJSONObject(i); 
-			assertTrue(script.containsKey("name"));
-			assertTrue(script.containsKey("href"));
-			String name = script.getString("name");
-			assertTrue(name.equals("foo.py") || name.equals("bar.py"));
-			String href = script.getString("href");
-			assertTrue(href.equals("http://localhost/geoserver/rest/scripts/wps/foo.py") || 
-					href.equals("http://localhost/geoserver/rest/scripts/wps/bar.py"));
-		}
-		
-		// XML
-		Document doc = getAsDOM("/rest/scripts/wps.xml");
-		assertEquals("scripts",doc.getDocumentElement().getTagName());
-		NodeList scriptNodes = doc.getElementsByTagName("script"); 
-		assertEquals(2, scriptNodes.getLength());
-		
-		// HTML
-		Document htmlDom = getAsDOM( "/rest/scripts/wps.html" );
+        // JSON
+        json = getAsJSON("/rest/scripts/function.json");
+        JSONArray scripts = ((JSONObject) json).getJSONObject("scripts").getJSONArray("script");
+        assertEquals(2, scripts.size());
+        for (int i = 0; i < scripts.size(); i++) {
+            JSONObject script = scripts.getJSONObject(i);
+            assertTrue(script.containsKey("name"));
+            assertTrue(script.containsKey("href"));
+            String name = script.getString("name");
+            assertTrue(name.equals("foo.py") || name.equals("bar.py"));
+            String href = script.getString("href");
+            assertTrue(href.equals("http://localhost/geoserver/rest/scripts/function/foo.py")
+                    || href.equals("http://localhost/geoserver/rest/scripts/function/bar.py"));
+        }
+
+        // XML
+        Document doc = getAsDOM("/rest/scripts/function.xml");
+        assertEquals("scripts", doc.getDocumentElement().getTagName());
+        NodeList scriptNodes = doc.getElementsByTagName("script");
+        assertEquals(2, scriptNodes.getLength());
+
+        // HTML
+        Document htmlDom = getAsDOM("/rest/scripts/function.html");
         NodeList links = xp.getMatchingNodes("//html:a", htmlDom);
         assertEquals(2, links.getLength());
-        
+
         // HTML - No extension
-		htmlDom = getAsDOM( "/rest/scripts/wps" );
+        htmlDom = getAsDOM("/rest/scripts/function");
         links = xp.getMatchingNodes("//html:a", htmlDom);
         assertEquals(2, links.getLength());
-	}
+    }
 
-	public void testDeleteWps() throws Exception {
-		MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/wps/foo.py");
-		assertEquals(404, resp.getStatusCode());
+    public void testDeleteFunction() throws Exception {
+        MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/function/foo.py");
+        assertEquals(404, resp.getStatusCode());
 
-		File dir = scriptMgr.findOrCreateScriptDir("wps");
-		FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
+        File dir = scriptMgr.findOrCreateScriptDir("function");
+        FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
 
-		resp = getAsServletResponse("/rest/scripts/wps/foo.py");
-		assertEquals(200, resp.getStatusCode());
-		assertEquals("print 'foo'", resp.getOutputStreamContent());
+        resp = getAsServletResponse("/rest/scripts/function/foo.py");
+        assertEquals(200, resp.getStatusCode());
+        assertEquals("print 'foo'", resp.getOutputStreamContent());
 
-		resp = deleteAsServletResponse("/rest/scripts/wps/foo.py");
-		assertEquals(200, resp.getStatusCode());
+        resp = deleteAsServletResponse("/rest/scripts/function/foo.py");
+        assertEquals(200, resp.getStatusCode());
 
-		resp = getAsServletResponse("/rest/scripts/wps/foo.py");
-		assertEquals(404, resp.getStatusCode());
-	}
+        resp = getAsServletResponse("/rest/scripts/function/foo.py");
+        assertEquals(404, resp.getStatusCode());
+    }
+
+    // WPS
+
+    public void testGetWps() throws Exception {
+        MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/wps/foo.py");
+        assertEquals(404, resp.getStatusCode());
+
+        File dir = scriptMgr.findOrCreateScriptDir("wps");
+        FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
+
+        resp = getAsServletResponse("/rest/scripts/wps/foo.py");
+        assertEquals(200, resp.getStatusCode());
+        assertEquals("print 'foo'", resp.getOutputStreamContent());
+    }
+
+    public void testPutWps() throws Exception {
+        assertNull(scriptMgr.findScriptFile("wps/bar.py"));
+
+        String body = "print 'hello';";
+        MockHttpServletResponse resp = putAsServletResponse("/rest/scripts/wps/bar.py", body,
+                "text/plain");
+        assertEquals(201, resp.getStatusCode());
+
+        assertNotNull(scriptMgr.findScriptFile("wps/bar.py"));
+    }
+
+    public void testGetAllWps() throws Exception {
+        // Make sure we get an empty response
+        JSON json = getAsJSON("/rest/scripts/wps.json");
+        assertTrue(((JSONObject) json).getString("scripts").isEmpty());
+
+        // Add two WPS scripts
+        File dir = scriptMgr.findOrCreateScriptDir("wps");
+        FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
+        FileUtils.writeStringToFile(new File(dir, "bar.py"), "print 'bar'");
+
+        // JSON
+        json = getAsJSON("/rest/scripts/wps.json");
+        JSONArray scripts = ((JSONObject) json).getJSONObject("scripts").getJSONArray("script");
+        assertEquals(2, scripts.size());
+        for (int i = 0; i < scripts.size(); i++) {
+            JSONObject script = scripts.getJSONObject(i);
+            assertTrue(script.containsKey("name"));
+            assertTrue(script.containsKey("href"));
+            String name = script.getString("name");
+            assertTrue(name.equals("foo.py") || name.equals("bar.py"));
+            String href = script.getString("href");
+            assertTrue(href.equals("http://localhost/geoserver/rest/scripts/wps/foo.py")
+                    || href.equals("http://localhost/geoserver/rest/scripts/wps/bar.py"));
+        }
+
+        // XML
+        Document doc = getAsDOM("/rest/scripts/wps.xml");
+        assertEquals("scripts", doc.getDocumentElement().getTagName());
+        NodeList scriptNodes = doc.getElementsByTagName("script");
+        assertEquals(2, scriptNodes.getLength());
+
+        // HTML
+        Document htmlDom = getAsDOM("/rest/scripts/wps.html");
+        NodeList links = xp.getMatchingNodes("//html:a", htmlDom);
+        assertEquals(2, links.getLength());
+
+        // HTML - No extension
+        htmlDom = getAsDOM("/rest/scripts/wps");
+        links = xp.getMatchingNodes("//html:a", htmlDom);
+        assertEquals(2, links.getLength());
+    }
+
+    public void testDeleteWps() throws Exception {
+        MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/wps/foo.py");
+        assertEquals(404, resp.getStatusCode());
+
+        File dir = scriptMgr.findOrCreateScriptDir("wps");
+        FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
+
+        resp = getAsServletResponse("/rest/scripts/wps/foo.py");
+        assertEquals(200, resp.getStatusCode());
+        assertEquals("print 'foo'", resp.getOutputStreamContent());
+
+        resp = deleteAsServletResponse("/rest/scripts/wps/foo.py");
+        assertEquals(200, resp.getStatusCode());
+
+        resp = getAsServletResponse("/rest/scripts/wps/foo.py");
+        assertEquals(404, resp.getStatusCode());
+    }
 }

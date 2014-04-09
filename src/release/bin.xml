@@ -43,7 +43,6 @@
     <include>jetty-util-*.jar</include>
     <include>jsp-api-*.jar</include>
     <include>servlet-api-*.jar</include>
-    <include>slf4j-simple-*.jar</include>
     <include>xercesImpl-*.jar</include>
     <include>xmlParserAPIs-*.jar</include>
    </includes>

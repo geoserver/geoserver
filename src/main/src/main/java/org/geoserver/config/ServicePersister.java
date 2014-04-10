@@ -97,6 +97,7 @@ public class ServicePersister extends ConfigurationListenerAdapter {
     }
 
     File dir( WorkspaceInfo ws ) throws IOException {
+        
         return dir( ws, false );
     }
 

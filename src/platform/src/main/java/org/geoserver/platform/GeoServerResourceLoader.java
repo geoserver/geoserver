@@ -197,33 +197,29 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
         //first to an existance check
         File file = parent != null ? new File(parent,location) : new File(location);
         
-        if (file.exists()) {
+        if (parent != null && file.exists()) {
             return file;
         }
         
         if (file.isAbsolute()) {
             return file.exists() ? file : null;
         } else {
-            //try a relative url if no parent specified
-            if ( parent == null ) {
-                for (Iterator f = searchLocations.iterator(); f.hasNext();) {
-                    File base = (File) f.next();
-                    file = new File(base, location);
-    
-                    try {
-                        if (file.exists()) {
-                            return file;
-                        }
-                    } catch (SecurityException e) {
-                        LOGGER.warning("Failed attemp to check existance of " + file.getAbsolutePath());
-                    }
-                }
+            // try relative to base dir
+            String path = file.getPath();
+            file = new File(baseDirectory, path);
+            if (file.exists()) {
+                return file;
             }
-            else {
-                //try relative to base dir
-                file = new File(baseDirectory, file.getPath());
-                if (file.exists()) {
-                    return file;
+            for (Iterator f = searchLocations.iterator(); f.hasNext();) {
+                File base = (File) f.next();
+                file = new File(base, path);
+
+                try {
+                    if (file.exists()) {
+                        return file;
+                    }
+                } catch (SecurityException e) {
+                    LOGGER.warning("Failed attemp to check existance of " + file.getAbsolutePath());
                 }
             }
         }
@@ -416,7 +412,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
                 throw new IOException(msg);
             }
         }
-
+        
         file = parent != null ? new File(parent,location) : new File(location);
 
         if (file.isAbsolute()) {
@@ -425,7 +421,7 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
             return file;
         }
 
-        //no base directory set, cannot create a relative path
+        // no base directory set, cannot create a relative path
         if (baseDirectory == null) {
              String msg = "No base location set, could not create directory: " + location;
              throw new IOException(msg);
@@ -520,28 +516,23 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
 
             return file;
         }
-
+        
         file = parent != null ? new File(parent,location) : new File(location);
 
-        if (file.isAbsolute()) {
-            file.createNewFile();
-
-            return file;
-        }
-
-        if ( parent == null ) {
-            //no base directory set, cannot create a relative path
+        if (parent == null) {
+            // no base directory set, cannot create a relative path
             if (baseDirectory == null) {
-                String msg = "No base location set, could not create file: " + location;
+                String msg = "No base location set, could not create file: " + file.getPath();
                 throw new IOException(msg);
             }
 
-            file = new File(baseDirectory, location);
-            if (!file.getParentFile().exists()) {
-                file.getParentFile().mkdirs();
-            }
-            file.createNewFile();
+            file = new File(baseDirectory, file.getPath());
         }
+
+        if (!file.getParentFile().exists()) {
+            file.getParentFile().mkdirs();
+        }
+        file.createNewFile();
         
         return file;
     }
@@ -650,8 +641,6 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
         final String[] varStrs = { "GEOSERVER_DATA_DIR", "GEOSERVER_DATA_ROOT" };
 
         String dataDirStr = null;
-        String msgPrefix = null;
-        int iVar = 0;
         // Loop over variable names
         for (int i = 0; i < varStrs.length && dataDirStr == null; i++) {
             
@@ -682,35 +671,44 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Ap
                 
                 // Verify section
                 File fh = new File(value);
-
-                // Being a bit pessimistic here
-                msgPrefix = "Found " + typeStr + varStr + " set to " + value;
-
-                if (!fh.exists()) {
-                    LOGGER.warning(msgPrefix + " , but this path does not exist");
-                    continue;
-                }
-                if (!fh.isDirectory()) {
-                    LOGGER.warning(msgPrefix + " , which is not a directory");
-                    continue;
-                }
-                if (!fh.canWrite()) {
-                    LOGGER.warning(msgPrefix + " , which is not writeable");
-                    continue;
-                }
-
-                // Sweet, we can work with this
-                dataDirStr = value;
-                iVar = i;
+                if(verifyDataDir(typeStr, varStr, fh)) {
+                    // Sweet, we can work with this
+                    dataDirStr = value;
+                } 
             }
         }
         
         // fall back to embedded data dir
         if(dataDirStr == null) {
             dataDirStr = servContext.getRealPath("/data");
-            LOGGER.info("Falling back to embedded data directory: " + dataDirStr);
+            if(dataDirStr == null) {
+                throw new RuntimeException("The embedded data dir is not available, GeoServer cannot start!");
+            } else if(!verifyDataDir("default embedded data dir", "", new File(dataDirStr))) {
+                throw new RuntimeException("The embedded data dir is available but not usable (see previous messages), GeoServer cannot start!");
+            } else {
+                LOGGER.info("Falling back to embedded data directory: " + dataDirStr);
+            }
         }
         
         return dataDirStr;
+    }
+    
+    private static boolean verifyDataDir(String typeStr, String varStr, File fh) {
+        // Being a bit pessimistic here
+        String msgPrefix = "Found " + typeStr + varStr + " set to " + fh.getPath();
+        if (!fh.exists()) {
+            LOGGER.warning(msgPrefix + " , but this path does not exist");
+            return false;
+        }
+        if (!fh.isDirectory()) {
+            LOGGER.warning(msgPrefix + " , which is not a directory");
+            return false;
+        }
+        if (!fh.canWrite()) {
+            LOGGER.warning(msgPrefix + " , which is not writeable");
+            return false;
+        }
+        
+        return true;
     }
 }

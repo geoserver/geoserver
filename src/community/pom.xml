@@ -3,8 +3,7 @@
  Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
- -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+ --><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -49,6 +48,7 @@
           <descriptor>release/ext-colormap.xml</descriptor>
           <descriptor>release/ext-mbtiles.xml</descriptor>
           <descriptor>release/ext-geopkg.xml</descriptor>
+          <descriptor>release/ext-grib.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -164,6 +164,7 @@
         <module>netcdf-out</module>
         <!-- <module>mbtiles</module> -->
         <!-- <module>geopkg</module> -->
+		<module>grib</module>
       </modules>
     </profile>
     <profile>
@@ -281,6 +282,15 @@
       <id>geoserver-sync</id>
       <modules>
         <module>geoserver-sync</module>
+      </modules>
+    </profile>
+	<profile>
+      <id>grib</id>
+	  <activation>
+        <property><name>grib</name></property>
+      </activation>
+      <modules>
+        <module>grib</module>
       </modules>
     </profile>
   </profiles>

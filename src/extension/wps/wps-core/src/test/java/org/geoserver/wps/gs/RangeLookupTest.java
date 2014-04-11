@@ -133,7 +133,7 @@ public class RangeLookupTest extends WPSTestSupport {
                 + "  </wps:ResponseForm>\n" + "</wps:Execute>\n" + "\n" + "";
 
         MockHttpServletResponse response = postAsServletResponse(root(), xml);
-        System.out.println(response.getOutputStreamContent());
+        //System.out.println(response.getOutputStreamContent());
         InputStream is = getBinaryInputStream(response);
         
         ArcGridFormat format = new ArcGridFormat();

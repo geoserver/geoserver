@@ -688,7 +688,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             return ws;
     }
 
-    protected WrapperPolicy buildWrapperPolicy(Authentication user, @Nonnull CatalogInfo info) {
+    WrapperPolicy buildWrapperPolicy(@Nonnull ResourceAccessManager accessManager, Authentication user, @Nonnull CatalogInfo info) {
         Assert.notNull(info);
 
         if (info instanceof NamespaceInfo) {
@@ -701,25 +701,25 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
                 ws = delegate.getFactory().createWorkspace();
                 ws.setName(((NamespaceInfo) info).getPrefix());
             }
-            return buildWrapperPolicy(user, ws, ws.getName());
+            return buildWrapperPolicy(accessManager, user, ws, ws.getName());
 
         }
 
         if (info instanceof WorkspaceInfo) {
-            return buildWrapperPolicy(user, info, ((WorkspaceInfo) info).getName());
+            return buildWrapperPolicy(accessManager, user, info, ((WorkspaceInfo) info).getName());
         }
 
         if (info instanceof StoreInfo) {
-            return buildWrapperPolicy(user, ((StoreInfo) info).getWorkspace(),
+            return buildWrapperPolicy(accessManager, user, ((StoreInfo) info).getWorkspace(),
                     ((StoreInfo) info).getName());
         }
 
         if (info instanceof ResourceInfo) {
-            return buildWrapperPolicy(user, info, ((ResourceInfo) info).getName());
+            return buildWrapperPolicy(accessManager, user, info, ((ResourceInfo) info).getName());
         }
 
         if (info instanceof LayerInfo) {
-            return buildWrapperPolicy(user, info, ((LayerInfo) info).getName());
+            return buildWrapperPolicy(accessManager, user, info, ((LayerInfo) info).getName());
         }
 
         if (info instanceof LayerGroupInfo) {
@@ -728,7 +728,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             WrapperPolicy mostRestrictive = WrapperPolicy.readWrite(null);
 
             for (PublishedInfo layer : ((LayerGroupInfo) info).getLayers()) {
-                WrapperPolicy policy = buildWrapperPolicy(user, layer, layer.getName());
+                WrapperPolicy policy = buildWrapperPolicy(accessManager, user, layer, layer.getName());
                 if (AccessLevel.HIDDEN.equals(policy.getAccessLevel())) {
                     return policy;
                 }
@@ -744,7 +744,10 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
 
         throw new IllegalArgumentException("Can't build wrapper policy for objects of type "
                 + info.getClass().getName());
-
+    }
+    
+    protected WrapperPolicy buildWrapperPolicy(Authentication user, @Nonnull CatalogInfo info) {
+        return buildWrapperPolicy(accessManager, user, info);
     }
 
     /**
@@ -759,6 +762,11 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
      */
     public WrapperPolicy buildWrapperPolicy(Authentication user,
             CatalogInfo info, String resourceName) {
+        return SecureCatalogImpl.buildWrapperPolicy(accessManager, user, info, resourceName);
+    }
+    
+    static WrapperPolicy buildWrapperPolicy(ResourceAccessManager accessManager, 
+            Authentication user, CatalogInfo info, String resourceName) {
         boolean canRead = true;
         boolean canWrite = true;
 
@@ -1449,24 +1457,10 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             // these kind of objects are not secured
             return filter;
         }
-
-        org.opengis.filter.expression.Function visible = new InternalVolatileFunction() {
-            /**
-             * Returns {@code false} if the catalog info shall be hidden, {@code true} otherwise.
-             */
-            @Override
-            public Boolean evaluate(Object object) {
-                WrapperPolicy policy = buildWrapperPolicy(user, (CatalogInfo)object);
-                AccessLevel accessLevel = policy.getAccessLevel();
-                boolean visible = !AccessLevel.HIDDEN.equals(accessLevel);
-                return Boolean.valueOf(visible);
-            }
-        };
-
-        FilterFactory factory = Predicates.factory;
-
+        
+        Filter securityFilter = this.accessManager.getSecurityFilter(user, infoType);
+        
         // create a filter combined with the security credentials check
-        Filter securityFilter = factory.equals(factory.literal(Boolean.TRUE), visible);
         return Predicates.and(filter, securityFilter);
     }
 

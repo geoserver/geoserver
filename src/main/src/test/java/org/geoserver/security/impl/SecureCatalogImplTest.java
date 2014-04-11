@@ -4,8 +4,12 @@
  */
 package org.geoserver.security.impl;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
 import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
@@ -14,14 +18,24 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.hasSize;
+
+import org.easymock.IAnswer;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.Predicates;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.AbstractCatalogDecorator;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
@@ -30,12 +44,16 @@ import org.geoserver.ows.Request;
 import org.geoserver.security.AbstractCatalogFilter;
 import org.geoserver.security.CatalogFilterAccessManager;
 import org.geoserver.security.ResourceAccessManager;
+import org.geoserver.security.ResourceAccessManagerWrapper;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.decorators.ReadOnlyDataStoreTest;
+import org.geoserver.security.decorators.SecuredCoverageInfo;
 import org.geoserver.security.decorators.SecuredDataStoreInfo;
 import org.geoserver.security.decorators.SecuredFeatureTypeInfo;
 import org.geoserver.security.decorators.SecuredLayerGroupInfo;
 import org.geoserver.security.decorators.SecuredLayerInfo;
+import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.filter.Filter;
@@ -53,45 +71,102 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         
         Dispatcher.REQUEST.remove();
     }
+    
+    SecureCatalogImpl buildTestObject(String propertyFile, Catalog catalog) throws Exception {
+        return buildTestObject(propertyFile, catalog, null);
+    }
+    
+    @SuppressWarnings("serial")
+    SecureCatalogImpl buildTestObject(String propertyFile, Catalog catalog, ResourceAccessManagerWrapper wrapper) throws Exception{
+        // hack to override the getSecurityWrapper method on the access manager to return the 
+        // securecatalog that itself requires the resourcemanager before being created.
+        // Outside of testing, this is handled using GeoServerExtensions.bean
+        SecureCatalogImpl sc;
+        final SecureCatalogImpl[] scHolder =  new SecureCatalogImpl[1];
+        ResourceAccessManager manager = buildManager(propertyFile, new IAnswer<SecureCatalogImpl>(){
 
+            @Override
+            public SecureCatalogImpl answer() throws Throwable {
+                return scHolder[0];
+            }
+            
+        });
+        
+        if(wrapper!=null) {
+            wrapper.setDelegate(manager);
+            manager=wrapper;
+        }
+        
+        sc = new SecureCatalogImpl(catalog, manager) {
+
+            @Override
+            protected boolean isAdmin(Authentication authentication) {
+                return false;
+            }
+            
+        };
+        
+        scHolder[0]=sc;
+        return sc;
+    }
+    
     @Test 
     public void testWideOpen() throws Exception {
-        ResourceAccessManager manager = buildManager("wideOpen.properties");
-        SecureCatalogImpl sc = new SecureCatalogImpl(catalog, manager);
-
+        SecureCatalogImpl sc = buildTestObject("wideOpen.properties", catalog);
+        
         // use no user at all
         SecurityContextHolder.getContext().setAuthentication(anonymous);
         assertSame(states, sc.getFeatureTypeByName("topp:states"));
         assertSame(arcGrid, sc.getCoverageByName("nurc:arcgrid"));
         assertSame(states, sc.getResourceByName("topp:states", FeatureTypeInfo.class));
         assertSame(arcGrid, sc.getResourceByName("nurc:arcgrid", CoverageInfo.class));
-        assertEquals(featureTypes, sc.getFeatureTypes());
-        assertEquals(coverages, sc.getCoverages());
-        assertEquals(workspaces, sc.getWorkspaces());
         assertEquals(toppWs, sc.getWorkspaceByName("topp"));
         assertSame(statesStore, sc.getDataStoreByName("states"));
         assertSame(roadsStore, sc.getDataStoreByName("roads"));
         assertSame(arcGridStore, sc.getCoverageStoreByName("arcGrid"));
+        
+        assertThatBoth(
+                sc.getFeatureTypes(),
+                sc.list(FeatureTypeInfo.class, Predicates.acceptAll()),
+                equalTo(featureTypes));
+        assertThatBoth(
+                sc.getCoverages(),
+                sc.list(CoverageInfo.class, Predicates.acceptAll()),
+                equalTo(coverages));
+        assertThatBoth(
+                sc.getWorkspaces(),
+                sc.list(WorkspaceInfo.class, Predicates.acceptAll()),
+                equalTo(workspaces));
     }
 
     @Test
     public void testLockedDown() throws Exception {
-        ResourceAccessManager manager = buildManager("lockedDown.properties");
-        SecureCatalogImpl sc = new SecureCatalogImpl(catalog, manager);
-
+        
+        SecureCatalogImpl sc = buildTestObject("lockedDown.properties", catalog);
+        
         // try with read only user
         SecurityContextHolder.getContext().setAuthentication(roUser);
         assertNull(sc.getFeatureTypeByName("topp:states"));
         assertNull(sc.getCoverageByName("nurc:arcgrid"));
         assertNull(sc.getResourceByName("topp:states", FeatureTypeInfo.class));
         assertNull(sc.getResourceByName("nurc:arcgrid", CoverageInfo.class));
-        assertEquals(0, sc.getFeatureTypes().size());
-        assertEquals(0, sc.getCoverages().size());
-        assertEquals(0, sc.getWorkspaces().size());
         assertNull(sc.getWorkspaceByName("topp"));
         assertNull(sc.getDataStoreByName("states"));
         assertNull(sc.getDataStoreByName("roads"));
         assertNull(sc.getCoverageStoreByName("arcGrid"));
+        
+        assertThatBoth(
+                sc.getFeatureTypes(),
+                sc.list(FeatureTypeInfo.class, Predicates.acceptAll()),
+                empty());
+        assertThatBoth(
+                sc.getCoverages(),
+                sc.list(CoverageInfo.class, Predicates.acceptAll()),
+                empty());
+        assertThatBoth(
+                sc.getWorkspaces(),
+                sc.list(WorkspaceInfo.class, Predicates.acceptAll()),
+                empty());
 
         // try with write enabled user
         SecurityContextHolder.getContext().setAuthentication(rwUser);
@@ -99,19 +174,29 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         assertSame(arcGrid, sc.getCoverageByName("nurc:arcgrid"));
         assertSame(states, sc.getResourceByName("topp:states", FeatureTypeInfo.class));
         assertSame(arcGrid, sc.getResourceByName("nurc:arcgrid", CoverageInfo.class));
-        assertEquals(featureTypes, sc.getFeatureTypes());
-        assertEquals(coverages, sc.getCoverages());
-        assertEquals(workspaces, sc.getWorkspaces());
         assertEquals(toppWs, sc.getWorkspaceByName("topp"));
         assertSame(statesStore, sc.getDataStoreByName("states"));
         assertSame(roadsStore, sc.getDataStoreByName("roads"));
         assertSame(arcGridStore, sc.getCoverageStoreByName("arcGrid"));
+        
+        assertThatBoth(
+                sc.getFeatureTypes(),
+                sc.list(FeatureTypeInfo.class, Predicates.acceptAll()),
+                equalTo(featureTypes));
+        assertThatBoth(
+                sc.getCoverages(),
+                sc.list(CoverageInfo.class, Predicates.acceptAll()),
+                equalTo(coverages));
+        assertThatBoth(
+                sc.getWorkspaces(),
+                sc.list(WorkspaceInfo.class, Predicates.acceptAll()),
+                equalTo(workspaces));
     }
     
     @Test
     public void testLockedChallenge() throws Exception {
-        ResourceAccessManager manager = buildManager("lockedDownChallenge.properties");
-        SecureCatalogImpl sc = new SecureCatalogImpl(catalog, manager);
+
+        SecureCatalogImpl sc = buildTestObject("lockedDownChallenge.properties", catalog);
 
         // try with read only user
         SecurityContextHolder.getContext().setAuthentication(roUser);
@@ -170,10 +255,26 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         }
         
         // check we still get the lists out so that capabilities can be built
-        assertEquals(featureTypes.size(), sc.getFeatureTypes().size());
-        assertEquals(coverages.size(), sc.getCoverages().size());
-        assertEquals(workspaces.size(), sc.getWorkspaces().size());
         
+        assertThatBoth(
+                sc.getFeatureTypes(),
+                sc.list(FeatureTypeInfo.class, Predicates.acceptAll()),
+                
+                allOf(hasSize(featureTypes.size()),
+                  everyItem(Matchers.<FeatureTypeInfo>instanceOf(SecuredFeatureTypeInfo.class))));
+
+        assertThatBoth(
+                sc.getCoverages(),
+                sc.list(CoverageInfo.class, Predicates.acceptAll()),
+               
+                allOf(hasSize(coverages.size()),
+                  everyItem(Matchers.<CoverageInfo>instanceOf(SecuredCoverageInfo.class))));
+
+        assertThatBoth(
+                sc.getWorkspaces(),
+                sc.list(WorkspaceInfo.class, Predicates.acceptAll()),
+                
+                equalTo(workspaces));
 
         // try with write enabled user
         SecurityContextHolder.getContext().setAuthentication(rwUser);
@@ -181,19 +282,29 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         assertSame(arcGrid, sc.getCoverageByName("nurc:arcgrid"));
         assertSame(states, sc.getResourceByName("topp:states", FeatureTypeInfo.class));
         assertSame(arcGrid, sc.getResourceByName("nurc:arcgrid", CoverageInfo.class));
-        assertEquals(featureTypes, sc.getFeatureTypes());
-        assertEquals(coverages, sc.getCoverages());
-        assertEquals(workspaces, sc.getWorkspaces());
         assertEquals(toppWs, sc.getWorkspaceByName("topp"));
         assertSame(statesStore, sc.getDataStoreByName("states"));
         assertSame(roadsStore, sc.getDataStoreByName("roads"));
         assertSame(arcGridStore, sc.getCoverageStoreByName("arcGrid"));
+        
+        assertThatBoth(
+                sc.getFeatureTypes(),
+                sc.list(FeatureTypeInfo.class, Predicates.acceptAll()),
+                equalTo(featureTypes));
+        assertThatBoth(
+                sc.getCoverages(),
+                sc.list(CoverageInfo.class, Predicates.acceptAll()),
+                equalTo(coverages));
+        assertThatBoth(
+                sc.getWorkspaces(),
+                sc.list(WorkspaceInfo.class, Predicates.acceptAll()),
+                equalTo(workspaces));
     }
     
     @Test
     public void testLockedMixed() throws Exception {
-        ResourceAccessManager manager = buildManager("lockedDownMixed.properties");
-        SecureCatalogImpl sc = new SecureCatalogImpl(catalog, manager);
+        
+        SecureCatalogImpl sc = buildTestObject("lockedDownMixed.properties", catalog);
 
         // try with read only user and GetFeatures request
         SecurityContextHolder.getContext().setAuthentication(roUser);
@@ -267,9 +378,18 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         Dispatcher.REQUEST.set(request);
         
         // check the lists used to build capabilities are empty
-        assertEquals(0, sc.getFeatureTypes().size());
-        assertEquals(0, sc.getCoverages().size());
-        assertEquals(0, sc.getWorkspaces().size());
+        assertThatBoth(
+                sc.getFeatureTypes(),
+                sc.list(FeatureTypeInfo.class, Predicates.acceptAll()),
+                empty());
+        assertThatBoth(
+                sc.getCoverages(),
+                sc.list(CoverageInfo.class, Predicates.acceptAll()),
+                empty());
+        assertThatBoth(
+                sc.getWorkspaces(),
+                sc.list(WorkspaceInfo.class, Predicates.acceptAll()),
+                empty());
         
         
 
@@ -279,36 +399,52 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         assertSame(arcGrid, sc.getCoverageByName("nurc:arcgrid"));
         assertSame(states, sc.getResourceByName("topp:states", FeatureTypeInfo.class));
         assertSame(arcGrid, sc.getResourceByName("nurc:arcgrid", CoverageInfo.class));
-        assertEquals(featureTypes, sc.getFeatureTypes());
-        assertEquals(coverages, sc.getCoverages());
-        assertEquals(workspaces, sc.getWorkspaces());
         assertEquals(toppWs, sc.getWorkspaceByName("topp"));
         assertSame(statesStore, sc.getDataStoreByName("states"));
         assertSame(roadsStore, sc.getDataStoreByName("roads"));
         assertSame(arcGridStore, sc.getCoverageStoreByName("arcGrid"));
+        
+        assertThatBoth(
+                sc.getFeatureTypes(),
+                sc.list(FeatureTypeInfo.class, Predicates.acceptAll()),
+                equalTo(featureTypes));
+        assertThatBoth(
+                sc.getCoverages(),
+                sc.list(CoverageInfo.class, Predicates.acceptAll()),
+                equalTo(coverages));
+        assertThatBoth(
+                sc.getWorkspaces(),
+                sc.list(WorkspaceInfo.class, Predicates.acceptAll()),
+                equalTo(workspaces));
     }
 
     @Test
     public void testPublicRead() throws Exception {
-        ResourceAccessManager manager = buildManager("publicRead.properties");
-        SecureCatalogImpl sc = new SecureCatalogImpl(catalog, manager);
+        
+        SecureCatalogImpl sc = buildTestObject("publicRead.properties", catalog);
 
         // try with read only user
         SecurityContextHolder.getContext().setAuthentication(roUser);
         assertSame(arcGrid, sc.getCoverageByName("nurc:arcgrid"));
         assertSame(arcGrid, sc.getResourceByName("nurc:arcgrid", CoverageInfo.class));
-        assertEquals(coverages, sc.getCoverages());
-        assertEquals(workspaces, sc.getWorkspaces());
         assertEquals(toppWs, sc.getWorkspaceByName("topp"));
         assertSame(arcGridStore, sc.getCoverageStoreByName("arcGrid"));
         // .. the following should have been wrapped
         assertNotNull(sc.getFeatureTypeByName("topp:states"));
         assertTrue(sc.getFeatureTypeByName("topp:states") instanceof SecuredFeatureTypeInfo);
         assertTrue(sc.getResourceByName("topp:states", FeatureTypeInfo.class) instanceof SecuredFeatureTypeInfo);
-        assertEquals(featureTypes.size(), sc.getFeatureTypes().size());
-        for (FeatureTypeInfo ft : sc.getFeatureTypes()) {
-            assertTrue(ft instanceof SecuredFeatureTypeInfo);
-        }
+        
+        assertThatBoth(sc.getFeatureTypes(),
+              sc.list(FeatureTypeInfo.class, Predicates.acceptAll()),
+              allOf(hasSize(featureTypes.size()),
+                everyItem(Matchers.<FeatureTypeInfo>instanceOf(SecuredFeatureTypeInfo.class))));
+        assertThatBoth(sc.getCoverages(),
+              sc.list(CoverageInfo.class, Predicates.acceptAll()),
+              equalTo(coverages));
+        assertThatBoth(sc.getWorkspaces(),
+              sc.list(WorkspaceInfo.class, Predicates.acceptAll()),
+              equalTo(workspaces));
+       
         assertNotNull(sc.getLayerByName("topp:states"));
         assertTrue(sc.getLayerByName("topp:states") instanceof SecuredLayerInfo);
         assertTrue(sc.getDataStoreByName("states") instanceof SecuredDataStoreInfo);
@@ -329,16 +465,16 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         assertSame(arcGridStore, sc.getCoverageStoreByName("arcGrid"));
     }
 
+    @SuppressWarnings("serial")
     @Test
     public void testCatalogFilteredGetLayers() throws Exception {
-        ResourceAccessManager manager = buildManager("publicRead.properties");
 
         CatalogFilterAccessManager filter = new CatalogFilterAccessManager();
-        filter.setDelegate(manager);
 
         // make a catalog that uses our layers
         Catalog withLayers = new AbstractCatalogDecorator(catalog) {
 
+            @SuppressWarnings("unchecked")
             @Override
             public <T extends CatalogInfo> CloseableIterator<T> list(Class<T> of, Filter filter, Integer offset, Integer count, SortBy sortBy) {
                 return new CloseableIteratorAdapter<T>((Iterator<T>) layers.iterator());
@@ -346,15 +482,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         };
 
         // and the secure catalog with the filter
-        SecureCatalogImpl sc = new SecureCatalogImpl(withLayers, filter) {
-
-            @Override
-            // override so we don't need GeoServerSecurityManager
-            protected boolean isAdmin(Authentication authentication) {
-                return false;
-            }
-
-        };
+        SecureCatalogImpl sc = this.buildTestObject("publicRead.properties", withLayers, filter);
 
         // base behavior sanity
         assertTrue(layers.size() > 1);
@@ -379,8 +507,8 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
 
     @Test
     public void testComplex() throws Exception {
-        ResourceAccessManager manager = buildManager("complex.properties");
-        SecureCatalogImpl sc = new SecureCatalogImpl(catalog, manager);
+        
+        SecureCatalogImpl sc = buildTestObject("complex.properties", catalog);
 
         // try with anonymous user
         SecurityContextHolder.getContext().setAuthentication(anonymous);
@@ -427,8 +555,9 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
 
     @Test
     public void testLockedLayerInGroupMustNotHideGroup() throws Exception {        
-        ResourceAccessManager manager = buildManager("lockedLayerInLayerGroup.properties");
-        SecureCatalogImpl sc = new SecureCatalogImpl(catalog, manager);
+        
+        SecureCatalogImpl sc = buildTestObject("lockedLayerInLayerGroup.properties", catalog);
+        
         
         SecurityContextHolder.getContext().setAuthentication(rwUser);
         assertSame(states, sc.getFeatureTypeByName("topp:states"));
@@ -466,8 +595,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         expect(eoCatalog.getLayerGroupByName("topp", eoStatesLayerGroup.getName())).andReturn(eoStatesLayerGroup).anyTimes();        
         replay(eoCatalog);
         
-        ResourceAccessManager manager = buildManager("lockedLayerInLayerGroup.properties");
-        SecureCatalogImpl sc = new SecureCatalogImpl(eoCatalog, manager);
+        SecureCatalogImpl sc = this.buildTestObject("lockedLayerInLayerGroup.properties", eoCatalog);
         SecurityContextHolder.getContext().setAuthentication(roUser);
         
         // if root layer is not hidden
@@ -479,4 +607,23 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         layerGroup = sc.getLayerGroupByName("topp", "eoStatesLayerGroup");                
         assertNull(layerGroup);        
     }
+    
+    static <T> void assertThatBoth(List<T> result1, CloseableIterator<T> result2, Matcher<? super List<T>> expected) throws IOException {
+        assertThat(result1, expected);
+        assertThat(collectAndClose(result2), expected);
+    }
+    
+    static <T> List<T> collectAndClose(CloseableIterator<T> it) throws IOException {
+        if(it==null) return null;
+        try {
+            LinkedList<T> list = new LinkedList<T>();
+            while(it.hasNext()) {
+                list.add(it.next());
+            }
+            return list;
+        } finally {
+            it.close();
+        }
+    }
+
 }

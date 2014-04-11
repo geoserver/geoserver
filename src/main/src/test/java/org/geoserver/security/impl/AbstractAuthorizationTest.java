@@ -5,16 +5,22 @@
 package org.geoserver.security.impl;
 
 import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.capture;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
+import org.easymock.Capture;
+import org.easymock.EasyMock;
+import org.easymock.IAnswer;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
@@ -26,13 +32,18 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.security.DataAccessManager;
 import org.geoserver.security.DataAccessManagerAdapter;
 import org.geoserver.security.ResourceAccessManager;
+import org.geoserver.security.SecureCatalogImpl;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureStore;
 import org.geotools.factory.Hints;
 import org.junit.Before;
+import org.opengis.filter.Filter;
+import org.opengis.filter.sort.SortBy;
 import org.opengis.util.ProgressListener;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -224,6 +235,25 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
     protected ResourceAccessManager buildManager(String propertyFile) throws Exception {
         return new DataAccessManagerAdapter(buildLegacyAccessManager(propertyFile));
     }
+    protected ResourceAccessManager buildManager(String propertyFile, final IAnswer<SecureCatalogImpl> securityWrapper) throws Exception {
+        return new DataAccessManagerAdapter(buildLegacyAccessManager(propertyFile)) {
+
+            @Override
+            protected SecureCatalogImpl getSecurityWrapper() {
+                try {
+                    SecureCatalogImpl sc = securityWrapper.answer();
+                    return sc;
+                } catch(RuntimeException e) {
+                    throw e;
+                } catch(Error e) {
+                    throw e;
+                } catch (Throwable e) {
+                    throw new IllegalStateException(e);
+                }
+            }
+            
+        };
+    }
     
     protected DataAccessManager buildLegacyAccessManager(String propertyFile) throws Exception {
         Properties props = new Properties();
@@ -272,9 +302,13 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         expect(catalog.getCoverageStoreByName("arcGrid")).andReturn(
                 (CoverageStoreInfo) arcGridStore).anyTimes();
         expect(catalog.getLayers()).andReturn(layers).anyTimes();
+        stubList(catalog, LayerInfo.class, layers);
         expect(catalog.getFeatureTypes()).andReturn(featureTypes).anyTimes();
+        stubList(catalog, FeatureTypeInfo.class, featureTypes);
         expect(catalog.getCoverages()).andReturn(coverages).anyTimes();
+        stubList(catalog, CoverageInfo.class, coverages);
         expect(catalog.getWorkspaces()).andReturn(workspaces).anyTimes();
+        stubList(catalog, WorkspaceInfo.class, workspaces);
         expect(catalog.getWorkspaceByName("topp")).andReturn(toppWs).anyTimes();
         expect(catalog.getWorkspaceByName("nurc")).andReturn(nurcWs).anyTimes();
         expect(catalog.getStyles()).andReturn(Arrays.asList(pointStyle, lineStyle)).anyTimes();
@@ -285,5 +319,25 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         expect(catalog.getLayerGroupsByWorkspace("nurc")).andReturn(Arrays.asList(layerGroupGlobal)).anyTimes();
         expect(catalog.getLayerGroupByName("topp", layerGroupWithSomeLockedLayer.getName())).andReturn(layerGroupWithSomeLockedLayer).anyTimes();
         replay(catalog);
+    }
+    
+    <T extends CatalogInfo> void stubList(Catalog mock, Class<T> clazz, final List<T> source) {
+        final Capture<Filter> cap = new Capture<Filter>();
+        expect(catalog.list(eq(clazz), capture(cap))).andStubAnswer(new IAnswer<CloseableIterator<T>>(){
+            @Override
+            public CloseableIterator<T> answer() throws Throwable {
+                return makeCIterator(source, cap.getValue());
+            }
+        });
+        expect(catalog.list(eq(clazz), capture(cap), EasyMock.anyInt(), EasyMock.anyInt(), (SortBy)anyObject())).andStubAnswer(new IAnswer<CloseableIterator<T>>(){
+            @Override
+            public CloseableIterator<T> answer() throws Throwable {
+                return makeCIterator(source, cap.getValue());
+            }
+        });
+    }
+    
+    static <T> CloseableIterator<T> makeCIterator(List<T> source, Filter f) {
+        return CloseableIteratorAdapter.filter(source.iterator(), f);
     }
 }

@@ -324,7 +324,18 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
                 start("swe:description");
                 chars(sd.getName()); // TODO can we make up something better??
                 end("swe:description");
-                
+
+                // nil values
+                List<Double> nullValues = sd.getNullValues();
+                if (nullValues != null && !nullValues.isEmpty()) {
+                    final int size = nullValues.size();
+                    double[] noDataValues = new double[size];
+                    for (int i = 0; i < size; i++) {
+                        noDataValues[i] = nullValues.get(i);
+                    }
+                    handleSampleDimensionNilValues(null, noDataValues);
+                }
+
                 //UoM
                 final AttributesImpl uomAttr = new AttributesImpl();
                 final String unit =sd.getUnit();
@@ -338,9 +349,6 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
                 handleSampleDimensionRange(sd);// TODO make  this generic
                 end("swe:AllowedValues");
                 end("swe:constraint");
-                
-                // nil values
-//                handleSampleDimensionNilValues(gc2d,(GridSampleDimension) sd);
                 
                 end("swe:Quantity");
                 end("swe:field");

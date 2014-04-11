@@ -4,28 +4,42 @@
  */
 package org.geoserver.catalog.rest;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
-import static junit.framework.Assert.*;
+
+import it.geosolutions.imageio.utilities.ImageIOUtilities;
 
 import java.net.URL;
+import java.util.List;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.io.FileUtils;
+import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geotools.coverage.GridSampleDimension;
+import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.DataUtilities;
+import org.geotools.util.NumberRange;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengis.coverage.grid.GridCoverageReader;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class CoverageTest extends CatalogRESTTestSupport {
 
+    private final static double DELTA = 1E-6;
+    
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         testData.setUpDefaultRasterLayers();
@@ -173,6 +187,7 @@ public class CoverageTest extends CatalogRESTTestSupport {
         dom = getAsDOM("/rest/workspaces/gs/coveragestores/usaWorldImage/coverages/usa.xml");
         assertXpathEvaluatesTo("-130.85168", "/coverage/latLonBoundingBox/minx", dom);
         assertXpathEvaluatesTo("983 598", "/coverage/grid/range/high", dom);
+
     }
 
     @Test
@@ -319,5 +334,97 @@ public class CoverageTest extends CatalogRESTTestSupport {
 
         assertNull(catalog.getCoverageByName("wcs", "BlueMarble"));
         assertNull(catalog.getLayerByName("wcs:BlueMarble"));
+    }
+    
+    @Test
+    public void testCoverageWrapping() throws Exception {
+        String xml = 
+          "<coverage>" +
+            "<name>tazdem</name>" + 
+            "<title>new title</title>" +  
+          "</coverage>";
+        MockHttpServletResponse response = 
+            putAsServletResponse("/rest/workspaces/wcs/coveragestores/DEM/coverages/DEM", xml, "text/xml");
+        assertEquals( 200, response.getStatusCode() );
+        
+        Document dom = getAsDOM("/rest/workspaces/wcs/coveragestores/DEM/coverages/tazdem.xml");
+        assertXpathEvaluatesTo("new title", "/coverage/title", dom );
+        
+        CoverageInfo c = catalog.getCoverageByName( "wcs", "tazdem");
+        assertEquals( "new title", c.getTitle() );
+        List<CoverageDimensionInfo> dimensions = c.getDimensions();
+        CoverageDimensionInfo dimension = dimensions.get(0);
+        assertEquals( "GRAY_INDEX", dimension.getName());
+        NumberRange range = dimension.getRange();
+        assertEquals( -9999.0, range.getMinimum(), DELTA);
+        assertEquals( -9999.0, range.getMaximum(), DELTA);
+        assertEquals("GridSampleDimension[-9999.0,-9999.0]", dimension.getDescription());
+        List<Double> nullValues = dimension.getNullValues();
+        assertEquals( -9999.0, nullValues.get(0), DELTA);
+        
+        
+        // Updating dimension properties
+        xml = 
+                "<coverage>" +
+                  "<name>tazdem</name>" +
+                  "<title>new title</title>" +
+                  "<dimensions>" + 
+                      "<coverageDimension>" +
+                          "<name>Elevation</name>" +
+                          "<description>GridSampleDimension[-100.0,1000.0]</description>" +
+                          "<nullValues>" +
+                              "<double>-999</double>" +
+                          "</nullValues>" +
+                          "<range>" +
+                              "<min>-100</min>" +
+                              "<max>1000</max>" +
+                          "</range>" +
+                      "</coverageDimension>" +
+                  "</dimensions>" +
+                "</coverage>";
+        response = 
+           putAsServletResponse("/rest/workspaces/wcs/coveragestores/DEM/coverages/tazdem", xml, "text/xml");
+        assertEquals( 200, response.getStatusCode() );
+
+        c = catalog.getCoverageByName( "wcs", "tazdem");
+        dimensions = c.getDimensions();
+        dimension = dimensions.get(0);
+        assertEquals( "Elevation", dimension.getName());
+        range = dimension.getRange();
+        assertEquals( -100.0, range.getMinimum(), DELTA);
+        assertEquals( 1000.0, range.getMaximum(), DELTA);
+        assertEquals("GridSampleDimension[-100.0,1000.0]", dimension.getDescription());
+        nullValues = dimension.getNullValues();
+        assertEquals( -999.0, nullValues.get(0), DELTA);
+
+        CoverageStoreInfo coverageStore = catalog.getStoreByName("wcs", "DEM", CoverageStoreInfo.class);
+        GridCoverageReader reader = null;
+        GridCoverage2D coverage = null;
+        try {
+            reader = catalog.getResourcePool().getGridCoverageReader(coverageStore, "tazdem", null);
+            coverage = (GridCoverage2D) reader.read("tazdem", null);
+            GridSampleDimension sampleDim = (GridSampleDimension) coverage.getSampleDimension(0);
+            double[] noDataValues = sampleDim.getNoDataValues();
+            assertEquals( -999.0, noDataValues[0], DELTA);
+            range = sampleDim.getRange();
+            assertEquals( -100.0, range.getMinimum(), DELTA);
+            assertEquals( 1000.0, range.getMaximum(), DELTA);
+        } finally {
+            if (coverage != null) {
+                try {
+                    ImageIOUtilities.disposeImage(coverage.getRenderedImage());
+                    coverage.dispose(true);
+                } catch (Throwable t) {
+                    // Does nothing;
+                }
+            }
+            if (reader != null) {
+                try {
+                    reader.dispose();
+                } catch (Throwable t) {
+                    // Does nothing;
+                }
+            }
+        }
     }
 }

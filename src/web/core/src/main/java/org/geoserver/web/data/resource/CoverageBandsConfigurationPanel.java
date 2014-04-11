@@ -21,9 +21,12 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.convert.IConverter;
+import org.apache.wicket.util.convert.converters.DoubleConverter;
 import org.apache.wicket.util.string.Strings;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -35,6 +38,7 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.geotools.util.NumberRange;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.SampleDimensionType;
 
@@ -44,23 +48,126 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
 
     private GeoServerTablePanel<CoverageDimensionInfo> bands;
 
+    /** 
+     * A TextField to handle Double numbers also supporting -Infinity and Infinity values.
+     */
+    static class DoubleTextField extends TextField<Double>{
+
+        public DoubleTextField(String id, IModel<Double> model) {
+            super(id, model, Double.class);
+        }
+
+        @Override
+        public IConverter getConverter(Class<?> type) {
+            return new DoubleInfinityConverter();
+        }
+    }
+
+    /**
+     * A Double numbers converter supporting -Infinity and Infinity too.
+     */
+    static class DoubleInfinityConverter extends DoubleConverter {
+
+        @Override
+        public Double convertToObject(String value, Locale locale) {
+            final Number number = parse(value, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Locale.US);
+            if (number == null) {
+                return null;
+            }
+
+            return new Double(number.doubleValue());
+        }
+
+        @Override
+        public String convertToString(Object value, Locale locale) {
+            return super.convertToString(value, Locale.US);
+        }
+    }
+
+    /**
+     * An IModel implementation to deal with list of double values.
+     */
+    static class DoubleListModel implements IModel {
+
+        private final IModel wrapped;
+
+        @Override
+        public void detach() {
+            
+        }
+
+        public DoubleListModel(IModel wrapped) {
+            this.wrapped = wrapped;
+        }
+
+        @Override
+        public Object getObject() {
+            List<Double> nullValues = (List<Double>)wrapped.getObject();
+            if (nullValues != null && nullValues.size() > 0) {
+                return nullValues.get(0).toString();
+            }
+            return "-";
+        }
+
+        @Override
+        public void setObject(Object object) {
+            String val = (String) object;
+            List<Double> vals = (List<Double>) wrapped.getObject();
+            vals.clear();
+            // Parsing double values
+            if (!val.equalsIgnoreCase("-")) {
+                String[] values;
+                if (val.contains(",")) {
+                    values = val.split(",");
+                } else {
+                    values = new String[]{val.trim()};
+                }
+                for (String value : values) {
+                    vals.add(Double.parseDouble(value.trim()));
+                }
+            }
+        }
+    }
+
     public CoverageBandsConfigurationPanel(String id, final IModel model) {
         super(id, model);
-
-        // the parameters table
         bands = new GeoServerTablePanel<CoverageDimensionInfo>("bands",
                 new CoverageDimensionsProvider(), true) {
 
             @Override
             protected Component getComponentForProperty(String id, IModel itemModel,
                     Property<CoverageDimensionInfo> property) {
+                if ("band".equals(property.getName())) {
+                    Fragment f = new Fragment(id, "bandtext", CoverageBandsConfigurationPanel.this);
+                    Component text = new TextField<String>("bandtext", property.getModel(itemModel));
+                    f.add(text);
+                    return f;
+                }
+                if ("nullValues".equals(property.getName())) {
+                    Fragment f = new Fragment(id, "nulltext", CoverageBandsConfigurationPanel.this);
+                    Component text = new TextField("nulltext", new DoubleListModel(property.getModel(itemModel)));
+                    f.add(text);
+                    return f;
+                }
                 if ("unit".equals(property.getName())) {
                     Fragment f = new Fragment(id, "text", CoverageBandsConfigurationPanel.this);
                     Component text = buildUnitField("text", property.getModel(itemModel));
                     f.add(text);
-
                     return f;
                 }
+               if ("minRange".equals(property.getName())) {
+                    Fragment f = new Fragment(id, "minRange", CoverageBandsConfigurationPanel.this);
+                    Component min = new DoubleTextField("minRange", property.getModel(itemModel));
+                    f.add(min);
+                    return f;
+                }
+                if ("maxRange".equals(property.getName())) {
+                    Fragment f = new Fragment(id, "maxRange", CoverageBandsConfigurationPanel.this);
+                    Component max = new DoubleTextField("maxRange", property.getModel(itemModel));
+                    f.add(max);
+                    return f;
+                }
+
                 return null;
             }
 
@@ -163,21 +270,69 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
 
                 @Override
                 public Object getPropertyValue(CoverageDimensionInfo item) {
-                    List<Double> values = item.getNullValues();
-                    if (values == null || values.isEmpty()) {
-                        return "-";
-                    } else {
-                        StringBuilder sb = new StringBuilder();
-                        final int size = values.size();
-                        for (int i = 0; i < size; i++) {
-                            sb.append(values.get(i));
-                            if (i < size - 1) {
-                                sb.append(", ");
-                            }
+                    return item.getNullValues();
+                }
+
+            });
+            result.add(new AbstractProperty<CoverageDimensionInfo>("minRange") {
+
+                @Override
+                public Object getPropertyValue(final CoverageDimensionInfo item) {
+                    return new IModel<Double>() {
+
+                        @Override
+                        public void detach() {
+                            // nothing to do
                         }
 
-                        return sb.toString();
-                    }
+                        @Override
+                        public Double getObject() {
+                            if(item.getRange() == null) {
+                                return null;
+                            }
+                            return item.getRange().getMinimum(true);
+                        }
+
+                        @Override
+                        public void setObject(Double min) {
+                            if(min != null) {
+                                NumberRange range = item.getRange();
+                                NumberRange<Double> newRange = NumberRange.create(min, range != null ? range.getMaximum() : min);
+                                item.setRange(newRange);
+                            }
+                        }
+                    };
+                }
+
+            });
+            result.add(new AbstractProperty<CoverageDimensionInfo>("maxRange") {
+
+                @Override
+                public Object getPropertyValue(final CoverageDimensionInfo item) {
+                    return new IModel<Double>() {
+
+                        @Override
+                        public void detach() {
+                            // nothing to do
+                        }
+
+                        @Override
+                        public Double getObject() {
+                            if(item.getRange() == null) {
+                                return null;
+                            }
+                            return item.getRange().getMaximum();
+                        }
+
+                        @Override
+                        public void setObject(Double max) {
+                            if(max != null) {
+                                NumberRange range = item.getRange();
+                                NumberRange<Double> newRange = NumberRange.create(range != null ? range.getMinimum() : max, max);
+                                item.setRange(newRange);
+                            }
+                        }
+                    };
                 }
 
             });
@@ -195,6 +350,5 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                 return Collections.emptyList();
             }
         }
-
     }
 }

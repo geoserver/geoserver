@@ -15,6 +15,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
 import org.geoserver.platform.FileWatcher;
+import org.geoserver.platform.resource.Resource;
 
 /**
  * Special watcher that watches an underlying script and when changed creates a new 
@@ -28,6 +29,11 @@ public class ScriptFileWatcher extends FileWatcher<ScriptEngine> {
     ScriptManager scriptMgr;
     ScriptEngine engine;
 
+    public ScriptFileWatcher(Resource resource, ScriptManager scriptMgr) {
+        super(resource);
+        this.scriptMgr = scriptMgr;
+    }
+    @Deprecated
     public ScriptFileWatcher(File file, ScriptManager scriptMgr) {
         super(file);
         this.scriptMgr = scriptMgr;

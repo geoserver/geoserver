@@ -15,9 +15,14 @@ import java.util.logging.Level;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.geoserver.monitor.MonitorRequestFilter.Filter;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.FileWatcher;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.platform.resource.Resources;
 import org.springframework.util.AntPathMatcher;
 
 import static org.geoserver.monitor.MonitorFilter.LOGGER;
@@ -32,28 +37,11 @@ public class MonitorRequestFilter {
     }
     
     public MonitorRequestFilter(GeoServerResourceLoader loader) throws IOException {
-        //loader.findOrCreateDirectory("monitoring");
-        
-        File configFile = loader.find("monitoring", "filter.properties");
-        if (configFile == null) {
-            configFile = loader.createFile("monitoring", "filter.properties");
-            loader.copyFromClassPath("filter.properties", configFile, getClass());
+        Resource configFile = loader.get( Paths.path("monitoring", "filter.properties") );
+        if (configFile.getType() == Type.UNDEFINED) {
+            loader.copyFromClassPath("filter.properties", configFile.file(), getClass());
         }
-        
-        watcher = new FileWatcher<List<Filter>>(configFile) {
-            @Override
-            protected List<Filter> parseFileContents(InputStream in) throws IOException {
-                List<Filter> filters = new ArrayList();
-            
-                BufferedReader r = new BufferedReader(new InputStreamReader(in));
-                String line = null;
-                while ((line = r.readLine()) != null) {
-                    filters.add(new Filter(line));
-                }
-            
-                return filters;
-            }
-        };
+        watcher = new FilterPropertyFileWatcher(configFile);
     }
     
     public boolean filter(HttpServletRequest req) throws IOException {
@@ -78,6 +66,29 @@ public class MonitorRequestFilter {
         return false;
     }
     
+    private final class FilterPropertyFileWatcher extends FileWatcher<List<Filter>> {
+        
+        private FilterPropertyFileWatcher(Resource resource) {
+            super(resource);
+        }
+        private FilterPropertyFileWatcher(File file) {
+            super(file);
+        }
+
+        @Override
+        protected List<Filter> parseFileContents(InputStream in) throws IOException {
+            List<Filter> filters = new ArrayList<Filter>();
+
+            BufferedReader r = new BufferedReader(new InputStreamReader(in));
+            String line = null;
+            while ((line = r.readLine()) != null) {
+                filters.add(new Filter(line));
+            }
+
+            return filters;
+        }
+    }
+
     static class Filter {
         
         AntPathMatcher matcher = new AntPathMatcher();

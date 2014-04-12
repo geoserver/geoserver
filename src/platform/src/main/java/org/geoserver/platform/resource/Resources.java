@@ -5,7 +5,10 @@
 package org.geoserver.platform.resource;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -97,6 +100,53 @@ public class Resources {
         else {
             return null;
         }
+    }
+    
+    /** File contents read on demand */
+    public static <T> Content<T> watch( final File file, final Content.Read<T> content ){
+        return new Content<T>(){
+            @Override
+            public T content() {
+                InputStream in;
+                try {
+                    in = new FileInputStream(file);
+                } catch (FileNotFoundException notFound) {
+                    throw new IllegalStateException(notFound);
+                }
+                try {
+                    return content.read(in);
+                }
+                finally {
+                    try {
+                        in.close();
+                    } catch (IOException notClosed) {
+                        throw new IllegalStateException(notClosed);
+                    }
+                }
+            }
+        };
+    }
+    /** Resource contents read on demand */
+    public static <T> Content<T> watch( final Resource resource, final Content.Read<T> content ){
+        return new Content<T>(){
+            @Override
+            public T content() {
+                InputStream in = resource.in();
+                try {
+                    return content.read(in);
+                }
+                finally {
+                    try {
+                        in.close();
+                    } catch (IOException e) {
+                        throw new IllegalStateException(e);
+                    }
+                }
+            }
+        };
+    }
+    public static <T> Content<T> cache( Content<T> watch, long interval ){
+        return watch;
     }
     
     /**

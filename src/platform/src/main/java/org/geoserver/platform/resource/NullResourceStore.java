@@ -44,6 +44,15 @@ final class NullResourceStore implements ResourceStore {
             }
             
             @Override
+            public void addListener(ResourceListener listener) {
+                // no events provided
+            }
+            @Override
+            public void removeListener(ResourceListener listener) {
+                // no events provided
+            }
+            
+            @Override
             public OutputStream out() {
                 throw new IllegalStateException("Unable to write to ResourceStore.EMPTY");
             }
@@ -127,4 +136,5 @@ final class NullResourceStore implements ResourceStore {
     public boolean move(String path, String target) {
         return false; // unable to move empty resource
     }
+
 }

@@ -11,6 +11,7 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.flow.ControlFlowConfigurator;
 import org.geoserver.flow.FlowController;
 import org.geoserver.flow.controller.BasicOWSController;
@@ -18,6 +19,9 @@ import org.geoserver.flow.controller.GlobalFlowController;
 import org.geoserver.flow.controller.IpFlowController;
 import org.geoserver.flow.controller.SingleIpFlowController;
 import org.geoserver.flow.controller.UserFlowController;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.PropertyFileWatcher;
 import org.geotools.util.logging.Logging;
 import org.vfny.geoserver.global.GeoserverDataDirectory;
@@ -35,9 +39,12 @@ public class DefaultControlFlowConfigurator implements ControlFlowConfigurator {
 
     long timeout = -1;
 
+    /** Default watches controlflow.properties */
     public DefaultControlFlowConfigurator() {
-        configFile = new PropertyFileWatcher(new File(
-                GeoserverDataDirectory.getGeoserverDataDirectory(), PROPERTYFILENAME));
+        GeoServerResourceLoader loader = (GeoServerResourceLoader) GeoServerExtensions.bean( "resourceLoader");        
+        Resource controlflow = loader.get(PROPERTYFILENAME);        
+        configFile = new PropertyFileWatcher(controlflow);        
+        //configFile = new PropertyFileWatcher(new File(GeoserverDataDirectory.getGeoserverDataDirectory(), PROPERTYFILENAME));
     }
 
     /**

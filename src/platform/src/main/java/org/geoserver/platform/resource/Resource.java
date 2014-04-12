@@ -71,9 +71,34 @@ public interface Resource {
     /**
      * Acquires an exclusive lock on resource content.
      * 
-     * @return an exlusive lock
+     * @return an exclusive lock
      */
     Lock lock();
+    
+    /**
+     * Listen for changes to ResourceStore content.
+     * <p>
+     * Listeners can be configured to check for changes to individual files or directory contents.
+     * </p>
+     * <ul>
+     * <li>styles: listener receives events for any change to the contents of the styles directory</li>
+     * <li>user_projections/epsg.properties: listener notified for any change to the epsg.properties resource</li>
+     * </ul>
+     * <p>
+     * Notification is course grained, often just based on change of last modified time stamp, as such they are issued after the change has been
+     * performed.
+     * </p>
+     * 
+     * @param listener Listener to receive change notification
+     */
+    void addListener( ResourceListener listener);
+    
+    /**
+     * Remove resource store content listener.
+     * @param path
+     * @param listener
+     */
+    void removeListener( ResourceListener listener);
     
     /**
      * Steam access to resource contents.

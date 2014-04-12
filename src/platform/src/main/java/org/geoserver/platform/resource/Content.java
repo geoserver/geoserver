@@ -32,7 +32,7 @@ public interface Content<T> {
      * @param <T>
      */
     public static interface Read<C> {
-        C read(InputStream in);
+        C read(InputStream in) throws Exception;
     }
 
     /**

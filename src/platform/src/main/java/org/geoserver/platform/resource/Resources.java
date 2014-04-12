@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.geoserver.platform.resource.Resource.Type;
 
@@ -107,6 +108,12 @@ public class Resources {
         return new Content<T>(){
             @Override
             public T content() {
+                if( !file.exists() ){
+                    return null;
+                }
+                if( file.isDirectory() ){
+                    throw new IllegalStateException("Unable to read content from a directory");
+                }
                 InputStream in;
                 try {
                     in = new FileInputStream(file);
@@ -115,6 +122,9 @@ public class Resources {
                 }
                 try {
                     return content.read(in);
+                }
+                catch( Exception unexpected){
+                    throw new IllegalStateException(unexpected);
                 }
                 finally {
                     try {
@@ -131,9 +141,18 @@ public class Resources {
         return new Content<T>(){
             @Override
             public T content() {
+                if( resource.getType() != Type.UNDEFINED ){
+                    return null;
+                }
+                if( resource.getType() != Type.DIRECTORY ){
+                    throw new IllegalStateException("Unable to read content from a directory");
+                }
                 InputStream in = resource.in();
                 try {
                     return content.read(in);
+                }
+                catch( Exception unexpected){
+                    throw new IllegalStateException(unexpected);
                 }
                 finally {
                     try {
@@ -145,8 +164,25 @@ public class Resources {
             }
         };
     }
-    public static <T> Content<T> cache( Content<T> watch, long interval ){
-        return watch;
+
+    public static <T> Content<T> cache(final Content<T> watch, final long delay, final TimeUnit unit) {
+        return new Content<T>() {
+            long next = 0;
+
+            T cache = null;
+
+            @Override
+            public T content() {
+                synchronized (this) {
+                    long now = System.currentTimeMillis();
+                    if (next < now) {
+                        next = now + unit.convert(delay, TimeUnit.MILLISECONDS);
+                        cache = watch.content();
+                    }
+                    return cache;
+                }
+            }
+        };
     }
     
     /**

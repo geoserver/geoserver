@@ -69,7 +69,8 @@ public class SimpleNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
             nl.setOpen(true);
 
             // look at for this layer
-            ReferencedEnvelope latLongBoundingBox = layerBounds.get(i);
+            ReferencedEnvelope latLongBoundingBox = ReferencedEnvelope.create(request.getBbox(), aggregatedBounds.getCoordinateReferenceSystem());
+            
             if (latLongBoundingBox != null) {
                 LookAt la = lookAtFactory.buildLookAt(latLongBoundingBox, lookAtOptions, false);
                 nl.setAbstractView(la);

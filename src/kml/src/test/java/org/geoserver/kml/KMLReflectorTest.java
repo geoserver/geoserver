@@ -54,9 +54,12 @@ import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.util.xml.SimpleNamespaceContext;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -66,6 +69,7 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
  * 
  * @author David Winslow (OpenGeo)
  * @author Gabriel Roldan (OpenGeo)
+ * @author Markus Innerebner (EURAC Research)
  * @version $Id$
  */
 public class KMLReflectorTest extends WMSTestSupport {
@@ -951,4 +955,69 @@ public class KMLReflectorTest extends WMSTestSupport {
             assertTrue(expected.containsKey(key));
         }
     }
+    
+    /**
+     * 
+     * <p>Method testLookatOptionsWithRefreshMode tests if the two altitude values are obtained from the corresponding bounding box.
+     * The first value (//kml:Document/kml:LookAt/kml:altitude) is calculated from the initial bounding box.
+     * The second value (//kml:Document/kml:NetworkLink/kml:LookAt/kml:altitude) is calculated from the bounding box passed to the WMS request.
+     * Test fails if those values are identical.
+     * @see http://jira.codehaus.org/browse/GEOS-6410
+     * </p>
+     * @throws Exception
+     */
+    @Test
+    public void testLookatOptionsWithRefreshMode() throws Exception {
+        String layerId = getLayerId(MockData.BASIC_POLYGONS);
+        final String requestUrl = "wms/kml?layers=" + layerId
+                + "&styles=polygon&mode=refresh&bbox=10.56,46.99,11.50,47.26" ;
+        Document doc = getAsDOM(requestUrl);
+        // we expect that those values should not be the same, because first value is obtained from initial bbox of the layer, while the second value from the bbox of the request
+        XMLAssert.assertXpathValuesNotEqual("//kml:Document/kml:LookAt/kml:altitude","//kml:Document/kml:NetworkLink/kml:LookAt/kml:altitude", doc);
+    }
+    
+    
+    /**
+     * <p>Method testWMSTimeRequest tests if the time parameter of the request is also passed to the KML WMS request.</p>
+     * @see http://jira.codehaus.org/browse/GEOS-6411
+     * @throws Exception
+     */
+    @Test
+    public void testWMSTimeRequest() throws Exception {
+        String layerId = getLayerId(MockData.BASIC_POLYGONS);
+        String expectedTS = "time=2014-03-01";
+        final String requestUrl = "wms/kml?layers=" + layerId + "&styles=polygon&mode=refresh&bbox=10.56,46.99,11.50,47.26&" + expectedTS ;
+        Document doc = getAsDOM(requestUrl);
+        // we expect that those values should not be the same, because first value is obtained from initial bbox of the layer, while the second value from the bbox of the request
+        
+        NodeList nodes = doc.getElementsByTagName("href");
+        for (int i = 0; i < nodes.getLength(); ++i) {
+          Element e = (Element) nodes.item(i);
+          String actualTS = e.getTextContent();
+          Assert.assertTrue("Time parameter missing", actualTS.contains(expectedTS));
+        }
+    }
+    
+    
+    /**
+     * <p>Method testWMSElevationRequest tests if the elevation parameter of the request is also passed to the KML WMS request.</p>
+     * @see http://jira.codehaus.org/browse/GEOS-6411
+     * @throws Exception
+     */
+    @Test
+    public void testWMSElevationRequest() throws Exception {
+        String layerId = getLayerId(MockData.BASIC_POLYGONS);
+        String expectedTS = "elevation=500";
+        final String requestUrl = "wms/kml?layers=" + layerId + "&styles=polygon&mode=refresh&bbox=10.56,46.99,11.50,47.26&" + expectedTS ;
+        Document doc = getAsDOM(requestUrl);
+        // we expect that those values should not be the same, because first value is obtained from initial bbox of the layer, while the second value from the bbox of the request
+        
+        NodeList nodes = doc.getElementsByTagName("href");
+        for (int i = 0; i < nodes.getLength(); ++i) {
+          Element e = (Element) nodes.item(i);
+          String actualTS = e.getTextContent();
+          Assert.assertTrue("Elevation parameter missing", actualTS.contains(expectedTS));
+        }
+    }
+    
 }

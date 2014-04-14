@@ -33,7 +33,7 @@ public class MonitorRequestFilter {
     List<Filter> filters;
     
     public MonitorRequestFilter() {
-        filters = new ArrayList();
+        filters = new ArrayList<Filter>();
     }
     
     public MonitorRequestFilter(GeoServerResourceLoader loader) throws IOException {
@@ -66,13 +66,13 @@ public class MonitorRequestFilter {
         return false;
     }
     
+    /**
+     * FileWatcher used to parse List<Filter> from text file.
+     */
     private final class FilterPropertyFileWatcher extends FileWatcher<List<Filter>> {
         
         private FilterPropertyFileWatcher(Resource resource) {
             super(resource);
-        }
-        private FilterPropertyFileWatcher(File file) {
-            super(file);
         }
 
         @Override
@@ -88,16 +88,30 @@ public class MonitorRequestFilter {
             return filters;
         }
     }
-
+    
+    /**
+     * Match path contents based on AntPathMatcher pattern
+     */
     static class Filter {
         
         AntPathMatcher matcher = new AntPathMatcher();
         String pattern;
-     
+        
+        /**
+         * Filter based on request path.
+         * 
+         * @param pattern AntPathMatcher pattern
+         */
         Filter(String pattern) {
             this.pattern = pattern;
         }
         
+        /**
+         * Request path match.
+         * 
+         * @param path Request path
+         * @return Request path match
+         */
         boolean matches(String path) {
             return matcher.match(pattern, path);
         }

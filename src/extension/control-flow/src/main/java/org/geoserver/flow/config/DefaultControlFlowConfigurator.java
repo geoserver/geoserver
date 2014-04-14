@@ -41,10 +41,9 @@ public class DefaultControlFlowConfigurator implements ControlFlowConfigurator {
 
     /** Default watches controlflow.properties */
     public DefaultControlFlowConfigurator() {
-        GeoServerResourceLoader loader = (GeoServerResourceLoader) GeoServerExtensions.bean( "resourceLoader");        
-        Resource controlflow = loader.get(PROPERTYFILENAME);        
+        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        Resource controlflow = loader.get(PROPERTYFILENAME);
         configFile = new PropertyFileWatcher(controlflow);        
-        //configFile = new PropertyFileWatcher(new File(GeoserverDataDirectory.getGeoserverDataDirectory(), PROPERTYFILENAME));
     }
 
     /**

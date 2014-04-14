@@ -34,7 +34,6 @@
         <descriptors>
           <descriptor>release/ext-authkey.xml</descriptor>
           <descriptor>release/ext-ftp.xml</descriptor>
-          <descriptor>release/ext-printing.xml</descriptor>
           <descriptor>release/ext-python.xml</descriptor>
           <descriptor>release/ext-groovy.xml</descriptor>
           <descriptor>release/ext-javascript.xml</descriptor>
@@ -114,12 +113,7 @@
         <module>dds</module>
       </modules>
     </profile>
-    <profile>
-      <id>printing</id>
-      <modules>
-        <module>printing</module>
-      </modules>
-    </profile>
+    
     
     <profile>
       <id>dbconfig</id>
@@ -150,7 +144,6 @@
       <modules>
         <module>authkey</module>
         <module>dds</module>
-        <module>printing</module>
         <module>release</module>
         <module>ftp</module>
         <module>spatialite</module>

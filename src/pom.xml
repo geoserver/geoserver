@@ -1250,6 +1250,7 @@
       <descriptor>release/ext-css.xml</descriptor>      
       <descriptor>release/ext-csw.xml</descriptor>
       <descriptor>release/ext-dxf.xml</descriptor>
+      <descriptor>release/ext-printing.xml</descriptor>
       <descriptor>release/ext-wcs2_0-eo.xml</descriptor>
       <descriptor>release/ext-libjpeg-turbo.xml</descriptor>
       <descriptor>release/ext-importer.xml</descriptor>

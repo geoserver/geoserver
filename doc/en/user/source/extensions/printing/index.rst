@@ -10,15 +10,12 @@ are available from the Mapfish and GeoExt projects.
 Installation
 ------------
 
-The printing module is built nightly and published to the `nightly build server
-<http://ares.boundlessgeo.com/geoserver/master/community-latest/>`_.  The installation process is similar to other GeoServer plugins:
-
-* Download the file (named like
-  ``geoserver-2.0.2-SNAPSHOT-printing-plugin.zip``)
+* Download the extension (named like ``geoserver-<version>-printing-plugin.zip``)
+  from the geoserver site download page.
 * Extract the contents of the ZIP archive into the :file:`/WEB-INF/lib/` in the
   GeoServer webapp.  For example, if you have installed the GeoServer binary to
-  :file:`/opt/geoserver-2.0.1/`, the printing extension JAR files should be
-  placed in :file:`/opt/geoserver-2.0.1/webapps/geoserver/WEB-INF/lib/`.
+  :file:`/opt/geoserver-2.6/`, the printing extension JAR files should be
+  placed in :file:`/opt/geoserver-2.6/webapps/geoserver/WEB-INF/lib/`.
 * After extracting the extension, restart GeoServer in order for the changes to
   take effect.  All further configuration can be done with GeoServer running.
 
@@ -30,8 +27,7 @@ configuration file in :file:`{GEOSERVER_DATA_DIR}/printing/config.yaml`.
 Checking for this file's existence is a quick way to verify the module is
 installed properly.  It is safe to edit this file; in fact there is currently
 no way to modify the print module settings other than by opening this
-configuration file in a text editor.  Details about the configuration file are
-available from the `Mapfish website <http://www.mapfish.org/doc/print/>`.
+configuration file in a text editor.  
 
 If the module is installed and configured properly, then you will also be able
 to retrieve a list of configured printing parameters from
@@ -52,10 +48,14 @@ modify it with your HTML editor of choice to use the proper URL.
    in the sample are subject to change without notice, so pages using them may
    change behavior without warning.
 
-Using the Print Module in Applications
+
+MapFish documentation
 --------------------------------------
 
-See the print documentation on the `GeoExt web site
-<http://geoext.org/search.html?q=print>`_ for information about using the print
-service in web applications.
+.. toctree::
+   :maxdepth: 1
+
+   configuration
+   protocol
+   faq
 

@@ -30,3 +30,4 @@ see the :ref:`data_vector`, :ref:`data_raster`, and :ref:`data_database` section
    wcs20eo/index
    libjpeg-turbo/index
    jp2k
+   printing/index

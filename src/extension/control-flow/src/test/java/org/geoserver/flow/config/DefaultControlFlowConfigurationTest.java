@@ -18,6 +18,7 @@ import org.geoserver.flow.controller.GlobalFlowController;
 import org.geoserver.flow.controller.IpFlowController;
 import org.geoserver.flow.controller.SingleIpFlowController;
 import org.geoserver.flow.controller.UserFlowController;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.PropertyFileWatcher;
 import org.junit.Test;
 
@@ -73,7 +74,7 @@ public class DefaultControlFlowConfigurationTest {
         Properties properties;
 
         public FixedWatcher(Properties properties) {
-            super(null);
+            super((Resource)null);
             this.properties = properties;
         }
 

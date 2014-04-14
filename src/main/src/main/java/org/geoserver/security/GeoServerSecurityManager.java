@@ -58,8 +58,12 @@ import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.platform.resource.Files;
+import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.auth.AuthenticationCache;
@@ -2822,15 +2826,13 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
                 FileBasedSecurityServiceConfig fileConfig = 
                     (FileBasedSecurityServiceConfig) config;
                 if (fileConfig.getCheckInterval()>0) {
-                    File file = new File(fileConfig.getFileName());
-                    if (file.isAbsolute()==false) 
-                        file = new File(new File(getUserGroupRoot(), name), file.getPath());
-                    if (file.canRead()==false) {
-                        throw new IOException("Cannot read file: "+file.getCanonicalPath());
+                    Resource resource = getConfigFile( fileConfig.getFileName());
+                    if( resource == null ){
+                        String path = Paths.path("security/usergroup", name, fileConfig.getFileName());
+                        resource = get(path);                        
                     }
-                    UserGroupFileWatcher watcher = new 
-                        UserGroupFileWatcher(file.getCanonicalPath(),service,file.lastModified());
-                    watcher.setDelay(fileConfig.getCheckInterval());
+                    
+                    UserGroupFileWatcher watcher = new UserGroupFileWatcher(resource,service);
                     service.registerUserGroupLoadedListener(watcher);
                     watcher.start();
 
@@ -2897,15 +2899,13 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
                 FileBasedSecurityServiceConfig fileConfig = 
                     (FileBasedSecurityServiceConfig) config;
                 if (fileConfig.getCheckInterval()>0) {
-                    File file = new File(fileConfig.getFileName());
-                    if (file.isAbsolute()==false) 
-                        file = new File(new File(getRoleRoot(), name), file.getPath());
-                    if (file.canRead()==false) {
-                        throw new IOException("Cannot read file: "+file.getCanonicalPath());
+                    Resource resource = getConfigFile( fileConfig.getFileName());
+                    if( resource == null ){
+                        String path = Paths.path("security/role", name, fileConfig.getFileName());
+                        resource = get(path);
                     }
-                    RoleFileWatcher watcher = new 
-                        RoleFileWatcher(file.getCanonicalPath(),service,file.lastModified());
-                    watcher.setDelay(fileConfig.getCheckInterval());
+
+                    RoleFileWatcher watcher = new RoleFileWatcher(resource, service, resource.lastmodified());
                     service.registerRoleLoadedListener(watcher);
                     watcher.start();
 
@@ -2923,6 +2923,26 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         }
     }
 
+    /**
+     * Alternative to {@link GeoServerResourceLoader#find(String)} that supports absolute paths
+     * for use in test cases.
+     * <p>
+     * If an absolute path is used the Resource implementation is provided by {@link Files#asResource(File)}.
+     * 
+     * @param fileLocation
+     * @return resource
+     */
+    Resource getConfigFile(String configFileLocation) throws IOException {
+        File file = new File(configFileLocation);
+        if (file.isAbsolute()) {
+            if (file.canRead()) {
+                return Files.asResource(file); // used by test cases
+            } else {
+                throw new IOException("Cannot read file: " + file.getCanonicalPath());
+            }
+        }
+        return null;
+    }
 
     class PasswordValidatorHelper extends HelperBase<PasswordValidator,PasswordPolicyConfig> {
 

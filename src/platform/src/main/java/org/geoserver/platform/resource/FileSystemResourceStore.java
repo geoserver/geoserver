@@ -25,9 +25,12 @@ public class FileSystemResourceStore implements ResourceStore {
     /** Base directory for ResourceStore content */
     protected File baseDirectory = null;
 
+    protected FileSystemWatcher watcher;
+
     protected FileSystemResourceStore(){
         // Used by Spring, baseDirectory set by subclass
     }
+
     
     /**
      * LockProvider used during {@link Resource#out()}.
@@ -83,7 +86,20 @@ public class FileSystemResourceStore implements ResourceStore {
             throw new IllegalArgumentException("Unable to acess directory " + resourceDirectory);
         }
     }
-
+    
+    public synchronized void addListener(File file, String path, ResourceListener listener) {
+        if( watcher == null ){
+            watcher = new FileSystemWatcher();
+        }
+        watcher.addListener( file, path, listener );
+    }
+    
+    public synchronized void removeListener(File file, String path, ResourceListener listener) {
+        if( watcher != null ){
+            watcher.removeListener(file, path, listener );
+        }
+    }
+    
     @Override
     public Resource get(String path) {
         path = Paths.valid(path);
@@ -153,6 +169,15 @@ public class FileSystemResourceStore implements ResourceStore {
             return lockProvider.acquire(path);
         }
         
+        @Override
+        public void addListener(ResourceListener listener) {
+            FileSystemResourceStore.this.addListener( file, path, listener );
+        }
+        
+        @Override
+        public void removeListener(ResourceListener listener) {
+            FileSystemResourceStore.this.removeListener( file, path, listener );
+        }
         @Override
         public InputStream in() {
             File actualFile = file();

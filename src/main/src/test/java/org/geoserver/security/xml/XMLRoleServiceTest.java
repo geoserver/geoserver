@@ -9,11 +9,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import junit.framework.Assert;
 
 import org.apache.commons.io.FileUtils;
+import org.geoserver.platform.resource.Files;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.event.RoleLoadedEvent;
@@ -233,51 +235,59 @@ public class XMLRoleServiceTest extends AbstractRoleServiceTest {
     
     @Test 
     public void testDynamicReload() throws Exception {
-        File xmlFile = File.createTempFile("roles", ".xml");
-        FileUtils.copyURLToFile(getClass().getResource("rolesTemplate.xml"),xmlFile);
-        GeoServerRoleService service1 =  
-            createRoleService("reload1",xmlFile.getCanonicalPath());
-        GeoServerRoleService service2 =  
-            createRoleService("reload2",xmlFile.getCanonicalPath());
-        
-        GeoServerRoleStore store1= createStore(service1);
-        
-        
-        GeoServerRole role_test1 = store1.createRoleObject("ROLE_TEST1");
-        
-        checkEmpty(service1);
-        checkEmpty(service2);
-        
-        // prepare for syncing
-        
-        RoleLoadedListener listener = new RoleLoadedListener() {
+        Files.schedule(200,TimeUnit.MILLISECONDS);
+        try {
+            File xmlFile = File.createTempFile("roles", ".xml");
+            FileUtils.copyURLToFile(getClass().getResource("rolesTemplate.xml"),xmlFile);
+            GeoServerRoleService service1 =  
+                createRoleService("reload1",xmlFile.getCanonicalPath());
+            GeoServerRoleService service2 =  
+                createRoleService("reload2",xmlFile.getCanonicalPath());
             
-            @Override
-            public void rolesChanged(RoleLoadedEvent event) {
-                synchronized (this) {
-                    this.notifyAll();
+            GeoServerRoleStore store1= createStore(service1);
+            
+            
+            GeoServerRole role_test1 = store1.createRoleObject("ROLE_TEST1");
+            
+            checkEmpty(service1);
+            checkEmpty(service2);
+            
+            // prepare for syncing            
+            class CheckRoleLoaded implements RoleLoadedListener {    
+                public int notified = 0;
+                @Override
+                public void rolesChanged(RoleLoadedEvent event) {
+                    synchronized (this) {
+                        this.notifyAll();
+                        notified++;
+                    }                    
                 }
-                
+            };             
+            CheckRoleLoaded listener = new CheckRoleLoaded();
+            service2.registerRoleLoadedListener(listener);
+            
+            // modifiy store1
+            store1.addRole(role_test1);
+            store1.store();
+            assertTrue(service1.getRoles().size()==1);
+            
+            // increment lastmodified adding a second manually, the test is too fast
+            xmlFile.setLastModified(xmlFile.lastModified()+1000); 
+            
+            // wait for the listener to unlock when 
+            // service 2 triggers a load event
+            synchronized (listener) {
+                if(listener.notified == 0 ){
+                    listener.wait(); // wait 4 seconds
+                }
             }
-        }; 
-        service2.registerRoleLoadedListener(listener);
-        
-        // modifiy store1
-        store1.addRole(role_test1);
-        store1.store();
-        assertTrue(service1.getRoles().size()==1);
-        
-     // increment lastmodified adding a second manually, the test is too fast
-        xmlFile.setLastModified(xmlFile.lastModified()+1000);  
-        
-        // wait for the listener to unlock when 
-        // service 2 triggers a load event
-        synchronized (listener) {
-            listener.wait();            
+            assertTrue("notification expected",listener.notified > 0 );
+            
+            // here comes the magic !!!
+            assertTrue(service2.getRoles().size()==1);
         }
-        
-        // here comes the magic !!!
-        assertTrue(service2.getRoles().size()==1);
-
+        finally {
+            Files.schedule(10,TimeUnit.SECONDS);
+        }
     }
 }

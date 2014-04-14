@@ -58,7 +58,8 @@ public class Paths {
             return item;
         }
     }
-
+    
+    /** Used to quickly check path extension */
     static String extension(String path) {
         String name = name(path);
         if (name == null) {

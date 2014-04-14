@@ -71,4 +71,11 @@ public class BaseSecurityNamedServiceConfig implements SecurityNamedServiceConfi
     @Override
     public void initBeforeSave() {
     }
+
+    @Override
+    public String toString() {
+        return "BaseSecurityNamedServiceConfig [name=" + name + ", className="
+                + className + ", id=" + id + "]";
+    }
+    
 }

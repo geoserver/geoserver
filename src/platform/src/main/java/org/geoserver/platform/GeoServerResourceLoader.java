@@ -19,6 +19,7 @@ import javax.servlet.ServletContext;
 import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.springframework.beans.BeansException;
@@ -180,7 +181,6 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
     public boolean remove(String path) {
         return resources.remove( path );
     }
-    
     
     /**
      * Performs file lookup.

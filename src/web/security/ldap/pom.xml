@@ -12,13 +12,13 @@
 	<parent>
 		<groupId>org.geoserver.web</groupId>
 		<artifactId>web-sec</artifactId>
-		<version>2.4-SNAPSHOT</version>
+		<version>2.4.6</version>
 	</parent>
 
 	<groupId>org.geoserver.web</groupId>
 	<artifactId>web-sec-ldap</artifactId>
 	<packaging>jar</packaging>
-	<version>2.4-SNAPSHOT</version>
+	<version>2.4.6</version>
 	<name>Security UI LDAP Module</name>
 
   <dependencies>

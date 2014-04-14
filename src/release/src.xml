@@ -26,7 +26,7 @@
     <include>org.geoserver:extension</include>
    </includes>
    <sources>
-    <outputDirectory>geoserver-2.4-SNAPSHOT/${artifactId}/</outputDirectory>
+    <outputDirectory>geoserver-2.4.6/${artifactId}/</outputDirectory>
     <excludes>
       <exclude>target</exclude>
       <exclude>**/target</exclude>
@@ -37,7 +37,7 @@
  <fileSets>
   <fileSet>
    <directory>.</directory>
-   <outputDirectory>geoserver-2.4-SNAPSHOT/</outputDirectory>
+   <outputDirectory>geoserver-2.4.6/</outputDirectory>
    <includes>
     <include>pom.xml</include>
    </includes>
@@ -53,7 +53,7 @@
   </fileSet>
   <fileSet>
    <directory>target</directory>
-   <outputDirectory>geoserver-2.4-SNAPSHOT</outputDirectory>
+   <outputDirectory>geoserver-2.4.6</outputDirectory>
    <includes>
     <include>VERSION.txt</include>
    </includes>

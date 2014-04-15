@@ -150,14 +150,14 @@ This job will rsync all the artifacts located at::
 
      http://ares.boundlessgeo.com/geoserver/release/<RELEASE>
 
-to the SourceForge FRS server. Navigate to `Sourceforge <http://sourceforge.net/projects/geoserver/>`__ and verify that the artifacts have been uploaded properly. Set the necessary flags on the ``.exe``, ``.dmg`` and ``.bin`` artifacts so that they show up as the appropriate default for users downloading on the Windows, OSX, and Linux platforms.
+to the SourceForge FRS server. Navigate to `Sourceforge <http://sourceforge.net/projects/geoserver/>`__ and verify that the artifacts have been uploaded properly. If this is the latest stable release, set the necessary flags on the ``.exe``, ``.dmg`` and ``.bin`` artifacts so that they show up as the appropriate default for users downloading on the Windows, OSX, and Linux platforms.
 
 Create the download page
 ------------------------
 
 Get the JIRA version for this release:
 
-#. Go to `JIRA <http://jira.codehaus.org/display/GEOS/>`__
+#. Go to `JIRA <https://jira.codehaus.org/browse/GEOS/>`__
 #. Select "Change log"
 #. Open the release notes for the version being released
 #. The version will be in the url, e.g. ``http://jira.codehaus.org/secure/ReleaseNote.jspa?projectId=10311&version=18700`` -> 18700
@@ -165,24 +165,28 @@ Get the JIRA version for this release:
 Create the new download page:
 
 #. Go to `GeoServer web site <http://geoserver.org/>`_ and make sure you are logged in.
-#. Select the "New page" link in the menu
+#. Select the "Add Page" link in the menu
 #. Click "select a page template to start from"
 #. Choose the "Download" template
 #. Fill in the version, release date (e.g., May 17th, 2012) and the jira version
 #. Set the page title to the version being released (e.g. "GeoServer 2.2-RC3")
-#. Save and check all the links are working
+#. Save and check all the links are working. The template includes links for all plugins; for a stable or maintenance release, remove links to plugins that are not available for that branch.
 
 Update the download short cuts:
 
-#. If you are instead releasing a beta/RC, edit the `Latest version <http://geoserver.org/display/GEOS/Latest>`_ page and make it include the newly created release page.::
+#. If you are releasing a beta/RC, edit the `Latest version <http://geoserver.org/display/GEOS/Latest>`_ page and include the newly created release page, with a warning note::
 
      {note}{*}Releases on this page are known to be unstable.* If you're looking for a stable release, you may want to be on the [Stable] download page.
      {note}
-     {include:GeoServer 2.4-RC1}
+     {include:GeoServer 2.6-RC1}
 
-#. If you are releasing a stable version, edit the `Stable version <http://geoserver.org/display/GEOS/Stable>`_ page and make it include the newly created release page.::
+#. If you are releasing a stable version, edit the `Stable version <http://geoserver.org/display/GEOS/Stable>`_ page and include the newly created release page::
 
-      {include:GeoServer 2.3.5}
+      {include:GeoServer 2.5.0}
+
+#. If you are releasing a maintenance version, edit the `Maintenance version <http://geoserver.org/display/GEOS/Maintenance>`_ page and include the newly created release page::
+
+      {include:GeoServer 2.4.6}
 
 Post the Documentation
 ----------------------

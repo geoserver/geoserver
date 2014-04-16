@@ -20,16 +20,19 @@ import java.util.zip.ZipFile;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FileUtils;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.rest.RestletException;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Status;
 import org.vfny.geoserver.global.ConfigurationException;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
-
 import com.noelios.restlet.ext.servlet.ServletCall;
 import com.noelios.restlet.http.HttpRequest;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
@@ -79,12 +82,17 @@ public class RESTUtils {
     
     /**
      * This function gets the stream of the request to copy it into a file.
+     * 
+     * This method will create a "data" folder in GEOSERVER_DATA_DIRECTORY if needed.
+     * 
      * @deprecated use {@link #handleBinUpload(String, File, Request)}.
      */
     public static File handleBinUpload(String datasetName, String extension,
             Request request) throws IOException, ConfigurationException {
-    
-        final File dir = GeoserverDataDirectory.findCreateConfigDir("data");
+        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        Resource data = loader.get("data");
+        
+        final File dir = data.dir(); // find or create
         return handleBinUpload( datasetName + "." + extension, dir, request );
     }
 
@@ -95,7 +103,7 @@ public class RESTUtils {
      * before creating the new file.
      * 
      * @param fileName The name of the file to write out.
-     * @param directory The directory to write the file to.
+     * @param directory The directory to write the file to
      * @param request The request.
      * 
      * @return The file object representing the newly written file.
@@ -171,12 +179,11 @@ public class RESTUtils {
      * @deprecated use {@link #handleURLUpload(String, File, Request)}.
      */
     public static File handleURLUpload(String datasetName, String extension, Request request) throws IOException, ConfigurationException {
-        ////
-        //
         // Get the dir where to write and create a file there
-        //
-        ////
-        File dir = GeoserverDataDirectory.findCreateConfigDir("data");
+        
+        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        Resource data = loader.get("data");
+        final File dir = data.dir(); // find or create
         return handleURLUpload(datasetName + "." + extension, dir, request);
     }
     
@@ -296,8 +303,10 @@ public class RESTUtils {
      *  
      */
     public static File unpackZippedDataset(String storeName, File zipFile) throws IOException, ConfigurationException {
-        
-        File outputDirectory = new File(GeoserverDataDirectory.findCreateConfigDir("data"), storeName);
+        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        String outputPath = Paths.path("data",Paths.convert(storeName));
+        Resource directory = loader.get(outputPath);
+        File outputDirectory = directory.dir(); // find or create
         unzipFile(zipFile, outputDirectory);
         return outputDirectory;
     }

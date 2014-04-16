@@ -9,6 +9,8 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.IOException;
 
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.data.DataUtilities;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -29,7 +31,8 @@ public class GeoServerTemplateLoaderTest extends GeoServerSystemTestSupport {
         File featureType2 = new File(featureTypes, "ft2");
         featureType2.mkdir();
 
-        GeoServerTemplateLoader templateLoader = new GeoServerTemplateLoader(getClass());
+        GeoServerResourceLoader resources = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        GeoServerTemplateLoader templateLoader = new GeoServerTemplateLoader(getClass(),resources);
 
         //test a path relative to templates
         File expected = new File(templates, "1.ftl");
@@ -58,7 +61,8 @@ public class GeoServerTemplateLoaderTest extends GeoServerSystemTestSupport {
     
     public void testRemoteType() throws Exception {
         SimpleFeatureType ft = DataUtilities.createType("remoteType", "the_geom:MultiPolygon,FID:String,ADDRESS:String");
-        GeoServerTemplateLoader loader = new GeoServerTemplateLoader(getClass());
+        GeoServerResourceLoader resources = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        GeoServerTemplateLoader loader = new GeoServerTemplateLoader(getClass(),resources);
         loader.setFeatureType(ft);
         loader.findTemplateSource("header.ftl");
     }

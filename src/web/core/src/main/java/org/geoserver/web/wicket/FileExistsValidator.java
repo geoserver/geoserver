@@ -15,8 +15,10 @@ import org.apache.commons.io.IOUtils;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.validator.AbstractValidator;
 import org.apache.wicket.validation.validator.UrlValidator;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Files;
 import org.geotools.util.Converters;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 /**
  * Checks the specified file exists on the file system, including checks in the data directory
@@ -25,6 +27,9 @@ import org.vfny.geoserver.global.GeoserverDataDirectory;
 public class FileExistsValidator extends AbstractValidator {
     
     private UrlValidator delegate;
+    
+    /** Optional base directory for use during testing */
+    File baseDirectory = null;
     
     /**
      * Checks the file exists on the local file system
@@ -78,10 +83,20 @@ public class FileExistsValidator extends AbstractValidator {
             // may be a windows path, move on               
         }
         
-        // local to data dir?
-        File relFile = GeoserverDataDirectory.findDataFile(uriSpec);
-        if(relFile == null || !relFile.exists()) {
-            error(validatable, "FileExistsValidator.fileNotFoundError", 
+        File relFile = null;
+
+        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        if (baseDirectory != null ){
+            // local to provided baseDirectory
+            relFile = Files.url(baseDirectory, uriSpec);
+        }
+        else if( loader != null ){
+            // local to data directory?
+            relFile = loader.url(uriSpec);
+        }
+
+        if (relFile == null || !relFile.exists()) {
+            error(validatable, "FileExistsValidator.fileNotFoundError",
                     Collections.singletonMap("file", uriSpec));
         }
     }

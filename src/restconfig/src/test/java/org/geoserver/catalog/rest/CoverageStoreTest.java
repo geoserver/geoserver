@@ -26,9 +26,11 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
 import org.junit.Before;
 import org.junit.Test;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -317,8 +319,9 @@ public class CoverageStoreTest extends CatalogRESTTestSupport {
         Document dom = getAsDOM( "/rest/workspaces/wcs/coveragestores/mosaicfordelete.xml");
         assertXpathEvaluatesTo("true", "/coverageStore/enabled", dom );
 
-        final File dataDir = GeoserverDataDirectory.getGeoserverDataDirectory();
-        final File storeDir = new File(dataDir, "data/wcs/mosaicfordelete");
+        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        
+        final File storeDir = loader.url("data/wcs/mosaicfordelete");
         File[] content = storeDir.listFiles();
         assertEquals(11, content.length);
 

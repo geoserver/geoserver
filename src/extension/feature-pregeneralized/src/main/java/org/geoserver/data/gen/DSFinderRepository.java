@@ -14,30 +14,28 @@ import org.apache.log4j.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.data.DataStore;
 import org.geotools.data.Repository;
 import org.opengis.feature.type.Name;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 /**
  * Implementation of {@link Repository}
  * 
- * The class makes a lookup in the goeserver catalog.
+ * The class makes a lookup in the GoeServer catalog.
  * 
  * If nothing is found, the class interprets the data source name as a file name or an URL for a
  * property file containing the ds creation parameters
  * 
  * For shape files ending with .shp or SHP, the shape file could be passed as name
  * 
- * 
  * @author Christian Mueller
- * 
  */
 public class DSFinderRepository extends org.geotools.data.gen.DSFinderRepository {
 
     protected URL getURLForLocation(String location) throws IOException {
-
-        File f = GeoserverDataDirectory.findDataFile(location);
+        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        File f = loader.url(location);        
         URL url = null;
         if (f.exists()) {
             url = f.toURI().toURL();

@@ -22,9 +22,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.geoserver.filters.GeoServerFilter;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.PropertyFileWatcher;
 import org.geotools.util.logging.Logging;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 /**
  * A class that allows the configuration of an ip black list, rejecting requests from ip addresses configured in the controlflow.properties file
@@ -60,9 +62,9 @@ public class IpBlacklistFilter implements GeoServerFilter {
      */
     public IpBlacklistFilter() {
         try {
-            File file = new File(GeoserverDataDirectory.getGeoserverDataDirectory(),
-            		PROPERTYFILENAME);
-            configFile = new PropertyFileWatcher(file);
+            GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+            Resource resource = loader.get(PROPERTYFILENAME);
+            configFile = new PropertyFileWatcher(resource);
             blackListedAddresses = reloadConfiguration(BLPROPERTY);
             whiteListedAddresses = reloadConfiguration(WLPROPERTY);
         } catch (Exception e) {

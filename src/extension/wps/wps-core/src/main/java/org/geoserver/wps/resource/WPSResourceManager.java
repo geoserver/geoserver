@@ -15,16 +15,18 @@ import java.util.logging.Logger;
 import org.geoserver.ows.DispatcherCallback;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.wps.WPSException;
 import org.geotools.util.logging.Logging;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextStoppedEvent;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 import org.vfny.geoserver.wcs.WcsException;
 
 /**
@@ -155,13 +157,14 @@ public class WPSResourceManager implements DispatcherCallback,
     File getWpsOutputStorage() {
         File wpsStore = null;
         try {
-            File temp = GeoserverDataDirectory.findCreateConfigDir("temp");
-            wpsStore = new File(temp, "wps");
-            if(!wpsStore.exists()) {
-                mkdir(wpsStore);
-            }
+            GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+            Resource wps = loader.get("temp/wps");
+            wpsStore = wps.dir(); // find or create
         } catch(Exception e) {
-            throw new WcsException("Could not create the temporary storage directory for WPS");
+            throw new ServiceException("Could not create the temporary storage directory for WPS");
+        }
+        if(wpsStore == null || !wpsStore.exists()) {
+            throw new ServiceException("Could not create the temporary storage directory for WPS");
         }
         return wpsStore;
     }

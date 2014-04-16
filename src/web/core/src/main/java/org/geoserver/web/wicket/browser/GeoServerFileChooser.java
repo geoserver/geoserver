@@ -21,8 +21,8 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 @SuppressWarnings("serial")
 public class GeoServerFileChooser extends Panel {
@@ -79,8 +79,10 @@ public class GeoServerFileChooser extends Panel {
         Collections.sort(roots);
         
         // TODO: find a better way to deal with the data dir
-        File dataDirectory = GeoserverDataDirectory.getGeoserverDataDirectory();
-        roots.add(0, dataDirectory);
+        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        File dataDirectory = loader.getBaseDirectory();
+        
+        roots.add(0, dataDirectory );
         
         // add the home directory as well if it was possible to determine it at all
         if(!hideFileSystem && USER_HOME != null) {
@@ -92,7 +94,7 @@ public class GeoServerFileChooser extends Panel {
         
         // first check if the file is a relative reference into the data dir
         if(selection != null) {
-            File relativeToDataDir = GeoserverDataDirectory.findDataFile(selection.getPath()); 
+            File relativeToDataDir = loader.url(selection.getPath());
             if(relativeToDataDir != null) {
                 selection = relativeToDataDir;
             }
@@ -259,8 +261,12 @@ public class GeoServerFileChooser extends Panel {
 			
 			if(f == USER_HOME) {
 			    return new ParamResourceModel("userHome", GeoServerFileChooser.this).getString();
-			} else if(f.equals(GeoserverDataDirectory.getGeoserverDataDirectory())) {
-			    return new ParamResourceModel("dataDirectory", GeoServerFileChooser.this).getString();
+			} else {
+			    GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+			    
+			    if(f.equals(loader.getBaseDirectory())) {
+			        return new ParamResourceModel("dataDirectory", GeoServerFileChooser.this).getString();
+			    }
 			}
 			
 			try {

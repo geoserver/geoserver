@@ -15,8 +15,6 @@ import org.geoserver.web.StringValidatable;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
-
 import com.google.common.io.Files;
 
 public class FileExistsValidatorTest {
@@ -35,13 +33,8 @@ public class FileExistsValidatorTest {
 
         Files.touch(new File(wcs, "BlueMarble.tiff"));
 
-        GeoserverDataDirectory.setResourceLoader(new GeoServerResourceLoader(root));
         validator = new FileExistsValidator();
-    }
-
-    @AfterClass
-    public static void destroy() {
-        GeoserverDataDirectory.setResourceLoader(null);
+        validator.baseDirectory = root;
     }
 
     @Test

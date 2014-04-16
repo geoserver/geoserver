@@ -42,6 +42,10 @@ public class FileWatcher<T> {
         return resource.file();
     }
     
+    public Resource getResource() {
+        return resource;
+    }
+    
     /**
      * Reads the file updating the last check timestamp.
      * <p>

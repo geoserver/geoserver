@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -18,12 +19,14 @@ import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geotools.util.logging.Logging;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
-
 import com.google.common.collect.Maps;
 
 /**
@@ -58,19 +61,21 @@ public class GeorectifyConfiguration implements ApplicationListener {
 
     private static final String GDAL_CONFIG_FILE = "gdalops.properties";
 
-    File configFile;
+    Resource configFile;
 
     Timer timer;
 
     public GeorectifyConfiguration() {
-        configFile = new File(GeoserverDataDirectory.getGeoserverDataDirectory(), GDAL_CONFIG_FILE);
+        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        configFile = loader.get(GDAL_CONFIG_FILE);
+        //configFile = new File(GeoserverDataDirectory.getGeoserverDataDirectory(), GDAL_CONFIG_FILE);
         timer = new Timer(true);
         timer.schedule(new ConfigurationPoller(), 1000);
     }
 
     private void loadConfiguration() {
         try {
-            if (configFile.exists() && configFile.canRead()) {
+            if (configFile.getType() == Type.RESOURCE) {
                 loadConfig();
             } else {
                 tempFolder = initFolder(GRDefaults.TEMP_DIR);
@@ -91,7 +96,7 @@ public class GeorectifyConfiguration implements ApplicationListener {
         }
 
         public void run() {
-            long newLastModified = configFile.exists() ? configFile.lastModified() : -1;
+            long newLastModified = configFile.lastmodified(); 
             if (lastModified == null || newLastModified != lastModified) {
                 lastModified = newLastModified;
                 loadConfiguration();
@@ -137,13 +142,13 @@ public class GeorectifyConfiguration implements ApplicationListener {
      * @throws IOException
      */
     private void loadConfig() throws IOException {
-        final boolean hasPropertiesFile = configFile != null && configFile.exists() 
-            && configFile.canRead() && configFile.isFile();
+        final boolean hasPropertiesFile = configFile != null && configFile.getType() == Type.RESOURCE;
+        
         if (hasPropertiesFile) {
             Properties props = new Properties();
-            FileInputStream fis = null;
+            InputStream fis = null;
             try {
-                fis = new FileInputStream(configFile);
+                fis = configFile.in();
                 props.load(fis);
                 Iterator<Object> keys = props.keySet().iterator();
                 envVariables = Maps.newHashMap();
@@ -218,12 +223,12 @@ public class GeorectifyConfiguration implements ApplicationListener {
 
             } catch (FileNotFoundException e) {
                 if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.log(Level.WARNING, "Unable to parse the config file: " + configFile.getAbsolutePath(), e);
+                    LOGGER.log(Level.WARNING, "Unable to parse the config file: " + configFile.path(), e);
                 }
 
             } catch (IOException e) {
                 if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.log(Level.WARNING, "Unable to parse the config file: " + configFile.getAbsolutePath(), e);
+                    LOGGER.log(Level.WARNING, "Unable to parse the config file: " + configFile.path(), e);
                 }
             } finally {
                 if (fis != null) {

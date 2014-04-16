@@ -4,9 +4,9 @@
  */
 package org.geoserver.config;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.*;
 
 import java.net.URL;
 
@@ -16,11 +16,13 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.data.DataUtilities;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
+import org.springframework.context.ApplicationContext;
 
 public class DefaultGeoServerLoaderTest {
     DefaultGeoServerLoader loader;
@@ -31,7 +33,8 @@ public class DefaultGeoServerLoaderTest {
     public void setUp() {
         URL url = DefaultGeoServerLoaderTest.class.getResource("/data_dir/nested_layer_groups");
         GeoServerResourceLoader resourceLoader = new GeoServerResourceLoader(DataUtilities.urlToFile(url));
-        GeoserverDataDirectory.setResourceLoader(resourceLoader);
+        GeoServerExtensions.init( "resourceLoader", resourceLoader);
+        
         loader = new DefaultGeoServerLoader(resourceLoader);
         catalog = new CatalogImpl();
         XStreamPersisterFactory xpf = new XStreamPersisterFactory();
@@ -40,6 +43,8 @@ public class DefaultGeoServerLoaderTest {
     
     @Test
     public void testLoadNestedLayerGroups() throws Exception {
+        GeoServerResourceLoader resources = GeoServerExtensions.bean(GeoServerResourceLoader.class );
+        assertSame( catalog.getResourceLoader(), resources );
         loader.readCatalog(catalog, xp);
         assertNotNull(catalog.getLayerGroupByName("topp", "simplegroup"));
         LayerGroupInfo nestedLayerGroup = catalog.getLayerGroupByName("topp", "nestedgroup");

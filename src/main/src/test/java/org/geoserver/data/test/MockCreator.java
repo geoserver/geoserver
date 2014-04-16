@@ -35,6 +35,7 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.impl.CatalogFactoryImpl;
 import org.geoserver.data.test.MockCatalogBuilder.Callback;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.security.GeoServerAuthenticationProvider;
 import org.geoserver.security.GeoServerRoleStore;
@@ -66,8 +67,12 @@ import org.geoserver.security.validation.PasswordValidatorImpl;
 import org.geoserver.security.xml.XMLRoleService;
 import org.geoserver.security.xml.XMLUserGroupService;
 import org.springframework.context.ApplicationContext;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
+/**
+ * Helper class used to creat mock objects during GeoServer testing.
+ * <p>
+ * Utility methods are provided to create many common configuration and resource access objects.
+ */
 public class MockCreator implements Callback {
 
     public Catalog createCatalog(MockTestData testData) throws Exception {
@@ -75,8 +80,8 @@ public class MockCreator implements Callback {
         File data = testData.getDataDirectoryRoot();
     
         GeoServerResourceLoader loader = new GeoServerResourceLoader(data);
-        GeoserverDataDirectory.setResourceLoader(loader);
-    
+        GeoServerExtensions.init("resourceLoader", loader ); // treat as singleton
+        
         final Catalog catalog = createMock(Catalog.class);
         expect(catalog.getFactory()).andReturn(new CatalogFactoryImpl(catalog)).anyTimes();
         expect(catalog.getResourceLoader()).andReturn(loader).anyTimes();

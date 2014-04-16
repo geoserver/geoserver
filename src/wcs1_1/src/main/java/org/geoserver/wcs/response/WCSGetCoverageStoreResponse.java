@@ -23,14 +23,15 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Response;
 import org.geoserver.ows.URLMangler.URLType;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.responses.CoverageResponseDelegate;
 import org.geoserver.wcs.responses.CoverageResponseDelegateFinder;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.opengis.coverage.grid.GridCoverage;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 import org.vfny.geoserver.wcs.WcsException;
 
 /**
@@ -85,10 +86,13 @@ public class WCSGetCoverageStoreResponse extends Response {
         // write the coverage to temporary storage in the data dir
         File wcsStore = null;
         try {
-            File temp = GeoserverDataDirectory.findCreateConfigDir("temp");
-            wcsStore = new File(temp, "wcs");
-            if(!wcsStore.exists())
-                wcsStore.mkdir();
+            GeoServerResourceLoader loader = geoServer.getCatalog().getResourceLoader();
+            Resource wcs = loader.get("temp/wcs");
+            wcsStore = wcs.dir();
+//            File temp = GeoserverDataDirectory.findCreateConfigDir("temp");
+//            wcsStore = new File(temp, "wcs");
+//            if(!wcsStore.exists())
+//                wcsStore.mkdir();
         } catch(Exception e) {
             throw new WcsException("Could not create the temporary storage directory for WCS");
         }

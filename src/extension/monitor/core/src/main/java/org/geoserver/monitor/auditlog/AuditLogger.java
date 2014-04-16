@@ -27,13 +27,13 @@ import org.geoserver.monitor.MemoryMonitorDAO;
 import org.geoserver.monitor.MonitorConfig;
 import org.geoserver.monitor.RequestData;
 import org.geoserver.monitor.RequestDataListener;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
-
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 
@@ -73,8 +73,8 @@ public class AuditLogger implements RequestDataListener, ApplicationListener<App
 
     public AuditLogger(MonitorConfig config, GeoServerResourceLoader loader) throws IOException {
         this.config = config;
-        defaultPath = new File(GeoserverDataDirectory.getGeoserverDataDirectory(), "monitoring")
-                .getAbsolutePath();
+        Resource monitoring = loader.get("monitoring");        
+        defaultPath = monitoring.dir().getAbsolutePath();
         templateConfig = new Configuration();
         templateConfig.setTemplateLoader(new AuditTemplateLoader(loader));
     }
@@ -94,8 +94,8 @@ public class AuditLogger implements RequestDataListener, ApplicationListener<App
             // check the path
             File loggingDir = new File(path);
             if (!loggingDir.isAbsolute()) {
-                loggingDir = new File(GeoserverDataDirectory.getGeoserverDataDirectory(),
-                        loggingDir.getPath());
+                GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+                loggingDir = new File(loader.getBaseDirectory(), loggingDir.getPath());
             }
             if (!loggingDir.exists()) {
                 if (!loggingDir.mkdirs()) {

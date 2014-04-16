@@ -84,7 +84,6 @@ import org.geotools.xml.XSD;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -304,9 +303,6 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
                 }
                 
                 if(getTestData() != null) {
-                    // this cleans up the data directory static loader, if we don't the next test
-                    // will keep on running on the current data dir
-                    GeoserverDataDirectory.destroy();
                     getTestData().tearDown();
                 }
             } finally {

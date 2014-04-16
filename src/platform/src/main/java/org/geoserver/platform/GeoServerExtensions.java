@@ -41,6 +41,18 @@ import org.springframework.web.context.WebApplicationContext;
  * It must be a singleton, and must not be loaded lazily. Furthermore, this
  * bean must be loaded before any beans that use it.
  * </p>
+ * <h2>Testing</h2>
+ * <p>
+ * As a concession to mocking test cases, a few singletons can be registered by hand:
+ * <pre><code>
+ * &#64;Before
+ * public void before(){
+ *   GeoServerResourceLoader loader = new GeoServerResourceLoader(baseDirectory);
+ *   GeoServerExtensions.mock( "resourceLoader", loader );
+ * }
+ * </code><pre>
+ * Warnings provided by {@link #checkContext(ApplicationContext, String)} are supressed when using {@link #init(Object)}.
+ * 
  * @author Justin Deoliveira, The Open Planning Project
  * @author Andrea Aime, The Open Planning Project
  *
@@ -67,6 +79,11 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
     static SoftValueHashMap<Class, List<Object>> spiCache = new SoftValueHashMap<Class, List<Object>>(40);
     
     /**
+     * Flag to identify use of spring context via {@link #setApplicationContext(ApplicationContext)} an
+     * enable additional consistency checks for missing extensions.
+     */
+    static boolean isSpringContext = true;
+    /**
      * A static application context
      */
     static ApplicationContext context;
@@ -79,12 +96,14 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
      * which take a context are available.
      * </p>
      * <p>
-     * This is the context that is used for methods which dont supply their
+     * This is the context that is used for methods which don't supply their
      * own context.
      * </p>
+     * @param context ApplicationContext used to lookup extensions
      */
     public void setApplicationContext(ApplicationContext context)
         throws BeansException {
+        isSpringContext = true;
         GeoServerExtensions.context = context;
         extensionsCache.clear();
         singletonBeanCache.clear();
@@ -98,6 +117,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
      *
      * @return A collection of the extensions, or an empty collection.
      */
+    @SuppressWarnings("unchecked")
     public static final <T> List<T> extensions(Class<T> extensionPoint, ApplicationContext context) {
         String[] names;
         if(GeoServerExtensions.context == context){
@@ -106,7 +126,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
             names = null;
         }
         if(names == null) {
-            checkContext(context);
+            checkContext(context,extensionPoint.getSimpleName());
             if ( context != null ) {
                 try {
                     names = context.getBeanNamesForType(extensionPoint);
@@ -140,18 +160,18 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         }
         
         // look up all the beans
-        List result = new ArrayList(names.length);
+        List<T> result = new ArrayList<T>(names.length);
         for(String name : names) {
             Object bean = getBean(context, name);
             if(!excludeBean(name, bean, filters))
-                result.add(bean);
+                result.add( (T) bean);
         }
         
         // load from secondary extension providers
         if (!ExtensionProvider.class.isAssignableFrom(extensionPoint) && 
             !ExtensionFilter.class.isAssignableFrom(extensionPoint)) {
             
-            List secondary = new ArrayList();
+            List<Object> secondary = new ArrayList<Object>();
             for (ExtensionProvider xp : extensions(ExtensionProvider.class, context)) {
                 try {
                     if (extensionPoint.isAssignableFrom(xp.getExtensionPoint())) {
@@ -181,19 +201,16 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         filter(spiExtensions, filters, result);
         
         //sort the results based on ExtensionPriority
-        Collections.sort( result, new Comparator() {
-
+        Collections.sort( result, new Comparator<Object>() {
             public int compare(Object o1, Object o2) {
                 int p1 = ExtensionPriority.LOWEST;
                 if ( o1 instanceof ExtensionPriority ) {
                     p1 = ((ExtensionPriority)o1).getPriority();
                 }
-                
                 int p2 = ExtensionPriority.LOWEST;
                 if ( o2 instanceof ExtensionPriority ) {
                     p2 = ((ExtensionPriority)o2).getPriority();
                 }
-                
                 return p1 - p2;
             }
         });
@@ -255,10 +272,9 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
     
     /**
      * Returns a specific bean given its name with a specified application context.
-     *
      */
     public static final Object bean(String name, ApplicationContext context) {
-        checkContext(context);
+        checkContext(context, name);
         return context != null ? getBean(context, name) : null;
     }
 
@@ -275,7 +291,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
      * type in the context. 
      */
     public static final <T> T bean(Class<T> type) throws IllegalArgumentException {
-        checkContext(context);
+        checkContext(context,type.getSimpleName());
         return context != null ? bean( type, context ) : null;
     }
     
@@ -315,9 +331,9 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
     /**
      * Checks the context, if null will issue a warning.
      */
-    static void checkContext(ApplicationContext context) {
-        if ( context == null ) {
-            LOGGER.warning( "Extension lookup occured, but ApplicationContext is unset.");
+    static void checkContext(ApplicationContext context,String bean) {
+        if ( context == null && isSpringContext) {
+            LOGGER.warning( "Extension lookup '"+bean+"', but ApplicationContext is unset.");
         }
     }
     
@@ -447,5 +463,46 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         }
         return null; // unavaialble
     }
-    
+    /**
+     * Directly register singleton for use with {@link #bean(String)} (and {@link #bean(Class)}).
+     * 
+     * @param name Singleton name
+     * @param bean Singleton
+     */
+    public static void init( String name, Object bean ){
+        if( context != null ){
+            if( context.containsBean(name) ){
+                Object conflict = context.getBean(name);
+                if( bean != conflict ){
+                    throw new IllegalStateException("ApplicationContext "+name+" already contains "+conflict);
+                }
+            }
+        }
+        else {
+            isSpringContext = false;
+        }
+        if( name == null || bean == null ){
+            return;
+        }
+        singletonBeanCache.put( name,  bean );
+        Class<?> type = bean.getClass();
+        extensionsCache.put( type, new String[]{ name } );
+        
+
+    }
+    /**
+     * Sets the web application context to be used for looking up extensions.
+     * <p>
+     * This is the context that is used for methods which don't supply their
+     * own context.
+     * </p>
+     * 
+     * @param context
+     */
+    public static void init(ApplicationContext context){
+        isSpringContext = false;
+        GeoServerExtensions.context = context;
+        extensionsCache.clear();
+        singletonBeanCache.clear();
+    }
 }

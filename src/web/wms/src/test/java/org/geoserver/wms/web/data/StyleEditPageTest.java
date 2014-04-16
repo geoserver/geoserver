@@ -5,11 +5,10 @@
 package org.geoserver.wms.web.data;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -19,10 +18,13 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.junit.Before;
 import org.junit.Test;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 import org.w3c.dom.Document;
 
 public class StyleEditPageTest extends GeoServerWicketTestSupport {
@@ -55,10 +57,15 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         tester.assertComponent("form:SLD:editorContainer:editor", TextArea.class);
         
         tester.assertModelValue("form:name", "Buildings");
-
-        File styleFile = GeoserverDataDirectory.findStyleFile( buildingsStyle.getFilename() );
+        
+        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        assertNotNull( loader );
+        
+        String path = Paths.path("styles", Paths.convert(buildingsStyle.getFilename()));
+        Resource styleFile = loader.get(path);
+        
         DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        Document d1 = db.parse( new FileInputStream(styleFile) );
+        Document d1 = db.parse( styleFile.in() );
 
         //GEOS-3257, actually drag into xml and compare with xmlunit to avoid 
         // line ending problems

@@ -16,6 +16,7 @@ import javax.xml.namespace.QName;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.SystemTest;
 import org.junit.Test;
@@ -44,21 +45,24 @@ public class GeoserverDataDirectoryTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testFindDataFile() throws IOException {
-        final File file = GeoserverDataDirectory.findDataFile("file:" + RAIN_DATA_PATH);
+        GeoServerResourceLoader loader = getResourceLoader();
+        final File file = loader.url("file:" + RAIN_DATA_PATH);
         assertNotNull(file);
     }
 
     @Test
     public void testFindDataFileForAbsolutePath() throws IOException {
-        final File dataDir = GeoserverDataDirectory.getGeoserverDataDirectory();
+        GeoServerResourceLoader loader = getResourceLoader();       
+        final File dataDir = loader.getBaseDirectory();
         final String absolutePath = dataDir.getCanonicalPath() + SEPARATOR_CHAR + RAIN_DATA_PATH;
-        final File file = GeoserverDataDirectory.findDataFile(absolutePath);
+        final File file = loader.url(absolutePath);
         assertNotNull(file);
     }
 
     @Test
     public void testFindDataFileForCustomUrl() throws IOException {
-        final File file = GeoserverDataDirectory.findDataFile("sde://user:password@server:port");
+        GeoServerResourceLoader loader = getResourceLoader();
+        final File file = loader.url("sde://user:password@server:port");
         assertNull(file); // Before GEOS-5931 it would have been returned a file again
     }
 }

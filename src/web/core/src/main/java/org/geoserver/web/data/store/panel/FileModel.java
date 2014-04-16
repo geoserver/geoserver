@@ -10,8 +10,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.wicket.model.IModel;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Files;
 import org.geotools.util.logging.Logging;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 /**
  * Makes sure the file path for files do start with file:// otherwise
@@ -27,7 +29,7 @@ public class FileModel implements IModel {
     File rootDir;
     
     public FileModel(IModel delegate) {
-        this(delegate, GeoserverDataDirectory.getGeoserverDataDirectory());
+        this(delegate, GeoServerExtensions.bean(GeoServerResourceLoader.class).getBaseDirectory());
     }
 
     public FileModel(IModel delegate, File rootDir) {
@@ -73,13 +75,16 @@ public class FileModel implements IModel {
                     curr = curr.getParentFile();
                 } 
                 location = "file:" + path;
-            } else if(!GeoserverDataDirectory.findDataFile(location).equals(file)) {
-                // relative to the data directory, does not need fixing
-            } else {
-                location = "file://" + file.getAbsolutePath();
+            }
+            else {
+                File dataFile = Files.url( rootDir, location );
+                if( dataFile != null && !dataFile.equals(file)) {
+                    // relative to the data directory, does not need fixing
+                } else {
+                    location = "file://" + file.getAbsolutePath();
+                }
             }
         }
-        
         delegate.setObject(location);
     }
 

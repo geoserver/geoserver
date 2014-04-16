@@ -45,7 +45,6 @@ import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.springframework.web.context.support.GenericWebApplicationContext;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -84,7 +83,6 @@ public class HTMLImageMapTest {
         GeoServerResourceLoader loader = new GeoServerResourceLoader(testdata);
         GenericWebApplicationContext context = new GenericWebApplicationContext();
         context.getBeanFactory().registerSingleton("resourceLoader", loader);
-        GeoserverDataDirectory.init(context);
 
         // initialized WGS84 CRS (used by many tests)
         WGS84 = CRS.decode("EPSG:4326");

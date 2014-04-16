@@ -24,7 +24,6 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.PropertyFileWatcher;
 import org.geotools.util.logging.Logging;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 /**
  * Basic property file based {@link ControlFlowConfigurator} implementation

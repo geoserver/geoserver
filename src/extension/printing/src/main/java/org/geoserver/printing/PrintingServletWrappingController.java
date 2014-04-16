@@ -12,8 +12,12 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 import org.springframework.web.servlet.mvc.ServletWrappingController;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 import org.geoserver.data.util.IOUtils;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 
 /**
  * Wrapper for Spring's ServletWrappingController to allow use of GeoServer's config dir.
@@ -27,30 +31,31 @@ ServletWrappingController {
     private Logger LOG = org.geotools.util.logging.Logging.getLogger("org.geoserver.printing");
 
     public void setInitParameters(Properties initParameters) {
-        // find the config parameter and update it so it points to
-        // $GEOSERVER_DATA_DIR/printing/$CONFIG 
-        String configProp = initParameters.getProperty("config");		
+        // find the config parameter and update it so it points to $GEOSERVER_DATA_DIR/printing/$CONFIG
+        String configProp = initParameters.getProperty("config");
 
         try {
-            File dir = GeoserverDataDirectory.findCreateConfigDir("printing");
-            File qualifiedConfig = new File(dir, configProp);
-            if (!qualifiedConfig.exists()) {
+            GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+            String configPath = Paths.path("printing", Paths.convert(configProp));
+            Resource config = loader.get(configPath);
+
+            if (config.getType() == Type.UNDEFINED) {
                 InputStream conf = getClass().getResourceAsStream("default-config.yaml");
-                IOUtils.copy(conf, qualifiedConfig);
+                IOUtils.copy(conf, config.file());
             }
+            File qualifiedConfig = config.file();
             if (!qualifiedConfig.canRead()) {
                 LOG.warning("Printing module missing its configuration.  Any actions it takes will fail.");
                 return;
             }
-            initParameters.setProperty("config", qualifiedConfig.getCanonicalPath());			
-        } catch(org.vfny.geoserver.global.ConfigurationException e){
-            LOG.warning("Explosion while attempting to access/create config directory for MapFish " +
-                    "printing module.  Module will fail when run. Config exception is: " + e);
-        } catch(java.io.IOException e){
-            LOG.warning("Explosion while calculating canonical path for MapFish printing servlet. " +
-                    "Module will fail when run.  IO Exception is: " + e);
+            initParameters.setProperty("config", qualifiedConfig.getCanonicalPath());
+        } catch (java.io.IOException e) {
+            LOG.warning("Unable to calcule canonical path for MapFish printing servlet. "
+                    + "Module will fail when run.  IO Exception is: " + e);
+        } catch (Exception e) {
+            LOG.warning("Unable to access/create config directory for MapFish printing module."
+                    + "Module will fail when run. Config exception is: " + e);
         }
-
         super.setInitParameters(initParameters);
     }
 }

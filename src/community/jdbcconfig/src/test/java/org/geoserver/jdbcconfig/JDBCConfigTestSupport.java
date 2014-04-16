@@ -29,7 +29,6 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.web.context.WebApplicationContext;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 @SuppressWarnings("unused")
 public class JDBCConfigTestSupport {
@@ -74,7 +73,6 @@ public class JDBCConfigTestSupport {
         ConfigDatabase.LOGGER.setLevel(Level.FINER);
 
         resourceLoader = new GeoServerResourceLoader(createTempDir());
-        GeoserverDataDirectory.loader = resourceLoader;
 
         // just to avoid hundreds of warnings in the logs about extension lookups with no app
         // context set

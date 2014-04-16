@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -50,6 +51,7 @@ import org.geoserver.data.util.CoverageStoreUtils;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.feature.retype.RetypingFeatureSource;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
@@ -100,7 +102,6 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.springframework.context.ApplicationContext;
 import org.vfny.geoserver.global.GeoServerFeatureLocking;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 import org.vfny.geoserver.util.DataStoreUtils;
 
 /**
@@ -464,7 +465,8 @@ public class ResourcePool {
         }
     
         if ( factory == null && info.getConnectionParameters() != null ) {
-            factory = DataStoreUtils.aquireFactory( getParams( info.getConnectionParameters() , GeoserverDataDirectory.getGeoserverDataDirectory().getCanonicalPath()));    
+            Map<String, Serializable> params = getParams( info.getConnectionParameters(), catalog.getResourceLoader() );
+            factory = DataStoreUtils.aquireFactory( params);    
         }
    
         return factory;
@@ -495,7 +497,7 @@ public class ResourcePool {
                         //call this methdo to execute the hack which recognizes 
                         // urls which are relative to the data directory
                         // TODO: find a better way to do this
-                        connectionParameters = DataStoreUtils.getParams(connectionParameters,null);
+                        connectionParameters = ResourcePool.getParams(connectionParameters, catalog.getResourceLoader() );
                         
                         // obtain the factory
                         DataAccessFactory factory = null;
@@ -590,23 +592,29 @@ public class ResourcePool {
     }
         
     /**
-     * Get Connect params.
+     * Process conneciton parameters into a synchronized map.
      *
      * <p>
      * This is used to smooth any relative path kind of issues for any file
      * URLS or directory. This code should be expanded to deal with any other context
-     * sensitve isses dataStores tend to have.
+     * sensitve isses data stores tend to have.
      * </p>
-     *
-     * @return DOCUMENT ME!
-     *
+     * <ul>
+     * <li>key ends in URL, and value is a string</li>
+     * <li>value is a URL</li>
+     * <li>key is directory, and value is a string</li>
+     * </ul>
+     * 
+     * @return Processed parameters with relative file URLs resolved
+     * @param m
+     * @param baseDir Base directory used to resolve relative file URLs
      * @task REVISIT: cache these?
      */
-    public static Map getParams(Map m, String baseDir) {
-        Map params = Collections.synchronizedMap(new HashMap(m));
-
-        for (Iterator i = params.entrySet().iterator(); i.hasNext();) {
-            Map.Entry entry = (Map.Entry) i.next();
+    public static <K,V> Map<K,V> getParams(Map<K,V> m, GeoServerResourceLoader loader) {
+        @SuppressWarnings("unchecked")
+        Map<K,V> params = Collections.synchronizedMap(new HashMap<K,V>(m));
+        
+        for (Entry<K,V> entry : params.entrySet()) {
             String key = (String) entry.getKey();
             Object value = entry.getValue();
 
@@ -617,23 +625,24 @@ public class ResourcePool {
                 String path = (String) value;
 
                 if (path.startsWith("file:")) {
-                    File fixedPath = GeoserverDataDirectory.findDataFile(path);
-                    entry.setValue(DataUtilities.fileToURL(fixedPath).toExternalForm());
+                    File fixedPath = loader.url(path);
+                    URL url = DataUtilities.fileToURL(fixedPath);
+                    entry.setValue( (V) url.toExternalForm());
                 }
             } else if (value instanceof URL && ((URL) value).getProtocol().equals("file")) {
-                File fixedPath = GeoserverDataDirectory.findDataFile(((URL) value).toString());
-                entry.setValue(DataUtilities.fileToURL(fixedPath));
+                URL url = (URL) value;
+                File fixedPath = loader.url( url.toString() );
+                entry.setValue( (V) DataUtilities.fileToURL(fixedPath));
             } else if ((key != null) && key.equals("directory") && value instanceof String) {
                 String path = (String) value;
                 //if a url is used for a directory (for example property store), convert it to path
                 
                 if (path.startsWith("file:")) {
-                    File fixedPath = GeoserverDataDirectory.findDataFile((String) value);
-                    entry.setValue(fixedPath.toString());            
+                    File fixedPath = loader.url(path);
+                    entry.setValue( (V) fixedPath.toString() );            
                 }
             }
         }
-
         return params;
     }
     
@@ -1286,7 +1295,9 @@ public class ResourcePool {
                     //
                     // /////////////////////////////////////////////////////////
                     final String url = info.getURL();
-                    final File obj = GeoserverDataDirectory.findDataFile(url);
+                    GeoServerResourceLoader loader = catalog.getResourceLoader();
+                    final File obj = loader.url(url);
+
                     // In case no File is returned, provide the original String url
                     final Object input = obj != null ? obj : url;  
 

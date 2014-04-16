@@ -6,11 +6,16 @@ package org.vfny.geoserver.crs;
 
 import java.io.File;
 import java.net.URL;
+import java.util.logging.Level;
+
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geotools.data.DataUtilities;
 import org.geotools.factory.Hints;
 import org.geotools.referencing.factory.epsg.CoordinateOperationFactoryUsingWKT;
 import org.opengis.referencing.operation.CoordinateOperationAuthorityFactory;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 /**
  * Authority allowing users to define their own CoordinateOperations in a separate file.
@@ -35,16 +40,25 @@ public class GeoserverWKTOperationFactory extends CoordinateOperationFactoryUsin
      * @return The URL, or {@code null} if none.
      */
     protected URL getDefinitionsURL() {
-        File file = new File(GeoserverDataDirectory.getGeoserverDataDirectory(),
-                "user_projections/" + FILENAME);
-
-        if (file.exists()) {
-            return DataUtilities.fileToURL(file);
-        } else {
-            LOGGER.info(file.getAbsolutePath() + " was not found, using the default set of " +
-            		"coordinate operation overrides (normally empty)");
-            // use the built-in file
-            return GeoserverOverridingWKTFactory.class.getResource(FILENAME); 
+        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        if( loader != null ){ // not available for SystemTestData
+            Resource definition = loader.get("user_projections/" + FILENAME);
+            if( definition.getType() == Type.RESOURCE ){
+                File file = definition.file();
+                URL url = DataUtilities.fileToURL(file);
+                if( url != null ){
+                    return url;
+                }
+                else {
+                    LOGGER.log(Level.SEVERE, "Had troubles converting file name to URL");
+                }
+            }
+            else {
+                LOGGER.info(definition.path() + " was not found, using the default set of " +
+                        "coordinate operation overrides (normally empty)");
+            }
         }
+        return GeoserverOverridingWKTFactory.class.getResource(FILENAME); 
+        
     }
 }

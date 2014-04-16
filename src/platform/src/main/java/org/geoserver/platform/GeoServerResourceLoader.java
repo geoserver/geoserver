@@ -10,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,16 +18,13 @@ import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 
 import org.geoserver.platform.resource.FileSystemResourceStore;
+import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
-import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.geotools.data.DataUtilities;
 import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Access to resources in GeoServer including configuration information and unmanaged cache or log files.
@@ -182,6 +180,29 @@ public class GeoServerResourceLoader extends DefaultResourceLoader implements Re
         return resources.remove( path );
     }
     
+    /**
+     * Used to look up files in the data directory based on user provided url (or path).
+     * 
+     * This method (originally from vfny GeoserverDataDirectory) is used to process a URL provided
+     * by a user: <i>iven a path, tries to interpret it as a file into the data directory, or as an absolute
+     * location, and returns the actual absolute location of the file.</i>
+     * 
+     * Over time this url method has grown in the telling to support:
+     * <ul>
+     * <li>Actual URL to external resoruce using http or ftp protocol - will return null</li>
+     * <li>File URL - will support absolute file references</li>
+     * <li>File URL - will support relative file references</li>
+     * <li>Fake URLs - sde://user:pass@server:port - will return null.</li>
+     * <li>path - user supplied file path (operating specific specific)</li>
+     * </ul>
+     * 
+     * @param url File URL or path relative to data directory 
+     * @return File indicated by provided URL
+     * @see Files#url(File, String)
+     */
+    public File url(String url) {
+        return Files.url( baseDirectory, url );
+    }
     /**
      * Performs file lookup.
      *

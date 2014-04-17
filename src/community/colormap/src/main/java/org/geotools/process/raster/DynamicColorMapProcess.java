@@ -5,6 +5,7 @@
 package org.geotools.process.raster;
 
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.factory.GeoTools;
 import org.geotools.process.ProcessException;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
@@ -35,7 +36,7 @@ public class DynamicColorMapProcess implements RasterProcess {
             @DescribeParameter(name = "colorRamp", description = "The name of the color ramp.") ColorMap colorMap)
             throws ProcessException {
 
-            RasterSymbolizerHelper rsh = new RasterSymbolizerHelper(coverage, null);
+            RasterSymbolizerHelper rsh = new RasterSymbolizerHelper(coverage, GeoTools.getDefaultHints());
             // build the RasterSymbolizer
             StyleBuilder sldBuilder = new StyleBuilder();
     

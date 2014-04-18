@@ -509,5 +509,21 @@ public class GetRecordsTest extends CSWSimpleTestSupport {
         assertXpathEvaluatesTo("*lorem*", "/csw:Acknowledgement/csw:EchoedRequest/csw:GetRecords/csw:Query/" +
         		"csw:Constraint/ogc:Filter/ogc:PropertyIsLike/ogc:Literal", d);
     }
+    
+    @Test 
+    public void testStartPositionOverNumberOfRecords() throws Exception {
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results&elementSetName=brief&startPosition=50&maxRecords=10";
+        Document d = getAsDOM(request, "ISO-8859-1");
+        checkValidationErrors(d, new CSWConfiguration());
+        
+        // check we have the expected results
+        assertXpathEvaluatesTo("brief", "//csw:SearchResults/@elementSet", d);
+        assertXpathEvaluatesTo("12", "//csw:SearchResults/@numberOfRecordsMatched", d);
+        assertXpathEvaluatesTo("0", "//csw:SearchResults/@numberOfRecordsReturned", d);
+        assertXpathEvaluatesTo("0", "//csw:SearchResults/@nextRecord", d);
+        
+        // check we have 0 summary records
+        assertXpathEvaluatesTo("0", "count(//csw:SearchResults/csw:BriefRecord)", d);
+    }
 
 }

@@ -474,7 +474,8 @@ public final class IOUtils {
         }
         // make sure the rename actually succeeds
         if(!source.renameTo(dest)) {
-            throw new IOException("Failed to rename " + source.getAbsolutePath() + " to " + dest.getAbsolutePath());
+            FileUtils.deleteQuietly(dest);
+            FileUtils.moveFile(source, dest);
         }
     }
 }

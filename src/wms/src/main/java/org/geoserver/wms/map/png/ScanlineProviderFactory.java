@@ -46,7 +46,7 @@ public class ScanlineProviderFactory {
             if (sm.getNumBands() == 3 || sm.getNumBands() == 4) {
                 return new RasterByteABGRProvider(raster, cm.hasAlpha());
             } else if (sm.getNumBands() == 2 && cm.hasAlpha()) {
-                return new RasterByteSingleBandProvider(raster, 8, 2 * raster.getWidth());
+                return new RasterByteGrayAlphaProvider(raster);
             } else if (sm.getNumBands() == 1) {
                 if (sm.getDataType() == DataBuffer.TYPE_BYTE) {
                     if (sm instanceof MultiPixelPackedSampleModel) {

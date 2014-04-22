@@ -31,6 +31,11 @@ public interface FeatureTypeInfo extends ResourceInfo {
     static final String JDBC_VIRTUAL_TABLE = "JDBC_VIRTUAL_TABLE";
     
     /**
+     * The cascaded stored query configuration
+     */
+    static final String STORED_QUERY_CONFIGURATION = "WFS_NG_STORED_QUERY_CONFIGURATION";
+
+    /**
      * The data store the feature type is a part of.
      * <p>
      * </p>

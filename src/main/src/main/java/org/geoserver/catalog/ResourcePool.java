@@ -54,6 +54,7 @@ import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.util.CoverageStoreUtils;
 import org.geoserver.data.util.CoverageUtils;
+import org.geoserver.feature.retype.RetypingDataStore;
 import org.geoserver.feature.retype.RetypingFeatureSource;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -79,6 +80,7 @@ import org.geotools.data.ows.MultithreadedHttpClient;
 import org.geotools.data.ows.SimpleHttpClient;
 import org.geotools.data.ows.WMSCapabilities;
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.data.store.ContentDataStore;
 import org.geotools.data.wms.WebMapServer;
 import org.geotools.factory.Hints;
 import org.geotools.feature.AttributeTypeBuilder;
@@ -892,7 +894,6 @@ public class ResourcePool {
         //grab the underlying feature type
         DataAccess<? extends FeatureType, ? extends Feature> dataAccess = getDataStore(info.getStore());
 
-
         FeatureTypeCallback initializer = getFeatureTypeInitializer(info, dataAccess);
         Name temporaryName = null;
         if (initializer != null) {
@@ -1243,7 +1244,7 @@ public class ResourcePool {
 
             //return a normal 
             return GeoServerFeatureLocking.create(fs, schema, info.getFilter(), resultCRS, info
-                    .getProjectionPolicy().getCode(), getTolerance(info));
+                    .getProjectionPolicy().getCode(), getTolerance(info), (Map)info.getMetadata().getMap());
         }
     }
     

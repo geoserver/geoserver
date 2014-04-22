@@ -113,7 +113,10 @@ public class GetRecords {
             FeatureCollection records = null;
             if(resultType != ResultType.VALIDATE) {
                 // compute the number of records we're returning and the next record
-                if(numberOfRecordsMatched - offset <= maxRecords) {
+                if (offset > numberOfRecordsMatched) {
+                    numberOfRecordsReturned = 0;
+                    nextRecord = 0;
+                } else if (numberOfRecordsMatched - offset <= maxRecords) {
                     numberOfRecordsReturned = numberOfRecordsMatched - offset;
                     nextRecord = 0;
                 } else {

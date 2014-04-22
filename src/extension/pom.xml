@@ -293,6 +293,13 @@
       </modules>
     </profile>
 
+    <profile>
+      <id>wfs-ng</id>
+      <modules>
+        <module>wfs-ng</module>
+      </modules>
+    </profile>
+
     <!-- allExtensions profile, includes all modules -->
     <profile>
       <id>allExtensions</id>
@@ -329,6 +336,7 @@
         <module>wcs2_0-eo</module>
         <module>libjpeg-turbo</module>
         <module>importer</module>
+        <module>wfs-ng</module>
       </modules>
     </profile>
 
@@ -368,6 +376,7 @@
         <module>wcs2_0-eo</module>
         <module>libjpeg-turbo</module>
         <module>importer</module>
+        <module>wfs-ng</module>
       </modules>
     </profile>
 

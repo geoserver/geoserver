@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 
 /**
@@ -100,6 +101,12 @@ public class Request {
      */
     protected Date timestamp;
     
+    /**
+     * The Operation used to call the service code. Available only after dispatching is done, it
+     * will give access to the current service object, and the parsed request
+     */
+    protected Operation operation;
+
     public Request() {
         timestamp = new Date(); 
     }
@@ -201,6 +208,16 @@ public class Request {
      */
     public String getOutputFormat() {
         return outputFormat;
+    }
+
+    /**
+     * The Operation used to call the service code. Available only after dispatching is done, it
+     * provides access to the current service object, and the parsed request
+     * 
+     * @return
+     */
+    public Operation getOperation() {
+        return operation;
     }
 
     /**
@@ -315,6 +332,15 @@ public class Request {
      */
     public void setOutputFormat(String outputFormat) {
         this.outputFormat = outputFormat;
+    }
+
+    /**
+     * Sets the operation in use
+     * 
+     * @param service
+     */
+    public void setOperation(Operation operation) {
+        this.operation = operation;
     }
 
     /**

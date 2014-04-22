@@ -205,6 +205,18 @@ public class DispatcherTest extends TestCase {
         request.setRequestURI(
             "http://localhost/geoserver/ows?service=hello&request=hello&message=HelloWorld");
         request.setQueryString("service=hello&request=hello&message=HelloWorld");
+
+        dispatcher.callbacks.add(new AbstractDispatcherCallback() {
+            @Override
+            public Object operationExecuted(Request request, Operation operation, Object result) {
+                Operation op = Dispatcher.REQUEST.get().getOperation();
+                assertNotNull(op);
+                assertTrue(op.getService().getService() instanceof HelloWorld);
+                assertTrue(op.getParameters()[0] instanceof Message);
+                return result;
+            }
+        });
+
         dispatcher.handleRequest(request, response);
         assertEquals("Hello world!", response.getOutputStreamContent());
     }

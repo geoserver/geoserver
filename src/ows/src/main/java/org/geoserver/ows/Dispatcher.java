@@ -261,6 +261,7 @@ public class Dispatcher extends AbstractController {
 
             //dispatch the operation
             Operation operation = dispatch(request, service);
+            request.setOperation(operation);
 
             if (request.isSOAP()) {
                 //let the request object know that this is a SOAP request, since it effects

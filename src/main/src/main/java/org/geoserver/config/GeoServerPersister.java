@@ -385,6 +385,9 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     
     void modifyWorkspace( WorkspaceInfo ws ) throws IOException {
         LOGGER.fine( "Persisting workspace " + ws.getName() );
+        File dir = dir( ws, true );
+        dir.mkdirs();
+        
         persist( ws, file( ws ) );
     }
     
@@ -419,6 +422,8 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     
     void modifyNamespace( NamespaceInfo ns) throws IOException {
         LOGGER.fine( "Persisting namespace " + ns.getPrefix() );
+        File dir = dir( ns, true );
+        dir.mkdirs();
         persist( ns, file(ns) );
     }
     

@@ -6,6 +6,7 @@
 package org.vfny.geoserver.global;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geotools.data.DataSourceException;
@@ -50,8 +51,9 @@ public class GeoServerFeatureLocking extends GeoServerFeatureStore implements Si
      */
     GeoServerFeatureLocking(FeatureLocking<SimpleFeatureType, SimpleFeature> locking,
             SimpleFeatureType schema, Filter definitionQuery,
-            CoordinateReferenceSystem declaredCRS, int srsHandling, Double linearizationTolerance) {
-        super(locking, schema, definitionQuery, declaredCRS, srsHandling, linearizationTolerance);
+            CoordinateReferenceSystem declaredCRS, int srsHandling, Double linearizationTolerance,
+            Map<String, Object> metadata) {
+        super(locking, schema, definitionQuery, declaredCRS, srsHandling, linearizationTolerance, metadata);
     }
 
     FeatureLocking<SimpleFeatureType, SimpleFeature> locking() {

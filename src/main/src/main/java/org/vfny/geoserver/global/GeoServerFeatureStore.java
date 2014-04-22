@@ -7,6 +7,7 @@ package org.vfny.geoserver.global;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.geoserver.feature.RetypingFeatureCollection;
 import org.geotools.data.DataUtilities;
@@ -55,8 +56,9 @@ public class GeoServerFeatureStore extends GeoServerFeatureSource implements Sim
      */
     GeoServerFeatureStore(FeatureStore<SimpleFeatureType, SimpleFeature> store,
             SimpleFeatureType schema, Filter definitionQuery,
-            CoordinateReferenceSystem declaredCRS, int srsHandling, Double linearizationTolerance) {
-        super(store, schema, definitionQuery, declaredCRS, srsHandling, linearizationTolerance);
+            CoordinateReferenceSystem declaredCRS, int srsHandling, Double linearizationTolerance,
+            Map<String, Object> metadata) {
+        super(store, schema, definitionQuery, declaredCRS, srsHandling, linearizationTolerance, metadata);
     }
 
     /**

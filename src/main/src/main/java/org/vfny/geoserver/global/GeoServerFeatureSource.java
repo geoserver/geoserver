@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -29,6 +31,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.Hints;
+import org.geotools.factory.Hints.ConfigurationMetadataKey;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.feature.SchemaException;
 import org.geotools.feature.collection.MaxSimpleFeatureCollection;
@@ -99,6 +102,9 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
     /** How to handle SRS   */
     protected ProjectionPolicy srsHandling;
 
+    /** FeatureTypeInfo metadata to pass to extensions within the Query **/
+    protected Map<String, Object> metadata;
+
     /**
      * Distance used for curve linearization tolerance, as an absolute value expressed in the data
      * native CRS
@@ -116,13 +122,14 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      *        value expressed in the data native CRS
      */
     GeoServerFeatureSource(FeatureSource<SimpleFeatureType, SimpleFeature> source, SimpleFeatureType schema, Filter definitionQuery,
-        CoordinateReferenceSystem declaredCRS, int srsHandling, Double linearizationTolerance) {
+        CoordinateReferenceSystem declaredCRS, int srsHandling, Double linearizationTolerance, Map<String, Object> metadata) {
         this.source = DataUtilities.simple(source);
         this.schema = schema;
         this.definitionQuery = definitionQuery;
         this.declaredCRS = declaredCRS;
         this.srsHandling = ProjectionPolicy.get( srsHandling );
         this.linearizationTolerance = linearizationTolerance;
+        this.metadata = metadata;
 
         if (this.definitionQuery == null) {
             this.definitionQuery = Filter.INCLUDE;
@@ -158,18 +165,19 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      * @return
      */
     public static GeoServerFeatureSource create(FeatureSource <SimpleFeatureType, SimpleFeature> featureSource, SimpleFeatureType schema,
-        Filter definitionQuery, CoordinateReferenceSystem declaredCRS, int srsHandling, Double linearizationTolerance) {
+        Filter definitionQuery, CoordinateReferenceSystem declaredCRS, int srsHandling, Double linearizationTolerance,
+        Map<String, Object> metadata) {
         if (featureSource instanceof FeatureLocking) {
             return new GeoServerFeatureLocking(
                     (FeatureLocking<SimpleFeatureType, SimpleFeature>) featureSource, schema,
-                    definitionQuery, declaredCRS, srsHandling, linearizationTolerance);
+                    definitionQuery, declaredCRS, srsHandling, linearizationTolerance, metadata);
         } else if (featureSource instanceof FeatureStore) {
             return new GeoServerFeatureStore(
                     (FeatureStore<SimpleFeatureType, SimpleFeature>) featureSource, schema,
-                    definitionQuery, declaredCRS, srsHandling, linearizationTolerance);
+                    definitionQuery, declaredCRS, srsHandling, linearizationTolerance, metadata);
         }
 
-        return new GeoServerFeatureSource(featureSource, schema, definitionQuery, declaredCRS, srsHandling, null);
+        return new GeoServerFeatureSource(featureSource, schema, definitionQuery, declaredCRS, srsHandling, null, metadata);
     }
 
     /**
@@ -401,6 +409,12 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
         Query reprojected = reprojectFilter(query);
         Query newQuery = adaptQuery(reprojected, schema);
         
+        // Merge configuration metadata into query hints
+        for (Entry<String, Object> e : metadata.entrySet()) {
+            ConfigurationMetadataKey key = ConfigurationMetadataKey.get(e.getKey());
+            newQuery.getHints().put(key, e.getValue());
+        }
+
         CoordinateReferenceSystem targetCRS = query.getCoordinateSystemReproject();
         try {
             //this is the raw "unprojected" feature collection

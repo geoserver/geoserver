@@ -75,8 +75,8 @@ public class CoverageNearestValueSelectionStrategyImpl extends AbstractDefaultVa
                         dateToMatch = new Date(DateUtil.parseDateTime(this.toMatch.toString()));
                     } catch (IllegalArgumentException e) {
                         throw new ServiceException(
-                                "Error parsing value to match against while trying to find the default time value for the layer " + resource.getName(),
-                                e);
+                                "Error parsing value to match against while trying to find the default time value for the layer "
+                                        + resource.getName(), e);
                     }
                 }
                 retval = findNearestTime(dimAccessor, dateToMatch);
@@ -267,5 +267,8 @@ public class CoverageNearestValueSelectionStrategyImpl extends AbstractDefaultVa
         }
     }
 
+    public Object getTargetValue() {
+        return toMatch;
+    }
    
 }

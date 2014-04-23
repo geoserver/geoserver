@@ -15,7 +15,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
@@ -46,6 +45,7 @@ import org.geoserver.wms.WMSInfo.WMSInterpolation;
 import org.geoserver.wms.WatermarkInfo.Position;
 import org.geoserver.wms.dimension.DimensionDefaultValueSelectionStrategy;
 import org.geoserver.wms.dimension.DimensionDefaultValueSelectionStrategyFactory;
+import org.geoserver.wms.dimension.DimensionFilterBuilder;
 import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
 import org.geoserver.wms.map.RenderedImageMapResponse;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
@@ -60,22 +60,16 @@ import org.geotools.feature.visitor.CalcResult;
 import org.geotools.feature.visitor.MaxVisitor;
 import org.geotools.feature.visitor.MinVisitor;
 import org.geotools.feature.visitor.UniqueVisitor;
-import org.geotools.filter.Filters;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.styling.Style;
 import org.geotools.util.Converters;
-import org.geotools.util.DateRange;
-import org.geotools.util.NumberRange;
-import org.geotools.util.Range;
 import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
-import org.opengis.filter.expression.Literal;
-import org.opengis.filter.expression.PropertyName;
 import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterDescriptor;
@@ -86,7 +80,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import com.sun.media.jai.codec.PNGEncodeParam;
 import com.vividsolutions.jts.geom.Coordinate;
 
 /**
@@ -194,6 +187,8 @@ public class WMS implements ApplicationContextAware {
     private final GeoServer geoserver;
 
     private ApplicationContext applicationContext;
+
+    private DimensionDefaultValueSelectionStrategyFactory defaultDimensionValueFactory;
 
     public WMS(GeoServer geoserver) {
         this.geoserver = geoserver;
@@ -634,6 +629,11 @@ public class WMS implements ApplicationContextAware {
     public void setApplicationContext(final ApplicationContext applicationContext)
             throws BeansException {
         this.applicationContext = applicationContext;
+
+        // get the default dimension value selector factory, picking the one with
+        // the highest priority (this allows for plugin overrides)
+        defaultDimensionValueFactory = GeoServerExtensions.extensions(
+                DimensionDefaultValueSelectionStrategyFactory.class).get(0);
     }
 
     /**
@@ -884,32 +884,14 @@ public class WMS implements ApplicationContextAware {
         }
         
         // custom dimensions
-        final Map<String, String> rawKvpMap = request.getRawKvp();
+
         List<String> customDomains = new ArrayList(dimensions.getCustomDomains());
-        if (rawKvpMap != null) {
-            for (Map.Entry<String, String> kvp : rawKvpMap.entrySet()) {
-                String name = kvp.getKey();
-                if (name.regionMatches(true, 0, "dim_", 0, 4)) {
-                    name = name.substring(4);
-                    name = caseInsensitiveLookup(customDomains, name);
-                    if(name != null) {
-                        // remove it so that we don't have to set the default value
-                        customDomains.remove(name);
-                        final DimensionInfo customInfo = metadata.get(ResourceInfo.CUSTOM_DIMENSION_PREFIX + name,
-                                DimensionInfo.class);
-                        if (dimensions.hasDomain(name) && customInfo != null && customInfo.isEnabled()) {
-                            final ArrayList<String> val = new ArrayList<String>(1);
-                            if(kvp.getValue().indexOf(",")>0){
-                                String[] elements = kvp.getValue().split(",");
-                                val.addAll(Arrays.asList(elements));
-                            }else{
-                                val.add(kvp.getValue());
-                            }
-                            readParameters = CoverageUtils.mergeParameter(
-                                parameterDescriptors, readParameters, val, name);
-                        }
-                    }
-                }
+        for (String domain : new ArrayList<String>(customDomains)) {
+            List<String> values = request.getCustomDimension(domain);
+            if (values != null) {
+                readParameters = CoverageUtils.mergeParameter(parameterDescriptors, readParameters,
+                        values, domain);
+                customDomains.remove(domain);
             }
         }
         
@@ -928,16 +910,6 @@ public class WMS implements ApplicationContextAware {
         }
 
         return readParameters;
-    }
-
-    private String caseInsensitiveLookup(List<String> names, String name) {
-        for (String s : names) {
-            if(name.equalsIgnoreCase(s)) {
-                return s;
-            }
-        }
-        
-        return null;
     }
 
     public Collection<RenderedImageMapResponse> getAvailableMapResponses() {
@@ -1112,9 +1084,8 @@ public class WMS implements ApplicationContextAware {
     
     DimensionDefaultValueSelectionStrategy getDefaultValueStrategy(ResourceInfo resource,
             String dimensionName, DimensionInfo dimensionInfo){
-         DimensionDefaultValueSelectionStrategyFactory factory = this.applicationContext.getBean(DimensionDefaultValueSelectionStrategyFactory.class);
-         if (factory != null){
-             return factory.getStrategy(resource, dimensionName, dimensionInfo);             
+        if (defaultDimensionValueFactory != null) {
+            return defaultDimensionValueFactory.getStrategy(resource, dimensionName, dimensionInfo);
          }
          else {
              return null;
@@ -1148,46 +1119,7 @@ public class WMS implements ApplicationContextAware {
         return source.getFeatures(dimQuery);
     }
     
-    /**
-     * Build a filter for a single value based on an attribute and optional
-     * endAttribute. The value is either a Range or object that can be used as
-     * a literal (Date,Number).
-     * @param value
-     * @param attribute
-     * @param endAttribute
-     * @return 
-     */
-    Filter buildDimensionFilter(Object value, PropertyName attribute, PropertyName endAttribute) {
-        Filter filter;
-        if (value == null) {
-            filter = Filter.INCLUDE;
-        } else if (value instanceof Range) {
-            Range range = (Range) value;
-            if (endAttribute == null) {
-                filter = ff.between(attribute, ff.literal(range.getMinValue()),
-                         ff.literal(range.getMaxValue()));
-            } else {
-                // Range intersects valid range of feature
-                // @todo adding another option to dimensionInfo allows contains, versus intersects
-                Literal qlower = ff.literal(range.getMinValue());
-                Literal qupper = ff.literal(range.getMaxValue());
-                Filter lower = ff.between(attribute, qlower, qupper);
-                Filter upper = ff.between(endAttribute, qlower, qupper);
-                return ff.or(lower, upper);
-            }
-        } else {
-            // Single element is equal to
-            if (endAttribute == null) {
-                filter = ff.equal(attribute, ff.literal(value), true);
-            } else {
-                // Single element is contained by valid range of feature
-                Filter lower = ff.greaterOrEqual(ff.literal(value), attribute);
-                Filter upper = ff.lessOrEqual(ff.literal(value), endAttribute);
-                filter = ff.and(lower, upper);
-            }
-        }
-        return filter;
-    }
+
 
     /**
      * Builds a filter for the current time and elevation, should the layer support them. Only one
@@ -1205,56 +1137,37 @@ public class WMS implements ApplicationContextAware {
         DimensionInfo elevationInfo = typeInfo.getMetadata().get(ResourceInfo.ELEVATION,
                 DimensionInfo.class);
         
-        // handle time support
-        Filter result = null;
-        if (timeInfo != null && timeInfo.isEnabled() && times != null) {
-            final List<Filter> timeFilters = new ArrayList<Filter>();
-            final PropertyName attribute = ff.property(timeInfo.getAttribute());
-            final PropertyName endAttribute = timeInfo.getEndAttribute() == null ? null :
-                ff.property(timeInfo.getEndAttribute());
+        DimensionFilterBuilder builder = new DimensionFilterBuilder(ff);
 
+        // handle time support
+        if (timeInfo != null && timeInfo.isEnabled() && times != null) {
+            List<Object> defaultedTimes = new ArrayList<Object>(times.size());
             for (Object datetime : times) {
                 if (datetime == null) {
                     // this is "default"
                     datetime = getDefaultTime(typeInfo);
                 }
-                timeFilters.add(buildDimensionFilter(datetime, attribute, endAttribute));
+                defaultedTimes.add(datetime);
             }
-            final int sizeTime = timeFilters.size();
-            if (sizeTime > 1) {
-                result = ff.or(timeFilters);
-            } else if (sizeTime == 1) {
-                result = timeFilters.get(0);
-            }
+
+            builder.appendFilters(timeInfo.getAttribute(), timeInfo.getEndAttribute(), defaultedTimes);
         }
 
         // handle elevation support
         if (elevationInfo != null && elevationInfo.isEnabled() && elevations != null) {
-            final List<Filter> elevationFilters = new ArrayList<Filter>();
-            final PropertyName attribute = ff.property(elevationInfo.getAttribute());
-            final PropertyName endAttribute = elevationInfo.getEndAttribute() == null ? null :
-                ff.property(elevationInfo.getEndAttribute());
+            List<Object> defaultedElevations = new ArrayList<Object>(elevations.size());
             for (Object elevation : elevations) {
                 if (elevation == null) {
                     // this is "default"
                     elevation = getDefaultElevation(typeInfo);
                 }
-                elevationFilters.add(buildDimensionFilter(elevation, attribute, endAttribute));
+                defaultedElevations.add(elevation);
             }
-            final int size = elevationFilters.size();
-            Filter summary = null;
-            if (size > 1) {
-                summary = ff.or(elevationFilters);
-            } else if (size == 1) {
-                summary = elevationFilters.get(0);
-            }
-
-            // mix with the previous filter
-            if (summary != null) {
-                result = Filters.and(ff, result, summary);
-            }
+            builder.appendFilters(elevationInfo.getAttribute(), elevationInfo.getEndAttribute(),
+                    defaultedElevations);
         }
 
+        Filter result = builder.getFilter();
         return result;
     }
 

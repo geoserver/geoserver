@@ -293,5 +293,14 @@
         <module>grib</module>
       </modules>
     </profile>
+    <profile>
+      <id>dyndimension</id>
+	  <activation>
+        <property><name>dyndimension</name></property>
+      </activation>
+      <modules>
+        <module>dyndimension</module>
+      </modules>
+    </profile>
   </profiles>
 </project>

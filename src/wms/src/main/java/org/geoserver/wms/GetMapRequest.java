@@ -9,6 +9,7 @@ import java.awt.geom.Point2D;
 import java.awt.image.IndexColorModel;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -745,5 +746,25 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
 		} catch (CloneNotSupportedException e) {
 			throw new RuntimeException("Unexpected, could not clone GetMapRequest", e);
 		}
-    } 
+    }
+
+    public List<String> getCustomDimension(String dimensionName) {
+        if (getRawKvp() != null) {
+            String key = "DIM_" + dimensionName;
+            String value = getRawKvp().get(key);
+            if (value != null) {
+
+                final ArrayList<String> values = new ArrayList<String>(1);
+                if (value.indexOf(",") > 0) {
+                    String[] elements = value.split("\\s*,\\s*");
+                    values.addAll(Arrays.asList(elements));
+                } else {
+                    values.add(value);
+                }
+                return values;
+            }
+        }
+
+        return null;
+    }
 }

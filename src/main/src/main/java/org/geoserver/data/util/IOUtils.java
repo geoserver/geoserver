@@ -475,7 +475,12 @@ public final class IOUtils {
         // make sure the rename actually succeeds
         if(!source.renameTo(dest)) {
             FileUtils.deleteQuietly(dest);
-            FileUtils.moveFile(source, dest);
+            if( source.isDirectory() ){
+                FileUtils.moveDirectory(source, dest );
+            }
+            else {
+                FileUtils.moveFile(source, dest);
+            }
         }
     }
 }

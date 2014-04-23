@@ -385,9 +385,6 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     
     void modifyWorkspace( WorkspaceInfo ws ) throws IOException {
         LOGGER.fine( "Persisting workspace " + ws.getName() );
-        File dir = dir( ws, true );
-        dir.mkdirs();
-        
         persist( ws, file( ws ) );
     }
     
@@ -409,21 +406,23 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     }
     
     File file( WorkspaceInfo ws ) throws IOException {
-        return new File( dir( ws ), "workspace.xml" );
+        File directory = dir( ws );
+        if( directory == null ){
+            LOGGER.warning("Workspace '"+ws.getName()+"' directory not found for workspace.xml");
+        }
+        return new File( directory, "workspace.xml" );
     }
 
     //namespaces
     void addNamespace( NamespaceInfo ns ) throws IOException {
         LOGGER.fine( "Persisting namespace " + ns.getPrefix() );
-        File dir = dir( ns, true );
-        dir.mkdirs();
+        dir(ns,true); // ensure directory created before persist
         persist( ns, file(ns) );
     }
     
     void modifyNamespace( NamespaceInfo ns) throws IOException {
         LOGGER.fine( "Persisting namespace " + ns.getPrefix() );
-        File dir = dir( ns, true );
-        dir.mkdirs();
+        dir(ns,true); // ensure directory created before persist 
         persist( ns, file(ns) );
     }
     
@@ -432,10 +431,31 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
         file( ns ).delete();
     }
     
+    /**
+     * Lookup directory for namespace.
+     * <p>
+     * Namespace prefix used to create directory of the form
+     * <code>workspace/prefix</code>
+     * 
+     * @param ns namespace supplying prefix to use 
+     * @return namespace directory, or null if not available
+     * @throws IOException
+     */
     File dir( NamespaceInfo ns ) throws IOException {
         return dir( ns, false );
     }
     
+    /**
+     * Lookup directory for namespace.
+     * <p>
+     * Namespace prefix used to create directory of the form
+     * <code>workspace/prefix</code>
+     * 
+     * @param ns namespace supplying prefix to use 
+     * @param create true to create directory
+     * @return namespace directory, or null if not available
+     * @throws IOException
+     */
     File dir( NamespaceInfo ns, boolean create ) throws IOException {
         File d = rl.find( "workspaces", ns.getPrefix() );
         if ( d == null && create ) {
@@ -443,9 +463,18 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
         }
         return d;
     }
-    
+    /**
+     * Access to <code>namespace/prefix/namespace.xml</code> configuration file.
+     * @param ns namespace
+     * @return namespace.xml file for namespace
+     * @throws IOException
+     */
     File file( NamespaceInfo ns ) throws IOException {
-        return new File( dir( ns ), "namespace.xml");
+        File namespaceDirectory = dir( ns );
+        if( namespaceDirectory == null ){
+            LOGGER.warning("Namespace '"+ns.getName()+"' directory not found for namespace.xml");
+        }
+        return new File( namespaceDirectory, "namespace.xml");
     }
     
     //datastores
@@ -477,7 +506,11 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     }
     
     File file( DataStoreInfo ds ) throws IOException {
-        return new File( dir( ds ), "datastore.xml" );
+        File directory = dir( ds );
+        if( directory == null ){
+            LOGGER.warning("DataStore '"+ds.getName()+"' directory not found for datastore.xml");
+        }
+        return new File( directory, "datastore.xml" );
     }
     
     //feature types
@@ -508,7 +541,11 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     }
     
     File file( FeatureTypeInfo ft ) throws IOException {
-        return new File( dir( ft ), "featuretype.xml");
+        File directory = dir( ft );
+        if( directory == null ){
+            LOGGER.warning("FeatureType '"+ft.getName()+"' directory not found for featuretype.xml");
+        }
+        return new File( directory, "featuretype.xml");
     }
     
     //coverage stores
@@ -531,7 +568,11 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     }
     
     File file( CoverageStoreInfo cs ) throws IOException {
-        return new File( dir( cs ), "coveragestore.xml");
+        File directory = dir( cs );
+        if( directory == null ){
+            LOGGER.warning("CoverageStore '"+cs.getName()+"' directory not found for coveragestore.xml");
+        }
+        return new File( directory, "coveragestore.xml");
     }
     
     //coverages
@@ -573,7 +614,11 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     }
     
     File file( WMSStoreInfo ds ) throws IOException {
-        return new File( dir( ds ), "wmsstore.xml" );
+        File directory = dir( ds );
+        if( directory == null ){
+            LOGGER.warning("WMSStore '"+ds.getName()+"' directory not found for wmsstore.xml ");
+        }
+        return new File( directory, "wmsstore.xml" );
     }
     
     //wms layers
@@ -627,7 +672,11 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     }
     
     File file( LayerInfo l ) throws IOException {
-        return new File( dir( l ), "layer.xml" );
+        File directory = dir( l );
+        if( directory == null ){
+            LOGGER.warning("Layer '"+l.getName()+"' directory not found for layer.xml ");
+        }
+        return new File( directory, "layer.xml" );
     }
     
     //styles
@@ -680,13 +729,17 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
         //special case for styles, if the file name (minus the suffix) matches the id of the style
         // and the suffix is xml (rather than sld) we need to avoid overwritting the actual 
         // style file
+        File directory = dir( s );
+        if( directory == null ){
+            LOGGER.warning("Style '"+s.getName()+"' directory not found for xml file");
+        }
         if (s.getFilename() != null && s.getFilename().endsWith(".xml") 
             && s.getFilename().startsWith(s.getName()+".")) {
             //append a second .xml suffix
-            return new File( dir( s ), s.getName() + ".xml.xml");
+            return new File( directory, s.getName() + ".xml.xml");
         }
         else {
-            return new File( dir( s ), s.getName() + ".xml");
+            return new File( directory, s.getName() + ".xml");
         }
     }
 
@@ -770,13 +823,21 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     }
     
     File file( LayerGroupInfo lg ) throws IOException {
-        return new File( dir( lg ), lg.getName() + ".xml" );
+        File directory = dir( lg );
+        if( directory == null ){
+            LOGGER.warning("LayerGroup '"+lg.getName()+"' directory not found for xml file");
+        }
+        return new File( directory, lg.getName() + ".xml" );
     }
 
     // settings
     File file(SettingsInfo settings) throws IOException {
         File dir = settings.getWorkspace() != null ? dir(settings.getWorkspace()) : 
             rl.getBaseDirectory();
+        
+        if( dir == null ){
+            LOGGER.warning("Settings '"+settings.getTitle()+"' directory not found for settings.xml ");
+        }
         return new File(dir, "settings.xml");
     }
 

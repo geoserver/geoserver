@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,18 +41,6 @@ import org.springframework.web.context.WebApplicationContext;
  * </code>
  * It must be a singleton, and must not be loaded lazily. Furthermore, this
  * bean must be loaded before any beans that use it.
- * </p>
- * <h2>Testing</h2>
- * <p>
- * As a concession to mocking test cases, a few singletons can be registered by hand:
- * <pre><code>
- * &#64;Before
- * public void before(){
- *   GeoServerResourceLoader loader = new GeoServerResourceLoader(baseDirectory);
- *   GeoServerExtensions.mock( "resourceLoader", loader );
- * }
- * </code><pre>
- * Warnings provided by {@link #checkContext(ApplicationContext, String)} are supressed when using {@link #init(Object)}.
  * 
  * @author Justin Deoliveira, The Open Planning Project
  * @author Andrea Aime, The Open Planning Project
@@ -62,7 +51,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
     /**
      * logger 
      */
-    private static final Logger LOGGER = Logging.getLogger( "org.geoserver.platform" );
+    protected static final Logger LOGGER = Logging.getLogger( "org.geoserver.platform" );
     
     /**
      * Caches the names of the beans for a particular type, so that the lookup (expensive)
@@ -72,6 +61,18 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
     static SoftValueHashMap<Class, String[]> extensionsCache = new SoftValueHashMap<Class, String[]>(40);
     
     static ConcurrentHashMap<String, Object> singletonBeanCache = new ConcurrentHashMap<String, Object>();
+    
+    /**
+     * Property cache maintained by GeoServerExtensionsHelper allowing temporary override of
+     * {@link #getProperty(String)} results.
+     */
+    static ConcurrentHashMap<String,String> propertyCache = new ConcurrentHashMap<String,String>();
+    
+    /**
+     * File cache maintained by GeoServerExtensionsHelper allowing temporary override of
+     * {@link #file(String)} results.
+     */
+    static ConcurrentHashMap<String,File> fileCache = new ConcurrentHashMap<String,File>();
     
     /**
      * SPI lookups are very  expensive, we need to cache them
@@ -107,6 +108,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         GeoServerExtensions.context = context;
         extensionsCache.clear();
         singletonBeanCache.clear();
+        propertyCache.clear();
     }
 
     /**
@@ -220,7 +222,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
 
     private static Object getBean(ApplicationContext context, String name) {
         Object bean = singletonBeanCache.get(name);
-        if(bean == null) {
+        if(bean == null && context != null) {
             bean = context.getBean(name);
             if(bean != null && context.isSingleton(name)) {
                 singletonBeanCache.put(name, bean);
@@ -275,7 +277,13 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
      */
     public static final Object bean(String name, ApplicationContext context) {
         checkContext(context, name);
-        return context != null ? getBean(context, name) : null;
+        if( context != null ){
+            return getBean(context,name);
+        }
+        else {
+            Object bean = singletonBeanCache.get(name);
+            return bean;
+        }
     }
 
     /**
@@ -292,7 +300,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
      */
     public static final <T> T bean(Class<T> type) throws IllegalArgumentException {
         checkContext(context,type.getSimpleName());
-        return context != null ? bean( type, context ) : null;
+        return bean(type,context);
     }
     
     /**
@@ -376,6 +384,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
     /**
      * Looks up for a named string property into the following contexts (in order):
      * <ul>
+     * <li>Test override supplied by GeoServerExtensionsHelper</li>
      * <li>System Property</li>
      * <li>web.xml init parameters</li>
      * <li>Environment variable</li>
@@ -393,7 +402,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         // Once that is fixed, we can remove the logging code that makes this method more complex
         // than strictly necessary
 
-        final String[] typeStrs = { "Java environment variable ", "Servlet context parameter ",
+        final String[] typeStrs = { "Property override","Java environment variable ", "Servlet context parameter ",
                 "System environment variable " };
 
         String result = null;
@@ -401,14 +410,18 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
             // Lookup section
             switch (j) {
             case 0:
+                result = propertyCache.get(propertyName);
+                break;
+                
+            case 1:
                 result = System.getProperty(propertyName);
                 break;
-            case 1:
+            case 2:
                 if (context != null) {
                     result = context.getInitParameter(propertyName);
                 }
                 break;
-            case 2:
+            case 3:
                 result = System.getenv(propertyName);
                 break;
             }
@@ -434,6 +447,9 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
      * @return Requested file, or null if not found
      */ 
     public static File file(String path) {
+        if( fileCache.containsKey(path) ){
+            return fileCache.get(path); // override provided by GeoServerExtensionsHelper
+        }
         if( context instanceof WebApplicationContext){
             ServletContext servletContext = ((WebApplicationContext)context).getServletContext();
             String filepath = servletContext.getRealPath( path );
@@ -463,46 +479,5 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         }
         return null; // unavaialble
     }
-    /**
-     * Directly register singleton for use with {@link #bean(String)} (and {@link #bean(Class)}).
-     * 
-     * @param name Singleton name
-     * @param bean Singleton
-     */
-    public static void init( String name, Object bean ){
-        if( context != null ){
-            if( context.containsBean(name) ){
-                Object conflict = context.getBean(name);
-                if( bean != conflict ){
-                    throw new IllegalStateException("ApplicationContext "+name+" already contains "+conflict);
-                }
-            }
-        }
-        else {
-            isSpringContext = false;
-        }
-        if( name == null || bean == null ){
-            return;
-        }
-        singletonBeanCache.put( name,  bean );
-        Class<?> type = bean.getClass();
-        extensionsCache.put( type, new String[]{ name } );
-        
 
-    }
-    /**
-     * Sets the web application context to be used for looking up extensions.
-     * <p>
-     * This is the context that is used for methods which don't supply their
-     * own context.
-     * </p>
-     * 
-     * @param context
-     */
-    public static void init(ApplicationContext context){
-        isSpringContext = false;
-        GeoServerExtensions.context = context;
-        extensionsCache.clear();
-        singletonBeanCache.clear();
-    }
 }

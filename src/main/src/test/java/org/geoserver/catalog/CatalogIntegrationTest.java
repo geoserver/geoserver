@@ -20,6 +20,7 @@ import org.geoserver.config.GeoServerPersister;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.SystemTest;
 import org.geoserver.test.TestSetup;
@@ -38,7 +39,7 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
         
         GeoServerExtensions extension = GeoServerExtensions.bean(GeoServerExtensions.class);
         if( extension == null ){
-            new GeoServerExtensions().setApplicationContext( this.applicationContext );
+            GeoServerExtensionsHelper.init( this.applicationContext );
         }
     }
     

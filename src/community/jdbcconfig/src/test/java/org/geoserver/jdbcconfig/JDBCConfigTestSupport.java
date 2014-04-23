@@ -26,6 +26,7 @@ import org.geoserver.jdbcconfig.internal.DbMappings;
 import org.geoserver.jdbcconfig.internal.Util;
 import org.geoserver.jdbcconfig.internal.XStreamInfoSerialBinding;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.web.context.WebApplicationContext;
@@ -77,7 +78,7 @@ public class JDBCConfigTestSupport {
         // just to avoid hundreds of warnings in the logs about extension lookups with no app
         // context set
         appContext = createNiceMock(WebApplicationContext.class);
-        new GeoServerExtensions().setApplicationContext(appContext);
+        GeoServerExtensionsHelper.init(appContext);
 
         configureAppContext(appContext);
         replay(appContext);

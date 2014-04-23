@@ -71,6 +71,7 @@ import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geotools.data.DataUtilities;
@@ -294,7 +295,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
                 applicationContext.destroy();
                 
                 // kill static caches
-                new GeoServerExtensions().setApplicationContext(null);
+                GeoServerExtensionsHelper.init(null);
         
                 // some tests do need a kick on the GC to fully clean up
                 if(isMemoryCleanRequired()) {

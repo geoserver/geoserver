@@ -23,7 +23,10 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 /**
- * Tests for {@link GeoServerDataDirectory}.
+ * Tests covering the former functionality of GeoServerDataDirectory.
+ * 
+ * Much of this functionality depends on the availability of GeoServerResourceLoader
+ * in the application context as the bean "resourceLoader".
  * 
  * @author Daniele Romagnoli, GeoSolutions SAS
  */

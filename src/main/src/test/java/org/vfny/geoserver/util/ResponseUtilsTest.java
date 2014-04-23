@@ -12,6 +12,7 @@ import org.geoserver.config.SettingsInfo;
 import org.geoserver.ows.ProxifyingURLMangler;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
@@ -36,12 +37,12 @@ public class ResponseUtilsTest {
         expect(appContext.getBeanNamesForType(URLMangler.class)).andReturn(new String[]{"mangler"});
         expect(appContext.getBean("mangler")).andReturn(mangler).anyTimes();
         replay(appContext);
-        new GeoServerExtensions().setApplicationContext(appContext);
+        GeoServerExtensionsHelper.init(appContext);
     }
 
     @After
     public void clearAppContext() {
-        new GeoServerExtensions().setApplicationContext(null);
+        GeoServerExtensionsHelper.init(null);
     }
 
     @Test

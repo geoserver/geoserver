@@ -35,7 +35,7 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.impl.CatalogFactoryImpl;
 import org.geoserver.data.test.MockCatalogBuilder.Callback;
-import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.security.GeoServerAuthenticationProvider;
 import org.geoserver.security.GeoServerRoleStore;
@@ -74,13 +74,27 @@ import org.springframework.context.ApplicationContext;
  * Utility methods are provided to create many common configuration and resource access objects.
  */
 public class MockCreator implements Callback {
-
-    public Catalog createCatalog(MockTestData testData) throws Exception {
     
+    /**
+     * Creates GeoServerResouceLoader around provided test data.
+     * <p>
+     * Created bean is registered with GeoServerExtensions as the singleton resourceLoader.
+     * 
+     * @param testData Used to access base directory
+     * @return GeoServerResourceLoader (registered with GeoServerExtensions)
+     * @throws Exception
+     */
+    public GeoServerResourceLoader createResourceLoader(MockTestData testData) throws Exception {
         File data = testData.getDataDirectoryRoot();
-    
         GeoServerResourceLoader loader = new GeoServerResourceLoader(data);
-        GeoServerExtensions.init("resourceLoader", loader ); // treat as singleton
+        
+        GeoServerExtensionsHelper.singleton("resourceLoader", loader ); // treat as singleton
+        
+        return loader;
+    }
+    
+    public Catalog createCatalog(MockTestData testData) throws Exception {
+        GeoServerResourceLoader loader = createResourceLoader(testData);
         
         final Catalog catalog = createMock(Catalog.class);
         expect(catalog.getFactory()).andReturn(new CatalogFactoryImpl(catalog)).anyTimes();
@@ -98,8 +112,7 @@ public class MockCreator implements Callback {
                 return ResourcePool.create(catalog);
             }
         }).anyTimes();
-    
-        MockCatalogBuilder b = new MockCatalogBuilder(catalog, data);
+        MockCatalogBuilder b = new MockCatalogBuilder(catalog, loader.getBaseDirectory() );
         b.setCallback(this);
     
         b.style(DEFAULT_VECTOR_STYLE);

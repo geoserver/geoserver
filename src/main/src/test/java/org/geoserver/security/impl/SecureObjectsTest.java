@@ -4,9 +4,8 @@
  */
 package org.geoserver.security.impl;
 
-import junit.framework.TestCase;
-
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.springframework.context.ApplicationContext;
@@ -24,6 +23,6 @@ public abstract class SecureObjectsTest {
 
     @AfterClass
     public static void destroyAppContext() {
-        new GeoServerExtensions().setApplicationContext(null);
+        GeoServerExtensionsHelper.init(null);
     }
 }

@@ -78,6 +78,7 @@ import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.GeoServerRoleService;
@@ -252,7 +253,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             applicationContext.destroy();
             
             // kill static caches
-            new GeoServerExtensions().setApplicationContext(null);
+            GeoServerExtensionsHelper.init(null);
         } finally {
             applicationContext = null;
         }

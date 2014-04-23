@@ -52,7 +52,6 @@ import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 /**
  * Initializes GeoServer configuration and catalog on startup.
@@ -82,7 +81,6 @@ public abstract class GeoServerLoader {
     
     public void setApplicationContext(ApplicationContext applicationContext)
             throws BeansException {
-        GeoserverDataDirectory.init((WebApplicationContext)applicationContext);
     }
     
     public void setXStreamPeristerFactory(XStreamPersisterFactory xpf) {

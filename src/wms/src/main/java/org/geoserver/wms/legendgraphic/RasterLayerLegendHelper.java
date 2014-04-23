@@ -12,12 +12,16 @@ import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
-import java.io.File;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.legendgraphic.ColorMapLegendCreator.Builder;
 import org.geoserver.wms.map.ImageUtils;
@@ -29,8 +33,6 @@ import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
-
 /**
  * Helper class to create legends for raster styles by parsing the rastersymbolizer element.
  * 
@@ -40,16 +42,19 @@ import org.vfny.geoserver.global.GeoserverDataDirectory;
 public class RasterLayerLegendHelper {
 
     /**
-     * The default legend is a simpe image with an R within it which stands for Raster.
+     * The default legend is a simple image with an R within it which stands for Raster.
      */
     private final static BufferedImage defaultLegend;
     static {
         BufferedImage imgShape = null;
         try {
-            final File stylesDirectory = GeoserverDataDirectory.findCreateConfigDir("styles");
-            final File rasterLegend = new File(stylesDirectory, "rasterLegend.png");
-            if (rasterLegend.exists())
-                imgShape = ImageIO.read(rasterLegend);
+            GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+            Resource rasterLegend = loader.get( Paths.path("styles","rasterLegend.png"));
+//            final File stylesDirectory = GeoserverDataDirectory.findCreateConfigDir("styles");
+//            final File rasterLegend = new File(stylesDirectory, "rasterLegend.png");
+            if (rasterLegend.getType() == Type.RESOURCE ){
+                imgShape = ImageIO.read(rasterLegend.file());
+            }
         } catch (Throwable e) {
             imgShape = null;
         }

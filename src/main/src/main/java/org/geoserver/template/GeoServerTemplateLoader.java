@@ -20,8 +20,6 @@ import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
-
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.cache.FileTemplateLoader;
 import freemarker.cache.TemplateLoader;
@@ -265,10 +263,34 @@ public class GeoServerTemplateLoader implements TemplateLoader {
             final String dirName;
             if (featureType != null) {
                 baseDirName = "featureTypes";
-                dirName = GeoserverDataDirectory.findFeatureTypeDirName(featureType);
+                String name = featureType.getTypeName();
+                String namespace = featureType.getName().getNamespaceURI();
+                FeatureTypeInfo ftInfo = null;
+                if(catalog != null && namespace != null) {
+                    NamespaceInfo nsInfo = catalog.getNamespaceByURI(namespace);
+                    if(nsInfo != null){
+                        ftInfo = catalog.getFeatureTypeByName( nsInfo.getPrefix(), name);
+                    }
+                }
+                if(catalog != null && ftInfo == null){ 
+                    ftInfo = catalog.getFeatureTypeByName(name);
+                }
+                if(ftInfo != null){
+                    String metadata = ftInfo.getMetadata().get("dirName",String.class);
+                    if( metadata != null ){
+                        dirName = metadata;
+                    }
+                    else {
+                        dirName = ftInfo.getNamespace().getPrefix() + "_" + ftInfo.getName();
+                    }
+                }
+                else {
+                    dirName = null; // unavaialble
+                }
             } else if (coverageName != null) {
                 baseDirName = "coverages";
-                dirName = GeoserverDataDirectory.findCoverageDirName(coverageName);
+                CoverageInfo coverageInfo = catalog.getCoverageByName(coverageName);
+                dirName = coverageInfo.getMetadata().get( "dirName", String.class );
             } else {
                 baseDirName = "featureTypes";
                 dirName = "";

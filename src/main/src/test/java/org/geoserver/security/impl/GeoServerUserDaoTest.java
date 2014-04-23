@@ -144,11 +144,10 @@ public class GeoServerUserDaoTest {
         File temp = File.createTempFile("sectest", "", new File("target"));
         temp.delete();
         temp.mkdir();
+        File propFile = new File(temp, "users.properties");
         try {
-            dao.securityDir = temp;
-            dao.storeUsers();
-            File propFile = new File(temp, "users.properties");
             dao.userDefinitionsFile = new PropertyFileWatcher(propFile);
+            dao.storeUsers();
             dao.userMap.clear();
             dao.loadUserMap();
         } finally {

@@ -4,12 +4,16 @@ import static org.geotools.filter.capability.FunctionNameImpl.parameter;
 
 import java.io.File;
 
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geotools.filter.FunctionExpressionImpl;
 import org.geotools.filter.capability.FunctionNameImpl;
 import org.geotools.renderer.lite.gridcoverage2d.GradientColorMapGenerator;
 import org.geotools.styling.ColorMap;
 import org.opengis.filter.capability.FunctionName;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 /**
  * Filter function to generate a {@link ColorMap} on top of an SVG file contained within the styles data folder
@@ -18,7 +22,8 @@ import org.vfny.geoserver.global.GeoserverDataDirectory;
  * @author Daniele Romagnoli, GeoSolutions SAS
  */
 public class FilterFunction_svgColorMap extends FunctionExpressionImpl {
-
+    
+    /** "/ramps/" or "\ramps\" depending on platform */
     private final static String STYLES_RAMP = File.separatorChar + "ramps" + File.separatorChar;
 
     public static FunctionName NAME = new FunctionNameImpl("colormap",
@@ -40,23 +45,27 @@ public class FilterFunction_svgColorMap extends FunctionExpressionImpl {
 
     public Object evaluate(String colorMap, final double min, final double max) {
         GradientColorMapGenerator generator = null;
-        File xmlFile = null;
+        Resource xmlFile = null;
         if (!colorMap.startsWith(GradientColorMapGenerator.RGB_INLINEVALUE_MARKER)
                 && !colorMap.startsWith(GradientColorMapGenerator.HEX_INLINEVALUE_MARKER)) {
-            colorMap = colorMap.replace('\\', File.separatorChar);
-            xmlFile = GeoserverDataDirectory.findStyleFile(STYLES_RAMP + colorMap + ".svg");
-            if (xmlFile == null || !xmlFile.exists() || !xmlFile.canRead()) {
+            
+            GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+            colorMap = colorMap.replace('\\', '/');
+            
+            String path = Paths.path("styles","ramps", colorMap+"svg");
+            
+            xmlFile = loader.get( path );
+            if( xmlFile.getType() != Type.RESOURCE ){
                 throw new IllegalArgumentException(
                         "The specified colorMap do not exist in the styles/ramp folder\n"
                                 + "Check that "
-                                + GeoserverDataDirectory.getGeoserverDataDirectory()
-                                + File.separatorChar + "styles" + File.separatorChar + "ramp"
-                                + " contains a " + colorMap + ".svg file");
+                                + path
+                                + " exists and is an .svg file");
             }
         }
         try {
             if (xmlFile != null) {
-                generator = GradientColorMapGenerator.getColorMapGenerator(xmlFile);
+                generator = GradientColorMapGenerator.getColorMapGenerator(xmlFile.file());
             } else {
                 generator = GradientColorMapGenerator.getColorMapGenerator(colorMap);
             }

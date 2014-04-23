@@ -44,7 +44,10 @@ import javax.media.jai.operator.FormatDescriptor;
 import javax.media.jai.operator.LookupDescriptor;
 import javax.media.jai.operator.MosaicDescriptor;
 
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.wms.DefaultWebMapService;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.GetMapRequest;
@@ -89,7 +92,6 @@ import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.PixelInCell;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 
 /**
@@ -555,22 +557,23 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         MapDecorationLayout layout = null;
         if (layoutName != null) {
             try {
-                File layoutDir = GeoserverDataDirectory.findConfigDir(
-                        GeoserverDataDirectory.getGeoserverDataDirectory(), "layouts");
+                GeoServerResourceLoader loader = wms.getCatalog().getResourceLoader();
+                Resource layouts = loader.get("layouts");
+                if (layouts.getType() == Type.DIRECTORY ) {
+                    Resource layoutConfig = layouts.get(layoutName+".xml");
+                    //File layoutConfig = new File(layoutDir, layoutName + ".xml");
 
-                if (layoutDir != null) {
-                    File layoutConfig = new File(layoutDir, layoutName + ".xml");
-
-                    if (layoutConfig.exists() && layoutConfig.canRead()) {
-                        layout = MapDecorationLayout.fromFile(layoutConfig, tiled);
+                    if( layoutConfig.getType() == Type.RESOURCE ){
+                        File layoutConfigFile = layoutConfig.file();
+                        layout = MapDecorationLayout.fromFile(layoutConfigFile, tiled);
                     } else {
                         LOGGER.log(Level.WARNING, "Unknown layout requested: " + layoutName);
                     }
                 } else {
-                    LOGGER.log(Level.WARNING, "No layout directory defined");
+                    LOGGER.log(Level.WARNING, "No layouts directory defined");
                 }
             } catch (Exception e) {
-                LOGGER.log(Level.WARNING, "Failed to load layout: " + layoutName, e);
+                LOGGER.log(Level.WARNING, "Unable to load layout: " + layoutName, e);
             }
         }
 

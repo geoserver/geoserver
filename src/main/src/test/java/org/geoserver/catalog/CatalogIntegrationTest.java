@@ -19,6 +19,8 @@ import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.config.GeoServerPersister;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.SystemTest;
 import org.geoserver.test.TestSetup;
@@ -34,6 +36,11 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
         testData.setUpDefaultRasterLayers();
+        
+        GeoServerExtensions extension = GeoServerExtensions.bean(GeoServerExtensions.class);
+        if( extension == null ){
+            GeoServerExtensionsHelper.init( this.applicationContext );
+        }
     }
     
     @Test

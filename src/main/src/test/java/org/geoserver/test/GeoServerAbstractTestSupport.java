@@ -71,6 +71,7 @@ import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geotools.data.DataUtilities;
@@ -84,7 +85,6 @@ import org.geotools.xml.XSD;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -295,7 +295,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
                 applicationContext.destroy();
                 
                 // kill static caches
-                new GeoServerExtensions().setApplicationContext(null);
+                GeoServerExtensionsHelper.init(null);
         
                 // some tests do need a kick on the GC to fully clean up
                 if(isMemoryCleanRequired()) {
@@ -304,9 +304,6 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
                 }
                 
                 if(getTestData() != null) {
-                    // this cleans up the data directory static loader, if we don't the next test
-                    // will keep on running on the current data dir
-                    GeoserverDataDirectory.destroy();
                     getTestData().tearDown();
                 }
             } finally {

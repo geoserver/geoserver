@@ -56,7 +56,7 @@ public class GeoValidator extends ValidationProcessor {
      * @param config The configuration module.
      */
     public GeoValidator(GeoServerResourceLoader resourceLoader) {
-        loadPlugins(resourceLoader.getBaseDirectory());
+        loadPlugins(resourceLoader);
     }
 
     /**
@@ -64,14 +64,13 @@ public class GeoValidator extends ValidationProcessor {
      *
      * @param dataDir The data directory.
      */
-    protected void loadPlugins(File dataDir) {
+    protected void loadPlugins(GeoServerResourceLoader loader) {
         Map plugIns = null;
         Map testSuites = null;
 
         try {
-            File plugInDir = GeoserverDataDirectory.findConfigDir(dataDir, "plugIns");
-            File validationDir = GeoserverDataDirectory.findConfigDir(dataDir, "validation");
-
+            File plugInDir = loader.get("plugIns").dir();
+            File validationDir = loader.get("validation").dir();
             if (plugInDir != null && plugInDir.exists()) {
                 plugIns = XMLReader.loadPlugIns(plugInDir);
 

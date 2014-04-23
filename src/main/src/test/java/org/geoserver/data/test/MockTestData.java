@@ -90,7 +90,6 @@ import org.geotools.referencing.CRS;
 import org.geotools.util.Version;
 import org.opengis.feature.type.FeatureType;
 import org.springframework.context.ApplicationContext;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 /**
  * Test setup uses for GeoServer mock tests.

@@ -22,10 +22,11 @@ import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.DataUtilities;
 import org.geotools.util.SoftValueHashMap;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 public class WatermarkDecoration implements MapDecoration {
     /** A logger for this class. */
@@ -109,9 +110,11 @@ public class WatermarkDecoration implements MapDecoration {
         try {
             url = new URL(imageURL);
             if (url.getProtocol() == null || url.getProtocol().equals("file")) {
-                File file = GeoserverDataDirectory.findDataFile(imageURL);
-                if (file.exists())
+                GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+                File file = loader.url(imageURL);
+                if (file.exists()){
                     url = DataUtilities.fileToURL(file);
+                }
             }
         } catch (MalformedURLException e) {
             url = null;

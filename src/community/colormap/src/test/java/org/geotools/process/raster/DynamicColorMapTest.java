@@ -20,6 +20,8 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.security.AccessMode;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wms.map.GetMapKvpRequestReader;
@@ -30,7 +32,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverageReader;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
@@ -75,7 +76,9 @@ public class DynamicColorMapTest extends GeoServerSystemTestSupport {
         }
 
         URL style = getClass().getResource("test-data/style_rgb.sld");
-        final String dataDir = GeoserverDataDirectory.getGeoserverDataDirectory().getAbsolutePath();
+        
+        GeoServerResourceLoader loader = catalog.getResourceLoader();
+        final String dataDir = loader.getBaseDirectory().getAbsolutePath();
         try {
             is = style.openStream();
             org.geoserver.data.util.IOUtils.copy(is, new File(dataDir + "/styles/style_rgb.sld"));

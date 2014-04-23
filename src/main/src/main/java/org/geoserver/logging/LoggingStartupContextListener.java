@@ -25,7 +25,6 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.util.logging.CommonsLoggerFactory;
 import org.geotools.util.logging.Log4JLoggerFactory;
 import org.geotools.util.logging.Logging;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 /**
  * Listens for GeoServer startup and tries to configure logging redirection to
@@ -63,7 +62,7 @@ public class LoggingStartupContextListener implements ServletContextListener {
             getLogger().info("RELINQUISH_LOG4J_CONTROL on, won't attempt to reconfigure LOG4J loggers");
         } else {
             try {
-                File baseDir = new File(GeoserverDataDirectory.findGeoServerDataDir(context));
+                File baseDir = new File(GeoServerResourceLoader.lookupGeoServerDataDirectory(context));
                 GeoServerResourceLoader loader = new GeoServerResourceLoader(baseDir);
                 
                 File f= loader.find( "logging.xml" );

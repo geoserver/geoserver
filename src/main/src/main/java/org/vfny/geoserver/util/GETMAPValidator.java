@@ -22,9 +22,12 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.wms.request.GetMapRequest;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -43,9 +46,10 @@ public class GETMAPValidator {
      * @return
      */
     public List validateGETMAP(InputStream xml) {
-        File schemaFile = new File(GeoserverDataDirectory.getGeoserverDataDirectory(),
-                "/data/capabilities/sld/GetMap.xsd");
-
+        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        
+        Resource schema = loader.get("data/capabilities/sld/GetMap.xsd");
+        File schemaFile = schema.file();
         try {
             return validateGETMAP(xml, DataUtilities.fileToURL(schemaFile));
         } catch (Exception e) {
@@ -78,8 +82,14 @@ public class GETMAPValidator {
     }
 
     public List validateGETMAP(InputSource xml, ServletContext servContext) {
-        File schemaFile = new File(GeoserverDataDirectory.getGeoserverDataDirectory(),
-                "/data/capabilities/sld/GetMap.xsd");
+        
+        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        
+        Resource schema = loader.get("data/capabilities/sld/GetMap.xsd");
+        File schemaFile = schema.file();
+        
+//        File schemaFile = new File(GeoserverDataDirectory.getGeoserverDataDirectory(),
+//                "/data/capabilities/sld/GetMap.xsd");
 
         try {
             return validateGETMAP(xml, DataUtilities.fileToURL(schemaFile));

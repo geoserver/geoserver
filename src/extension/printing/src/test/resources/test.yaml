@@ -1,0 +1,150 @@
+#===========================================================================
+# allowed DPIs
+#===========================================================================
+dpis: [75, 150, 300]
+
+#===========================================================================
+# the allowed scales
+#===========================================================================
+scales:
+  - 25000
+  - 50000
+  - 100000
+  - 200000
+  - 500000
+  - 1000000
+  - 2000000
+  - 4000000
+
+#===========================================================================
+# the list of allowed hosts
+#===========================================================================
+hosts:
+  - !localMatch
+    dummy: true
+  
+
+layouts:
+  Legal:
+    mainPage:
+      pageSize: LEGAL
+      items:
+        - !map
+          spacingAfter: 30
+          width: 440
+          height: 483
+  #===========================================================================
+  A4 portrait:
+  #===========================================================================
+    metaData:
+#      title: '${mapTitle}'
+      author: 'MapFish print module'
+      subject: 'Simple layout'
+      keywords: 'map,print'
+      creator: 'MapFish'
+
+    titlePage:
+      pageSize: A4
+      items:
+        - !text
+          spacingAfter: 150
+        - !text
+          font: Helvetica
+          fontSize: 40
+          spacingAfter: 100
+          align: center
+          text: '${layout}'
+
+      footer: &commonFooter
+        height: 30
+        items:
+          - !columns
+            config:
+              cells:
+                - paddingBottom: 5   
+            items:
+              - !text
+                backgroundColor: #FF0000
+                align: left
+                text: a red box
+              - !text
+                align: right
+                text: 'Page ${pageNum}'
+
+    #-------------------------------------------------------------------------
+    mainPage:
+      pageSize: A4
+      rotation: true
+#      header:
+#        height: 50
+#        items:
+#          - !text
+#            font: Helvetica
+#            fontSize: 30
+#            align: right
+#            text: '${layout}'
+      items:
+        - !text
+          text: '${mapTitle}'
+          fontSize: 30
+          spacingAfter: 30
+        - !map
+          spacingAfter: 30
+          width: 440
+          height: 483
+        - !columns
+          # columns can have an absolute position. In that case, they need the 3 following fields:
+          absoluteX: 410
+          absoluteY: 310
+          width: 100
+          items:
+            - !scalebar
+              type: bar
+              maxSize: 100
+              barBgColor: white
+              fontSize: 8
+              align: right
+        - !text
+          text: '${comment}'
+          spacingAfter: 30
+        - !attributes
+          source: data
+          spacingAfter: 30
+          columnDefs:
+            id:
+              columnWeight: 2
+              header: !text
+                text: ID
+                backgroundColor: #A0A0A0
+              cell: !text
+                text: '${id}'
+            name:
+              columnWeight: 5
+              header: !text
+                text: Name
+                backgroundColor: #A0A0A0
+              cell: !columns
+                config:
+                  cells:
+                    - backgroundColor: '${nameBackgroundColor}'
+                      borderWidth: 1
+                      borderColor: '${nameBorderColor}'
+                items:
+                  - !text
+                    text: '${name}'
+            icon:
+              columnWeight: 2
+              header: !text
+                text: Symbol
+                backgroundColor: #A0A0A0
+              cell: !text
+                align: center
+                maxWidth: 15
+                maxHeight: 15
+                text: TEXT
+        - !text
+          font: Helvetica
+          fontSize: 9
+          align: right
+          text: '1:${scale} ${now MM.dd.yyyy}'
+      footer: *commonFooter

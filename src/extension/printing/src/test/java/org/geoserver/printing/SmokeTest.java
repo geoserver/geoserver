@@ -4,13 +4,17 @@
  */
 package org.geoserver.printing;
 
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import com.mockrunner.mock.web.MockServletContext;
 
 
 public class SmokeTest extends GeoServerSystemTestSupport
@@ -19,7 +23,8 @@ public class SmokeTest extends GeoServerSystemTestSupport
     @Test
     public void testServiceExists() throws Exception
     {
-        JSON json = getAsJSON("/pdf/info.json");
+        ((MockServletContext)applicationContext.getServletContext()).setRealPath("test.yaml", new File(getClass().getResource("/test.yaml").toURI()).getAbsolutePath());
+        JSON json = getAsJSON("/pdf/info.json?app=test");
 
         assertTrue(json instanceof JSONObject);
 
@@ -32,7 +37,7 @@ public class SmokeTest extends GeoServerSystemTestSupport
 
         json = json(postAsServletResponse(
                 "/pdf/create.json",
-                "{\"units\":\"m\",\"srs\":\"EPSG:900913\",\"layout\":\"A4 portrait\",\"dpi\":75,\"outputFilename\":\"mapstore-print\",\"layers\":[],\"legends\":[],\"pages\":[{\"mapTitle\":\"\",\"center\":[1263949.7576605,5859225.6448425],\"scale\":200000,\"rotation\":0,\"comment\":\"\"}]}",
+                "{\"app\":\"test\",\"units\":\"m\",\"srs\":\"EPSG:900913\",\"layout\":\"A4 portrait\",\"dpi\":75,\"outputFilename\":\"mapstore-print\",\"layers\":[],\"legends\":[],\"pages\":[{\"mapTitle\":\"\",\"center\":[1263949.7576605,5859225.6448425],\"scale\":200000,\"rotation\":0,\"comment\":\"\"}]}",
                 "application/json"));
 
 

@@ -81,6 +81,7 @@ public abstract class GeoServerLoader {
     
     public void setApplicationContext(ApplicationContext applicationContext)
             throws BeansException {
+    	xpf.setApplicationContext(applicationContext);
     }
     
     public void setXStreamPeristerFactory(XStreamPersisterFactory xpf) {

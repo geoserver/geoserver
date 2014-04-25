@@ -24,6 +24,13 @@
       <groupId>org.geotools</groupId>
       <artifactId>gt-wfs-ng</artifactId>
     </dependency>
+
+    <!-- Provided dependencies -->
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-main</artifactId>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
 </project>

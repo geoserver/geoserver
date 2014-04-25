@@ -5,6 +5,8 @@
 package org.vfny.geoserver.global;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.Map;
 
 import org.geotools.data.DataSourceException;
 import org.geotools.data.FeatureLock;
@@ -44,11 +46,13 @@ public class GeoServerFeatureLocking extends GeoServerFeatureStore implements Si
      * @param definitionQuery DOCUMENT ME!
      * @param declaredCRS 
      * @param srsHandling see {@link FeatureTypeInfo#FORCE} & co.
+     * @param metadata metadata associated with the feature
      */
     GeoServerFeatureLocking(FeatureLocking<SimpleFeatureType, SimpleFeature> locking,
             SimpleFeatureType schema, Filter definitionQuery,
-            CoordinateReferenceSystem declaredCRS, int srsHandling) {
-        super(locking, schema, definitionQuery, declaredCRS, srsHandling);
+            CoordinateReferenceSystem declaredCRS, int srsHandling,
+            Map<String, Serializable> metadata) {
+        super(locking, schema, definitionQuery, declaredCRS, srsHandling, metadata);
     }
 
     FeatureLocking<SimpleFeatureType, SimpleFeature> locking() {

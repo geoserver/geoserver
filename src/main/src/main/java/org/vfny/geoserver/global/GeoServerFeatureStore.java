@@ -5,7 +5,9 @@
 package org.vfny.geoserver.global;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import org.geoserver.feature.RetypingFeatureCollection;
 import org.geotools.data.DataUtilities;
@@ -50,11 +52,13 @@ public class GeoServerFeatureStore extends GeoServerFeatureSource implements Sim
      * @param definitionQuery Filter that constrains source
      * @param declaredCRS Geometries will be forced to this CRS (or null, if no forcing is needed)
      * @param srsHandling
+     * @param metadata metadata associated with the feature
      */
     GeoServerFeatureStore(FeatureStore<SimpleFeatureType, SimpleFeature> store,
             SimpleFeatureType schema, Filter definitionQuery,
-            CoordinateReferenceSystem declaredCRS, int srsHandling) {
-        super(store, schema, definitionQuery, declaredCRS, srsHandling);
+            CoordinateReferenceSystem declaredCRS, int srsHandling,
+            Map<String, Serializable> metadata) {
+        super(store, schema, definitionQuery, declaredCRS, srsHandling, metadata);
     }
 
     /**

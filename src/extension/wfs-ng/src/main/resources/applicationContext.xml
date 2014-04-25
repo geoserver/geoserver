@@ -10,4 +10,6 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
     <context:annotation-config></context:annotation-config>
+
+    <bean id="WfsNgXStreamPersisterInitializer" class="org.geoserver.extension.wfsng.WfsNgXStreamPersisterInitializer" />
 </beans>

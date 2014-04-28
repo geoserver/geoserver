@@ -32,7 +32,6 @@ public class WfsNgConfigurationParserTest {
 		String xml = 
 			"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
 			"<storedQueryConfiguration>\n" +
-			"  <storedQueryId>foo</storedQueryId>\n" +
 			"  <storedQueryParameterMappings>\n" +
 			"    <storedQueryParameterMappingExpressionValue>\n" +
 			"      <parameterName>bbox</parameterName>\n" +
@@ -53,8 +52,6 @@ public class WfsNgConfigurationParserTest {
 		
 		assertNotNull(configuration);
 		
-		assertNotNull(configuration.getStoredQueryId());
-		assertEquals("foo", configuration.getStoredQueryId());
 		assertEquals(2, configuration.getStoredQueryParameterMappings().size());
 		assertEquals(ParameterMappingExpressionValue.class, configuration.getStoredQueryParameterMappings().get(0).getClass());
 		assertEquals(ParameterMappingDefaultValue.class, configuration.getStoredQueryParameterMappings().get(1).getClass());
@@ -74,7 +71,6 @@ public class WfsNgConfigurationParserTest {
 	@Test
 	public void testSerialization() throws Exception {
 		StoredQueryConfiguration mockConfiguration = new StoredQueryConfiguration();
-		mockConfiguration.setStoredQueryId("foo");
 
 		ParameterMappingExpressionValue param1 = new ParameterMappingExpressionValue();
 		param1.setParameterName("bbox");

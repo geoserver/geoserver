@@ -6,6 +6,7 @@ package org.geoserver.wms.featureinfo;
 
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.RenderingHints.Key;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -17,8 +18,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -326,7 +329,6 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
                 : Integer.MAX_VALUE;
         definitionQuery.setMaxFeatures(maxFeatures);
 
-        FeatureSource<? extends FeatureType, ? extends Feature> allAttributesFeatureSource;
         FeatureLayer result = new FeatureLayer(new AllAttributesFeatureSource(featureSource), style);
         result.setQuery(definitionQuery);
 
@@ -581,6 +583,18 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             Query q = new Query(query);
             q.setProperties(Query.ALL_PROPERTIES);
             return super.getFeatures(q);
+        }
+        
+        @Override
+        public Set<Key> getSupportedHints() {
+            Set<Key> hints = delegate.getSupportedHints();
+            if(hints == null || !hints.contains(Hints.FEATURE_DETACHED)) {
+                return hints;
+            } else {
+                Set<Key> result = new HashSet<RenderingHints.Key>(hints);
+                result.remove(Hints.FEATURE_DETACHED);
+                return result;
+            }
         }
         
     }

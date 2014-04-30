@@ -206,8 +206,6 @@ public class CssDemoPage extends GeoServerSecuredPage {
                     style.setWorkspace(ws);
                 }
                 
-                catalog.add(style);
-
                 File sld = findStyleFile(style);
                 if (sld == null || !sld.exists()) {
                     catalog.getResourcePool().writeStyle(
@@ -223,6 +221,8 @@ public class CssDemoPage extends GeoServerSecuredPage {
                     writer.write(defaultStyle);
                     writer.close();
                 }
+								
+                catalog.add(style);
             }
         } catch (IOException ioe) {
             throw new WicketRuntimeException(ioe);

@@ -206,8 +206,6 @@ public class CssDemoPage extends GeoServerSecuredPage {
                     style.setWorkspace(ws);
                 }
                 
-                catalog.add(style);
-
                 File sld = findStyleFile(style);
                 if (sld == null || !sld.exists()) {
                     catalog.getResourcePool().writeStyle(
@@ -216,6 +214,8 @@ public class CssDemoPage extends GeoServerSecuredPage {
                             );
                     sld = findStyleFile(style);
                 }
+                
+                catalog.add(style);
 
                 File css = new File(sld.getParent(), name + ".css");
                 if (!css.exists()) {

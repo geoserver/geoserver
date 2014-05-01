@@ -5,7 +5,6 @@
 package org.geoserver.gwc;
 
 import static org.geoserver.data.test.MockData.BASIC_POLYGONS;
-import static org.geoserver.data.test.MockData.MPOINTS;
 import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -44,6 +43,8 @@ import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.test.TestSetup;
+import org.geoserver.test.TestSetupFrequency;
 import org.geowebcache.GeoWebCacheDispatcher;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.GeoWebCacheExtensions;
@@ -58,13 +59,13 @@ import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.grid.GridSubset;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.TileLayerDispatcher;
-import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
+@TestSetup(run=TestSetupFrequency.REPEAT)
 public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     
     static final String FLAT_LAYER_GROUP = "flatLayerGroup";
@@ -76,31 +77,6 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         super.onSetUp(testData);
         
         GWC.get().getConfig().setDirectWMSIntegrationEnabled(false);
-    }
-    
-    @Before
-    public void resetLayers() throws Exception {
-        removeGroup(FLAT_LAYER_GROUP);
-        removeGroup(CONTAINER_LAYER_GROUP);
-        removeGroup(NESTED_LAYER_GROUP);
-        
-        final String layerName = getLayerId(BASIC_POLYGONS);
-        LayerInfo layerInfo = getCatalog().getLayerByName(layerName);
-        if(layerInfo != null) {
-            getCatalog().remove(layerInfo);
-            getGeoServer().reload();
-            
-        }
-
-        revertLayer(BASIC_POLYGONS);
-        revertLayer(MPOINTS);
-    }
-
-    private void removeGroup(String groupName) {
-        LayerGroupInfo lg = getCatalog().getLayerGroupByName(groupName);
-        if(lg != null) {
-            getCatalog().remove(lg);
-        }
     }
 
     @Test 

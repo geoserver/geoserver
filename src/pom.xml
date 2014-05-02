@@ -1501,7 +1501,7 @@
  <properties>
   <gs.version>2.4-SNAPSHOT</gs.version>
   <gt.version>10-SNAPSHOT</gt.version>
-  <gwc.version>1.5.0</gwc.version>
+  <gwc.version>1.5.2</gwc.version>
   <spring.version>3.1.4.RELEASE</spring.version>
   <spring.security.version>3.1.0.RELEASE</spring.security.version> 
   <poi.version>3.8</poi.version>

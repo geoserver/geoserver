@@ -101,7 +101,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
     protected ProjectionPolicy srsHandling;
 
     /** FeatureTypeInfo metadata to pass to extensions within the Query **/
-    protected Map<String, Serializable> metadata;
+    protected Map<String, Object> metadata;
     
     /**
      * Creates a new GeoServerFeatureSource object.
@@ -113,7 +113,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      * @param metadata metadata associated with the feature
      */
     GeoServerFeatureSource(FeatureSource<SimpleFeatureType, SimpleFeature> source, SimpleFeatureType schema, Filter definitionQuery,
-        CoordinateReferenceSystem declaredCRS, int srsHandling, Map<String, Serializable> metadata) {
+        CoordinateReferenceSystem declaredCRS, int srsHandling, Map<String, Object> metadata) {
         this.source = DataUtilities.simple(source);
         this.schema = schema;
         this.definitionQuery = definitionQuery;
@@ -156,7 +156,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      * @return
      */
     public static GeoServerFeatureSource create(FeatureSource <SimpleFeatureType, SimpleFeature> featureSource, SimpleFeatureType schema,
-        Filter definitionQuery, CoordinateReferenceSystem declaredCRS, int srsHandling, Map<String, Serializable> metadata) {
+        Filter definitionQuery, CoordinateReferenceSystem declaredCRS, int srsHandling, Map<String, Object> metadata) {
         if (featureSource instanceof FeatureLocking) {
             return new GeoServerFeatureLocking(
                     (FeatureLocking<SimpleFeatureType, SimpleFeature>) featureSource, schema,

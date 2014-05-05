@@ -57,7 +57,7 @@ public class GeoServerFeatureStore extends GeoServerFeatureSource implements Sim
     GeoServerFeatureStore(FeatureStore<SimpleFeatureType, SimpleFeature> store,
             SimpleFeatureType schema, Filter definitionQuery,
             CoordinateReferenceSystem declaredCRS, int srsHandling,
-            Map<String, Serializable> metadata) {
+            Map<String, Object> metadata) {
         super(store, schema, definitionQuery, declaredCRS, srsHandling, metadata);
     }
 

@@ -51,7 +51,7 @@ public class GeoServerFeatureLocking extends GeoServerFeatureStore implements Si
     GeoServerFeatureLocking(FeatureLocking<SimpleFeatureType, SimpleFeature> locking,
             SimpleFeatureType schema, Filter definitionQuery,
             CoordinateReferenceSystem declaredCRS, int srsHandling,
-            Map<String, Serializable> metadata) {
+            Map<String, Object> metadata) {
         super(locking, schema, definitionQuery, declaredCRS, srsHandling, metadata);
     }
 

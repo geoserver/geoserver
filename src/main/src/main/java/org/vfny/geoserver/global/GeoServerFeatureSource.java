@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -30,6 +31,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.Hints;
+import org.geotools.factory.Hints.ConfigurationMetadataKey;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.feature.SchemaException;
 import org.geotools.feature.collection.MaxSimpleFeatureCollection;
@@ -393,7 +395,11 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
         Query reprojected = reprojectFilter(query);
         Query newQuery = adaptQuery(reprojected, schema);
         
-        newQuery.getHints().put(Hints.FEATURETYPEINFO_METADATA, metadata);
+        // Merge configuration metadata into query hints
+        for (Entry<String, Object> e : metadata.entrySet()) {
+        	ConfigurationMetadataKey key = ConfigurationMetadataKey.get(e.getKey());
+        	newQuery.getHints().put(key, e.getValue());
+        }
 
         CoordinateReferenceSystem targetCRS = query.getCoordinateSystemReproject();
         try {

@@ -213,7 +213,7 @@ public class DataStoreFileResource extends StoreFileResource {
         getResponse().setStatus(Status.SUCCESS_ACCEPTED);
         Form form = getRequest().getResourceRef().getQueryAsForm();
 
-        File uploadedFile = doFileUpload(method, workspace, datastore, format);
+        File uploadedFile = doFileUpload(method, workspace, datastore, format).get(0);
         
         //look up the target datastore type specified by user
         String sourceDataStoreFormat = dataStoreFormat; 

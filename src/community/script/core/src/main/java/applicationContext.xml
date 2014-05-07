@@ -106,4 +106,11 @@
   <bean id="mapXmlPPIO" class="org.geoserver.script.wps.MapXMLPPIO"/>
   <bean id="mapJsonPPIO" class="org.geoserver.script.wps.MapJSONPPIO"/>
 
+  <bean id="scriptPage" class="org.geoserver.web.MenuPageInfo">
+    <property name="id" value="scriptPage"/>
+    <property name="titleKey" value="ScriptPage.page.title"/>
+    <property name="descriptionKey" value="ScriptPage.page.description"/>
+    <property name="componentClass" value="org.geoserver.script.web.ScriptPage"/>
+  </bean>
+
 </beans>

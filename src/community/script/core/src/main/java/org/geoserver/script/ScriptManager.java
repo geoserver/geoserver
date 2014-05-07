@@ -391,7 +391,54 @@ public class ScriptManager implements InitializingBean {
         }
         return ext;
     }
-
+    
+    /**
+     * Find the File based on the name, ScriptType and extension
+     * @param name The name of the script
+     * @param type The ScriptType
+     * @param extension The extension (js, py, groovy)
+     * @return The script File
+     */
+    public File getFile(String name, ScriptType type, String extension) throws IOException {
+        File dir = null;
+        if (type == ScriptType.WPS) {
+            dir = this.getWpsRoot();
+        } else if (type == ScriptType.FUNCTION) {
+            dir = this.getFunctionRoot();
+        } else if (type == ScriptType.WFSTX) {
+            dir = this.getWfsTxRoot();
+        } else if (type == ScriptType.APP) {
+            dir = this.getAppRoot();
+        }
+        if (type == ScriptType.APP) {
+            File appDir = new File(dir, name);
+            appDir.mkdirs();
+            return new File(appDir,  "main." + extension);
+        } else {
+            return new File(dir, name + "." + extension);
+        }
+    }
+    
+    /**
+     * Determine the ScriptType for the File
+     * @param file The File
+     * @return The ScriptType
+     */
+    public ScriptType getScriptType(File file) {
+        File dir = file.getParentFile();
+        if (dir.getName().equals("function")) {
+            return ScriptType.FUNCTION;
+        } else if (dir.getName().equals("tx") && dir.getParentFile().getName().equals("wfs")) {
+            return ScriptType.WFSTX;
+        } else if (dir.getName().equals("wps")) {
+            return ScriptType.WPS;
+        } else if (dir.getParentFile().getName().equals("apps")) {
+            return ScriptType.APP;
+        } else {
+            throw new IllegalArgumentException("Can't determine ScriptType for " + file + "'!");
+        }
+    }
+    
     @Override
     public void afterPropertiesSet() throws Exception {
         plugins();

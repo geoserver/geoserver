@@ -8,6 +8,7 @@ import java.util.Date;
 
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionDefaultValueSetting;
+import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -332,7 +333,7 @@ public class DimensionDefaultValueSelectionStrategyFactoryImpl implements
             String dimensionName, DimensionInfo dimensionInfo) {
         DimensionDefaultValueSelectionStrategy retval = null;
         DimensionDefaultValueSetting setting = dimensionInfo.getDefaultValue();
-        if (setting != null) {
+        if (setting != null && setting.getStrategyType() != null) {
             if (dimensionName.equals(ResourceInfo.TIME)) {
                 retval = getDefaultTimeStrategy(resource, setting);
             } else if (dimensionName.equals(ResourceInfo.ELEVATION)) {
@@ -348,7 +349,8 @@ public class DimensionDefaultValueSelectionStrategyFactoryImpl implements
             DimensionDefaultValueSetting setting) {
         DimensionDefaultValueSelectionStrategy retval = null;
         String referenceValue = null;
-        switch (setting.getStrategyType()) {
+        Strategy getStrategyType = setting.getStrategyType();
+        switch (getStrategyType) {
         case NEAREST: {
             Date refDate;
             String capabilitiesValue = null;

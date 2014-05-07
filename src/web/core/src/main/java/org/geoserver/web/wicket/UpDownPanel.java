@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.web.wicket;
 
 import java.util.List;
@@ -10,6 +14,13 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.StringResourceModel;
 
+/**
+ * A panel with two arrows, up and down, supposed to reorder items in a container (a table)
+ * 
+ * @author Andrea Aime - GeoSolutions
+ * 
+ * @param <T>
+ */
 public class UpDownPanel<T extends Object> extends Panel {
     
     T entry;
@@ -41,7 +52,7 @@ public class UpDownPanel<T extends Object> extends Panel {
             
             @Override
             protected void onComponentTag(ComponentTag tag) {
-                tag.put("title", downTitle.getString());
+                tag.put("title", upTitle.getString());
                 if ( items.indexOf( entry ) == 0 ) {
                     tag.put("style", "visibility:hidden");
                 } else {
@@ -68,7 +79,7 @@ public class UpDownPanel<T extends Object> extends Panel {
             
             @Override
             protected void onComponentTag(ComponentTag tag) {
-                tag.put("title", upTitle.getString());
+                tag.put("title", downTitle.getString());
                 if ( items.indexOf( entry ) == items.size() - 1) {
                     tag.put("style", "visibility:hidden");
                 } else {

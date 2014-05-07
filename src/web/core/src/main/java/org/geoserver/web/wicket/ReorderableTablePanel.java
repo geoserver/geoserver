@@ -1,3 +1,7 @@
+/* Copyright (c) 2001 - 2014 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.web.wicket;
 
 import java.util.ArrayList;
@@ -77,7 +81,7 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
 
                 Component component = null;
                 if (property == POSITION) {
-                    ParamResourceModel upTitle = new ParamResourceModel("moveToBottom", this);
+                    ParamResourceModel upTitle = new ParamResourceModel("moveToTop", this);
                     ParamResourceModel downTitle = new ParamResourceModel("moveToBottom", this);
                     component = new UpDownPanel<T>("component", (T) itemModel.getObject(),
                             dataProvider.getItems(), ReorderableTablePanel.this, upTitle, downTitle);
@@ -105,6 +109,8 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
         };
         items.setReuseItems(true);
         item.add(items);
+
+        this.setOutputMarkupId(true);
     }
 
     protected void onPopulateItem(GeoServerDataProvider.Property<T> property,

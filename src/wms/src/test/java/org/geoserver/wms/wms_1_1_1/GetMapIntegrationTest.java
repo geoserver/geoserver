@@ -19,9 +19,11 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -33,9 +35,16 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.CoverageView;
+import org.geoserver.catalog.CoverageView.CompositionType;
+import org.geoserver.catalog.CoverageView.CoverageBand;
+import org.geoserver.catalog.CoverageView.InputCoverageBand;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -52,8 +61,12 @@ import org.w3c.dom.Element;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class GetMapIntegrationTest extends WMSTestSupport {
-    
+
     private static final QName ONE_BIT = new QName(MockData.SF_URI, "onebit", MockData.SF_PREFIX);
+
+    private static final QName MOSAIC_HOLES = new QName(MockData.SF_URI, "mosaic_holes", MockData.SF_PREFIX);
+
+    private static final QName MOSAIC = new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX);
 
     String bbox = "-130,24,-66,50";
 
@@ -151,14 +164,51 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         
         Map properties = new HashMap();
         properties.put(LayerProperty.STYLE,"raster");
-        testData.addRasterLayer(new QName(MockData.SF_URI, "mosaic_holes", MockData.SF_PREFIX),
+        testData.addRasterLayer(MOSAIC_HOLES,
                 "mosaic_holes.zip", null, properties,GetMapIntegrationTest.class,catalog);
         
         testData.addRasterLayer(ONE_BIT,
                 "onebit.zip", null, properties,GetMapIntegrationTest.class,catalog);
 
+        testData.addRasterLayer(MOSAIC,
+                "mosaic.zip", null, properties,GetMapIntegrationTest.class,catalog);
+
+        addCoverageViewLayer();
     }
-    
+
+    private void addCoverageViewLayer() throws Exception {
+        final InputCoverageBand ib0 = new InputCoverageBand("mosaic", "2");
+        final CoverageBand b0 = new CoverageBand(Collections.singletonList(ib0), "mosaic@2",
+                0, CompositionType.BAND_SELECT);
+
+        final InputCoverageBand ib1 = new InputCoverageBand("mosaic", "1");
+        final CoverageBand b1 = new CoverageBand(Collections.singletonList(ib1), "mosaic@1",
+                1, CompositionType.BAND_SELECT);
+
+        final InputCoverageBand ib2 = new InputCoverageBand("mosaic", "0");
+        final CoverageBand b2 = new CoverageBand(Collections.singletonList(ib2), "mosaic@0",
+                2, CompositionType.BAND_SELECT);
+
+        final List<CoverageBand> coverageBands = new ArrayList<CoverageBand>(3);
+        coverageBands.add(b0);
+        coverageBands.add(b1);
+        coverageBands.add(b2);
+        CoverageView coverageView = new CoverageView("mosaic_shuffle", coverageBands);
+        Catalog cat = getCatalog();
+        final CoverageStoreInfo storeInfo = cat.getCoverageStoreByName("mosaic");
+
+        final CatalogBuilder builder = new CatalogBuilder(cat);
+        builder.setStore(storeInfo);
+
+        // Reordered bands coverage
+        final CoverageInfo coverageInfoView = coverageView.createCoverageInfo("mosaic_shuffle",
+                storeInfo, builder);
+        coverageInfoView.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        cat.add(coverageInfoView);
+        final LayerInfo layerInfoView = builder.buildLayer(coverageInfoView);
+        cat.add(layerInfoView);
+    }
+
     // protected String getDefaultLogConfiguration() {
     // return "/DEFAULT_LOGGING.properties";
     // }
@@ -596,6 +646,39 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertEquals(0, color[0]);
         assertEquals(255, color[1]);
         assertEquals(0, color[2]);
+    }
+
+    @Test
+    public void testCoverageViewMap() throws Exception {
+        String url = "wms?LAYERS=mosaic&"
+                + "&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1"
+                + "&REQUEST=GetMap&SRS=EPSG%3A4326"
+                + "&BBOX=7,37,11,41&WIDTH=100&HEIGHT=200&bgcolor=0xFF0000";
+        BufferedImage bi = getAsImage(url, "image/png");
+        int[] pixel = new int[3];
+        bi.getRaster().getPixel(50, 100, pixel);
+
+        final int R_PIXEL = 45;
+        final int G_PIXEL = 46;
+        final int B_PIXEL = 69;
+
+        assertEquals(R_PIXEL, pixel[0]);
+        assertEquals(G_PIXEL, pixel[1]);
+        assertEquals(B_PIXEL, pixel[2]);
+
+        // The shuffled view revert RGB bands to BGR
+        url = "wms?LAYERS=mosaic_shuffle&"
+                + "&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1"
+                + "&REQUEST=GetMap&SRS=EPSG%3A4326"
+                + "&BBOX=7,37,11,41&WIDTH=100&HEIGHT=200&bgcolor=0xFF0000";
+
+        bi = getAsImage(url, "image/png");
+        bi.getRaster().getPixel(50, 100, pixel);
+
+        assertEquals(B_PIXEL, pixel[0]);
+        assertEquals(G_PIXEL, pixel[1]);
+        assertEquals(R_PIXEL, pixel[2]);
+
     }
     
     @Test

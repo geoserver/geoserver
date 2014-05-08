@@ -774,7 +774,7 @@ public class CatalogBuilder {
     public void initCoverage(CoverageInfo cinfo, final String coverageName) throws Exception {
     	CoverageStoreInfo csinfo = (CoverageStoreInfo) store;
         GridCoverage2DReader reader = (GridCoverage2DReader) catalog
-            	.getResourcePool().getGridCoverageReader(csinfo, GeoTools.getDefaultHints());
+            	.getResourcePool().getGridCoverageReader(cinfo, GeoTools.getDefaultHints());
         if(coverageName != null) {
             reader = SingleGridCoverage2DReader.wrap(reader, coverageName);
         }
@@ -873,7 +873,7 @@ public class CatalogBuilder {
         }
         
         // if we are dealing with a multicoverage reader, wrap to simplify code
-        if(coverageName != null) {
+        if (coverageName != null) {
             reader = SingleGridCoverage2DReader.wrap(reader, coverageName);
         }
 
@@ -890,7 +890,8 @@ public class CatalogBuilder {
         }
         cinfo.setNamespace(namespace);
 
-        CoordinateReferenceSystem nativeCRS = reader.getOriginalEnvelope().getCoordinateReferenceSystem();
+        GeneralEnvelope envelope = reader.getOriginalEnvelope();
+        CoordinateReferenceSystem nativeCRS = envelope.getCoordinateReferenceSystem();
         cinfo.setNativeCRS(nativeCRS);
 
         // mind the default projection policy, Coverages do not have a flexible
@@ -904,7 +905,7 @@ public class CatalogBuilder {
             cinfo.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
         }
 
-        GeneralEnvelope envelope = reader.getOriginalEnvelope();
+        
         cinfo.setNativeBoundingBox(new ReferencedEnvelope(envelope));
         cinfo.setLatLonBoundingBox(new ReferencedEnvelope(CoverageStoreUtils.getWGS84LonLatEnvelope(envelope)));
 

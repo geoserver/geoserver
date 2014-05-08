@@ -32,6 +32,12 @@ Extensions are available at the `GeoServer download page <http://geoserver.org/d
    imagemosaicjdbc
    customjdbcaccess
 
+GeoServer provides extensive facilities for controlling how rasters are accessed.
+These are covered in the following sections.
 
+.. toctree::
+   :maxdepth: 1
+
+   coverageview
 
    

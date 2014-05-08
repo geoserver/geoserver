@@ -9,13 +9,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.CoverageView;
+import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.web.data.layer.SQLViewEditPage;
+import org.geoserver.web.data.layer.CoverageViewEditPage;
+import org.geoserver.web.data.layer.CoverageViewAbstractPage;
 import org.geoserver.web.data.store.panel.ColorPickerPanel;
 import org.geoserver.web.data.store.panel.TextParamPanel;
 import org.geoserver.web.util.MapModel;
@@ -47,6 +56,30 @@ public class CoverageResourceConfigurationPanel extends ResourceConfigurationPan
                 item.add(inputComponent);
             }
         };
+        
+        WebMarkupContainer coverageViewContainer = new WebMarkupContainer("editCoverageViewContainer");
+        add(coverageViewContainer);
+        final CoverageView coverageView = coverage.getMetadata().get(CoverageView.COVERAGE_VIEW, CoverageView.class);
+        coverageViewContainer.add(new Link("editCoverageView") {
+            
+            @Override
+            public void onClick() {
+                CoverageInfo coverageInfo = (CoverageInfo) model.getObject();
+                try {
+                    CoverageStoreInfo store = coverageInfo.getStore();
+                    WorkspaceInfo workspace = store.getWorkspace();
+                    setResponsePage(new CoverageViewEditPage(workspace.getName(), store.getName(), coverageInfo.getName(), coverageInfo,((ResourceConfigurationPage) this.getPage())));
+                } catch(Exception e) {
+                    LOGGER.log(Level.SEVERE, "Failure opening the Virtual Coverage edit page", e);
+                    error(e.toString());
+                }
+            }
+            
+           
+        });
+        
+        coverageViewContainer.setVisible(coverageView != null);
+        
         // needed for form components not to loose state
         paramsList.setReuseItems(true);
         add(paramsList);

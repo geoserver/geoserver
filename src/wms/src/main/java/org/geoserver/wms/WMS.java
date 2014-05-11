@@ -1178,9 +1178,9 @@ public class WMS implements ApplicationContextAware {
                 // @todo adding another option to dimensionInfo allows contains, versus intersects
                 Literal qlower = ff.literal(range.getMinValue());
                 Literal qupper = ff.literal(range.getMaxValue());
-                Filter lower = ff.between(attribute, qlower, qupper);
-                Filter upper = ff.between(endAttribute, qlower, qupper);
-                return ff.or(lower, upper);
+                Filter lower = ff.lessOrEqual(attribute, qupper);
+                Filter upper = ff.greaterOrEqual(endAttribute, qlower);
+                return ff.and(lower, upper);
             }
         } else {
             // Single element is equal to

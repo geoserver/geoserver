@@ -15,7 +15,7 @@ import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
 
 /**
- * Helper class that builds dimension related filters against refernce objects that can be point
+ * Helper class that builds dimension related filters against reference objects that can be point
  * ones (date, number, string) or range types (DateRange, NumberRange)
  * 
  * @author Andrea Aime - GeoSolutions
@@ -83,9 +83,9 @@ public class DimensionFilterBuilder {
                 // @todo adding another option to dimensionInfo allows contains, versus intersects
                 Literal qlower = ff.literal(range.getMinValue());
                 Literal qupper = ff.literal(range.getMaxValue());
-                Filter lower = ff.between(attribute, qlower, qupper);
-                Filter upper = ff.between(endAttribute, qlower, qupper);
-                return ff.or(lower, upper);
+                Filter lower = ff.lessOrEqual(attribute, qupper);
+                Filter upper = ff.greaterOrEqual(endAttribute, qlower);
+                return ff.and(lower, upper);
             }
         } else {
             // Single element is equal to

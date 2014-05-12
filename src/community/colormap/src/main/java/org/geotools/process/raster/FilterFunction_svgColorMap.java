@@ -52,12 +52,12 @@ public class FilterFunction_svgColorMap extends FunctionExpressionImpl {
             GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
             colorMap = colorMap.replace('\\', '/');
             
-            String path = Paths.path("styles","ramps", colorMap+"svg");
+            String path = Paths.path("styles", "ramps", colorMap + ".svg");
             
             xmlFile = loader.get( path );
             if( xmlFile.getType() != Type.RESOURCE ){
                 throw new IllegalArgumentException(
-                        "The specified colorMap do not exist in the styles/ramp folder\n"
+                        "The specified colorMap do not exist in the styles/ramps folder\n"
                                 + "Check that "
                                 + path
                                 + " exists and is an .svg file");

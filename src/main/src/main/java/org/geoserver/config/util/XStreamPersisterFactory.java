@@ -4,8 +4,15 @@
  */
 package org.geoserver.config.util;
 
-import org.geoserver.platform.GeoServerExtensions;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.geoserver.platform.GeoServerExtensions;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+
+import com.thoughtworks.xstream.io.HierarchicalStreamDriver;
 import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 
 /**
@@ -30,19 +37,70 @@ import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
  * @author Justin Deoliveira, OpenGeo
  *
  */
-public class XStreamPersisterFactory {
+public class XStreamPersisterFactory implements ApplicationContextAware {
+
+    private List<XStreamPersisterInitializer> initializers;
 
     /**
-     * Creates an instance configured to persist XML. 
+     * Creates an instance configured to persist XML.
      */
     public XStreamPersister createXMLPersister() {
-        return new XStreamPersister();
+        return buildPersister(null);
     }
 
     /**
      * Creates an instance configured to persist JSON.
      */
     public XStreamPersister createJSONPersister() {
-        return new XStreamPersister(new JettisonMappedXmlDriver());
+        return buildPersister(new JettisonMappedXmlDriver());
+    }
+
+    /**
+     * Builds a persister and runs the initializers against it
+     */
+    private XStreamPersister buildPersister(HierarchicalStreamDriver driver) {
+        XStreamPersister persister = new XStreamPersister(driver);
+
+        // give the initializers a chance to register their own converters, aliases and so on
+        for (XStreamPersisterInitializer initializer : getInitializers()) {
+            initializer.init(persister);
+        }
+
+        return persister;
+    }
+
+    private List<XStreamPersisterInitializer> getInitializers() {
+        if (initializers == null) {
+            initializers = new ArrayList<XStreamPersisterInitializer>(
+                    GeoServerExtensions.extensions(XStreamPersisterInitializer.class));
+        }
+
+        return initializers;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        initializers = new ArrayList<XStreamPersisterInitializer>(GeoServerExtensions.extensions(
+                XStreamPersisterInitializer.class, applicationContext));
+    }
+
+    /**
+     * Programmatically adds a {@link XStreamPersisterInitializer} to the factory (initializers are
+     * also automatically looked up from the Spring context, use this method only if you cannot
+     * Declare your initializer as a spring bean)
+     * 
+     * @param initializer
+     */
+    public void addInitializer(XStreamPersisterInitializer initializer) {
+        getInitializers().add(initializer);
+    }
+
+    /**
+     * Removes an initializer
+     * 
+     * @return True if the initializer was found and removed, false otherwise
+     */
+    public boolean removeInitializer(XStreamPersisterInitializer initializer) {
+        return getInitializers().remove(initializer);
     }
 }

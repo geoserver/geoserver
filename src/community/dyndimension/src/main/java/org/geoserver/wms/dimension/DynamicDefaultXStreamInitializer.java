@@ -1,0 +1,28 @@
+/* Copyright (c) 2014 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+package org.geoserver.wms.dimension;
+
+import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.config.util.XStreamPersisterInitializer;
+
+import com.thoughtworks.xstream.XStream;
+
+/**
+ * Initializes the XStream persister to treat the {@link DefaultValueConfigurations} values in the
+ * ResourceInfo metadata map
+ * 
+ * @author Andrea Aime - GeoSolutions
+ */
+public class DynamicDefaultXStreamInitializer implements XStreamPersisterInitializer {
+
+    @Override
+    public void init(XStreamPersister persister) {
+        persister.registerBreifMapComplexType("DynamicDefaultValues",
+                DefaultValueConfigurations.class);
+        XStream xs = persister.getXStream();
+        xs.alias("configuration", DefaultValueConfiguration.class);
+    }
+
+}

@@ -29,6 +29,7 @@ import javax.media.jai.JAI;
 import javax.media.jai.OperationRegistry;
 import javax.media.jai.RegistryElementDescriptor;
 import javax.media.jai.RegistryMode;
+import javax.media.jai.util.ImagingListener;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
@@ -71,6 +72,24 @@ public class GeoserverInitStartupListener implements ServletContextListener {
         // start up tctool - remove it before committing!!!!
         // new tilecachetool.TCTool().setVisible(true);
         
+        // Register logging, and bridge to JAI logging
+        GeoTools.init( (Hints) null );
+        
+        // Custom GeoTools ImagingListener used to ignore common warnings 
+        JAI.getDefaultInstance().setImagingListener(new ImagingListener() {
+            final Logger LOGGER = Logging.getLogger("javax.media.jai");
+            @Override
+            public boolean errorOccurred(String message, Throwable thrown, Object where,
+                    boolean isRetryable) throws RuntimeException {
+                if (message.contains("Continuing in pure Java mode")) {
+                    LOGGER.log(Level.FINE, message, thrown);
+                } else {
+                    LOGGER.log(Level.INFO, message, thrown);
+                }
+                return false; // we are not trying to recover
+            }
+        });
+                        
         // setup concurrent operation registry
         JAI jaiDef = JAI.getDefaultInstance();
         if(!(jaiDef.getOperationRegistry() instanceof ConcurrentOperationRegistry)) {
@@ -119,24 +138,13 @@ public class GeoserverInitStartupListener implements ServletContextListener {
         // IIORegistry leading to imageio plugins not being properly initialized
         ImageIO.scanForPlugins();
 
-        // HACK: under JDK 1.4.2 the native java image i/o stuff is failing
-        // in all containers besides Tomcat. If running under jdk 1.4.2 we
-        // disable the native codecs, unless the user forced the setting already
-        if (System.getProperty("java.version").startsWith("1.4")
-                && (System.getProperty("com.sun.media.imageio.disableCodecLib") == null)) {
-            LOGGER.warning("Disabling mediaLib acceleration since this is a "
-                    + "java 1.4 VM.\n If you want to force its enabling, " //
-                    + "set -Dcom.sun.media.imageio.disableCodecLib=true "
-                    + "in your virtual machine");
-            System.setProperty("com.sun.media.imageio.disableCodecLib", "true");
-        } else {
-            // in any case, the native png reader is worse than the pure java ones, so
-            // let's disable it (the native png writer is on the other side faster)...
-            ImageIOExt.allowNativeCodec("png", ImageReaderSpi.class, false);
-            ImageIOExt.allowNativeCodec("png", ImageWriterSpi.class, true);
-        }
-
-        // initialize geotools factories so that we don't make a spi lookup every time a factory is needed
+        
+        // in any case, the native png reader is worse than the pure java ones, so
+        // let's disable it (the native png writer is on the other side faster)...
+        ImageIOExt.allowNativeCodec("png", ImageReaderSpi.class, false);
+        ImageIOExt.allowNativeCodec("png", ImageWriterSpi.class, true);
+        
+        // initialize GeoTools factories so that we don't make a SPI lookup every time a factory is needed
         Hints.putSystemDefault(Hints.FILTER_FACTORY, CommonFactoryFinder.getFilterFactory2(null));
         Hints.putSystemDefault(Hints.STYLE_FACTORY, CommonFactoryFinder.getStyleFactory(null));
         Hints.putSystemDefault(Hints.FEATURE_FACTORY, CommonFactoryFinder.getFeatureFactory(null));

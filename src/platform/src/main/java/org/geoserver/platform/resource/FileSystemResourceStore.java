@@ -128,6 +128,7 @@ public class FileSystemResourceStore implements ResourceStore {
         }
 
         try {
+            dest.getParentFile().mkdirs(); // Make sure there's somewhere to move to.
             return Files.move(file, dest);
         } catch (IOException e) {
             throw new IllegalStateException("Unable to move " + path + " to " + target, e);

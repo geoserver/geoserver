@@ -1595,17 +1595,7 @@ public class ResourcePool {
             synchronized (styleCache) {
                 style = styleCache.get( info );
                 if ( style == null ) {
-                    
-                    //JD: it is important that we call the SLDParser(File) constructor because
-                    // if not the sourceURL will not be set which will mean it will fail to 
-                    //resolve relative references to online resources
-                    File styleFile = dataDir().findStyleSldFile(info);
-                    if ( styleFile == null ){
-                        throw new IOException( "No such file: " + info.getFilename());
-                    }
-                    
-                    style = Styles.style(Styles.parse(styleFile, null, info.getSLDVersion()));
-                    
+                    style = dataDir().parsedStyle(info, true);
                     //set the name of the style to be the name of hte style metadata
                     // remove this when wms works off style info
                     style.setName( info.getName() );

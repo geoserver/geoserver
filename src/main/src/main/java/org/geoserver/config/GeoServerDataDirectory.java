@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javax.annotation.Nonnull;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.CoverageInfo;
@@ -18,16 +20,23 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.Styles;
+import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
+import org.geotools.styling.Style;
+import org.geotools.styling.StyledLayerDescriptor;
 
 /**
  * File or Resource access to GeoServer data directory. In addition to paths Catalog obhjects such as workspace or FeatureTypeInfo can be used to
@@ -266,29 +275,15 @@ public class GeoServerDataDirectory implements ResourceStore {
     }
 
     /**
-     * Access to "security" folder.
-     */
-    @Deprecated
-    private File securityDir(boolean create, String... location) throws IOException {
-        Resource directory = get(Paths.path("security", Paths.path(location)));
-        if (create) {
-            return directory.dir(); // will create directory as needed
-        } else {
-            return Resources.directory(directory);
-        }
-    }
-
-    /**
      * Copies a file into a security configuration directory.
      * <p>
      * If the security configuration directory does exist it will be created.
      * </p>
      */
+    @Deprecated
     public void copyToSecurityDir(File f) throws IOException {
         Resource resource = get("security");
-        File securityRoot = resource.dir();
-
-        FileUtils.copyFileToDirectory(f, securityRoot);
+        Resources.copy(f, resource);
     }
 
     /**
@@ -297,97 +292,78 @@ public class GeoServerDataDirectory implements ResourceStore {
      * If the security configuration directory does exist it will be created
      * </p>
      */
+    @Deprecated
     public void copyToSecurityDir(InputStream data, String filename) throws IOException {
         Resource resource = get("security");
-        File securityRoot = resource.dir();
-
-        copy(data, securityRoot, filename);
+        Resources.copy(data, resource, filename);
     }
 
     /**
      * Returns the directory for the specified workspace, if the directory does not exist null is returned.
+     * 
+     * @deprecated As of GeoServer 2.6, replaced by @link {@link #get(WorkspaceInfo)}
      */
+    @Deprecated
     public File findWorkspaceDir(WorkspaceInfo ws) throws IOException {
-        Resource directory = get(path(ws));
+        Resource directory = get(ws);
         return Resources.directory(directory);
     }
-
+    
+    
     /**
      * Returns the directory for the specified workspace, if the directory does not exist it will be created.
      * 
      * @param create If set to true the directory will be created when it does not exist.
+     * 
+     * @deprecated As of GeoServer 2.6, replaced by {@link #get(WorkspaceInfo, String...)}
      */
+    @Deprecated
     public File findOrCreateWorkspaceDir(WorkspaceInfo ws) throws IOException {
-        Resource directory = get(path(ws));
+        Resource directory = get(ws);
         return directory.dir();
-    }
-
-    @Deprecated
-    private File workspaceDir(boolean create, WorkspaceInfo ws) throws IOException {
-        if (create) {
-            Resource directory = get(path(ws));
-            return directory.dir();
-        } else {
-            Resource directory = get(path(ws));
-            return Resources.directory(directory);
-        }
-    }
-
-    @Deprecated
-    private File workspacesDir(boolean create) throws IOException {
-        if (create) {
-            Resource directory = get("workspaces");
-            return directory.dir();
-        } else {
-            Resource directory = get("workspaces");
-            return Resources.directory(directory);
-        }
     }
 
     /**
      * Returns the configuration file for the specified workspace, if the file does not exist null is returned.
+     *
+     * @deprecated As of GeoServer 2.6, replaced by {@link #config(WorkspaceInfo)}
      */
+    @Deprecated
     public File findWorkspaceFile(WorkspaceInfo ws) throws IOException {
-        Resource workspaceFile = get(path(ws, "workspace.xml"));
+        Resource workspaceFile = config(ws);
         return Resources.file(workspaceFile);
     }
 
     /**
      * Returns the configuration file for the specified workspace, if the file does not exist a file object will still be returned.
      * 
+     * @deprecated As of GeoServer 2.6, replaced by {@link #config(WorkspaceInfo)}
      */
-    public File findOrResolveWorkspaceFile(WorkspaceInfo ws) throws IOException {
-        Resource workspaceFile = get(path(ws, "workspace.xml"));
-        return workspaceFile.file();
-    }
-
     @Deprecated
-    private File workspaceFile(boolean create, WorkspaceInfo ws) throws IOException {
-        Resource workspaceFile = get(path(ws, "workspace.xml"));
-        if (create) {
-            return workspaceFile.file();
-        } else {
-            return Resources.file(workspaceFile);
-        }
+    public File findOrResolveWorkspaceFile(WorkspaceInfo ws) throws IOException {
+        Resource workspaceFile = config(ws);
+        return workspaceFile.file();
     }
 
     /**
      * Returns a supplementary configuration file for a workspace, if the file does not exist null is returned.
+     * 
+     * @deprecated As of GeoServer 2.6, replaced by {@link #get(WorkspaceInfo, String...)}
      */
+    @Deprecated
     public File findSuppWorkspaceFile(WorkspaceInfo ws, String filename) throws IOException {
-        Resource resource = get(path(ws, filename));
+        Resource resource = get(ws, filename);
         return Resources.file(resource);
-    }
-
-    private String path(WorkspaceInfo workspace, String filename) {
-        return Paths.path("workspaces", workspace.getName(), filename);
     }
 
     /**
      * Returns a supplementary configuration file in the workspaces directory, if the file does not exist null is returned.
+     * 
+     * @deprecated As of GeoServer 2.6, replaced by {@link #getWorkspaces(String...)}
      */
+    @Deprecated
     public File findSuppWorkspacesFile(WorkspaceInfo ws, String filename) throws IOException {
-        Resource resource = get(Paths.path("workspaces", filename));
+        Resource resource = getWorkspaces(filename);
         return Resources.file(resource);
     }
 
@@ -399,10 +375,13 @@ public class GeoServerDataDirectory implements ResourceStore {
      * 
      * @param ws Target workspace for copied file
      * @param file File to copy
+     * 
+     * @deprecated As of GeoServer 2.6, replaced by {@link #get(WorkspaceInfo, String...)}
      */
+    @Deprecated
     public void copyToWorkspaceDir(WorkspaceInfo ws, File file) throws IOException {
-        Resource directory = get(path(ws));
-        FileUtils.copyFileToDirectory(file, directory.dir());
+        Resource directory = get(ws);
+        Resources.copy(file, directory);
     }
 
     /**
@@ -410,15 +389,13 @@ public class GeoServerDataDirectory implements ResourceStore {
      * <p>
      * If the workspace configuration directory does exist it will be created
      * </p>
+     * @deprecated As of GeoServer 2.6, replaced by {@link #get(WorkspaceInfo, String...)}
      */
+    @Deprecated
     public void copyToWorkspaceDir(WorkspaceInfo ws, InputStream data, String filename)
             throws IOException {
-        Resource directory = get(path(ws));
-        copy(data, directory.dir(), filename);
-    }
-
-    private String path(WorkspaceInfo workspace) {
-        return Paths.path("workspaces", workspace.getName());
+        Resource directory = get(ws);
+        Resources.copy(data, directory, filename);
     }
 
     /**
@@ -426,19 +403,25 @@ public class GeoServerDataDirectory implements ResourceStore {
      * <p>
      * If the workspace configuration directory does exist it will be created
      * </p>
-     */
+     * @deprecated As of GeoServer 2.6, replaced by {@link #get(WorkspaceInfo, String...)}
+      */
+    @Deprecated
     public void copyToWorkspacesDir(InputStream data, String filename) throws IOException {
-        copy(data, get("workspaces").dir(), filename);
+        Resources.copy(data, getWorkspaces(), filename);
     }
 
     /**
      * Returns the directory in which a stores configuration is persisted, if the directory does not exists null is returned.
+     * 
+     * @deprecated As of GeoServer 2.6, replaced by {@link #get(StoreInfo, String...)}
      */
+    @Deprecated
     public File findStoreDir(StoreInfo store) throws IOException {
-        Resource directory = get(path(store));
+        Resource directory = get(store);
         return Resources.directory(directory);
     }
 
+    @Deprecated
     private String path(StoreInfo store) {
         WorkspaceInfo workspace = store.getWorkspace();
         return Paths.path("workspaces", workspace.getName(), store.getName());
@@ -446,79 +429,46 @@ public class GeoServerDataDirectory implements ResourceStore {
 
     /**
      * Returns the directory in which a stores configuration is persisted, if the directory does not exist it is created.
+     * 
+     * @deprecated As of GeoServer 2.6, replaced by {@link #get(StoreInfo, String...)}
      */
-    public File findOrCreateStoreDir(StoreInfo store) throws IOException {
-        Resource resource = get(path(store));
-        return resource.dir();
-    }
-
     @Deprecated
-    private File storeDir(boolean create, StoreInfo store) throws IOException {
-        if (create) {
-            Resource directory = get(path(store));
-            return directory.dir();
-        } else {
-            Resource directory = get(path(store));
-            return Resources.directory(directory);
-        }
+    public File findOrCreateStoreDir(StoreInfo store) throws IOException {
+        Resource resource = get(store);
+        return resource.dir();
     }
 
     /**
      * Returns the configuration file for the specified store, if the file does not exist null is returned.
+     * 
+     * @deprecated As of GeoServer 2.6, replaced by {@link #config(DataStoreInfo)}, {@link #config(CoverageStoreInfo)}, and {@link #config(WMSStoreInfo)}
      */
+    @Deprecated
     public File findStoreFile(StoreInfo store) throws IOException {
-        Resource resource = get(pathStoreFile(store));
+        Resource resource = config(store);
         return Resources.file(resource);
     }
 
     /**
      * Returns the configuration file for the specified store, if the file does not exist a file object is still returned.
+     *
+     * @deprecated As of GeoServer 2.6, replaced by {@link #get(StoreInfo, String...)}
      */
+    @Deprecated
     public File findOrResolveStoreFile(StoreInfo store) throws IOException {
-        Resource resource = get(pathStoreFile(store));
+        Resource resource = get(store);
         return resource.file();
     }
 
     /**
-     * Determines the appropriate XML resource file for DataStoreInfo or CoverageStoreInfo.
-     * 
-     * @param store
-     * @return datastore.xml or coveragestore.xml as appropriate
-     */
-    private String pathStoreFile(StoreInfo store) {
-        WorkspaceInfo workspace = store.getWorkspace();
-        if (store instanceof DataStoreInfo) {
-            return Paths.path("workspaces", workspace.getName(), store.getName(), "datastore.xml");
-        } else if (store instanceof CoverageStoreInfo) {
-            return Paths.path("workspaces", workspace.getName(), store.getName(),
-                    "coveragestore.xml");
-        } else {
-            throw new IllegalStateException("Unsupported Store " + store.getType() + " "
-                    + store.getClass().getSimpleName());
-        }
-    }
-
-    @Deprecated
-    private File storeFile(boolean create, StoreInfo store) throws IOException {
-        Resource resource = get(pathStoreFile(store));
-        if (create) {
-            return resource.file();
-        } else {
-            return Resources.file(resource);
-        }
-    }
-
-    /**
      * Returns a supplementary configuration file for a store, if the file does not exist null is returned.
+     *
+     * @deprecated As of GeoServer 2.6, replaced by {@link #get(StoreInfo, String...)}
      */
+    @Deprecated
     public File findSuppStoreFile(StoreInfo store, String filename) throws IOException {
-        Resource resource = get(path(store, filename));
+        Resource resource = get(store, filename);
         return Resources.file(resource);
-    }
-
-    private String path(StoreInfo store, String filename) {
-        WorkspaceInfo workspace = store.getWorkspace();
-        return Paths.path("workspaces", workspace.getName(), store.getName(), filename);
     }
 
     /**
@@ -526,10 +476,12 @@ public class GeoServerDataDirectory implements ResourceStore {
      * <p>
      * If the store configuration directory does exist it will be created
      * </p>
+     * @deprecated As of GeoServer 2.6, replaced by {@link #get(StoreInfo, String...)}
      */
+    @Deprecated
     public void copyToStoreDir(StoreInfo store, File file) throws IOException {
         Resource directory = get(path(store));
-        FileUtils.copyFileToDirectory(file, directory.dir());
+        Resources.copy(file, directory);
     }
 
     /**
@@ -537,18 +489,22 @@ public class GeoServerDataDirectory implements ResourceStore {
      * <p>
      * If the store configuration directory does exist it will be created
      * </p>
+     * @deprecated As of GeoServer 2.6, replaced by {@link #get(StoreInfo, String...)}
      */
     public void copyToStoreDir(StoreInfo store, InputStream data, String filename)
             throws IOException {
-        Resource directory = get(path(store));
-        copy(data, directory.dir(), filename);
+        Resource directory = get(store);
+        Resources.copy(data, directory, filename);
     }
 
     /**
      * Returns the directory in which a resources configuration is persisted, if the directory does not exist null is returned.
+     *
+     * @deprecated As of GeoServer 2.6, replaced by {@link #get(ResourceInfo, String...)}
      */
+    @Deprecated
     public File findResourceDir(ResourceInfo resource) throws IOException {
-        Resource directory = get(path(resource));
+        Resource directory = get(resource);
         return Resources.directory(directory);
     }
 
@@ -583,93 +539,52 @@ public class GeoServerDataDirectory implements ResourceStore {
 
     /**
      * Returns the directory in which a resources configuration is persisted, if the directory does not exist it will be created.
+     *
+     * @deprecated As of GeoServer 2.6, replaced by {@link #get(ResourceInfo, String...)}
      */
     public File findOrCreateResourceDir(ResourceInfo r) throws IOException {
-        Resource directory = get(path(r));
+        Resource directory = get(r);
         return directory.dir();
     }
 
-    @Deprecated
-    private File resourceDir(boolean create, ResourceInfo resource) throws IOException {
-        if (create) {
-            Resource directory = get(path(resource));
-            return directory.dir();
-        } else {
-            Resource directory = get(path(resource));
-            return Resources.directory(directory);
-        }
-    }
-
-    private String path(ResourceInfo resource) {
-        StoreInfo store = resource.getStore();
-        WorkspaceInfo workspace = store.getWorkspace();
-        return Paths.path("workspaces", workspace.getName(), store.getName(),
-                resource.getName());
-    }
-
-    private String path(ResourceInfo resource, String filename) {
-        StoreInfo store = resource.getStore();
-        WorkspaceInfo workspace = store.getWorkspace();
-        String path = Paths.path("workspaces", workspace.getName(), store.getName(),
-                resource.getName(), filename);
-        return path;
-    }
-
+    
     /**
      * Returns the configuration file for the specified resource, if the file does not exist null is returned.
+     *
+     * @deprecated As of GeoServer 2.6, replaced by {@link #config(FeatureTypeInfo, String...)}, {@link #config(CoverageInfo, String...)}, {@link #config(WMSLayerInfo, String...)}
      */
+    @Deprecated
     public File findResourceFile(ResourceInfo r) throws IOException {
-        String path = pathResourceFile(r);
-        Resource resource = get(path);
+        Resource resource = config(r);
         return Resources.file(resource);
     }
 
     /**
      * Returns the configuration file for the specified resource, if the file does not exist a file object is still returned.
      * 
+     * @deprecated As of GeoServer 2.6, replaced by {@link #config(FeatureTypeInfo, String...)}, {@link #config(CoverageInfo, String...)}, {@link #config(WMSLayerInfo, String...)}
      */
-    public File findOrResolveResourceFile(ResourceInfo r) throws IOException {
-        String path = pathResourceFile(r);
-        Resource resource = get(path);
-        return resource.file();
-    }
-
-    private String pathResourceFile(ResourceInfo resource) {
-        StoreInfo store = resource.getStore();
-        WorkspaceInfo workspace = store.getWorkspace();
-        if (resource instanceof FeatureTypeInfo) {
-            return Paths.path("workspaces", workspace.getName(), store.getName(),
-                    resource.getName(), "featuretype.xml");
-        } else if (resource instanceof CoverageInfo) {
-            return Paths.path("workspaces", workspace.getName(), store.getName(),
-                    resource.getName(), "coverage");
-        } else {
-            throw new IllegalArgumentException("Unsupported resource " + resource.getName() + " "
-                    + resource.getClass().getName());
-        }
-    }
-
     @Deprecated
-    private File resourceFile(boolean create, ResourceInfo r) throws IOException {
-        String path = pathResourceFile(r);
-        Resource resource = get(path);
-        if (create) {
-            return resource.file();
-        } else {
-            return Resources.file(resource);
-        }
+    public File findOrResolveResourceFile(ResourceInfo r) throws IOException {
+        Resource resource = config(r);
+        return resource.file();
     }
 
     /**
      * Returns a supplementary configuration file for a resource, if the file does not exist null is returned.
+     *
+     * @deprecated As of GeoServer 2.6, replaced by {@link #get(ResourceInfo, String...)}
      */
+    @Deprecated
     public File findSuppResourceFile(ResourceInfo r, String filename) throws IOException {
-        Resource resource = get(path(r, filename));
+        Resource resource = get(r, filename);
         return Resources.file(resource);
     }
 
     /**
      * Returns a supplementary configuration file for a resource in a 1.x data directory format. If the file does not exist null is returned.
+     *
+     * @deprecated As of GeoServer 2.6, replaced by {@link #get(ResourceInfo, String...)}
      */
     public File findSuppLegacyResourceFile(ResourceInfo r, String filename) throws IOException {
         File rdir = findLegacyResourceDir(r);
@@ -686,10 +601,12 @@ public class GeoServerDataDirectory implements ResourceStore {
      * <p>
      * If the resource directory does exist it will be created
      * </p>
+     * @deprecated As of GeoServer 2.6, replaced by {@link #get(ResourceInfo, String...)}
      */
+    @Deprecated
     public void copyToResourceDir(ResourceInfo resource, File file) throws IOException {
-        Resource directory = get(path(resource));
-        FileUtils.copyFileToDirectory(file, directory.dir());
+        Resource directory = get(resource);
+        Resources.copy(file, directory);
     }
 
     /**
@@ -697,97 +614,76 @@ public class GeoServerDataDirectory implements ResourceStore {
      * <p>
      * If the resource directory does exist it will be created
      * </p>
+     * @deprecated As of GeoServer 2.6, replaced by {@link #get(ResourceInfo, String...)}
      */
+    @Deprecated
     public void copyToResourceDir(ResourceInfo resource, InputStream data, String filename)
             throws IOException {
-        Resource directory = get(path(resource));
-        copy(data, directory.dir(), filename);
+        Resource directory = get(resource);
+        Resources.copy(data, directory, filename);
     }
 
     /**
      * Returns the configuration file for the specified namespace, if the file does not exist null is returned.
+     * @deprecated As of GeoServer 2.6, replaced by {@link #get(WorkspaceInfo, String...)}
      */
+    @Deprecated
     public File findNamespaceFile(WorkspaceInfo ws) throws IOException {
-        Resource directory = get(pathNamespaceFile(ws));
+        Resource directory = get(ws);
         return Resources.directory(directory);
     }
 
     /**
      * Returns the configuration file for the specified namespace, if the file does not exist a file object is still returned.
+     * @deprecated As of GeoServer 2.6, replaced by {@link #get(WorkspaceInfo, String...)}
      */
-    public File findOrResolveNamespaceFile(WorkspaceInfo ws) throws IOException {
-        Resource directory = get(pathNamespaceFile(ws));
-        return directory.dir();
-    }
-
     @Deprecated
-    private File namespaceFile(boolean create, WorkspaceInfo ws) throws IOException {
-        if (create) {
-            Resource resource = get(pathNamespaceFile(ws));
-            return resource.file();
-        } else {
-            Resource resource = get(pathNamespaceFile(ws));
-            return Resources.file(resource);
-        }
-    }
-
-    private String pathNamespaceFile(WorkspaceInfo ws) {
-        return Paths.path("workspaces", ws.getName(), "namespace.xml");
+    public File findOrResolveNamespaceFile(WorkspaceInfo ws) throws IOException {
+        Resource directory = get(ws);
+        return directory.dir();
     }
 
     /**
      * Returns the configuration file for the specified layer, if the file does not exist null is returned.
+     * @deprecated As of GeoServer 2.6, replaced by {@link #get(LayerInfo, String...)}
      */
+    @Deprecated
     public File findLayerFile(LayerInfo layer) throws IOException {
-        Resource resource = get(pathLayerFile(layer));
+        Resource resource = get(layer);
         return Resources.file(resource);
     }
 
     /**
      * Returns the configuration file for the specified layer, if the file does not exist a file object is still returned.
      * 
+     * @deprecated As of GeoServer 2.6, replaced by {@link #get(LayerInfo, String...)}
      */
     public File findOrResolveLayerFile(LayerInfo layer) throws IOException {
-        Resource resource = get(pathLayerFile(layer));
+        Resource resource = get(layer);
         return resource.file();
-    }
-
-    @Deprecated
-    private File layerFile(boolean create, LayerInfo layer) throws IOException {
-        if (create) {
-            Resource resource = get(pathLayerFile(layer));
-            return resource.file();
-        } else {
-            Resource resource = get(pathLayerFile(layer));
-            return Resources.file(resource);
-        }
-    }
-
-    private String pathLayerFile(LayerInfo layer) {
-        ResourceInfo resource = layer.getResource();
-        StoreInfo store = resource.getStore();
-        WorkspaceInfo workspace = store.getWorkspace();
-        return Paths.path("workspaces", workspace.getName(), store.getName(), resource.getName(),
-                "layer.xml");
     }
 
     /**
      * Returns the directory in which global styles are persisted, if the directory does not exist null is returned.
+     * 
+     * @deprecated As of GeoServer 2.6, replaced by {@link #get(StyleInfo, String...)}
      */
     public File findStyleDir() throws IOException {
-        Resource styles = get("styles");
+        Resource styles = get(STYLE_DIR);
         return Resources.directory(styles);
     }
 
     /**
      * Returns the directory in which global styles are persisted, if the directory does not exist it will be created.
+     * 
+     * @deprecated As of GeoServer 2.6, replaced by {@link #get(StyleInfo, String...)}
      */
     public File findOrCreateStyleDir() throws IOException {
-        Resource styles = get("styles");
+        Resource styles = get(STYLE_DIR);
         return styles.dir();
     }
 
-/**
+    /**
      * Styles directory (using StyleInfo).
      * 
      * Package visibility {@link GeoServerPersister#dir(StyleInfo).
@@ -796,14 +692,12 @@ public class GeoServerDataDirectory implements ResourceStore {
      * @param styleInfo
      * @return
      * @throws IOException
+     * 
+     * @deprecated As of GeoServer 2.6, replaced by {@link #get(StyleInfo, String...)}
      */
     File styleDir(boolean create, StyleInfo styleInfo) throws IOException {
-        Resource styles = get(pathStyles(styleInfo));
-        if (create) {
-            return styles.dir();
-        } else {
-            return Resources.directory(styles);
-        }
+        Resource styles = get(styleInfo);
+        return Resources.directory(styles, create);
     }
 
     /**
@@ -815,146 +709,510 @@ public class GeoServerDataDirectory implements ResourceStore {
      * @param workspaceInfo Workspace used to access styles directory
      * @return styles directory
      * @throws IOException
+     * 
+     * @deprecated As of GeoServer 2.6, replaced by {@link #get(StyleInfo, String...)}
      */
     File styleDir(boolean create, WorkspaceInfo workspaceInfo) throws IOException {
-        Resource styles = get(pathStyles(workspaceInfo));
-        if (create) {
-            return styles.dir();
-        } else {
-            return Resources.directory(styles);
-        }
-    }
-
-    /**
-     * Style directory for the provided workspace (or global styles directory if workspace not provided).
-     * 
-     * @param workspace
-     * @return Path to styles directory
-     */
-    private String pathStyles(StyleInfo style) {
-        WorkspaceInfo workspace = style != null ? style.getWorkspace() : null;
-        if (workspace == null) {
-            return "styles";
-        } else {
-            return Paths.path("workspaces", workspace.getName(), "styles");
-        }
-    }
-
-    /**
-     * Style directory for the provided workspace (or global styles directory if workspace not provided).
-     * 
-     * @param workspace
-     * @return Path to styles directory
-     */
-    private String pathStyles(WorkspaceInfo workspace) {
-        if (workspace == null) {
-            return "styles";
-        } else {
-            return Paths.path("workspaces", workspace.getName(), "styles");
-        }
+        Resource styles = get(workspaceInfo, STYLE_DIR);
+        return Resources.directory(styles, create);
     }
 
     /**
      * Returns the configuration file for the specified style, if the file does not exist null is returned.
+     * 
+     * @deprecated As of GeoServer 2.6, replaced by {@link #config(StyleInfo, String...)}
      */
     public File findStyleFile(StyleInfo s) throws IOException {
-        Resource resource = get(pathStyleFile(s));
+        Resource resource = config(s);
         return Resources.file(resource);
     }
 
     /**
      * Returns the SLD file for the specified style, if the file does not exist null is returned.
+     * 
+     * @deprecated As of GeoServer 2.6, replaced by {@link #style(StyleInfo, String...)}
      */
     public File findStyleSldFile(StyleInfo s) throws IOException {
-        Resource resource = get(pathSldFile(s));
+        Resource resource = style(s);
         return Resources.file(resource);
     }
 
     /**
      * Returns the configuration file for the specified style, if the file does not exist a file object is still returned.
+     * 
+     * @deprecated As of GeoServer 2.6, replaced by {@link #config(StyleInfo, String...)}
      */
     public File findOrCreateStyleFile(StyleInfo s) throws IOException {
-        Resource resource = get(pathStyleFile(s));
+        Resource resource = config(s);
         return resource.file();
     }
 
     /**
      * Returns the SLD file for the specified style, if the file does not exist a file object is still returned.
+     * 
+     * @deprecated As of GeoServer 2.6, replaced by {@link #style(StyleInfo, String...)}
      */
     public File findOrCreateStyleSldFile(StyleInfo s) throws IOException {
-        Resource resource = get(pathSldFile(s));
+        Resource resource = style(s);
         return resource.file();
     }
+    
+    // Resource lookup methods
+    static final String WORKSPACE_XML = "workspace.xml";
+    static final String NAMESPACE_XML = "namespace.xml";
+    static final String DATASTORE_XML = "datastore.xml";
+    static final String COVERAGESTORE_XML = "coveragestore.xml";
+    static final String WMSSTORE_XML = "wmsstore.xml";
+    static final String FEATURETYPE_XML = "featuretype.xml";
+    static final String COVERAGE_XML = "coverage.xml";
+    static final String WMSLAYER_XML = "wmslayer.xml";
+    static final String LAYER_XML = "layer.xml";
+    static final String WORKSPACE_DIR = "workspaces";
+    static final String LAYERGROUP_DIR = "layergroups";
+    static final String STYLE_DIR = "styles";
 
-    @Deprecated
-    private File styleFile(boolean create, StyleInfo s) throws IOException {
-        Resource resource = get(pathStyleFile(s));
-        if (create) {
-            return resource.file();
-        } else {
-            return Resources.file(resource);
-        }
+    
+    /**
+     * Retrieve a resource relative tot he root of the data directory. An empty path will retrieve
+     * the directory itself.
+     * @return A {@link Resource}
+     */
+    public @Nonnull Resource getRoot(String... path) {
+        Resource r = get(Paths.path(path));
+        assert r!=null;
+        return r;
     }
 
     /**
-     * Path to generated style file, style directory used based on {@link StyleInfo#getWorkspace()}.
-     * 
-     * @param style
-     * @return
+     * Retrieve a resource in the the workspaces directory. An empty path will retrieve
+     * the directory itself.
+     * @return A {@link Resource}
      */
-    String pathStyleFile(StyleInfo style) {
-        String configFileName = style.getName() + ".xml";
-        if (configFileName.equals(style.getFilename())) {
-            configFileName = configFileName + ".xml";
+    public @Nonnull Resource getWorkspaces(String... path) {
+        Resource r = get(  Paths.path( WORKSPACE_DIR, Paths.path(path)));
+        assert r!=null;
+        return r;
+    }
+    
+    /**
+     * Retrieve the configuration xml for the default workspace.
+     * @return A {@link Resource}
+     */
+    public @Nonnull Resource defaultWorkspaceConfig() {
+        Resource r = getRoot("default.xml");
+        assert r!=null;
+        return r;
+    }
+
+    /**
+     * Retrieve a resource in the the workspace configuration directory. An empty path will retrieve
+     * the directory itself.
+     * @param ws The workspace
+     * @return A {@link Resource}
+     */
+    public @Nonnull Resource get(WorkspaceInfo ws, String... path) {
+        Resource r;
+        if(ws==null) {
+            return resourceLoader.get("");
+        } else {
+            r = getWorkspaces(  ws.getName(), Paths.path(path));
         }
-        WorkspaceInfo workspace = style != null ? style.getWorkspace() : null;
+        assert r!=null;
+        return r;
+    }
+    
+    /**
+     * Retrieve the workspace configuration XML as a Resource
+     * @param ws The workspace
+     * @return A {@link Resource}
+     */
+    public @Nonnull Resource config(WorkspaceInfo ws) {
+        Resource r = get(ws, WORKSPACE_XML);
+        assert r!=null;
+        return r;
+    }
+    
+    /**
+     * Retrieve a resource in the the configuration directory of the workspace associated with a 
+     * namespace.  An empty path will retrieve the directory itself.
+     * @param ws The namespace
+     * @return A {@link Resource}
+     */
+    public @Nonnull Resource get(NamespaceInfo ns, String... path) {
+        Resource r = getWorkspaces(ns.getPrefix(), Paths.path(path));
+        assert r!=null;
+        return r;
+    }
+    
+    /**
+     * Retrieve the namespace configuration XML as a Resource
+     * @param ns The namespace
+     * @return A {@link Resource}
+     */
+    public @Nonnull Resource config(NamespaceInfo ns) {
+        Resource r = get(ns, NAMESPACE_XML);
+        assert r!=null;
+        return r;
+    }
+    
+    /**
+     * Retrieve a resource in the the configuration directory of a Store.  An empty path will 
+     * retrieve the directory itself.
+     * @param store The store
+     * @return A {@link Resource}
+     */
+    public @Nonnull Resource get(StoreInfo store, String... path) {
+        Resource r = get(store.getWorkspace(), store.getName(), Paths.path(path));
+        assert r!=null;
+        return r;
+    }
+    
+    /**
+     * Retrieve the datastore configuration XML as a Resource
+     * @param ds The datastore
+     * @return A {@link Resource}
+     */
+    public @Nonnull Resource config(DataStoreInfo ds) {
+        Resource r = get(ds, DATASTORE_XML);
+        assert r!=null;
+        return r;
+    }
+    
+    /**
+     * Retrieve the coverage store configuration XML as a Resource
+     * @param cs The coverage store
+     * @return A {@link Resource}
+     */
+    public @Nonnull Resource config(CoverageStoreInfo cs) {
+        Resource r = get(cs, COVERAGESTORE_XML);
+        assert r!=null;
+        return r;
+    }
+    
+    /**
+     * Retrieve the WMS store configuration XML as a Resource
+     * @param wmss The coverage store
+     * @return A {@link Resource}
+     */
+    public @Nonnull Resource config(WMSStoreInfo wmss) {
+        Resource r = get(wmss, WMSSTORE_XML);
+        assert r!=null;
+        return r;
+    }
+    
+    /**
+     * Retrieve the WMS store configuration XML as a Resource
+     * @param wmss The coverage store
+     * @return A {@link Resource}
+     */
+    private @Nonnull Resource config(StoreInfo si) {
+        final Resource r;
+        if(si instanceof DataStoreInfo) {
+            r=config((DataStoreInfo) si);
+        } else if(si instanceof CoverageStoreInfo) {
+            r=config((CoverageStoreInfo) si);
+        } else if(si instanceof WMSStoreInfo) {
+            r=config((WMSStoreInfo) si);
+        } else {
+            // It'd be nice if we could be generic and cover potential future StoreInfo types.
+            throw new IllegalArgumentException(
+                    "Only DataStoreInfo, CoverageStoreInfo, and WMSStoreInfo are supported.");
+        }
+        assert r!=null;
+        return r;
+    }
+    
+    /**
+     * Retrieve the resource configuration XML as a Resource
+     * @param wmss The resource
+     * @return A {@link Resource}
+     */
+    private @Nonnull Resource config(ResourceInfo si) {
+        final Resource r;
+        if(si instanceof FeatureTypeInfo) {
+            r=config((FeatureTypeInfo) si);
+        } else if(si instanceof CoverageInfo) {
+            r=config((CoverageInfo) si);
+        } else if(si instanceof WMSLayerInfo) {
+            r=config((WMSLayerInfo) si);
+        } else {
+            // It'd be nice if we could be generic and cover potential future ResourceInfo types.
+            throw new IllegalArgumentException(
+                    "Only FeatureTypeInfo, CoverageInfo, and WMSLayerInfo are supported.");
+        }
+        assert r!=null;
+        return r;
+    }
+    
+    /**
+     * Retrieve a resource in the the configuration directory of a Resource.  An empty path will 
+     * retrieve the directory itself.
+     * @param ri The store
+     * @return A {@link Resource}
+     */
+    public @Nonnull Resource get(ResourceInfo ri, String... path) {
+        Resource r = get(ri.getStore(), ri.getName(), Paths.path(path));
+        assert r!=null;
+        return r;
+    }
+    
+    /**
+     * Retrieve the feature type configuration XML as a Resource
+     * @param fti The feature type
+     * @return A {@link Resource}
+     */
+    public @Nonnull Resource config(FeatureTypeInfo fti) {
+        Resource r = get(fti, FEATURETYPE_XML);
+        assert r!=null;
+        return r;
+    }
+    
+    /**
+     * Retrieve the coverage configuration XML as a Resource
+     * @param c The feature type
+     * @return A {@link Resource}
+     */
+    public @Nonnull Resource config(CoverageInfo c) {
+        Resource r = get(c, COVERAGE_XML);
+        assert r!=null;
+        return r;
+    }
+    
+    /**
+     * Retrieve the WMS layer configuration XML as a Resource
+     * @param wmsl The feature type
+     * @return A {@link Resource}
+     */
+    public @Nonnull Resource config(WMSLayerInfo wmsl) {
+        Resource r = get(wmsl, WMSLAYER_XML);
+        assert r!=null;
+        return r;
+    }
+    
+    /**
+     * Retrieve a resource in the the configuration directory of a Layer.  An empty path will 
+     * retrieve the directory itself.
+     * @param li The store
+     * @return A {@link Resource}
+     */
+    public @Nonnull Resource get(LayerInfo l, String... path ) {
+        final Resource r;
+        if ( l.getResource() instanceof FeatureTypeInfo) {
+            r = get( (FeatureTypeInfo) l.getResource(), path );
+        }
+        else if ( l.getResource() instanceof CoverageInfo ) {
+            r = get( (CoverageInfo) l.getResource(), path );
+        }
+        else if ( l.getResource() instanceof WMSLayerInfo ) {
+            r = get( (WMSLayerInfo) l.getResource(), path );
+        }
+        else {
+            // It'd be nice if we could be generic and cover potential future ResourceInfo types.
+            throw new IllegalArgumentException(
+                    "Only FeatureTypeInfo, CoverageInfo, and WMSLayerInfo are supported.");
+        }
+        assert r!=null;
+        return r;
+    }
+    
+    /**
+     * Retrieve the layer configuration XML as a Resource
+     * @param li The feature type
+     * @return A {@link Resource}
+     */
+    public @Nonnull Resource config(LayerInfo li) {
+        Resource r = get(li, LAYER_XML);
+        assert r!=null;
+        return r;
+    }
+    
+    /**
+     * Retrieve a resource in the the layer groups directory. An empty path will retrieve
+     * the directory itself.
+     * @return A {@link Resource}
+     */
+    public @Nonnull Resource getLayerGroups(String... path) {
+        Resource r = get(  Paths.path( LAYERGROUP_DIR, Paths.path(path)));
+        assert r!=null;
+        return r;
+    }
+    
+    /**
+     * Retrieve a resource in the the layer groups directory of a workspace. An empty path will retrieve
+     * the directory itself.
+     * @return A {@link Resource}
+     */
+    public @Nonnull Resource getLayerGroups(WorkspaceInfo wsi, String... path) {
+        Resource r = get(wsi, Paths.path( LAYERGROUP_DIR, Paths.path(path)));
+        assert r!=null;
+        return r;
+    }
+    
+    /**
+     * Retrieve a resource in the the configuration directory of a LayerGroup.  An empty path will 
+     * retrieve the directory itself. This directory is shared by all Layer Groups in a Workspace.
+     * @param lgi The store
+     * @return A {@link Resource}
+     */
+    public @Nonnull Resource get(LayerGroupInfo lgi, String... path) {
+        WorkspaceInfo wsi = lgi.getWorkspace();
+        final Resource r;
+        if(wsi==null) {
+            r = getLayerGroups(path);
+        } else {
+            r = getLayerGroups(wsi, path);
+        }
+        assert r!=null;
+        return r;
+    }
+    
+    /**
+     * Retrieve the layer group configuration XML as a Resource
+     * @param lgi The layer group
+     * @return A {@link Resource}
+     */
+    public @Nonnull Resource config(LayerGroupInfo lgi) {
+        Resource r = get(lgi, String.format("%s.xml", lgi.getName()));
+        assert r!=null;
+        return r;
+    }
+    
+
+    /**
+     * Retrieve a resource in the the styles directory. An empty path will retrieve
+     * the directory itself.
+     * @return A {@link Resource}
+     */
+    public @Nonnull Resource getStyles(String... path) {
+        Resource r = get(  Paths.path( STYLE_DIR, Paths.path(path)));
+        assert r!=null;
+        return r;
+    }
+    
+    /**
+     * Retrieve a resource in the the styles directory of a workspace. An empty path will retrieve
+     * the directory itself.
+     * @return A {@link Resource}
+     */
+    public @Nonnull Resource getStyles(WorkspaceInfo wsi, String... path) {
+        Resource r = get(wsi, Paths.path( STYLE_DIR, Paths.path(path)));
+        assert r!=null;
+        return r;
+    }
+
+    /**
+     * Retrieve a resource in the the configuration directory of a Resource.  An empty path will 
+     * retrieve the directory itself.
+     * @param si The store
+     * @return A {@link Resource}
+     */
+    public @Nonnull Resource get(StyleInfo si, String... path) {
+        WorkspaceInfo workspace = si != null ? si.getWorkspace() : null;
+        final Resource r;
         if (workspace == null) {
-            return Paths.convert("styles", configFileName);
+            r = getStyles(path);
         } else {
-            return Paths.convert(Paths.path("workspaces", workspace.getName(), "styles"),
-                    configFileName);
+            r = getStyles(workspace, path);
         }
+        assert r!=null;
+        return r;
     }
 
     /**
-     * Path to generated style file, style directory used based on {@link StyleInfo#getWorkspace()}.
-     * 
-     * @param style
-     * @return
+     * Retrieve the style configuration XML as a Resource
+     * @param c The style
+     * @return A {@link Resource}
      */
-    String pathSldFile(StyleInfo style) {
-        WorkspaceInfo workspace = style != null ? style.getWorkspace() : null;
-        if (workspace == null) {
-            return Paths.convert("styles", style.getFilename());
+    public @Nonnull Resource config(StyleInfo s) {
+        //special case for styles, if the file name (minus the suffix) matches the id of the style
+        // and the suffix is xml (rather than sld) we need to avoid overwritting the actual 
+        // style file
+        final String filename;
+        if (s.getFilename() != null && s.getFilename().endsWith(".xml") 
+                && s.getFilename().startsWith(s.getName()+".")) {
+            //append a second .xml suffix
+            filename = s.getName() + ".xml.xml";
         } else {
-            return Paths.convert(Paths.path("workspaces", workspace.getName(), "styles"),
-                    style.getFilename());
+            filename = s.getName() + ".xml";
         }
-    }
 
-    @Deprecated
-    private File styleSldFile(boolean create, StyleInfo s) throws IOException {
-        if (create) {
-            Resource resource = get(pathSldFile(s));
-            return resource.file();
-        } else {
-            Resource resource = get(pathSldFile(s));
-            return Resources.file(resource);
-        }
+        Resource r = get(s, filename);
+        assert r!=null;
+        return r;
     }
-
+    
     /**
-     * Copies a file into the global style configuration directory.
-     * <p>
-     * If the resource directory does exist it will be created
-     * </p>
-     * 
-     * @deprecated use {@link #copyToStyleDir(File, StyleInfo)}
+     * Retrieve the style defintion as a Resource
+     * @param c The style
+     * @return A {@link Resource}
      */
-    public void copyToStyleDir(File f) throws IOException {
-        Resource styles = get("styles");
-        FileUtils.copyFileToDirectory(f, styles.dir());
+    public @Nonnull Resource style(StyleInfo s) {
+        Resource r = get(s, s.getFilename());
+        assert r!=null;
+        return r;
     }
+    
+    /**
+     * Retrieve the style as a Style object
+     * @param s The style
+     * @param absolutize Ensure all file urls are absolute
+     * @return A {@link Resource}
+     */
+    public @Nonnull Style parsedStyle(StyleInfo s, boolean absolutize) throws IOException {
+        final Resource styleResource = style(s);
+        if ( styleResource.getType() == Type.UNDEFINED ){
+            throw new IOException( "No such resource: " + s.getFilename());
+        }
+        
+        final Object input;
+        if(absolutize) {
+            input = styleResource.file();
+            // TODO unpack resources
+        } else {
+            input = styleResource;
+        }
+        final StyledLayerDescriptor sld = Styles.parse(input, null, s.getSLDVersion());
+        final Style style = Styles.style(sld);
+        assert style!=null;
+        return style;
+    }
+    
+    /**
+     * Retrieve the settings configuration XML as a Resource
+     * @param s The settings
+     * @return A {@link Resource}
+     */
+    public @Nonnull Resource config(SettingsInfo s) {
+        Resource r = get(s.getWorkspace(), "settings.xml");
+        assert r!=null;
+        return r;
+    }
+    
+    /**
+     * Retrieve the logging configuration XML as a Resource
+     * @param l The settings
+     * @return A {@link Resource}
+     */
+    public @Nonnull Resource config(LoggingInfo l) {
+        Resource r = getRoot("logging.xml");
+        assert r!=null;
+        return r;
+    }
+    
+    /**
+     * Retrieve the global configuration xml
+     * @param g The global info
+     * @return A {@link Resource}
+     */
+    public @Nonnull Resource config(GeoServerInfo g) {
+        Resource r = getRoot("global.xml");
+        assert r!=null;
+        return r;
+    }
+
+    
+    // SLD Manipulation
+    
 
     /**
      * Copy file to styles directory (determined using {@link StyleInfo#getWorkspace()}).
@@ -962,110 +1220,22 @@ public class GeoServerDataDirectory implements ResourceStore {
      * @param file
      * @param style
      * @throws IOException
+     * 
+     * @deprecated As of GeoServer 2.6, replaced by {@link #get(StyleInfo, String...)}
      */
     @Deprecated
     public void copyToStyleDir(File file, StyleInfo style) throws IOException {
-        Resource styles = get(pathStyles(style));
+        Resource styles = get(style);
         FileUtils.copyFileToDirectory(file, styles.dir());
     }
 
     /**
-     * Copies data into the global style directory.
-     * <p>
-     * If the style directory does exist it will be created
-     * </p>
-     */
-    public void copyToStyleDir(InputStream data, String filename) throws IOException {
-        Resource styles = get("styles");
-        copy(data, styles.dir(), filename);
-    }
-
-    /**
-     * Style directory for the provided workspace (or global styles directory if workspace not provided).
-     * 
-     * @param workspace
-     * @return Path to styles directory
-     */
-    private String pathLayerGroup(LayerGroupInfo layerGroup) {
-        WorkspaceInfo workspace = layerGroup.getWorkspace();
-        if (workspace == null) {
-            return "layergroups";
-        } else {
-            return Paths.path("workspaces", workspace.getName(), "layergroups");
-        }
-    }
-
-    /**
-     * Style directory for the provided workspace (or global styles directory if workspace not provided).
-     * 
-     * @param workspace
-     * @return Path to styles directory
-     */
-    private String pathLayerGroup(WorkspaceInfo workspace) {
-        if (workspace == null) {
-            return "layergroups";
-        } else {
-            return Paths.path("workspaces", workspace.getName(), "layergroups");
-        }
-    }
-
-    /**
      * Returns the directory in which global layer groups are persisted, if the directory does not exist null is returned.
+     * @deprecated As of GeoServer 2.6, replaced by {@link #get(LayerGroupInfo, String...)}
      */
     public File findLayerGroupDir() throws IOException {
-        Resource resource = get("layergroups");
+        Resource resource = getLayerGroups();
         return Resources.directory(resource);
-    }
-
-    /**
-     * Returns the directory in which global layer groups are persisted, if the directory does not exist it will be created.
-     */
-    public File findOrCreateLayerGroupDir() throws IOException {
-        Resource resource = get("layergroups");
-        return resource.dir();
-    }
-
-    /** Package visibility for {@link GeoServerPersister#dir(LayerGroupInfo)  */
-    File layerGroupDir(boolean create, LayerGroupInfo lg) throws IOException {
-        if (create) {
-            Resource resource = get(pathLayerGroup(lg));
-            return resource.dir();
-        } else {
-            Resource resource = get(pathLayerGroup(lg));
-            return Resources.directory(resource);
-        }
-    }
-
-    /** Package visibility for {@link GeoServerPersister} */
-    File layerGroupDir(boolean create, WorkspaceInfo ws) throws IOException {
-        if (create) {
-            Resource resource = get(pathLayerGroup(ws));
-            return resource.dir();
-        } else {
-            Resource resource = get(pathLayerGroup(ws));
-            return Resources.directory(resource);
-        }
-    }
-
-    //
-    // Helper methods
-    //
-    /**
-     * Utility method to copy an InputStream to a new file.
-     * 
-     * @param data Input stream to copy to a new file
-     * @param targetDir Directory for target file
-     * @param filename Name of target file
-     */
-    private void copy(InputStream data, File targetDir, String filename) throws IOException {
-        OutputStream out = null;
-        try {
-            out = new FileOutputStream(new File(targetDir, filename));
-            IOUtils.copy(data, out);
-            out.flush();
-        } finally {
-            IOUtils.closeQuietly(out);
-        }
     }
 
 }

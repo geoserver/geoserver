@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 import javax.xml.transform.TransformerException;
 
 import org.geoserver.ows.util.RequestUtils;
+import org.geoserver.platform.resource.Resource;
 import org.geotools.data.DataUtilities;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.sld.v1_1.SLDConfiguration;
@@ -277,6 +278,10 @@ public class Styles {
         
         if (input instanceof File) {
             return new FileReader((File)input);
+        }
+        
+        if (input instanceof Resource) {
+            return new InputStreamReader(((Resource)input).in());
         }
         
         throw new IllegalArgumentException("Unable to turn " + input + " into reader");

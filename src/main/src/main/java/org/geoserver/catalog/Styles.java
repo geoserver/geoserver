@@ -18,7 +18,9 @@ import java.util.logging.Logger;
 
 import javax.xml.transform.TransformerException;
 
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.ows.util.RequestUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.data.DataUtilities;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.sld.v1_1.SLDConfiguration;
@@ -325,7 +327,11 @@ public class Styles {
                 else {
                     parser = new SLDParser(styleFactory, toReader(input));
                 }
-                
+                GeoServerDataDirectory dd = GeoServerExtensions.bean(GeoServerDataDirectory.class);
+                File styles = dd.findOrCreateStyleDir().getCanonicalFile();
+                DefaultResourceLocator rl = new DefaultResourceLocator();
+                rl.setSourceUrl(DataUtilities.fileToURL(styles));
+                parser.setOnLineResourceLocator(rl);
                 parser.setEntityResolver(entityResolver);
                 return parser;
             }
@@ -348,7 +354,13 @@ public class Styles {
                         };
                     };
                 } else {
-                    sld = new SLDConfiguration();
+                    sld = new SLDConfiguration() {
+                        protected void configureContext(
+                                org.picocontainer.MutablePicoContainer container) {
+                            DefaultResourceLocator locator = new DefaultResourceLocator();
+                            container.registerComponentInstance(ResourceLocator.class, locator);
+                        };
+                    };
                 }
                 
                 try {

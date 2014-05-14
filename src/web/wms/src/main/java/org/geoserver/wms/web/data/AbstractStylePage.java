@@ -4,53 +4,54 @@
  */
 package org.geoserver.wms.web.data;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
+import javax.imageio.ImageIO;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.Session;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.IAjaxCallDecorator;
-import org.apache.wicket.ajax.calldecorator.AjaxCallDecorator;
 import org.apache.wicket.ajax.calldecorator.AjaxPreprocessingCallDecorator;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.markup.html.DynamicWebResource;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.FormComponentPanel;
-import org.apache.wicket.markup.html.form.IFormSubmittingComponent;
-import org.apache.wicket.markup.html.form.ListMultipleChoice;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
+import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.lang.Bytes;
-import org.geoserver.catalog.Keyword;
-import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.StyleInfoImpl;
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.style.StyleDetachableModel;
@@ -58,15 +59,16 @@ import org.geoserver.web.data.workspace.WorkspaceChoiceRenderer;
 import org.geoserver.web.data.workspace.WorkspacesModel;
 import org.geoserver.web.wicket.CodeMirrorEditor;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
-import org.geoserver.web.wicket.LiveCollectionModel;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.geoserver.wms.GetLegendGraphicRequest;
+import org.geoserver.wms.legendgraphic.BufferedImageLegendGraphicBuilder;
 import org.geoserver.wms.web.publish.StyleChoiceRenderer;
 import org.geoserver.wms.web.publish.StylesModel;
-import org.geotools.renderer.lite.gridcoverage2d.StyleVisitorAdapter;
-import org.geotools.styling.ExternalGraphic;
+import org.geotools.styling.NamedLayer;
+import org.geotools.styling.Style;
+import org.geotools.styling.StyledLayer;
 import org.geotools.styling.StyledLayerDescriptor;
-import org.geotools.styling.visitor.DuplicatingStyleVisitor;
-import org.opengis.metadata.citation.OnLineResource;
+import org.geotools.styling.UserLayer;
 import org.xml.sax.SAXParseException;
 
 /**
@@ -90,6 +92,14 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
     protected CodeMirrorEditor editor;
     
     String rawSLD;
+
+    private Image legend;
+
+    String lastStyle;
+
+    private WebMarkupContainer legendContainer;
+
+    private DropDownChoice<WorkspaceInfo> wsChoice;
 
     public AbstractStylePage() {
     }
@@ -115,8 +125,8 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         styleForm.add(nameTextField = new TextField("name"));
         nameTextField.setRequired(true);
         
-        DropDownChoice<WorkspaceInfo> wsChoice = 
-            new DropDownChoice("workspace", new WorkspacesModel(), new WorkspaceChoiceRenderer());
+        wsChoice = 
+            new DropDownChoice<WorkspaceInfo>("workspace", new WorkspacesModel(), new WorkspaceChoiceRenderer());
         wsChoice.setNullValid(true);
         if (!isAuthenticatedAsAdmin()) {
             wsChoice.setNullValid(false);
@@ -168,6 +178,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         
 
         add(validateLink());
+        add(previewLink());
         Link cancelLink = new Link("cancel") {
             @Override
             public void onClick() {
@@ -175,6 +186,77 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
             }
         };
         add(cancelLink);
+
+        legendContainer = new WebMarkupContainer("legendContainer");
+        legendContainer.setOutputMarkupId(true);
+        add(legendContainer);
+        legend = new Image("legend");
+        legendContainer.add(legend);
+        legend.setVisible(false);
+        legend.setOutputMarkupId(true);
+        legend.setImageResource(new DynamicWebResource() {
+
+            @Override
+            protected ResourceState getResourceState() {
+                return new ResourceState() {
+
+                    @Override
+                    public byte[] getData() {
+                        GeoServerDataDirectory dd = GeoServerExtensions.bean(GeoServerDataDirectory.class, getGeoServerApplication().getApplicationContext());
+                        StyleInfo si = new StyleInfoImpl(getCatalog());
+                        String styleName = "tmp" + UUID.randomUUID().toString();
+                        String styleFileName =  styleName + ".sld";
+                        si.setFilename(styleFileName);
+                        si.setName(styleName);
+                        si.setWorkspace(wsChoice.getModel().getObject());
+                        File styleFile = null;
+                        try {
+                            styleFile = dd.findOrCreateStyleSldFile(si);
+                            FileUtils.writeStringToFile(styleFile, lastStyle);
+                            StyledLayerDescriptor sld = Styles.parse(styleFile, null);
+                            if (sld != null && sld.getStyledLayers().length > 0) {
+                                Style style = null;
+                                StyledLayer sl = sld.getStyledLayers()[0];
+                                if (sl instanceof UserLayer) {
+                                    style = ((UserLayer) sl).getUserStyles()[0];
+                                } else {
+                                    style = ((NamedLayer) sl).getStyles()[0];
+                                }
+
+                                GetLegendGraphicRequest request = new GetLegendGraphicRequest();
+                                request.setStyle(style);
+                                request.setLayer(null);
+                                request.setStrict(false);
+                                Map<String, String> legendOptions = new HashMap<String, String>();
+                                legendOptions.put("forceLabels", "on");
+                                legendOptions.put("fontAntiAliasing", "true");
+                                request.setLegendOptions(legendOptions);
+                                BufferedImageLegendGraphicBuilder builder = new BufferedImageLegendGraphicBuilder();
+                                BufferedImage image = builder.buildLegendGraphic(request);
+
+                                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+                                ImageIO.write(image, "PNG", bos);
+                                return bos.toByteArray();
+                            }
+
+                            error("Failed to build legend preview");
+                            return null;
+
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        } finally {
+                            FileUtils.deleteQuietly(styleFile);
+                        }
+                    }
+
+                    @Override
+                    public String getContentType() {
+                        return "image/png";
+                    }
+                };
+            }
+        });
     }
 
     Form uploadForm(final Form form) {
@@ -232,6 +314,26 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         };
     }
     
+    Component previewLink() {
+        return new GeoServerAjaxFormLink("preview", styleForm) {
+
+            @Override
+            protected void onClick(AjaxRequestTarget target, Form form) {
+                editor.processInput();
+                wsChoice.processInput();
+                lastStyle = editor.getInput();
+
+                legend.setVisible(true);
+                target.addComponent(legendContainer);
+            }
+
+            @Override
+            protected IAjaxCallDecorator getAjaxCallDecorator() {
+                return editor.getSaveDecorator();
+            };
+        };
+    }
+
     private String sldErrorWithLineNo(Exception e) {
         if (e instanceof SAXParseException) {
             SAXParseException se = (SAXParseException) e;

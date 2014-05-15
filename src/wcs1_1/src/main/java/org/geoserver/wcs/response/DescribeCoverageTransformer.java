@@ -4,7 +4,7 @@
  */
 package org.geoserver.wcs.response;
 
-import static org.geoserver.ows.util.ResponseUtils.*;
+import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -274,8 +274,7 @@ public class DescribeCoverageTransformer extends TransformerBase {
             } else {
                 String urnIdentifier = urnIdentifier(crs);
                 CoordinateReferenceSystem latlonCrs = CRS.decode(urnIdentifier);
-                encodedEnvelope = new ReferencedEnvelope(CRS.transform(CRS.findMathTransform(crs, latlonCrs, true),
-                        encodedEnvelope));
+                encodedEnvelope = new ReferencedEnvelope(CRS.transform(encodedEnvelope, latlonCrs));
                 attributes.addAttribute("", "crs", "crs", "", urnIdentifier);
             }
             attributes.addAttribute("", "dimensions", "dimensions", "", Integer.toString(crs

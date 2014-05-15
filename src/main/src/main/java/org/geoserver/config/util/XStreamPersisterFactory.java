@@ -39,7 +39,7 @@ import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
  */
 public class XStreamPersisterFactory implements ApplicationContextAware {
 
-    private List<XStreamPersisterInitializer> initializers = new ArrayList<XStreamPersisterInitializer>();
+    private List<XStreamPersisterInitializer> initializers;
 
     /**
      * Creates an instance configured to persist XML.
@@ -62,20 +62,26 @@ public class XStreamPersisterFactory implements ApplicationContextAware {
         XStreamPersister persister = new XStreamPersister(driver);
 
         // give the initializers a chance to register their own converters, aliases and so on
-        if (initializers != null) {
-            for (XStreamPersisterInitializer initializer : initializers) {
-                initializer.init(persister);
-            }
+        for (XStreamPersisterInitializer initializer : getInitializers()) {
+            initializer.init(persister);
         }
 
         return persister;
     }
 
+    private List<XStreamPersisterInitializer> getInitializers() {
+        if (initializers == null) {
+            initializers = new ArrayList<XStreamPersisterInitializer>(
+                    GeoServerExtensions.extensions(XStreamPersisterInitializer.class));
+        }
+
+        return initializers;
+    }
+
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        initializers = GeoServerExtensions.extensions(XStreamPersisterInitializer.class,
-                applicationContext);
-
+        initializers = new ArrayList<XStreamPersisterInitializer>(GeoServerExtensions.extensions(
+                XStreamPersisterInitializer.class, applicationContext));
     }
 
     /**
@@ -86,7 +92,7 @@ public class XStreamPersisterFactory implements ApplicationContextAware {
      * @param initializer
      */
     public void addInitializer(XStreamPersisterInitializer initializer) {
-        this.initializers.add(initializer);
+        getInitializers().add(initializer);
     }
 
     /**
@@ -95,6 +101,6 @@ public class XStreamPersisterFactory implements ApplicationContextAware {
      * @return True if the initializer was found and removed, false otherwise
      */
     public boolean removeInitializer(XStreamPersisterInitializer initializer) {
-        return this.initializers.remove(initializer);
+        return getInitializers().remove(initializer);
     }
 }

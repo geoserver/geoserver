@@ -13,6 +13,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 
 import org.apache.wicket.ResourceReference;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.IAjaxCallDecorator;
 import org.apache.wicket.ajax.calldecorator.AjaxCallDecorator;
 import org.apache.wicket.behavior.AbstractBehavior;
@@ -33,12 +34,28 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
     public static final ResourceReference REFERENCE = new ResourceReference(
             CodeMirrorEditor.class, "js/codemirror/js/codemirror.js");
     
+    public static final ResourceReference CSS_REFERENCE = new ResourceReference(
+            CodeMirrorEditor.class, "js/codemirror/css/codemirror.css");
+    
+    public static final ResourceReference[] MODES = new ResourceReference[] {
+        new ResourceReference(CodeMirrorEditor.class, "js/codemirror/js/xml.js"),
+        new ResourceReference(CodeMirrorEditor.class, "js/codemirror/js/clike.js"),
+        new ResourceReference(CodeMirrorEditor.class, "js/codemirror/js/groovy.js"),
+        new ResourceReference(CodeMirrorEditor.class, "js/codemirror/js/javascript.js"),
+        new ResourceReference(CodeMirrorEditor.class, "js/codemirror/js/python.js"),
+        new ResourceReference(CodeMirrorEditor.class, "js/codemirror/js/ruby.js")
+    };
+    
+
     private TextArea<String> editor;
 
     private WebMarkupContainer container;
 
-    public CodeMirrorEditor(String id, IModel<String> model) {
+    private String mode;
+    
+    public CodeMirrorEditor(String id, String mode, IModel<String> model) {
         super(id, model);
+        this.mode = mode;
         
         container = new WebMarkupContainer("editorContainer");
         container.setOutputMarkupId(true);
@@ -48,6 +65,10 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         container.add(editor);
         editor.setOutputMarkupId(true);
         editor.add(new CodeMirrorBehavior());
+    }
+    
+    public CodeMirrorEditor(String id, IModel<String> model) {
+        this(id, "xml", model);
     }
     
     @Override
@@ -69,6 +90,14 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         return editor.getMarkupId();
     }
     
+    public void setMode(String mode) {
+        this.mode = mode;
+        if (AjaxRequestTarget.get() != null) {
+            String javascript = "document.gsEditors." + editor.getMarkupId() + ".setOption('mode', '" + mode + "');";
+            AjaxRequestTarget.get().appendJavascript(javascript);
+        }
+    }
+    
     public void reset() {
         super.validate();
         editor.validate();
@@ -83,7 +112,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
             public CharSequence decorateScript(CharSequence script) {
                 // textarea.value = codemirrorinstance.getCode()
                 String id = getTextAreaMarkupId();
-                return "document.getElementById('" + id + "').value = document.gsEditors." + id + ".getCode();" + script;
+                return "document.getElementById('" + id + "').value = document.gsEditors." + id + ".getValue();" + script;
             }
         };
     }
@@ -93,8 +122,15 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         @Override
         public void renderHead(IHeaderResponse response) {
             super.renderHead(response);
+            // Add CSS
+            response.renderCSSReference(CSS_REFERENCE);
+            // Add JS
             response.renderJavascriptReference(REFERENCE);
-
+            // Add Modes
+            for(ResourceReference mode : MODES) {
+                response.renderJavascriptReference(mode);
+            }
+            
             response.renderOnDomReadyJavascript(getInitJavascript());
         }
 
@@ -102,9 +138,8 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
             InputStream is = CodeMirrorEditor.class.getResourceAsStream("CodeMirrorEditor.js");
             String js = convertStreamToString(is);
             js = js.replaceAll("\\$componentId", editor.getMarkupId());
-            js = js.replaceAll("\\$syntax", "parsexml.js");
+            js = js.replaceAll("\\$mode", mode);
             js = js.replaceAll("\\$container", container.getMarkupId());
-            js = js.replaceAll("\\$stylesheet", "./resources/org.geoserver.web.wicket.CodeMirrorEditor/js/codemirror/css/xmlcolors.css");
             return js;
         }
 

@@ -81,6 +81,14 @@ public final class GeometryEncoder {
             }
             json.endArray();
             json.endObject();
+        } else if (geom instanceof com.vividsolutions.jts.geom.LineString) {
+            com.vividsolutions.jts.geom.LineString line = (com.vividsolutions.jts.geom.LineString) geom;
+            json.object();
+            json.key("paths");
+            json.array();
+            embeddedLineStringToJson(line, json);
+            json.endArray();
+            json.endObject();
         } else if (geom instanceof com.vividsolutions.jts.geom.MultiLineString) {
             com.vividsolutions.jts.geom.MultiLineString mline = (com.vividsolutions.jts.geom.MultiLineString) geom;
             json.object();

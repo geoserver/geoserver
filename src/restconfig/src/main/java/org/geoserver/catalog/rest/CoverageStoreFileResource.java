@@ -23,6 +23,7 @@ import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataUtilities;
+import org.geotools.factory.GeoTools;
 import org.opengis.coverage.grid.Format;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.restlet.data.Form;
@@ -82,10 +83,10 @@ public class CoverageStoreFileResource extends StoreFileResource {
             CoverageStoreInfo info = catalog.getCoverageStoreByName(workspace, coveragestore);
             GridCoverageReader reader = info.getGridCoverageReader(null, null);
             StructuredGridCoverage2DReader sr = (StructuredGridCoverage2DReader) reader;
-            
-            final File uploadedFile = doFileUpload(method, workspace, coveragestore, format);
-            
-            sr.harvest(null, uploadedFile, null);
+            // This method returns a List of the harvested files.
+            final List<File> uploadedFiles = doFileUpload(method, workspace, coveragestore, format);
+            // File Harvesting
+            sr.harvest(null, uploadedFiles, GeoTools.getDefaultHints());
         } catch(IOException e) {
             throw new RestletException("File harvest failed", Status.SERVER_ERROR_INTERNAL, e);
         }
@@ -101,7 +102,8 @@ public class CoverageStoreFileResource extends StoreFileResource {
         String format = getAttribute("format");
         String method = getUploadMethod(request);
         
-        final File uploadedFile = doFileUpload(method, workspace, coveragestore, format);
+        // doFileUpload returns a List of File but in the case of a Put operation the list contains only a value
+        final File uploadedFile = doFileUpload(method, workspace, coveragestore, format).get(0);
         
         // /////////////////////////////////////////////////////////////////////
         //

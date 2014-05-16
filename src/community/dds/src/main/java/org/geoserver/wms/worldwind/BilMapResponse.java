@@ -37,8 +37,8 @@ import org.geotools.coverage.grid.GeneralGridEnvelope;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
@@ -279,10 +279,8 @@ public final class BilMapResponse extends RenderedImageMapResponse {
 	    destinationEnvelope.setCoordinateReferenceSystem(sourceCRS);
 	
 	    // this is the destination envelope in the coverage crs
-	    final GeneralEnvelope destinationEnvelopeInSourceCRS = (!deviceCRSToGCCRSTransform
-	        .isIdentity()) ? CRS.transform(deviceCRSToGCCRSTransform, destinationEnvelope)
-	                       : new GeneralEnvelope(destinationEnvelope);
-	    destinationEnvelopeInSourceCRS.setCoordinateReferenceSystem(cvCRS);
+        final GeneralEnvelope destinationEnvelopeInSourceCRS = CRS.transform(destinationEnvelope,
+                cvCRS);
 	
 	    /**
 	     * Reading Coverage on Requested Envelope

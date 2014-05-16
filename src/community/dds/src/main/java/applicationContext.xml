@@ -11,9 +11,18 @@
 		Map producers and Responses
 	 -->
 	<bean id="DDSMapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
-      <constructor-arg>
-        <description>The prescribed output format MIME-Type, same as declared in the getcaps document</description>
+	  <constructor-arg>
+        <description>The prescribed output format MIME-Type</description>
         <value>image/dds</value>
+      </constructor-arg>
+      <constructor-arg>
+        <description>The declared output format MIME-Types in the capabilities document</description>
+        <list>
+	        <value>image/dds</value>
+	        <value>image/dds; format=DXT1</value>
+	        <value>image/dds; format=DXT3</value>
+	        <value>image/dds; format=ETC1</value>
+        </list>
       </constructor-arg>
       <constructor-arg ref="wms" />
     </bean>

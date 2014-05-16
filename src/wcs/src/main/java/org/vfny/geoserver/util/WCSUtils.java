@@ -25,8 +25,8 @@ import org.geoserver.wcs.WCSInfo;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.DecimationPolicy;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.OverviewPolicy;
 import org.geotools.coverage.processing.CoverageProcessor;
 import org.geotools.coverage.processing.operation.Interpolate;
@@ -399,7 +399,7 @@ public class WCSUtils {
             final CoordinateReferenceSystem requestCRS = requestedEnvelope.getCoordinateReferenceSystem();
             final CoordinateReferenceSystem nativeCRS = reader.getCoordinateReferenceSystem();
             if(!CRS.equalsIgnoreMetadata(requestCRS, nativeCRS)) {
-                requestedEnvelope = CRS.transform(CRS.findMathTransform(requestCRS, nativeCRS, true), requestedEnvelope);
+                requestedEnvelope = CRS.transform(requestedEnvelope, nativeCRS);
             }
             // intersect with the native envelope, we cannot read outside of it
             requestedEnvelope.intersect(reader.getOriginalEnvelope());

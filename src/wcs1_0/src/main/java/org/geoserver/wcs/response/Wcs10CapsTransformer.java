@@ -34,8 +34,8 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
-import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.ResourceErrorHandling;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wcs.WCSInfo;
@@ -741,7 +741,8 @@ public class Wcs10CapsTransformer extends TransformerBase {
                 
                 GridCoverage2DReader reader = null;
                 try {
-                    reader = (GridCoverage2DReader) catalog.getResourcePool().getGridCoverageReader(csinfo, GeoTools.getDefaultHints());
+                    reader = (GridCoverage2DReader) cv.getGridCoverageReader(null,
+                            GeoTools.getDefaultHints());
                 } catch (IOException e) {
                     LOGGER.severe("Unable to acquire a reader for this coverage with format: " + csinfo.getFormat().getName());
                 }

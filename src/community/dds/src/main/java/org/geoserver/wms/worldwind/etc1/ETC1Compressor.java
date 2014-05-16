@@ -91,7 +91,7 @@ public class ETC1Compressor implements DXTCompressor
 	    int encodedWidth = (width + 3) & ~3;
 	    int encodedHeight = (height + 3) & ~3;
 	    
-	    int pixelSize = 3;	    
+	    int pixelSize = 1;	    
 	    
 	    int stride = pixelSize * width;
 	    
@@ -112,9 +112,9 @@ public class ETC1Compressor implements DXTCompressor
 	            for (int cy = 0; cy < yEnd; cy++) {
 	            	int q = (cy * 4) * 3;
 	            	int p = pixelSize * x + stride * (y + cy);
-	                // (pixelSize == 3) {
+	                // (pixelSize == 1 * 32 bit) {
                 	for (int cx = 0; cx < xEnd; cx++) {
-                        int pixel = ((pIn.getElem(p+2) & 0xFF) << 16) |((pIn.getElem(p+1) & 0xFF) << 8) | (pIn.getElem(p) & 0xFF);
+                        int pixel = pIn.getElem(p);
                         block[q++] = (byte) ((pixel >> 16) & 0xFF);
                         block[q++] = (byte) ((pixel >> 8) & 0xFF);
                         block[q++] = (byte) (pixel & 0xFF);

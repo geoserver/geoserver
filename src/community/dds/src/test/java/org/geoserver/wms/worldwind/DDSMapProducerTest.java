@@ -54,32 +54,27 @@ public class DDSMapProducerTest extends RenderedImageMapOutputFormatTest {
 	    		"&format=image/dds&srs=EPSG:4326";
 	    
 	    String response  = getAsString(request);
-	    System.out.println(response.getBytes().length);
-	    assertTrue("testStandartRequest",response.getBytes().length>874009);
+	    assertTrue("testStandartRequest",response.getBytes().length==874009);
 	    
 	    request = "wms?service=wms&request=GetMap&version=1.3.0" +
 	    		"&layers=" + layer + "&styles=&bbox=108.3,-46.3,160.3,-4.2&width=512&height=512" + 
 	    		"&format=image/dds; format=DXT1&srs=EPSG:4326";
-	    System.out.println(request);
 	    response  = getAsString(request);
-	    System.out.println(response.getBytes().length);
-	    assertTrue("testStandartRequest",response.getBytes().length>349681);
+	    assertTrue("testStandartRequest",response.getBytes().length==349681);
 	    
 	    request = "wms?service=wms&request=GetMap&version=1.3.0" +
 	    		"&layers=" + layer + "&styles=&bbox=108.3,-46.3,160.3,-4.2&width=512&height=512" + 
 	    		"&format=image/dds; format=DXT3&srs=EPSG:4326";
 	    
 	    response  = getAsString(request);
-	    System.out.println(response.getBytes().length);
-	    assertTrue("testStandartRequest",response.getBytes().length>874009);
+	    assertTrue("testStandartRequest",response.getBytes().length==874009);
 	    
 	    request = "wms?service=wms&request=GetMap&version=1.3.0" +
 	    		"&layers=" + layer + "&styles=&bbox=108.3,-46.3,160.3,-4.2&width=512&height=512" + 
 	    		"&format=image/dds; format=ETC1&srs=EPSG:4326";
 	    
 	    response  = getAsString(request);
-	    System.out.println(response.getBytes().length);
-	    assertTrue("testStandartRequest",response.getBytes().length>305985);
+	    assertTrue("testStandartRequest",response.getBytes().length==305985);
 	}
 
     @Before

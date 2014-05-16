@@ -29,6 +29,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -40,6 +41,8 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.FilenameUtils;
 import org.geotools.data.DataUtilities;
+import org.restlet.data.Method;
+import org.restlet.data.Request;
 
 /**
  * Assorted IO related utilities
@@ -706,12 +709,19 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
 	 * 
 	 * @param archive the {@link ZipFile} to inflate.
 	 * @param outputDirectory the directory where to inflate the archive.
+	 * @param fileName name of the file if present.
+	 * @param request HTTP request sent.
+	 * @param files empty list of the extracted files.
 	 * @throws IOException in case something bad happens.
 	 * @throws FileNotFoundException in case something bad happens.
 	 */
-	public static void inflate(ZipFile archive, File outputDirectory, String fileName) throws IOException,
+	public static void inflate(ZipFile archive, File outputDirectory, String fileName, 
+	        Request request, List<File> files ) throws IOException,
 			FileNotFoundException {
 
+	        // Boolean checking if the request is a POST and if the files must be saved into a List
+	        boolean saveFile = files != null && request!=null && request.getMethod().equals(Method.POST);
+	    
 		final Enumeration<? extends ZipEntry> entries = archive.entries();
 		try {
 			while (entries.hasMoreElements()) {
@@ -725,7 +735,10 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
 		        	final OutputStream out = new BufferedOutputStream(new FileOutputStream(outFile));
 		
 		            IOUtils.copyStream(in, out, true, true);
-	
+		            // If the file must be listed, then the file is added to the list
+		            if(saveFile){
+		                files.add(outFile);
+		            }
 		        }
 		        else {
 		            //if the entry is a directory attempt to make it

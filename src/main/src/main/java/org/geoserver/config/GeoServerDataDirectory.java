@@ -1142,38 +1142,56 @@ public class GeoServerDataDirectory implements ResourceStore {
     }
     
     /**
-     * Retrieve the style defintion as a Resource
+     * Retrieve the style definition as a Resource
      * @param c The style
      * @return A {@link Resource}
      */
     public @Nonnull Resource style(StyleInfo s) {
-        Resource r = get(s, s.getFilename());
+        // Must be a simple filename
+        final String filename = s.getFilename();
+        Resource r = get(s, filename);
         assert r!=null;
         return r;
     }
     
     /**
-     * Retrieve the style as a Style object
+     * Retrieve the StyleInfo as a GeoTools Style object. Note this is just
+     * the data structure as written, the matching external graphics are unmodified
+     * and may not be (yet) available on the local system.
+     * 
      * @param s The style
-     * @param absolutize Ensure all file urls are absolute
      * @return A {@link Resource}
      */
-    public @Nonnull Style parsedStyle(StyleInfo s, boolean absolutize) throws IOException {
+    public @Nonnull Style parsedStyle(StyleInfo s) throws IOException {
         final Resource styleResource = style(s);
         if ( styleResource.getType() == Type.UNDEFINED ){
             throw new IOException( "No such resource: " + s.getFilename());
         }
-        
-        final Object input;
-        if(absolutize) {
-            input = styleResource.file();
-            // TODO unpack resources
-        } else {
-            input = styleResource;
+        final StyledLayerDescriptor sld = Styles.parse(styleResource, null, s.getSLDVersion());
+        final Style style = Styles.style(sld);
+        assert style!=null;
+        return style;
+    }
+    
+    /**
+     * Retrieve the style prepared for direct GeoTools use. All file references
+     * have been made absolute.
+     * 
+     * @param s The style
+     * @return A {@link Resource}
+     */
+    public @Nonnull Style parsedStylePrepaired(StyleInfo s) throws IOException {
+        final Resource styleResource = style(s);
+        if ( styleResource.getType() == Type.UNDEFINED ){
+            throw new IOException( "No such resource: " + s.getFilename());
         }
+        File input = styleResource.file();
         final StyledLayerDescriptor sld = Styles.parse(input, null, s.getSLDVersion());
         final Style style = Styles.style(sld);
         assert style!=null;
+        // TODO unpack resources
+        // 1. visitor to shortlist resources
+        // 2. call resource.file() on each resource
         return style;
     }
     

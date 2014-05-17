@@ -51,6 +51,10 @@ import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.feature.retype.RetypingFeatureSource;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.ResourceListener;
+import org.geoserver.platform.resource.ResourceNotification;
+import org.geoserver.platform.resource.ResourceNotification.Kind;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
@@ -1580,33 +1584,46 @@ public class ResourcePool {
     }
     
     /**
-     * Returns a style resource, caching the result.
+     * Returns a style resource, caching the result. Any associated images should
+     * also be unpacked onto the local machine. ResourcePool will watch the style
+     * for changes and invalidate the cache as needed.
      * <p>
      * The resource is loaded by parsing {@link StyleInfo#getFilename()} as an 
-     * SLD.
+     * SLD. The SLD is prepaired for direct use by GeoTools, making use of absolute
+     * file paths where possible.
      * </p>
      * @param info The style metadata.
      * 
      * @throws IOException Any parsing errors.
      */
-    public Style getStyle( StyleInfo info ) throws IOException {
+    public Style getStyle( final StyleInfo info ) throws IOException {
         Style style = styleCache.get( info );
         if ( style == null ) {
             synchronized (styleCache) {
                 style = styleCache.get( info );
                 if ( style == null ) {
-                    style = dataDir().parsedStyle(info, true);
-                    //set the name of the style to be the name of hte style metadata
+                    style = dataDir().parsedStylePrepaired(info);
+                    // set the name of the style to be the name of the style metadata
                     // remove this when wms works off style info
                     style.setName( info.getName() );
                     styleCache.put( info, style );
+                    
+                    final Resource styleResource = dataDir().style(info);
+                    styleResource.addListener( new ResourceListener() {
+                        @Override
+                        public void changed(ResourceNotification notify) {
+                            styleCache.remove(info);
+                            styleResource.removeListener( this );
+                        }
+                    });
+                    
                 }
             }
         }
         
         return style;
     }
-    
+
     /**
      * Clears a style resource from the cache.
      * 

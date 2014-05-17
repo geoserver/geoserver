@@ -638,7 +638,7 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
         final List<Resource> files = new ArrayList<Resource>();
         final Resource baseDir = dd.get(s);
         try {
-            Style parsedStyle = dd.parsedStyle(s, false);
+            Style parsedStyle = dd.parsedStyle(s);
             parsedStyle.accept(new AbstractStyleVisitor() {
                 @Override
                 public void visit(ExternalGraphic exgr) {
@@ -693,8 +693,6 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
         rmRes(xml);
     }
     
-    // settings
-    
     private void persist( Object o, Resource r ) throws IOException {
         try {
             synchronized ( xp ) {
@@ -708,7 +706,7 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
             throw new CatalogException(msg, e);
         }
     }
-
+    
     private void rmRes(Resource r) {
         rl.remove(r.path());
     }

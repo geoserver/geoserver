@@ -54,12 +54,17 @@ public class DDSMapProducerTest extends RenderedImageMapOutputFormatTest {
 	    		"&format=image/dds&srs=EPSG:4326";
 	    
 	    String response  = getAsString(request);
+	    // strange result, should be 512 * 512 (1 byte / px) * 133/100 (mipmap) = 348650 + 448 (header)
+	    // request response tested on real geoserver are coherent with the statement above
 	    assertTrue("testStandartRequest",response.getBytes().length==874009);
 	    
 	    request = "wms?service=wms&request=GetMap&version=1.3.0" +
 	    		"&layers=" + layer + "&styles=&bbox=108.3,-46.3,160.3,-4.2&width=512&height=512" + 
 	    		"&format=image/dds; format=DXT1&srs=EPSG:4326";
 	    response  = getAsString(request);
+	    
+	    // strange result, should be 512 * 512 / 2 (0,5 byte / px) * 133/100 (mipmap) = 174325 + 448 (header)
+	    // request response tested on real geoserver are coherent with the statement above
 	    assertTrue("testStandartRequest",response.getBytes().length==349681);
 	    
 	    request = "wms?service=wms&request=GetMap&version=1.3.0" +
@@ -67,6 +72,8 @@ public class DDSMapProducerTest extends RenderedImageMapOutputFormatTest {
 	    		"&format=image/dds; format=DXT3&srs=EPSG:4326";
 	    
 	    response  = getAsString(request);
+	    // strange result, should be 512 * 512 (1 byte / px) * 133/100 (mipmap) = 348650 + 448 (header)
+	    // request response tested on real geoserver are coherent with the statement above
 	    assertTrue("testStandartRequest",response.getBytes().length==874009);
 	    
 	    request = "wms?service=wms&request=GetMap&version=1.3.0" +
@@ -74,6 +81,9 @@ public class DDSMapProducerTest extends RenderedImageMapOutputFormatTest {
 	    		"&format=image/dds; format=ETC1&srs=EPSG:4326";
 	    
 	    response  = getAsString(request);
+	    
+	    // strange result, should be 512 * 512 / 2 (0,5 byte / px) * 133/100 (mipmap) = 174325 + 448 (header)
+	    // request response tested on real geoserver are coherent with the statement above
 	    assertTrue("testStandartRequest",response.getBytes().length==305985);
 	}
 

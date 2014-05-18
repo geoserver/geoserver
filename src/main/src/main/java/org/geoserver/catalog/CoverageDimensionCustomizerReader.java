@@ -222,8 +222,11 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         if (wrappedDims == null) {
             wrappedDims = (GridSampleDimension[]) dims;
         } else if (properties != null && properties.containsKey("GC_NODATA")) {
-            // update the GC_NODATA property (if any) with the latest value
-            properties.put("GC_NODATA", wrappedDims[0].getNoDataValues()[0]);
+            // update the GC_NODATA property (if any) with the latest value, if we have any
+            double[] wrappedNoDataValues = wrappedDims[0].getNoDataValues();
+            if (wrappedNoDataValues != null && wrappedNoDataValues.length > 0) {
+                properties.put("GC_NODATA", wrappedNoDataValues[0]);
+            }
         }
 
         
@@ -589,7 +592,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
 
             // custom null values 
             final List<Double> nullValues = info.getNullValues();
-            if (nullValues != null) {
+            if (nullValues != null && nullValues.size() > 0) {
                 final int size = nullValues.size();
                 configuredNoDataValues = new double[size];
                 for (int i = 0; i < size ; i++) {
@@ -605,8 +608,12 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
                 Category wrapped = null;
                 for (Category category : categories) {
                     wrapped = category;
-                    if (category.getName().equals(Category.NODATA.getName())) {
-                        wrapped = new Category(Category.NODATA.getName(), category.getColors()[0], nullValues.get(0));
+                    if (Category.NODATA.getName().equals(category.getName())) {
+                        wrapped = new Category(
+                                Category.NODATA.getName(),
+                                category.getColors()[0],
+                                configuredNoDataValues != null && configuredNoDataValues.length > 0 ? configuredNoDataValues[0]
+                                        : category.getRange().getMinimum());
                     }
                     customCategories.add(wrapped);
                 }

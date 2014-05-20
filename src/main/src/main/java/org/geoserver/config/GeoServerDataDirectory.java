@@ -9,6 +9,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
 
 import javax.annotation.Nonnull;
 
@@ -29,12 +34,15 @@ import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
+import org.geotools.styling.AbstractStyleVisitor;
+import org.geotools.styling.ExternalGraphic;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyledLayerDescriptor;
 
@@ -1188,10 +1196,13 @@ public class GeoServerDataDirectory implements ResourceStore {
         File input = styleResource.file();
         final StyledLayerDescriptor sld = Styles.parse(input, null, s.getSLDVersion());
         final Style style = Styles.style(sld);
+        
+        List<Resource> styleResources = additionalStyleResources(s);
+        for(Resource resource:styleResources) {
+            resource.file();
+        }
+        
         assert style!=null;
-        // TODO unpack resources
-        // 1. visitor to shortlist resources
-        // 2. call resource.file() on each resource
         return style;
     }
     
@@ -1254,6 +1265,52 @@ public class GeoServerDataDirectory implements ResourceStore {
     public File findLayerGroupDir() throws IOException {
         Resource resource = getLayerGroups();
         return Resources.directory(resource);
+    }
+
+    List<Resource> additionalStyleResources(StyleInfo s) throws IOException {
+        final List<Resource> files = new ArrayList<Resource>();
+        final Resource baseDir = get(s);
+        try {
+            Style parsedStyle = parsedStyle(s);
+            parsedStyle.accept(new AbstractStyleVisitor() {
+                @Override
+                public void visit(ExternalGraphic exgr) {
+                    if (exgr.getOnlineResource() == null) {
+                        return;
+                    }
+    
+                    URI uri = exgr.getOnlineResource().getLinkage();
+                    if (uri == null) {
+                        return;
+                    }
+                    
+    
+                    Resource r = null;
+                    try {
+                        r = uriToResource(baseDir, uri);
+                        if (r!=null && r.getType()!=Type.UNDEFINED) files.add(r);
+                    } catch (IllegalArgumentException|MalformedURLException e) {
+                        GeoServerPersister.LOGGER.log(Level.WARNING, "Error attemping to process SLD resource", e);
+                    } 
+                }
+            });
+        }
+        catch(IOException e) {
+            GeoServerPersister.LOGGER.log(Level.WARNING, "Error loading style", e);
+        }
+        return files;
+    }
+
+    Resource uriToResource(Resource base, URI uri) throws MalformedURLException {
+        if(uri.getScheme()!=null && !uri.getScheme().equals("file")) {
+            return null;
+        }
+        if(uri.isAbsolute() && ! uri.isOpaque()) {
+            assert uri.getScheme().equals("file");
+            return Files.asResource(new File(uri.toURL().getFile()));
+        }  else {
+            return base.get(uri.getSchemeSpecificPart());
+        }
     }
 
 }

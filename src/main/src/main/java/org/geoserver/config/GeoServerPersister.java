@@ -168,7 +168,7 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
 
                     //look for any resource files (image, etc...) and copy them over, don't move 
                     // since they could be shared among other styles
-                    for (Resource old : additionalResources((StyleInfo) source)) {
+                    for (Resource old : dd.additionalStyleResources((StyleInfo) source)) {
                         copyResToDir(old, newDir);
                     }
 

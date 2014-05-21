@@ -107,44 +107,10 @@ public class LayerListResource extends Resource {
         if (workspace == null) {
             throw new NoSuchElementException("No workspace known by name: " + workspaceName);
         }
-        List<LayerOrTable> layers = new ArrayList<LayerOrTable>();
-        List<LayerOrTable> tables = new ArrayList<LayerOrTable>();
-        int idCounter = 0;
-        List<LayerInfo> layersInWorkspace = new ArrayList<LayerInfo>();
-        for (LayerInfo l : catalog.getLayers()) {
-            if (l.getType() == LayerInfo.Type.VECTOR && l.getResource().getStore().getWorkspace().getName().equals(workspaceName)) {
-                layersInWorkspace.add(l);
-            }
-        }
-        Collections.sort(layersInWorkspace, LayerNameComparator.INSTANCE);
-        for (LayerInfo l : layersInWorkspace) {
-            ResourceInfo resource = l.getResource();
-            try {
-                if (resource instanceof CoverageInfo) {
-                        layers.add(new LayerOrTable(l, idCounter, GeometryTypeEnum.POLYGON));
-                        idCounter++;
-                } else if (resource instanceof FeatureTypeInfo) {
-                    final GeometryTypeEnum gtype;
-                    GeometryDescriptor gDesc = ((FeatureTypeInfo)resource).getFeatureType().getGeometryDescriptor();
-                    if (gDesc == null) {
-                        gtype = null;
-                    } else { 
-                        gtype = GeometryTypeEnum.forJTSClass(gDesc.getType().getBinding());
-                    }
-                    if (gtype == null) {
-                        tables.add(new LayerOrTable(l, idCounter, gtype));
-                    } else {
-                        layers.add(new LayerOrTable(l, idCounter, gtype));
-                    }
-                    idCounter++;
-                }
-            } catch (IOException e) {
-                idCounter += 1;
-            }
-        }
-        return new JsonLayersRepresentation(Collections.unmodifiableList(layers), Collections.unmodifiableList(tables));
+        LayersAndTables layersAndTables = LayersAndTables.find(catalog, workspaceName);
+        return new JsonLayersRepresentation(layersAndTables.layers, layersAndTables.tables);
     }
-    
+
     private static class JsonLayersRepresentation extends OutputRepresentation {
         private final List<LayerOrTable> layers;
         private final List<LayerOrTable> tables;
@@ -167,18 +133,6 @@ public class LayerListResource extends Resource {
             json.endObject();
             writer.flush();
             writer.close();
-        }
-    }
-    
-    private static class LayerOrTable {
-        public final LayerInfo layer;
-        public final int id;
-        public final GeometryTypeEnum gtype;
-
-        LayerOrTable(LayerInfo layer, int id, GeometryTypeEnum gtype) {
-            this.layer = layer;
-            this.id = id;
-            this.gtype = gtype;
         }
     }
     
@@ -210,31 +164,18 @@ public class LayerListResource extends Resource {
                 Double maxScale = Double.isInfinite(range.maxScale) ? null : range.maxScale;
                 json.key("minScale").value(minScale);
                 json.key("maxScale").value(maxScale);
-                try {
-                    CoordinateReferenceSystem lonLat = CRS.decode("EPSG:4326");
-                    ReferencedEnvelope boundingBox = layer.getResource().getLatLonBoundingBox();
-                    if (boundingBox != null) {
-                        json.key("extent");
+                if (layerOrTable.boundingBox != null) {
+                    json.key("extent");
+                    try {
                         CoordinateReferenceSystem WEB_MERCATOR = CRS.decode("EPSG:3857");
-                        try {
-                            double minx = Math.max(boundingBox.getMinX(),  -180);
-                            double maxx = Math.min(boundingBox.getMaxX(),   180);
-                            double miny = Math.max(boundingBox.getMinY(), -85);
-                            double maxy = Math.min(boundingBox.getMaxY(),  85);
-                            ReferencedEnvelope sphericalMercatorBoundingBox = new ReferencedEnvelope(minx, maxx, miny, maxy, lonLat);
-                            sphericalMercatorBoundingBox = sphericalMercatorBoundingBox.transform(WEB_MERCATOR, true);
-                            GeometryEncoder.referencedEnvelopeToJson(sphericalMercatorBoundingBox, SpatialReferences.fromCRS(WEB_MERCATOR), json);
-                        } catch (TransformException e) {
-                            throw new RuntimeException("Couldn't translate to EPSG:3857: " + boundingBox, e);
-                        }
+                        GeometryEncoder.referencedEnvelopeToJson(layerOrTable.boundingBox, SpatialReferences.fromCRS(WEB_MERCATOR), json);
+                    } catch (FactoryException e) {
+                        LOGGER.log(Level.WARNING, "Omitting bbox because we couldn't find EPSG:3857", e);
                     }
-                } catch (FactoryException e) {
-                    LOGGER.log(Level.WARNING, "Unable to convert CRS to SpatialReference for layer " + layer, e);
                 }
                 json.key("drawingInfo");
                 json.object().key("renderer");
-                Renderer renderer = StyleEncoder.effectiveRenderer(layer);
-                StyleEncoder.encodeRenderer(json, renderer);
+                StyleEncoder.encodeRenderer(json, layerOrTable.renderer);
                 json.endObject();
             }
             DimensionInfo time = (DimensionInfo) layer.getResource().getMetadata().get(ResourceInfo.TIME);

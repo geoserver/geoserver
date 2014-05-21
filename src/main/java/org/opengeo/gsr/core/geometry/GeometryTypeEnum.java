@@ -5,6 +5,7 @@
 package org.opengeo.gsr.core.geometry;
 
 import java.io.IOException;
+import java.util.NoSuchElementException;
 
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -50,7 +51,7 @@ public enum GeometryTypeEnum {
         } else if (jtsClass.equals(com.vividsolutions.jts.geom.Envelope.class)) {
             return ENVELOPE;
         } else {
-            throw new UnsupportedOperationException("No GeoServices Geometry equivalent known for " + jtsClass);
+            throw new NoSuchElementException("No GeoServices Geometry equivalent known for " + jtsClass);
         }
     }
     

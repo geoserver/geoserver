@@ -93,6 +93,12 @@ public class QueryResource extends Resource {
                 return buildJsonError(new ServiceError(500, "Requested operation is not implemented", Arrays.asList(e.getMessage())));
             } catch (NoSuchElementException e) {
                 return buildJsonError(new ServiceError(404, "Requested element not found", Arrays.asList(e.getMessage())));
+            } catch (Exception e) {
+                List<String> trace = new ArrayList<String>();
+                for (StackTraceElement elem : e.getStackTrace()) {
+                    trace.add(elem.toString());
+                }
+                return buildJsonError(new ServiceError(500, "Requested operation is not implemented", trace));
             }
         }
         return super.getRepresentation(variant);
@@ -108,21 +114,35 @@ public class QueryResource extends Resource {
     private Representation buildJsonRepresentation() {
         if (!"json".equals(format)) throw new IllegalArgumentException("json is the only supported format");
         String workspace = (String) getRequest().getAttributes().get("workspace");
-        
-        List<LayerInfo> layersInWorkspace = new ArrayList<LayerInfo>();
-        for (LayerInfo l : catalog.getLayers()) {
-            if (l.getType() == LayerInfo.Type.VECTOR && l.getResource().getStore().getWorkspace().getName().equals(workspace)) {
-                layersInWorkspace.add(l);
-            }
-        }
-        Collections.sort(layersInWorkspace, LayerNameComparator.INSTANCE);
+
+        LayersAndTables layersAndTables = LayersAndTables.find(catalog, workspace);
         
         String layerOrTableId = (String) getRequest().getAttributes().get("layerOrTable");
         Integer layerOrTableIndex = Integer.valueOf(layerOrTableId);
-        LayerInfo l = layersInWorkspace.get(layerOrTableIndex);
+        LayerInfo l = null;
+        for (LayerOrTable layerOrTable : layersAndTables.layers) {
+            if (layerOrTable.id == layerOrTableIndex) {
+                l = layerOrTable.layer;
+                break;
+            }
+        }
+
+        if (l == null) {
+            for (LayerOrTable layerOrTable : layersAndTables.tables) {
+                if (layerOrTable.id == layerOrTableIndex) {
+                    l = layerOrTable.layer;
+                    break;
+                }
+            }
+        }
+
+        if (null == l) {
+            throw new NoSuchElementException("No table or layer in workspace \"" + workspace + " for id " + layerOrTableId + "\" of " + layersAndTables);
+        }
+
         FeatureTypeInfo featureType = (FeatureTypeInfo) l.getResource();
         if (null == featureType) {
-            throw new NoSuchElementException("No table or layer in workspace \"" + workspace + " for id " + layerOrTableId + "\"");
+            throw new NoSuchElementException("No table or layer in workspace \"" + workspace + " for id " + layerOrTableId + "\" of " + layersAndTables);
         }
 
         final String geometryProperty;

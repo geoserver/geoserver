@@ -1602,7 +1602,7 @@ public class ResourcePool {
             synchronized (styleCache) {
                 style = styleCache.get( info );
                 if ( style == null ) {
-                    style = dataDir().parsedStylePrepaired(info);
+                    style = dataDir().parsedStylePrepared(info);
                     // set the name of the style to be the name of the style metadata
                     // remove this when wms works off style info
                     style.setName( info.getName() );

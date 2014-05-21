@@ -42,7 +42,9 @@ import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.geotools.styling.AbstractStyleVisitor;
+import org.geotools.styling.ChannelSelection;
 import org.geotools.styling.ExternalGraphic;
+import org.geotools.styling.SelectedChannelType;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyledLayerDescriptor;
 
@@ -1188,7 +1190,7 @@ public class GeoServerDataDirectory implements ResourceStore {
      * @param s The style
      * @return A {@link Resource}
      */
-    public @Nonnull Style parsedStylePrepaired(StyleInfo s) throws IOException {
+    public @Nonnull Style parsedStylePrepared(StyleInfo s) throws IOException {
         final Resource styleResource = style(s);
         if ( styleResource.getType() == Type.UNDEFINED ){
             throw new IOException( "No such resource: " + s.getFilename());
@@ -1293,6 +1295,19 @@ public class GeoServerDataDirectory implements ResourceStore {
                         GeoServerPersister.LOGGER.log(Level.WARNING, "Error attemping to process SLD resource", e);
                     } 
                 }
+
+                // TODO: Workaround for GEOT-4803, Remove when it is fixed, KS
+                @Override
+                public void visit(ChannelSelection cs) {
+                    if (cs.getGrayChannel() != null) {
+                        cs.getGrayChannel().accept(this);
+                    }
+                    final SelectedChannelType[] rgbChannels = cs.getRGBChannels();
+                    for (SelectedChannelType ch : rgbChannels) {
+                        if(ch!=null) ch.accept(this);
+                    }
+                }
+                
             });
         }
         catch(IOException e) {

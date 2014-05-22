@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.map.ImageUtils;
@@ -66,6 +67,7 @@ import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Literal;
 import org.opengis.style.GraphicLegend;
 import org.opengis.util.InternationalString;
+
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -290,6 +292,7 @@ public class BufferedImageLegendGraphicBuilder {
                 
                 final Feature sampleFeature;
                 if (layer == null || hasVectorTransformation) {
+
                     sampleFeature = createSampleFeature();
                 } else {                    
                     sampleFeature = createSampleFeature(layer);
@@ -376,8 +379,7 @@ public class BufferedImageLegendGraphicBuilder {
                             Symbolizer symbolizer = symbolizers[sIdx];
                             
                             if (symbolizer instanceof RasterSymbolizer) {
-                                throw new IllegalStateException(
-                                        "It is not legal to have a RasterSymbolizer here");
+                                // skip it
                             } else {
                                 // rescale symbols if needed
                                 if (symbolScale > 1.0

@@ -47,8 +47,15 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import net.sf.json.util.JSONBuilder;
+
+import org.opengis.filter.And;
+import org.opengis.filter.BinaryComparisonOperator;
 import org.opengis.filter.Filter;
 import org.opengis.filter.PropertyIsEqualTo;
+import org.opengis.filter.PropertyIsGreaterThan;
+import org.opengis.filter.PropertyIsGreaterThanOrEqualTo;
+import org.opengis.filter.PropertyIsLessThan;
+import org.opengis.filter.PropertyIsLessThanOrEqualTo;
 import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
 
@@ -141,6 +148,9 @@ public class StyleEncoder {
         
         Renderer render = rulesToUniqueValueRenderer(rules);
         if (render != null) return render;
+        
+        render = rulesToClassBreaksRenderer(rules);
+        if (render != null) return render;
 
         final Symbolizer symbolizer = getSingleSymbolizer(style);
         if (symbolizer != null) {
@@ -153,6 +163,98 @@ public class StyleEncoder {
         } else {
             return null;
         }
+    }
+    
+    private static Renderer rulesToClassBreaksRenderer(List<Rule> rules) {
+        List<Rule> rulesOther = new LinkedList<Rule>();
+        Map<String, ClassBreaksRenderer> map = new LinkedHashMap<String, ClassBreaksRenderer>();
+        for (Rule rule : rules) {
+            ClassBreakInfoMeta meta = ruleToClassBreakInfoMeta(rule);
+            if (meta != null) {
+                ClassBreaksRenderer renderer = map.get(meta.propertyName);
+                if (renderer == null) {
+                    double minValue = 0;
+                    renderer = new ClassBreaksRenderer(meta.propertyName, 
+                            minValue,
+                            new LinkedList<ClassBreakInfo>());
+                    map.put(meta.propertyName, renderer);
+                }
+                renderer.getClassBreakInfos().add(meta.classBreakInfo);
+            } else {
+                rulesOther.add(rule);
+            }
+        }
+
+        if (map.size() == 1 && rulesOther.size() <= 1) {
+            ClassBreaksRenderer classBreaksRenderer = map.values().iterator().next();
+            if (rulesOther.size() == 1) {
+                // assuming remaining rule is the default.
+                Rule rule = rulesOther.get(0);
+                String title = rule.getTitle();
+                if (title == null) title = "";
+                // classBreaksRenderer.setDefaultLabel(title);
+                // classBreaksRenderer.setDefaultSymbol(symbolizerToSymbol(rule.symbolizers().get(0)));
+            }
+            return classBreaksRenderer;
+        }
+
+        return null;
+    }
+
+    private static class ClassBreakInfoMeta {
+        final String propertyName;
+        final ClassBreakInfo classBreakInfo;
+        public ClassBreakInfoMeta(String propertyName, ClassBreakInfo classBreakInfo) {
+            this.propertyName = propertyName;
+            this.classBreakInfo = classBreakInfo;
+        }
+    }
+
+    private static ClassBreakInfoMeta ruleToClassBreakInfoMeta(Rule rule) {
+        List<Symbolizer> symbolizers = rule.symbolizers();
+        if (symbolizers == null || symbolizers.size() != 1) return null;
+
+        Symbolizer symbolizer = symbolizers.get(0);
+        if (symbolizer == null) return null;
+
+        Filter filter = rule.getFilter();
+        if (!(filter instanceof And)) return null;
+
+        And classBreakFilter = (And) filter;
+        List<Filter> children = classBreakFilter.getChildren();
+
+        if (children == null || children.size() != 2) return null;
+
+        Filter child1 = children.get(0);
+        if (!(child1 instanceof PropertyIsGreaterThanOrEqualTo || child1 instanceof PropertyIsGreaterThan)) return null;
+        BinaryComparisonOperator lowerBound = (BinaryComparisonOperator) child1;
+
+        Filter child2 = children.get(1);
+        if (!(child2 instanceof PropertyIsLessThanOrEqualTo || child2 instanceof PropertyIsLessThan)) return null;
+        BinaryComparisonOperator upperBound = (BinaryComparisonOperator) child2;
+        Expression property1 = lowerBound.getExpression1();
+        Expression property2 = upperBound.getExpression1();
+
+        if (property1 == null || property2 == null || !(property1.equals(property2))) {
+            return null;
+        }
+        if (!(property1 instanceof PropertyName)) {
+            return null;
+        }
+        String propertyName = ((PropertyName) property1).getPropertyName();
+
+        Expression min = lowerBound.getExpression2();
+        if (!(min instanceof Literal)) {
+            return null;
+        }
+        Double minAsDouble = ((Literal)min).evaluate(null, double.class);
+
+        Expression max = upperBound.getExpression2();
+        if (!(max instanceof Literal)) {
+            return null;
+        }
+        Double maxAsDouble = ((Literal)max).evaluate(null, double.class);
+        return new ClassBreakInfoMeta(propertyName, new ClassBreakInfo(maxAsDouble, "", "", symbolizerToSymbol(symbolizer)));
     }
     
     private static Renderer rulesToUniqueValueRenderer(List<Rule> rules) {
@@ -663,10 +765,34 @@ public class StyleEncoder {
             encodeSimpleRenderer(json, (SimpleRenderer) renderer);
         } else if (renderer instanceof UniqueValueRenderer) {
             encodeUniqueValueRenderer(json, (UniqueValueRenderer) renderer);
-        }
+        } else if (renderer instanceof ClassBreaksRenderer) {
+        	encodeClassBreaksRenderer(json, (ClassBreaksRenderer) renderer);
+        } else throw new IllegalArgumentException("Unhandled renderer " + renderer);
     }
     
-    private static void encodeSimpleRenderer(JSONBuilder json, SimpleRenderer renderer) {
+    private static void encodeClassBreaksRenderer(JSONBuilder json, ClassBreaksRenderer renderer) {
+		// TODO Auto-generated method stub
+    	json.object()
+    	  .key("type").value("classBreaks")
+    	  .key("field").value(renderer.getField())
+    	  .key("minValue").value(renderer.getMinValue());
+    	
+    	json.key("classBreakInfos").array();
+    	
+    	for (ClassBreakInfo info : renderer.getClassBreakInfos()) {
+    		json.object().
+    		     key("classMaxValue").value(info.getClassMaxValue())
+    		    .key("label").value(info.getLabel())
+    		    .key("description").value(info.getDescription())
+    		    .key("symbol");
+    		encodeSymbol(json, info.getSymbol());
+    		json.endObject();
+    	}
+    	
+    	json.endArray().endObject();
+	}
+
+	private static void encodeSimpleRenderer(JSONBuilder json, SimpleRenderer renderer) {
         json.object()
           .key("type").value("simple")
           .key("symbol");

@@ -54,6 +54,13 @@ public class RendererEncoderTest extends ResourceTest {
         StyleEncoder.encodeRenderer(json, pointRenderer);
     }
     
+    private Renderer parseAndConvertToRenderer(String sldPath) throws Exception {
+        StyleFactory factory = CommonFactoryFinder.getStyleFactory();
+        SLDParser parser = new SLDParser(factory, getClass().getResource(sldPath));
+        org.geotools.styling.Style sld = parser.readXML()[0];
+        return StyleEncoder.styleToRenderer((org.geotools.styling.Style) sld);
+    }
+    
     @Test
     public void testIconRenderer() throws Exception {
         StyleFactory factory = CommonFactoryFinder.getStyleFactory();
@@ -73,5 +80,19 @@ public class RendererEncoderTest extends ResourceTest {
         assertEquals("image/jpeg", contentType);
         assertEquals(64, width);
         assertEquals(64, height);
+    }
+
+    @Test
+    public void testClassBreaks() throws Exception {
+    	Renderer renderer = parseAndConvertToRenderer("earthquakes.sld");
+    	assertTrue(renderer.toString(), renderer instanceof ClassBreaksRenderer);
+    	renderer = parseAndConvertToRenderer("hnd_bridges_graduated.sld");
+    	assertTrue(renderer.toString(), renderer instanceof ClassBreaksRenderer);
+    }
+    
+    @Test
+    public void testUniqueValues() throws Exception {
+    	Renderer renderer = parseAndConvertToRenderer("hnd_cemeteries_categorized.sld");
+    	assertTrue(renderer.toString(), renderer instanceof UniqueValueRenderer);
     }
 }

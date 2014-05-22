@@ -141,6 +141,9 @@ public class LayerListResource extends Resource {
         for (int i = 0; i < layers.size(); i++) {
             final LayerOrTable layerOrTable = layers.get(i);
             final LayerInfo layer = layerOrTable.layer;
+            if (!layer.isAdvertised()) {
+                continue;
+            }
             json.object();
             json.key("id").value(layerOrTable.id);
             json.key("type").value("Feature Layer");

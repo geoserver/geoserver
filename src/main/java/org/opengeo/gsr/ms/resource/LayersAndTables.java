@@ -38,7 +38,7 @@ public class LayersAndTables {
         int idCounter = 0;
         List<LayerInfo> layersInWorkspace = new ArrayList<LayerInfo>();
         for (LayerInfo l : catalog.getLayers()) {
-            if (l.getType() == LayerInfo.Type.VECTOR && l.getResource().getStore().getWorkspace().getName().equals(workspaceName)) {
+            if (l.enabled() && l.getType() == LayerInfo.Type.VECTOR && l.getResource().getStore().getWorkspace().getName().equals(workspaceName)) {
                 layersInWorkspace.add(l);
             }
         }

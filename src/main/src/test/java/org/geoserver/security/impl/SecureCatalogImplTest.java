@@ -5,6 +5,7 @@
 package org.geoserver.security.impl;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -260,15 +261,15 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
                 sc.getFeatureTypes(),
                 sc.list(FeatureTypeInfo.class, Predicates.acceptAll()),
                 
-                allOf(hasSize(featureTypes.size()),
-                  everyItem(Matchers.<FeatureTypeInfo>instanceOf(SecuredFeatureTypeInfo.class))));
+                allOf((Matcher)hasSize(featureTypes.size()),
+                  (Matcher)everyItem(Matchers.<FeatureTypeInfo>instanceOf(SecuredFeatureTypeInfo.class))));
 
         assertThatBoth(
                 sc.getCoverages(),
                 sc.list(CoverageInfo.class, Predicates.acceptAll()),
                
-                allOf(hasSize(coverages.size()),
-                  everyItem(Matchers.<CoverageInfo>instanceOf(SecuredCoverageInfo.class))));
+                allOf((Matcher)hasSize(coverages.size()),
+                  (Matcher)everyItem(Matchers.<CoverageInfo>instanceOf(SecuredCoverageInfo.class))));
 
         assertThatBoth(
                 sc.getWorkspaces(),
@@ -436,8 +437,8 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         
         assertThatBoth(sc.getFeatureTypes(),
               sc.list(FeatureTypeInfo.class, Predicates.acceptAll()),
-              allOf(hasSize(featureTypes.size()),
-                everyItem(Matchers.<FeatureTypeInfo>instanceOf(SecuredFeatureTypeInfo.class))));
+              allOf((Matcher)hasSize(featureTypes.size()),
+                (Matcher)everyItem(Matchers.<FeatureTypeInfo>instanceOf(SecuredFeatureTypeInfo.class))));
         assertThatBoth(sc.getCoverages(),
               sc.list(CoverageInfo.class, Predicates.acceptAll()),
               equalTo(coverages));
@@ -608,9 +609,9 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         assertNull(layerGroup);        
     }
     
-    static <T> void assertThatBoth(List<T> result1, CloseableIterator<T> result2, Matcher<? super List<T>> expected) throws IOException {
-        assertThat(result1, expected);
-        assertThat(collectAndClose(result2), expected);
+    static <T> void assertThatBoth(List<T> result1, CloseableIterator<T> result2, Matcher<?> expected) throws IOException {
+        assertThat(result1, (Matcher<List<T>>)expected);
+        assertThat(collectAndClose(result2), (Matcher<List<T>>)expected);
     }
     
     static <T> List<T> collectAndClose(CloseableIterator<T> it) throws IOException {

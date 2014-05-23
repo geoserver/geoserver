@@ -1188,7 +1188,7 @@ O:      for (String propName : query.getPropertyNames()) {
                             CoordinateReferenceSystem crs = null;
                             try {
                                 crs = CRS.decode( filter.getSRS() );
-                                e = CRS.transform(CRS.findMathTransform(crs, geo, true), e);
+                                e = CRS.transform(e, geo);
                             } 
                             catch( Exception ex ) {
                                 throw new WFSException( request, ex );

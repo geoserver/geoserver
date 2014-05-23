@@ -14,6 +14,7 @@ import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipFile;
 
@@ -32,6 +33,7 @@ import org.restlet.data.Status;
 import org.vfny.geoserver.global.ConfigurationException;
 import com.noelios.restlet.ext.servlet.ServletCall;
 import com.noelios.restlet.http.HttpRequest;
+import org.restlet.data.Method;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -275,12 +277,14 @@ public class RESTUtils {
      * 
      * @param zipFile The zip file.
      * @param outputDirectory The directory to unpack the contents to.
+     * @param request HTTP request sent.
+     * @param files Empty List to be filled with the zip files.
      * 
      * @throws IOException Any I/O errors that occur.
      * 
      * TODO: move this to IOUtils
      */
-    public static void unzipFile( File zipFile, File outputDirectory ) throws IOException {
+    public static void unzipFile( File zipFile, File outputDirectory, Request request, List<File> files) throws IOException {
         if ( outputDirectory == null ) {
             outputDirectory = zipFile.getParentFile();
         }
@@ -288,7 +292,7 @@ public class RESTUtils {
             outputDirectory.mkdir();
         }
         ZipFile archive = new ZipFile(zipFile);
-        IOUtils.inflate(archive, outputDirectory, null);
+        IOUtils.inflate(archive, outputDirectory, null, request, files);
         IOUtils.deleteFile(zipFile);
     }
     
@@ -307,7 +311,7 @@ public class RESTUtils {
         String outputPath = Paths.path("data",Paths.convert(storeName));
         Resource directory = loader.get(outputPath);
         File outputDirectory = directory.dir(); // find or create
-        unzipFile(zipFile, outputDirectory);
+        unzipFile(zipFile, outputDirectory, null, null);
         return outputDirectory;
     }
 

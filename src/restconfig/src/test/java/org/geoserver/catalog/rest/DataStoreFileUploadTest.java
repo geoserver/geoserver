@@ -170,7 +170,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         
         File zip = new File(f, "pds.zip");
         IOUtils.copy(getClass().getResourceAsStream( "test-data/pds.zip" ), new FileOutputStream(zip));
-        org.geoserver.rest.util.IOUtils.inflate(new ZipFile(zip), f, null);
+        org.geoserver.rest.util.IOUtils.inflate(new ZipFile(zip), f, null, null, null);
         
         MockHttpServletResponse resp = putAsServletResponse("/rest/workspaces/gs/datastores/pds/external.shp", 
             new File(f, "pds.shp").toURL().toString(), "text/plain");

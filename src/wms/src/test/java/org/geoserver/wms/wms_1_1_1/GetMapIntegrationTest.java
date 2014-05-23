@@ -235,7 +235,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         
         // check the pixels that should be in the scale bar
         assertPixel(image, 56, 211, Color.WHITE);
-        assertPixel(image, 52, 221, Color.BLACK);
+        assertPixel(image, 52, 222, Color.BLACK);
     }
     
     @Test

@@ -76,6 +76,12 @@ public class Styles {
      */
     public static StyledLayerDescriptor parse(Object input, EntityResolver entityResolver) throws IOException {
         Object[] obj = getVersionAndReader(input);
+        // if the input is a file we want to maintain it, as we are going to need
+        // relative references to image files
+        if (input instanceof File && obj[1] instanceof Reader) {
+            ((Reader) obj[1]).close();
+            obj[1] = input;
+        }
         return parse(obj[1], entityResolver, (Version)obj[0]);
     }
 

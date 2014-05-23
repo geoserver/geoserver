@@ -5,6 +5,7 @@
 package org.geoserver.wcs;
 
 import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.InvalidParameterValue;
+
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -15,7 +16,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.media.jai.Interpolation;
+
 import net.opengis.gml.CodeType;
 import net.opengis.gml.DirectPositionType;
 import net.opengis.gml.RectifiedGridType;
@@ -34,6 +37,7 @@ import net.opengis.wcs10.SpatialSubsetType;
 import net.opengis.wcs10.TimePeriodType;
 import net.opengis.wcs10.TimeSequenceType;
 import net.opengis.wcs10.TypedLiteralType;
+
 import org.eclipse.emf.common.util.EList;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
@@ -51,8 +55,8 @@ import org.geotools.coverage.grid.GeneralGridGeometry;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.parameter.DefaultParameterDescriptor;
@@ -545,8 +549,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             GeneralEnvelope destinationEnvelope = (GeneralEnvelope) getHorizontalEnvelope(computeIntersectionEnvelope(
                     requestedEnvelope, nativeEnvelope));
             if(targetCRS != null) {
-                MathTransform mt = CRS.findMathTransform(nativeCRS, targetCRS);
-                destinationEnvelope = CRS.transform(mt, destinationEnvelope);
+                destinationEnvelope = CRS.transform(destinationEnvelope, targetCRS);
                 destinationEnvelope.setCoordinateReferenceSystem(targetCRS);
             }
 
@@ -615,14 +618,9 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             //        	
             MathTransform destinationToSourceTransform = null;
             // STEP 1: reproject requested BBox to native CRS if needed
-            if (!CRS.equalsIgnoreMetadata(requestCRS, nativeCRS))
-                destinationToSourceTransform = CRS.findMathTransform(requestCRS, nativeCRS, true);
-            // now transform the requested envelope to source crs
-            if (destinationToSourceTransform != null && !destinationToSourceTransform.isIdentity()) {
-                retVal = CRS.transform(destinationToSourceTransform,
-                        getHorizontalEnvelope(requestedEnvelope));
+            if (!CRS.equalsIgnoreMetadata(requestCRS, nativeCRS)) {
+                retVal = CRS.transform(getHorizontalEnvelope(requestedEnvelope), nativeCRS);
                 retVal.setCoordinateReferenceSystem(nativeCRS);
-
             } else {
                 // we do not need to do anything, but we do this in order to aboid problems with the
                 // envelope checks
@@ -673,14 +671,8 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             GeneralEnvelope requestedBBOXInNativeGeographicCRS = null;
             // STEP 1 reproject the requested envelope to the coverage geographic bbox
             if (!CRS.equalsIgnoreMetadata(nativeCRS, requestCRS)) {
-                // try to convert the requested bbox to the coverage geocrs
-                final MathTransform requestCRSToCoverageGeographicCRS2D = CRS.findMathTransform(
-                        requestCRS, nativeGeoCRS, true);
-                if (!requestCRSToCoverageGeographicCRS2D.isIdentity()) {
-                    requestedBBOXInNativeGeographicCRS = CRS.transform(
-                            requestCRSToCoverageGeographicCRS2D, requestedEnvelope);
-                    requestedBBOXInNativeGeographicCRS.setCoordinateReferenceSystem(nativeCRS);
-                }
+                requestedBBOXInNativeGeographicCRS = CRS.transform(requestedEnvelope, nativeGeoCRS);
+                requestedBBOXInNativeGeographicCRS.setCoordinateReferenceSystem(nativeGeoCRS);
             }
             if (requestedBBOXInNativeGeographicCRS == null)
                 requestedBBOXInNativeGeographicCRS = new GeneralEnvelope(requestCRS);
@@ -697,9 +689,8 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
 
             // now go back to the coverage native CRS in order to compute an approximate requested
             // resolution
-            final MathTransform transform = CRS.findMathTransform(nativeGeoCRS, requestCRS, true);
-            final GeneralEnvelope approximateRequestedBBox = CRS.transform(transform,
-                    requestedBBOXInNativeGeographicCRS);
+            final GeneralEnvelope approximateRequestedBBox = CRS.transform(
+                    requestedBBOXInNativeGeographicCRS, requestCRS);
             approximateRequestedBBox.setCoordinateReferenceSystem(requestCRS);
             return approximateRequestedBBox;
 
@@ -708,11 +699,6 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             // envelope. let's try with wgs84
             if (LOGGER.isLoggable(Level.FINE))
                 LOGGER.log(Level.FINE, te.getLocalizedMessage(), te);
-        } catch (FactoryException fe) {
-            // something bad happened while trying to transform this
-            // envelope. let's try with wgs84
-            if (LOGGER.isLoggable(Level.FINE))
-                LOGGER.log(Level.FINE, fe.getLocalizedMessage(), fe);
         }
 
         LOGGER

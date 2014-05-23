@@ -64,7 +64,6 @@ import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.PixelInCell;
-import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -196,9 +195,8 @@ public class WCSDimensionsSubsetHelper {
         if(!(subsettingCRS==null||CRS.equalsIgnoreMetadata(subsettingCRS,sourceCRS))){
             // reproject source envelope to subsetting crs for initialization
             try {
-                sourceEnvelopeInSubsettingCRS= CRS.transform(
-                        CRS.findMathTransform(reader.getCoordinateReferenceSystem(), subsettingCRS), 
-                        reader.getOriginalEnvelope());
+                sourceEnvelopeInSubsettingCRS = CRS.transform(reader.getOriginalEnvelope(),
+                        subsettingCRS);
                 sourceEnvelopeInSubsettingCRS.setCoordinateReferenceSystem(subsettingCRS);
             } catch (Exception e) {
                 final WCS20Exception exception= new WCS20Exception(
@@ -342,11 +340,9 @@ public class WCSDimensionsSubsetHelper {
         try {
             if(!CRS.equalsIgnoreMetadata(subsettingEnvelope.getCoordinateReferenceSystem(), reader.getOriginalEnvelope())){
                 // look for transform
-                final MathTransform mathTransform = CRS.findMathTransform(subsettingCRS,sourceCRS);
-                if(!mathTransform.isIdentity()){ // do we really need to reproject?
+                if (!CRS.equalsIgnoreMetadata(subsettingCRS, sourceCRS)) {
                 final GeneralEnvelope subsettingEnvelopeInSourceCRS = CRS.transform(
-                            mathTransform, 
-                            subsettingEnvelope);
+                            subsettingEnvelope, sourceCRS);
                     subsettingEnvelopeInSourceCRS.setCoordinateReferenceSystem(sourceCRS);
 
                     // intersect
@@ -373,13 +369,6 @@ public class WCSDimensionsSubsetHelper {
                         WCS20Exception.WCS20ExceptionCode.InvalidSubsetting,"");// TODO spit our envelope trimmed
             }
             return subsettingEnvelope;
-        } catch (FactoryException e) {
-            final WCS20Exception exception= new WCS20Exception(
-                    "Unable to initialize subsetting envelope",
-                    WCS20Exception.WCS20ExceptionCode.SubsettingCrsNotSupported,
-                    subsettingCRS.toWKT()); // TODO extract code
-            exception.initCause(e);
-            throw exception;
         } catch (TransformException e) {
             final WCS20Exception exception= new WCS20Exception(
                     "Unable to initialize subsetting envelope",

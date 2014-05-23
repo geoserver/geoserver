@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -15,9 +16,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.Session;
@@ -45,8 +48,10 @@ import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.StyleInfoImpl;
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.ows.util.ResponseUtils;
-import org.geoserver.util.EntityResolverProvider;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.data.style.StyleDetachableModel;
@@ -94,6 +99,8 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
     private WebMarkupContainer legendContainer;
 
+    private DropDownChoice<WorkspaceInfo> wsChoice;
+
     public AbstractStylePage() {
     }
 
@@ -118,8 +125,8 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         styleForm.add(nameTextField = new TextField("name"));
         nameTextField.setRequired(true);
         
-        DropDownChoice<WorkspaceInfo> wsChoice = 
-            new DropDownChoice("workspace", new WorkspacesModel(), new WorkspaceChoiceRenderer());
+        wsChoice = 
+            new DropDownChoice<WorkspaceInfo>("workspace", new WorkspacesModel(), new WorkspaceChoiceRenderer());
         wsChoice.setNullValid(true);
         if (!isAuthenticatedAsAdmin()) {
             wsChoice.setNullValid(false);
@@ -195,13 +202,18 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
                     @Override
                     public byte[] getData() {
+                        GeoServerDataDirectory dd = GeoServerExtensions.bean(GeoServerDataDirectory.class, getGeoServerApplication().getApplicationContext());
+                        StyleInfo si = new StyleInfoImpl(getCatalog());
+                        String styleName = "tmp" + UUID.randomUUID().toString();
+                        String styleFileName =  styleName + ".sld";
+                        si.setFilename(styleFileName);
+                        si.setName(styleName);
+                        si.setWorkspace(wsChoice.getModel().getObject());
+                        File styleFile = null;
                         try {
-                            ByteArrayInputStream input = new ByteArrayInputStream(lastStyle
-                                    .getBytes());
-                            EntityResolverProvider entityResolverProvider = new EntityResolverProvider(
-                                    getGeoServer());
-                            StyledLayerDescriptor sld = Styles.parse(input,
-                                    entityResolverProvider.getEntityResolver());
+                            styleFile = dd.findOrCreateStyleSldFile(si);
+                            FileUtils.writeStringToFile(styleFile, lastStyle);
+                            StyledLayerDescriptor sld = Styles.parse(styleFile, null);
                             if (sld != null && sld.getStyledLayers().length > 0) {
                                 Style style = null;
                                 StyledLayer sl = sld.getStyledLayers()[0];
@@ -233,6 +245,8 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
                         } catch (IOException e) {
                             throw new RuntimeException(e);
+                        } finally {
+                            FileUtils.deleteQuietly(styleFile);
                         }
                     }
 
@@ -306,6 +320,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
             @Override
             protected void onClick(AjaxRequestTarget target, Form form) {
                 editor.processInput();
+                wsChoice.processInput();
                 lastStyle = editor.getInput();
 
                 legend.setVisible(true);

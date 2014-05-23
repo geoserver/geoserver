@@ -18,9 +18,7 @@ import java.util.logging.Logger;
 
 import javax.xml.transform.TransformerException;
 
-import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.ows.util.RequestUtils;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.data.DataUtilities;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.sld.v1_1.SLDConfiguration;
@@ -78,6 +76,12 @@ public class Styles {
      */
     public static StyledLayerDescriptor parse(Object input, EntityResolver entityResolver) throws IOException {
         Object[] obj = getVersionAndReader(input);
+        // if the input is a file we want to maintain it, as we are going to need
+        // relative references to image files
+        if (input instanceof File && obj[1] instanceof Reader) {
+            ((Reader) obj[1]).close();
+            obj[1] = input;
+        }
         return parse(obj[1], entityResolver, (Version)obj[0]);
     }
 
@@ -327,11 +331,7 @@ public class Styles {
                 else {
                     parser = new SLDParser(styleFactory, toReader(input));
                 }
-                GeoServerDataDirectory dd = GeoServerExtensions.bean(GeoServerDataDirectory.class);
-                File styles = dd.findOrCreateStyleDir().getCanonicalFile();
-                DefaultResourceLocator rl = new DefaultResourceLocator();
-                rl.setSourceUrl(DataUtilities.fileToURL(styles));
-                parser.setOnLineResourceLocator(rl);
+                
                 parser.setEntityResolver(entityResolver);
                 return parser;
             }
@@ -354,13 +354,7 @@ public class Styles {
                         };
                     };
                 } else {
-                    sld = new SLDConfiguration() {
-                        protected void configureContext(
-                                org.picocontainer.MutablePicoContainer container) {
-                            DefaultResourceLocator locator = new DefaultResourceLocator();
-                            container.registerComponentInstance(ResourceLocator.class, locator);
-                        };
-                    };
+                    sld = new SLDConfiguration();
                 }
                 
                 try {

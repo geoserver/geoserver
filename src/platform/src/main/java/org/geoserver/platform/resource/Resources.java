@@ -13,8 +13,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
 import org.apache.commons.io.IOUtils;
 import org.geoserver.platform.resource.Resource.Type;
 
@@ -75,7 +73,7 @@ public class Resources {
      * @param resource
      * @return Existing directory, or null
      */
-    public static @Nullable File directory(@Nullable Resource resource) {
+    public static File directory(Resource resource) {
         return directory(resource, false);
     }
     
@@ -88,7 +86,7 @@ public class Resources {
      * @param create
      * @return directory, or null
      */
-    public static @Nullable File directory(@Nullable Resource resource, boolean create) {
+    public static File directory(Resource resource, boolean create) {
         final File f;
         if(resource==null) {
             f = null;
@@ -115,7 +113,7 @@ public class Resources {
      * @param resource
      * @return Existing file, or null
      */
-    public static @Nullable File file(@Nullable Resource resource) {
+    public static File file(Resource resource) {
         return file(resource, false);
     }
 
@@ -128,7 +126,7 @@ public class Resources {
      * @param create
      * @return file, or null
      */
-    public static @Nullable File file(@Nullable Resource resource, boolean create) {
+    public static File file(Resource resource, boolean create) {
         final File f;
         if(resource==null) {
             f = null;
@@ -230,6 +228,18 @@ public class Resources {
     }
     
     /**
+     * Write the contents of a resource into another resource
+     * @param data resource to read
+     * @param destination resource to write to
+     * @throws IOException
+     */
+    public static void copy (Resource data, Resource destination) throws IOException {
+        try(InputStream in = data.in()) {
+            copy(in, destination);
+        }
+    }
+    
+    /**
      * Write the contents of a stream to a new Resource inside a directory
      * @param data data to write
      * @param directory parent directory to create the resource in
@@ -250,6 +260,23 @@ public class Resources {
         String filename = data.getName();
         try(InputStream in = new FileInputStream(data)) {
             copy(data, directory.get(filename));
+        }
+    }
+    
+    /**
+     * Renames a resource by reading it and writing to the new resource, then deleting the old one.
+     * This is not atomic.
+     * @param source
+     * @param destination
+     * @throws IOException
+     * @return true if successful, false if either the write or delete failed.
+     */
+    public static boolean renameByCopy(Resource source, Resource destination) {
+        try {
+            copy(source, destination);
+            return source.delete();
+        } catch (IOException e) {
+            return false;
         }
     }
 }

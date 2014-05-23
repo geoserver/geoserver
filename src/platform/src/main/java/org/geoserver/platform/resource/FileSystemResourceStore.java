@@ -420,5 +420,21 @@ public class FileSystemResourceStore implements ResourceStore {
             return file.getAbsolutePath();
         }
 
+        @Override
+        public boolean delete() {
+            return file.delete();
+        }
+
+        @Override
+        public boolean renameTo(Resource dest) {
+            if(dest instanceof FileSystemResource) {
+                return file.renameTo(((FileSystemResource)dest).file);
+            } else if(dest instanceof Files.ResourceAdaptor) {
+                    return file.renameTo(((Files.ResourceAdaptor)dest).file);
+            } else {
+                return Resources.renameByCopy(this, dest);
+            }
+        }
+
     }
 }

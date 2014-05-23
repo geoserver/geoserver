@@ -17,8 +17,10 @@ import java.io.OutputStream;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
+import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
@@ -39,6 +41,19 @@ public abstract class ResourceTheoryTest {
     public ExpectedException exception = ExpectedException.none();
     
     protected abstract Resource getResource(String path) throws Exception;
+    
+    /**
+     * @return a resource that is not a data point of type DIRECTORY.
+     */
+    protected abstract Resource getDirectory();
+    /**
+     * @return a resource that is not a data point of type RESOURCE.
+     */
+    protected abstract Resource getResource();
+    /**
+     * @return a resource that is not a data point of type UNDEFINED.
+     */
+    protected abstract Resource getUndefined();
     
     @Theory
     public void theoryNotNull(String path) throws Exception {
@@ -271,6 +286,54 @@ public abstract class ResourceTheoryTest {
         assertThat(result, notNullValue());
     }
     
+    @Theory
+    public void theoryDeletedResourcesAreUndefined(String path) throws Exception {
+        Resource res = getResource(path);
+        assumeThat(res, resource());
+        
+        assertThat(res.delete(), is(true));
+        assertThat(res, undefined());
+    }
+    
+    @Theory
+    public void theoryUndefinedNotDeleted(String path) throws Exception {
+        Resource res = getResource(path);
+        assumeThat(res, undefined());
+        
+        assertThat(res.delete(), is(false));
+        assertThat(res, undefined());
+    }
+    @Theory
+    public void theoryRenamedAreUndefined(String path) throws Exception {
+        Resource res = getResource(path);
+        assumeThat(res, defined());
+        
+        Resource target = getUndefined();
+        assertThat(res.renameTo(target), is(true));
+        assertThat(res, undefined());
+    }
+    @Theory
+    public void theoryRenamedResourcesAreEquivalent(String path) throws Exception {
+        final Resource res = getResource(path);
+        assumeThat(res, resource());
+        
+        final byte[] expectedContent;
+        try(InputStream in = res.in()) {
+            expectedContent = IOUtils.toByteArray(in);
+        }
+        
+        final Resource target = getUndefined();
+        assertThat(res.renameTo(target), is(true));
+        assertThat(target, resource());
+        
+        final byte[] resultContent;
+        try(InputStream in = target.in()) {
+            resultContent = IOUtils.toByteArray(in);
+        }
+        
+        assertThat(resultContent, equalTo(expectedContent));
+    }
+   
     @Theory
     public void theoryNonDirectoriesHaveFileWithSameContents(String path) throws Exception {
         Resource res = getResource(path);

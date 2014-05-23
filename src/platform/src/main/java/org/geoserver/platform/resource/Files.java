@@ -37,8 +37,8 @@ public final class Files {
      * This can be used to handle absolute file references that are not located
      * in the data directory.
      */
-    private static final class ResourceAdaptor implements Resource {
-        private final File file;
+    static final class ResourceAdaptor implements Resource {
+        final File file;
 
         private ResourceAdaptor(File file) {
             this.file = file;
@@ -127,6 +127,23 @@ public final class Files {
         public String toString() {
             return "ResourceAdaptor("+file+")";
         }
+
+        @Override
+        public boolean delete() {
+            return file.delete();
+        }
+
+        @Override
+        public boolean renameTo(Resource dest) {
+            if(dest instanceof FileSystemResourceStore.FileSystemResource) {
+                return file.renameTo(((FileSystemResourceStore.FileSystemResource)dest).file);
+            } else if(dest instanceof ResourceAdaptor) {
+                    return file.renameTo(((ResourceAdaptor)dest).file);
+            } else {
+                return Resources.renameByCopy(this, dest);
+            }
+        }
+
     }
 
     private static final Logger LOGGER = Logging.getLogger(Files.class);

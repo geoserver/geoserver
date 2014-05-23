@@ -4,6 +4,7 @@
  */
 package org.geoserver.wfs;
 
+import java.io.Closeable;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -47,7 +48,7 @@ class FeatureBoundsFeatureCollection extends AbstractFeatureCollection {
      * @author Andrea Aime - TOPP
      *
      */
-    private static class BoundsIterator implements Iterator<SimpleFeature> {
+    private static class BoundsIterator implements Iterator<SimpleFeature>, Closeable {
         SimpleFeatureIterator wrapped;
         SimpleFeatureType targetSchema;
 

@@ -2,7 +2,7 @@
 
 Contributors are asked to provide an assignment agreement for working on the project:
 
-* [assignment_agreement.pdf](http://docs.geoserver.org/latest/en/developer/_downloads/assignment_agreement.pdf)
+* [assignment_agreement.pdf](http://geoserver.org/comm/assignment_agreement.pdf)
 
 This agreement can be printed, signed, scanned and emailed to [Ellen McDermott ](mailto:emcdermott@openplans.org>) at OpenPlans. [OpenPlans](http://openplans.org/about/>)
 is the  non-profit which holds the GeoServer codebase for the community.

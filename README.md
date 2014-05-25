@@ -39,8 +39,12 @@ GeoServer uses [JIRA](http://jira.codehaus.org/browse/GEOS), hosted by
 
 ## Mailing Lists
 
-The [mailing list page](http://geoserver.org/display/GEOS/Mailing+Lists) on the GeoServer web site provides
-access to the various mailing list, as well as some indication of the [code of conduct](http://geoserver.org/display/GEOS/GeoServer+user+list+posting+guidelines) when posting to the lists
+The [mailing list page](http://geoserver.org/comm/) on the GeoServer web site provides
+access to the various mailing list, as well as some indication of the [code of conduct](http://geoserver.org/comm/userlist-guidelines.html) when posting to the lists
+
+## Contributing
+
+Please read [the contribution guilelines](https://github.com/geoserver/geoserver/blob/master/CONTRIBUTING.md) before contributing pull requests to the GeoServer project.
 
 ## More Information
 

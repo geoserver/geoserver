@@ -4,8 +4,10 @@
  */
 package org.geoserver.wms.map;
 
-import java.awt.image.BufferedImage;
+import java.awt.Transparency;                                                   
+import java.awt.image.BufferedImage;                                            
 import java.awt.image.IndexColorModel;
+
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -78,6 +80,7 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
     private static MapProducerCapabilities CAPABILITIES = new MapProducerCapabilities(true, false,
             true, true, MIME_TYPE);
 
+    
     /**
      * Default capabilities for GIF animated.
      * 
@@ -91,7 +94,7 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
      * 
      * <p>
      * We should soon support multipage tiff.
-     */
+     */    
     private static MapProducerCapabilities CAPABILITIES_ANIM = new MapProducerCapabilities(true,
             true, true, true, MIME_TYPE);
 
@@ -196,8 +199,8 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
                 if (ri != null) {
                     // prepare metadata and write param
                     final IIOMetadata imageMetadata = gifWriter.getDefaultImageMetadata(
-                            new ImageTypeSpecifier(ri), param);
-                    prepareMetadata(imageMetadata, loopContinuosly, delay);
+                    	new ImageTypeSpecifier(ri), param);
+                    prepareMetadata(ri, imageMetadata, loopContinuosly, delay);
 
                     // write
                     gifWriter.writeToSequence(new IIOImage(ri, null, imageMetadata), param);
@@ -252,6 +255,7 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
      * Prepare imagemetadata for writing an animated GIF.
      * <p>
      * This process involves setting the continuos looping mode as well the delay between frames
+     * @param ri The {@link RenderedImage} for which we are setting metadata.
      * 
      * @param imageMetadata original {@link IIOMetadata} instance to modify.
      * @param loopContinuously <code>yes</code> in case we want to loop continuosly,
@@ -259,21 +263,29 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
      * @param timeBetweenFramesMS the delay in ms between two frames when looping.
      * @throws IOException in case an error occurs.
      */
-    private void prepareMetadata(IIOMetadata imageMetadata, boolean loopContinuously,
+    private static void prepareMetadata(RenderedImage ri, IIOMetadata imageMetadata, boolean loopContinuously,
             int timeBetweenFramesMS) throws IOException {
 
         String metaFormatName = imageMetadata.getNativeMetadataFormatName();
 
         IIOMetadataNode root = (IIOMetadataNode) imageMetadata.getAsTree(metaFormatName);
-
         IIOMetadataNode graphicsControlExtensionNode = getNode(root, "GraphicControlExtension");
-
         graphicsControlExtensionNode.setAttribute("disposalMethod", "none");
         graphicsControlExtensionNode.setAttribute("userInputFlag", "FALSE");
-        graphicsControlExtensionNode.setAttribute("transparentColorFlag", "FALSE");
-        graphicsControlExtensionNode.setAttribute("delayTime", Integer
-                .toString(timeBetweenFramesMS / 10));
-        graphicsControlExtensionNode.setAttribute("transparentColorIndex", "0");
+        graphicsControlExtensionNode.setAttribute("delayTime", Integer.toString(timeBetweenFramesMS / 10));
+        
+        
+        // transparency support
+        final IndexColorModel icm= (IndexColorModel) ri.getColorModel();
+        int transparentColorIndex=-1;
+        
+        if(icm.getTransparency()==Transparency.BITMASK&&(transparentColorIndex=icm.getTransparentPixel())>=0){
+            graphicsControlExtensionNode.setAttribute("transparentColorIndex", String.valueOf(transparentColorIndex));
+            graphicsControlExtensionNode.setAttribute("transparentColorFlag", "TRUE");              
+        } else {
+            graphicsControlExtensionNode.setAttribute("transparentColorIndex", "0");
+            graphicsControlExtensionNode.setAttribute("transparentColorFlag", "FALSE");              
+        }
 
         IIOMetadataNode commentsNode = getNode(root, "CommentExtensions");
         commentsNode.setAttribute("CommentExtension", "Created by MAH");
@@ -285,8 +297,8 @@ public final class GIFMapResponse extends RenderedImageMapResponse {
         child.setAttribute("authenticationCode", "2.0");
 
         int loop = loopContinuously ? 0 : 1;
-
-        child.setUserObject(new byte[] { 0x1, (byte) (loop & 0xFF), (byte) ((loop >> 8) & 0xFF) });
+        final byte[] userObject=new byte[] { 0x1, (byte) (loop & 0xFF), (byte) ((loop >> 8) & 0xFF) };
+        child.setUserObject(userObject);
         appEntensionsNode.appendChild(child);
 
         imageMetadata.setFromTree(metaFormatName, root);

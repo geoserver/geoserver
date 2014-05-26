@@ -63,6 +63,11 @@ public abstract class AbstractCatalogFilter implements CatalogFilter {
         return (Catalog) GeoServerExtensions.bean("catalog");
     }
 
+    /**
+     * Returns a Filter equivalent to this CatalogFilter when applied to an object of the specified 
+     * type.  Implementers should override and return an appropriate well known filter 
+     * @see Predicates
+     */
     @Override
     public Filter getSecurityFilter(final Class<? extends CatalogInfo> clazz) {
         org.opengis.filter.expression.Function visible;

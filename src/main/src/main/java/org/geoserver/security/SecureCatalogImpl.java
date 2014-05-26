@@ -688,6 +688,13 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             return ws;
     }
 
+    /**
+     * Check how an access manager responds to a user accessing a catalog object and return the result.
+     * @param accessManager the access manager to ask
+     * @param user the user accessing the object
+     * @param info the catalog object being accessed
+     * @return the combination of access level and response policy to apply to the request
+     */
     WrapperPolicy buildWrapperPolicy(@Nonnull ResourceAccessManager accessManager, Authentication user, @Nonnull CatalogInfo info) {
         Assert.notNull(info);
 

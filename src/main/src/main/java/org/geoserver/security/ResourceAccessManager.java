@@ -4,6 +4,8 @@
  */
 package org.geoserver.security;
 
+import javax.annotation.Nullable;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -54,11 +56,13 @@ public interface ResourceAccessManager {
     public LayerGroupAccessLimits getAccessLimits(Authentication user, LayerGroupInfo layerGroup);
     
     /**
-     * Returns a Filter which removes catalog objects which this manager would hide.
+     * Returns a filter selecting only the objects authorized by the manager.  May return 
+     * {@code null} in which case the caller is responsible for building a filter based on calls to
+     * the manager's other methods.
      * @param user
      * @param clazz
      * @return
      */
-    public Filter getSecurityFilter(Authentication user, final Class<? extends CatalogInfo> clazz);
+    public @Nullable Filter getSecurityFilter(Authentication user, final Class<? extends CatalogInfo> clazz);
 
 }

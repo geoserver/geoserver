@@ -165,15 +165,13 @@ public class DescribeProcess {
                         literal.setDataType(Ows11Util.type("xs:" + typeName.getLocalPart()));        
                     }    
                 }
-                if(lppio.getType().isEnum()) {
+                if (p.metadata.get(Parameter.OPTIONS) != null) {
+                    List<Object> options = (List<Object>) p.metadata.get(Parameter.OPTIONS);
+                    Object[] optionsArray = (Object[]) options.toArray(new Object[options.size()]);
+                    addAllowedValues(literal, optionsArray);
+                } else if (lppio.getType().isEnum()) {
                 	Object[] enumValues = lppio.getType().getEnumConstants();
-                	AllowedValuesType allowed = owsf.createAllowedValuesType();
-                	for (Object value : enumValues) {
-                		ValueType vt = owsf.createValueType();
-                		vt.setValue(value.toString());
-						allowed.getValue().add(vt);
-					}
-                	literal.setAllowedValues(allowed);
+                    addAllowedValues(literal, enumValues);
                 } else {
                 	literal.setAnyValue( owsf.createAnyValueType() );
                 }
@@ -207,6 +205,16 @@ public class DescribeProcess {
                 }
             }
         }
+    }
+
+    private void addAllowedValues(LiteralInputType literal, Object[] values) {
+        AllowedValuesType allowed = owsf.createAllowedValuesType();
+        for (Object value : values) {
+            ValueType vt = owsf.createValueType();
+            vt.setValue(value.toString());
+            allowed.getValue().add(vt);
+        }
+        literal.setAllowedValues(allowed);
     }
 
     private SupportedCRSsType buildSupportedCRSType() {

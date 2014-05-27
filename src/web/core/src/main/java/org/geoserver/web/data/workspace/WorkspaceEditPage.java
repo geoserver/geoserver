@@ -18,7 +18,6 @@ import org.apache.wicket.ResourceReference;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -58,6 +57,7 @@ import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.admin.ContactPanel;
 import org.geoserver.web.admin.GlobalSettingsPage;
 import org.geoserver.web.data.namespace.NamespaceDetachableModel;
+import org.geoserver.web.data.settings.SettingsPluginPanelInfo;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.services.ServiceMenuPageInfo;
 import org.geoserver.web.wicket.GeoServerDialog;
@@ -328,6 +328,12 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
             otherSettingsPanel.add(new TextField<Integer>("numDecimals").add(new MinimumValidator<Integer>(0)));
             otherSettingsPanel.add(new DropDownChoice("charset", GlobalSettingsPage.AVAILABLE_CHARSETS));
             otherSettingsPanel.add(new TextField("proxyBaseUrl").add(new UrlValidator()));
+            
+            // Addition of pluggable extension points
+            ListView extensions = SettingsPluginPanelInfo.createExtensions("extensions", set.model, 
+                    getGeoServerApplication());
+            otherSettingsPanel.add(extensions);
+            
             settingsContainer.add(otherSettingsPanel);
 
         }

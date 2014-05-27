@@ -139,11 +139,33 @@ public class CoverageStoreFileResource extends StoreFileResource {
         if (isInlineUpload(method)) {
             //TODO: create a method to figure out the relative url instead of making assumption
             // about the structure
+            
+            String defaultRoot = File.separator + "data" + File.separator + workspace + File.separator + coveragestore;
+            
+            StringBuilder fileBuilder = new StringBuilder(uploadedFile.getAbsolutePath());
+            
             String url;
             if(uploadedFile.isDirectory() && uploadedFile.getName().equals(coveragestore)) {
-                url = "file:data/" + workspace + "/" + coveragestore;
+
+                int def = fileBuilder.indexOf(defaultRoot);
+                
+                if(def >= 0){
+                    url = "file:data/" + workspace + "/" + coveragestore;
+                }else{
+                    url = fileBuilder.toString();
+                }
             } else {
-                url = "file:data/" + workspace + "/" + coveragestore + "/" + uploadedFile.getName();
+
+                int def = fileBuilder.indexOf(defaultRoot);
+                
+                if(def >= 0){
+                    
+                    String itemPath = fileBuilder.substring(def + defaultRoot.length());
+                    
+                    url = "file:data/" + workspace + "/" + coveragestore + "/" + itemPath;
+                }else{
+                    url = fileBuilder.toString();
+                }
             }
             if (url.contains("+")) {
                 url = url.replace("+", "%2B");
@@ -340,8 +362,15 @@ public class CoverageStoreFileResource extends StoreFileResource {
             return directory;
         }
         for ( File f : directory.listFiles() ) {
-            if ( ((AbstractGridFormat)coverageFormat).accepts(f) ) {
-                return f;
+            if(f.isDirectory()){
+                File result = findPrimaryFile(f,format);
+                if(result!=null){
+                    return result;
+                }
+            }else{
+                if ( ((AbstractGridFormat)coverageFormat).accepts(f) ) {
+                    return f;
+                }
             }
         }
         

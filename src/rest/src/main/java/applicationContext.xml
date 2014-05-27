@@ -23,4 +23,8 @@
     </bean>
     
     <bean id="restEnviromentInjectionCallback" class="org.geoserver.rest.EnviromentInjectionCallback"/>
+    
+    <bean id="DefaultRUPathMapper" class="org.geoserver.rest.util.RESTUploadExternalPathMapper">
+      <constructor-arg ref="catalog"/>
+    </bean>
 </beans>

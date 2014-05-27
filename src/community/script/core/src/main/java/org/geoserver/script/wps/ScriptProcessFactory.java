@@ -5,17 +5,17 @@
 package org.geoserver.script.wps;
 
 import static org.apache.commons.io.FilenameUtils.getBaseName;
-import static org.apache.commons.io.FilenameUtils.getExtension;
 
 import java.awt.RenderingHints.Key;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.script.ScriptEngine;
 
 import org.geoserver.script.ScriptFactory;
 import org.geoserver.script.ScriptManager;
@@ -67,10 +67,10 @@ public class ScriptProcessFactory extends ScriptFactory implements ProcessFactor
                 if (hook == null) {
                     LOGGER.fine("Skipping " + f.getName() + ", no hook found");
                 } else {
-                    //use the extension as the namespace, and the basename as the process name 
-                    names.add(new NameImpl(getExtension(f.getName()), getBaseName(f.getName())));
-
-                    //TODO: support the process defining its namespace
+                    //
+                    ScriptEngine engine = scriptMgr.createNewEngine(f, true);
+                    String namespace = hook.getNamespace(engine, f);
+                    names.add(new NameImpl(namespace, getBaseName(f.getName())));
                 }
             }
         }
@@ -149,28 +149,69 @@ public class ScriptProcessFactory extends ScriptFactory implements ProcessFactor
 
     ScriptProcess process(Name name) {
         ScriptProcess process = processes.get(name);
-        if (process == null) {
-            synchronized(this) {
-                process = processes.get(name);
-                if (process == null) {
-                    try {
-                        ScriptManager scriptMgr = scriptMgr();
-
-                        File f = new File(scriptMgr.getWpsRoot(), 
-                            name.getLocalPart() + "." + name.getNamespaceURI());
-                        if (!f.exists()) {
-                            throw new FileNotFoundException(f.getPath());
-                        }
-
-                        process = new ScriptProcess(name, f, scriptMgr);
-                    } 
-                    catch (IOException e) {
-                        throw new RuntimeException(e);
+        try {
+            if (process == null) {
+                synchronized (this) {
+                    process = processes.get(name);
+                    if (process == null) {
+                        process = createProcess(name);
+                        processes.put(name, process);
                     }
+                }
+            } else if (!name.equals(process.getName())) {
+                synchronized (this) {
+                    process = createProcess(name);
                     processes.put(name, process);
                 }
             }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         return process;
+    }
+
+    private ScriptProcess createProcess(Name name) throws IOException {
+        ScriptManager scriptMgr = scriptMgr();
+
+        boolean found = false;
+        // look for the file using the default prefix, if not found,
+        // do an exhaustive search over the files matching names and
+        // supported extensions
+        File scriptFile = new File(scriptMgr.getWpsRoot(), name.getLocalPart() + "."
+                + name.getNamespaceURI());
+        if (scriptMatchesName(scriptMgr, scriptFile, name)) {
+            found = true;
+        } else {
+            for (String extension : scriptMgr.getSupportedExtensions()) {
+                scriptFile = new File(scriptMgr.getWpsRoot(), name.getLocalPart() + "." + extension);
+                if (scriptMatchesName(scriptMgr, scriptFile, name)) {
+                    found = true;
+                    break;
+                }
+            }
+        }
+
+        if (!found) {
+            throw new RuntimeException("Could not find a script file matching name " + name);
+        }
+
+        return new ScriptProcess(scriptFile, scriptMgr);
+    }
+
+    private boolean scriptMatchesName(ScriptManager scriptMgr, File scriptFile, Name name)
+            throws IOException {
+        if (!scriptFile.exists()) {
+            return false;
+        }
+
+        WpsHook hook = scriptMgr.lookupWpsHook(scriptFile);
+        if (hook == null) {
+            return false;
+        }
+
+        ScriptEngine engine = scriptMgr.createNewEngine(scriptFile, true);
+
+        String namespace = hook.getNamespace(engine, scriptFile);
+        return name.getNamespaceURI().equals(namespace);
     }
 }

@@ -4,6 +4,7 @@
  */
 package org.geoserver.script.py;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import org.geotools.util.logging.Logging;
 import org.python.core.Py;
 import org.python.core.PyDictionary;
 import org.python.core.PyList;
+import org.python.core.PyNone;
 import org.python.core.PyObject;
 import org.python.core.PyTuple;
 import org.python.core.PyType;
@@ -191,7 +193,7 @@ public class PyWpsHook extends WpsHook {
     }
 
     String str(Object obj) {
-        return obj != null ? obj.toString() : null; 
+        return obj != null && !(obj instanceof PyNone) ? obj.toString() : null;
     }
 
     Parameter parameter(String name, Object type, int min, int max, Object desc,
@@ -207,5 +209,15 @@ public class PyWpsHook extends WpsHook {
         desc = desc != null ? desc : name;
         return new Parameter(name, clazz, Text.text(name), Text.text(desc.toString()),
                 min > 0, min, max, defaultValue, metadata);
+    }
+
+    @Override
+    public String getNamespace(ScriptEngine engine, File scriptFile) {
+        String ns = str(process(engine).__getattr__("namespace"));
+        if (ns == null) {
+            return "py";
+        } else {
+            return ns;
+        }
     }
 }

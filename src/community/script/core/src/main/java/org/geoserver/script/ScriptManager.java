@@ -7,16 +7,22 @@ package org.geoserver.script;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.script.Bindings;
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerExtensions;
@@ -213,7 +219,31 @@ public class ScriptManager implements InitializingBean {
      * Creates a new script engine for the specified script file.
      */
     public ScriptEngine createNewEngine(File script) {
-        return createNewEngine(ext(script));
+        try {
+            return createNewEngine(script, false);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    /**
+     * Creates a new script engine for the specified script file, and parses the file into the
+     * engine if parseScript is true
+     */
+    public ScriptEngine createNewEngine(File script, boolean parseScript) throws IOException {
+        ScriptEngine engine = createNewEngine(ext(script));
+        if (parseScript) {
+            Bindings bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
+            bindings.put(ScriptEngine.FILENAME, script.getPath());
+            try {
+                engine.eval(FileUtils.readFileToString(script));
+            } catch (ScriptException e) {
+                throw new IOException(e);
+            }
+            return engine;
+        }
+
+        return engine;
     }
 
     /**
@@ -344,6 +374,16 @@ public class ScriptManager implements InitializingBean {
         return false;
     }
 
+    public Set<String> getSupportedExtensions() {
+        List<ScriptPlugin> plugins = plugins();
+        Set<String> extensions = new HashSet<String>();
+        for (ScriptPlugin scriptPlugin : plugins) {
+            extensions.add(scriptPlugin.getExtension());
+        }
+
+        return extensions;
+    }
+
     /*
      * Looks up all {@link ScriptPlugin} instances in the application context.
      */
@@ -396,4 +436,5 @@ public class ScriptManager implements InitializingBean {
     public void afterPropertiesSet() throws Exception {
         plugins();
     }
+
 }

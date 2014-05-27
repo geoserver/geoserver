@@ -4,6 +4,7 @@
  */
 package org.geoserver.script.wps;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -11,6 +12,7 @@ import java.util.Set;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
+import org.apache.commons.io.FilenameUtils;
 import org.geoserver.script.ScriptHook;
 import org.geoserver.script.ScriptPlugin;
 import org.geotools.data.Parameter;
@@ -184,5 +186,15 @@ public class WpsHook extends ScriptHook {
         throws ScriptException {
 
         return (Map<String, Object>) invoke(engine, "run", input);
+    }
+
+    /**
+     * Returns the namespace for the given file
+     * 
+     * @param scriptFile
+     * @return
+     */
+    public String getNamespace(ScriptEngine engine, File scriptFile) {
+        return FilenameUtils.getExtension(scriptFile.getName());
     }
 }

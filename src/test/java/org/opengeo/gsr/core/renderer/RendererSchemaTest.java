@@ -63,9 +63,9 @@ public class RendererSchemaTest extends JsonSchemaTest {
         int[] color2 = { 218, 240, 158, 255 };
         Symbol symbol1 = new SimpleFillSymbol(SimpleFillSymbolEnum.SOLID, color1, outline1);
         Symbol symbol2 = new SimpleFillSymbol(SimpleFillSymbolEnum.SOLID, color2, outline2);
-        ClassBreakInfo classBreakInfo1 = new ClassBreakInfo(1000, "10.0 - 1000.0000", "10 to 1000",
+        ClassBreakInfo classBreakInfo1 = new ClassBreakInfo(null, 1000, "10.0 - 1000.0000", "10 to 1000",
                 symbol1);
-        ClassBreakInfo classBreakInfo2 = new ClassBreakInfo(5000, "1000.00001 - 5000.0000",
+        ClassBreakInfo classBreakInfo2 = new ClassBreakInfo(null, 5000, "1000.00001 - 5000.0000",
                 "1000 to 5000", symbol2);
 
         List<ClassBreakInfo> classBreakInfos = new ArrayList<ClassBreakInfo>();

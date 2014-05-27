@@ -13,6 +13,8 @@ import org.opengeo.gsr.core.symbol.Symbol;
  */
 public class ClassBreakInfo {
 
+	private Double classMinValue;
+	
     private double classMaxValue;
 
     private String label;
@@ -21,6 +23,14 @@ public class ClassBreakInfo {
 
     private Symbol symbol;
 
+    public Double getClassMinValue() {
+    	return classMinValue;
+    }
+    
+    public void setClassMinValue(Double classMinValue) {
+    	this.classMinValue = classMinValue;
+    }
+    
     public double getClassMaxValue() {
         return classMaxValue;
     }
@@ -53,8 +63,9 @@ public class ClassBreakInfo {
         this.symbol = symbol;
     }
 
-    public ClassBreakInfo(double classMaxValue, String label, String description, Symbol symbol) {
+    public ClassBreakInfo(Double classMinValue, double classMaxValue, String label, String description, Symbol symbol) {
         super();
+        this.classMinValue = classMinValue;
         this.classMaxValue = classMaxValue;
         this.label = label;
         this.description = description;

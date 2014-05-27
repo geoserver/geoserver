@@ -38,6 +38,7 @@ import org.opengeo.gsr.core.symbol.SimpleMarkerSymbol;
 import org.opengeo.gsr.core.symbol.SimpleMarkerSymbolEnum;
 import org.opengeo.gsr.core.symbol.Symbol;
 import org.opengis.filter.expression.Expression;
+import org.opengis.style.Description;
 import org.opengis.style.Fill;
 import org.opengis.style.GraphicalSymbol;
 
@@ -254,7 +255,20 @@ public class StyleEncoder {
             return null;
         }
         Double maxAsDouble = ((Literal)max).evaluate(null, double.class);
-        return new ClassBreakInfoMeta(propertyName, new ClassBreakInfo(maxAsDouble, "", "", symbolizerToSymbol(symbolizer)));
+        
+        String title = null, description = null;
+        Description desc = rule.getDescription();
+        if (desc != null) {
+        	if (desc.getTitle() != null) {
+	            title = desc.getTitle().toString();
+        	}
+        	if (desc.getAbstract() != null) {
+        		description = desc.getAbstract().toString();
+        	}
+        }
+        if (title == null) title = "";
+        if (description == null) description = "";
+        return new ClassBreakInfoMeta(propertyName, new ClassBreakInfo(minAsDouble, maxAsDouble, title, description, symbolizerToSymbol(symbolizer)));
     }
     
     private static Renderer rulesToUniqueValueRenderer(List<Rule> rules) {
@@ -780,8 +794,9 @@ public class StyleEncoder {
     	json.key("classBreakInfos").array();
     	
     	for (ClassBreakInfo info : renderer.getClassBreakInfos()) {
-    		json.object().
-    		     key("classMaxValue").value(info.getClassMaxValue())
+    		json.object();
+    		if (info.getClassMinValue() != null) json.key("classMinValue").value(info.getClassMinValue());
+    		json.key("classMaxValue").value(info.getClassMaxValue())
     		    .key("label").value(info.getLabel())
     		    .key("description").value(info.getDescription())
     		    .key("symbol");

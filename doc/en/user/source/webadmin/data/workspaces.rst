@@ -22,6 +22,17 @@ To view details and edit a workspace, click a workspace name.
    
 A workspace consists of a name and a Namespace URI (Uniform Resource Identifier). The workspace name is limited of ten characters and may not contain space. A URI is similar to a URL, except URIs don't need to point to a location on the web, and only need to be a unique identifier. For a Workspace URI, we recommend using a URL associated with your project, with perhaps a different trailing identifier, such as ``http://www.openplans.org/topp`` for the "topp" workspace. 
    
+.. figure:: ../images/data_workspaces_ROOT.png
+   :align: center
+   
+   *Workspace Root Directory parameter*
+   
+This parameter is used by the RESTful API as the `Root Directory` for the newly uploaded files, following the structure::
+
+	${rootDirectory}/workspace/store[/<file>]
+	
+.. note:: This parameter is visible only when the **Enabled** parameter of the *Settings* section is checked. 
+   
 Add or Remove a Workspace
 -------------------------
 

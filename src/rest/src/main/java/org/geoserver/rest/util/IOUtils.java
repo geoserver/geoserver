@@ -40,6 +40,7 @@ import java.util.zip.ZipFile;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.FilenameUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.data.DataUtilities;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -704,6 +705,20 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
 	    }
 	}
 
+	
+	       /**
+         * Inflate the provided {@link ZipFile} in the provided output directory.
+         * 
+         * @param archive the {@link ZipFile} to inflate.
+         * @param outputDirectory the directory where to inflate the archive.
+         * @throws IOException in case something bad happens.
+         * @throws FileNotFoundException in case something bad happens.
+         */
+        public static void inflate(ZipFile archive, File outputDirectory, String fileName) throws IOException,
+                        FileNotFoundException {
+            inflate(archive, outputDirectory, fileName, null, null, null, null, false);
+        }
+
 	/**
 	 * Inflate the provided {@link ZipFile} in the provided output directory.
 	 * 
@@ -711,13 +726,13 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
 	 * @param outputDirectory the directory where to inflate the archive.
 	 * @param fileName name of the file if present.
 	 * @param request HTTP request sent.
+	 * @param external 
 	 * @param files empty list of the extracted files.
 	 * @throws IOException in case something bad happens.
 	 * @throws FileNotFoundException in case something bad happens.
 	 */
-	public static void inflate(ZipFile archive, File outputDirectory, String fileName, 
-	        Request request, List<File> files ) throws IOException,
-			FileNotFoundException {
+	public static void inflate(ZipFile archive, File outputDirectory, String fileName,
+	        String workspace, String store, Request request, List<File> files, boolean external) throws IOException, FileNotFoundException {
 
 	        // Boolean checking if the request is a POST and if the files must be saved into a List
 	        boolean saveFile = files != null && request!=null && request.getMethod().equals(Method.POST);
@@ -731,7 +746,18 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
 		        	final String name = entry.getName();
 		        	final String ext = FilenameUtils.getExtension(name);
 		        	final InputStream in = new BufferedInputStream(archive.getInputStream(entry));
-		        	final File outFile = new File(outputDirectory, fileName!=null?new StringBuilder(fileName).append(".").append(ext).toString():name);
+		        	// Builder associated to the path for the item
+		        	StringBuilder itemPath = fileName!=null?new StringBuilder(fileName).append(".").append(ext):new StringBuilder(name);
+		        	// String associated to the filename
+		        	String initialFileName = fileName!=null? fileName + "." + ext: FilenameUtils.getName(name);
+		        	//If the RESTUploadPathMapper are present then the output file position is changed
+		        	if(!external){
+		        	    Map<String, String> storeParams = new HashMap<String, String>();
+		        	    RESTUtils.remapping(workspace, store, itemPath, initialFileName, storeParams);
+		        	}
+		        	
+		        	final File outFile = new File(outputDirectory, itemPath.toString());
+		        	outFile.getParentFile().mkdirs();
 		        	final OutputStream out = new BufferedOutputStream(new FileOutputStream(outFile));
 		
 		            IOUtils.copyStream(in, out, true, true);

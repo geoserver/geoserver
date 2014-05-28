@@ -1,4 +1,4 @@
-.. _css_cookbook:
+.. _extensions_css_cookbook:
 
 CSS Cookbook
 ============
@@ -11,22 +11,23 @@ Each section uses data created especially for the Cookbooks (both CSS and SLD), 
 
 .. list-table::
    :widths: 20 80
+   :header-rows: 1
 
-   * - **Data Type**
-     - **Shapefile**
+   * - Data type
+     - Shapefile
    * - Point
-     - :download:`sld_cookbook_point.zip <../../styling/sld-cookbook/artifacts/sld_cookbook_point.zip>`
+     - :download:`sld_cookbook_point.zip <../../../styling/sld-cookbook/artifacts/sld_cookbook_point.zip>`
    * - Line
-     - :download:`sld_cookbook_line.zip <../../styling/sld-cookbook/artifacts/sld_cookbook_line.zip>`
+     - :download:`sld_cookbook_line.zip <../../../styling/sld-cookbook/artifacts/sld_cookbook_line.zip>`
    * - Polygon
-     - :download:`sld_cookbook_polygon.zip <../../styling/sld-cookbook/artifacts/sld_cookbook_polygon.zip>`
+     - :download:`sld_cookbook_polygon.zip <../../../styling/sld-cookbook/artifacts/sld_cookbook_polygon.zip>`
    * - Raster
-     - :download:`sld_cookbook_raster.zip <../../styling/sld-cookbook/artifacts/sld_cookbook_raster.zip>`
+     - :download:`sld_cookbook_raster.zip <../../../styling/sld-cookbook/artifacts/sld_cookbook_raster.zip>`
 
 .. toctree::
    :maxdepth: 2
 
-   cookbook_point
-   cookbook_line
-   cookbook_polygon
-   cookbook_raster
+   point
+   line
+   polygon
+   raster

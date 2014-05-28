@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.annotation.Nullable;
 import javax.xml.transform.TransformerException;
 
 import org.geoserver.ows.util.RequestUtils;
@@ -100,6 +101,21 @@ public class Styles {
      */
     public static StyledLayerDescriptor parse(Object input, EntityResolver entityResolver, Version version) throws IOException {
         return Handler.lookup(version).parse(input, entityResolver);
+    }
+    /**
+     * Parses a style document into a StyledLayerDescriptor object explicitly specifying version.
+     * <p>
+     * </p>
+     * @param input a File, Reader, or InputStream object.
+     * @param version The SLD version
+     * 
+     * @return The parsed StyleLayerDescriptor.
+     * 
+     * @throws IOException Any parsing errors that occur.
+     * @throws IllegalArgumentException If the specified version is not supported.
+     */
+    public static StyledLayerDescriptor parse(Object input, EntityResolver entityResolver, Version version, ResourceLocator locator) throws IOException {
+        return Handler.lookup(version).parse(input, entityResolver, locator);
     }
     
     /**
@@ -292,7 +308,14 @@ public class Styles {
             
             @Override
             public StyledLayerDescriptor parse(Object input, EntityResolver entityResolver) throws IOException {
+                return parse(input, entityResolver, null);
+            }
+            @Override
+            public StyledLayerDescriptor parse(Object input, EntityResolver entityResolver, @Nullable ResourceLocator locator) throws IOException {
                 SLDParser p = parser(input, entityResolver);
+                if(locator!=null) {
+                    p.setOnLineResourceLocator(locator);
+                }
                 StyledLayerDescriptor sld = p.parseSLD();
                 if (sld.getStyledLayers().length == 0) {
                     //most likely a style that is not a valid sld, try to actually parse out a 
@@ -346,7 +369,31 @@ public class Styles {
             
             @Override
             public StyledLayerDescriptor parse(Object input, EntityResolver entityResolver) throws IOException {
+                ResourceLocator locator;
+                if (input instanceof File) {
+                    // setup for resolution of relative paths
+                    final java.net.URL surl = DataUtilities.fileToURL((File) input);
+                    locator = new DefaultResourceLocator();
+                    ((DefaultResourceLocator)locator).setSourceUrl(surl);
+                } else {
+                    locator=null;
+                }
+                
+                return parse(input, entityResolver, locator);
+            }
+            @Override
+            public StyledLayerDescriptor parse(Object input, EntityResolver entityResolver, @Nullable final ResourceLocator locator) throws IOException {
                 SLDConfiguration sld;
+                if(locator==null) {
+                    sld = new SLDConfiguration();
+                } else {
+                    sld = new SLDConfiguration() {
+                        protected void configureContext(
+                                org.picocontainer.MutablePicoContainer container) {
+                            container.registerComponentInstance(ResourceLocator.class, locator);
+                        };
+                    };
+                }
                 if (input instanceof File) {
                     // setup for resolution of relative paths
                     final java.net.URL surl = DataUtilities.fileToURL((File) input);
@@ -409,6 +456,7 @@ public class Styles {
         }
 
         protected abstract StyledLayerDescriptor parse(Object input, EntityResolver entityResolver) throws IOException;
+        protected abstract StyledLayerDescriptor parse(Object input, EntityResolver entityResolver, @Nullable ResourceLocator locator) throws IOException;
         
         protected abstract void encode(StyledLayerDescriptor sld, boolean format, OutputStream output) 
             throws IOException;

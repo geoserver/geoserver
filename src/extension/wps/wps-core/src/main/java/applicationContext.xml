@@ -124,8 +124,8 @@
  
 
     <!-- HTTP URL Mapping -->
-    <bean id="wpsURLMapping"
-        class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+	<bean id="wpsURLMapping" class="org.geoserver.ows.OWSHandlerMapping">
+		<constructor-arg ref="catalog"/>
         <property name="alwaysUseFullPath" value="true" />
         <property name="mappings">
             <props>
@@ -214,7 +214,8 @@
     
     <!-- Map dispatcher in order to publish the wcsTempStorage directory -->
     <bean id="wpsTempDirDispatcherMapping"
-      class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+      		class="org.geoserver.ows.OWSHandlerMapping">
+  	  <constructor-arg ref="catalog"/>
       <property name="alwaysUseFullPath" value="true" />
       <property name="mappings">
         <props>
@@ -265,5 +266,10 @@
     <!-- The default process filters -->
     <bean id="unsupportedParameterTypeProcessFilter" class="org.geoserver.wps.UnsupportedParameterTypeProcessFilter"/>
     <bean id="configuredProcessesFilter" class="org.geoserver.wps.DisabledProcessesSelector"/>
+
+    <bean id="wpsLocalWorkspaceURLManger" class="org.geoserver.ows.LocalWorkspaceURLMangler">
+      <constructor-arg value="wps"/>
+    </bean>
+
 
 </beans>

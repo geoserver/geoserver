@@ -1,5 +1,5 @@
 <assembly>
-  <id>dyndimension-plugin</id>
+  <id>rest-ext</id>
   <formats>
     <format>zip</format>
   </formats>

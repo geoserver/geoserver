@@ -10,6 +10,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.geoserver.data.test.MockData;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -19,9 +20,22 @@ public class GetCapabilitiesTest extends WPSTestSupport {
     public void testGetBasic() throws Exception { // Standard Test A.4.2.1
         Document d = getAsDOM( "wps?service=wps&request=getcapabilities" );
         //print(d);
-        basicCapabilitiesTest(d);
+        basicCapabilitiesTest(d, null);
     }
     
+    @Test
+    public void testGetBasicWorkspaceQualified() throws Exception {
+        // this one did not report the workspace specific urls
+        Document d = getAsDOM(MockData.CITE_PREFIX + "/ows?service=wps&request=getcapabilities");
+        print(d);
+
+        basicCapabilitiesTest(d, MockData.CITE_PREFIX);
+
+        // this one used to fail with a 404
+        d = getAsDOM(MockData.CITE_PREFIX + "/wps?service=wps&request=getcapabilities");
+        basicCapabilitiesTest(d, MockData.CITE_PREFIX);
+    }
+
     @Test
     public void testProcesseListSorted() throws Exception { // Standard Test A.4.2.1
         Document d = getAsDOM( "wps?service=wps&request=getcapabilities" );
@@ -45,21 +59,21 @@ public class GetCapabilitiesTest extends WPSTestSupport {
                 + "xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" "
                 + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/>";
         Document d = postAsDOM(root(), request);
-        basicCapabilitiesTest(d);
+        basicCapabilitiesTest(d, null);
     }
     
     @Test
     public void testBasicGetAcceptVersions() throws Exception { // Standard Test A.4.2.3
         Document d = getAsDOM( "wps?service=wps&request=getcapabilities&AcceptVersions=1.0.0" );
         // print(d);
-        basicCapabilitiesTest(d);
+        basicCapabilitiesTest(d, null);
     }
     
     @Test
     public void testBasicGetLanguage() throws Exception { // Standard Test A.4.2.3
         Document d = getAsDOM( "wps?service=wps&request=getcapabilities&language=en-US" );
         // print(d);
-        basicCapabilitiesTest(d);
+        basicCapabilitiesTest(d, null);
     }
 
     @Test
@@ -73,7 +87,7 @@ public class GetCapabilitiesTest extends WPSTestSupport {
                 +   "</ows:AcceptVersions>"
                 + "</wps:GetCapabilities>";
         Document d = postAsDOM(root(), request);
-        basicCapabilitiesTest(d);
+        basicCapabilitiesTest(d, null);
     }
 
     @Test
@@ -84,10 +98,10 @@ public class GetCapabilitiesTest extends WPSTestSupport {
                 + "xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" "
                 + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/>";
         Document d = postAsDOM(root(), request);
-        basicCapabilitiesTest(d);
+        basicCapabilitiesTest(d, null);
     }
     
-    private void basicCapabilitiesTest(Document d) throws Exception {
+    private void basicCapabilitiesTest(Document d, String workspace) throws Exception {
         // print(d);
         checkValidationErrors(d);
         
@@ -100,12 +114,16 @@ public class GetCapabilitiesTest extends WPSTestSupport {
         assertTrue( np > 0 );
         
         // check the operation links
+        String expectedOperationUrl = "http://localhost:8080/geoserver/wps";
+        if(workspace != null) {
+            expectedOperationUrl = "http://localhost:8080/geoserver/" + workspace + "/wps";
+        }
         String[] operations = new String[] {"GetCapabilities", "DescribeProcess", "Execute"};
         for (String operation : operations) {
             String getPath = "//ows:Operation[@name='" + operation + "']/ows:DCP/ows:HTTP/ows:Get/@xlink:href";
-            assertXpathEvaluatesTo("http://localhost:8080/geoserver/wps", getPath, d); 
+            assertXpathEvaluatesTo(expectedOperationUrl, getPath, d); 
             String postPath = "//ows:Operation[@name='" + operation + "']/ows:DCP/ows:HTTP/ows:Post/@xlink:href";
-            assertXpathEvaluatesTo("http://localhost:8080/geoserver/wps", postPath, d);
+            assertXpathEvaluatesTo(expectedOperationUrl, postPath, d);
         }
     }
 

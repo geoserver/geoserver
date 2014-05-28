@@ -20,6 +20,7 @@ import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -154,7 +155,15 @@ public class LayerListResource extends Resource {
             final String description = layer.getResource().getAbstract();
             json.key("description").value(description != null ? description : "");
             json.key("displayField").value(""); // TODO: Extract displayField from the Style
-            json.key("copyrightText").value("");
+
+            final String copyrightText;
+            List<MetadataLinkInfo> metadataLinks = layer.getResource().getMetadataLinks();
+            if (metadataLinks != null && metadataLinks.size() > 0) {
+                copyrightText = metadataLinks.get(0).getContent();
+            } else {
+                copyrightText = "";
+            }
+            json.key("copyrightText").value(copyrightText);
             json.key("relationships").array().endArray();
             json.key("parentLayer").value(null);
             json.key("subLayers").array().endArray();

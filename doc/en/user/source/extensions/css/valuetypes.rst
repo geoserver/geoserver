@@ -1,10 +1,12 @@
-.. highlight:: css
+.. _extensions_css_valuetypes:
 
-CSS Value Types
+CSS value types
 ===============
 
+.. highlight:: css
+
 This page presents a brief overview of CSS types as used by this project.  Note
-that these can be repeated as described in :doc:`multivalues`.
+that these can be repeated as described in :ref:`extensions_css_multivalueprops`.
 
 Numbers
 -------
@@ -65,7 +67,6 @@ characters themselves must also be prefixed.  For example, ``'\\\''`` is a
 string value consisting of a single backslash followed by a single single quote
 character.
 
-
 Labels
 ------
 
@@ -116,9 +117,10 @@ specify them.
 
 .. list-table::
     :widths: 20 80
+    :header-rows: 1
 
-    - * **Format** 
-      * **Interpretation** 
+    - * Format 
+      * Interpretation 
     - * ``#RRGGBB``
       * A hexadecimal-encoded color value, with two digits each for red, green, and blue.
     - * ``#RGB``
@@ -134,7 +136,7 @@ specify them.
         colors is available at
         http://www.w3.org/TR/SVG/types.html#ColorKeywords
 
-External References
+External references
 -------------------
 
 When using external images to decorate map features, it is necessary to
@@ -157,7 +159,7 @@ case where the surrounding quote marks can usually be omitted. Some examples::
     This may be cause problems when relocating data directories, etc.
     The style can be regenerated with the current correct URL by opening it in the demo editor and using the Submit button there.
 
-Well-Known Marks
+Well-known marks
 ----------------
 
 As defined in the SLD standard, GeoServer's ``css`` module  also allows using a

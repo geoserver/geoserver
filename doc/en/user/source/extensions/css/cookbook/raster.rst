@@ -1,4 +1,4 @@
-.. _css_cookbook_rasters:
+.. _extensions_css_cookbook_rasters:
 
 Rasters
 =======
@@ -10,16 +10,16 @@ One example of a raster is a Digital Elevation Model (DEM) layer, which has elev
 Example raster
 --------------
 
-The :download:`raster layer <../../styling/sld-cookbook/artifacts/sld_cookbook_raster.zip>` that is used in the examples below contains elevation data for a fictional world.  The data is stored in EPSG:4326 (longitude/latitude) and has a data range from 70 to 256.  If rendered in grayscale, where minimum values are colored black and maximum values are colored white, the raster would look like this:
+The :download:`raster layer <../../../styling/sld-cookbook/artifacts/sld_cookbook_raster.zip>` that is used in the examples below contains elevation data for a fictional world.  The data is stored in EPSG:4326 (longitude/latitude) and has a data range from 70 to 256.  If rendered in grayscale, where minimum values are colored black and maximum values are colored white, the raster would look like this:
 
-.. figure:: ../../styling/sld-cookbook/images/raster.png
+.. figure:: ../../../styling/sld-cookbook/images/raster.png
    :align: center
 
    *Raster file as rendered in grayscale*
 
-:download:`Download the raster file <../../styling/sld-cookbook/artifacts/sld_cookbook_raster.zip>`
+:download:`Download the raster file <../../../styling/sld-cookbook/artifacts/sld_cookbook_raster.zip>`
 
-.. _css_cookbook_raster_twocolorgradient:
+.. _extensions_css_cookbook_raster_twocolorgradient:
 
 
 Two-color gradient
@@ -27,7 +27,7 @@ Two-color gradient
 
 This example shows a two-color style with green at lower elevations and brown at higher elevations.
 
-.. figure:: ../../styling/sld-cookbook/images/raster_twocolorgradient.png
+.. figure:: ../../../styling/sld-cookbook/images/raster_twocolorgradient.png
    :align: center
 
    *Two-color gradient*
@@ -65,7 +65,7 @@ Transparent gradient
 
 This example creates the same two-color gradient as in the :ref:`sld_cookbook_raster_twocolorgradient` as in the example above but makes the entire layer mostly transparent by setting a 30% opacity.
 
-.. figure:: ../../styling/sld-cookbook/images/raster_transparentgradient.png
+.. figure:: ../../../styling/sld-cookbook/images/raster_transparentgradient.png
    :align: center
 
    *Transparent gradient*
@@ -95,7 +95,7 @@ Brightness and contrast
 
 This example normalizes the color output and then increases the brightness by a factor of 2.
 
-.. figure:: ../../styling/sld-cookbook/images/raster_brightnessandcontrast.png
+.. figure:: ../../../styling/sld-cookbook/images/raster_brightnessandcontrast.png
    :align: center
 
    *Brightness and contrast*
@@ -126,7 +126,7 @@ Three-color gradient
 
 This example creates a three-color gradient in primary colors.  In addition, we want to avoid displaying data outside of the chosen range, leading some data not to be rendered at all.
 
-.. figure:: ../../styling/sld-cookbook/images/raster_threecolorgradient.png
+.. figure:: ../../../styling/sld-cookbook/images/raster_threecolorgradient.png
    :align: center
 
    *Three-color gradient*
@@ -160,7 +160,7 @@ Alpha channel
 
 This example creates an "alpha channel" effect such that higher values are increasingly transparent.
 
-.. figure:: ../../styling/sld-cookbook/images/raster_alphachannel.png
+.. figure:: ../../../styling/sld-cookbook/images/raster_alphachannel.png
    :align: center
 
    *Alpha channel*
@@ -191,7 +191,7 @@ Discrete colors
 
 This example shows a gradient that is not linearly interpolated but instead has values mapped precisely to one of three specific colors.
 
-.. figure:: ../../styling/sld-cookbook/images/raster_discretecolors.png
+.. figure:: ../../../styling/sld-cookbook/images/raster_discretecolors.png
    :align: center
 
    *Discrete colors*
@@ -222,7 +222,7 @@ Many color gradient
 
 This example shows a gradient interpolated across eight different colors.
 
-.. figure:: ../../styling/sld-cookbook/images/raster_manycolorgradient.png
+.. figure:: ../../../styling/sld-cookbook/images/raster_manycolorgradient.png
    :align: center
 
    *Many color gradient*

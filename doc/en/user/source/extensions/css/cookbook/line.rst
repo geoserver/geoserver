@@ -1,4 +1,4 @@
-.. _css_cookbook_lines:
+.. _extensions_css_cookbook_lines:
 
 Lines
 =====
@@ -6,12 +6,12 @@ Lines
 While lines can also seem to be simple shapes, having length but no width, there are many options and tricks for making
 lines display nicely.
 
-.. _css_cookbook_lines_attributes:
+.. _extensions_css_cookbook_lines_attributes:
 
 Example lines layer
 -------------------
 
-The :download:`lines layer <../../styling/sld-cookbook/artifacts/sld_cookbook_line.zip>` used in the examples below contains road information for a
+The :download:`lines layer <../../../styling/sld-cookbook/artifacts/sld_cookbook_line.zip>` used in the examples below contains road information for a
 fictional country.  For reference, the attribute table for the points in this layer is included below.
 
 .. list-table::
@@ -96,16 +96,16 @@ fictional country.  For reference, the attribute table for the points in this la
      - River Road
      - local-road
 
-:download:`Download the lines shapefile <../../styling/sld-cookbook/artifacts/sld_cookbook_line.zip>`
+:download:`Download the lines shapefile <../../../styling/sld-cookbook/artifacts/sld_cookbook_line.zip>`
 
-.. _css_cookbook_lines_simpleline:
+.. _extensions_css_cookbook_lines_simpleline:
 
 Simple line
 -----------
 
 This example specifies lines be colored black with a thickness of 3 pixels.
 
-.. figure:: ../../styling/sld-cookbook/images/line_simpleline.png
+.. figure:: ../../../styling/sld-cookbook/images/line_simpleline.png
    :align: center
 
    *Simple line*
@@ -133,7 +133,7 @@ Line with border
 This example shows how to draw lines with borders (sometimes called "cased lines").
 In this case the lines are drawn with a 3 pixel blue center and a 1 pixel wide gray border.
 
-.. figure:: ../../styling/sld-cookbook/images/line_linewithborder.png
+.. figure:: ../../../styling/sld-cookbook/images/line_linewithborder.png
    :align: center
 
    *Line with border*
@@ -177,10 +177,10 @@ side of the 3 pixel blue line.
 Dashed line
 -----------
 
-This example alters the :ref:`css_cookbook_lines_simpleline` to create a dashed line consisting of 5 pixels of drawn
+This example alters the :ref:`extensions_css_cookbook_lines_simpleline` to create a dashed line consisting of 5 pixels of drawn
 line alternating with 2 pixels of blank space.
 
-.. figure:: ../../styling/sld-cookbook/images/line_dashedline.png
+.. figure:: ../../../styling/sld-cookbook/images/line_dashedline.png
    :align: center
 
    *Dashed line*
@@ -210,7 +210,7 @@ Railroad (hatching)
 This example uses hatching to create a railroad style.  Both the line and the hatches are black, with a 2 pixel
 thickness for the main line and a 1 pixel width for the perpendicular hatches.
 
-.. figure:: ../../styling/sld-cookbook/images/line_railroad.png
+.. figure:: ../../../styling/sld-cookbook/images/line_railroad.png
    :align: center
 
    *Railroad (hatching)*
@@ -248,7 +248,7 @@ This example uses a graphic stroke along with dash arrays to create a "dot and s
 Adding the dash array specification allows to control the amount of space between one symbol and the next one.
 Without using the dash array the lines would be densely populated with dots, each one touching the previous one.
 
-.. figure:: ../../styling/sld-cookbook/images/line_dashspace.png
+.. figure:: ../../../styling/sld-cookbook/images/line_dashspace.png
    :align: center
 
    *Spaced symbols along a line*
@@ -283,7 +283,7 @@ The spacing between symbols is controlled with the ``stroke-dasharray`` at **lin
 to provide the spacing.
 
 
-.. _css_cookbook_lines_dashoffset:
+.. _extensions_css_cookbook_lines_dashoffset:
 
 Alternating symbols with dash offsets
 -------------------------------------
@@ -303,7 +303,7 @@ section and 2 pixels of the pen-up section, then draws the remaining 8 pixels of
 The example shows how to use these features to create two synchronized sequences of dash arrays, 
 one drawing line segments and the other symbols.
 
-.. figure:: ../../styling/sld-cookbook/images/line_dashdot.png
+.. figure:: ../../../styling/sld-cookbook/images/line_dashdot.png
    :align: center
 
    *Alternating dash and symbol*
@@ -338,7 +338,7 @@ Details
 The circle portrayal details are specified using the pseudo selector "nth-stroke(2)" at **line 8**, asking for circles that
 are 5 pixels wide, not filled, and with a dark blue outline.
 
-.. _css_cookbook_lines_defaultlabel:
+.. _extensions_css_cookbook_lines_defaultlabel:
 
 Line with default label
 -----------------------
@@ -346,7 +346,7 @@ Line with default label
 This example shows a text label on the simple line.  This is how a label will be displayed in the absence of any other
 customization.
 
-.. figure:: ../../styling/sld-cookbook/images/line_linewithdefaultlabel.png
+.. figure:: ../../../styling/sld-cookbook/images/line_linewithdefaultlabel.png
    :align: center
 
    *Line with default label*
@@ -370,14 +370,14 @@ This example paints lines with a red stroke, and then adds horizontal black labe
 
 _css_line_
 
-.. _css_cookbook_lines_perpendicularlabel:
+.. _extensions_css_cookbook_lines_perpendicularlabel:
 
 Labels along line with perpendicular offset
 -------------------------------------------
 
 This example shows a text label on the simple line, just like the previous example, but will force the label to be parallel to the lines, and will offset them a few pixels away.
 
-.. figure:: ../../styling/sld-cookbook/images/line_labelwithoffset.png
+.. figure:: ../../../styling/sld-cookbook/images/line_labelwithoffset.png
    :align: center
 
    *Line with default label*
@@ -401,14 +401,14 @@ Details
 This example is line by line identical to the previous one, but it add a new attribute "label-offset", which in the case of lines, when having a single value, is intepreted as a perpendicular
 offset from the line. The label is painted along a straight line, parallel to the line orientation in the center point of the label.
 
-.. _css_cookbook_lines_labelfollowingline:
+.. _extensions_css_cookbook_lines_labelfollowingline:
 
 Label following line
 --------------------
 
 This example renders the text label to follow the contour of the lines.
 
-.. figure:: ../../styling/sld-cookbook/images/line_labelfollowingline.png
+.. figure:: ../../../styling/sld-cookbook/images/line_labelfollowingline.png
    :align: center
 
    *Label following line*
@@ -429,22 +429,22 @@ Code
 Details
 ~~~~~~~
 
-As the :ref:`css_cookbook_lines_defaultlabel` example showed, the default label behavior isn't optimal.
+As the :ref:`extensions_css_cookbook_lines_defaultlabel` example showed, the default label behavior isn't optimal.
 
-This example is similar to the :ref:`css_cookbook_lines_defaultlabel` example with the exception of **line 5** where the
+This example is similar to the :ref:`extensions_css_cookbook_lines_defaultlabel` example with the exception of **line 5** where the
 "-gt-label-follow-line" option is specified, which forces the labels to strickly follow the line.
 
 Not all labels are visible partly because of conflict resolution, and partly because the renderer cannot find a line
 segment long and "straight" enough to paint the label (labels are not painted over sharp turns by default).
 
-.. _css_cookbook_lines_optimizedlabel:
+.. _extensions_css_cookbook_lines_optimizedlabel:
 
 Optimized label placement
 -------------------------
 
 This example optimizes label placement for lines such that the maximum number of labels are displayed.
 
-.. figure:: ../../styling/sld-cookbook/images/line_optimizedlabel.png
+.. figure:: ../../../styling/sld-cookbook/images/line_optimizedlabel.png
    :align: center
 
    *Optimized label*
@@ -468,18 +468,18 @@ Code
 Details
 ~~~~~~~
 
-This example is similar to the previous example, :ref:`css_cookbook_lines_labelfollowingline`.  The only differences are contained in **lines 6-8**.  **Line 6** sets the maximum angle that the label will follow.  This sets the label to never bend more than 90 degrees to prevent the label from becoming illegible due to a pronounced curve or angle.  **Line 7** sets the maximum displacement of the label to be 400 pixels.  In order to resolve conflicts with overlapping labels, GeoServer will attempt to move the labels such that they are no longer overlapping.  This value sets how far the label can be moved relative to its original placement.  Finally, **line 8** sets the labels to be repeated every 150 pixels.  A feature will typically receive only one label, but this can cause confusion for long lines. Setting the label to repeat ensures that the line is always labeled locally.
+This example is similar to the previous example, :ref:`extensions_css_cookbook_lines_labelfollowingline`.  The only differences are contained in **lines 6-8**.  **Line 6** sets the maximum angle that the label will follow.  This sets the label to never bend more than 90 degrees to prevent the label from becoming illegible due to a pronounced curve or angle.  **Line 7** sets the maximum displacement of the label to be 400 pixels.  In order to resolve conflicts with overlapping labels, GeoServer will attempt to move the labels such that they are no longer overlapping.  This value sets how far the label can be moved relative to its original placement.  Finally, **line 8** sets the labels to be repeated every 150 pixels.  A feature will typically receive only one label, but this can cause confusion for long lines. Setting the label to repeat ensures that the line is always labeled locally.
  
 
 
-.. _css_cookbook_lines_optimizedstyledlabel:
+.. _extensions_css_cookbook_lines_optimizedstyledlabel:
 
 Optimized and styled label
 --------------------------
 
-This example improves the style of the labels from the :ref:`css_cookbook_lines_optimizedlabel` example.
+This example improves the style of the labels from the :ref:`extensions_css_cookbook_lines_optimizedlabel` example.
 
-.. figure:: ../../styling/sld-cookbook/images/line_optimizedstyledlabel_with_halo.png
+.. figure:: ../../../styling/sld-cookbook/images/line_optimizedstyledlabel_with_halo.png
    :align: center
 
    *Optimized and styled label*
@@ -508,7 +508,7 @@ Code
 Details
 ~~~~~~~
 
-This example is similar to the :ref:`css_cookbook_lines_optimizedlabel`.  The only differences are:
+This example is similar to the :ref:`extensions_css_cookbook_lines_optimizedlabel`.  The only differences are:
 
   * The font family and weight have been specified
   * In order to make the labels easier to read, a white "halo" has been added. The halo draws a thin 1 pixel white border around the text, making it stand out from the background.  
@@ -519,7 +519,7 @@ Attribute-based line
 
 This example styles the lines differently based on the "type" (Road class) attribute.
 
-.. figure:: ../../styling/sld-cookbook/images/line_attributebasedline.png
+.. figure:: ../../../styling/sld-cookbook/images/line_attributebasedline.png
    :align: center
 
    *Attribute-based line*
@@ -551,7 +551,7 @@ Code
 Details
 ~~~~~~~
 
-.. note:: Refer to the :ref:`css_cookbook_lines_attributes` to see the attributes for the layer.  This example has eschewed labels in order to simplify the style, but you can refer to the example :ref:`css_cookbook_lines_optimizedstyledlabel` to see which attributes correspond to which points.
+.. note:: Refer to the :ref:`extensions_css_cookbook_lines_attributes` to see the attributes for the layer.  This example has eschewed labels in order to simplify the style, but you can refer to the example :ref:`extensions_css_cookbook_lines_optimizedstyledlabel` to see which attributes correspond to which points.
 
 There are three types of road classes in our fictional country, ranging from back roads to high-speed freeways:
 "highway", "secondary", and "local-road".  In order to make sure the roads are rendered in the proper order of importance, a "z-index" attribute has been placed in each rule.
@@ -588,21 +588,21 @@ The three rules are designed as follows:
 Zoom-based line
 ---------------
 
-This example alters the :ref:`css_cookbook_lines_simpleline` style at different zoom levels.
+This example alters the :ref:`extensions_css_cookbook_lines_simpleline` style at different zoom levels.
 
-.. figure:: ../../styling/sld-cookbook/images/line_zoombasedlinelarge.png
+.. figure:: ../../../styling/sld-cookbook/images/line_zoombasedlinelarge.png
    :align: center
 
    *Zoom-based line: Zoomed in*
 
 
-.. figure:: ../../styling/sld-cookbook/images/line_zoombasedlinemedium.png
+.. figure:: ../../../styling/sld-cookbook/images/line_zoombasedlinemedium.png
    :align: center
 
    *Zoom-based line: Partially zoomed*
 
 
-.. figure:: ../../styling/sld-cookbook/images/line_zoombasedlinesmall.png
+.. figure:: ../../../styling/sld-cookbook/images/line_zoombasedlinesmall.png
    :align: center
 
    *Zoom-based line: Zoomed out*

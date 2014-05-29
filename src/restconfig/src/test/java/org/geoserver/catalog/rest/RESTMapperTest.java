@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.net.URL;
 
 import org.apache.commons.io.FileUtils;
@@ -40,7 +41,8 @@ public class RESTMapperTest extends CatalogRESTTestSupport {
     @Test
     public void testGlobalConfig() throws Exception {
         // Selection of the root directory
-        String root = getTestData().getDataDirectoryRoot().getAbsolutePath();
+        File rootFile = getRootDirectory();
+        String root = rootFile.getAbsolutePath();
 
         // Setting of the global configuration
         GeoServerInfo global = getGeoServer().getGlobal();
@@ -59,13 +61,14 @@ public class RESTMapperTest extends CatalogRESTTestSupport {
         // Save settings
         getGeoServer().save(global);
         // Test of the input file
-        testFile(root, "sf", "usa");
+        testFile(rootFile, "sf", "usa");
     }
 
     @Test
     public void testWorkspaceConfig() throws Exception {
         // Selection of the root directory
-        String root = getTestData().getDataDirectoryRoot().getAbsolutePath();
+        File rootFile = getRootDirectory();
+        String root = rootFile.getAbsolutePath();
 
         // Creation of a new Workspace called "test"
         String xml = "<workspace>" + "<name>test</name>" + "</workspace>";
@@ -97,13 +100,14 @@ public class RESTMapperTest extends CatalogRESTTestSupport {
         // Add the new Settings
         getGeoServer().add(info);
         // Test of the input file
-        testFile(root, "test", "usa2");
+        testFile(rootFile, "test", "usa2");
     }
 
     @Test
     public void testStoreConfig() throws Exception {
         // Selection of the root directory
-        String root = getTestData().getDataDirectoryRoot().getAbsolutePath();
+        File rootFile = getRootDirectory();
+        String root = rootFile.getAbsolutePath();
         // Adding a new default coverage
         getTestData().addDefaultRasterLayer(SystemTestData.TASMANIA_BM, getCatalog());
         // Modifying the coverageStore by setting it to WorldImage
@@ -121,7 +125,19 @@ public class RESTMapperTest extends CatalogRESTTestSupport {
         // Saving the store
         getCatalog().save(cs);
         // Test of the input file
-        testFile(root, "wcs", "BlueMarble");
+        testFile(rootFile, "wcs", "BlueMarble");
+    }
+
+    /**
+     * Create a fake root directory where the sample data are stored. This directory contains a path with spaces
+     * in order to check that no error are thrown with URL encoding.
+     * 
+     * @return
+     */
+    private File getRootDirectory() {
+        File dataDirectoryRoot = getTestData().getDataDirectoryRoot();
+        File newroot = new File(dataDirectoryRoot, "test data");
+        return newroot;
     }
 
     /**
@@ -133,7 +149,7 @@ public class RESTMapperTest extends CatalogRESTTestSupport {
      * @param coverageStore
      * @throws Exception
      */
-    private void testFile(String root, String workspace, String coverageStore) throws Exception {
+    private void testFile(File root, String workspace, String coverageStore) throws Exception {
         // Selection of a zip file
         URL zip = getClass().getResource("test-data/usa.zip");
         byte[] bytes = FileUtils.readFileToByteArray(DataUtilities.urlToFile(zip));
@@ -151,7 +167,14 @@ public class RESTMapperTest extends CatalogRESTTestSupport {
         // Control if the associated info are present
         CoverageInfo ci = getCatalog().getCoverageByName(workspace, "usa");
         assertNotNull(ci);
-        // Check if the defined root is present
-        assertTrue(cs.getURL().contains(root));
+        // Check if the defined root is present        
+        // Using DataUtilities.fileToURL in order to have the same URL encoding
+        String urlString = cs.getURL();
+        File urlFile = new File(urlString);
+        URL url = DataUtilities.fileToURL(urlFile);
+        File urlFileRoot = new File(DataUtilities.fileToURL(root).getPath());
+        URL urlRoot = DataUtilities.fileToURL(urlFileRoot);
+        
+        assertTrue(url.toExternalForm().contains(urlRoot.toExternalForm()));
     }
 }

@@ -30,7 +30,13 @@ public abstract class ScriptProcessTestSupport extends ScriptIntTestSupport {
 
     protected File copyScriptIfExists(String baseName) throws IOException {
         File wps = scriptMgr.getWpsRoot();
-        File script = new File(wps, baseName + "." + getExtension());
+        File directory;
+        if (getNamespace().equals(getExtension())) {
+            directory = wps;
+        } else {
+            directory = new File(wps, getNamespace());
+        }
+        File script = new File(directory, baseName + "." + getExtension());
 
         URL u = getClass().getResource(script.getName());
         if (u != null) {
@@ -41,6 +47,10 @@ public abstract class ScriptProcessTestSupport extends ScriptIntTestSupport {
     }
 
     public abstract String getExtension();
+
+    public String getNamespace() {
+        return getExtension();
+    }
 
     public abstract String getProcessName();
 

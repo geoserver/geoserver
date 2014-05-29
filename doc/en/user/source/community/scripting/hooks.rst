@@ -84,6 +84,20 @@ located in a file named for the process. For example::
     scripts/
       wps/
         buffer.bsh
+        
+The process will be exposed using the extension as the namespace prefix, and the file name as 
+the process name, for example, the above process will show up as ``bsh:buffer``. 
+It is also possible to put scripts in subdirectories of ``script/wps``, in this case the directory name
+will be used as the process namespace, for example::
+
+  GEOSERVER_DATA_DIR/
+    ...
+    scripts/
+      wps/
+        foo/
+          buffer.bsh
+
+will expose the process as ``foo:buffer``. 
 
 A process script must define two things:
 

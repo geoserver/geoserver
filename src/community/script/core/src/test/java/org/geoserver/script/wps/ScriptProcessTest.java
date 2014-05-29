@@ -77,6 +77,8 @@ public abstract class ScriptProcessTest extends ScriptProcessTestSupport {
     public void testRun() throws Exception {
         ScriptProcessFactory pf = new ScriptProcessFactory(scriptMgr);
         Name buffer = pf.getNames().iterator().next();
+        assertEquals(getNamespace(), buffer.getNamespaceURI());
+        assertEquals(getProcessName(), buffer.getLocalPart());
 
         org.geotools.process.Process p = pf.create(buffer);
 
@@ -96,7 +98,7 @@ public abstract class ScriptProcessTest extends ScriptProcessTestSupport {
         File script = copyScriptIfExists(pname);
         if (script != null) {
             ScriptProcessFactory pf = new ScriptProcessFactory(scriptMgr);
-            Name buffer = new NameImpl(getExtension(), pname);
+            Name buffer = new NameImpl(getNamespace(), pname);
 
             org.geotools.process.Process p = pf.create(buffer);
             

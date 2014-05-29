@@ -11,10 +11,12 @@ import java.util.Map;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
+import org.apache.commons.io.FilenameUtils;
 import org.geoserver.platform.FileWatcher;
 import org.geoserver.script.ScriptFileWatcher;
 import org.geoserver.script.ScriptManager;
 import org.geotools.data.Parameter;
+import org.geotools.feature.NameImpl;
 import org.geotools.process.Process;
 import org.geotools.process.ProcessException;
 import org.opengis.feature.type.Name;
@@ -45,8 +47,7 @@ public class ScriptProcess implements Process {
     /** the hook for interacting with the script */
     WpsHook hook;
 
-    ScriptProcess(Name name, File script, ScriptManager scriptMgr) {
-        this.name = name;
+    ScriptProcess(File script, ScriptManager scriptMgr) {
         this.scriptMgr = scriptMgr;
 
         hook = scriptMgr.lookupWpsHook(script);
@@ -84,4 +85,12 @@ public class ScriptProcess implements Process {
         }
     }
 
+    public File getScript() {
+        return fw.getFile();
+    }
+
+    public Name getName() throws IOException {
+        return new NameImpl(hook.getNamespace(fw.readIfModified(), getScript()),
+                FilenameUtils.getBaseName(getScript().getName()));
+    }
 }

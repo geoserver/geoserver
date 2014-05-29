@@ -3,7 +3,7 @@ from geoscript import core
 from org.geoscript.util import PyFeatureCollection
 from org.geotools.feature import FeatureCollection
 
-def process(inputs, outputs, title=None, description=None):
+def process(inputs, outputs, namespace=None, title=None, description=None):
   def wrap(f):
     def wrapped(*args, **kwargs):
       # map arguments on way in
@@ -23,6 +23,7 @@ def process(inputs, outputs, title=None, description=None):
 
     wrapped.title = title
     wrapped.description = description
+    wrapped.namespace = namespace
 
     # unmap the specified inputs and outputs 
     wrapped.inputs = dict((k,_unmap(v, FeatureCollection)) 

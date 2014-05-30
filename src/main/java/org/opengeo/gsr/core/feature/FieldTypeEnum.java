@@ -49,7 +49,7 @@ public enum FieldTypeEnum {
             return SHORT_INTEGER;
         } else if (Integer.class.equals(binding) || Long.class.equals(binding) || BigInteger.class.equals(binding)) {
             return INTEGER;
-        } else if (Date.class.equals(binding) || Timestamp.class.equals(binding)) {
+        } else if (Date.class.isAssignableFrom(binding)) {
             return DATE;
         } else if (Geometry.class.isAssignableFrom(binding)) {
             return GEOMETRY;

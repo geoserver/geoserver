@@ -243,15 +243,22 @@ public class LayerListResource extends Resource {
     private static void encodeSchemaProperties(JSONBuilder json, FeatureType ftype) {
         json.array();
         for (PropertyDescriptor desc : ftype.getDescriptors()) {
-            if (!Geometry.class.isAssignableFrom(desc.getType().getBinding())) {
-                json.object();
-                json.key("name").value(desc.getName().getLocalPart());
-                json.key("type").value(FieldTypeEnum.forClass(desc.getType().getBinding()).getFieldType());
-                json.key("editable").value(false);
-                if (String.class.equals(desc.getType().getBinding())) {
-                    json.key("length").value(4000);
+            try {
+                if (!Geometry.class.isAssignableFrom(desc.getType().getBinding())) {
+                    String name = desc.getName().getLocalPart();
+                    String type = FieldTypeEnum.forClass(desc.getType().getBinding()).getFieldType();
+
+                    json.object();
+                    json.key("name").value(name);
+                    json.key("type").value(type);
+                    json.key("editable").value(false);
+                    if (String.class.equals(desc.getType().getBinding())) {
+                        json.key("length").value(4000);
+                    }
+                    json.endObject();
                 }
-                json.endObject();
+            } catch (Exception e) {
+                continue;
             }
         }
         json.endArray();

@@ -258,6 +258,7 @@ public class LayerListResource extends Resource {
                     json.endObject();
                 }
             } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "Omitting fields for PropertyDescriptor: " + desc, e);
                 continue;
             }
         }

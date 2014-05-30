@@ -11,11 +11,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -43,6 +48,7 @@ import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.geotools.styling.AbstractStyleVisitor;
 import org.geotools.styling.ChannelSelection;
+import org.geotools.styling.DefaultResourceLocator;
 import org.geotools.styling.ExternalGraphic;
 import org.geotools.styling.SelectedChannelType;
 import org.geotools.styling.Style;
@@ -1172,12 +1178,14 @@ public class GeoServerDataDirectory implements ResourceStore {
      * @param s The style
      * @return A {@link Resource}
      */
-    public @Nonnull Style parsedStyle(StyleInfo s) throws IOException {
+    protected @Nonnull Style parsedStyleResources(StyleInfo s) throws IOException {
         final Resource styleResource = style(s);
         if ( styleResource.getType() == Type.UNDEFINED ){
             throw new IOException( "No such resource: " + s.getFilename());
         }
-        final StyledLayerDescriptor sld = Styles.parse(styleResource, null, s.getSLDVersion());
+        final DefaultResourceLocator locator = new DefaultResourceLocator();
+        locator.setSourceUrl(resourceToUrl(styleResource));
+        final StyledLayerDescriptor sld = Styles.parse(styleResource, null, s.getSLDVersion(), locator);
         final Style style = Styles.style(sld);
         assert style!=null;
         return style;
@@ -1190,19 +1198,41 @@ public class GeoServerDataDirectory implements ResourceStore {
      * @param s The style
      * @return A {@link Resource}
      */
-    public @Nonnull Style parsedStylePrepared(StyleInfo s) throws IOException {
+    public @Nonnull Style parsedStyle(final StyleInfo s) throws IOException {
         final Resource styleResource = style(s);
         if ( styleResource.getType() == Type.UNDEFINED ){
             throw new IOException( "No such resource: " + s.getFilename());
         }
         File input = styleResource.file();
-        final StyledLayerDescriptor sld = Styles.parse(input, null, s.getSLDVersion());
+
+        DefaultResourceLocator locator = new DefaultResourceLocator() {
+            
+            @SuppressWarnings("deprecation")
+            // Need to use toURL() rather than toURI().toURL() to avoid escaping 
+            // of CQL expressions KS
+            @Override
+            public URL locateResource(String uri) {
+                try {
+                    URL url = super.locateResource(uri);
+                    if(url.getProtocol().equalsIgnoreCase("resource")) {
+                        Resource r = urlToResource(url);
+                        return r.file().toURL();
+                    } else {
+                        return url;
+                    }
+                } catch (MalformedURLException e) {
+                    try {
+                        return new URL((URL)null, uri);
+                    } catch (MalformedURLException e2){
+                        return null;
+                    }
+               }
+            }
+            
+        };
+        locator.setSourceUrl(resourceToUrl(styleResource));
+        final StyledLayerDescriptor sld = Styles.parse(input, null, s.getSLDVersion(), locator);
         final Style style = Styles.style(sld);
-        
-        List<Resource> styleResources = additionalStyleResources(s);
-        for(Resource resource:styleResources) {
-            resource.file();
-        }
         
         assert style!=null;
         return style;
@@ -1270,27 +1300,22 @@ public class GeoServerDataDirectory implements ResourceStore {
     }
 
     List<Resource> additionalStyleResources(StyleInfo s) throws IOException {
-        final List<Resource> files = new ArrayList<Resource>();
+        final List<Resource> resources = new ArrayList<Resource>();
         final Resource baseDir = get(s);
         try {
-            Style parsedStyle = parsedStyle(s);
+            Style parsedStyle = parsedStyleResources(s);
             parsedStyle.accept(new AbstractStyleVisitor() {
                 @Override
                 public void visit(ExternalGraphic exgr) {
                     if (exgr.getOnlineResource() == null) {
                         return;
                     }
-    
-                    URI uri = exgr.getOnlineResource().getLinkage();
-                    if (uri == null) {
-                        return;
-                    }
-                    
-    
-                    Resource r = null;
                     try {
-                        r = uriToResource(baseDir, uri);
-                        if (r!=null && r.getType()!=Type.UNDEFINED) files.add(r);
+                        Resource r = urlToResource(exgr.getLocation());
+                        
+                        if (r!=null && r.getType()!=Type.UNDEFINED){
+                            resources.add(r);
+                        }
                     } catch (IllegalArgumentException|MalformedURLException e) {
                         GeoServerPersister.LOGGER.log(Level.WARNING, "Error attemping to process SLD resource", e);
                     } 
@@ -1313,9 +1338,58 @@ public class GeoServerDataDirectory implements ResourceStore {
         catch(IOException e) {
             GeoServerPersister.LOGGER.log(Level.WARNING, "Error loading style", e);
         }
-        return files;
+        return resources;
     }
 
+    URL resourceToUrl(final Resource res) {
+        try {
+            return new URL("resource", null, -1, String.format(res.getType()==Type.DIRECTORY?"/%s/":"/%s", res.path()),
+                new URLStreamHandler(){
+
+                @Override
+                protected URLConnection openConnection(URL u)
+                        throws IOException {
+                    return new URLConnection(u){
+
+                        @Override
+                        public void connect() throws IOException {
+                            // TODO Auto-generated method stub
+                            
+                        }
+
+                        @Override
+                        public long getLastModified() {
+                            return res.lastmodified();
+                        }
+
+                        @Override
+                        public InputStream getInputStream() throws IOException {
+                            return res.in();
+                        }
+
+                        @Override
+                        public OutputStream getOutputStream() throws IOException {
+                            return res.out();
+                        }
+                    };
+                }
+                
+            });
+        } catch (MalformedURLException e) {
+            throw new IllegalStateException("Should not happen",e);
+            //LOGGER.log(Level.FINER, e.getMessage(), e);
+        }
+    }
+    
+    @Nullable Resource urlToResource(URL url) {
+        if(url.getProtocol().equalsIgnoreCase("resource")) {
+            return get(url.getPath());
+        } else if (url.getProtocol().equalsIgnoreCase("file")){
+            return Files.asResource(new File(url.getPath()));
+        } else {
+            return null;
+        }
+    }
     Resource uriToResource(Resource base, URI uri) throws MalformedURLException {
         if(uri.getScheme()!=null && !uri.getScheme().equals("file")) {
             return null;
@@ -1324,7 +1398,7 @@ public class GeoServerDataDirectory implements ResourceStore {
             assert uri.getScheme().equals("file");
             return Files.asResource(new File(uri.toURL().getFile()));
         }  else {
-            return base.get(uri.getSchemeSpecificPart());
+            return base.get(uri.normalize().getSchemeSpecificPart());
         }
     }
 

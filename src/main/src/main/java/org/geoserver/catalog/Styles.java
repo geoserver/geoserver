@@ -394,20 +394,6 @@ public class Styles {
                         };
                     };
                 }
-                if (input instanceof File) {
-                    // setup for resolution of relative paths
-                    final java.net.URL surl = DataUtilities.fileToURL((File) input);
-                    sld = new SLDConfiguration() {
-                        protected void configureContext(
-                                org.picocontainer.MutablePicoContainer container) {
-                            DefaultResourceLocator locator = new DefaultResourceLocator();
-                            locator.setSourceUrl(surl);
-                            container.registerComponentInstance(ResourceLocator.class, locator);
-                        };
-                    };
-                } else {
-                    sld = new SLDConfiguration();
-                }
                 
                 try {
                     Parser parser = new Parser(sld);

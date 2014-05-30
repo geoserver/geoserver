@@ -13,7 +13,6 @@ import java.awt.image.RenderedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,7 +42,6 @@ import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.Query;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.image.ImageWorker;
-import org.geotools.process.ProcessException;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
@@ -104,8 +102,8 @@ public class GeorectifyCoverage implements GSProcess {
             @DescribeParameter(name = "width", description = "Width of output raster in pixels", min = 0) Integer width,
             @DescribeParameter(name = "height", description = "Height of output raster in pixels", min = 0) Integer height,
             @DescribeParameter(name = "warpOrder", min = 0, description = "Order of the warping polynomial (1 to 3)") Integer warpOrder,
-            @DescribeParameter(name = "transparent", min = 0, description = "Force output to have transparent background") Boolean transparent,
-            @DescribeParameter(name = "store", min = 0, description = "Indicates whether to keep the output file after processing") Boolean store,
+            @DescribeParameter(name = "transparent", min = 0, description = "Force output to have transparent background", defaultValue = "true") Boolean transparent,
+            @DescribeParameter(name = "store", min = 0, description = "Indicates whether to keep the output file after processing", defaultValue = "false") Boolean store,
             @DescribeParameter(name = "outputPath", min = 0, description = "Pathname where the output file is stored") String outputPath)
             throws IOException {
 

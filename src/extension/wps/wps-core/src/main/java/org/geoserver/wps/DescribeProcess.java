@@ -10,6 +10,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import net.opengis.ows11.AllowedValuesType;
 import net.opengis.ows11.CodeType;
@@ -51,6 +53,8 @@ import org.springframework.context.ApplicationContext;
  * @author Justin Deoliveira, OpenGEO
  */
 public class DescribeProcess {
+    static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(DescribeProcess.class);
+
     WPSInfo wps;
     ApplicationContext context;
     Locale locale;
@@ -176,7 +180,14 @@ public class DescribeProcess {
                 	literal.setAnyValue( owsf.createAnyValueType() );
                 }
 
-                //TODO: output the default value and see if we can output a valid range as well
+                try {
+                    if (p.sample != null) {
+                        literal.setDefaultValue(lppio.encode(p.sample));
+                    }
+                } catch (Exception e) {
+                    LOGGER.log(Level.WARNING, "Failed to fill the default value for input " + p.key
+                            + " of process " + name, e);
+                }
             } else if(ppios.get( 0 ) instanceof BoundingBoxPPIO) {
                 input.setBoundingBoxData(buildSupportedCRSType());
             } else {

@@ -55,7 +55,7 @@
 <body>
 <wicket:panel>
   <div wicket:id="editorContainer" style="background-color: white">
-    <div style="border-top: 1px solid black; padding-top: 3px">
+    <div wicket:id="toolbar" style="border-top: 1px solid black; padding-top: 3px">
       <wicket:link>
         <div class="button-group button-toolbar selfclear">
               <!--  Sigh, does not work... oh well, commenting out for the time being and hoping
@@ -88,7 +88,7 @@
             </div>
       </wicket:link>
     </div>
-     <div style="border: 1px solid black;">
+    <div wicket:id="editorParent">
       <textarea wicket:id="editor"></textarea>
     </div>
   </div>

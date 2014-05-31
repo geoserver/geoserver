@@ -109,6 +109,10 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         this(id, "xml", model);
     }
     
+    public CodeMirrorEditor(String id, IModel<String> model) {
+        this(id, "xml", model);
+    }
+    
     @Override
     protected void convertInput() {
         editor.processInput();

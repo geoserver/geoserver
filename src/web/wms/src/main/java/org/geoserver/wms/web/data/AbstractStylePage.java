@@ -387,7 +387,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                     public CharSequence preDecorateScript(CharSequence script) {
                         return "if(event.view.document.gsEditors."
                                 + editor.getTextAreaMarkupId()
-                                + ".getCode() != '' &&"
+                                + ".getValue() != '' &&"
                                 + "!confirm('"
                                 + new ParamResourceModel("confirmOverwrite", AbstractStylePage.this)
                                         .getString() + "')) return false;" + script;

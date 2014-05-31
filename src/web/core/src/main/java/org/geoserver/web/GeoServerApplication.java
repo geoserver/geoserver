@@ -23,14 +23,9 @@ import org.apache.wicket.protocol.http.WebRequest;
 import org.apache.wicket.protocol.http.WebRequestCycle;
 import org.apache.wicket.protocol.http.WebRequestCycleProcessor;
 import org.apache.wicket.protocol.http.WebResponse;
-import org.apache.wicket.protocol.http.request.CryptedUrlWebRequestCodingStrategy;
-import org.apache.wicket.protocol.http.request.WebRequestCodingStrategy;
 import org.apache.wicket.request.IRequestCodingStrategy;
 import org.apache.wicket.request.IRequestCycleProcessor;
 import org.apache.wicket.request.RequestParameters;
-import org.apache.wicket.request.target.coding.WebRequestEncoder;
-import org.apache.wicket.resource.loader.ClassStringResourceLoader;
-import org.apache.wicket.resource.loader.ComponentStringResourceLoader;
 import org.apache.wicket.resource.loader.IStringResourceLoader;
 import org.apache.wicket.spring.SpringWebApplication;
 import org.apache.wicket.util.convert.ConverterLocator;
@@ -191,6 +186,9 @@ public class GeoServerApplication extends SpringWebApplication {
 
         getApplicationSettings().setPageExpiredErrorPage(GeoServerExpiredPage.class);
         getSecuritySettings().setCryptFactory(GeoserverWicketEncrypterFactory.get());
+
+        // figure out which browser we're running against
+        getRequestCycleSettings().setGatherExtendedBrowserInfo(true);
     }
 
     @Override

@@ -131,6 +131,8 @@ public class GetFeatureInfoKvpReader extends KvpRequestReader {
                 throw new ServiceException("Invalid format '" + format
                         + "', supported formats are " + infoFormats, "InvalidFormat", "info_format");
             }
+            if (wms.getAllowedFeatureInfoFormats().contains(format)==false)
+                throw wms.unallowedGetFeatureInfoFormatException(format);
         }
 
         request.setInfoFormat(format);

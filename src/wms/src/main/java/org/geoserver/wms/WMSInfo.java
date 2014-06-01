@@ -5,6 +5,7 @@
 package org.geoserver.wms;
 
 import java.util.List;
+import java.util.Set;
 
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
@@ -40,7 +41,22 @@ public interface WMSInfo extends ServiceInfo {
      * The srs's that the wms service supports.
      */
     List<String> getSRS();
-
+    
+    /**
+     * A set of mime types allowed for a getMap request. If the set is 
+     * empty, each mime type is allowed
+     * 
+     */
+    Set<String> getGetMapMimeTypes();
+    
+    
+    /**
+     * A set of mime types allowed for a getFeatureInfo request. If the set is 
+     * empty, each mime type is allowed
+     * 
+     */
+    Set<String> getGetFeatureInfoMimeTypes();
+    
     /**
      * Flag controlling whether the WMS service, for each layer, should declare a bounding box 
      * for every CRS supported, in it's capabilities document. 

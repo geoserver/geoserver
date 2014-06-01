@@ -5,7 +5,9 @@
 package org.geoserver.wms;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
@@ -21,6 +23,9 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
     WMSInterpolation interpolation = WMSInterpolation.Nearest;
     
+    Set<String> getFeatureInfoMimeTypes = new HashSet<String>();
+    
+    Set<String> getMapMimeTypes = new HashSet<String>();
 
     /**
      * This property is transient in 2.1.x series and stored under the metadata map with key
@@ -140,5 +145,21 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
     public void setIdentifiers(List<LayerIdentifierInfo> identifiers) {
         this.identifiers = identifiers;
+    }
+
+    public Set<String> getGetFeatureInfoMimeTypes() {
+        return getFeatureInfoMimeTypes;
+    }
+
+    public void setGetFeatureInfoMimeTypes(Set<String> getFeatureInfoMimeTypes) {
+        this.getFeatureInfoMimeTypes = getFeatureInfoMimeTypes;
+    }
+
+    public Set<String> getGetMapMimeTypes() {
+        return getMapMimeTypes;
+    }
+
+    public void setGetMapMimeTypes(Set<String> getMapMimeTypes) {
+        this.getMapMimeTypes = getMapMimeTypes;
     }
 }

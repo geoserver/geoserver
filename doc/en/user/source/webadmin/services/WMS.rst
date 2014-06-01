@@ -70,9 +70,19 @@ The GeoServer WMS supports SVG (Scalable Vector Graphics) as an output format. G
 Anti-aliasing is a technique for making edges appear smoother by filling in the edges of an object with pixels that are between the object's color and the background color. Anti-aliasing creates the illusion of smoother lines and smoother selections. Turning on anti-aliasing will generally make maps look nicer, but will increase the size of the images, and will take longer to return. If you are overlaying the anti-aliased map on top of others, beware of using transparencies as the anti-aliasing process mixes with the colors behind and can create a "halo" effect.
 
      
+Restricting MIME types for GetMap and GetFeatureInfo requests
+-------------------------------------------------------------
+
+GeoServer supports restricting formats for WMS GetMap and WMS GetFeatureInfo requests. The following figure shows an example. The MIME types
+**image/png** and **text/html;subtype=openlayers** are allowed for GetMap requests, the MIME types **text/html** and **text/plain** are allowed for
+GetFeatureInfo requests. A GetMap/GetFeatureInfo request with a MIME type not allowed will result in a service exception reporting the error.    
+
+.. figure:: ../images/service_WMS_allowedMimeTypes.png
+   :align: center
      
      
-     
+The default configuration is to allow all MIME types for both request types. An empty allowed list  or an allowed list containing all possible MIME types causes
+GeoServer to disable the  MIME type checking.     
      
      
      

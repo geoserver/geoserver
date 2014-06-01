@@ -5,6 +5,7 @@
 package org.geoserver.wms.wms_1_1_1;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -29,6 +30,7 @@ import javax.imageio.ImageIO;
 import javax.servlet.ServletResponse;
 import javax.xml.namespace.QName;
 
+import org.apache.batik.bridge.svg12.SVG12BridgeContext;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
@@ -42,8 +44,15 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.wms.GetMap;
+import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.WMS;
+import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
+import org.geoserver.wms.featureinfo.GML3FeatureInfoOutputFormat;
+import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
+import org.geoserver.wms.featureinfo.TextFeatureInfoOutputFormat;
+import org.geoserver.wms.map.OpenLayersMapOutputFormat;
+import org.geoserver.wms.map.RenderedImageMapOutputFormat;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -170,6 +179,41 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 + "&width=550" + "&height=250" + "&srs=EPSG:4326");
         checkImage(response);
     }
+    
+    @Test
+    public void testAllowedMimeTypes() throws Exception {
+        
+        WMSInfo wms = getWMS().getServiceInfo();
+        GetMapOutputFormat format = new RenderedImageMapOutputFormat(getWMS());        
+        wms.getGetMapMimeTypes().add(format.getMimeType());
+        getGeoServer().save(wms);
+
+     // check mime type allowed
+        MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox
+                + "&styles=&layers=" + layers + "&Format=image/png" + "&request=GetMap"
+                + "&width=550" + "&height=250" + "&srs=EPSG:4326");
+        checkImage(response);
+        
+        
+     // check mime type not allowed                
+        String result = getAsString("wms?bbox=" + bbox
+                + "&styles=&layers=" + layers + "&Format="+OpenLayersMapOutputFormat.MIME_TYPE+ "&request=GetMap"
+                + "&width=550" + "&height=250" + "&srs=EPSG:4326");
+        assertTrue(result.indexOf("ForbiddenFormat") > 0);        
+                      
+        wms.getGetMapMimeTypes().clear();
+        getGeoServer().save(wms);
+        
+        result = getAsString("wms?bbox=" + bbox
+                + "&styles=&layers=" + layers + "&Format="+OpenLayersMapOutputFormat.MIME_TYPE+ "&request=GetMap"
+                + "&width=550" + "&height=250" + "&srs=EPSG:4326");
+
+        assertTrue(result.indexOf("OpenLayers") > 0);
+ 
+    }
+
+    
+    
     
     @Test
     public void testLayoutLegendNPE() throws Exception {

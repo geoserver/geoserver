@@ -483,7 +483,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
             start("GetFeatureInfo");
 
-            for (String format : wmsConfig.getAvailableFeatureInfoFormats()) {
+            for (String format : wmsConfig.getAllowedFeatureInfoFormats()) {
                 element("Format", format);
             }
 

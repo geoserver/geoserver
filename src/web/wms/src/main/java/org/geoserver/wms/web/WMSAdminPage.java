@@ -5,8 +5,10 @@
 package org.geoserver.wms.web;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TreeSet;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.PageParameters;
@@ -24,8 +26,11 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.model.util.CollectionModel;
+import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.validation.validator.MinimumValidator;
 import org.apache.wicket.validation.validator.RangeValidator;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.FileExistsValidator;
@@ -33,10 +38,12 @@ import org.geoserver.web.wicket.LiveCollectionModel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SRSListTextArea;
 import org.geoserver.web.wicket.browser.GeoServerFileChooser;
+import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSInfo.WMSInterpolation;
 import org.geoserver.wms.WatermarkInfo.Position;
+import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
 import org.geoserver.wms.web.publish.LayerAuthoritiesAndIdentifiersPanel;
 import org.geoserver.web.data.store.panel.FileModel;
 
@@ -55,7 +62,10 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
             WMS.KML_SUPEROVERLAY_MODE_RASTER, WMS.KML_SUPEROVERLAY_MODE_OVERVIEW, WMS.KML_SUPEROVERLAY_MODE_HYBRID, WMS.KML_SUPEROVERLAY_MODE_CACHED});
     
     ModalWindow modal;
-
+    MimeTypesFormComponent getMapMimeTypesComponent,getFeatureInfoMimeTypesComponent;
+    TreeSet<String> getMapAvailable;
+    TreeSet<String> getFeatureInfoAvailable;
+    
     public WMSAdminPage() {
         super();
     }
@@ -174,6 +184,66 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         //scalehint
         form.add(new CheckBox("scalehint.mapunitsPixel",defaultedModel(metadataModel, WMS.SCALEHINT_MAPUNITS_PIXEL, WMS.SCALEHINT_MAPUNITS_PIXEL_DEFAULT)));
         
+        // mime types for GetMap
+        TreeSet<String> getMapAllowed = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        getMapAvailable = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        for (GetMapOutputFormat format : GeoServerExtensions.extensions(GetMapOutputFormat.class)) {
+            getMapAvailable.add(format.getMimeType());
+            if (WMS.get().isAllowedGetMapFormat(format))
+                getMapAllowed.add(format.getMimeType());                
+        }
+        
+        
+        List<String> getMapSelected = new ArrayList<String>();
+        getMapSelected.addAll(getMapAllowed);
+        List<String> getMapChoices = new ArrayList<String>();
+        getMapChoices.addAll(getMapAvailable);
+                               
+        form.add(getMapMimeTypesComponent= new MimeTypesFormComponent("getMapMimeTypes",
+                new ListModel<String>(getMapSelected),new CollectionModel<String>(getMapChoices)));
+        
+        // mime types for GetFeatueInfo
+        TreeSet<String> getFeatureInfoAllowed = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        getFeatureInfoAvailable = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        for (GetFeatureInfoOutputFormat format : GeoServerExtensions.extensions(GetFeatureInfoOutputFormat.class)) {
+            getFeatureInfoAvailable.add(format.getContentType());
+            if (WMS.get().isAllowedGetFeatureInfoFormat(format))
+                getFeatureInfoAllowed.add(format.getContentType());
+        }
+        
+            
+        List<String> getFeatureInfoSelected = new ArrayList<String>();
+        getFeatureInfoSelected.addAll(getFeatureInfoAllowed);
+        List<String> getFeatureInfoChoices = new ArrayList<String>();
+        getFeatureInfoChoices.addAll(getFeatureInfoAvailable);
+                               
+        form.add(getFeatureInfoMimeTypesComponent =new MimeTypesFormComponent("getFeatureInfoMimeTypes",
+                new ListModel<String>(getFeatureInfoSelected),new CollectionModel<String>(getFeatureInfoChoices)));                
+                
+                            
+        
+    }
+    
+    @Override
+    protected void handleSubmit(WMSInfo info) {
+        
+        // store the selected mime types. 
+        // if the selection is empty, store an empty collection --> no MIME type access control
+        // if all types are selected, store an empty collection --> no MIME type access control
+        // Otherwise, mime type access control is active
+        
+        info.getGetMapMimeTypes().clear();
+        int selected = getMapMimeTypesComponent.getPalette().getModelCollection().size(); 
+        if ( selected > 0 && selected < getMapAvailable.size()) {                 
+            info.getGetMapMimeTypes().addAll(getMapMimeTypesComponent.getPalette().getModelCollection());
+        }
+               
+        info.getGetFeatureInfoMimeTypes().clear();
+        selected = getFeatureInfoMimeTypesComponent.getPalette().getModelCollection().size();
+        if (selected > 0 && selected < getFeatureInfoAvailable.size()) {                
+            info.getGetFeatureInfoMimeTypes().addAll(getFeatureInfoMimeTypesComponent.getPalette().getModelCollection());
+        }                
+        super.handleSubmit(info);
     }
     
     protected Component chooserButton(String linkId, final String windowTitle, final TextField<String> textField) {

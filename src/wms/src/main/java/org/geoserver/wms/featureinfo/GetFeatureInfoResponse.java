@@ -122,6 +122,11 @@ public class GetFeatureInfoResponse extends Response {
         if (format == null) {
             format = defaultOutputFormat;
         }
+        
+        if (wms.isAllowedGetFeatureInfoFormat(format)==false) {
+            throw wms.unallowedGetFeatureInfoFormatException(requestFormat);
+        }
+        
         return format;
 
     }

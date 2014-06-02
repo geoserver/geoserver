@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Implementation of ResourceStore backed by the file system.
@@ -208,10 +209,15 @@ public class FileSystemResourceStore implements ResourceStore {
             }
             try {
                 // first save to a temp file
-                final File temp = new File(actualFile.getParentFile(), actualFile.getName() + ".tmp");
-                
-                if (temp.exists()) {
-                    temp.delete();
+                final File temp;
+                synchronized(this) {
+                    File tryTemp;
+                    do {
+                        UUID uuid = UUID.randomUUID();
+                        tryTemp = new File(actualFile.getParentFile(), String.format("%s.%s.tmp", actualFile.getName(), uuid));
+                    } while(tryTemp.exists());
+                    
+                    temp = tryTemp;
                 }
                 // OutputStream wrapper used to write to a temporary file
                 // (and only lock during move to actualFile)

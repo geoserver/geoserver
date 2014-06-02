@@ -452,4 +452,37 @@ public abstract class ResourceTheoryTest {
         
         assertThat(children, hasItem(child));
     }
+    
+    @Theory
+    public void theoryMultipleOutputStreamsAreSafe(String path) throws Exception {
+        final Resource res = getResource(path);
+        assumeThat(res, is(resource()));
+        
+        
+        final byte[] thread1Content = "This is the content for thread 1".getBytes();
+        final byte[] thread2Content = "Thread 2 has this content".getBytes();
+        
+        
+        try(OutputStream out1 = res.out();
+            OutputStream out2 = res.out()) {
+            for(int i=0; i<thread1Content.length || i<thread2Content.length; i++) {
+                if(i<thread1Content.length) {
+                    out1.write(thread1Content[i]);
+                }
+                if(i<thread2Content.length) {
+                    out2.write(thread2Content[i]);
+                }
+            }
+        }
+        
+        final byte[] resultContent;
+        try(InputStream in = res.in()) {
+            resultContent = IOUtils.toByteArray(in);
+        }
+        
+        // 2 streams being written to concurrently should result in the resource containing 
+        // what was written to one of the two streams.
+        assertThat(resultContent, anyOf(equalTo(thread1Content), equalTo(thread2Content)));
+        
+    }
 }

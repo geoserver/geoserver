@@ -44,3 +44,25 @@ While the Esri implementation of GeoServices supports multiple file formats, all
   * WMTS. Not supported. (GeoServer does support this, but via GeoWebCache integration rather than the GeoServices extension.)
   * WMTS Capabilities. Not supported. (GeoServer does support this, but via GeoWebCache integration rather than the GeoServices extension.)
   * WMTS Tile. Not supported. (GeoServer does support this, but via GeoWebCache integration rather than the GeoServices extension.)
+
+## Technical Limitations
+
+### Features
+
+While GeoServer supports fields of arbitrary type (determined by the data store) the GeoServices REST API constrains field types to a short list of types.
+
+The GeoServer plugin maintains a mapping between these types and native Java classes in the FieldTypeEnum class.
+Fields whose types are not translatable will be omitted from responses.
+
+### Layer
+
+GeoServer does not model layers the same way that they are presented in the GeoServices REST API.
+GeoServer layers may have multiple associated styles, while GeoServices allows for one style per layer.
+The GeoServer plugin uses the "default" style for the layer and ignores any alternative styles.
+GeoServer also has no concept corresponding to the "sublayers" supported by GeoServices.
+
+## Styles
+
+GeoServer does not model styles the same way that they are presented in the GeoServices REST API.
+GeoServer styles use the SLD format, which allows a wide variety of conditional styling, while "Renderers" in the GeoServices REST API are much more constrained.
+The GeoServices plugin checks for SLD styles conforming to a small number of patterns and converts these to equivalent renderers, but when an SLD uses capabilities with no analog in GeoServices a simple default style will be advertised instead.

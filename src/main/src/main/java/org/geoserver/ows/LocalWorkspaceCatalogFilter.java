@@ -5,13 +5,17 @@
 package org.geoserver.ows;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.Wrapper;
 import org.geoserver.security.AbstractCatalogFilter;
+import org.opengis.filter.Filter;
 
 /**
  * Filters the resources that are not in the current workspace (used only if virtual services are
@@ -84,4 +88,67 @@ public class LocalWorkspaceCatalogFilter extends AbstractCatalogFilter {
         }
         return hideWorkspace(layerGroup.getWorkspace());
     }
+    
+    private Filter inWorkspace() {
+        WorkspaceInfo localWS = LocalWorkspace.get();
+        if(localWS==null) return Predicates.acceptAll();
+        return Predicates.equal("workspace.id", localWS.getId());
+    }
+    
+    private Filter standardFilter(Class<? extends CatalogInfo> clazz) {
+        final Filter forGlobal;
+        if (LocalWorkspace.get() != null) {
+            // TODO need a well known implementation
+            // Show globals unless an object with the same name is in the local workspace
+            forGlobal = super.getSecurityFilter(clazz);
+        } else {
+            // Global request, show all globals
+            forGlobal = Predicates.acceptAll();
+        }
+        // If it's a global use the global filter, otherwise check if it's in the local workspace
+        return Predicates.or(
+                Predicates.and(Predicates.isNull("workspace.id"), forGlobal),
+                Predicates.and(Predicates.factory.not(Predicates.isNull("workspace.id")), inWorkspace())
+               );
+    }
+    @Override
+    public Filter getSecurityFilter(final Class<? extends CatalogInfo> clazz) {
+        WorkspaceInfo localWS = LocalWorkspace.get();
+        LayerInfo localLayer = LocalLayer.get();
+        if(localWS==null && localLayer==null) {
+            return Predicates.acceptAll();
+        }
+        if(ResourceInfo.class.isAssignableFrom(clazz)) {
+            // Show if it's in a visible workspace or used by the local layer
+            Filter localLayerFilter;
+            if(localLayer==null) {
+                localLayerFilter=Predicates.acceptAll();
+            } else {
+                // TODO Well known check if it's used by the local layer
+                return super.getSecurityFilter(clazz);
+            }
+            return Predicates.or(localLayerFilter, inWorkspace());
+        } else if(WorkspaceInfo.class.isAssignableFrom(clazz)) {
+            // Show if there's no local workspace or if it is the local workspace
+            if(localWS==null) return Predicates.acceptAll();
+            return Predicates.equal("id", localWS.getId());
+        } else if(LayerGroupInfo.class.isAssignableFrom(clazz)) {
+            return standardFilter(clazz);
+        } else if(StyleInfo.class.isAssignableFrom(clazz)) {
+            return standardFilter(clazz);
+        } else if(LayerInfo.class.isAssignableFrom(clazz)) {
+            // If there's a local Layer, only show that layer, otherwise show all.
+            if(localLayer==null) {
+                return Predicates.acceptAll();
+            } else {
+                return Predicates.equal("id", localLayer.getId());
+            }
+        } else if(NamespaceInfo.class.isAssignableFrom(clazz)) {
+            // TODO
+            return super.getSecurityFilter(clazz);
+        } else {
+            return super.getSecurityFilter(clazz);
+        }
+    }
+
 }

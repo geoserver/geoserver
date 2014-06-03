@@ -46,6 +46,7 @@ import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wps.BinaryEncoderDelegate;
 import org.geoserver.wps.CDataEncoderDelegate;
+import org.geoserver.wps.RawDataEncoderDelegate;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.XMLEncoderDelegate;
 import org.geoserver.wps.executor.ExecutionStatus.ProcessState;
@@ -55,8 +56,10 @@ import org.geoserver.wps.ppio.CDataPPIO;
 import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geoserver.wps.ppio.LiteralPPIO;
 import org.geoserver.wps.ppio.ProcessParameterIO;
+import org.geoserver.wps.ppio.RawDataPPIO;
 import org.geoserver.wps.ppio.XMLPPIO;
 import org.geoserver.wps.process.GeoServerProcessors;
+import org.geoserver.wps.process.RawData;
 import org.geoserver.wps.resource.GridCoverageResource;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.data.Parameter;
@@ -293,7 +296,12 @@ public class ExecuteResponseBuilder {
                 kvp.put("request", "GetExecutionResult");
                 kvp.put("executionId", executionId);
                 kvp.put("outputId", file.getName());
-                kvp.put("mimetype", cppio.getMimeType());
+                if(o instanceof RawData) {
+                	RawData rawData = (RawData) o;
+                	kvp.put("mimetype", rawData.getMimeType());
+                } else {
+                	kvp.put("mimetype", cppio.getMimeType());
+                }
                 outputReference.setHref(ResponseUtils.buildURL(request.getBaseUrl(), "ows", kvp, URLType.SERVICE));
                 outputReference.setMimeType(cppio.getMimeType());
             } else {
@@ -316,12 +324,18 @@ public class ExecuteResponseBuilder {
                     ComplexPPIO cppio = (ComplexPPIO) ppio;
                     complex.setMimeType(cppio.getMimeType());
 
-                    if (cppio instanceof XMLPPIO) {
+                    if (cppio instanceof RawDataPPIO) {
+                        RawData rawData = (RawData) o;
+                        complex.setMimeType(rawData.getMimeType());
+                        complex.setEncoding("base64");
+                        complex.getData().add(new RawDataEncoderDelegate(rawData));
+                    } else if (cppio instanceof XMLPPIO) {
                         // encode directly
                         complex.getData().add(new XMLEncoderDelegate((XMLPPIO) cppio, o));
                     } else if (cppio instanceof CDataPPIO) {
                         complex.getData().add(new CDataEncoderDelegate((CDataPPIO) cppio, o));
                     } else if (cppio instanceof BinaryPPIO) {
+                        complex.setEncoding("base64");
                         complex.getData().add(new BinaryEncoderDelegate((BinaryPPIO) cppio, o));
                     } else {
                         throw new WPSException("Don't know how to encode an output whose PPIO is "

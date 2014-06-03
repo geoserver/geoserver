@@ -5,6 +5,7 @@
 package org.geoserver.wps;
 
 import java.math.BigInteger;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -40,6 +41,8 @@ import org.geoserver.wps.ppio.BoundingBoxPPIO;
 import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geoserver.wps.ppio.LiteralPPIO;
 import org.geoserver.wps.ppio.ProcessParameterIO;
+import org.geoserver.wps.ppio.RawDataPPIO;
+import org.geoserver.wps.process.AbstractRawData;
 import org.geoserver.wps.process.GeoServerProcessors;
 import org.geotools.data.Parameter;
 import org.geotools.process.ProcessFactory;
@@ -132,7 +135,14 @@ public class DescribeProcess {
      }
     
     void dataInputs( DataInputsType inputs, ProcessFactory pf, Name name) {
+        Collection<String> outputMimeParameters = AbstractRawData.getOutputMimeParameters(name, pf)
+                .values();
         for(Parameter<?> p : pf.getParameterInfo(name).values()) {
+            // skip the output mime choice params, they will be filled automatically by WPS
+            if (outputMimeParameters.contains(p.key)) {
+                continue;
+            }
+
             InputDescriptionType input = wpsf.createInputDescriptionType();
             inputs.getInput().add( input );
             
@@ -199,11 +209,26 @@ public class DescribeProcess {
                 for ( ProcessParameterIO ppio : ppios ) {
                     ComplexPPIO cppio = (ComplexPPIO) ppio;
 
-                    ComplexDataDescriptionType format = wpsf.createComplexDataDescriptionType();
-                    format.setMimeType( cppio.getMimeType() );
+                    ComplexDataDescriptionType format = null;
+
+                    if (ppio instanceof RawDataPPIO) {
+                        String[] mimeTypes = AbstractRawData.getMimeTypes(p);
+                        for (String mimeType : mimeTypes) {
+                            ComplexDataDescriptionType ddt = wpsf
+                                    .createComplexDataDescriptionType();
+                            ddt.setMimeType(mimeType);
+                            complex.getSupported().getFormat().add(ddt);
+                            if (format == null) {
+                                format = ddt;
+                            }
+                        }
+                    } else {
+                        format = wpsf.createComplexDataDescriptionType();
+                        format.setMimeType(cppio.getMimeType());
+                        // add to supported
+                        complex.getSupported().getFormat().add(format);
+                    }
                     
-                    //add to supported
-                    complex.getSupported().getFormat().add( format );
                     
                     //handle the default    
                     if ( complex.getDefault() == null ) {
@@ -283,11 +308,25 @@ public class DescribeProcess {
                 for ( ProcessParameterIO ppio : ppios ) {
                     ComplexPPIO cppio = (ComplexPPIO) ppio;
 
-                    ComplexDataDescriptionType format = wpsf.createComplexDataDescriptionType();
-                    format.setMimeType( cppio.getMimeType() );
-                    
-                    //add to supported
-                    complex.getSupported().getFormat().add( format );
+                    ComplexDataDescriptionType format = null;
+
+                    if (ppio instanceof RawDataPPIO) {
+                        String[] mimeTypes = AbstractRawData.getMimeTypes(p);
+                        for (String mimeType : mimeTypes) {
+                            ComplexDataDescriptionType ddt = wpsf
+                                    .createComplexDataDescriptionType();
+                            ddt.setMimeType(mimeType);
+                            complex.getSupported().getFormat().add(ddt);
+                            if (format == null) {
+                                format = ddt;
+                            }
+                        }
+                    } else {
+                        format = wpsf.createComplexDataDescriptionType();
+                        format.setMimeType(cppio.getMimeType());
+                        // add to supported
+                        complex.getSupported().getFormat().add(format);
+                    }
                     
                     //handle the default    
                     if ( complex.getDefault() == null ) {

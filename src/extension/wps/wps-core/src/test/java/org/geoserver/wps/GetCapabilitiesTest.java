@@ -27,7 +27,7 @@ public class GetCapabilitiesTest extends WPSTestSupport {
     public void testGetBasicWorkspaceQualified() throws Exception {
         // this one did not report the workspace specific urls
         Document d = getAsDOM(MockData.CITE_PREFIX + "/ows?service=wps&request=getcapabilities");
-        print(d);
+        // print(d);
 
         basicCapabilitiesTest(d, MockData.CITE_PREFIX);
 

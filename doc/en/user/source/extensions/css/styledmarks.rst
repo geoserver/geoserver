@@ -1,5 +1,9 @@
-Styled Marks in CSS
-===================
+.. _extensions_css_styledmarks:
+
+Styled marks
+============
+
+.. highlight:: css
 
 GeoServer's CSS module provides a collection of predefined symbols that you can
 use and combine to create simple marks, strokes, and fill patterns without
@@ -11,10 +15,10 @@ to create a simple 'dot' marker for a point layer::
       mark: symbol(circle);
     }
 
-Symbols work anywhere you can use a ``url()`` to reference an image (ie, you
+Symbols work anywhere you can use a ``url()`` to reference an image (as in, you
 can use symbols for stroke and fill patterns as well as markers.)
 
-Symbol Names
+Symbol names
 ------------
 
 GeoServer extensions can add extra symbols (such as the ``chart://`` symbol
@@ -35,7 +39,7 @@ the Google Charts API).  However, there are a few symbols that are always availa
    * shape://plus
    * shape://times
 
-Symbol Selectors
+Symbol selectors
 ----------------
 
 Symbols offer some additional styling options beyond those offered for image
@@ -63,7 +67,7 @@ used to style selectors:
       the nth stacked symbol on a feature, regardless of which context it is
       used in.
 
-Symbol Styling Properties
+Symbol styling properties
 -------------------------
 
 Styling a built-in symbol is similar to styling a polygon feature. However, the
@@ -83,7 +87,7 @@ feature:
     The various prefixed '-size' and '-rotation' properties on the
     containing style override those for the symbol if they are present.
 
-Example Styled Symbol
+Example styled symbol
 ---------------------
 
 As an example, consider a situation where you are styling a layer that includes data about hospitals in your town.  You can create a simple hospital logo by placing a red cross symbol on top of a white circle background::

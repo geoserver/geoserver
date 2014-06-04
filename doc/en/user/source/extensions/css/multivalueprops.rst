@@ -1,7 +1,9 @@
-.. highlight:: css
+.. _extensions_css_multivalueprops:
 
-Multi-Valued Properties
+Multi-valued properties
 =======================
+
+.. highlight:: css
 
 When rendering maps, it is sometimes useful to draw the same feature multiple
 times.  For example, you might want to stroke a roads layer with a thick line

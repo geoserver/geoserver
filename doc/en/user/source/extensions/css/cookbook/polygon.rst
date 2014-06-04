@@ -1,16 +1,16 @@
-.. _css_cookbook_polygons:
+.. _extensions_css_cookbook_polygons:
 
 Polygons
 ========
 
 Polygons are two dimensional shapes that contain both an outer edge (or "stroke") and an inside (or "fill").  A polygon can be thought of as an irregularly-shaped point and is styled in similar ways to points.
 
-.. _css_cookbook_polygons_attributes:
+.. _extensions_css_cookbook_polygons_attributes:
 
 Example polygons layer
 ----------------------
 
-The :download:`polygons layer <../../styling/sld-cookbook/artifacts/sld_cookbook_polygon.zip>` used below contains county information for a fictional country. For reference, the attribute table for the polygons is included below.
+The :download:`polygons layer <../../../styling/sld-cookbook/artifacts/sld_cookbook_polygon.zip>` used below contains county information for a fictional country. For reference, the attribute table for the polygons is included below.
 
 .. list-table::
    :widths: 30 40 30
@@ -43,17 +43,17 @@ The :download:`polygons layer <../../styling/sld-cookbook/artifacts/sld_cookbook
      - Rhombus County
      - 198029
 
-:download:`Download the polygons shapefile <../../styling/sld-cookbook/artifacts/sld_cookbook_polygon.zip>`
+:download:`Download the polygons shapefile <../../../styling/sld-cookbook/artifacts/sld_cookbook_polygon.zip>`
 
 
-.. _css_cookbook_polygons_simplepolygon:
+.. _extensions_css_cookbook_polygons_simplepolygon:
 
 Simple polygon
 --------------
 
 This example shows a polygon filled in blue.
 
-.. figure:: ../../styling/sld-cookbook/images/polygon_simplepolygon.png
+.. figure:: ../../../styling/sld-cookbook/images/polygon_simplepolygon.png
    :align: center
 
    *Simple polygon*
@@ -76,14 +76,14 @@ This simple rule applies a dark blue (``#000080``) fill to all the polygons in t
 
 .. note::  The light-colored borders around the polygons in the figure are artifacts of the renderer caused by the polygons being adjacent. There is no border in this style.
 
-.. _css_cookbook_polygons_simplepolygonwithstroke:
+.. _extensions_css_cookbook_polygons_simplepolygonwithstroke:
 
 Simple polygon with stroke
 --------------------------
 
-This example adds a 2 pixel white stroke to the :ref:`css_cookbook_polygons_simplepolygon` example.
+This example adds a 2 pixel white stroke to the :ref:`extensions_css_cookbook_polygons_simplepolygon` example.
 
-.. figure:: ../../styling/sld-cookbook/images/polygon_simplepolygonwithstroke.png
+.. figure:: ../../../styling/sld-cookbook/images/polygon_simplepolygonwithstroke.png
    :align: center
 
    *Simple polygon with stroke*
@@ -104,14 +104,14 @@ Code
 Details
 ~~~~~~~
 
-This example is similar to the :ref:`css_cookbook_polygons_simplepolygon` example above, with the addition of the "stroke" and "stroke-width" attributes, that add a white, 2 pixels wide border around each polygon. 
+This example is similar to the :ref:`extensions_css_cookbook_polygons_simplepolygon` example above, with the addition of the "stroke" and "stroke-width" attributes, that add a white, 2 pixels wide border around each polygon. 
 
 Transparent polygon
 -------------------
 
-This example builds on the :ref:`css_cookbook_polygons_simplepolygonwithstroke` example and makes the fill partially transparent by setting the opacity to 50%.
+This example builds on the :ref:`extensions_css_cookbook_polygons_simplepolygonwithstroke` example and makes the fill partially transparent by setting the opacity to 50%.
 
-.. figure:: ../../styling/sld-cookbook/images/polygon_transparentpolygon.png
+.. figure:: ../../../styling/sld-cookbook/images/polygon_transparentpolygon.png
    :align: center
 
    *Transparent polygon*
@@ -133,16 +133,16 @@ Code
 Details
 ~~~~~~~
 
-This example is similar to the :ref:`css_cookbook_polygons_simplepolygonwithstroke` example, save for defining the fill's opacity in **line 3**. The value of 0.5 results in partially transparent fill that is 50% opaque.  An opacity value of 1 would draw the fill as 100% opaque, while an opacity value of 0 would result in a completely transparent (0% opaque) fill.  In this example, since the background is white, the dark blue looks lighter.  Were the points imposed on a dark background, the resulting color would be darker.
+This example is similar to the :ref:`extensions_css_cookbook_polygons_simplepolygonwithstroke` example, save for defining the fill's opacity in **line 3**. The value of 0.5 results in partially transparent fill that is 50% opaque.  An opacity value of 1 would draw the fill as 100% opaque, while an opacity value of 0 would result in a completely transparent (0% opaque) fill.  In this example, since the background is white, the dark blue looks lighter.  Were the points imposed on a dark background, the resulting color would be darker.
 
-.. _css_cookbook_polygons_graphicfill:
+.. _extensions_css_cookbook_polygons_graphicfill:
 
 Graphic fill
 ------------
 
 This example fills the polygons with a tiled graphic.
 
-.. figure:: ../../styling/sld-cookbook/images/polygon_graphicfill.png
+.. figure:: ../../../styling/sld-cookbook/images/polygon_graphicfill.png
    :align: center
 
    *Graphic fill*
@@ -166,7 +166,7 @@ This style fills the polygon with a tiled graphic.
 The graphic is selected providing a url for the fill, which in this case is meant to the relative to the ``styles`` directory contained within the data directory (an absolute path could have been provided, as well as a internet reference). **Line 3** specifies that the image itself is a png (by default the code assumes jpegs are used and will fail to parse the file unless we specify its mime type).
 The size of the image is not specified, meaning the native size is going to be used. In case a rescale is desired, the "fill-size" attribute can be used to force a different size.
 
-.. figure:: ../../styling/sld-cookbook/images/colorblocks.png
+.. figure:: ../../../styling/sld-cookbook/images/colorblocks.png
    :align: center
 
    *Graphic used for fill*
@@ -177,7 +177,7 @@ Hatching fill
 
 This example fills the polygons with a hatching pattern.
 
-.. figure:: ../../styling/sld-cookbook/images/polygon_hatchingfill.png
+.. figure:: ../../../styling/sld-cookbook/images/polygon_hatchingfill.png
    :align: center
 
    *Hatching fill*
@@ -207,14 +207,14 @@ In this example the fill is specified to be the "shape://times" symbol, which is
 
 The details of the hatch are specified at **line 5***, where the pseudo-selector ":nth-fill(1)" is used to match the contents of the first fill, and specify that we want a symbol large 16 pixels (the larger the symbol, the coarser the cross hatch will be), and painted with a 1 pixel wide purple stroke.
 
-.. _css_cookbook_polygons_polygonwithdefaultlabel:
+.. _extensions_css_cookbook_polygons_polygonwithdefaultlabel:
 
 Polygon with default label
 --------------------------
 
 This example shows a text label on the polygon.  In the absence of any other customization, this is how a label will be displayed.
 
-.. figure:: ../../styling/sld-cookbook/images/polygon_polygonwithdefaultlabel.png
+.. figure:: ../../../styling/sld-cookbook/images/polygon_polygonwithdefaultlabel.png
    :align: center
 
    *Polygon with default label*
@@ -245,9 +245,9 @@ The single rule in the CSS applies to all feature: first it fills all polygons a
 Label halo
 ----------
 
-This example alters the look of the :ref:`css_cookbook_polygons_polygonwithdefaultlabel` by adding a white halo to the label.
+This example alters the look of the :ref:`extensions_css_cookbook_polygons_polygonwithdefaultlabel` by adding a white halo to the label.
 
-.. figure:: ../../styling/sld-cookbook/images/polygon_labelhalo.png
+.. figure:: ../../../styling/sld-cookbook/images/polygon_labelhalo.png
    :align: center
 
    *Label halo*
@@ -272,16 +272,16 @@ Code
 Details
 ~~~~~~~
 
-This example builds on :ref:`css_cookbook_polygons_polygonwithdefaultlabel`, with the addition of a halo around the labels on **lines 7-8**.  A halo creates a color buffer around the label to improve label legibility.  **Line 9** sets the radius of the halo, extending the halo 3 pixels around the edge of the label, and **line 8** sets the color of the halo to white. Since halos are most useful when set to a sharp contrast relative to the text color, this example uses a white halo around black text to ensure optimum readability.
+This example builds on :ref:`extensions_css_cookbook_polygons_polygonwithdefaultlabel`, with the addition of a halo around the labels on **lines 7-8**.  A halo creates a color buffer around the label to improve label legibility.  **Line 9** sets the radius of the halo, extending the halo 3 pixels around the edge of the label, and **line 8** sets the color of the halo to white. Since halos are most useful when set to a sharp contrast relative to the text color, this example uses a white halo around black text to ensure optimum readability.
 
-.. _css_cookbook_polygons_polygonwithstyledlabel:
+.. _extensions_css_cookbook_polygons_polygonwithstyledlabel:
 
 Polygon with styled label
 -------------------------
 
-This example improves the label style from the :ref:`css_cookbook_polygons_polygonwithdefaultlabel` example by centering the label on the polygon, specifying a different font name and size, and setting additional label placement optimizations.
+This example improves the label style from the :ref:`extensions_css_cookbook_polygons_polygonwithdefaultlabel` example by centering the label on the polygon, specifying a different font name and size, and setting additional label placement optimizations.
 
-.. figure:: ../../styling/sld-cookbook/images/polygon_polygonwithstyledlabel.png
+.. figure:: ../../../styling/sld-cookbook/images/polygon_polygonwithstyledlabel.png
    :align: center
 
    *Polygon with styled label*
@@ -311,7 +311,7 @@ Code
 Details
 ~~~~~~~
 
-This example is similar to the :ref:`css_cookbook_polygons_polygonwithdefaultlabel` example, with additional styling options for the labels.
+This example is similar to the :ref:`extensions_css_cookbook_polygons_polygonwithdefaultlabel` example, with additional styling options for the labels.
 
 The font is setup to be Arial, 11 pixels, "normal" (as opposed to "italic") and bold.
 
@@ -326,7 +326,7 @@ Attribute-based polygon
 
 This example styles the polygons differently based on the "pop" (Population) attribute.
 
-.. figure:: ../../styling/sld-cookbook/images/polygon_attributebasedpolygon.png
+.. figure:: ../../../styling/sld-cookbook/images/polygon_attributebasedpolygon.png
    :align: center
 
    *Attribute-based polygon*
@@ -353,7 +353,7 @@ Code
 Details
 ~~~~~~~
 
-.. note:: Refer to the :ref:`css_cookbook_polygons_attributes` to see the attributes for the layer.  This example has eschewed labels in order to simplify the style, but you can refer to the example :ref:`css_cookbook_polygons_polygonwithstyledlabel` to see which attributes correspond to which polygons.
+.. note:: Refer to the :ref:`extensions_css_cookbook_polygons_attributes` to see the attributes for the layer.  This example has eschewed labels in order to simplify the style, but you can refer to the example :ref:`extensions_css_cookbook_polygons_polygonwithstyledlabel` to see which attributes correspond to which polygons.
 
 Each polygon in our fictional country has a population that is represented by the population ("pop") attribute. This style contains three rules that alter the fill based on the value of "pop" attribute, with smaller values yielding a lighter color and larger values yielding a darker color.
 
@@ -391,17 +391,17 @@ Zoom-based polygon
 This example alters the style of the polygon at different zoom levels.
 
 
-.. figure:: ../../styling/sld-cookbook/images/polygon_zoombasedpolygonlarge.png
+.. figure:: ../../../styling/sld-cookbook/images/polygon_zoombasedpolygonlarge.png
    :align: center
 
    *Zoom-based polygon: Zoomed in*
 
-.. figure:: ../../styling/sld-cookbook/images/polygon_zoombasedpolygonmedium.png
+.. figure:: ../../../styling/sld-cookbook/images/polygon_zoombasedpolygonmedium.png
    :align: center
 
    *Zoom-based polygon: Partially zoomed*
 
-.. figure:: ../../styling/sld-cookbook/images/polygon_zoombasedpolygonsmall.png
+.. figure:: ../../../styling/sld-cookbook/images/polygon_zoombasedpolygonsmall.png
    :align: center
 
    *Zoom-based polygon: Zoomed out*

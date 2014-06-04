@@ -1,22 +1,22 @@
-Installing the CSS Module
-=========================
+.. _extensions_css_install:
+
+Installation
+============
 
 The CSS extension is listed among the other extension downloads on the GeoServer download page.
-Please ensure that you download a version of the extension that corresponds to the version of GeoServer that you use.
 
-The installation process is similar to other GeoServer plugins:
+The installation process is similar to other GeoServer extensions:
 
-1. Download the ZIP archive.
-   Please verify that the version number in the filename corresponds to the one reported in GeoServer's admin UI.
-2. Extract the contents of the ZIP archive into the :file:`/WEB-INF/lib/` direcotry in the GeoServer webapp.
-   For example, if you have installed the GeoServer binary to :file:`/opt/geoserver-2.4.0/`, you should place the CSS extension's JAR files in :file:`/opt/geoserver-2.4.0/webapps/geoserver/WEB-INF/lib/`.
-3. After extracting the extension, restart GeoServer in order for the changes to take effect.
-   All further configuration can be done through the GeoServer web UI.
+#. Download the appropriate archive from the GeoServer download page. Please verify that the version number in the filename corresponds to the version of GeoServer you are running. The file will be called :file:`geoserver-A.B.C-css-plugin.zip` where ``A.B.C`` is the GeoServer version.
 
-After installation, you may find the following useful to get you started - :doc:`/extensions/css/tutorial`.
+#. Extract the contents of the archive into the :file:`WEB-INF/lib` directory in GeoServer. Make sure you do not create any sub-directories during the extraction process.
 
-Nightly builds
---------------
+#. Restart GeoServer.
 
-For those interested in trying out new features and other experimental changes, nightly builds are available from the GeoServer continuous integration system at http://ares.boundlessgeo.com/geoserver/ .
-After downloading the ZIP archive, the steps to install are the same as above.
+If installation was successful, you will see a CSS entry in the :ref:`web_admin`. 
+
+.. figure:: images/csslink.png
+
+   CSS link in the web admin interface
+
+After installation, you may wish to read the tutorial: :ref:`Styling data with CSS <extensions_css_tutorial>`.

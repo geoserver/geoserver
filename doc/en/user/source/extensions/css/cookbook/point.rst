@@ -1,16 +1,16 @@
-.. _css_cookbook_points:
+.. _extensions_css_cookbook_points:
 
 Points
 ======
 
 While points are seemingly the simplest type of shape, possessing only position and no other dimensions, there are many different ways that a point can be styled in CSS.
 
-.. _css_cookbook_points_attributes:
+.. _extensions_css_cookbook_points_attributes:
 
 Example points layer
 --------------------
 
-The :download:`points layer <../../styling/sld-cookbook/artifacts/sld_cookbook_point.zip>` used for the examples below contains name and population information for the major cities of a fictional country. For reference, the attribute table for the points in this layer is included below.
+The :download:`points layer <../../../styling/sld-cookbook/artifacts/sld_cookbook_point.zip>` used for the examples below contains name and population information for the major cities of a fictional country. For reference, the attribute table for the points in this layer is included below.
 
 .. list-table::
    :widths: 30 40 30
@@ -40,16 +40,16 @@ The :download:`points layer <../../styling/sld-cookbook/artifacts/sld_cookbook_p
      - Detrania
      - 205609
 
-:download:`Download the points shapefile <../../styling/sld-cookbook/artifacts/sld_cookbook_point.zip>`
+:download:`Download the points shapefile <../../../styling/sld-cookbook/artifacts/sld_cookbook_point.zip>`
 
-.. _css_cookbook_points_simplepoint:
+.. _extensions_css_cookbook_points_simplepoint:
 
 Simple point
 ------------
 
 This example specifies points be styled as red circles with a diameter of 6 pixels.
 
-.. figure:: ../../styling/sld-cookbook/images/point_simplepoint.png
+.. figure:: ../../../styling/sld-cookbook/images/point_simplepoint.png
    :align: center
 
    *Simple point*
@@ -75,14 +75,14 @@ Details
 
 There are two rules in this CSS, the first one (**lines 1-4**) matches all features, and asks them to be depicted with a circular mark, 6 pixels wide. The second rule uses a symbol selector, ``:mark``, which selects all marks in the previous rules, and allows to specify how to fill the contents of the circle, in this case, with a solid red fill (a stand alone fill property would have been interpreted as the request to fill all polygons in the input with solid red instead).
 
-.. _css_cookbook_points_simplepointwithstroke:
+.. _extensions_css_cookbook_points_simplepointwithstroke:
 
 Simple point with stroke
 ------------------------
 
-This example adds a stroke (or border) around the :ref:`css_cookbook_points_simplepoint`, with the stroke colored black and given a thickness of 2 pixels.
+This example adds a stroke (or border) around the :ref:`extensions_css_cookbook_points_simplepoint`, with the stroke colored black and given a thickness of 2 pixels.
 
-.. figure:: ../../styling/sld-cookbook/images/point_simplepointwithstroke.png
+.. figure:: ../../../styling/sld-cookbook/images/point_simplepointwithstroke.png
    :align: center
 
    *Simple point with stroke*
@@ -107,7 +107,7 @@ Code
 Details
 ~~~~~~~
 
-This example is similar to the :ref:`css_cookbook_points_simplepoint` example, in this case a stroke and a stroke width have been specified in the mark selector in order to apply them to the circle symbols.
+This example is similar to the :ref:`extensions_css_cookbook_points_simplepoint` example, in this case a stroke and a stroke width have been specified in the mark selector in order to apply them to the circle symbols.
 
 
 Rotated square
@@ -115,7 +115,7 @@ Rotated square
 
 This example creates a square instead of a circle, colors it green, sizes it to 12 pixels, and rotates it by 45 degrees.
 
-.. figure:: ../../styling/sld-cookbook/images/point_rotatedsquare.png
+.. figure:: ../../../styling/sld-cookbook/images/point_rotatedsquare.png
    :align: center
 
    *Rotated square*
@@ -146,9 +146,9 @@ In this example, **line 2** sets the shape to be a square, with **line 8** setti
 Transparent triangle
 --------------------
 
-This example draws a triangle, creates a black stroke identical to the :ref:`css_cookbook_points_simplepointwithstroke` example, and sets the fill of the triangle to 20% opacity (mostly transparent).
+This example draws a triangle, creates a black stroke identical to the :ref:`extensions_css_cookbook_points_simplepointwithstroke` example, and sets the fill of the triangle to 20% opacity (mostly transparent).
 
-.. figure:: ../../styling/sld-cookbook/images/point_transparenttriangle.png
+.. figure:: ../../../styling/sld-cookbook/images/point_transparenttriangle.png
    :align: center
 
    *Transparent triangle*
@@ -181,7 +181,7 @@ Point as graphic
 
 This example styles each point as a graphic instead of as a simple shape.
 
-.. figure:: ../../styling/sld-cookbook/images/point_pointasgraphic.png
+.. figure:: ../../../styling/sld-cookbook/images/point_pointasgraphic.png
    :align: center
 
    *Point as graphic*
@@ -202,19 +202,19 @@ Details
 
 This style uses a graphic instead of a simple shape to render the points.  **Line 2** sets the path and file name of the graphic, while **line 3** indicates the format (MIME type) of the graphic (image/png). In this example, the graphic is contained in the same directory as the SLD, so no path information is necessary,  although a full URL could be used if desired. 
 
-.. figure:: ../../styling/sld-cookbook/images/smileyface.png
+.. figure:: ../../../styling/sld-cookbook/images/smileyface.png
    :align: center
 
    *Graphic used for points*
 
-.. _css_cookbook_points_pointwithdefaultlabel:
+.. _extensions_css_cookbook_points_pointwithdefaultlabel:
 
 Point with default label
 ------------------------
 
-This example shows a text label on the :ref:`css_cookbook_points_simplepoint` that displays the "name" attribute of the point. This is how a label will be displayed in the absence of any other customization.
+This example shows a text label on the :ref:`extensions_css_cookbook_points_simplepoint` that displays the "name" attribute of the point. This is how a label will be displayed in the absence of any other customization.
 
-.. figure:: ../../styling/sld-cookbook/images/point_pointwithdefaultlabel.png
+.. figure:: ../../../styling/sld-cookbook/images/point_pointwithdefaultlabel.png
    :align: center
 
    *Point with default label*
@@ -240,17 +240,17 @@ Code
 Details
 ~~~~~~~
 
-This style is quite similar to the :ref:`css_cookbook_points_simplepoint`, but two new properties have been added to specify the labelling options. **Line 4** indicates that the label contents come from the "name" attribute (anything in square brackets is a CQL expression, the attribute name being the simplest case) while **Line 5** sets the label color to black.
+This style is quite similar to the :ref:`extensions_css_cookbook_points_simplepoint`, but two new properties have been added to specify the labelling options. **Line 4** indicates that the label contents come from the "name" attribute (anything in square brackets is a CQL expression, the attribute name being the simplest case) while **Line 5** sets the label color to black.
 
 
-.. _css_cookbook_points_pointwithstyledlabel:
+.. _extensions_css_cookbook_points_pointwithstyledlabel:
 
 Point with styled label
 -----------------------
 
-This example improves the label style from the :ref:`css_cookbook_points_pointwithdefaultlabel` example by centering the label above the point and providing a different font name and size.
+This example improves the label style from the :ref:`extensions_css_cookbook_points_pointwithdefaultlabel` example by centering the label above the point and providing a different font name and size.
 
-.. figure:: ../../styling/sld-cookbook/images/point_pointwithstyledlabel.png
+.. figure:: ../../../styling/sld-cookbook/images/point_pointwithstyledlabel.png
    :align: center
 
    *Point with styled label*
@@ -281,7 +281,7 @@ Code
 Details
 ~~~~~~~
 
-This example expands on :ref:`css_cookbook_points_pointwithdefaultlabel` and specifies the font attributes, in particular, the text is Aria, bold, 12px wide. Moreover, the label is moved on top of the point, by specifying an anchor of ``0.5 0``, which sets the point to be centered (0.5) horizontally axis and bottom aligned (0.0) vertically with the label, and an offset which moves the label 5 pixels up vertically.
+This example expands on :ref:`extensions_css_cookbook_points_pointwithdefaultlabel` and specifies the font attributes, in particular, the text is Aria, bold, 12px wide. Moreover, the label is moved on top of the point, by specifying an anchor of ``0.5 0``, which sets the point to be centered (0.5) horizontally axis and bottom aligned (0.0) vertically with the label, and an offset which moves the label 5 pixels up vertically.
 
 The result is a centered bold label placed slightly above each point.
 
@@ -289,9 +289,9 @@ The result is a centered bold label placed slightly above each point.
 Point with rotated label
 ------------------------
 
-This example builds on the previous example, :ref:`css_cookbook_points_pointwithstyledlabel`, by rotating the label by 45 degrees, positioning the labels farther away from the points, and changing the color of the label to purple.
+This example builds on the previous example, :ref:`extensions_css_cookbook_points_pointwithstyledlabel`, by rotating the label by 45 degrees, positioning the labels farther away from the points, and changing the color of the label to purple.
 
-.. figure:: ../../styling/sld-cookbook/images/point_pointwithrotatedlabel.png
+.. figure:: ../../../styling/sld-cookbook/images/point_pointwithrotatedlabel.png
    :align: center
 
    *Point with rotated label*
@@ -322,7 +322,7 @@ Code
 Details
 ~~~~~~~
 
-This example is similar to the :ref:`css_cookbook_points_pointwithstyledlabel`, but there are three important differences.  **Line ** specifies 25 pixels of vertical displacement.  **Line 11** specifies a rotation of "-45" or 45 degrees counter-clockwise.  (Rotation values increase clockwise, which is why the value is negative.)  Finally, **line 5** sets the font color to be a shade of purple (``#99099``).
+This example is similar to the :ref:`extensions_css_cookbook_points_pointwithstyledlabel`, but there are three important differences.  **Line ** specifies 25 pixels of vertical displacement.  **Line 11** specifies a rotation of "-45" or 45 degrees counter-clockwise.  (Rotation values increase clockwise, which is why the value is negative.)  Finally, **line 5** sets the font color to be a shade of purple (``#99099``).
 
 Note that the displacement takes effect before the rotation during rendering, so in this example, the 25 pixel vertical displacement is itself rotated 45 degrees.
 
@@ -332,7 +332,7 @@ Attribute-based point
 
 This example alters the size of the symbol based on the value of the population ("pop") attribute.  
 
-.. figure:: ../../styling/sld-cookbook/images/point_attributebasedpoint.png
+.. figure:: ../../../styling/sld-cookbook/images/point_attributebasedpoint.png
    :align: center
 
    *Attribute-based point*
@@ -366,7 +366,7 @@ Code
 Details
 ~~~~~~~
    
-.. note:: Refer to the :ref:`css_cookbook_points_attributes` to see the attributes for this data.  This example has eschewed labels in order to simplify the style, but you can refer to the example :ref:`css_cookbook_points_pointwithstyledlabel` to see which attributes correspond to which points.
+.. note:: Refer to the :ref:`extensions_css_cookbook_points_attributes` to see the attributes for this data.  This example has eschewed labels in order to simplify the style, but you can refer to the example :ref:`extensions_css_cookbook_points_pointwithstyledlabel` to see which attributes correspond to which points.
 
 This style shows how the basic mark setup (red circle, default size) can be overridden via cascading, changing the size depending on the pop attribute value, with smaller values yielding a smaller circle, and larger values yielding a larger circle.
 
@@ -400,17 +400,17 @@ Zoom-based point
 
 This example alters the style of the points at different zoom levels.
 
-.. figure:: ../../styling/sld-cookbook/images/point_zoombasedpointlarge.png
+.. figure:: ../../../styling/sld-cookbook/images/point_zoombasedpointlarge.png
    :align: center
 
    *Zoom-based point: Zoomed in*
 
-.. figure:: ../../styling/sld-cookbook/images/point_zoombasedpointmedium.png
+.. figure:: ../../../styling/sld-cookbook/images/point_zoombasedpointmedium.png
    :align: center
    
    *Zoom-based point: Partially zoomed*
 
-.. figure:: ../../styling/sld-cookbook/images/point_zoombasedpointsmall.png
+.. figure:: ../../../styling/sld-cookbook/images/point_zoombasedpointsmall.png
    :align: center
    
    *Zoom-based point: Zoomed out*

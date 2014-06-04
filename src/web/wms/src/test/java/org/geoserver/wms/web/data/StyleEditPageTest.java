@@ -54,7 +54,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
         
         tester.assertComponent("form:name", TextField.class);
-        tester.assertComponent("form:SLD:editorContainer:editor", TextArea.class);
+        tester.assertComponent("form:SLD:editorContainer:editorParent:editor", TextArea.class);
         
         tester.assertModelValue("form:name", "Buildings");
         

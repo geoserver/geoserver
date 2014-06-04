@@ -4,7 +4,8 @@
  */
 package org.geoserver.wms.web.data;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.FileReader;
 
@@ -34,7 +35,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
         
         tester.assertComponent("form:name", TextField.class);
-        tester.assertComponent("form:SLD:editorContainer:editor", TextArea.class);
+        tester.assertComponent("form:SLD:editorContainer:editorParent:editor", TextArea.class);
         tester.assertComponent("uploadForm:filename", FileUploadField.class);
         
         tester.assertModelValue("form:name", null);
@@ -83,7 +84,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         FormTester form = tester.newFormTester("form");
         File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
         String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
-        form.setValue("SLD:editorContainer:editor", sld);
+        form.setValue("SLD:editorContainer:editorParent:editor", sld);
         form.setValue("name", "test");
         form.submit();
         

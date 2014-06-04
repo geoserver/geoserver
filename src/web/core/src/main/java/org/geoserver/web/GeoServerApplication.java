@@ -59,6 +59,9 @@ public class GeoServerApplication extends SpringWebApplication {
      */
     public static Logger LOGGER = Logging.getLogger("org.geoserver.web");
 
+    public static boolean DETECT_BROWSER = Boolean.valueOf(System.getProperty(
+            "org.geoserver.web.browser.detect", "true"));
+
     /**
      * The {@link GeoServerHomePage}.
      */
@@ -188,7 +191,7 @@ public class GeoServerApplication extends SpringWebApplication {
         getSecuritySettings().setCryptFactory(GeoserverWicketEncrypterFactory.get());
 
         // figure out which browser we're running against
-        getRequestCycleSettings().setGatherExtendedBrowserInfo(true);
+        getRequestCycleSettings().setGatherExtendedBrowserInfo(DETECT_BROWSER);
     }
 
     @Override

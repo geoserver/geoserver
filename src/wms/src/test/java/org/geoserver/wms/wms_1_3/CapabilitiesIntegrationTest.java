@@ -171,6 +171,7 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
 
     @org.junit.Test 
     public void testLayerQualified() throws Exception {
+        // Qualify the request with a layer.  Other layers should not be included.
         Document dom = dom(get("cite/Forests/wms?request=getCapabilities&version=1.3.0"), true);
         Element e = dom.getDocumentElement();
         assertEquals("WMS_Capabilities", e.getLocalName());

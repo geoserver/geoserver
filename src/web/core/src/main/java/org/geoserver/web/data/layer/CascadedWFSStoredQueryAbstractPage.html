@@ -7,9 +7,7 @@
 
     <form wicket:id="form">
 
-    <div>
-        <wicket:message key="selectStoredQuery">Select Stored Query </wicket:message> <select wicket:id="storedQueriesDropDown"></select>
-    </div>
+    <div wicket:id="storedQueryName"></div>
     
     <div wicket:id="parameters"></div>
 
@@ -17,7 +15,12 @@
         key="save">Save</wicket:message></a> <a href="#" wicket:id="cancel"><wicket:message
         key="cancel">Cancel</wicket:message></a></div>
     </form>
- 
+
+<wicket:fragment wicket:id="newPage">
+  <wicket:message key="selectStoredQuery">Select Stored Query </wicket:message> <select wicket:id="storedQueriesDropDown"></select>
+</wicket:fragment>
+
+
 <wicket:fragment wicket:id="parameterMappingType">
   <select wicket:id="dropdown"></select>
 </wicket:fragment>   
@@ -25,7 +28,6 @@
 <wicket:fragment wicket:id="parameterMappingValue">
   <input type="text" wicket:id="text"></input>
 </wicket:fragment>   
-
 
 </wicket:extend>
 

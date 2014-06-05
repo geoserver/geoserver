@@ -60,11 +60,10 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
 
     public static final String WORKSPACE = "wsName";
 
-    DropDownChoice storedQueriesDropDown;
-    StoredQueryParameterAttributeProvider parameterProvider;
-    GeoServerTablePanel<StoredQueryParameterAttribute> parameters;
-    
     String storeId;
+    
+    GeoServerTablePanel<StoredQueryParameterAttribute> parameters;
+    StoredQueryParameterAttributeProvider parameterProvider;
 
     public CascadedWFSStoredQueryAbstractPage(PageParameters params) throws IOException {
         this(params.getString(WORKSPACE), params.getString(DATASTORE), null, null);
@@ -76,8 +75,7 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
                 .getId();
         Form form = new Form("form", new CompoundPropertyModel(this));
         
-        storedQueriesDropDown = storedQueriesDropDown();
-        form.add(storedQueriesDropDown);
+        form.add(getStoredQueryNameComponent());
 
         parameterProvider = new StoredQueryParameterAttributeProvider();
         
@@ -129,9 +127,7 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
         form.add(new SubmitLink("save") {
             @Override
             public void onSubmit() {
-                StoredQuery selection = (StoredQuery)storedQueriesDropDown.getDefaultModelObject();
-                StoredQueryConfiguration config = createStoredQueryConfiguration(parameterProvider.items);
-                onSave(selection.storedQueryId, config);
+                onSave();
             }
         });
         form.add(new Link("cancel") {
@@ -175,23 +171,6 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
         return ret;
     }
 
-    private DropDownChoice storedQueriesDropDown() {
-        final DropDownChoice dropdown = new DropDownChoice("storedQueriesDropDown", new Model(),
-                new StoredQueryListModel(), new StoredQueryListRenderer());
-        
-        dropdown.add(new AjaxFormComponentUpdatingBehavior("onchange") {
-            
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                StoredQuery selection = (StoredQuery)dropdown.getDefaultModelObject();
-                parameterProvider.refreshItems(selection);
-                target.addComponent(parameters);
-            }
-        });
-        
-        return dropdown;
-    }
-    
     protected List<StoredQueryListItemType> listStoredQueries()  {
         try {
             WFSContentDataStore contentStore = getContentDataStore();
@@ -234,57 +213,7 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
         return ret.toString();
     }
     
-    private class StoredQueryListModel extends LoadableDetachableModel<List<StoredQuery>> {
-        @Override
-        protected List<StoredQuery> load() {
-            List<StoredQuery> ret = new ArrayList<StoredQuery>();
-            
-            for (StoredQueryListItemType sqlit : listStoredQueries()) {
-                StoredQuery item = new StoredQuery();
-                item.setStoredQueryId(sqlit.getId());
-                item.setTitle(createStoredQueryTitle(sqlit));
-                
-                ret.add(item);
-            }
-            return ret;
-        }
-    }
-    
-    private class StoredQueryListRenderer implements IChoiceRenderer<StoredQuery> {
-        @Override
-        public Object getDisplayValue(StoredQuery object) {
-            return object.getTitle();
-        }
-        
-        @Override
-        public String getIdValue(StoredQuery object, int index) {
-            return object.getStoredQueryId();
-        }
-    }
-    
-    public static class StoredQuery implements Serializable {
-        private static final long serialVersionUID = 1L;
 
-        private String title;
-        private String storedQueryId;
-        
-        public void setStoredQueryId(String storedQueryId) {
-            this.storedQueryId = storedQueryId;
-        }
-        
-        public String getStoredQueryId() {
-            return storedQueryId;
-        }
-        
-        public void setTitle(String title) {
-            this.title = title;
-        }
-        
-        public String getTitle() {
-            return title;
-        }
-    }
-    
     public static class StoredQueryParameterAttribute implements Serializable {
         private String parameterName;
         private String title;
@@ -392,17 +321,18 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
         }
     }
     
+
     public class StoredQueryParameterAttributeProvider extends GeoServerDataProvider<StoredQueryParameterAttribute> {
         private List<StoredQueryParameterAttribute> items = new ArrayList<StoredQueryParameterAttribute>();
         
-        public void refreshItems(StoredQuery selection) {
+        public void refreshItems(String storedQueryId) {
             items.clear();
-            if (selection != null) {
+            if (storedQueryId != null) {
                 
                 StoredQueryDescriptionType desc;
                 try {
                     WFSContentDataStore contentStore = getContentDataStore();
-                    desc = contentStore.getStoredQueryDescriptionType(selection.getStoredQueryId());
+                    desc = contentStore.getStoredQueryDescriptionType(storedQueryId);
                 } catch(IOException ie) {
                     throw new RuntimeException("Unable to describe stored query", ie);
                 }
@@ -424,7 +354,9 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
         }
     }
     
-    protected abstract void onSave(String storedQueryId, StoredQueryConfiguration configuration);
+    protected abstract Component getStoredQueryNameComponent();
+    
+    protected abstract void onSave();
     
     protected abstract void onCancel();
 }

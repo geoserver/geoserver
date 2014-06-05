@@ -10,12 +10,16 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.Predicates;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.Wrapper;
 import org.geoserver.security.AbstractCatalogFilter;
+import org.geotools.filter.expression.InternalVolatileFunction;
 import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory;
+import org.opengis.filter.expression.Function;
 
 /**
  * Filters the resources that are not in the current workspace (used only if virtual services are
@@ -89,6 +93,30 @@ public class LocalWorkspaceCatalogFilter extends AbstractCatalogFilter {
         return hideWorkspace(layerGroup.getWorkspace());
     }
     
+    /**
+     * Returns true if the sublayers of a layer group are all hidden.
+     * @param layerGroup
+     * @return
+     */
+    protected boolean subLayersHidden(LayerGroupInfo layerGroup) {
+        boolean anySublayersVisible=false;
+        for(PublishedInfo subLayer: layerGroup.getLayers()) {
+            if(subLayer instanceof LayerInfo) {
+                if(!hideLayer((LayerInfo)subLayer)){
+                    anySublayersVisible=true;
+                    break;
+                };
+            } else if (subLayer instanceof LayerGroupInfo) {
+                if(!hideLayerGroup((LayerGroupInfo)subLayer)) {
+                    anySublayersVisible=true;
+                    break;
+                };
+            }
+        }
+        
+        return !anySublayersVisible;
+    }
+    
     private Filter inWorkspace() {
         WorkspaceInfo localWS = LocalWorkspace.get();
         if(localWS==null) return Predicates.acceptAll();
@@ -133,7 +161,28 @@ public class LocalWorkspaceCatalogFilter extends AbstractCatalogFilter {
             if(localWS==null) return Predicates.acceptAll();
             return Predicates.equal("id", localWS.getId());
         } else if(LayerGroupInfo.class.isAssignableFrom(clazz)) {
-            return standardFilter(clazz);
+            Filter filter = standardFilter(clazz);
+            
+            // TODO Need a well known recursive filter for layer groups instead of using an 
+            // InternalVolatileFunction, KS
+            Function subLayersHidden = new InternalVolatileFunction() {
+                @Override
+                public Boolean evaluate(Object object) {
+                    return !subLayersHidden((LayerGroupInfo) object);
+                }
+            };
+            FilterFactory factory = Predicates.factory;
+
+            // hide the layer if its sublayers are hidden
+            filter = Predicates.and(filter, 
+                    factory.equals(factory.literal(Boolean.TRUE), subLayersHidden));
+
+            // Only show a layer group in a layer local request if it is the local layer
+            if(localLayer!=null) {
+                filter = Predicates.and(filter,
+                        Predicates.equal("id", localLayer.getId()));
+            }
+            return filter;
         } else if(StyleInfo.class.isAssignableFrom(clazz)) {
             return standardFilter(clazz);
         } else if(LayerInfo.class.isAssignableFrom(clazz)) {

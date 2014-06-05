@@ -243,51 +243,60 @@ public class GeoServerDataDirectory implements ResourceStore {
      * <p>
      * This directory is called 'security', and is located directly under {@link #root()}
      * </p>
+     * @deprecated As of GeoServer 2.6, replaced by @link {@link #getSecurity()}
      */
+    @Deprecated
     public File findSecurityRoot() throws IOException {
-        Resource directory = get("security");
-        return Resources.directory(directory);
+        return Resources.directory(getSecurity());
     }
 
     /**
      * Returns the root of the directory which contains security configuration files, if the directory does exist it is created.
      * <p>
      * This directory is called 'security', and is located directly under {@link #root()}
-     * </p>
+     * 
+     * @deprecated As of GeoServer 2.6, replaced by @link {@link #getSecurity()}
      */
+    @Deprecated
     public File findOrCreateSecurityRoot() throws IOException {
-        Resource direcrtory = get("security");
-        return direcrtory.dir(); // will create directory as needed
+        return getSecurity().dir(); // will create directory as needed
     }
 
     /**
      * Access to security directory.
      * 
-     * @Unused
+     * @deprecated As of GeoServer 2.6, replaced by @link {@link #getSecurity()}
      */
+    @Deprecated
     private File securityRoot(boolean create) throws IOException {
-        Resource directory = get("security");
+        final Resource directory = getSecurity();
+        final File f;
         if (create) {
-            return directory.dir();
+            f = directory.dir();
         } else {
-            return Resources.directory(directory);
+            f = Resources.directory(directory);
         }
+        return f;
     }
 
     /**
      * Returns a directory under the {@link #securityRoot()} directory, if the directory does not exist null will be returned.
+     *
+     * @deprecated As of GeoServer 2.6, replaced by @link {@link #getSecurity()}
      */
+    @Deprecated
     public File findSecurityDir(String... location) throws IOException {
-        Resource resource = get(Paths.path("security", Paths.path(location)));
-        return Resources.directory(resource);
+        return Resources.directory(getSecurity(location));
     }
 
     /**
      * Returns a directory under the {@link #securityRoot()} directory, if the directory does not exist it will be created.
+     *
+     * @deprecated As of GeoServer 2.6, replaced by @link {@link #getSecurity()}
      */
+    @Deprecated
     public File findOrCreateSecurityDir(String... location) throws IOException {
-        Resource resource = get(Paths.path("security", Paths.path(location)));
-        return resource.dir();
+        return getSecurity(location).dir();
     }
 
     /**
@@ -295,10 +304,11 @@ public class GeoServerDataDirectory implements ResourceStore {
      * <p>
      * If the security configuration directory does exist it will be created.
      * </p>
-     */
+      * @deprecated As of GeoServer 2.6, replaced by @link {@link #getSecurity()}
+    */
     @Deprecated
     public void copyToSecurityDir(File f) throws IOException {
-        Resource resource = get("security");
+        Resource resource = getSecurity();
         Resources.copy(f, resource);
     }
 
@@ -307,10 +317,11 @@ public class GeoServerDataDirectory implements ResourceStore {
      * <p>
      * If the security configuration directory does exist it will be created
      * </p>
+     * @deprecated As of GeoServer 2.6, replaced by @link {@link #getSecurity()}
      */
     @Deprecated
     public void copyToSecurityDir(InputStream data, String filename) throws IOException {
-        Resource resource = get("security");
+        Resource resource = getSecurity();
         Resources.copy(data, resource, filename);
     }
 
@@ -786,15 +797,27 @@ public class GeoServerDataDirectory implements ResourceStore {
     static final String WORKSPACE_DIR = "workspaces";
     static final String LAYERGROUP_DIR = "layergroups";
     static final String STYLE_DIR = "styles";
+    static final String SECURITY_DIR = "security";
 
     
     /**
-     * Retrieve a resource relative tot he root of the data directory. An empty path will retrieve
+     * Retrieve a resource relative to the root of the data directory. An empty path will retrieve
      * the directory itself.
      * @return A {@link Resource}
      */
     public @Nonnull Resource getRoot(String... path) {
         Resource r = get(Paths.path(path));
+        assert r!=null;
+        return r;
+    }
+
+    /**
+     * Retrieve a resource in the the security directory. An empty path will retrieve
+     * the directory itself.
+     * @return A {@link Resource}
+     */
+    public @Nonnull Resource getSecurity(String... path) {
+        Resource r = get(  Paths.path( SECURITY_DIR, Paths.path(path)));
         assert r!=null;
         return r;
     }
@@ -1158,7 +1181,7 @@ public class GeoServerDataDirectory implements ResourceStore {
     }
     
     /**
-     * Retrieve the style definition as a Resource
+     * Retrieve the style definition (SLD) as a Resource
      * @param c The style
      * @return A {@link Resource}
      */

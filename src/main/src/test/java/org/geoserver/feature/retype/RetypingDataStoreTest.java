@@ -77,7 +77,7 @@ public class RetypingDataStoreTest {
         PropertyDataStore pds = new PropertyDataStore(data);
         rts = new RetypingDataStore(pds) {
             @Override
-            protected String transformFeatureTypeName(String originalName) {
+            public String transformFeatureTypeName(String originalName) {
                 if (originalName.equals(MockData.BUILDINGS.getLocalPart()))
                     return RENAMED;
                 else
@@ -230,7 +230,7 @@ public class RetypingDataStoreTest {
 
         RetypingDataStore rts = new RetypingDataStore(ds) {
             @Override
-            protected String transformFeatureTypeName(String originalName) {
+            public String transformFeatureTypeName(String originalName) {
                 return "oaks";
             }
         };

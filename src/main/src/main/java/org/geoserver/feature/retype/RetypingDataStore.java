@@ -248,7 +248,7 @@ public class RetypingDataStore implements DataStore {
      * @param originalName
      * @return
      */
-    protected String transformFeatureTypeName(String originalName) {
+    public String transformFeatureTypeName(String originalName) {
          return originalName.replaceAll(":", "_");
     }
 
@@ -341,5 +341,9 @@ public class RetypingDataStore implements DataStore {
      */
     public void removeSchema(Name typeName) throws IOException {
         removeSchema(typeName.getLocalPart());
+    }
+
+    public DataStore getWrapped() {
+        return wrapped;
     }
 }

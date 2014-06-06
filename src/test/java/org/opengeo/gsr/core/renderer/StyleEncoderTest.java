@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2013 TOPP - www.openplans.org. All rights reserved.
+/* Copyright (c) 2013 - 2014 Boundless - http://boundlessgeo.com All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */

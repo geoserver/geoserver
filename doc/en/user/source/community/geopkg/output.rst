@@ -52,6 +52,7 @@ General outline of a ``contents`` scheme::
 
 Each geopackage has a mandatory ``name``, which will be the name of the file (with the extension .gpkg added).
 Each layer (features or tiles) has the following properties:
+
   * ``name`` (mandatory): the name of the layer in the geopackage;
   * ``identifier`` (optional): an identifier for the layer;
   * ``description`` (optional): a description for the layer;

@@ -134,6 +134,7 @@ If the 'outputFilename' parameter is defined in the main body then that name wil
 
 "brokenUrlPlaceholder" the placeholder image to use in the case of a broken url.  By default, when a url request fails, an error is thrown and the pdf process terminates.  However if this parameter is set then instead a placeholder image is returned.
 Non-null values are:
+
   * "default" - use the system default image.
   * "throw" - throw an exception.
   * <url> - obtain the image from the supplied url.  If this url is broken then an exception will be thrown.  This can be anytype of valid url from a file url to https url.

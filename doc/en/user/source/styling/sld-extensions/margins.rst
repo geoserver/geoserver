@@ -1,4 +1,4 @@
-.. _label_obstacles:
+.. _margins:
 
 Adding space around graphic fills
 =================================

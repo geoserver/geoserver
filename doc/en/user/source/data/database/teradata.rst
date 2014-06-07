@@ -128,7 +128,7 @@ Teradata database support is not enabled by default and requires the GeoServer T
 GeoServer artifacts
 ~~~~~~~~~~~~~~~~~~~
 
-#. Download the Teradata extension from the `download page <http://geoserver.org/display/GEOS/Stable>`_ that matches your version of GeoServer.  The extension is listed at the bottom of the download page under :guilabel:`Extensions`.
+#. Download the Teradata extension from the `download page <http://geoserver.org/release/stable/>`_ that matches your version of GeoServer.  The extension is listed at the bottom of the download page under :guilabel:`Extensions`.
 
    .. warning:: Make sure to match the version of the extension to the version of GeoServer!
 

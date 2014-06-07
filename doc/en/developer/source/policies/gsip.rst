@@ -45,18 +45,26 @@ Implementing a GSIP
 -------------------
    
 GSIPs are written up on the 
-`wiki <http://geoserver.org/display/GEOS/GeoServer+Improvement+Proposals>`_. To
-make a GSIP:
+`Proposals <https://github.com/geoserver/geoserver.github.io/wiki/Proposals>`_ wiki page.
 
-#. Navigate to the `proposals under discussion page
-   <http://geoserver.org/display/GEOS/Proposals+Under+Discussion>`_
-#. Log in to the wiki and click the ``Add Page`` link
-#. Use the ``Proposal`` template to create the new page
-#. Name the new page "GSIP ## - <TITLE>" where:
+If you have write access login and follow the steps below. If you do not have write access GitHub will automatically create a fork for you as you edit individual pages.
+
+To make a GSIP:
+
+#. Navigate to the wiki: https://github.com/geoserver/geoserver.github.io/wiki
+#. Select and copy the proposal template to your clipboard.
+#. Navigate to the proposals page: https://github.com/geoserver/geoserver.github.io/wiki/Proposals
+#. Edit the page with a new link under *Proposals Under Discussion*:
+   
+   ````
+   [GSIP 116 - Use Apache Style Contributor Agreement](GSIP 116)
+   ````
  
-   #. ## is the number of the GSIP
-   #. <TITLE> is the title of the GSIP
+   #. The number should be the next "available" GSIP number.
+   #. The title should be short and descriptive
 
+#. Save your change to the *Proposal* page, and click on your new link to create a new page.
+#. Click on your new link to create the page, fill in the page contents by pasting the proposal page template from your clipboard.
 #. Fill in the information in the page template, and click ``Save`` when
    complete.
 

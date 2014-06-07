@@ -12,7 +12,7 @@ Vector Product Format (VPF) is a military standard for vector-based digital map 
 Installing the VPF extension
 ----------------------------
 
-#. Download the VPF extension from the `GeoServer download page <http://geoserver.org/display/GEOS/Download>`_.
+#. Download the VPF extension from the `GeoServer download page <http://geoserver.org/download>`_.
 
    .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance!
 

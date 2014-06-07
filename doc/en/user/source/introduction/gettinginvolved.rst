@@ -49,4 +49,4 @@ A further way to help out the GeoServer project is to spread the word about it. 
 Fund improvements
 -----------------
 
-A final way to help out is to push for GeoServer to be used in your own organization. A number of `commerical organizations <http://geoserver.org/display/GEOS/Commercial+Support>`_ offer support for GeoServer, and any improvements made due to that funding will benefit the entire GeoServer community. 
+A final way to help out is to push for GeoServer to be used in your own organization. A number of `commerical organizations <http://geoserver.org/support/>`_ offer support for GeoServer, and any improvements made due to that funding will benefit the entire GeoServer community. 

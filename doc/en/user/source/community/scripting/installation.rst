@@ -8,7 +8,7 @@ Installing the Scripting Extension
 Python
 ------
 
-Currently, the only scripting language that is distributed as a package for download is Python. This extension is a community extension, in that it is not included with the list of extensions on the standard `GeoServer download page <http://geoserver.org/display/GEOS/Download>`_. Instead, the community extensions are built each night on the `nightly build server <http://ares.boundlessgeo.com/geoserver/>`_.
+Currently, the only scripting language that is distributed as a package for download is Python. This extension is a community extension, in that it is not included with the list of extensions on the standard `GeoServer download page <http://geoserver.org/download>`_. Instead, the community extensions are built each night on the `nightly build server <http://ares.boundlessgeo.com/geoserver/>`_.
 
 To access the Python scripting extension:
 

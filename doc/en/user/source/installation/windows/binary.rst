@@ -11,7 +11,7 @@ The most common way to install GeoServer is using the OS-independent binary.  Th
 Installation
 ------------
 
-#. Navigate to the `GeoServer Download page <http://geoserver.org/display/GEOS/Download>`_ and pick the appropriate version to download.
+#. Navigate to the `GeoServer Download page <http://geoserver.org/download>`_ and pick the appropriate version to download.
 
 #. Select :guilabel:`OS-independent binary` on the download page.
 

@@ -16,7 +16,7 @@ The standard GeoServer installation supports accessing the following databases:
 
 Other data sources are supplied as GeoServer extensions.  
 Extensions are downloadable modules that add functionality to GeoServer.  
-Extensions are available at the `GeoServer download page <http://geoserver.org/display/GEOS/Download>`_.
+Extensions are available at the `GeoServer download page <http://geoserver.org/download>`_.
 
 .. warning:: The extension version must match the version of the GeoServer instance.
 

@@ -10,7 +10,7 @@ History
 
 GeoServer documentation has for a long time been hosted at `geoserver.org <http://geoserver.org>`_.  This site, a `wiki <http://www.atlassian.com/software/confluence>`_, served two functions, as it is both the homepage for GeoServer and the site of the documentation.
 
-There were advantages to having documentation as a wiki: a low barrier to entry (anyone could add/edit pages) and the homepage was already using the wiki software.  However, there were many disadvantages to this as well.  Confluence didn't allow for easy PDF output, pages didn't adhere to any obvious hierarchy, there was no version control, and the quality of documentation was inconsistent.  Thus, it was decided to break off the documentation from the wiki, and `implement the documentation in a new framework <http://geoserver.org/display/GEOS/GSIP+25+-+New+Documentation+Framework>`_.  
+There were advantages to having documentation as a wiki: a low barrier to entry (anyone could add/edit pages) and the homepage was already using the wiki software.  However, there were many disadvantages to this as well.  Confluence didn't allow for easy PDF output, pages didn't adhere to any obvious hierarchy, there was no version control, and the quality of documentation was inconsistent.  Thus, it was decided to break off the documentation from the wiki, and `implement the documentation in a new framework <https://github.com/geoserver/geoserver.github.io/wiki/GSIP%2025%20-%20New%20Documentation%20Framework>`_.  
 
 Today
 -----

@@ -4,7 +4,7 @@ Installing the Python Extension
 ===============================
 
 #. Download the Python extension from the `GeoServer download page 
-   <http://geoserver.org/display/GEOS/Download>`_.
+   <http://geoserver.org/download>`_.
 
    .. warning:: 
 

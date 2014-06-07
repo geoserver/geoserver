@@ -15,7 +15,7 @@ GeoServer requires Java to be installed on your system.  Oracle Java SE 6 or new
 Installation
 ------------
 
-#. Navigate to the `GeoServer Download page <http://geoserver.org/display/GEOS/Download>`_ and pick the appropriate version to download.
+#. Navigate to the `GeoServer Download page <http://geoserver.org/download>`_ and pick the appropriate version to download.
 
 #. Select :guilabel:`Web archive` on the download page.
 

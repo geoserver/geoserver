@@ -26,6 +26,8 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.feature.retype.RetypingDataStore;
+import org.geoserver.web.data.layer.CascadedWFSStoredQueryAbstractPage.ParameterMappingType;
+import org.geoserver.web.data.layer.CascadedWFSStoredQueryAbstractPage.StoredQueryParameterAttribute;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.data.DataAccess;
@@ -54,18 +56,28 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
     }
 
     @Override
+    public void populateStoredQueryParameterAttribute(String storedQueryId,
+            ParameterExpressionType pet, StoredQueryParameterAttribute attr) {
+        // We're creating a new layer, all parameters are empty by default
+        attr.setMappingType(ParameterMappingType.NONE);
+        attr.setValue(null);
+    }
+
+    @Override
     protected void onSave() {
         
         StoredQuery selection = (StoredQuery)storedQueriesDropDown.getDefaultModelObject();
-        StoredQueryConfiguration config = createStoredQueryConfiguration(parameterProvider.getItems());
-        
+        StoredQueryConfiguration config =
+                createStoredQueryConfiguration(parameterProvider.getItems(),
+                selection.storedQueryId);
+
         String storedQueryId = selection.storedQueryId;
-        
+
         try {
             DataStoreInfo dsInfo = getCatalog().getStore(storeId, DataStoreInfo.class);
             WFSContentDataStore directDs = getContentDataStore();
             DataAccess da = dsInfo.getDataStore(null);
-            
+
             String localName = storedQueryId;
             // Transform type name if the DS retypes 
             if (da instanceof RetypingDataStore) {
@@ -93,7 +105,6 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
     protected void onCancel() {
         doReturn(LayerPage.class);     
     }
-    
 
     private DropDownChoice storedQueriesDropDown() {
         final DropDownChoice dropdown = new DropDownChoice("storedQueriesDropDown", new Model(),

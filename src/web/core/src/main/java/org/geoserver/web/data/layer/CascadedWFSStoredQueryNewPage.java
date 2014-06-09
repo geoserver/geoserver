@@ -3,13 +3,11 @@ package org.geoserver.web.data.layer;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.opengis.wfs20.ParameterExpressionType;
-import net.opengis.wfs20.StoredQueryDescriptionType;
 import net.opengis.wfs20.StoredQueryListItemType;
 
 import org.apache.wicket.Component;
@@ -18,16 +16,15 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.feature.retype.RetypingDataStore;
-import org.geoserver.web.data.layer.CascadedWFSStoredQueryAbstractPage.ParameterMappingType;
-import org.geoserver.web.data.layer.CascadedWFSStoredQueryAbstractPage.StoredQueryParameterAttribute;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.data.DataAccess;
@@ -42,6 +39,8 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
     
     DropDownChoice storedQueriesDropDown;
     
+    private String nativeName;
+    
     public CascadedWFSStoredQueryNewPage(PageParameters params) throws IOException {
         super(params);
     }
@@ -52,9 +51,19 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
         storedQueriesDropDown = storedQueriesDropDown();
         f.add(storedQueriesDropDown);
         
+        TextField textField = new TextField("nativeName", new PropertyModel(this, "nativeName"));
+        f.add(textField);
         return f;
     }
 
+    public void setNativeName(String nativeName) {
+        this.nativeName = nativeName;
+    }
+    
+    public String getNativeName() {
+        return nativeName;
+    }
+    
     @Override
     public void populateStoredQueryParameterAttribute(String storedQueryId,
             ParameterExpressionType pet, StoredQueryParameterAttribute attr) {
@@ -65,7 +74,7 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
 
     @Override
     protected void onSave() {
-        
+        // TODO: check stuff before saving
         StoredQuery selection = (StoredQuery)storedQueriesDropDown.getDefaultModelObject();
         StoredQueryConfiguration config =
                 createStoredQueryConfiguration(parameterProvider.getItems(),
@@ -78,19 +87,13 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
             WFSContentDataStore directDs = getContentDataStore();
             DataAccess da = dsInfo.getDataStore(null);
 
-            String localName = storedQueryId;
-            // Transform type name if the DS retypes 
-            if (da instanceof RetypingDataStore) {
-                localName = ((RetypingDataStore)da).transformFeatureTypeName(localName);
-            }
-            
-            Name typeName = directDs.createStoredQueryName(localName);
-            
+            Name typeName = directDs.addStoredQuery(getNativeName(), config.getStoredQueryId());
+
             CatalogBuilder builder = new CatalogBuilder(getCatalog());
             builder.setStore(dsInfo);
             FeatureTypeInfo fti = builder.buildFeatureType(da.getFeatureSource(typeName));
 
-            fti.getMetadata().put(WFSContentDataStore.STORED_QUERY_CONFIGURATION_HINT, config);
+            fti.getMetadata().put(FeatureTypeInfo.STORED_QUERY_CONFIGURATION, config);
             LayerInfo layerInfo = builder.buildLayer(fti);
             setResponsePage(new ResourceConfigurationPage(layerInfo, true));
 

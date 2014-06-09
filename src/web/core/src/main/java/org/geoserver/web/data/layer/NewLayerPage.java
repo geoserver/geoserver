@@ -282,10 +282,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
         if (store instanceof DataStoreInfo) {
             try {
                 DataAccess da = ((DataStoreInfo) store).getDataStore(null);
-                // This hack needs to be fixed. Andrea has a plan for it.
-                if (da instanceof RetypingDataStore) {
-                    da = ((RetypingDataStore)da).getWrapped();
-                }
+
                 createSQLViewContainer.setVisible(da instanceof JDBCDataStore);
                 
                 if (da instanceof WFSContentDataStore) {

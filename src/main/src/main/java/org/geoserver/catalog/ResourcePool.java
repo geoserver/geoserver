@@ -49,6 +49,7 @@ import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.util.CoverageStoreUtils;
 import org.geoserver.data.util.CoverageUtils;
+import org.geoserver.feature.retype.RetypingDataStore;
 import org.geoserver.feature.retype.RetypingFeatureSource;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -71,6 +72,9 @@ import org.geotools.data.ows.MultithreadedHttpClient;
 import org.geotools.data.ows.SimpleHttpClient;
 import org.geotools.data.ows.WMSCapabilities;
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.data.store.ContentDataStore;
+import org.geotools.data.wfs.impl.WFSContentDataStore;
+import org.geotools.data.wfs.internal.v2_0.storedquery.StoredQueryConfiguration;
 import org.geotools.data.wms.WebMapServer;
 import org.geotools.factory.Hints;
 import org.geotools.feature.AttributeTypeBuilder;
@@ -849,6 +853,16 @@ public class ResourcePool {
                             jstore.addVirtualTable(vt);
                         }
                         ft = jstore.getSchema(vt.getName());
+                    } else if (isCascadedStoredQuery(info, dataAccess)) {
+
+                        StoredQueryConfiguration sqc = info.getMetadata().get(FeatureTypeInfo.STORED_QUERY_CONFIGURATION, StoredQueryConfiguration.class);
+                        WFSContentDataStore wstore = (WFSContentDataStore)dataAccess;
+
+                        if(!wstore.getConfiguredStoredQueries().containsValue(info.getName())) {
+                            wstore.addStoredQuery(info.getNativeName(), sqc.getStoredQueryId());
+                        }
+                        ft = wstore.getStoredQuerySchema(sqc.getStoredQueryId());
+
                     } else {
                         ft = dataAccess.getSchema(info.getQualifiedNativeName());
                     }
@@ -868,9 +882,13 @@ public class ResourcePool {
         //grab the underlying feature type
         DataAccess<? extends FeatureType, ? extends Feature> dataAccess = getDataStore(info.getStore());
         
+        JDBCDataStore jstore = null;
+        WFSContentDataStore wstore = null;
+
         String vtName = null;
+        String csqName = null;
         if(isSQLView(info, dataAccess)) {
-            JDBCDataStore jstore = (JDBCDataStore) dataAccess;
+            jstore = (JDBCDataStore) dataAccess;
             VirtualTable vt = info.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, VirtualTable.class);
             
             
@@ -893,14 +911,22 @@ public class ResourcePool {
                 // of making the user see the actual name
                 // NT 14/8/2012: Removed synchronization on jstore as it blocked query
                 // execution and risk of UUID clash is considered acceptable.
-                final String[] typeNames = jstore.getTypeNames();
-                do {
-                    vtName = UUID.randomUUID().toString();
-                } while (Arrays.asList(typeNames).contains(vtName));                                
+                vtName = createUniqueTemporaryName(jstore);
                 jstore.addVirtualTable(new VirtualTable(vtName, vt));
     
                 ft = jstore.getSchema(vtName);
             }
+        } else if (isCascadedStoredQuery(info, dataAccess)) {
+            wstore = (WFSContentDataStore) dataAccess;
+            StoredQueryConfiguration sqc = 
+                    info.getMetadata().get(FeatureTypeInfo.STORED_QUERY_CONFIGURATION, StoredQueryConfiguration.class);
+            
+            csqName = createUniqueTemporaryName(wstore);
+            
+            wstore.addStoredQuery(csqName, sqc.getStoredQueryId());
+            
+            ft = wstore.getStoredQuerySchema(sqc.getStoredQueryId());
+            
         } else {
             ft = dataAccess.getSchema(info.getQualifiedNativeName());
         }
@@ -908,16 +934,35 @@ public class ResourcePool {
         ft = buildFeatureType(info, handleProjectionPolicy, ft);
         
         if(vtName != null) {
-            JDBCDataStore jstore = (JDBCDataStore) dataAccess;
             jstore.removeVirtualTable(vtName);
         }
+        if (csqName != null) {
+            wstore.removeStoredQuery(csqName);
+        }
         return ft;
+    }
+
+    private String createUniqueTemporaryName(ContentDataStore jstore) throws IOException {
+        String ret;
+        final String[] typeNames = jstore.getTypeNames();
+        do {
+            ret = UUID.randomUUID().toString();
+        } while (Arrays.asList(typeNames).contains(ret));
+        return ret;
     }
     
     private boolean isSQLView(FeatureTypeInfo info,
             DataAccess<? extends FeatureType, ? extends Feature> dataAccess) {
         return dataAccess instanceof JDBCDataStore && info.getMetadata() != null &&
                 (info.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE) instanceof VirtualTable);
+    }
+    
+
+    private boolean isCascadedStoredQuery(FeatureTypeInfo info,
+            DataAccess<? extends FeatureType, ? extends Feature> dataAccess) {
+        return dataAccess instanceof WFSContentDataStore && info.getMetadata() != null &&
+                (info.getMetadata().get(FeatureTypeInfo.STORED_QUERY_CONFIGURATION) instanceof 
+                        StoredQueryConfiguration);
     }
     
     private FeatureType buildFeatureType(FeatureTypeInfo info,

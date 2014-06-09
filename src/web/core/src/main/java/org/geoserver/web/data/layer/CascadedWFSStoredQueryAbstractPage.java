@@ -180,12 +180,7 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
         DataStoreInfo store = getCatalog().getStore(storeId, DataStoreInfo.class);
         DataAccess da = store.getDataStore(null);
         
-        // Hack. Andrea will refactor around this issue
-        if (da instanceof RetypingDataStore) {
-            da = ((RetypingDataStore)da).getWrapped();
-        }
-        WFSContentDataStore contentStore = (WFSContentDataStore)da;
-        return contentStore;
+        return (WFSContentDataStore)da;
     }
     
     public static String createStoredQueryTitle(StoredQueryListItemType object) {

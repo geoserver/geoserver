@@ -8,7 +8,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
-import org.geotools.data.wfs.impl.WFSContentDataStore;
 import org.geotools.data.wfs.internal.v2_0.storedquery.ParameterMapping;
 import org.geotools.data.wfs.internal.v2_0.storedquery.ParameterMappingBlockValue;
 import org.geotools.data.wfs.internal.v2_0.storedquery.ParameterMappingDefaultValue;
@@ -32,7 +31,7 @@ public class CascadedWFSStoredQueryEditPage extends
         this.editableType = type;
         
         this.configuration = (StoredQueryConfiguration) type.getMetadata()
-                .get(WFSContentDataStore.STORED_QUERY_CONFIGURATION_HINT);
+                .get(FeatureTypeInfo.STORED_QUERY_CONFIGURATION);
         
         this.storedQueryId = this.configuration.getStoredQueryId();
         
@@ -51,10 +50,12 @@ public class CascadedWFSStoredQueryEditPage extends
         }
 
         ParameterMapping mapping = null;
-        for (ParameterMapping pm : configuration.getStoredQueryParameterMappings()) {
-            if (pm.getParameterName().equals(pet.getName())) {
-                mapping = pm;
-                break;
+        if (configuration.getStoredQueryParameterMappings() != null) {
+            for (ParameterMapping pm : configuration.getStoredQueryParameterMappings()) {
+                if (pm.getParameterName().equals(pet.getName())) {
+                    mapping = pm;
+                    break;
+                }
             }
         }
         
@@ -100,8 +101,7 @@ public class CascadedWFSStoredQueryEditPage extends
         StoredQueryConfiguration config = 
                 createStoredQueryConfiguration(parameterProvider.getItems(), storedQueryId);
         
-        editableType.getMetadata()
-            .put(WFSContentDataStore.STORED_QUERY_CONFIGURATION_HINT, config);
+        editableType.getMetadata().put(FeatureTypeInfo.STORED_QUERY_CONFIGURATION, config);
         
         setResponsePage(previousPage);
     }

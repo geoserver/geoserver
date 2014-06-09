@@ -17,7 +17,12 @@
     </form>
 
 <wicket:fragment wicket:id="newPage">
-  <wicket:message key="selectStoredQuery">Select Stored Query </wicket:message> <select wicket:id="storedQueriesDropDown"></select>
+  <div>
+    <wicket:message key="chooseNativeName">Layer name </wicket:message> <input type="text" wicket:id="nativeName"></input>
+  </div>
+  <div>
+    <wicket:message key="selectStoredQuery">Select Stored Query </wicket:message> <select wicket:id="storedQueriesDropDown"></select>
+  </div>
 </wicket:fragment>
 
 <wicket:fragment wicket:id="editPage">

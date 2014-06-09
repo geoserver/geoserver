@@ -35,7 +35,6 @@ import org.geoserver.web.data.layer.CascadedWFSStoredQueryEditPage;
 import org.geoserver.web.data.layer.SQLViewEditPage;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.ParamResourceModel;
-import org.geotools.data.wfs.impl.WFSContentDataStore;
 import org.geotools.data.wfs.internal.v2_0.storedquery.StoredQueryConfiguration;
 import org.geotools.jdbc.VirtualTable;
 import org.geotools.util.logging.Logging;
@@ -171,8 +170,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
                 }
             }
         });
-        
-        cascadedStoredQueryContainer.setVisible(typeInfo.getMetadata().get(WFSContentDataStore.STORED_QUERY_CONFIGURATION_HINT, StoredQueryConfiguration.class) != null);
+        cascadedStoredQueryContainer.setVisible(typeInfo.getMetadata().get(FeatureTypeInfo.STORED_QUERY_CONFIGURATION, StoredQueryConfiguration.class) != null);
     }
     
     static class ReloadWarningDialog extends WebPage {

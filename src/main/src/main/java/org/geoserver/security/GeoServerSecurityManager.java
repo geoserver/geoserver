@@ -330,9 +330,10 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
             // migrate from old security config
             try {
                 boolean migratedFrom21 = migrateFrom21();
+                removeErroneousAccessDeniedPage();
                 migrateFrom22(migratedFrom21);
                 migrateFrom23();
-                migrateFrom24();
+                migrateFrom24();                
             } catch (Exception e1) {
                 throw new RuntimeException(e1);
             }
@@ -2489,6 +2490,31 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
             migrated |= true;
         }
         return migrated;
+    }
+    
+    /**
+     * Remove erroneous access denied page (HTTP) 403 (see GEOS-4943)
+     * The page /accessDeniedPage does not exist and would not work
+     * if it exists.
+     * 
+     * @throws Exception
+     */
+    void removeErroneousAccessDeniedPage() throws Exception {
+         
+        ExceptionTranslationFilterConfig config = 
+                (ExceptionTranslationFilterConfig) loadFilterConfig(GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER);
+        if (config!=null && "/accessDenied.jsp".equals(config.getAccessDeniedErrorPage())) {
+            config.setAccessDeniedErrorPage(null);
+            saveFilter(config);
+        }
+        
+         config = 
+                (ExceptionTranslationFilterConfig) loadFilterConfig(GeoServerSecurityFilterChain.GUI_EXCEPTION_TRANSLATION_FILTER);
+        if (config!=null && "/accessDenied.jsp".equals(config.getAccessDeniedErrorPage())) {
+            config.setAccessDeniedErrorPage(null);
+            saveFilter(config);
+        }
+                    
     }
 
 

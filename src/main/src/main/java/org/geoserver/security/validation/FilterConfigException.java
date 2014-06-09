@@ -37,8 +37,6 @@ public class FilterConfigException extends SecurityConfigException {
     public static final String PASSWORD_PARAMETER_NAME_NEEDED="PASSWORD_PARAMETER_NAME_NEEDED";
     public static final String USER_PARAMETER_NAME_NEEDED="USER_PARAMETER_NAME_NEEDED";
 
-    public static final String ACCESS_DENIED_PAGE_NEEDED="ACCESS_DENIED_PAGE_NEEDED";
-    public static final String ACCESS_DENIED_PAGE_PREFIX="ACCESS_DENIED_PAGE_PREFIX";
     public static final String INVALID_ENTRY_POINT="INVALID_ENTRY_POINT";
     
     public static final String PRINCIPAL_HEADER_ATTRIBUTE_NEEDED="PRINCIPAL_HEADER_ATTRIBUTE_NEEDED";

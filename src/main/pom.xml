@@ -97,6 +97,10 @@
   </dependency>
   <dependency>
    <groupId>org.geotools</groupId>
+   <artifactId>gt-wfs-ng</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>org.geotools</groupId>
    <artifactId>gt-metadata</artifactId>
   </dependency>
   <dependency>

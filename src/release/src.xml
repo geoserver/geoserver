@@ -26,6 +26,7 @@
     <include>org.geoserver:community</include>
     <include>org.geoserver:extension</include>
     <include>org.geoserver:gs-release</include>
+    <include>org.geoserver:gs-wfs-ng</include>
    </includes>
    <sources>
     <outputDirectory>geoserver-2.6-SNAPSHOT/${artifactId}/</outputDirectory>

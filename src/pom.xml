@@ -392,6 +392,11 @@
    </dependency>
    <dependency>
     <groupId>org.geotools</groupId>
+    <artifactId>gt-wfs-ng</artifactId>
+    <version>${gt.version}</version>
+   </dependency>
+   <dependency>
+    <groupId>org.geotools</groupId>
     <artifactId>gt-wms</artifactId>
     <version>${gt.version}</version>
    </dependency>
@@ -1250,6 +1255,7 @@
       <descriptor>release/ext-libjpeg-turbo.xml</descriptor>
       <descriptor>release/ext-importer.xml</descriptor>
       <descriptor>release/ext-importer-bdb.xml</descriptor>
+      <descriptor>release/ext-wfs-ng.xml</descriptor>
      </descriptors>
      <finalName>geoserver-2.6-SNAPSHOT</finalName>
      <outputDirectory>${project.build.directory}/release</outputDirectory>

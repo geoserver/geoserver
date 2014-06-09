@@ -248,7 +248,7 @@ public class RetypingDataStore implements DataStore {
      * @param originalName
      * @return
      */
-    protected String transformFeatureTypeName(String originalName) {
+    public String transformFeatureTypeName(String originalName) {
          return originalName.replaceAll(":", "_");
     }
 

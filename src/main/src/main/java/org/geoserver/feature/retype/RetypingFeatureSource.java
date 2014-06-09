@@ -76,7 +76,7 @@ public class RetypingFeatureSource implements SimpleFeatureSource{
         this.typeMap = typeMap;
         this.store = new RetypingDataStore((DataStore) wrapped.getDataStore()) {
             @Override
-            protected String transformFeatureTypeName(String originalName) {
+            public String transformFeatureTypeName(String originalName) {
                 if(typeMap.getOriginalName().equals(originalName)) {
                     // rename
                     return typeMap.getName();

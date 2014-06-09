@@ -3,7 +3,9 @@ package org.geoserver.web.data.layer;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,6 +23,8 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.validator.AbstractValidator;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -52,6 +56,9 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
         f.add(storedQueriesDropDown);
         
         TextField textField = new TextField("nativeName", new PropertyModel(this, "nativeName"));
+        textField.setRequired(true);
+        textField.add(new ViewNameValidator());
+        
         f.add(textField);
         return f;
     }
@@ -113,6 +120,7 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
         final DropDownChoice dropdown = new DropDownChoice("storedQueriesDropDown", new Model(),
                 new StoredQueryListModel(), new StoredQueryListRenderer());
         
+        dropdown.setRequired(true);
         dropdown.add(new AjaxFormComponentUpdatingBehavior("onchange") {
             
             @Override
@@ -175,6 +183,29 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
         
         public String getTitle() {
             return title;
+        }
+    }
+    
+    class ViewNameValidator extends AbstractValidator {
+        @Override
+        protected void onValidate(IValidatable validatable) {
+            String csqName = (String) validatable.getValue();
+            
+            final DataStoreInfo store = getCatalog().getStore(storeId, DataStoreInfo.class);
+            List<FeatureTypeInfo> ftis = getCatalog().getResourcesByStore(store, FeatureTypeInfo.class);
+            for (FeatureTypeInfo curr : ftis) {
+                StoredQueryConfiguration config = curr.getMetadata().get(FeatureTypeInfo.STORED_QUERY_CONFIGURATION, StoredQueryConfiguration.class);
+                if(config != null) {
+                
+                    if(curr.getNativeName().equals(csqName)) {
+                        Map<String, String> map = new HashMap<String, String>();
+                        map.put("name", csqName);
+                        map.put("dataStore", store.getName());
+                        error(validatable, "duplicateSqlViewName", map);
+                        return;
+                    }
+                }
+            }
         }
     }
     

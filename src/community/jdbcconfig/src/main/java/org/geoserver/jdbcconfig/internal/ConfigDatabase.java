@@ -269,7 +269,7 @@ public class ConfigDatabase {
         }
         logStatement(sql, namedParameters);
 
-        Stopwatch sw = new Stopwatch().start();
+        Stopwatch sw = Stopwatch.createStarted();
         List<String> ids = template.queryForList(sql.toString(), namedParameters, String.class);
         sw.stop();
         if (LOGGER.isLoggable(Level.FINE)) {
@@ -304,7 +304,7 @@ public class ConfigDatabase {
 
     private <T extends Info> CloseableIterator<T> applyOffsetLimit(CloseableIterator<T> iterator, Integer offset, Integer limit){
         if (offset != null) {
-            Iterators.skip(iterator, offset.intValue());
+            Iterators.advance(iterator, offset.intValue());
         }
         if (limit != null) {
             iterator = CloseableIteratorAdapter.limit(iterator, limit.intValue());

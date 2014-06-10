@@ -73,7 +73,7 @@ public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
             return;
         }
 
-        Stopwatch sw = new Stopwatch().start();
+        Stopwatch sw = Stopwatch.createStarted();
         loadCatalogInternal(catalog, xp);
         sw.stop();
         //System.err.println("Loaded catalog in " + sw.toString());

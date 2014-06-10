@@ -6,14 +6,16 @@ package org.geoserver.config;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.io.FileUtils;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -28,10 +30,8 @@ import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.data.util.IOUtils;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.SystemTest;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -65,6 +65,7 @@ public class GeoServerPersisterTest extends GeoServerSystemTestSupport {
         removeNamespace("bar");
         removeStyle(null, "foostyle");
         removeStyle("gs", "foostyle");
+        removeStyle(null, "boostyle");
         
         getCatalog().setDefaultWorkspace(getCatalog().getWorkspaceByName("gs"));
     }
@@ -522,6 +523,46 @@ public class GeoServerPersisterTest extends GeoServerSystemTestSupport {
         Document dom = dom( f );
         
         assertXpathEvaluatesTo( "foostyle2.sld", "/style/filename", dom );
+    }
+
+    @Test
+    public void testRenameStyle() throws Exception {
+        testAddStyle();
+        File sldFile = new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld");
+        sldFile.createNewFile();
+
+        StyleInfo s = catalog.getStyleByName("foostyle");
+        s.setName("boostyle");
+        catalog.save(s);
+
+        File f = new File(testData.getDataDirectoryRoot(), "styles/boostyle.xml");
+        Document dom = dom(f);
+
+        assertXpathEvaluatesTo("boostyle.sld", "/style/filename", dom);
+        File renamedSldFile = new File(testData.getDataDirectoryRoot(), "styles/boostyle.sld");
+        assertFalse(sldFile.exists());
+        assertTrue(renamedSldFile.exists());
+    }
+
+    @Test
+    public void testRenameStyleConflict() throws Exception {
+        testAddStyle();
+        File sldFile = new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld");
+        sldFile.createNewFile();
+        File conflictingFile = new File(testData.getDataDirectoryRoot(), "styles/boostyle.sld");
+        conflictingFile.createNewFile();
+
+        StyleInfo s = catalog.getStyleByName("foostyle");
+        s.setName("boostyle");
+        catalog.save(s);
+
+        File f = new File(testData.getDataDirectoryRoot(), "styles/boostyle.xml");
+        Document dom = dom(f);
+
+        assertXpathEvaluatesTo("boostyle1.sld", "/style/filename", dom);
+        File renamedSldFile = new File(testData.getDataDirectoryRoot(), "styles/boostyle1.sld");
+        assertFalse(sldFile.exists());
+        assertTrue(renamedSldFile.exists());
     }
 
     @Test

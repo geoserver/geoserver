@@ -4,9 +4,10 @@
  */
 package org.geoserver.config;
 
-import java.io.BufferedOutputStream;
+import static org.geoserver.data.util.IOUtils.rename;
+import static org.geoserver.data.util.IOUtils.xStreamPersist;
+
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -17,7 +18,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.CoverageInfo;
@@ -45,10 +45,9 @@ import org.geotools.styling.AbstractStyleVisitor;
 import org.geotools.styling.ExternalGraphic;
 import org.geotools.util.logging.Logging;
 
-import static org.geoserver.data.util.IOUtils.rename;
-import static org.geoserver.data.util.IOUtils.xStreamPersist;
-
 public class GeoServerPersister implements CatalogListener, ConfigurationListener {
+
+    private static final int MAX_RENAME_ATTEMPTS = 100;
 
     /**
      * logging instance
@@ -634,7 +633,21 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
     
     void renameStyle( StyleInfo s, String newName ) throws IOException {
         LOGGER.fine( "Renameing style " + s.getName() + " to " + newName );
-        rename( file( s ), newName+".xml" );
+        rename(file(s), newName + ".xml");
+        File styleFile = styleFile(s);
+        String sldFileName = newName + ".sld";
+        File target = new File(styleFile.getParent(), sldFileName);
+        int i = 1;
+        while(target.exists() && i <= MAX_RENAME_ATTEMPTS) {
+            sldFileName = newName + i + ".sld";
+            target = new File(styleFile.getParent(), sldFileName);
+        }
+        if (i > MAX_RENAME_ATTEMPTS) {
+            throw new IOException("All target files between " + newName + "1.sld and " + newName
+                    + MAX_RENAME_ATTEMPTS + ".sld are in use already, giving up");
+        }
+        rename(styleFile, target);
+        s.setFilename(sldFileName);
     }
     
     void modifyStyle( StyleInfo s ) throws IOException {
@@ -682,6 +695,18 @@ public class GeoServerPersister implements CatalogListener, ConfigurationListene
         }
         else {
             return new File( dir( s ), s.getName() + ".xml");
+        }
+    }
+
+    File styleFile(StyleInfo s) throws IOException {
+        File directory = dir(s);
+        if (directory == null) {
+            LOGGER.warning("Style '" + s.getName() + "' directory not found for sld file");
+        }
+        if (s.getFilename() != null) {
+            return new File(directory, s.getFilename());
+        } else {
+            return new File(directory, s.getName() + ".sld");
         }
     }
 

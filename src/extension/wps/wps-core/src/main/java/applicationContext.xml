@@ -172,7 +172,9 @@
     <bean id="sldStylePPIO" class="org.geoserver.wps.ppio.SLDStylePPIO" />
     <bean id="urlPPIO" class="org.geoserver.wps.ppio.URLPPIO" />
     <bean id="jaitoolsRangePPIO" class="org.geoserver.wps.ppio.JAIToolsRangePPIO"/>
-    
+    <bean id="rawDataPPIO" class="org.geoserver.wps.ppio.RawDataPPIO">
+      <constructor-arg ref="wpsResourceManager" />
+    </bean>
     
     <!-- Register the GeoServer factory and processes -->
     <bean id="geoserverProcessFactory" class="org.geoserver.wps.jts.SpringBeanProcessFactory">

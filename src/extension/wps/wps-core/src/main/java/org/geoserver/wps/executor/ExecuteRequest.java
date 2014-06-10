@@ -5,6 +5,7 @@
 package org.geoserver.wps.executor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -13,11 +14,15 @@ import java.util.Map;
 import net.opengis.wps10.DocumentOutputDefinitionType;
 import net.opengis.wps10.ExecuteType;
 import net.opengis.wps10.InputType;
+import net.opengis.wps10.OutputDefinitionType;
+import net.opengis.wps10.ResponseDocumentType;
+import net.opengis.wps10.ResponseFormType;
 
 import org.eclipse.emf.common.util.EList;
 import org.geoserver.ows.Ows11Util;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.ppio.ProcessParameterIO;
+import org.geoserver.wps.process.AbstractRawData;
 import org.geoserver.wps.process.GeoServerProcessors;
 import org.geotools.data.Parameter;
 import org.geotools.process.ProcessFactory;
@@ -90,9 +95,24 @@ public class ExecuteRequest {
         }
         
         final Map<String, Parameter<?>> parameters = pf.getParameterInfo(processName);
+        Map<String, InputProvider> providers = new HashMap<String, InputProvider>();
+
+        // see what output raw data we have that need the user chosen mime type to be
+        // sent back to the process as an input
+        Map<String, String> outputMimeParameters = AbstractRawData.getOutputMimeParameters(
+                processName, pf);
+        if (!outputMimeParameters.isEmpty()) {
+            Map<String, String> requestedRawDataMimeTypes = getRequestedRawDataMimeTypes(outputMimeParameters.keySet(), processName, pf);
+            for (Map.Entry<String, String> param : outputMimeParameters.entrySet()) {
+                String outputName = param.getKey();
+                String inputParameter = param.getValue();
+                String mime = requestedRawDataMimeTypes.get(outputName);
+                StringInputProvider provider = new StringInputProvider(mime, inputParameter);
+                providers.put(inputParameter, provider);
+            }
+        }
 
         // turn them into a map of input providers
-        Map<String, InputProvider> providers = new HashMap<String, InputProvider>();
         for (Iterator i = request.getDataInputs().getInput().iterator(); i.hasNext();) {
             InputType input = (InputType) i.next();
             String inputId = input.getIdentifier().getValue();
@@ -134,6 +154,47 @@ public class ExecuteRequest {
         }
 
         return new LazyInputMap(providers);
+    }
+
+    private Map<String, String> getRequestedRawDataMimeTypes(Collection<String> rawResults, Name name,
+            ProcessFactory pf) {
+        Map<String, String> result = new HashMap<String, String>();
+        ResponseFormType form = request.getResponseForm();
+        OutputDefinitionType raw = form.getRawDataOutput();
+        ResponseDocumentType document = form.getResponseDocument();
+		if (form == null || (raw == null && document == null)) {
+            // all outputs using their default mime
+        	for (String rawResult : rawResults) {
+        		String mime = AbstractRawData.getDefaultMime(name, pf, rawResult);
+        		result.put(rawResult, mime);
+			}
+        } else if (raw != null) {
+            // just one output type
+            String output = raw.getIdentifier().getValue();
+            String mime;
+            if (raw.getMimeType() != null) {
+                mime = raw.getMimeType();
+            } else {
+                mime = AbstractRawData.getDefaultMime(name, pf, output);
+            }
+            result.put(output, mime);
+        } else {
+            // the response document form
+        	for (Iterator it = document.getOutput().iterator(); it.hasNext();) {
+				OutputDefinitionType out = (OutputDefinitionType) it.next();
+				String outputName = out.getIdentifier().getValue();
+				if(rawResults.contains(outputName)) {
+					// was the output mime specified?
+					String mime = out.getMimeType();
+					if(mime == null || mime.trim().isEmpty()) {
+						mime = AbstractRawData.getDefaultMime(name, pf, outputName);
+					}
+					result.put(outputName, mime);
+				}
+			}
+        }
+        
+        return result;
     }
 
     public boolean isLineageRequested() {

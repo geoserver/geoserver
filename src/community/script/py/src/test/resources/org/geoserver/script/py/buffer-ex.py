@@ -4,7 +4,7 @@ from geoscript.geom import Geometry
 @process(
   inputs={'geom': (Geometry, 'The geometry to buffer'), 
           'distance':(float, 'The buffer distance'),
-          'capStyle': (str, 'The style of buffer endings', {'min': 0, 'domain' :  ('round', 'flat', 'square')}),
+          'capStyle': (str, 'The style of buffer endings', {'min': 0, 'domain' : ('round', 'flat', 'square')}),
           'quadrantSegments': (int, 'Number of segments' , {'min': 0})},
   outputs={'result': (Geometry, 'The buffered geometry')}, 
   title='Buffer', 

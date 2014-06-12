@@ -5,6 +5,7 @@
 package org.geoserver.wms.worldwind;
 
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
@@ -12,6 +13,7 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
@@ -37,19 +39,14 @@ import org.geotools.coverage.grid.GeneralGridEnvelope;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
-import org.opengis.coverage.grid.GridCoverage;
-import org.opengis.coverage.grid.GridCoverageReader;
-import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.cs.AxisDirection;
 import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
-import org.vfny.geoserver.wcs.WcsException;
 
 import com.sun.media.imageioimpl.plugins.raw.RawImageWriterSpi;
 
@@ -71,8 +68,6 @@ public final class BilMapResponse extends RenderedImageMapResponse {
     private static final String[] OUTPUT_FORMATS = {MIME_TYPE,"application/bil",
     	"application/bil8","application/bil16", "application/bil32" };
     
-    private WMS wmsConfig;
-
 	/** GridCoverageFactory. - Where do we use this again ?*/
 	private final static GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
 
@@ -87,7 +82,6 @@ public final class BilMapResponse extends RenderedImageMapResponse {
      */
     public BilMapResponse(final WMS wms) {
         super(OUTPUT_FORMATS,wms);
-        this.wmsConfig = wms;
     }
     
 	@Override
@@ -95,7 +89,7 @@ public final class BilMapResponse extends RenderedImageMapResponse {
 	        WMSMapContent mapContent) throws ServiceException, IOException {
 		//TODO: Write reprojected terrain tile
 		// TODO Get request tile size
-		GetMapRequest request = mapContent.getRequest();
+		final GetMapRequest request = mapContent.getRequest();
 		
 		String bilEncoding = (String) request.getFormat();
 		
@@ -121,25 +115,37 @@ public final class BilMapResponse extends RenderedImageMapResponse {
         writerParams.parameter(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString())
                     .setValue(wp);
 		*/
-		GridCoverageReader coverageReader = mapLayerInfo.getCoverageReader();
-		
+		GridCoverage2DReader coverageReader = (GridCoverage2DReader) mapLayerInfo.getCoverageReader();
+
+		GeneralEnvelope destinationEnvelope = null;
+		try {
+			destinationEnvelope = getDestinationEnvelope(request, coverageReader);
+		} catch (Exception e1) {
+			LOGGER.severe("Could not create destination envelope");
+		}
+
 		/*
 		 * Try to use a gridcoverage style render
 		 */
 		GridCoverage2D subCov = null;
 		try {
-			subCov = getFinalCoverage(request,
-					mapLayerInfo, (GridCoverage2DReader)coverageReader);
-		} catch (IndexOutOfBoundsException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (TransformException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			if (destinationEnvelope != null) {
+				subCov = getFinalCoverage(request, mapLayerInfo, coverageReader, destinationEnvelope);
+			}
+		} catch (Exception e) {
+			LOGGER.severe("Could not get a subcoverage");
 		}
+
+		if (subCov == null) {
+			LOGGER.fine("Creating coverage from a blank image");
+			BufferedImage emptyImage = new BufferedImage(width, height, BufferedImage.TYPE_USHORT_GRAY);
+			DataBuffer data = emptyImage.getRaster().getDataBuffer();
+			for (int i = 0; i < data.getSize(); ++i) {
+				data.setElem(i, 32768); // 0x0080 in file (2^15)
+			}
+			subCov = factory.create("uselessname", emptyImage, destinationEnvelope);
+		}
+
 		if(subCov!=null)
 		{
 			/*
@@ -152,26 +158,7 @@ public final class BilMapResponse extends RenderedImageMapResponse {
 	        if(image!=null)
 	        {
 	        	int dtype = image.getData().getDataBuffer().getDataType();
-	        	/* Throw exception if required to perform conversion */
-	        	/*
-	        	if((bilEncoding.equals("application/bil32"))&&(dtype!=DataBuffer.TYPE_FLOAT))	        	{
-	        		throw new ServiceException("Cannot fetch BIL float data,"+
-	        				"Wrong underlying data type");
-	        	}
-	        	if((bilEncoding.equals("application/bil16"))&&(dtype!=DataBuffer.TYPE_SHORT))	        	{
-	        		throw new ServiceException("Cannot fetch BIL int data,"+
-	        				"Wrong underlying data type");
-	        	}
-	        	if((bilEncoding.equals("application/bil8"))&&(dtype!=DataBuffer.TYPE_BYTE))	        	{
-	        		throw new ServiceException("Cannot fetch BIL byte data,"+
-	        				"Wrong underlying data type");
-	        	}
-	        	*/
-	        	
-	        	/*
-	        	 * Perform format conversion
-	        	 * Operator is not created if no conversion is necessary
-	        	 */
+
 	        	RenderedOp formcov = null;
 	        	if((bilEncoding.equals("application/bil32"))&&(dtype!=DataBuffer.TYPE_FLOAT))	        	{
 	        		formcov = FormatDescriptor.create(image,DataBuffer.TYPE_FLOAT ,null);
@@ -208,82 +195,62 @@ public final class BilMapResponse extends RenderedImageMapResponse {
 	}
 
 	/**
+	 * @param request request
+	 * @param coverageReader reader
+	 * @return destination envelope
+	 * @throws Exception an error occurred
+	 */
+	private static GeneralEnvelope getDestinationEnvelope(GetMapRequest request,
+			GridCoverage2DReader coverageReader) throws Exception {
+	    final String requestCRS = request.getSRS();
+	    final CoordinateReferenceSystem sourceCRS = CRS.decode(requestCRS);
+
+	    com.vividsolutions.jts.geom.Envelope envelope = request.getBbox();
+
+	    final boolean lonFirst = sourceCRS.getCoordinateSystem().getAxis(0).getDirection().absolute()
+	                                      .equals(AxisDirection.EAST);
+
+	    // the envelope we are provided with is lon,lat always
+	    GeneralEnvelope destinationEnvelope = !lonFirst?
+	        new GeneralEnvelope(new double[] {envelope.getMinY(), envelope.getMinX()}, new double[] { envelope.getMaxY(), envelope.getMaxX()}) :
+	        new GeneralEnvelope(new double[] {envelope.getMinX(), envelope.getMinY()}, new double[] { envelope.getMaxX(), envelope.getMaxY()});
+
+	    destinationEnvelope.setCoordinateReferenceSystem(sourceCRS);
+	    return destinationEnvelope;
+	}
+
+	/**
 	 * getFinalCoverage - message the RenderedImage into Bil
 	 *
 	 * @param request CoverageRequest
 	 * @param meta CoverageInfo
-	 * @param parameters
-	 * @param coverage GridCoverage
+	 * @param coverageReader reader
+	 * @param destinationEnvelope
 	 * @return GridCoverage2D
-	 * @throws WcsException
-	 * @throws IOException
-	 * @throws IndexOutOfBoundsException
-	 * @throws FactoryException
-	 * @throws TransformException
+	 * @throws Exception an error occurred
 	 */
 	private static GridCoverage2D getFinalCoverage(GetMapRequest request, MapLayerInfo meta,
-	    GridCoverage2DReader coverageReader /*GridCoverage coverage*/)
-	    throws WcsException, IOException, IndexOutOfBoundsException, FactoryException,
-	        TransformException {
-	    // This is the final Response CRS
+	    GridCoverage2DReader coverageReader, GeneralEnvelope destinationEnvelope) throws Exception {
+
 	    final String responseCRS = request.getSRS();
-	
-	    // - first check if the responseCRS is present on the Coverage
-	    // ResponseCRSs list
-	    /*
-	    if (!meta.getSRS().contains(responseCRS)) {
-	        throw new WmsException("This Layer does not support the requested Response-CRS.");
-	    }
-		*/
-	    // - then create the Coordinate Reference System
 	    final CoordinateReferenceSystem targetCRS = CRS.decode(responseCRS);
-	
-	    // This is the CRS of the requested Envelope
+
+	    GeneralEnvelope originalEnvelope = coverageReader.getOriginalEnvelope();
+	    final CoordinateReferenceSystem cvCRS = originalEnvelope.getCoordinateReferenceSystem();
+
 	    final String requestCRS = request.getSRS();
-	
-	    // - first check if the requestCRS is present on the Coverage
-	    // RequestCRSs list
-	    /*
-	    if (!meta.getSRS().contains(requestCRS)) {
-	        throw new WmsException("This Layer does not support the requested CRS.");
-	    }
-		*/
-	    // - then create the Coordinate Reference System
 	    final CoordinateReferenceSystem sourceCRS = CRS.decode(requestCRS);
-	
+
+	    // this is the destination envelope in the coverage crs
 	    // This is the CRS of the Coverage Envelope
-	    final CoordinateReferenceSystem cvCRS = ((GeneralEnvelope) coverageReader
-	        .getOriginalEnvelope()).getCoordinateReferenceSystem();
 	    final MathTransform GCCRSTodeviceCRSTransformdeviceCRSToGCCRSTransform = CRS
 	        .findMathTransform(cvCRS, sourceCRS, true);
-	    final MathTransform GCCRSTodeviceCRSTransform = CRS.findMathTransform(cvCRS, targetCRS, true);
 	    final MathTransform deviceCRSToGCCRSTransform = GCCRSTodeviceCRSTransformdeviceCRSToGCCRSTransform
 	        .inverse();
-	
-	    com.vividsolutions.jts.geom.Envelope envelope = request.getBbox();
-	    GeneralEnvelope destinationEnvelope;
-	    final boolean lonFirst = sourceCRS.getCoordinateSystem().getAxis(0).getDirection().absolute()
-	                                      .equals(AxisDirection.EAST);
-	
-	    // the envelope we are provided with is lon,lat always
-	    if (!lonFirst) {
-	        destinationEnvelope = new GeneralEnvelope(new double[] {
-	                    envelope.getMinY(), envelope.getMinX()
-	                }, new double[] { envelope.getMaxY(), envelope.getMaxX() });
-	    } else {
-	        destinationEnvelope = new GeneralEnvelope(new double[] {
-	                    envelope.getMinX(), envelope.getMinY()
-	                }, new double[] { envelope.getMaxX(), envelope.getMaxY() });
-	    }
-	
-	    destinationEnvelope.setCoordinateReferenceSystem(sourceCRS);
-	
-	    // this is the destination envelope in the coverage crs
 	    final GeneralEnvelope destinationEnvelopeInSourceCRS = (!deviceCRSToGCCRSTransform
 	        .isIdentity()) ? CRS.transform(deviceCRSToGCCRSTransform, destinationEnvelope)
 	                       : new GeneralEnvelope(destinationEnvelope);
 	    destinationEnvelopeInSourceCRS.setCoordinateReferenceSystem(cvCRS);
-	
 	    /**
 	     * Reading Coverage on Requested Envelope
 	    */
@@ -345,11 +312,12 @@ public final class BilMapResponse extends RenderedImageMapResponse {
 	    parameters.put(AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString(),
 	        new GridGeometry2D(new GeneralGridEnvelope(destinationSize), destinationEnvelopeInSourceCRS));
 	
-	    final GridCoverage coverage = coverageReader.read(CoverageUtils.getParameters(
+	    final GridCoverage2D coverage = coverageReader.read(CoverageUtils.getParameters(
 	                coverageReader.getFormat().getReadParameters(), parameters, true));
 	
-	    if ((coverage == null) || !(coverage instanceof GridCoverage2D)) {
-	        throw new IOException("The requested coverage could not be found.");
+	    if (coverage == null) {
+	    	LOGGER.log(Level.FINE, "Failed to read coverage - continuing");
+	    	return null;
 	    }
 	
 	    /**

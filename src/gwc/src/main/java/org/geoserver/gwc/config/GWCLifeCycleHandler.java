@@ -30,6 +30,10 @@ public class GWCLifeCycleHandler implements GeoServerLifecycleHandler, Initializ
         LOGGER.fine("GWC life cycle handler created.");
     }
 
+    public void beforeReload() {
+        // nothing to do
+    }
+
     @Override
     public void onReload() {
         mediator.reload();

@@ -6,6 +6,7 @@
 package org.geoserver.wms.worldwind;
 
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;
@@ -15,6 +16,7 @@ import java.nio.ByteOrder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
@@ -48,8 +50,6 @@ import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.resources.coverage.CoverageUtilities;
 import org.geotools.util.logging.Logging;
-import org.opengis.coverage.grid.GridCoverage;
-import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
@@ -75,8 +75,6 @@ public final class BilMapResponse extends RenderedImageMapResponse {
     private static final String[] OUTPUT_FORMATS = {MIME_TYPE,"application/bil",
     	"application/bil8","application/bil16", "application/bil32" };
     
-    private WMS wmsConfig;
-
 	/** GridCoverageFactory. - Where do we use this again ?*/
 	private final static GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
 
@@ -91,7 +89,6 @@ public final class BilMapResponse extends RenderedImageMapResponse {
      */
     public BilMapResponse(final WMS wms) {
         super(OUTPUT_FORMATS,wms);
-        this.wmsConfig = wms;
     }
 
 	@Override
@@ -99,8 +96,7 @@ public final class BilMapResponse extends RenderedImageMapResponse {
 	        WMSMapContent mapContent) throws ServiceException, IOException {
 		//TODO: Write reprojected terrain tile
 		// TODO Get request tile size
-		GetMapRequest request = mapContent.getRequest();
-
+		final GetMapRequest request = mapContent.getRequest();
 		String bilEncoding = (String) request.getFormat();
 
 		int height = request.getHeight();
@@ -143,58 +139,36 @@ public final class BilMapResponse extends RenderedImageMapResponse {
     		}
 		}
 
-
-		/*
-		final ParameterValueGroup writerParams = format.getWriteParameters();
-        writerParams.parameter(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString())
-                    .setValue(wp);
-		*/
-		GridCoverageReader coverageReader = mapLayerInfo.getCoverageReader();
-
+		GridCoverage2DReader coverageReader = (GridCoverage2DReader) mapLayerInfo.getCoverageReader();
+	    GeneralEnvelope destinationEnvelope = new GeneralEnvelope(mapContent.getRenderingArea());
+		
 		/*
 		 * Try to use a gridcoverage style render
 		 */
 		GridCoverage2D subCov = null;
 		try {
-			subCov = getFinalCoverage(request,
-					mapLayerInfo, mapContent, (GridCoverage2DReader)coverageReader);
-		} catch (IndexOutOfBoundsException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FactoryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (TransformException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			subCov = getFinalCoverage(request, mapLayerInfo, mapContent, coverageReader, destinationEnvelope);
+		} catch (Exception e) {
+			LOGGER.severe("Could not get a subcoverage");
 		}
+
+		if (subCov == null)
+		{
+			LOGGER.fine("Creating coverage from a blank image");
+			BufferedImage emptyImage = new BufferedImage(width, height, BufferedImage.TYPE_USHORT_GRAY);
+			DataBuffer data = emptyImage.getRaster().getDataBuffer();
+			for (int i = 0; i < data.getSize(); ++i) {
+				data.setElem(i, 32768); // 0x0080 in file (2^15)
+			}
+			subCov = factory.create("uselessname", emptyImage, destinationEnvelope);
+		}
+
 		if(subCov!=null)
 		{
-			/*
-			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out));
-			writer.write(subCov.toString());
-			writer.flush();
-			writer.close();
-			*/
 	        image = subCov.getRenderedImage();
 	        if(image!=null)
 	        {
 	        	int dtype = image.getData().getDataBuffer().getDataType();
-	        	/* Throw exception if required to perform conversion */
-	        	/*
-	        	if((bilEncoding.equals("application/bil32"))&&(dtype!=DataBuffer.TYPE_FLOAT))	        	{
-	        		throw new ServiceException("Cannot fetch BIL float data,"+
-	        				"Wrong underlying data type");
-	        	}
-	        	if((bilEncoding.equals("application/bil16"))&&(dtype!=DataBuffer.TYPE_SHORT))	        	{
-	        		throw new ServiceException("Cannot fetch BIL int data,"+
-	        				"Wrong underlying data type");
-	        	}
-	        	if((bilEncoding.equals("application/bil8"))&&(dtype!=DataBuffer.TYPE_BYTE))	        	{
-	        		throw new ServiceException("Cannot fetch BIL byte data,"+
-	        				"Wrong underlying data type");
-	        	}
-	        	*/
 
 	        	RenderedImage transformedImage = image;
 
@@ -224,14 +198,17 @@ public final class BilMapResponse extends RenderedImageMapResponse {
 	        		bilEncoding = defaultDataType;
 	        	}
 
-	        	if((bilEncoding.equals("application/bil32"))&&(dtype!=DataBuffer.TYPE_FLOAT))	        	{
-	        	    transformedImage = FormatDescriptor.create(transformedImage,DataBuffer.TYPE_FLOAT ,null);
+	        	if((bilEncoding.equals("application/bil32")) && (dtype != DataBuffer.TYPE_FLOAT))
+	        	{
+	        	    transformedImage = FormatDescriptor.create(transformedImage, DataBuffer.TYPE_FLOAT, null);
 	        	}
-	        	if((bilEncoding.equals("application/bil16"))&&(dtype!=DataBuffer.TYPE_SHORT))	        	{
-	        	    transformedImage = FormatDescriptor.create(transformedImage,DataBuffer.TYPE_SHORT ,null);
+	        	else if((bilEncoding.equals("application/bil16")) && (dtype != DataBuffer.TYPE_SHORT))
+	        	{
+	        	    transformedImage = FormatDescriptor.create(transformedImage, DataBuffer.TYPE_SHORT, null);
 	        	}
-	        	if((bilEncoding.equals("application/bil8"))&&(dtype!=DataBuffer.TYPE_BYTE))	        	{
-	        	    transformedImage = FormatDescriptor.create(transformedImage,DataBuffer.TYPE_BYTE ,null);
+	        	else if((bilEncoding.equals("application/bil8")) && (dtype != DataBuffer.TYPE_BYTE))
+	        	{
+	        	    transformedImage = FormatDescriptor.create(transformedImage, DataBuffer.TYPE_BYTE, null);
 	        	}
 
 	        	TiledImage tiled = new TiledImage(transformedImage,width,height);
@@ -265,26 +242,25 @@ public final class BilMapResponse extends RenderedImageMapResponse {
 
 		}
 	}
-
+	
 	/**
 	 * getFinalCoverage - message the RenderedImage into Bil
 	 *
 	 * @param request CoverageRequest
 	 * @param meta CoverageInfo
-	 * @param parameters
 	 * @param mapContent Context for GetMap request.
-	 * @param coverage GridCoverage
+	 * @param coverageReader reader
+	 * 
 	 * @return GridCoverage2D
-	 * @throws WcsException
-	 * @throws IOException
-	 * @throws IndexOutOfBoundsException
-	 * @throws FactoryException
-	 * @throws TransformException
+	 * 
+	 * @throws Exception an error occurred
 	 */
 	private static GridCoverage2D getFinalCoverage(GetMapRequest request, MapLayerInfo meta,
-	        WMSMapContent mapContent, GridCoverage2DReader coverageReader)
-	    throws WcsException, IOException, IndexOutOfBoundsException, FactoryException,
-	        TransformException {
+			 WMSMapContent mapContent, GridCoverage2DReader coverageReader,
+			 GeneralEnvelope destinationEnvelope)
+		throws WcsException, IOException, IndexOutOfBoundsException, FactoryException,
+			TransformException
+	{
 	    // This is the final Response CRS
 	    final String responseCRS = request.getSRS();
 
@@ -301,78 +277,36 @@ public final class BilMapResponse extends RenderedImageMapResponse {
 	    final CoordinateReferenceSystem cvCRS = ((GeneralEnvelope) coverageReader
 	        .getOriginalEnvelope()).getCoordinateReferenceSystem();
 
-	    GeneralEnvelope destinationEnvelope = new GeneralEnvelope(mapContent.getRenderingArea());
-
 	    // this is the destination envelope in the coverage crs
         final GeneralEnvelope destinationEnvelopeInSourceCRS = CRS.transform(destinationEnvelope,
                 cvCRS);
 
 	    /**
 	     * Reading Coverage on Requested Envelope
-	    */
+	     */
 	    Rectangle destinationSize = null;
-	    /*
-	    if ((request.getGridLow() != null) && (request.getGridHigh() != null)) {
-	        final int[] lowers = new int[] {
-	                request.getGridLow()[0].intValue(), request.getGridLow()[1].intValue()
-	            };
-	        final int[] highers = new int[] {
-	                request.getGridHigh()[0].intValue(), request.getGridHigh()[1].intValue()
-	            };
-	
-	        destinationSize = new Rectangle(lowers[0], lowers[1], highers[0], highers[1]);
-	    } else {
-	        //destinationSize = coverageReader.getOriginalGridRange().toRectangle();
-	        throw new WmsException("Neither Grid Size nor Grid Resolution have been specified.");
-	    }
-		*/
 	    destinationSize = new Rectangle(0,0,request.getHeight(),request.getWidth());
+
 	    /**
 	     * Checking for supported Interpolation Methods
 	     */
+	    Interpolation interpolation = Interpolation.getInstance(Interpolation.INTERP_BILINEAR);	    
 	    
-	    /*
-	    Interpolation interpolation = Interpolation.getInstance(Interpolation.INTERP_NEAREST);
-	    final String interpolationType = request.getInterpolation();
-	
-	    if (interpolationType != null) {
-	        boolean interpolationSupported = false;
-	        Iterator internal = meta.getInterpolationMethods().iterator();
-	
-	        while (internal.hasNext()) {
-	            if (interpolationType.equalsIgnoreCase((String) internal.next())) {
-	                interpolationSupported = true;
-	            }
-	        }
-	
-	        if (!interpolationSupported) {
-	            throw new WcsException(
-	                "The requested Interpolation method is not supported by this Coverage.");
-	        } else {
-	            if (interpolationType.equalsIgnoreCase("bilinear")) {
-	                interpolation = Interpolation.getInstance(Interpolation.INTERP_BILINEAR);
-	            } else if (interpolationType.equalsIgnoreCase("bicubic")) {
-	                interpolation = Interpolation.getInstance(Interpolation.INTERP_BICUBIC);
-	            }
-	        }
-	    }
-		*/
-	    Interpolation interpolation = Interpolation.getInstance(Interpolation.INTERP_BILINEAR);
-	    
-	    Map<Object,Object> parameters = new HashMap<Object,Object>();
 	    // /////////////////////////////////////////////////////////
 	    //
 	    // Reading the coverage
 	    //
 	    // /////////////////////////////////////////////////////////
+	    Map<Object,Object> parameters = new HashMap<Object,Object>();
 	    parameters.put(AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString(),
 	        new GridGeometry2D(new GeneralGridEnvelope(destinationSize), destinationEnvelopeInSourceCRS));
 	
-	    final GridCoverage coverage = coverageReader.read(CoverageUtils.getParameters(
+	    final GridCoverage2D coverage = coverageReader.read(CoverageUtils.getParameters(
 	                coverageReader.getFormat().getReadParameters(), parameters, true));
 	
-	    if ((coverage == null) || !(coverage instanceof GridCoverage2D)) {
-	        throw new IOException("The requested coverage could not be found.");
+	    if (coverage == null) {
+	    	LOGGER.log(Level.FINE, "Failed to read coverage - continuing");
+	    	return null;
 	    }
 
 	    /**
@@ -397,11 +331,8 @@ public final class BilMapResponse extends RenderedImageMapResponse {
 	    GridCoverage2D subCoverage = croppedGridCoverage;
 	    final GeneralGridEnvelope newGridrange = new GeneralGridEnvelope(destinationSize);
 
-	    /*if (!newGridrange.equals(croppedGridCoverage.getGridGeometry()
-	                    .getGridRange())) {*/
 	    subCoverage = BilWCSUtils.scale(croppedGridCoverage, newGridrange, croppedGridCoverage, cvCRS,
 	            destinationEnvelopeInSourceCRS);
-	    //}
 
 	    /**
 	     * Reproject

@@ -21,17 +21,6 @@
     <version>${gs.version}</version>
     <name>Web Processing Service Module</name>
     
-    <repositories>
-        <repository> 
-            <id>jaitools-snapshots</id> 
-            <name>jaitools snapshots</name> 
-            <url>http://oss.sonatype.org/content/repositories/snapshots/</url> 
-            <snapshots> 
-                <enabled>true</enabled> 
-            </snapshots> 
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
             <groupId>org.geoserver</groupId>

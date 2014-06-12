@@ -1,7 +1,5 @@
 package org.geoserver.script.py;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import org.geoserver.script.wps.ScriptProcessFactory;
@@ -9,8 +7,6 @@ import org.geoserver.script.wps.ScriptProcessTestSupport;
 import org.geoserver.wps.process.RawData;
 import org.geotools.data.Parameter;
 import org.opengis.feature.type.Name;
-
-import com.vividsolutions.jts.geom.Geometry;
 
 public class PyRawDataTest extends ScriptProcessTestSupport {
 

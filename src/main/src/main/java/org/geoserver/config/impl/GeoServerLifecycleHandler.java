@@ -28,7 +28,13 @@ public interface GeoServerLifecycleHandler {
 
 
     /**
-     * Called as part of {@link GeoServer#reload()}
+     * Called as {@link GeoServer#reload()} begins its work. A subsequent call to
+     * {@link #onReload()} is guaranteed
+     */
+    void beforeReload();
+
+    /**
+     * Called when {@link GeoServer#reload()} is completed
      */
     void onReload();
 

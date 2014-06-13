@@ -4,9 +4,10 @@
  */
 package org.geoserver.wps;
 
+import static org.geoserver.wps.WPSInitializer.lookupNewProcessGroups;
+
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.impl.GeoServerLifecycleHandler;
-import static org.geoserver.wps.WPSInitializer.lookupNewProcessGroups;
 
 /**
  * Life cycle listener for WPS. 
@@ -30,6 +31,10 @@ public class WPSLifecycleHandler implements GeoServerLifecycleHandler {
         lookupNewProcessGroups(getWPS(), geoServer);
     }
     
+    public void beforeReload() {
+        // nothing to do
+    }
+
     @Override
     public void onDispose() {
     }

@@ -50,6 +50,10 @@ public class WMSLifecycleHandler implements GeoServerLifecycleHandler, Applicati
         shutdownAnimatorExecutorService();
     }
 
+    public void beforeReload() {
+        // nothing to do
+    }
+
     public void onReload() {
         // clear the caches for good measure
         onReset();

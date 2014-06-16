@@ -45,7 +45,11 @@ public class PagedUniqueProcessPPIO extends CDataPPIO {
     @Override
     public void encode(Object value, OutputStream os) throws Exception {
         PagedUniqueProcess.Results result = (PagedUniqueProcess.Results) value;
-        JSONObject obj = result.toJSON();
+        JSONObject obj = new JSONObject();
+        obj.put("featureTypeName", result.getFeatureTypeName());
+        obj.put("fieldName", result.getFieldName());
+        obj.put("size", result.getSize());
+        obj.put("values", result.getValues());
         Writer writer = new OutputStreamWriter(os);
         obj.writeJSONString(writer);
         writer.flush();

@@ -59,16 +59,19 @@ public class PagedUniqueProcess implements GeoServerProcess {
             this.size = size;
             this.values = values;
         }
-        
-        public JSONObject toJSON() {
-            JSONObject obj = new JSONObject();
-            obj.put("featureTypeName", featureTypeName);
-            obj.put("fieldName", fieldName);
-            obj.put("size", size);
-            obj.put("values", values);
-            return obj;
+        public String getFeatureTypeName() {
+            return featureTypeName;
         }
-    
+        public String getFieldName() {
+            return fieldName;
+        }
+        public int getSize() {
+            return size;
+        }
+        public List<?> getValues() {
+            return values;
+        }
+        
     }
     
     @DescribeResult(name = "result", type = Results.class, description = "List of values")

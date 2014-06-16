@@ -21,7 +21,7 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
     
     @Test
     public void testWfs110GetFeature() {
-        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&maxFeatures=2&startIndex=2");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&outputFormat=gml32&maxFeatures=2&startIndex=2");
         LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
         // expecting mf3 and mf4
         assertXpathCount(2, "//gsml:MappedFeature", doc);
@@ -41,6 +41,15 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
         // expecting mf2
         assertXpathCount(1, "//gsml:MappedFeature", doc);
         assertXpathEvaluatesTo("mf2", "//gsml:MappedFeature/@gml:id", doc);
+    }
+    
+    @Test
+    public void testGetFeatureDenormalised() {
+        Document doc = getAsDOM("wfs?request=GetFeature&version=2.0.0&typename=gsml:GeologicUnit&count=1&startIndex=1");
+        LOGGER.info("WFS GetFeature&typename=gsml:GeologicUnit response:\n" + prettyString(doc));
+        // expecting gu.25682
+        assertXpathCount(1, "//gsml:GeologicUnit", doc);
+        assertXpathEvaluatesTo("gu.25682", "//gsml:GeologicUnit/@gml:id", doc);
     }
     // test sortby
     

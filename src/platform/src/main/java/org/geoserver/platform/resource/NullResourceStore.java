@@ -120,6 +120,16 @@ final class NullResourceStore implements ResourceStore {
             public String toString() {
                 return path;
             }
+
+            @Override
+            public boolean delete() {
+                return false;
+            }
+
+            @Override
+            public boolean renameTo(Resource dest) {
+                return false;
+            }
         };
     }
 

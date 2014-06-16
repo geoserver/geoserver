@@ -181,4 +181,18 @@ public interface Resource {
      * @return
      */
     Type getType();
+    
+    /**
+     * Delete the resource.
+     * @see File#delete()
+     * @return
+     */
+    boolean delete();
+    
+    /**
+     * Move the resource to the specified location.
+     * @see File#renameTo(File)
+     * @return
+     */
+    boolean renameTo(Resource dest);
 }

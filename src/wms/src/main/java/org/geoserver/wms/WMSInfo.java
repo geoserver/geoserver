@@ -43,19 +43,27 @@ public interface WMSInfo extends ServiceInfo {
     List<String> getSRS();
     
     /**
-     * A set of mime types allowed for a getMap request. If the set is 
-     * empty, each mime type is allowed
+     * A set of mime types allowed for a getMap request. Active
+     * if {@link #isGetMapMimeTypeCheckingEnabled()} returns <code>true</code>
      * 
      */
     Set<String> getGetMapMimeTypes();
+
+    boolean isGetMapMimeTypeCheckingEnabled();
+
+    void setGetMapMimeTypeCheckingEnabled(boolean getMapMimeTypeCheckingEnabled);
     
-    
+            
     /**
-     * A set of mime types allowed for a getFeatureInfo request. If the set is 
-     * empty, each mime type is allowed
+     * A set of mime types allowed for a getFeatureInfo request. Active
+     * if {@link #isGetFeatureInfoMimeTypeCheckingEnabled()} returns <code>true</code>
      * 
      */
     Set<String> getGetFeatureInfoMimeTypes();
+    
+    boolean isGetFeatureInfoMimeTypeCheckingEnabled();
+    
+    void setGetFeatureInfoMimeTypeCheckingEnabled(boolean getFeatureInfoMimeTypeCheckingEnabled);
     
     /**
      * Flag controlling whether the WMS service, for each layer, should declare a bounding box 

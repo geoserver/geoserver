@@ -186,6 +186,9 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         WMSInfo wms = getWMS().getServiceInfo();
         GetMapOutputFormat format = new RenderedImageMapOutputFormat(getWMS());        
         wms.getGetMapMimeTypes().add(format.getMimeType());
+        wms.setGetMapMimeTypeCheckingEnabled(true);
+        
+
         getGeoServer().save(wms);
 
      // check mime type allowed
@@ -201,6 +204,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 + "&width=550" + "&height=250" + "&srs=EPSG:4326");
         assertTrue(result.indexOf("ForbiddenFormat") > 0);        
                       
+        wms.setGetMapMimeTypeCheckingEnabled(false);
         wms.getGetMapMimeTypes().clear();
         getGeoServer().save(wms);
         

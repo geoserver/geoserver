@@ -400,6 +400,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         WMSInfo wms = getWMS().getServiceInfo();
         GetMapOutputFormat format = new RenderedImageMapOutputFormat(getWMS());        
         wms.getGetMapMimeTypes().add(format.getMimeType());
+        wms.setGetMapMimeTypeCheckingEnabled(true);
         getGeoServer().save(wms);
 
      // check mime type allowed
@@ -416,6 +417,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         assertTrue(result.indexOf("ForbiddenFormat") > 0);        
                       
         wms.getGetMapMimeTypes().clear();
+        wms.setGetMapMimeTypeCheckingEnabled(false);
         getGeoServer().save(wms);
         
         result = getAsString("wms?bbox=" + bbox

@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2014 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -725,7 +725,8 @@ public class GetMap {
      * 
      * @throws ServiceException
      *             if no specialization is configured for the output format specified in
-     *             <code>request</code> or if it can't be instantiated
+     *             <code>request</code> or if it can't be instantiated or the format is not
+     *             allowed
      */
     private GetMapOutputFormat getDelegate(final String outputFormat) throws ServiceException {
 
@@ -735,6 +736,9 @@ public class GetMap {
                     + outputFormat + " format", "InvalidFormat");
             e.setCode("InvalidFormat");
             throw e;
+        }
+        if (wms.isAllowedGetMapFormat(producer)==false) {
+            throw wms.unallowedGetMapFormatException(outputFormat);
         }
         return producer;
     }

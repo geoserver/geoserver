@@ -37,7 +37,10 @@ public class ImporterTestUtils {
         File file = file(path, dir);
         
         new VFSWorker().extractTo(file, dir);
-        file.delete();
+        if (!file.delete()) {
+            // fail early as tests will expect it's deleted
+            throw new IOException("deletion failed during extraction");
+        }
         
         return dir;
     }

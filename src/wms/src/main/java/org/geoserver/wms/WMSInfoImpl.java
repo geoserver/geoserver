@@ -23,9 +23,14 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
     WMSInterpolation interpolation = WMSInterpolation.Nearest;
     
+    
+    boolean getFeatureInfoMimeTypeCheckingEnabled;
     Set<String> getFeatureInfoMimeTypes = new HashSet<String>();
     
+    boolean getMapMimeTypeCheckingEnabled;
     Set<String> getMapMimeTypes = new HashSet<String>();
+    
+    
 
     /**
      * This property is transient in 2.1.x series and stored under the metadata map with key
@@ -161,5 +166,21 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
     public void setGetMapMimeTypes(Set<String> getMapMimeTypes) {
         this.getMapMimeTypes = getMapMimeTypes;
+    }
+
+    public boolean isGetFeatureInfoMimeTypeCheckingEnabled() {
+        return getFeatureInfoMimeTypeCheckingEnabled;
+    }
+
+    public void setGetFeatureInfoMimeTypeCheckingEnabled(boolean getFeatureInfoMimeTypeCheckingEnabled) {
+        this.getFeatureInfoMimeTypeCheckingEnabled = getFeatureInfoMimeTypeCheckingEnabled;
+    }
+
+    public boolean isGetMapMimeTypeCheckingEnabled() {
+        return getMapMimeTypeCheckingEnabled;
+    }
+
+    public void setGetMapMimeTypeCheckingEnabled(boolean getMapMimeTypeCheckingEnabled) {
+        this.getMapMimeTypeCheckingEnabled = getMapMimeTypeCheckingEnabled;
     }
 }

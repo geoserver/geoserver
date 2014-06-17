@@ -645,9 +645,10 @@ public class WMS implements ApplicationContextAware {
      * @return
      */
     public boolean isAllowedGetMapFormat(GetMapOutputFormat format) {
-        Set<String> mimeTypes = getServiceInfo().getGetMapMimeTypes();
-        if (mimeTypes==null || mimeTypes.isEmpty())
+        
+        if  (getServiceInfo().isGetMapMimeTypeCheckingEnabled()==false)
             return true;
+        Set<String> mimeTypes = getServiceInfo().getGetMapMimeTypes();
         return mimeTypes.contains(format.getMimeType());
     }
     
@@ -658,9 +659,9 @@ public class WMS implements ApplicationContextAware {
      * @return
      */
     public boolean isAllowedGetFeatureInfoFormat(GetFeatureInfoOutputFormat format) {
-        Set<String> mimeTypes = getServiceInfo().getGetFeatureInfoMimeTypes();
-        if (mimeTypes==null || mimeTypes.isEmpty())
+        if (getServiceInfo().isGetFeatureInfoMimeTypeCheckingEnabled()==false)
             return true;
+        Set<String> mimeTypes = getServiceInfo().getGetFeatureInfoMimeTypes();
         return mimeTypes.contains(format.getContentType());
     }
 

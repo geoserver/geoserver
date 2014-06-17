@@ -220,6 +220,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         WMSInfo wms = getWMS().getServiceInfo();
         GetFeatureInfoOutputFormat format = new TextFeatureInfoOutputFormat(getWMS());        
         wms.getGetFeatureInfoMimeTypes().add(format.getContentType());
+        wms.setGetFeatureInfoMimeTypeCheckingEnabled(true);
         getGeoServer().save(wms);
 
         // check mime type allowed
@@ -241,6 +242,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         assertTrue(result.indexOf("ForbiddenFormat") > 0);        
         
         wms.getGetFeatureInfoMimeTypes().clear();
+        wms.setGetFeatureInfoMimeTypeCheckingEnabled(false);
         getGeoServer().save(wms);
  
         request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg" +

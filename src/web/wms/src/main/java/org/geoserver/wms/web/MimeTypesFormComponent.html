@@ -4,7 +4,20 @@
 	xmlns:wicket="http://wicket.apache.org/">
 <body>
 	<wicket:panel>
-    	<div wicket:id="palette"></div>
+		<ul>
+			<li>
+				<div>
+					<input wicket:id="mimeTypeCheckingEnabled" type="checkbox"
+						class="field checkbox" /> 
+					<label class="choice"><wicket:message
+							key="mimeTypeCheckingEnabled"></wicket:message>
+					</label>
+				</div>
+			</li>
+			<li>
+				<div wicket:id="palette"></div>
+			</li>
+		</ul>
 	</wicket:panel>
 </body>
 </html>

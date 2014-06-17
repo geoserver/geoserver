@@ -42,6 +42,8 @@ public class CapabilitiesAllowedMimeTypesTest extends WMSTestSupport {
         WMSInfo wms = getWMS().getServiceInfo();
         wms.getGetMapMimeTypes().add(getMapFormat.getMimeType());
         wms.getGetFeatureInfoMimeTypes().add(getInfoFormat.getContentType());
+        wms.setGetMapMimeTypeCheckingEnabled(true);
+        wms.setGetFeatureInfoMimeTypeCheckingEnabled(true);
         getGeoServer().save(wms);
     }
 
@@ -51,6 +53,8 @@ public class CapabilitiesAllowedMimeTypesTest extends WMSTestSupport {
         WMSInfo wms = getWMS().getServiceInfo();
         wms.getGetMapMimeTypes().clear();
         wms.getGetFeatureInfoMimeTypes().clear();
+        wms.setGetMapMimeTypeCheckingEnabled(false);
+        wms.setGetFeatureInfoMimeTypeCheckingEnabled(false);
         getGeoServer().save(wms);
     }
 

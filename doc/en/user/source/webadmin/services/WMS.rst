@@ -73,7 +73,14 @@ Anti-aliasing is a technique for making edges appear smoother by filling in the 
 Restricting MIME types for GetMap and GetFeatureInfo requests
 -------------------------------------------------------------
 
-GeoServer supports restricting formats for WMS GetMap and WMS GetFeatureInfo requests. The following figure shows an example. The MIME types
+GeoServer supports restricting formats for WMS GetMap and WMS GetFeatureInfo requests. The default is to allow all MIME types
+for both kinds of request.
+
+.. figure:: ../images/service_WMS_allMimeTypesAllowed.png
+   :align: center
+
+
+The following figure shows an example for MIME type restriction. The MIME types
 **image/png** and **text/html;subtype=openlayers** are allowed for GetMap requests, the MIME types **text/html** and **text/plain** are allowed for
 GetFeatureInfo requests. A GetMap/GetFeatureInfo request with a MIME type not allowed will result in a service exception reporting the error.    
 
@@ -81,8 +88,12 @@ GetFeatureInfo requests. A GetMap/GetFeatureInfo request with a MIME type not al
    :align: center
      
      
-The default configuration is to allow all MIME types for both request types. An empty allowed list  or an allowed list containing all possible MIME types causes
-GeoServer to disable the  MIME type checking.     
+.. note::
+   
+   Activating MIME type restriction and not allowing at least one MIME type disables the particular
+   request.
+   
+    
      
      
      

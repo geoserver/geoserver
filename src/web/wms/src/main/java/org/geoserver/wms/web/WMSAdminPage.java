@@ -8,6 +8,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.wicket.Component;
@@ -30,6 +31,7 @@ import org.apache.wicket.model.util.CollectionModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.validation.validator.MinimumValidator;
 import org.apache.wicket.validation.validator.RangeValidator;
+import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.util.MapModel;
@@ -185,64 +187,52 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         form.add(new CheckBox("scalehint.mapunitsPixel",defaultedModel(metadataModel, WMS.SCALEHINT_MAPUNITS_PIXEL, WMS.SCALEHINT_MAPUNITS_PIXEL_DEFAULT)));
         
         // mime types for GetMap
-        TreeSet<String> getMapAllowed = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
         getMapAvailable = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
         for (GetMapOutputFormat format : GeoServerExtensions.extensions(GetMapOutputFormat.class)) {
             getMapAvailable.add(format.getMimeType());
-            if (WMS.get().isAllowedGetMapFormat(format))
-                getMapAllowed.add(format.getMimeType());                
-        }
-        
+        }        
         
         List<String> getMapSelected = new ArrayList<String>();
-        getMapSelected.addAll(getMapAllowed);
+        getMapSelected.addAll(new PropertyModel<Set<String>>(info, "getMapMimeTypes").getObject());
         List<String> getMapChoices = new ArrayList<String>();
         getMapChoices.addAll(getMapAvailable);
                                
         form.add(getMapMimeTypesComponent= new MimeTypesFormComponent("getMapMimeTypes",
-                new ListModel<String>(getMapSelected),new CollectionModel<String>(getMapChoices)));
+                new ListModel<String>(getMapSelected),new CollectionModel<String>(getMapChoices),
+                new PropertyModel<Boolean>(info, "getMapMimeTypeCheckingEnabled").getObject()));
         
         // mime types for GetFeatueInfo
-        TreeSet<String> getFeatureInfoAllowed = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
         getFeatureInfoAvailable = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
         for (GetFeatureInfoOutputFormat format : GeoServerExtensions.extensions(GetFeatureInfoOutputFormat.class)) {
             getFeatureInfoAvailable.add(format.getContentType());
-            if (WMS.get().isAllowedGetFeatureInfoFormat(format))
-                getFeatureInfoAllowed.add(format.getContentType());
         }
-        
-            
+                    
         List<String> getFeatureInfoSelected = new ArrayList<String>();
-        getFeatureInfoSelected.addAll(getFeatureInfoAllowed);
+        getFeatureInfoSelected.addAll(new PropertyModel<Set<String>>(info, "getFeatureInfoMimeTypes").getObject());
         List<String> getFeatureInfoChoices = new ArrayList<String>();
         getFeatureInfoChoices.addAll(getFeatureInfoAvailable);
                                
         form.add(getFeatureInfoMimeTypesComponent =new MimeTypesFormComponent("getFeatureInfoMimeTypes",
-                new ListModel<String>(getFeatureInfoSelected),new CollectionModel<String>(getFeatureInfoChoices)));                
-                
-                            
+                new ListModel<String>(getFeatureInfoSelected),new CollectionModel<String>(getFeatureInfoChoices),
+                new PropertyModel<Boolean>(info, "getFeatureInfoMimeTypeCheckingEnabled").getObject()));                                                           
         
     }
     
     @Override
     protected void handleSubmit(WMSInfo info) {
-        
-        // store the selected mime types. 
-        // if the selection is empty, store an empty collection --> no MIME type access control
-        // if all types are selected, store an empty collection --> no MIME type access control
-        // Otherwise, mime type access control is active
-        
-        info.getGetMapMimeTypes().clear();
-        int selected = getMapMimeTypesComponent.getPalette().getModelCollection().size(); 
-        if ( selected > 0 && selected < getMapAvailable.size()) {                 
+
+        info.setGetMapMimeTypeCheckingEnabled(getMapMimeTypesComponent.isMimeTypeCheckingEnabled());
+        if (info.isGetMapMimeTypeCheckingEnabled())
             info.getGetMapMimeTypes().addAll(getMapMimeTypesComponent.getPalette().getModelCollection());
-        }
-               
-        info.getGetFeatureInfoMimeTypes().clear();
-        selected = getFeatureInfoMimeTypesComponent.getPalette().getModelCollection().size();
-        if (selected > 0 && selected < getFeatureInfoAvailable.size()) {                
+        else 
+            info.getGetMapMimeTypes().clear();
+        
+        info.setGetFeatureInfoMimeTypeCheckingEnabled(getFeatureInfoMimeTypesComponent.isMimeTypeCheckingEnabled());
+        if (info.isGetFeatureInfoMimeTypeCheckingEnabled())
             info.getGetFeatureInfoMimeTypes().addAll(getFeatureInfoMimeTypesComponent.getPalette().getModelCollection());
-        }                
+        else
+            info.getGetFeatureInfoMimeTypes().clear();
+        
         super.handleSubmit(info);
     }
     

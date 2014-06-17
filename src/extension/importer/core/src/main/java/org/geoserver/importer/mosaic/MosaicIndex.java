@@ -82,7 +82,12 @@ public class MosaicIndex {
                     || shpFileType != null;
             }
         })) {
-            f.delete();
+            if (!f.delete()) {
+                // throwing exception here caused sporadic test failures on
+                // windows related to file locking but only in the cleanup
+                // method SystemTestData.tearDown
+                 LOGGER.warning("unable to delete mosaic file " + f.getAbsolutePath());
+            }
         }
     }
 

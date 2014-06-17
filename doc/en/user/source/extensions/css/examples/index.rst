@@ -9,5 +9,6 @@ The following pages contain CSS styling examples grouped by specific topics.
    :maxdepth: 2
 
    randomfills
+   transformation
    kml
    misc

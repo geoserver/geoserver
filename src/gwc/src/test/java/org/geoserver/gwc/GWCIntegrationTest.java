@@ -6,10 +6,14 @@ package org.geoserver.gwc;
 
 import static org.geoserver.data.test.MockData.BASIC_POLYGONS;
 import static org.geoserver.gwc.GWC.tileLayerName;
+import static org.hamcrest.Matchers.equalToIgnoringCase;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -18,10 +22,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.namespace.QName;
 
 import org.apache.commons.httpclient.util.DateUtil;
 import org.apache.commons.io.FileUtils;
@@ -37,6 +45,7 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.layer.CatalogConfiguration;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
@@ -54,11 +63,14 @@ import org.geowebcache.diskquota.QuotaStore;
 import org.geowebcache.diskquota.jdbc.JDBCConfiguration;
 import org.geowebcache.diskquota.jdbc.JDBCConfiguration.ConnectionPoolConfiguration;
 import org.geowebcache.diskquota.jdbc.JDBCQuotaStore;
+import org.geowebcache.filter.parameters.StringParameterFilter;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.GridSetBroker;
 import org.geowebcache.grid.GridSubset;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.TileLayerDispatcher;
+import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -71,10 +83,40 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     static final String FLAT_LAYER_GROUP = "flatLayerGroup";
     static final String NESTED_LAYER_GROUP = "nestedLayerGroup";
     static final String CONTAINER_LAYER_GROUP = "containerLayerGroup";
+    
+    static final String TEST_WORKSPACE_NAME = "testWorkspace";
+    static final String TEST_WORKSPACE_URI = "http://geoserver.org/GWCIntegerationTest/"+TEST_WORKSPACE_NAME;
+    static final String WORKSPACED_STYLE_NAME = "workspacedStyle";
+    static final String WORKSPACED_STYLE_FILE = "workspacedStyle.sld";
+    static final String WORKSPACED_LAYER = "workspacedLayer";
+    static final QName WORKSPACED_LAYER_QNAME = new QName(TEST_WORKSPACE_URI, WORKSPACED_LAYER, TEST_WORKSPACE_NAME);
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
+        
+        Catalog catalog = getCatalog();
+        testData.addWorkspace(TEST_WORKSPACE_NAME, TEST_WORKSPACE_URI, catalog);
+        WorkspaceInfo wi = catalog.getWorkspaceByName(TEST_WORKSPACE_NAME);
+        testData.addStyle(wi, WORKSPACED_STYLE_NAME, WORKSPACED_STYLE_FILE, this.getClass(), catalog);
+        
+        assertThat(catalog.getStyleByName(WORKSPACED_STYLE_NAME), Matchers.describedAs("Style %0 should not be in the global workspace.", (nullValue()), WORKSPACED_STYLE_NAME));
+        assertThat(catalog.getStyleByName(wi, WORKSPACED_STYLE_NAME), Matchers.describedAs("Style %0 should be in workspace %1.", (not(nullValue())), WORKSPACED_STYLE_NAME, TEST_WORKSPACE_NAME));
+
+        Map<LayerProperty, Object> props = new HashMap<>();
+        props.put(LayerProperty.STYLE, WORKSPACED_STYLE_NAME);
+        testData.addVectorLayer(WORKSPACED_LAYER_QNAME, props, this.getClass(), catalog);
+        LayerInfo li = catalog.getLayerByName(getLayerId(WORKSPACED_LAYER_QNAME));
+        li.setDefaultStyle(catalog.getStyleByName(wi, WORKSPACED_STYLE_NAME));
+        catalog.save(li);
+        
+        GeoServerTileLayer tl = GWC.get().getTileLayer(li);
+        
+        StringParameterFilter wsFilter = new StringParameterFilter();
+        wsFilter.setKey("WORKSPACE");
+        wsFilter.setDefaultValue("");
+        wsFilter.setValues(Arrays.asList("", TEST_WORKSPACE_NAME));
+        tl.getInfo().addParameterFilter(wsFilter);
         
         GWC.get().getConfig().setDirectWMSIntegrationEnabled(false);
     }
@@ -85,6 +127,16 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         MockHttpServletResponse sr = getAsServletResponse("gwc/service/wmts?request=GetTile&layer="
                 + layerId
                 + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
+        assertEquals(200, sr.getErrorCode());
+        assertEquals("image/png", sr.getContentType());
+    }
+    
+    @Test 
+    public void testWorkspacedStyle() throws Exception {
+        String layerId = String.format("%s:%s", TEST_WORKSPACE_NAME, WORKSPACED_LAYER);
+        MockHttpServletResponse sr = getAsServletResponse("gwc/service/wmts?request=GetTile&layer="
+                + layerId
+                + "&format=image/png&tilematrixset=EPSG:4326&workspace="+TEST_WORKSPACE_NAME+"&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
         assertEquals(200, sr.getErrorCode());
         assertEquals("image/png", sr.getContentType());
     }
@@ -353,6 +405,35 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         assertEquals(200, response.getStatusCode());
         assertEquals("image/png", response.getContentType());
         assertEquals(qualifiedName, response.getHeader("geowebcache-layer"));
+    }
+    
+    @Test public void testDirectWMSIntegrationWithVirtualServicesAndWorkspacedStyle() throws Exception {
+        final GWC gwc = GWC.get();
+        gwc.getConfig().setDirectWMSIntegrationEnabled(true);
+
+        final String qualifiedName = super.getLayerId(WORKSPACED_LAYER_QNAME);
+        final String localName = WORKSPACED_LAYER_QNAME.getLocalPart();
+
+        final TileLayer tileLayer = gwc.getTileLayerByName(qualifiedName);
+        assertNotNull(tileLayer);
+        boolean directWMSIntegrationEndpoint = true;
+        String request = TEST_WORKSPACE_NAME
+                + "/"
+                + buildGetMap(directWMSIntegrationEndpoint, localName, "EPSG:4326", null, tileLayer)
+                + "&tiled=true";
+
+        MockHttpServletResponse response = getAsServletResponse(request);
+
+        assertEquals(200, response.getStatusCode());
+        assertEquals("image/png", response.getContentType());
+        assertEquals(qualifiedName, response.getHeader("geowebcache-layer"));
+        assertThat(response.getHeader("geowebcache-cache-result"), equalToIgnoringCase("MISS"));
+        
+        MockHttpServletResponse response2 = getAsServletResponse(request);
+        assertEquals(200, response2.getStatusCode());
+        assertEquals("image/png", response2.getContentType());
+        assertEquals(qualifiedName, response2.getHeader("geowebcache-layer"));
+        assertThat(response2.getHeader("geowebcache-cache-result"), equalToIgnoringCase("HIT"));
     }
 
     @Test public void testDirectWMSIntegrationWithVirtualServicesHiddenLayer() throws Exception {

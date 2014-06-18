@@ -32,6 +32,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.GeoServerPersister;
 import org.geoserver.config.LoggingInfo;
@@ -400,7 +401,14 @@ public class SystemTestData extends CiteTestData {
      * @param scope Class from which to load sld resource from.
      */
     public void addStyle(WorkspaceInfo ws, String name, String filename, Class scope, Catalog catalog) throws IOException {
-        File styles = catalog.getResourceLoader().findOrCreateDirectory(data, "styles");
+        GeoServerDataDirectory dd = new GeoServerDataDirectory(catalog.getResourceLoader());
+        File styles;
+        if(ws==null) {
+            styles=dd.findOrCreateStyleDir();
+        } else {
+            styles = new File(dd.findOrCreateWorkspaceDir(ws), "styles");
+            styles.mkdir();
+        }
         String target = new File( filename ).getName();
         
         catalog.getResourceLoader().copyFromClassPath(filename, new File(styles, target ), scope);

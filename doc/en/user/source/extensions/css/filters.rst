@@ -1,13 +1,15 @@
-.. highlight:: css
+.. _extensions_css_filters:
 
-Filter Syntax
+Filter syntax
 =============
+
+.. highlight:: css
 
 Filters limit the set of features affected by a rule's properties.  There are
 several types of simple filters, which can be combined to provide more complex
 filters for rules.  
 
-Combining Filters
+Combining filters
 -----------------
 
 Combination is done in the usual CSS way.  A rule with two filters separated by
@@ -26,7 +28,7 @@ below)::
         fill: blue;
     }
 
-Filtering on Data Attributes
+Filtering on data attributes
 ----------------------------
 
 An attribute filter matches some attribute of the data (for example, a column
@@ -38,9 +40,10 @@ Supported predicate operators include the following:
 
 .. list-table:: 
     :widths: 15 85
+    :header-rows: 1
 
-    * - **Operator**
-      - **Meaning**
+    * - Operator
+      - Meaning
     * - ``=``  
       - The property must be exactly `equal` to the specified value.
     * - ``<>``
@@ -71,7 +74,7 @@ letters in the first half of the alphabet,  the rule would look like::
     The current implementation of property filters uses ECQL syntax, described
     on the `GeoTools documentation <http://docs.geotools.org/latest/userguide/library/cql/index.html>`_.
 
-Filtering on Type
+Filtering on type
 -----------------
 
 When dealing with data from multiple sources, it may be useful to provide rules
@@ -100,7 +103,7 @@ hash sign (``#``)::
     GeoServer layers, the CSS module deviates from standard CSS slightly in this
     regard.  Future revisions may use some form of munging to avoid this deviation.
 
-Filtering by Rendering Context (Scale)
+Filtering by rendering context (scale)
 --------------------------------------
 
 Often, there are aspects of a map that should change based on the context in
@@ -118,9 +121,10 @@ The context details that are provided are as follows:
 
 .. list-table::
     :widths: 20 80
+    :header-rows: 1
 
-    * - **Pseudo-Attribute**
-      - **Meaning**
+    * - Pseudo-Attribute
+      - Meaning
     * - @scale
       - The scale denominator for the current rendering.  More explicitly, this
         is the ratio of real-world distance to screen/rendered distance.
@@ -130,7 +134,7 @@ The context details that are provided are as follows:
     pseudo-attributes cannot use complex expressions and MUST take the form of
     <PROPERTY><OPERATOR><LITERAL>.
 
-Filtering Symbols
+Filtering symbols
 -----------------
 
 When using symbols to create graphics inline, you may want to apply some
@@ -138,35 +142,36 @@ styling options to them.  You can specify style attributes for built-in symbols 
 
 .. list-table::
     :widths: 30 70
+    :header-rows: 1
 
-    * - **PseudoSelector**
-      - **Meaning**
-    * - :mark 
+    * - PseudoSelector
+      - Meaning
+    * - ``:mark``
       - specifies that a rule applies to symbols used as point markers
-    * - :stroke 
+    * - ``:stroke`` 
       - specifies that a rule applies to symbols used as stroke patterns
-    * - :fill 
+    * - ``:fill``
       - specifies that a rule applies to symbols used as fill patterns
-    * - :symbol 
+    * - ``:symbol`` 
       - specifies that a rule applies to any symbol, regardless of which
         context it is used in
-    * - :nth-mark(n) 
+    * - ``:nth-mark(n)`` 
       - specifies that a rule applies to the symbol used for the nth stacked
         point marker on a feature.
-    * - :nth-stroke(n) 
+    * - ``:nth-stroke(n)`` 
       - specifies that a rule applies to the symbol used for the nth stacked
         stroke pattern on a feature.
-    * - :nth-fill(n) 
+    * - ``:nth-fill(n)``
       - specifies that a rule applies to the symbol used for the nth stacked
         fill pattern on a feature.
-    * - :nth-symbol(n) 
+    * - ``:nth-symbol(n)`` 
       - specifies that a rule applies to the symbol used for the nth stacked
         symbol on a feature, regardless of which context it is used in.
 
-For more discussion on using these selectors, see :doc:`/extensions/css/styled-marks`.
+For more discussion on using these selectors, see :ref:`extensions_css_styledmarks`.
 
-Not Filtering at All
---------------------
+Global rules
+------------
 
 Sometimes it is useful to have a rule that matches all features, for example,
 to provide some default styling for your map (remember, by default nothing is

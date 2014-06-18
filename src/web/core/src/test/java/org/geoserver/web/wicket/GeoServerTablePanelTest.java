@@ -4,13 +4,11 @@
  */
 package org.geoserver.web.wicket;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import junit.framework.TestCase;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
@@ -145,7 +143,7 @@ public class GeoServerTablePanelTest {
         }
         
         @Override
-        IModel getPropertyTitle(Property<Integer> property) {
+        protected IModel getPropertyTitle(Property<Integer> property) {
             return new Model(property.getName());
         }
         

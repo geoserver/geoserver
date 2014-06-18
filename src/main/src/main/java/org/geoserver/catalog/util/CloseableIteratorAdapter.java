@@ -7,6 +7,7 @@ package org.geoserver.catalog.util;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geotools.util.logging.Logging;
@@ -124,7 +125,11 @@ public class CloseableIteratorAdapter<T> implements CloseableIterator<T> {
 
     public static void close(Iterator<?> iterator) {
         if (iterator instanceof Closeable) {
-            Closeables.closeQuietly((Closeable) iterator);
+            try {
+                Closeables.close((Closeable) iterator, false);
+            } catch (IOException e) {
+                LOGGER.log(Level.FINE, "Ignoring exception on CloseableIteratorAdapter.close()", e);
+            }
         }
     }
 

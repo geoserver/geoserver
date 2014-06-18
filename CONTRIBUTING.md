@@ -2,7 +2,7 @@
 
 Contributors are asked to provide an assignment agreement for working on the project:
 
-* [assignment_agreement.pdf](http://docs.geoserver.org/latest/en/developer/_downloads/assignment_agreement.pdf)
+* [assignment_agreement.pdf](http://geoserver.org/comm/assignment_agreement.pdf)
 
 This agreement can be printed, signed, scanned and emailed to [Ellen McDermott ](mailto:emcdermott@openplans.org>) at OpenPlans. [OpenPlans](http://openplans.org/about/>)
 is the  non-profit which holds the GeoServer codebase for the community.
@@ -18,15 +18,15 @@ your own account.
 Assuming that `origin` points to your github repo the the patch workflow then becomes:
 
 1. Make the change.
-   `````
-       git checkout -b my_bugfix master
-       git add .
-       git commit-m "fixed bug xyz"
-   ````
+`````
+   git checkout -b my_bugfix master
+   git add .
+   git commit-m "fixed bug xyz"
+````
 2. Push the change up to your github repository.
-   ````  
-       git push origin my_bugfix
-   ````
+````  
+   git push origin my_bugfix
+````
 3. Visit your github repo page and issue the pull request. 
 
 4. At this point the core developers will be notified of the pull request and review it at the earliest convenience. Core developers will review the patch and might require changes or improvements to it, it will be up to the submitter to amend the pull request and keep it alive until it gets merged.

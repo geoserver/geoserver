@@ -32,7 +32,7 @@ create table "AggregateGeoFeature" (
     name varchar,
     "multiPointProperty" geometry('MULTIPOINT', 4326), 
     "multiCurveProperty" geometry('MULTILINESTRING', 4326), 
-    "multiSurfaceProperty" geometry('MULTILINESTRING', 4326), 
+    "multiSurfaceProperty" geometry('MULTIPOLYGON', 4326), 
     "doubleProperty" float not null,
     "intRangeProperty" varchar,
     "strProperty" varchar not null,

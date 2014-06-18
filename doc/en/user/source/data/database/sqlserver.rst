@@ -22,7 +22,7 @@ Installing the SQL Server extension
 GeoServer files
 ```````````````
 
-#. Download the SQL Server extension from the `GeoServer download page <http://geoserver.org/display/GEOS/Download>`_.
+#. Download the SQL Server extension from the `GeoServer download page <http://geoserver.org/download>`_.
 
    .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance!
 

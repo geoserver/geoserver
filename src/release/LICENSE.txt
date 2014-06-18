@@ -1,7 +1,7 @@
 GeoServer is distributed under the GNU General Public License Version 2.0 license:
 
     GeoServer, open geospatial information server
-    Copyright (C) 2001 - 2012 The Open Planning Project dba OpenPlans
+    Copyright (C) 2001-2014 OpenPlans
     http://openplans.org
     
     This program is free software; you can redistribute it and/or modify
@@ -36,9 +36,9 @@ GeoServer is distributed under the GNU General Public License Version 2.0 licens
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA 02110-1335  USA
 
-For latest contact information of The Open Planning Project see the 
-website at http://topp.openplans.org.  Current email is info@openplans.org
-and address is 349 W. 12th Street, New York, NY 10014.
+For latest contact information of OpenPlans see the website at
+http://openplans.org.  Current email is hello@openplans.org and address is 
+148 Lafayette Street, 12th Floor, New York, NY 10013.
 
 The full GPL license is available in this directory at GPL.txt
 
@@ -82,7 +82,7 @@ The GeoServer Project also thank J. M. G. Elliot for his improvements on
 Jef Poskanzer's GifEncoder.  Notice is included below on his Elliot's 
 release to public domain and Poskanzer's original notice (which is new
 BSD).  Source code is included in GeoServer source, with modifications done
-by David Blasby for TOPP.  
+by David Blasby for The Open Planning Project (now OpenPlans).  
 
 ------
 Since Gif89Encoder includes significant sections of code from Jef Poskanzer's
@@ -173,7 +173,7 @@ nuclear facility.
 -------
 
 GeoServer also includes binaries and from Jetty, the standard version can be 
-found at http://jetty.mortbay.org, released under an OSI-approved artistic
+found at http://www.eclipse.org/jetty/, released under an OSI-approved artistic
 license.  We include the license completely, as some versions will be 
 distributed without full source.
 

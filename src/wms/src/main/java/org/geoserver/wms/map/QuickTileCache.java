@@ -115,7 +115,7 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
         // since this will be used for thread synchronization, we have to make
         // sure two thread asking for the same meta tile will get the same key
         // object
-        return (MetaTileKey) metaTileKeys.unique(key);
+        return metaTileKeys.unique(key);
     }
 
     private ReferencedEnvelope getMetaTileEnvelope(ReferencedEnvelope bbox, Point tileCoords, Point metaTileCoords) {
@@ -399,6 +399,10 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
     @Override
     public void onDispose() {
         tileCache.clear();
+    }
+
+    public void beforeReload() {
+        // nothing to do
     }
 
     @Override

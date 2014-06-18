@@ -98,6 +98,16 @@
      <artifactId>gs-grib</artifactId>
      <version>${project.version}</version>
    </dependency>
+    <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-dyndimension</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-rest-ext</artifactId>
+     <version>${project.version}</version>
+   </dependency>
  </dependencies>
  <build>
   <plugins>

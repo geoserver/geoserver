@@ -191,27 +191,6 @@ public class FilterConfigValidatorTest extends GeoServerMockTestSupport {
         config.setName("testEx");
 
         FilterConfigValidator validator = new FilterConfigValidator(getSecurityManager());
-        try {
-            validator.validateFilterConfig(config);
-            fail("no access denied page should fail");
-        } catch (FilterConfigException ex){
-            assertEquals(FilterConfigException.ACCESS_DENIED_PAGE_NEEDED,ex.getId());
-            assertEquals(0,ex.getArgs().length);
-        }
-        
-        config.setAccessDeniedErrorPage("blabla");
-        config.setAuthenticationFilterName("unknown");
-        
-        try {
-            validator.validateFilterConfig(config);
-            fail("no access denied page prefix should fail");
-        } catch (FilterConfigException ex){
-            assertEquals(FilterConfigException.ACCESS_DENIED_PAGE_PREFIX,ex.getId());
-            assertEquals(0,ex.getArgs().length);
-        
-        }
-
-        config.setAccessDeniedErrorPage("/denied.jsp");
         config.setAuthenticationFilterName("unknown");
 
         try {

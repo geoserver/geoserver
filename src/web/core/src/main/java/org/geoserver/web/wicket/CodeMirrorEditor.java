@@ -13,15 +13,19 @@ import java.io.StringWriter;
 import java.io.Writer;
 
 import org.apache.wicket.ResourceReference;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.IAjaxCallDecorator;
 import org.apache.wicket.ajax.calldecorator.AjaxCallDecorator;
 import org.apache.wicket.behavior.AbstractBehavior;
+import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
+import org.apache.wicket.protocol.http.ClientProperties;
+import org.apache.wicket.protocol.http.WebRequestCycle;
+import org.apache.wicket.protocol.http.request.WebClientInfo;
 
 /**
  * A XML editor based on CodeMirror
@@ -33,21 +37,76 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
     public static final ResourceReference REFERENCE = new ResourceReference(
             CodeMirrorEditor.class, "js/codemirror/js/codemirror.js");
     
+    public static final ResourceReference CSS_REFERENCE = new ResourceReference(
+            CodeMirrorEditor.class, "js/codemirror/css/codemirror.css");
+    
+    public static final ResourceReference[] MODES = new ResourceReference[] {
+        new ResourceReference(CodeMirrorEditor.class, "js/codemirror/js/xml.js"),
+        new ResourceReference(CodeMirrorEditor.class, "js/codemirror/js/clike.js"),
+        new ResourceReference(CodeMirrorEditor.class, "js/codemirror/js/groovy.js"),
+        new ResourceReference(CodeMirrorEditor.class, "js/codemirror/js/javascript.js"),
+        new ResourceReference(CodeMirrorEditor.class, "js/codemirror/js/python.js"),
+        new ResourceReference(CodeMirrorEditor.class, "js/codemirror/js/ruby.js")
+    };
+    
+
     private TextArea<String> editor;
 
     private WebMarkupContainer container;
 
-    public CodeMirrorEditor(String id, IModel<String> model) {
+    private String mode;
+    
+    public CodeMirrorEditor(String id, String mode, IModel<String> model) {
         super(id, model);
+        this.mode = mode;
         
+        // figure out if we're running against a browser supported by CodeMirror
+        boolean enableCodeMirror = isCodeMirrorSupported();
+
         container = new WebMarkupContainer("editorContainer");
         container.setOutputMarkupId(true);
         add(container);
         
+        WebMarkupContainer toolbar = new WebMarkupContainer("toolbar");
+        toolbar.setVisible(enableCodeMirror);
+        container.add(toolbar);
+
+        WebMarkupContainer editorParent = new WebMarkupContainer("editorParent");
+        if (enableCodeMirror) {
+            editorParent.add(new SimpleAttributeModifier("style", "border: 1px solid black;"));
+        }
+        container.add(editorParent);
         editor = new TextArea<String>("editor", model);
-        container.add(editor);
+        editorParent.add(editor);
         editor.setOutputMarkupId(true);
-        editor.add(new CodeMirrorBehavior());
+
+        if (enableCodeMirror) {
+            editor.add(new CodeMirrorBehavior());
+        } else {
+            editor.add(new SimpleAttributeModifier("style", "width:100%"));
+        }
+    }
+
+    private boolean isCodeMirrorSupported() {
+        boolean enableCodeMirror = true;
+        WebClientInfo clientInfo = (WebClientInfo) WebRequestCycle.get().getClientInfo();
+        ClientProperties clientProperties = clientInfo.getProperties();
+        if (clientProperties.isBrowserInternetExplorer()) {
+            enableCodeMirror = clientProperties.getBrowserVersionMajor() >= 8;
+        } else if (clientProperties.isBrowserMozillaFirefox()) {
+            enableCodeMirror = clientProperties.getBrowserVersionMajor() >= 3;
+        } else if (clientProperties.isBrowserSafari()) {
+            enableCodeMirror = clientProperties.getBrowserVersionMajor() > 5
+                    || (clientProperties.getBrowserVersionMajor() == 5 && clientProperties
+                            .getBrowserVersionMinor() >= 2);
+        } else if (clientProperties.isBrowserOpera()) {
+            enableCodeMirror = clientProperties.getBrowserVersionMajor() >= 9;
+        }
+        return enableCodeMirror;
+    }
+    
+    public CodeMirrorEditor(String id, IModel<String> model) {
+        this(id, "xml", model);
     }
     
     @Override
@@ -69,6 +128,14 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         return editor.getMarkupId();
     }
     
+    public void setMode(String mode) {
+        this.mode = mode;
+        if (AjaxRequestTarget.get() != null) {
+            String javascript = "document.gsEditors." + editor.getMarkupId() + ".setOption('mode', '" + mode + "');";
+            AjaxRequestTarget.get().appendJavascript(javascript);
+        }
+    }
+    
     public void reset() {
         super.validate();
         editor.validate();
@@ -83,7 +150,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
             public CharSequence decorateScript(CharSequence script) {
                 // textarea.value = codemirrorinstance.getCode()
                 String id = getTextAreaMarkupId();
-                return "document.getElementById('" + id + "').value = document.gsEditors." + id + ".getCode();" + script;
+                return "document.getElementById('" + id + "').value = document.gsEditors." + id + ".getValue();" + script;
             }
         };
     }
@@ -93,8 +160,15 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         @Override
         public void renderHead(IHeaderResponse response) {
             super.renderHead(response);
+            // Add CSS
+            response.renderCSSReference(CSS_REFERENCE);
+            // Add JS
             response.renderJavascriptReference(REFERENCE);
-
+            // Add Modes
+            for(ResourceReference mode : MODES) {
+                response.renderJavascriptReference(mode);
+            }
+            
             response.renderOnDomReadyJavascript(getInitJavascript());
         }
 
@@ -102,9 +176,8 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
             InputStream is = CodeMirrorEditor.class.getResourceAsStream("CodeMirrorEditor.js");
             String js = convertStreamToString(is);
             js = js.replaceAll("\\$componentId", editor.getMarkupId());
-            js = js.replaceAll("\\$syntax", "parsexml.js");
+            js = js.replaceAll("\\$mode", mode);
             js = js.replaceAll("\\$container", container.getMarkupId());
-            js = js.replaceAll("\\$stylesheet", "./resources/org.geoserver.web.wicket.CodeMirrorEditor/js/codemirror/css/xmlcolors.css");
             return js;
         }
 

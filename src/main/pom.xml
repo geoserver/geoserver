@@ -131,10 +131,19 @@
     <groupId>com.google.guava</groupId>
     <artifactId>guava</artifactId>
   </dependency>
+  <dependency>
+    <groupId>com.google.code.findbugs</groupId>
+    <artifactId>jsr305</artifactId>
+  </dependency>
   
   <dependency>
    <groupId>com.mockrunner</groupId>
    <artifactId>mockrunner</artifactId>
+   <scope>test</scope>
+  </dependency>
+  <dependency>
+   <groupId>org.hamcrest</groupId>
+   <artifactId>hamcrest-library</artifactId>
    <scope>test</scope>
   </dependency>
   <dependency>

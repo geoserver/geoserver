@@ -5,6 +5,7 @@
 package org.geoserver.wps.resource;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -27,7 +28,6 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextStoppedEvent;
-import org.vfny.geoserver.wcs.WcsException;
 
 /**
  * A WPS process has to deal with various temporary resources during the execution, be streamed and
@@ -138,6 +138,26 @@ public class WPSResourceManager implements DispatcherCallback,
         return new File(outputDirectory, fileName);
     }
     
+    /**
+     * Returns a file that will be used to store some temporary file for processing sake, and will
+     * mark it for deletion when the process ends
+     * 
+     * @param executionId
+     * @param fileName
+     * @return
+     * @throws IOException
+     */
+    public File getTemporaryFile(String extension) throws IOException {
+        String processId = getExecutionId(null);
+        File outputDirectory = new File(getWpsOutputStorage(), processId);
+        if (!outputDirectory.exists()) {
+            mkdir(outputDirectory);
+        }
+        File file = File.createTempFile("tmp", extension, outputDirectory);
+        addResource(new WPSFileResource(file));
+        return file;
+    }
+
     private void mkdir(File file) {
         if(!file.mkdir()) {
             throw new WPSException("Failed to create the specified directory " + file);

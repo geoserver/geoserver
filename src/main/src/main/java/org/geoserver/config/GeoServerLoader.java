@@ -51,7 +51,6 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Initializes GeoServer configuration and catalog on startup.
@@ -719,7 +718,17 @@ public abstract class GeoServerLoader {
                 LOGGER.info( "Loaded service '" +  s.getId() + "', " + (s.isEnabled()?"enabled":"disabled") );
             }
             catch( Throwable t ) {
-                LOGGER.log(Level.SEVERE, "Failed to load the service configuration in directory: " + directory.getPath(), t);
+                if (directory != null) {
+                    LOGGER.log(Level.SEVERE,
+                            "Failed to load the service configuration in directory: " + directory
+                                    + " with loader for " + l.getServiceClass(),
+                            t);
+                } else {
+                    LOGGER.log(
+                            Level.SEVERE,
+                            "Failed to load the root service configuration with loader for "
+                                    + l.getServiceClass(), t);
+                }
             }
         }
     }

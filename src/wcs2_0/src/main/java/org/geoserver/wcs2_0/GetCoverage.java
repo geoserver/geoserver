@@ -520,9 +520,7 @@ public class GetCoverage {
         final CoordinateReferenceSystem coverageCRS = reader.getCoordinateReferenceSystem();
         GeneralEnvelope subset = request.getSpatialSubset();
         if(!CRS.equalsIgnoreMetadata(subset.getCoordinateReferenceSystem(), coverageCRS)){
-            subset= CRS.transform(
-                    CRS.findMathTransform(subset.getCoordinateReferenceSystem(), coverageCRS),
-                    subset);
+            subset = CRS.transform(subset, coverageCRS);
             subset.setCoordinateReferenceSystem(coverageCRS);
         }
         // k, now subset is in the CRS of the source coverage

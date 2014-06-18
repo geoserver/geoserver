@@ -48,6 +48,8 @@
           <descriptor>release/ext-mbtiles.xml</descriptor>
           <descriptor>release/ext-geopkg.xml</descriptor>
           <descriptor>release/ext-grib.xml</descriptor>
+          <descriptor>release/ext-dyndimension.xml</descriptor>
+		  <descriptor>release/ext-rest-ext.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -158,6 +160,8 @@
         <module>mbtiles</module>
         <module>geopkg</module>
 		<module>grib</module>
+        <module>dyndimension</module>
+		<module>rest-ext</module>
       </modules>
     </profile>
     <profile>
@@ -291,6 +295,24 @@
       </activation>
       <modules>
         <module>grib</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>dyndimension</id>
+	  <activation>
+        <property><name>dyndimension</name></property>
+      </activation>
+      <modules>
+        <module>dyndimension</module>
+	  </modules>
+    </profile>
+	<profile>
+      <id>rest-ext</id>
+	  <activation>
+        <property><name>rest-ext</name></property>
+      </activation>
+      <modules>
+        <module>rest-ext</module>
       </modules>
     </profile>
   </profiles>

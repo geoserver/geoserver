@@ -5,14 +5,9 @@
 package org.geoserver.script.wps;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
-import org.geoserver.script.ScriptIntTestSupport;
-import org.geoserver.script.ScriptManager;
 import org.geotools.data.Parameter;
 import org.geotools.feature.NameImpl;
 import org.opengis.feature.type.Name;
@@ -20,30 +15,12 @@ import org.opengis.feature.type.Name;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
 
-public abstract class ScriptProcessTest extends ScriptIntTestSupport {
+public abstract class ScriptProcessTest extends ScriptProcessTestSupport {
 
-    File script;
-    
     @Override
-    protected void oneTimeSetUp() throws Exception {
-        super.oneTimeSetUp();
-    
-        script = copyScriptIfExists("buffer");
+    public String getProcessName() {
+        return "buffer";
     }
-
-    File copyScriptIfExists(String baseName) throws IOException {
-        File wps = scriptMgr.getWpsRoot();
-        File script = new File(wps, baseName + "." + getExtension());
-
-        URL u = getClass().getResource(script.getName());
-        if (u != null) {
-            FileUtils.copyURLToFile(u, script);
-            return script;
-        }
-        return null;
-    }
-
-    public abstract String getExtension();
 
     public void testLookupHook() throws Exception {
         assertNotNull(getScriptManager().lookupWpsHook(script));
@@ -100,6 +77,8 @@ public abstract class ScriptProcessTest extends ScriptIntTestSupport {
     public void testRun() throws Exception {
         ScriptProcessFactory pf = new ScriptProcessFactory(scriptMgr);
         Name buffer = pf.getNames().iterator().next();
+        assertEquals(getNamespace(), buffer.getNamespaceURI());
+        assertEquals(getProcessName(), buffer.getLocalPart());
 
         org.geotools.process.Process p = pf.create(buffer);
 
@@ -119,7 +98,7 @@ public abstract class ScriptProcessTest extends ScriptIntTestSupport {
         File script = copyScriptIfExists(pname);
         if (script != null) {
             ScriptProcessFactory pf = new ScriptProcessFactory(scriptMgr);
-            Name buffer = new NameImpl(getExtension(), pname);
+            Name buffer = new NameImpl(getNamespace(), pname);
 
             org.geotools.process.Process p = pf.create(buffer);
             

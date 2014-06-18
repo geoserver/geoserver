@@ -34,7 +34,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.xsd.XSDElementDeclaration;
 import org.eclipse.xsd.XSDParticle;
@@ -96,9 +95,7 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.Filter;
-import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.springframework.context.ApplicationContext;
 import org.vfny.geoserver.global.GeoServerFeatureLocking;
@@ -1432,24 +1429,11 @@ public class ResourcePool {
         }
         
         if (!CRS.equalsIgnoreMetadata(sourceCRS, destCRS)) {
-            // get a math transform
-            MathTransform transform;
-			try {
-				transform = CRS.findMathTransform(sourceCRS, destCRS,true);
-			} catch (FactoryException e) {
-				final IOException ioe= new IOException( "unable to determine coverage crs");
-				ioe.initCause(e);
-				throw ioe;
-			}
-        
-            // transform the envelope
-            if (!transform.isIdentity()) {
-                try {
-                    envelope = CRS.transform(transform, envelope);
-                } 
-                catch (TransformException e) {
-                    throw (IOException) new IOException( "error occured transforming envelope").initCause( e );
-                }
+            try {
+                envelope = CRS.transform(envelope, destCRS);
+            } catch (TransformException e) {
+                throw (IOException) new IOException("error occured transforming envelope")
+                        .initCause(e);
             }
         }
         

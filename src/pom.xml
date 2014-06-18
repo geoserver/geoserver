@@ -1001,7 +1001,12 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>11.0.1</version>
+      <version>17.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+      <version>2.0.3</version>
     </dependency>
     <dependency>
       <groupId>org.apache.poi</groupId>
@@ -1160,8 +1165,8 @@
      <artifactId>maven-compiler-plugin</artifactId>
      <version>2.3.2</version>
      <configuration>
-       <source>1.6</source>
-       <target>1.6</target>
+       <source>1.7</source>
+       <target>1.7</target>
        <debug>true</debug>
        <encoding>UTF-8</encoding>
        <!-- 
@@ -1526,7 +1531,7 @@
   <poi.version>3.8</poi.version>
   <wicket.version>1.4.12</wicket.version>
   <ant.version>1.8.4</ant.version>
-  <imageio-ext.version>1.1.9</imageio-ext.version>
+  <imageio-ext.version>1.1.10</imageio-ext.version>
   <java.awt.headless>true</java.awt.headless>
   <jvm.opts></jvm.opts>
   <jalopy.phase>disabled</jalopy.phase>

@@ -7,7 +7,7 @@ Installation
 ************
 
 
-   1. Download the REST plugin for your version of GeoServer from the `download page <http://geoserver.org/display/GEOS/Download>`_ .
+   1. Download the REST plugin for your version of GeoServer from the `download page <http://geoserver.org/download>`_ .
    2. Unzip the archive into the WEB-INF/lib directory of the GeoServer installation.
    3. Restart GeoServer
    4. Download the GeoExt Styler extension from `here <http://downloads.sourceforge.net/geoserver/styler-1.7.3.zip>`_ (it says 1.7.3 but the version number doesn't matter.  Soon there will be an updated release)

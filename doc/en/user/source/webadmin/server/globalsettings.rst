@@ -109,4 +109,11 @@ There are three options:
 **In-process locking**: Used to ensure individual configuration files cannot be modified by two web administration or REST sessions at the same time.
 
 **Disable Locking**: No file locking is used.
+
+REST PathMapper Root directory path
+-----------------------------------
+
+This parameter is used by the RESTful API as the `Root Directory` for the newly uploaded files, following the structure::
+
+	${rootDirectory}/workspace/store[/<file>]
  

@@ -16,6 +16,7 @@ import org.opengeo.gsr.service.AbstractService;
 import org.opengeo.gsr.service.CatalogService;
 import org.opengeo.gsr.service.GeometryService;
 import org.opengeo.gsr.service.MapService;
+import org.opengeo.gsr.service.FeatureService;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -53,7 +54,9 @@ public class CatalogResource extends GeoServicesResource {
             List<AbstractService> services = new ArrayList<AbstractService>();
             for (WorkspaceInfo ws : catalog.getWorkspaces()) {
                 MapService ms = new MapService(ws.getName());
+                FeatureService fs = new FeatureService(ws.getName());
                 services.add(ms);
+                services.add(fs);
             }
             services.add(new GeometryService("Geometry"));
             return new CatalogService("services", specVersion, productName, currentVersion,

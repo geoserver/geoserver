@@ -15,6 +15,7 @@ import org.geoserver.catalog.rest.AbstractCatalogFinder;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.wms.WMS;
+import org.opengeo.gsr.fs.resource.FeatureServiceResource;
 import org.opengeo.gsr.ms.resource.LayerListResource;
 import org.opengeo.gsr.ms.resource.LegendResource;
 import org.opengeo.gsr.ms.resource.MapResource;
@@ -81,6 +82,9 @@ public class ServiceFinder extends AbstractCatalogFinder {
                 }
                 break;
             case FeatureServer:
+                if ("".equals(operation)) {
+                    resource = new FeatureServiceResource(null, request, response, geoServer, format);
+                }
                 break;
             case GeocodeServer:
                 break;

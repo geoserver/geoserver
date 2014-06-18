@@ -37,7 +37,7 @@ public class MapService implements AbstractService {
 
     public MapService(String name) {
         this.name = name;
-        type = ServiceType.MapServer;
+        this.type = ServiceType.MapServer;
     }
 
 }

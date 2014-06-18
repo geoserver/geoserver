@@ -13,6 +13,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.wfs.WFSInfo;
 
+import net.sf.json.util.JSONBuilder;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -23,7 +24,10 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
 
+import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -82,12 +86,52 @@ public class FeatureServiceResource extends Resource {
     }
 
     private class FeatureRootRepresentation extends OutputRepresentation {
+        private final WFSInfo service;
+        private final List<LayerInfo> layers;
+
         public FeatureRootRepresentation(WFSInfo service, List<LayerInfo> layers) {
             super(new MediaType("application/json"));
+            this.service = service;
+            this.layers = layers;
         }
 
         @Override
-        public void write(OutputStream out) {
+        public void write(OutputStream out) throws IOException {
+            Writer writer = new OutputStreamWriter(out, "UTF-8");
+            JSONBuilder json = new JSONBuilder(writer);
+            json.object();
+            json.key("currentVersion").value(10.21);
+            String description = service.getTitle() != null ? service.getTitle() :  service.getName();
+            json.key("serviceDescription").value(description);
+            // json.key("hasVersionedData").value(false);
+            // json.key("supportsDisconnectedEditing").value(false);
+            // json.key("hasStaticData").value(false);
+            // json.key("maxRecordCount").value(0);
+            json.key("supportedQueryFormats").value("JSON");
+            // json.key("capabilities").value("query");
+            // json.key("description").value("");
+            // json.key("copyrightText").value("");
+            // json.key("spatialReference").value(null);
+            json.key("initialExtent").value(null);
+            json.key("fullExtent").value(null);
+            // json.key("allowGeometryUpdates").value(true);
+            // json.key("units").value("");
+            // json.key("syncEnabled").value(false);
+            // json.key("syncCapabilities").value(null);
+            // json.key("editorTrackingInfo").value(null);
+            // json.key("documentInfo").value(null);
+            json.key("layers").array();
+            for (int i = 0 ; i < layers.size(); i++) {
+                LayerInfo l = layers.get(i);
+                json.object();
+                json.key("id").value(i);
+                json.key("name").value(l.getName());
+                json.endObject();
+            }
+            json.endArray();
+            json.key("tables").array().endArray();
+            json.endObject();
+            writer.flush();
         }
     }
 }

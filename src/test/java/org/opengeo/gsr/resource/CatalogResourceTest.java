@@ -43,6 +43,9 @@ public class CatalogResourceTest extends ResourceTest {
         JSONObject mapService = services.getJSONObject(0);
         assertEquals("cite", mapService.get("name"));
         assertEquals("MapServer", mapService.get("type"));
+        JSONObject featureService = services.getJSONObject(1);
+        assertEquals("cite", featureService.get("name"));
+        assertEquals("FeatureServer", featureService.get("type"));
         JSONObject geometryService = services.getJSONObject(services.size() - 1);
         assertEquals("Geometry", geometryService.get("name"));
         assertEquals("GeometryServer", geometryService.get("type"));

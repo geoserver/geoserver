@@ -1,0 +1,50 @@
+{
+   "$schema":"http://json-schema.org/draft-03/schema#",
+   "id":"http://schemas.opengis.net/gsr-fs/1.0/root.json",
+   "title":"feature service root resource",
+   "type":"object",
+   "properties":{
+      "serviceDescription":{
+         "title":"service description",
+         "type":"string"
+      },
+      "layers":{
+         "title":"layers",
+         "type":"array",
+         "items":{
+            "title":"layer",
+            "type":"object",
+            "properties":{
+               "id":{
+                  "title":"layer id",
+                  "type":"integer",
+                  "required":true
+               },
+               "name":{
+                  "title":"layer name",
+                  "type":"string"
+               }
+            }
+         }
+      },
+      "tables":{
+         "title":"tables",
+         "type":"array",
+         "items":{
+            "title":"table",
+            "type":"object",
+            "properties":{
+               "id":{
+                  "title":"table id",
+                  "type":"integer",
+                  "required":true
+               },
+               "name":{
+                  "title":"table name",
+                  "type":"string"
+               }
+            }
+         }
+      }
+   }
+}

@@ -145,4 +145,13 @@ Response::
    ...
 
 
+Workspace Styles
+~~~~~~~~~~~~~~~~
 
+If a cached layer uses a style which is tied to a workspace, the layer needs to be viewed in the context of that workspace in order for the style to be visible.  Trying to cache such a layer will result in an error. 
+
+By default, the embeded GeoWebCache uses the global workspace.  This can be overridden using a ``WORKSPACE`` parameter. To enable this, create a List of Strings Parameter filter for the layer named ``WORKSPACE``.  Set the default to the name of the workspace containing the style.  Setting the other values will not be useful in most cases.
+
+Moving the style to a new workspace will require updating the filter.
+
+This parameter only applies to integrated tile layers.  If you are adding a GeoServer layer on a remote GeoServer directly to GWC, then specify the workspace as part of the path as you would normally.

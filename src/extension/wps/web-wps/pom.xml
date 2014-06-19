@@ -12,7 +12,7 @@
     <parent>
         <groupId>org.geoserver.extension</groupId>
         <artifactId>wps</artifactId>
-        <version>2.4-SNAPSHOT</version>
+        <version>2.4.7</version>
     </parent>
 
     <groupId>org.geoserver.extension</groupId>

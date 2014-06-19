@@ -8,7 +8,7 @@
   <fileSet>
    <!-- the main webapp -->
    <directory>web/app/target/geoserver</directory>
-   <outputDirectory>geoserver-2.4-SNAPSHOT/webapps/geoserver</outputDirectory>
+   <outputDirectory>geoserver-2.4.7/webapps/geoserver</outputDirectory>
    <includes>
     <include>**/*</include>
    </includes>
@@ -22,7 +22,7 @@
   <fileSet>
    <!-- the data directory -->
    <directory>web/app/target/geoserver/data</directory>
-   <outputDirectory>geoserver-2.4-SNAPSHOT/data_dir</outputDirectory>
+   <outputDirectory>geoserver-2.4.7/data_dir</outputDirectory>
    <includes>
     <include>**/*</include>
    </includes>
@@ -30,7 +30,7 @@
   <fileSet>
    <!-- the libs needed to run jetty -->
    <directory>release/target/dependency</directory>
-   <outputDirectory>geoserver-2.4-SNAPSHOT/lib</outputDirectory>
+   <outputDirectory>geoserver-2.4.7/lib</outputDirectory>
    <includes>
     <include>ant-*.jar</include>
     <include>commons-el-*.jar</include>
@@ -52,7 +52,7 @@
    <!-- windows batch files -->
    <directory>release/bin</directory>
    <lineEnding>keep</lineEnding>
-   <outputDirectory>geoserver-2.4-SNAPSHOT/bin</outputDirectory>
+   <outputDirectory>geoserver-2.4.7/bin</outputDirectory>
    <includes>
     <include>*.bat</include>
    </includes>
@@ -61,7 +61,7 @@
    <!-- unix shell scripts -->
    <directory>release/bin</directory>
    <lineEnding>unix</lineEnding>
-   <outputDirectory>geoserver-2.4-SNAPSHOT/bin</outputDirectory>
+   <outputDirectory>geoserver-2.4.7/bin</outputDirectory>
    <fileMode>0755</fileMode>
    <directoryMode>0755</directoryMode>
    <includes>
@@ -71,7 +71,7 @@
   <fileSet>
    <!-- the README and other text files -->
    <directory>release</directory>
-   <outputDirectory>geoserver-2.4-SNAPSHOT</outputDirectory>
+   <outputDirectory>geoserver-2.4.7</outputDirectory>
    <includes>
     <include>LICENSE.txt</include>
     <include>GPL.txt</include>
@@ -82,7 +82,7 @@
   </fileSet>
   <fileSet>
    <directory>target</directory>
-   <outputDirectory>geoserver-2.4-SNAPSHOT</outputDirectory>
+   <outputDirectory>geoserver-2.4.7</outputDirectory>
    <includes>
     <include>VERSION.txt</include>
    </includes>
@@ -90,7 +90,7 @@
   <fileSet>
    <!-- jetty configuration -->
    <directory>release/jetty</directory>
-   <outputDirectory>geoserver-2.4-SNAPSHOT</outputDirectory>
+   <outputDirectory>geoserver-2.4.7</outputDirectory>
    <includes>
     <include>**/*</include>
    </includes>
@@ -98,7 +98,7 @@
   <fileSet>
    <!-- empty log directory -->
    <directory>release/logs</directory>
-   <outputDirectory>geoserver-2.4-SNAPSHOT</outputDirectory>
+   <outputDirectory>geoserver-2.4.7</outputDirectory>
   </fileSet>
  </fileSets>
 </assembly>

@@ -14,13 +14,13 @@
 	<parent>
 		<groupId>org.geoserver</groupId>
 		<artifactId>community</artifactId>
-		<version>2.4-SNAPSHOT</version>
+		<version>2.4.7</version>
 	</parent>
 
 	<groupId>org.geoserver.community</groupId>
 	<artifactId>dds</artifactId>
 	<packaging>jar</packaging>
-	<version>2.4-SNAPSHOT</version>
+	<version>2.4.7</version>
 	<name>WorldWind Format Module</name>
 
 

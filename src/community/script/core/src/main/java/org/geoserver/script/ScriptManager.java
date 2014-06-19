@@ -430,7 +430,7 @@ public class ScriptManager implements InitializingBean {
             return ScriptType.FUNCTION;
         } else if (dir.getName().equals("tx") && dir.getParentFile().getName().equals("wfs")) {
             return ScriptType.WFSTX;
-        } else if (dir.getName().equals("wps")) {
+        } else if (dir.getName().equals("wps") || dir.getParentFile().getName().equals("wps")) {
             return ScriptType.WPS;
         } else if (dir.getParentFile().getName().equals("apps")) {
             return ScriptType.APP;

@@ -37,7 +37,7 @@ public class Script implements Serializable {
 
     public Script(File file) {
         this.file = file;
-        this.name = FilenameUtils.getBaseName(file.getName());
+        this.name = getNameFromFile(file);
         this.type = findType(file);
         this.extension = FilenameUtils.getExtension(file.getName());
         this.contents = readFile(file);
@@ -51,10 +51,21 @@ public class Script implements Serializable {
         this.contents = contents;
     }
 
+    private String getNameFromFile(File file) {
+        String baseName = FilenameUtils.getBaseName(file.getName());
+        if (file.getParentFile().getParentFile().getName().equals("wps")) {
+            return file.getParentFile().getName() + ":" + baseName;
+        } else {
+            return FilenameUtils.getBaseName(file.getName());
+        }
+    }
+
     private File findFile(String name, String type, String extension) {
         ScriptManager scriptManager = (ScriptManager) GeoServerExtensions.bean("scriptMgr");
-        ScriptType scriptType = ScriptType.getByLabel(type);
         try {
+            if (name.contains(":")) {
+                name = name.replace(":",File.separator);
+            }
             File f = scriptManager.getFile(name, ScriptType.getByLabel(type), extension);
             return f;
         } catch (IOException ex) {

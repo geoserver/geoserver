@@ -48,6 +48,15 @@ public class ScriptsModel extends LoadableDetachableModel {
                 for (File file : files) {
                     if (dir.getName().equals("apps")) {
                         scripts.add(new Script(scriptManager.findAppMainScript(file)));
+                    } else if (dir.getName().equals("wps")) {
+                        if (file.isDirectory()) {
+                            File[] fs = file.listFiles();
+                            for(File f: fs) {
+                                scripts.add(new Script(f));
+                            }
+                        } else {
+                            scripts.add(new Script(file));
+                        }
                     } else {
                         scripts.add(new Script(file));
                     }

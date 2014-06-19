@@ -31,6 +31,7 @@ import org.geoserver.script.ScriptManager;
 import org.geoserver.script.ScriptPlugin;
 import org.geoserver.script.ScriptType;
 import org.geoserver.web.GeoServerSecuredPage;
+import org.geoserver.web.wicket.CodeMirrorEditor;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.XMLNameValidator;
@@ -103,7 +104,9 @@ public class ScriptEditPage extends GeoServerSecuredPage {
         form.add(extension);
 
         // Content
-        TextArea content = new TextArea("contents", new PropertyModel(scriptModel, "contents"));
+        ScriptManager scriptManager = (ScriptManager) GeoServerExtensions.bean("scriptMgr");
+        String mode = scriptManager.lookupPluginEditorMode(script.getFile());
+        CodeMirrorEditor content = new CodeMirrorEditor("contents", mode, new PropertyModel(scriptModel, "contents"));
         content.setRequired(true);
         form.add(content);
 

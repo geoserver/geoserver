@@ -438,7 +438,27 @@ public class ScriptManager implements InitializingBean {
             throw new IllegalArgumentException("Can't determine ScriptType for " + file + "'!");
         }
     }
-    
+
+    /**
+     * Look up the editor mode by File extension
+     * @param ext The file extension (js, groovy, py)
+     * @return The codemirror editor mode or null
+     */
+    public String lookupEditorModeByExtension(String ext) {
+        ScriptPlugin p = null;
+        for (ScriptPlugin plugin : plugins()) {
+            if (ext.equalsIgnoreCase(plugin.getExtension())) {
+                p = plugin;
+            }
+        }
+        if (p != null) {
+            return p.getEditorMode();
+        } else {
+            return null;
+        }
+    }
+
+
     @Override
     public void afterPropertiesSet() throws Exception {
         plugins();

@@ -18,6 +18,7 @@ import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.script.ScriptManager;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.web.wicket.CodeMirrorEditor;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -41,7 +42,7 @@ public class ScriptNewPageTest extends GeoServerWicketTestSupport {
         tester.assertComponent("form:name", TextField.class);
         tester.assertComponent("form:type", DropDownChoice.class);
         tester.assertComponent("form:extension", DropDownChoice.class);
-        tester.assertComponent("form:contents", TextArea.class);
+        tester.assertComponent("form:contents", CodeMirrorEditor.class);
     }
     
     @Test
@@ -52,7 +53,7 @@ public class ScriptNewPageTest extends GeoServerWicketTestSupport {
         ((DropDownChoice) form.getForm().get("extension")).setChoices(Lists.newArrayList("py",
                 "js", "groovy"));
         form.select("extension", 1);
-        form.setValue("contents", "console.log('Hi');");
+        form.setValue("contents:editorContainer:editorParent:editor", "console.log('Hi');");
         form.submit();
 
         tester.assertRenderedPage(ScriptPage.class);
@@ -71,7 +72,7 @@ public class ScriptNewPageTest extends GeoServerWicketTestSupport {
         form.select("type", 0);
         ((DropDownChoice)form.getForm().get("extension")).setChoices(Lists.newArrayList("py","js","groovy"));
         form.select("extension", 0);
-        form.setValue("contents","console.log('Hi');");
+        form.setValue("contents:editorContainer:editorParent:editor","console.log('Hi');");
         form.submit();
         
         tester.assertRenderedPage(ScriptNewPage.class);
@@ -84,7 +85,7 @@ public class ScriptNewPageTest extends GeoServerWicketTestSupport {
         form.setValue("name", "hello");
         ((DropDownChoice)form.getForm().get("extension")).setChoices(Lists.newArrayList("py","js","groovy"));
         form.select("extension", 0);
-        form.setValue("contents","console.log('Hi');");
+        form.setValue("contents:editorContainer:editorParent:editor","console.log('Hi');");
         form.submit();
         
         tester.assertRenderedPage(ScriptNewPage.class);
@@ -96,7 +97,7 @@ public class ScriptNewPageTest extends GeoServerWicketTestSupport {
         FormTester form = tester.newFormTester("form");
         form.setValue("name", "hello");
         form.select("type", 0);
-        form.setValue("contents","console.log('Hi');");
+        form.setValue("contents:editorContainer:editorParent:editor","console.log('Hi');");
         form.submit();
         
         tester.assertRenderedPage(ScriptNewPage.class);

@@ -11,11 +11,11 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
-import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.LoadableDetachableModel;
@@ -25,7 +25,7 @@ import org.geoserver.script.ScriptManager;
 import org.geoserver.script.ScriptPlugin;
 import org.geoserver.script.ScriptType;
 import org.geoserver.web.GeoServerSecuredPage;
-import org.geoserver.web.wicket.XMLNameValidator;
+import org.geoserver.web.wicket.CodeMirrorEditor;
 import org.geotools.util.logging.Logging;
 
 import com.google.common.collect.Lists;
@@ -50,10 +50,18 @@ public class ScriptNewPage extends GeoServerSecuredPage {
         };
         add(form);
 
+        // Get List of script extensions from installed plugins
+        final List<String> extensions = getExtensions();
+
+        // Content
+        String mode = extensions.size() > 0 ? getModeFromExtension(extensions.get(0)) : "py";
+        final CodeMirrorEditor content = new CodeMirrorEditor("contents", mode, new PropertyModel(script, "contents"));
+        content.setRequired(true);
+        form.add(content);
+
         // Name
         TextField name = new TextField("name", new PropertyModel(script, "name"));
         name.setRequired(true);
-        name.add(new XMLNameValidator());
         form.add(name);
 
         // Type
@@ -72,26 +80,26 @@ public class ScriptNewPage extends GeoServerSecuredPage {
         form.add(typeDropDownChoice);
 
         // Extension
-        DropDownChoice<String> extensionDropDownChoice = new DropDownChoice<String>("extension",
-                new PropertyModel(script, "extension"),
-                new LoadableDetachableModel<List<String>>() {
-                    @Override
-                    protected List<String> load() {
-                        List<String> extensions = Lists.newArrayList();
-                        ScriptManager scriptManager = (ScriptManager) GeoServerExtensions.bean("scriptMgr");
-                        for (ScriptPlugin plugin : scriptManager.getPlugins()) {
-                            extensions.add(plugin.getExtension());
-                        }
-                        return extensions;
-                    }
-                });
+        final DropDownChoice<String> extensionDropDownChoice = new DropDownChoice<String>("extension",
+            new PropertyModel(script, "extension"),
+            new LoadableDetachableModel<List<String>>() {
+                @Override
+                protected List<String> load() {
+                    return extensions;
+                }
+            }
+        );
         extensionDropDownChoice.setRequired(true);
+        extensionDropDownChoice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                int i = Integer.parseInt(extensionDropDownChoice.getValue());
+                String ext = extensions.get(i);
+                String mode = getModeFromExtension(ext);
+                content.setMode(mode);
+            }
+        });
         form.add(extensionDropDownChoice);
-
-        // Content
-        final TextArea content = new TextArea("contents", new PropertyModel(script, "contents"));
-        content.setRequired(true);
-        form.add(content);
 
         SubmitLink submitLink = new SubmitLink("submit", form);
         form.add(submitLink);
@@ -105,7 +113,22 @@ public class ScriptNewPage extends GeoServerSecuredPage {
         };
         form.add(cancelLink);
     }
-    
+
+    private List<String> getExtensions() {
+        List<String> extensions = Lists.newArrayList();
+        ScriptManager scriptManager = (ScriptManager) GeoServerExtensions.bean("scriptMgr");
+        for (ScriptPlugin plugin : scriptManager.getPlugins()) {
+            extensions.add(plugin.getExtension());
+        }
+        return extensions;
+    }
+
+    private String getModeFromExtension(String ext) {
+        ScriptManager scriptManager = (ScriptManager) GeoServerExtensions.bean("scriptMgr");
+        String mode = scriptManager.lookupEditorModeByExtension(ext);
+        return mode;
+    }
+
     private void save() {
         Script s = (Script) form.getModelObject();
         try {

@@ -41,6 +41,9 @@ public class ScriptResource extends Resource {
     public void handleGet() {
         File script;
         try {
+            if (path.contains(":")) {
+                path = path.replace(":","/");
+            }
             script = scriptMgr.findScriptFile(path);
         } catch (IOException e) {
             throw new RestletException(format("Error looking up script %s", path),
@@ -65,6 +68,9 @@ public class ScriptResource extends Resource {
     public void handlePut() {
         File script;
         try {
+            if (path.contains(":")) {
+                path = path.replace(":","/");
+            }
             script = scriptMgr.findOrCreateScriptFile(path);
         }
         catch(IOException e) {
@@ -102,6 +108,9 @@ public class ScriptResource extends Resource {
     public void handleDelete() {
         File script;
         try {
+            if (path.contains(":")) {
+                path = path.replace(":","/");
+            }
             script = scriptMgr.findScriptFile(path);
             if (script == null) {
                 throw new IOException(format("Unable to find script file %s", path));

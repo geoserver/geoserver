@@ -5,12 +5,7 @@
  */
 package org.geoserver.ows;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.rmi.ServerException;
@@ -18,6 +13,11 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.internet.InternetHeaders;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMultipart;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletResponse;
 
@@ -626,5 +626,67 @@ public class DispatcherTest extends TestCase {
         assertNull(mov);
         // Check the response
         assertTrue(response.getOutputStreamContent().contains("Could not parse the KVP"));
+    }
+
+    public void testMultiPartFormUpload() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setContextPath("/geoserver");
+        request.setRequestURI("/geoserver/hello");
+        request.setMethod("post");
+
+        String xml = "<Hello service='hello' message='Hello world!' version='1.0.0' />";
+
+        MimeMultipart body = new MimeMultipart();
+        request.setContentType(body.getContentType());
+
+        InternetHeaders headers = new InternetHeaders();
+        headers.setHeader("Content-Disposition", "form-data; name=\"upload\"; filename=\"request.xml\"");
+        headers.setHeader("Content-Type", "application/xml");
+        body.addBodyPart(new MimeBodyPart(headers, xml.getBytes()));
+
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        body.writeTo(bout);
+
+        request.setBodyContent(bout.toByteArray());
+
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        URL url = getClass().getResource("applicationContext.xml");
+        FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString());
+        Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
+        dispatcher.handleRequestInternal(request, response);
+
+        assertEquals("Hello world!", response.getOutputStreamContent());
+    }
+
+    public void testMultiPartFormUploadWithBodyField() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setContextPath("/geoserver");
+        request.setRequestURI("/geoserver/hello");
+        request.setMethod("post");
+
+        String xml = "<Hello service='hello' message='Hello world!' version='1.0.0' />";
+
+        MimeMultipart body = new MimeMultipart();
+        request.setContentType(body.getContentType());
+
+        InternetHeaders headers = new InternetHeaders();
+        headers.setHeader("Content-Disposition", "form-data; name=\"body\";");
+        headers.setHeader("Content-Type", "application/xml");
+        body.addBodyPart(new MimeBodyPart(headers, xml.getBytes()));
+
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        body.writeTo(bout);
+
+        request.setBodyContent(bout.toByteArray());
+
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        URL url = getClass().getResource("applicationContext.xml");
+        FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(url.toString());
+        Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
+        dispatcher.handleRequestInternal(request, response);
+
+        assertEquals("Hello world!", response.getOutputStreamContent());
     }
 }

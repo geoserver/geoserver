@@ -964,8 +964,8 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         } catch (InvalidKeyException e) {
             strongEncryptionAvaialble = false; 
             LOGGER.warning("Strong cryptography is NOT available"+
-            "\nDownload and install of policy files recommended"+
-            "\nfrom http://www.oracle.com/technetwork/java/javase/downloads/jce-6-download-429243.html");
+            "\nDownload and installation the of unlimted length policy files is recommended"
+            );
         } catch (Exception ex) {
             LOGGER.log(Level.WARNING, "Strong cryptography is NOT available, unexpected error", ex);
             strongEncryptionAvaialble =false; //should not happen

@@ -152,8 +152,13 @@ public class FeatureEncoder {
         json.endObject();
     }
     
-    private final static Pattern featureIDPattern = Pattern.compile(".*\\.(\\p{Digit}+)");
+    private final static Pattern featureIDPattern = Pattern.compile("^(?:.*\\.)?(\\p{Digit}+)$");
     private static Object adaptId(String featureId) {
-        return Long.valueOf(featureId.hashCode());
+        Matcher matcher = featureIDPattern.matcher(featureId);
+        if (matcher.matches()) {
+            return matcher.group(1);
+        } else {
+            return Long.valueOf(featureId.hashCode());
+        }
     }
 }

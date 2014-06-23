@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.geoserver.config.GeoServerInfo;
 import org.geotools.data.FeatureSource;
+import org.geotools.data.wfs.impl.WFSContentDataStore;
 import org.geotools.factory.Hints;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
@@ -28,6 +29,11 @@ public interface FeatureTypeInfo extends ResourceInfo {
      */
     static final String JDBC_VIRTUAL_TABLE = "JDBC_VIRTUAL_TABLE";
     
+    /**
+     * The cascaded stored query configuration
+     */
+    static final String STORED_QUERY_CONFIGURATION = "WFS_NG_STORED_QUERY_CONFIGURATION";
+
     /**
      * The data store the feature type is a part of.
      * <p>

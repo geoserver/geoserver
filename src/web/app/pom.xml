@@ -1090,6 +1090,16 @@
       </dependencies>
     </profile>
     <profile>
+      <id>wfs-ng</id>
+      <dependencies>
+       <dependency>
+         <groupId>org.geoserver.extension</groupId>
+         <artifactId>gs-wfs-ng</artifactId>
+         <version>${project.version}</version>
+       </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>grib</id>
       <dependencies>
         <dependency>

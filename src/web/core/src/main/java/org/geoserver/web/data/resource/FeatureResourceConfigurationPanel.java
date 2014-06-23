@@ -31,9 +31,11 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.web.GeoServerApplication;
+import org.geoserver.web.data.layer.CascadedWFSStoredQueryEditPage;
 import org.geoserver.web.data.layer.SQLViewEditPage;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.geotools.data.wfs.internal.v2_0.storedquery.StoredQueryConfiguration;
 import org.geotools.jdbc.VirtualTable;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
@@ -152,6 +154,23 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
         FeatureTypeInfo typeInfo = (FeatureTypeInfo) model.getObject();
         reloadContainer.setVisible(typeInfo.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, VirtualTable.class) == null);
         sqlViewContainer.setVisible(!reloadContainer.isVisible());
+        
+        // Cascaded Stored Query
+        WebMarkupContainer cascadedStoredQueryContainer = new WebMarkupContainer("editCascadedStoredQueryContainer");
+        attributePanel.add(cascadedStoredQueryContainer);
+        cascadedStoredQueryContainer.add(new Link("editCascadedStoredQuery") {
+            @Override
+            public void onClick() {
+                FeatureTypeInfo typeInfo = (FeatureTypeInfo) model.getObject();
+                try {
+                    setResponsePage(new CascadedWFSStoredQueryEditPage(typeInfo, ((ResourceConfigurationPage) this.getPage())));
+                } catch(Exception e) {
+                    LOGGER.log(Level.SEVERE, "Failure opening the sql view edit page", e);
+                    error(e.toString());
+                }
+            }
+        });
+        cascadedStoredQueryContainer.setVisible(typeInfo.getMetadata().get(FeatureTypeInfo.STORED_QUERY_CONFIGURATION, StoredQueryConfiguration.class) != null);
     }
     
     static class ReloadWarningDialog extends WebPage {

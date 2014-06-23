@@ -95,7 +95,7 @@ public class FullyRetypingDataStoreTest {
         rts = new RetypingDataStore(pds) {
         	
         	@Override
-        	protected SimpleFeatureType transformFeatureType(
+                protected SimpleFeatureType transformFeatureType(
         			SimpleFeatureType original) throws IOException {
         		if (original.getTypeName().equals(MockData.PRIMITIVEGEOFEATURE.getLocalPart()))
                     return primitive;
@@ -104,7 +104,7 @@ public class FullyRetypingDataStoreTest {
         	}
         	
         	@Override
-        	protected String transformFeatureTypeName(String originalName) {
+        	public String transformFeatureTypeName(String originalName) {
         		if (originalName.equals(MockData.PRIMITIVEGEOFEATURE.getLocalPart()))
                     return primitive.getTypeName();
                 else
@@ -274,7 +274,7 @@ public class FullyRetypingDataStoreTest {
 
         RetypingDataStore rts = new RetypingDataStore(ds) {
             @Override
-            protected String transformFeatureTypeName(String originalName) {
+            public String transformFeatureTypeName(String originalName) {
                 return "oaks";
             }
         };

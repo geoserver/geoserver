@@ -26,7 +26,9 @@ public enum FieldTypeEnum {
     DATE("esriFieldTypeDate"),
     OID("esriFieldTypeOID"),
     GEOMETRY("esriFieldTypeGeometry"),
-    GUID("esriFieldTypeGUID");
+    GUID("esriFieldTypeGUID"),
+    GLOBAL_ID("esriFieldTypeGlobalID"),
+    XML("esriFieldTypeXML");
 
     private final String fieldType;
 

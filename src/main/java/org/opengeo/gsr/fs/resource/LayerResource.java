@@ -1,0 +1,536 @@
+/* Copyright (c) 2014 Boundless - http://boundlessgeo.com All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+package org.opengeo.gsr.fs.resource;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
+import java.util.NoSuchElementException;
+
+import net.sf.json.util.JSONBuilder;
+
+import org.apache.commons.lang.enums.EnumUtils;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.catalog.DimensionPresentation;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataLinkInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geotools.feature.FeatureTypes;
+import org.geotools.styling.FeatureTypeStyle;
+import org.geotools.styling.Rule;
+import org.geotools.styling.Style;
+import org.opengeo.gsr.core.exception.ServiceError;
+import org.opengeo.gsr.core.feature.FieldTypeEnum;
+import org.opengeo.gsr.core.format.GeoServicesJsonFormat;
+import org.opengeo.gsr.core.geometry.GeometryEncoder;
+import org.opengeo.gsr.core.renderer.StyleEncoder;
+import org.opengeo.gsr.ms.resource.LayerOrTable;
+import org.opengeo.gsr.ms.resource.LayersAndTables;
+import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.PropertyDescriptor;
+import org.opengis.feature.type.PropertyType;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.restlet.Context;
+import org.restlet.data.MediaType;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
+import org.restlet.resource.OutputRepresentation;
+import org.restlet.resource.Representation;
+import org.restlet.resource.Resource;
+import org.restlet.resource.Variant;
+
+/**
+ * Single feature layer or a non-spatial table in a feature service.
+ * <p>
+ * Path:
+ * <ul>
+ * <li>host:port/geoserver/services/'serviceName'/FeatureService/'LayerId'</li>
+ * <li>host:port/geoserver/services/workspace/'serviceName'/FeatureService/'LayerId'</li>
+ * </li>
+ * </p>
+ * <p>
+ * Parameters:
+ * <ul>
+ * <li>f: html (default), json, pjson</li>
+ * <li>returnUpdates: true for updated time extent. Time to attribute mapping may be available from WMS configuration</li>
+ * </p>
+ * <p>
+ * Available operations:
+ * <ul>
+ * <li>query</li>
+ * <li>queryRelatedRecords</li>
+ * <li>addFeatures</li>
+ * <li>updateFeatures</li>
+ * <li>deleteFeatures</li>
+ * <li>applyEdits</li>
+ * <li>generateRenderer</li>
+ * <ul>
+ * </p>
+ * 
+ * @author Jody Garnett (Boundless)
+ */
+public class LayerResource extends Resource {
+	private final class JsonLayerRepresentation extends OutputRepresentation {
+		private final LayerOrTable entry;
+		private final LayerInfo layerInfo;
+		private final FeatureTypeInfo featureTypeInfo;
+
+		private JsonLayerRepresentation(LayerOrTable entry, LayerInfo layerInfo,
+				FeatureTypeInfo featureTypeInfo) {
+			super(MediaType.APPLICATION_JAVASCRIPT);
+			this.entry = entry;
+			this.layerInfo = layerInfo;
+			this.featureTypeInfo = featureTypeInfo;
+		}
+
+		@Override
+		public void write(OutputStream outputStream) throws IOException {
+			Writer writer = new OutputStreamWriter(outputStream, "UTF-8");
+			try {
+				JSONBuilder json = new JSONBuilder(writer);	
+				FeatureType schema = featureTypeInfo.getFeatureType();
+				json.array();
+				
+				// listed first for early exit 
+				json.key("currentVersion").value(2.24);
+
+				// id
+				json.key("id").value(entry.id);
+				// type: Feature Layer (if geometry column available) or Table
+				if( schema.getGeometryDescriptor() != null ){
+					json.key("type").value("Feature Layer");
+				}
+				else {
+					json.key("type").value("Table");
+				}
+				// displayField - attribute name to use as a display name
+				json.key("displayField").value( displayField( schema ));
+				
+				// description - unsure if we need to encode the description
+				json.key("description").value( layerInfo.getAbstract() );
+				
+				// copyrightText
+				json.key("copyrightText").value( copyrightText( layerInfo ) );
+				
+				// defaultVisibility - true or false
+				json.key("defaultVisibility").value( "true" );
+				
+				// editFieldsInfo - skipped we are not editable
+				// ownershipBasedAccessControlForFeatures - skipped we are not doing ownership
+				// syncCanReturnChanges - skipped revision not supported until geogig
+				json.key("syncCanReturnChanges").value( "false" );
+				// relationships - only required for complex schema - will check associations
+				// isDataVersioned - false unless geogig used
+				json.key("isDataVersioned").value( "false" );
+				
+				// supportsRollbackOnFailureParameter - true as we use transactions
+				json.key("supportsRollbackOnFailureParameter").value("true");
+				
+				// supportsStatistics - may be able to implement with aggregate functions
+				json.key("supportsStatistics").value("false");
+				
+				// supportsAdvancedQueries - implement using SortBy
+				json.key("supportsAdvancedQueries").value("true");
+				
+				// for feature layers only
+				if( schema.getGeometryDescriptor() != null ){
+					// geometryType
+					
+					json.key("geometryType").value( entry.gtype.getGeometryType() );
+					
+					jsonMinMaxScale( json, layerInfo.getDefaultStyle().getStyle() );
+					
+					// extent - layer extent (includes srs info)
+					json.key("extent");
+					GeometryEncoder.envelopeToJson( entry.boundingBox, json );
+					
+					// drawingInfo (renderer, transparency, labelingInfo) - skip for now (check map service)
+				     json.key("drawingInfo");
+	                 {	json.object();
+	                 	json.key("renderer");
+	                 	StyleEncoder.encodeRenderer(json, entry.renderer);
+	                 	
+	                 	// transparency - not supported
+	                 	json.key("transparency").value(0);
+	                 	// labelingInfo - could read from style
+	                 	json.key("labelingInfo").value(null);
+		                json.endObject();
+	                 }
+					// hasM - unsupported
+					// hasZ - check CRS
+					CoordinateReferenceSystem crs = schema.getGeometryDescriptor().getCoordinateReferenceSystem();
+					int dimension = crs.getCoordinateSystem().getDimension();
+					json.key("extent").value( dimension > 2 ? "true" : "false" );					
+				}
+				// enableZDefaults - ignore
+				// zDefault - ignore
+				// allowGeometryUpdates - editing not supported at this time
+				
+				// Use time mapping from WMS if available
+				DimensionInfo time = (DimensionInfo) layerInfo.getMetadata().get(ResourceInfo.TIME);
+				if (time != null) {
+					// Use time mapping from WMS if available
+					json.key("timeInfo");
+					{
+						json.object();
+
+						// startTimeField
+						json.key("startTimeField").value(time.getAttribute());
+
+						// endTimeField
+						if (time.getEndAttribute() != null) {
+							json.key("endTimeField").value(
+									time.getEndAttribute());
+						} else {
+							json.key("endTimeField").value(time.getAttribute());
+						}
+						// timeExtent - dimension range
+						if (time.getPresentation() == DimensionPresentation.DISCRETE_INTERVAL) {
+							// skip for now - requires traverse
+							// See WMS.getFeatureTypeTimes for example
+
+							// timeReference
+							json.key("timeReference");
+							{
+								json.object();
+								json.key("timeZone").value("UTC");
+								json.key("respectsDaylightSaving").value(true);
+								json.endObject();
+							}
+
+							BigDecimal resolution = time.getResolution();
+							if (resolution != null) {
+								json.key("timeInterval").value(resolution);
+								json.key("timeIntervalUnits").value(
+										"milliseconds");
+							}
+						}
+						json.endObject();
+					}
+				}
+				// hasAttachments - not supported
+				json.key("hasAttachments").value("false");
+				
+				// htmlPopupType - could consider use of GetFeatureInfo
+				json.key("hasAttachments").value("false");
+				
+				// objectIdField - placeholder for FeatureId
+				json.key("objectIdField").value("objectid");
+				
+				// globalIdField - placeholder for FeatureId
+				json.key("objectIdField").value("objectid");
+				
+				// typeIdField - not applicable
+				
+				json.key("fields");
+				{
+					json.array();
+					// generated field
+					{
+						json.object();
+						json.key("name").value("objectid");
+						json.key("type").value("");
+						json.key("alias").value("Feature Id");
+						json.key("editable").value("false");
+						json.key("nullable").value("false");
+						json.key("domain").value(null);
+						json.endObject();
+					}
+					// attributes
+					for( PropertyDescriptor field : schema.getDescriptors() ){
+						if( field == schema.getGeometryDescriptor() ){
+							continue; // continue skip default geometry
+						}
+						jsonField( json, field );
+					}
+					json.endArray();
+				}
+				// types - we do not use sub types
+				json.key("types");
+				json.array();
+				json.endArray();
+				
+				// templates - we can list one template based on schema default values
+				json.key("templates");
+				json.array();
+				json.endArray();
+				               
+				// capabilities - (Create,Delete,Query,Update,Editing)
+				json.key("capabilities");
+				json.key("");
+				
+				json.endArray();
+			}
+		    finally {
+		    	writer.close();
+		    	outputStream.close();
+		    }
+		    
+		
+			
+		}
+		private void jsonMinMaxScale(JSONBuilder json, Style style) {
+	        Double minScale = null, maxScale = null;
+	        
+	        for (FeatureTypeStyle ft : style.featureTypeStyles()) {
+	            for (Rule r : ft.rules()) {
+	                double minS = r.getMinScaleDenominator();
+	                double maxS = r.getMaxScaleDenominator();
+	                if (minScale == null || minS > minScale) {
+	                    minScale = minS;
+	                }
+	                if (maxScale == null || maxS < maxScale) {
+	                    maxScale = maxS;
+	                }
+	            }
+	        }
+	        minScale = Double.isInfinite(minScale) ? null : minScale;
+            maxScale = Double.isInfinite(maxScale) ? null : maxScale;
+            
+			// minScale - from SLD limits
+            json.key("minScale").value(minScale);
+            // maxScale - from SLD limits
+            json.key("maxScale").value(maxScale);
+            
+			// effectiveMinScale - could guess from GWC settings?
+			// effectiveMaxScale - could guess from GWC settings?            
+		}
+
+		/**
+		 * Encode Field.
+		 * 
+		 * @param json
+		 * @param field
+		 */
+		private void jsonField(JSONBuilder json, PropertyDescriptor field) {
+			 // Similar to LayerListResource encodeencodeSchemaProperties
+			 // Similar to FeatureEncoder descriptorToJson. 
+			json.object();			
+			json.key("name").value( field.getName().getLocalPart() );
+			
+			FieldTypeEnum type = FieldTypeEnum.forClass(field.getType().getBinding());						
+			json.key("type").value( type.getFieldType() );
+			json.key("alias").value( field.getName().toString() );
+			
+			int length = FeatureTypes.getFieldLength( field );
+			
+			// String, Date, GlobalID, GUID and XML
+			switch( type ){
+			case STRING:
+			case DATE:
+			case GUID:
+			case GLOBAL_ID:
+			case XML:
+				json.key("length").value( length == -1 ? 4000 : length );
+				json.key("editable").value("false");
+				break;				
+			default:
+				// length and editable are optional
+			}
+			json.key("nullable").value( field.isNillable() ? "true" : "false" );
+			json.key("domain");		
+			jsonDomain( json, field.getType() );
+			
+			json.endObject();
+		}
+
+		private void jsonDomain(JSONBuilder json, PropertyType type) {
+			Class<?> binding = type.getBinding();
+			if( Enum.class.isAssignableFrom( binding )){
+				List<Enum> values = EnumUtils.getEnumList( binding );
+				
+				json.object();
+				json.key("type").value("codedValue");
+				json.key("name").value( type.getName().getLocalPart() );
+				json.key("codedValues");
+				{
+					json.array();
+					for( Enum value : values ){
+						json.object();
+						json.key("name").value( value.name() );
+						json.key("code").value( value.ordinal() );
+						
+						json.endObject();
+					}
+					json.endArray();
+				}
+				json.endObject();
+			}
+			else {
+				json.value( null );				
+			}
+		}
+
+		/**
+		 * Copyright text from attribute title or service access rights.
+		 * @param layerInfo
+		 * @return copyright text from layer attribute
+		 */
+		private Object copyrightText(LayerInfo layerInfo) {
+			// check metadata
+			List<MetadataLinkInfo> links = layerInfo.getResource().getMetadataLinks();
+			if( links != null && !links.isEmpty()){
+				return links.get(0).getContent();
+			}			
+			// check attribution
+			if( layerInfo.getAttribution() != null && layerInfo.getAttribution().getTitle() != null ){
+				return layerInfo.getAttribution().getTitle();
+			}
+			return "";
+		}
+
+		/**
+		 * Recommend a suitable display field.
+		 * <ul>
+		 * <li>A <b>name</b> field will be used if it is available (as per GeoTools feature model AbstractFeature)</li>
+		 * <li>A String field ending in <b>id</b> (preferred) or <b>name</b></li>
+		 * <li>First available String field</li>
+		 * </ul>
+		 * 
+		 * @param schema
+		 * @return Suitable display field
+		 */
+		private Object displayField(FeatureType schema) {
+			PropertyDescriptor property = schema.getDescriptor("name");
+			if( property != null && String.class.isAssignableFrom( property.getType().getBinding() )){
+				return "name";					
+			}
+			for( PropertyDescriptor attribute : schema.getDescriptors() ){
+				String name = attribute.getName().getLocalPart();
+				if( name.toLowerCase().endsWith("id") &&
+						String.class.isAssignableFrom( attribute.getType().getBinding() )){
+					return name;					
+				}	
+			}
+			for( PropertyDescriptor attribute : schema.getDescriptors() ){
+				String name = attribute.getName().getLocalPart();
+				if( name.toLowerCase().endsWith("name") &&
+						String.class.isAssignableFrom( attribute.getType().getBinding() )){
+					return name;
+				}
+			}
+			for( PropertyDescriptor attribute : schema.getDescriptors() ){
+				if( String.class.isAssignableFrom( attribute.getType().getBinding() )){
+					return attribute.getName();
+				}
+			}
+			return null;
+		}
+	}
+
+	private final static Variant JSON = new Variant(MediaType.APPLICATION_JSON);
+	
+	// catalog integration
+	private final Catalog catalog;
+    private final String format;
+    private final String layerId;
+    
+    
+    // data model
+//    public final int id;
+//    public final GeometryTypeEnum gtype;
+//    public final ReferencedEnvelope boundingBox;
+//    public final Renderer renderer;
+
+	//
+	// Property capabilities
+	//  Query, Create, Delete, Update, Editing
+//	double relationships;
+//	
+//	double effectiveMinScale;
+//	double effectiveMaxScale;
+//	boolean returnUpdates;
+//	boolean nullable;
+//	boolean hasAttachments;
+	//
+	// Optional properties added over time
+	//
+	/** Require use of standardized queries */
+//	boolean useStandardizedQueries;
+	
+	/** rollbackOnFailure available */
+//	boolean supportsRollbackOnFailures;
+	
+	/** Server can return changes (using global id and version) */
+//	boolean syncCanReturnChanges;
+//	boolean isDataVersioned;
+//	boolean supportsStatistics;
+	
+	/** Query can use orderBy */
+//	boolean supportsAdvancedQueries;
+	
+	/** List of query formats */
+//	List<String> supportedQueryFormats;
+	
+	/** Coordinates include z values */
+//	boolean hasZ;
+	
+	/** Coordiantes include m measurements */
+//	boolean hasM;
+	
+	/** If geometry can be edited */
+//	boolean allowGeometryUpdates;
+	
+    LayerResource(Context context, Request request, Response response, Catalog catalog, String format, String layerId) {
+        this.catalog = catalog;
+        this.format = format;
+        getVariants().add(JSON);
+        this.layerId = layerId;
+    }	
+	
+    @Override
+    public Representation getRepresentation(Variant variant) {
+    	if (variant == JSON) {
+            try {
+                return buildJsonRepresentation();
+            } catch (IllegalArgumentException e) {
+                return buildJsonError(new ServiceError(400, "Invalid arguments from client", Arrays.asList(e.getMessage())));
+            }
+        }
+        return super.getRepresentation(variant);
+    }
+    
+    private Representation buildJsonRepresentation() {
+        if (!"json".equals(format)) {
+        	throw new IllegalStateException("f=json expected");
+        }
+        String workspaceName = (String) getRequest().getAttributes().get("workspace");
+        String layerOrTableId = (String) getRequest().getAttributes().get("layerOrTable");
+        Integer layerIndex = Integer.valueOf(layerOrTableId);
+        
+        LayerOrTable entry;
+		try {
+			entry = LayersAndTables.find(catalog, workspaceName, layerIndex );
+		} catch (IOException e) {			
+			throw new NoSuchElementException("Unavaialble table or layer in workspace \"" + workspaceName + " for id " + layerOrTableId+":"+e); 
+		}
+        if (entry == null) {
+            throw new NoSuchElementException("No table or layer in workspace \"" + workspaceName + " for id " + layerOrTableId);
+        }
+        
+        final LayerInfo layerInfo = entry.layer;
+        final FeatureTypeInfo featureTypeInfo = (FeatureTypeInfo) layerInfo.getResource();
+        
+        return new JsonLayerRepresentation(entry, layerInfo,featureTypeInfo);
+	}
+
+	private Representation buildJsonError(ServiceError error) {
+        getResponse().setStatus(new Status(error.getCode()));
+        GeoServicesJsonFormat format = new GeoServicesJsonFormat();
+        return format.toRepresentation(error);
+    }
+    
+    @Override
+    public String toString() {
+        return String.valueOf(layerId);
+    }
+}

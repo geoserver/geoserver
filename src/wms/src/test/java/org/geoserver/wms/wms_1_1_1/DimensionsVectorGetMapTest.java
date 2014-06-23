@@ -272,11 +272,11 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
             BufferedImage img = reader.read(i);
             g.drawImage(img, w * i, 0, null);     
             // want to see the individual frame images and the filmstrip? uncomment below
-            File outputfile = new File("/tmp/geoserveranimatednontransparentframe"+i+".gif");
-           ImageIO.write(img, "gif", outputfile);
+            //File outputfile = new File("/tmp/geoserveranimatednontransparentframe"+i+".gif");
+            //ImageIO.write(img, "gif", outputfile);
         }
-        File outputfile = new File("/tmp/geoserveranimatedstripnontransparent.gif");
-        ImageIO.write(image, "gif", outputfile);
+        //File outputfile = new File("/tmp/geoserveranimatedstripnontransparent.gif");
+        //ImageIO.write(image, "gif", outputfile);
         
         // actual check for NON transparency and colored background
         assertPixel(image, 20, 10, Color.RED);
@@ -319,11 +319,11 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
             BufferedImage img = reader.read(i);
             g.drawImage(img, w * i, 0, null);     
             // want to see the individual frame images and the filmstrip? uncomment below
-            File outputfile = new File("/tmp/geoserveranimatedtransparentframe"+i+".gif");
-           ImageIO.write(img, "gif", outputfile);
+            //File outputfile = new File("/tmp/geoserveranimatedtransparentframe"+i+".gif");
+           //ImageIO.write(img, "gif", outputfile);
         }
-        File outputfile = new File("/tmp/geoserveranimatedstriptransparent.gif");
-        ImageIO.write(image, "gif", outputfile);
+        //File outputfile = new File("/tmp/geoserveranimatedstriptransparent.gif");
+        //ImageIO.write(image, "gif", outputfile);
                
         ColorModel cm = image.getColorModel();
         assertTrue(cm.hasAlpha());

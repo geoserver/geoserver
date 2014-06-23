@@ -84,3 +84,58 @@ Once the installation is complete, you may optionally remove the original JAI fi
    jai_codec-x.y.z.jar
    
 where ``x``, ``y``, and ``z`` refer to specific version numbers.
+
+.. _java_policyfiles:
+
+Installing Unlimited Strength Jurisdiction Policy Files
+-------------------------------------------------------
+These policy files are needed for unlimited cryptography. As an example, Java does not support AES
+with a key length of 256 bit. Installing the policy files removes these restrictions.
+
+Open JDK
+````````
+
+Since Open JDK is Open Source, the policy files are already installed.   
+
+Oracle Java
+```````````
+
+The policy files are available at   
+
+* `Java 6 JCE policy jars <http://www.oracle.com/technetwork/java/javase/downloads/jce-6-download-429243.html>`_
+* `Java 7 JCE policy jars <http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html>`_
+* `Java 8 JCE policy jars <http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html>`_ 
+
+The download contains two files, **local_policy.jar** and  **US_export_policy.jar**. The default
+versions of these two files are stored in JRE_HOME/lib/security. Replace these two files with the
+versions from the download. 
+
+
+Test if unlimited key length is available
+"""""""""""""""""""""""""""""""""""""""""
+
+Start or restart GeoServer and login as administrator. The annotated warning should have disappeared.
+
+.. figure:: ../webadmin/security/images/unlimitedkey.png
+   :align: center
+  
+
+
+Additionally, the GeoServer log file should contain the following line::
+
+   "Strong cryptography is available"
+
+.. note::
+
+   The replacement has to be done for each update of the Java runtime. 
+
+IBM Java
+````````
+
+The policy files are available at
+
+* `IBM JCE policy jars <https://www14.software.ibm.com/webapp/iwm/web/preLogin.do?source=jcesdk>`_ 
+
+An IBM ID is needed to log in. The installation is identical to Oracle.
+
+ 

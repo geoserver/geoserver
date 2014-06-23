@@ -79,13 +79,27 @@ public class ScriptListResource extends ReflectiveResource {
                 }
             };
             for (File f : dir.listFiles(filter)) {
-                String name = f.getName();
                 if (path.equals("apps")) {
                     File mainScript = scriptMgr.findAppMainScript(f);
-                    name = mainScript.getAbsolutePath().substring(
+                    String name = mainScript.getAbsolutePath().substring(
                             f.getParentFile().getAbsolutePath().length() + 1).replace("\\", "/");
+                    scripts.add(new Script(name));
+                } else if (path.equals("wps")) {
+                    if (f.isDirectory()) {
+                        String namespace = f.getName();
+                        File[] files = f.listFiles();
+                        for(File file: files) {
+                            String name = namespace + ":" + file.getName();
+                            scripts.add(new Script(name));
+                        }
+                    } else {
+                        String name = f.getName();
+                        scripts.add(new Script(name));
+                    }
+                } else {
+                    String name = f.getName();
+                    scripts.add(new Script(name));
                 }
-                scripts.add(new Script(name));
             }
         } else {
             // return empty array, perhaps we should return a 404?

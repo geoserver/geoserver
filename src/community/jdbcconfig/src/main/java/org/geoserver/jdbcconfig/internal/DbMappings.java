@@ -252,7 +252,7 @@ public class DbMappings {
             try {
                 properties.load(in);
             } finally {
-                Closeables.closeQuietly(in);
+                Closeables.close(in, true);
             }
         } catch (IOException e) {
             throw Throwables.propagate(e);

@@ -7,6 +7,7 @@ package org.geoserver.script.py;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,6 +87,19 @@ public class PyWpsHook extends WpsHook {
                     metadata = new HashMap();
                     metadata.put(Parameter.OPTIONS, options);
                 }
+                // map every other key as parameter metadata entry
+                HashSet<String> otherKeys = new HashSet<String>(meta.keySet());
+                otherKeys.remove("min");
+                otherKeys.remove("max");
+                otherKeys.remove("domain");
+                if(!otherKeys.isEmpty()) {
+                    if (metadata == null) {
+                        metadata = new HashMap();
+                    }
+                    for (String key : otherKeys) {
+						metadata.put(key, meta.get(key));
+					}
+                }
             }
             if (defaults != null) {
                 // from the python guide:
@@ -122,12 +136,24 @@ public class PyWpsHook extends WpsHook {
         Map<String,Parameter<?>> map = new TreeMap<String, Parameter<?>>();
 
         for (String name : (List<String>)outputs.keys()) {
-            PyObject output = (PyObject) outputs.get(name); 
+        	PyTuple output = (PyTuple) outputs.get(name); 
 
             Object type = output.__getitem__(0);
             Object desc = output.__getitem__(1);
 
-            map.put(name, parameter(name, type, 1, 1, desc, null, null));
+            // map every key in the optional dictionary as parameter metadata entry
+            Map<String, Object> metadata = null;
+            if (output.size() == 3) {
+                PyDictionary meta = (PyDictionary) output.get(2);
+                if(meta != null && !meta.isEmpty()) {
+                	metadata = new HashMap<String, Object>();
+	                for (Object key : meta.keySet()) {
+						metadata.put((String) key, meta.get(key));
+					}
+                }
+            }
+
+            map.put(name, parameter(name, type, 1, 1, desc, null, metadata));
         }
 
         return map;

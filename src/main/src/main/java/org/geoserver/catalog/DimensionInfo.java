@@ -72,7 +72,7 @@ public interface DimensionInfo extends Serializable {
     public void setResolution(BigDecimal resolution);
     
     /**
-     * The units attribute for the elevation dimension. This method has to affect
+     * The units attribute for the elevation dimension. This method has no affect
      * on the time dimension.
      * 
      * @return the value for units
@@ -82,7 +82,7 @@ public interface DimensionInfo extends Serializable {
     public void setUnits(String units);
     
     /**
-     * The unitSymbol attribute for the elevation dimension. This method has to affect
+     * The unitSymbol attribute for the elevation dimension. This method has no affect
      * on the time dimension.
      * 
      * @return the value for unitSymbol

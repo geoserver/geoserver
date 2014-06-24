@@ -37,7 +37,7 @@ import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.SystemTest;
-import org.hamcrest.Matchers;
+import org.geotools.data.DataUtilities;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -696,7 +696,7 @@ public class GeoServerPersisterTest extends GeoServerSystemTestSupport {
         
         // Insert an absolute path to test
         String content = new String(Files.readAllBytes(styleFile.toPath()), StandardCharsets.UTF_8);
-        content = content.replaceAll("./burg03.svg", target.getCanonicalPath());
+        content = content.replaceAll("./burg03.svg", DataUtilities.fileToURL(target.getCanonicalFile()).toString());
         Files.write(styleFile.toPath(), content.getBytes(StandardCharsets.UTF_8));
         new File( testData.getDataDirectoryRoot(), "styles/burg03.svg").delete();
         

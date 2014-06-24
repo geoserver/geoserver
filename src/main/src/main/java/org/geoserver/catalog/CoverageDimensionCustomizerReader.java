@@ -70,6 +70,12 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         private StructuredGridCoverage2DReader structuredDelegate;
 
         public CoverageDimensionCustomizerStructuredReader(StructuredGridCoverage2DReader delegate,
+                String coverageName, CoverageInfo info) {
+            super(delegate, coverageName, info);
+            this.structuredDelegate = delegate;
+        }
+
+        public CoverageDimensionCustomizerStructuredReader(StructuredGridCoverage2DReader delegate,
                 String coverageName, CoverageStoreInfo storeInfo) {
             super(delegate, coverageName, storeInfo);
             this.structuredDelegate = delegate;
@@ -150,6 +156,12 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         this.info = getCoverageInfo(storeInfo);
     }
 
+    public CoverageDimensionCustomizerReader(GridCoverage2DReader delegate, String coverageName, CoverageInfo info) {
+        this.delegate = delegate; 
+        this.coverageName = coverageName;
+        this.info = info;
+    }
+
     /**
      * Retrieve the proper {@link CoverageInfo} object from the specified {@link CoverageStoreInfo} 
      * using the specified coverageName (which may be the native one in some cases).
@@ -184,6 +196,14 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         return info;
     }
 
+    public String getCoverageName() {
+        return coverageName;
+    }
+
+    public CoverageInfo getInfo() {
+        return info;
+    }
+
     @Override
     public GridCoverage2D read(GeneralParameterValue[] parameters) throws IllegalArgumentException,
             IOException {
@@ -203,21 +223,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         }
         final Map properties = coverage.getProperties();
         final SampleDimension[] dims = coverage.getSampleDimensions();
-        GridSampleDimension[] wrappedDims = null;
-        if (info != null) {
-            List<CoverageDimensionInfo> storedDimensions = info.getDimensions();
-            if (storedDimensions != null && storedDimensions.size() > 0) {
-                int i = 0;
-                final int inputDims = storedDimensions.size();
-                final int outputDims = dims.length;
-                wrappedDims = new GridSampleDimension[outputDims];
-                for (SampleDimension dim: dims) {
-                    wrappedDims[i] = new WrappedSampleDimension((GridSampleDimension) dim, 
-                            storedDimensions.get(outputDims != inputDims ? (i > (inputDims - 1 ) ? inputDims - 1 : i) : i));
-                    i++;
-                }
-            }
-        } 
+        GridSampleDimension[] wrappedDims = wrapDimensions(dims);
         // Wrapping sample dimensions
         if (wrappedDims == null) {
             wrappedDims = (GridSampleDimension[]) dims;
@@ -229,9 +235,28 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
             }
         }
 
-        
         // Wrap the coverage into a coverageWrapper to change its name and sampleDimensions
         return new GridCoverageWrapper(coverageName, coverage, wrappedDims, properties);
+    }
+
+    protected GridSampleDimension[] wrapDimensions(SampleDimension[] dims) {
+        GridSampleDimension[] wrappedDims = null;
+        if (info != null) {
+            List<CoverageDimensionInfo> storedDimensions = info.getDimensions();
+            MetadataMap map = info.getMetadata();
+            if (storedDimensions != null && storedDimensions.size() > 0) {
+                    int i = 0;
+                    final int inputDims = storedDimensions.size();
+                    final int outputDims = dims.length;
+                    wrappedDims = new GridSampleDimension[outputDims];
+                    for (SampleDimension dim: dims) {
+                        wrappedDims[i] = new WrappedSampleDimension((GridSampleDimension) dim, 
+                                storedDimensions.get(outputDims != inputDims ? (i > (inputDims - 1 ) ? inputDims - 1 : i) : i));
+                        i++;
+                    }
+                }
+        }
+        return wrappedDims;
     }
 
     public Format getFormat() {

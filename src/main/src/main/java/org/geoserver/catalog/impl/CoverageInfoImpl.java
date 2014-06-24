@@ -16,7 +16,6 @@ import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.ProjectionPolicy;
-import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.factory.Hints;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.coverage.grid.GridCoverage;
@@ -160,8 +159,8 @@ public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
                 hints.putAll(crsHints);
             else
                 hints=crsHints;
-        }           
-        return catalog.getResourcePool().getGridCoverageReader(getStore(), nativeCoverageName, hints);
+        }
+        return catalog.getResourcePool().getGridCoverageReader(this, nativeCoverageName, hints);
     }
     
     public void setSupportedFormats(List<String> supportedFormats) {

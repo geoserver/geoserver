@@ -46,6 +46,7 @@ import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
+import org.geotools.data.DataUtilities;
 import org.geotools.styling.AbstractStyleVisitor;
 import org.geotools.styling.ChannelSelection;
 import org.geotools.styling.DefaultResourceLocator;
@@ -1230,26 +1231,15 @@ public class GeoServerDataDirectory implements ResourceStore {
 
         DefaultResourceLocator locator = new DefaultResourceLocator() {
             
-            @SuppressWarnings("deprecation")
-            // Need to use toURL() rather than toURI().toURL() to avoid escaping 
-            // of CQL expressions KS
             @Override
             public URL locateResource(String uri) {
-                try {
-                    URL url = super.locateResource(uri);
-                    if(url.getProtocol().equalsIgnoreCase("resource")) {
-                        Resource r = urlToResource(url);
-                        return r.file().toURL();
-                    } else {
-                        return url;
-                    }
-                } catch (MalformedURLException e) {
-                    try {
-                        return new URL((URL)null, uri);
-                    } catch (MalformedURLException e2){
-                        return null;
-                    }
-               }
+                URL url = super.locateResource(uri);
+                if(url.getProtocol().equalsIgnoreCase("resource")) {
+                    Resource r = urlToResource(url);
+                    return DataUtilities.fileToURL(r.file());
+                } else {
+                    return url;
+                }
             }
             
         };

@@ -98,7 +98,7 @@ public class LayerResource extends Resource {
 			try {
 				JSONBuilder json = new JSONBuilder(writer);	
 				FeatureType schema = featureTypeInfo.getFeatureType();
-				json.array();
+				json.object();
 				
 				// listed first for early exit 
 				json.key("currentVersion").value(2.24);
@@ -265,10 +265,9 @@ public class LayerResource extends Resource {
 				json.endArray();
 				               
 				// capabilities - (Create,Delete,Query,Update,Editing)
-				json.key("capabilities");
-				json.key("");
+				json.key("capabilities").value("");
 				
-				json.endArray();
+				json.endObject();
 			}
 		    finally {
 		    	writer.close();
@@ -480,11 +479,12 @@ public class LayerResource extends Resource {
 	/** If geometry can be edited */
 //	boolean allowGeometryUpdates;
 	
-    LayerResource(Context context, Request request, Response response, Catalog catalog, String format, String layerId) {
+    public LayerResource(Context context, Request request, Response response, Catalog catalog, String format, String layerId) {
+        super(context, request, response);
         this.catalog = catalog;
         this.format = format;
-        getVariants().add(JSON);
         this.layerId = layerId;
+        getVariants().add(JSON);
     }	
 	
     @Override
@@ -504,17 +504,16 @@ public class LayerResource extends Resource {
         	throw new IllegalStateException("f=json expected");
         }
         String workspaceName = (String) getRequest().getAttributes().get("workspace");
-        String layerOrTableId = (String) getRequest().getAttributes().get("layerOrTable");
-        Integer layerIndex = Integer.valueOf(layerOrTableId);
+        Integer layerIndex = Integer.valueOf(layerId);
         
         LayerOrTable entry;
 		try {
 			entry = LayersAndTables.find(catalog, workspaceName, layerIndex );
 		} catch (IOException e) {			
-			throw new NoSuchElementException("Unavaialble table or layer in workspace \"" + workspaceName + " for id " + layerOrTableId+":"+e); 
+			throw new NoSuchElementException("Unavaialble table or layer in workspace \"" + workspaceName + " for id " + layerId+":"+e); 
 		}
         if (entry == null) {
-            throw new NoSuchElementException("No table or layer in workspace \"" + workspaceName + " for id " + layerOrTableId);
+            throw new NoSuchElementException("No table or layer in workspace \"" + workspaceName + " for id " + layerId);
         }
         
         final LayerInfo layerInfo = entry.layer;

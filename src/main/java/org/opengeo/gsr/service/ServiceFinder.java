@@ -17,6 +17,7 @@ import org.geoserver.ows.Dispatcher;
 import org.geoserver.wms.WMS;
 import org.opengeo.gsr.fs.resource.FeatureServiceResource;
 import org.opengeo.gsr.fs.resource.FeatureResource;
+import org.opengeo.gsr.fs.resource.LayerResource;
 import org.opengeo.gsr.ms.resource.LayerListResource;
 import org.opengeo.gsr.ms.resource.LegendResource;
 import org.opengeo.gsr.ms.resource.MapResource;
@@ -88,6 +89,8 @@ public class ServiceFinder extends AbstractCatalogFinder {
                 } else if (attributes.get("layerOrTable") != null) {
                     // in this case the 'operation' parameter ends up being the feature id
                     resource = new FeatureResource(null, request, response, catalog, format, operation);
+                } else {
+                    resource = new LayerResource(null, request, response, catalog, format, operation);
                 }
                 break;
             case GeocodeServer:

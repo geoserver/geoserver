@@ -145,7 +145,7 @@ public class LayersAndTables {
                 LayerOrTable entry = entry( l, idCounter);
                 if (entry != null){
                     if (entry.gtype != null){
-                        ulayers.add(entry);
+                        layers.add(entry);
                     } else {
                         tables.add(entry);
                     }

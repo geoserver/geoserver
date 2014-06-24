@@ -34,6 +34,7 @@ import org.opengeo.gsr.core.geometry.GeometryEncoder;
 import org.opengeo.gsr.core.renderer.StyleEncoder;
 import org.opengeo.gsr.ms.resource.LayerOrTable;
 import org.opengeo.gsr.ms.resource.LayersAndTables;
+import org.opengeo.gsr.ms.resource.ScaleRange;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.feature.type.PropertyType;
@@ -146,7 +147,9 @@ public class LayerResource extends Resource {
 
                     json.key("geometryType").value(entry.gtype.getGeometryType());
 
-                    jsonMinMaxScale(json, layerInfo.getDefaultStyle().getStyle());
+                    ScaleRange range = ScaleRange.extract(layerInfo.getDefaultStyle().getStyle());
+                    json.key("minScale").value(range.minScale);
+                    json.key("maxScale").value(range.maxScale);
 
                     // extent - layer extent (includes srs info)
                     json.key("extent");
@@ -272,35 +275,6 @@ public class LayerResource extends Resource {
                 writer.close();
                 outputStream.close();
             }
-
-
-
-        }
-        private void jsonMinMaxScale(JSONBuilder json, Style style) {
-            Double minScale = null, maxScale = null;
-
-            for (FeatureTypeStyle ft : style.featureTypeStyles()) {
-                for (Rule r : ft.rules()) {
-                    double minS = r.getMinScaleDenominator();
-                    double maxS = r.getMaxScaleDenominator();
-                    if (minScale == null || minS > minScale) {
-                        minScale = minS;
-                    }
-                    if (maxScale == null || maxS < maxScale) {
-                        maxScale = maxS;
-                    }
-                }
-            }
-            minScale = Double.isInfinite(minScale) ? null : minScale;
-            maxScale = Double.isInfinite(maxScale) ? null : maxScale;
-
-            // minScale - from SLD limits
-            json.key("minScale").value(minScale);
-            // maxScale - from SLD limits
-            json.key("maxScale").value(maxScale);
-
-            // effectiveMinScale - could guess from GWC settings?
-            // effectiveMaxScale - could guess from GWC settings?            
         }
 
         /**

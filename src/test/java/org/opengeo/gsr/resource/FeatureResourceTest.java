@@ -26,9 +26,9 @@ public class FeatureResourceTest extends ResourceTest {
         // result should have a field named 'feature' containing an object with 'geometry' and 'attributes' fields.
         JSONObject json = (JSONObject) result;
         Object featureObject = ((JSONObject) result).get("feature");
-        assertTrue("feature field should contain an object", featureObject instanceof JSONObject);
+        assertTrue("feature field should contain an object" + json, featureObject instanceof JSONObject);
         JSONObject feature = (JSONObject) featureObject;
-        assertTrue("feature should contain attributes", feature.containsKey("attributes"));
-        assertTrue("feature should contain geometry", feature.containsKey("geometry"));
+        assertTrue("feature should contain attributes" + json, feature.containsKey("attributes"));
+        assertTrue("feature should contain geometry" + json, feature.containsKey("geometry"));
     }
 }

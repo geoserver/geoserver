@@ -79,16 +79,17 @@ public class FeatureResource extends Resource {
         if (!"json".equals(format)) throw new IllegalArgumentException("json is the only supported format");
         String workspace = (String) getRequest().getAttributes().get("workspace");
 
+        String layerOrTableId = (String) getRequest().getAttributes().get("layerOrTable");
         Integer layerOrTableIndex = Integer.valueOf(layerOrTableId);
-        LayersAndTables layersAndTables = LayersAndTables.find(catalog, workspace, layerOrTableIndex);
+        LayerOrTable l = LayersAndTables.find(catalog, workspace, layerOrTableIndex);
 
         if (null == l) {
-            throw new NoSuchElementException("No table or layer in workspace \"" + workspace + " for id " + layerOrTableId + "\" of " + layersAndTables);
+            throw new NoSuchElementException("No table or layer in workspace \"" + workspace + " for id " + layerOrTableId);
         }
 
-        FeatureTypeInfo featureType = (FeatureTypeInfo) l.getResource();
+        FeatureTypeInfo featureType = (FeatureTypeInfo) l.layer.getResource();
         if (null == featureType) {
-            throw new NoSuchElementException("No table or layer in workspace \"" + workspace + " for id " + layerOrTableId + "\" of " + layersAndTables);
+            throw new NoSuchElementException("No table or layer in workspace \"" + workspace + " for id " + layerOrTableId);
         }
 
 

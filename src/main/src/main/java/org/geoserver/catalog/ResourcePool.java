@@ -1221,6 +1221,16 @@ public class ResourcePool {
         }
     }
     
+    public GridCoverageReader getGridCoverageReader(CoverageInfo info, Hints hints) 
+            throws IOException {
+        return getGridCoverageReader(info, (String) null, hints); 
+    }
+
+    public GridCoverageReader getGridCoverageReader(CoverageInfo info, String coverageName, Hints hints) 
+            throws IOException {
+            return getGridCoverageReader(info.getStore(), info, coverageName, hints);
+    }
+
     /**
      * Returns a coverage reader, caching the result.
      *  
@@ -1244,7 +1254,21 @@ public class ResourcePool {
      * @throws IOException Any errors that occur loading the reader.
      */
     @SuppressWarnings("deprecation")
-    public GridCoverageReader getGridCoverageReader(CoverageStoreInfo info, String coverageName, Hints hints) 
+    public GridCoverageReader getGridCoverageReader(CoverageStoreInfo storeInfo, String coverageName, Hints hints) throws IOException {
+        return getGridCoverageReader(storeInfo, (CoverageInfo) null, coverageName, hints);
+    }
+    
+    
+    /**
+     * Returns a coverage reader, caching the result.
+     *  
+     * @param info The coverage metadata.
+     * @param hints Hints to use when loading the coverage, may be <code>null</code>.
+     * 
+     * @throws IOException Any errors that occur loading the reader.
+     */
+    @SuppressWarnings("deprecation")
+    private GridCoverageReader getGridCoverageReader(CoverageStoreInfo info, CoverageInfo coverageInfo, String coverageName, Hints hints) 
         throws IOException {
         
         final AbstractGridFormat gridFormat = info.getFormat();
@@ -1317,7 +1341,15 @@ public class ResourcePool {
                 }
             }
         }
-        
+
+        if (coverageInfo != null) {
+            MetadataMap metadata = coverageInfo.getMetadata();
+            if (metadata != null && metadata.containsKey(CoverageView.COVERAGE_VIEW)) {
+                CoverageView coverageView = (CoverageView) metadata.get(CoverageView.COVERAGE_VIEW);
+                return CoverageViewReader.wrap((GridCoverage2DReader) reader, coverageView, coverageInfo, hints);
+            }
+        }
+
         // wrap it if we are dealing with a multi-coverage reader
         if (coverageName != null) {
             // force the result to work against a single coverage, so that the OGC service portion of
@@ -1340,7 +1372,6 @@ public class ResourcePool {
             // but no coveragename have been specified
             return (GridCoverage2DReader) reader;
 
-            
         }
     }
     
@@ -1359,6 +1390,10 @@ public class ResourcePool {
         
     }
     
+    public GridCoverage getGridCoverage(CoverageInfo info, ReferencedEnvelope env, Hints hints) throws IOException {
+            return getGridCoverage(info, (String) null, env, hints);
+    }
+    
     /**
      * Loads a grid coverage.
      * <p>
@@ -1372,8 +1407,8 @@ public class ResourcePool {
      * @throws IOException Any errors that occur loading the coverage.
      */
     @SuppressWarnings("deprecation")
-    public GridCoverage getGridCoverage( CoverageInfo info, ReferencedEnvelope env, Hints hints) throws IOException {
-        final GridCoverageReader reader = getGridCoverageReader(info.getStore(), hints);
+    public GridCoverage getGridCoverage( CoverageInfo info, String coverageName, ReferencedEnvelope env, Hints hints) throws IOException {
+        final GridCoverageReader reader = getGridCoverageReader(info, coverageName, hints);
         if(reader == null) {
             return null;
         }

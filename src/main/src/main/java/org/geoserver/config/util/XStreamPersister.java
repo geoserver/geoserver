@@ -46,6 +46,9 @@ import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.CoverageView;
+import org.geoserver.catalog.CoverageView.InputCoverageBand;
+import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -306,6 +309,8 @@ public class XStreamPersister {
         xs.alias( "coverage", CoverageInfo.class);
         xs.alias( "wmsLayer", WMSLayerInfo.class);
         xs.alias( "coverageDimension", CoverageDimensionInfo.class);
+        xs.alias( "coverageBand", CoverageBand.class);
+        xs.alias( "inputCoverageBand", InputCoverageBand.class);
         xs.alias( "metadataLink", MetadataLinkInfo.class);
         xs.alias( "attribute", AttributeTypeInfo.class );
         xs.alias( "layer", LayerInfo.class);
@@ -317,7 +322,7 @@ public class XStreamPersister {
         xs.aliasField("abstract", ResourceInfoImpl.class, "_abstract" );
         xs.alias("AuthorityURL", AuthorityURLInfo.class);
         xs.alias("Identifier", LayerIdentifierInfo.class);
-        
+
         // GeoServerInfo
         xs.omitField(impl(GeoServerInfo.class), "clientProperties");
         xs.omitField(impl(GeoServerInfo.class), "geoServer");
@@ -435,10 +440,11 @@ public class XStreamPersister {
         xs.registerConverter(new KeywordInfoConverter());
         xs.registerConverter(new SettingsInfoConverter());
 
-        // register VirtulaTable handling
+        // register Virtual structure handling
         registerBreifMapComplexType("virtualTable", VirtualTable.class);
+        registerBreifMapComplexType("coverageView", CoverageView.class);
         registerBreifMapComplexType("dimensionInfo", DimensionInfoImpl.class);
-        
+
         callback = new Callback();
     }
     
@@ -452,7 +458,6 @@ public class XStreamPersister {
     public void registerBreifMapComplexType(String typeId, Class clazz) {
         forwardBreifMap.put(typeId, clazz);
         backwardBreifMap.put(clazz, typeId);
-        
     }
 
     public XStream getXStream() {
@@ -539,7 +544,7 @@ public class XStreamPersister {
         obj = unwrapProxies( obj );
         xs.toXML(obj, new OutputStreamWriter( out, "UTF-8" ));
     }
-    
+
     /**
      * Unwraps any proxies around the object.
      * <p>

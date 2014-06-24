@@ -20,7 +20,7 @@
   <artifactId>gs-dxf-core</artifactId>
   <packaging>jar</packaging>
   <version>2.6-SNAPSHOT</version>
-  <name>DXF output format</name>
+  <name>DXF WFS output format</name>
 
     <dependencies>
     <dependency>

@@ -230,7 +230,7 @@ public class LayerResource extends Resource {
                 json.key("objectIdField").value("objectid");
 
                 // globalIdField - placeholder for FeatureId
-                json.key("objectIdField").value("");
+                json.key("globalIdField").value("");
 
                 // typeIdField - not applicable
 

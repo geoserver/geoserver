@@ -1235,8 +1235,7 @@ public class GeoServerDataDirectory implements ResourceStore {
             public URL locateResource(String uri) {
                 URL url = super.locateResource(uri);
                 if(url.getProtocol().equalsIgnoreCase("resource")) {
-                    Resource r = urlToResource(url);
-                    return DataUtilities.fileToURL(r.file());
+                    return fileToUrlPreservingCqlTemplates(urlToResource(url).file());
                 } else {
                     return url;
                 }
@@ -1412,6 +1411,23 @@ public class GeoServerDataDirectory implements ResourceStore {
             return Files.asResource(new File(uri.toURL().getFile()));
         }  else {
             return base.get(uri.normalize().getSchemeSpecificPart());
+        }
+    }
+
+    /**
+     * Wrapper for {@link DataUtilities#fileToURL} that unescapes braces used to delimit CQL templates.
+     */
+    public static URL fileToUrlPreservingCqlTemplates(File file) {
+        URL url = DataUtilities.fileToURL(file);
+        if (!file.getPath().contains("${")) {
+            // guard against situations in which braces are used but not for CQL templates
+            return url;
+        } else {
+            try {
+                return new URL(url.toExternalForm().replace("%7B", "{").replace("%7D", "}"));
+            } catch (MalformedURLException e) {
+                return null;
+            }
         }
     }
 

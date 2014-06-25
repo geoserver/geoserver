@@ -46,6 +46,7 @@ import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
+import org.geotools.data.DataUtilities;
 import org.geotools.styling.AbstractStyleVisitor;
 import org.geotools.styling.ChannelSelection;
 import org.geotools.styling.DefaultResourceLocator;
@@ -1230,26 +1231,14 @@ public class GeoServerDataDirectory implements ResourceStore {
 
         DefaultResourceLocator locator = new DefaultResourceLocator() {
             
-            @SuppressWarnings("deprecation")
-            // Need to use toURL() rather than toURI().toURL() to avoid escaping 
-            // of CQL expressions KS
             @Override
             public URL locateResource(String uri) {
-                try {
-                    URL url = super.locateResource(uri);
-                    if(url.getProtocol().equalsIgnoreCase("resource")) {
-                        Resource r = urlToResource(url);
-                        return r.file().toURL();
-                    } else {
-                        return url;
-                    }
-                } catch (MalformedURLException e) {
-                    try {
-                        return new URL((URL)null, uri);
-                    } catch (MalformedURLException e2){
-                        return null;
-                    }
-               }
+                URL url = super.locateResource(uri);
+                if(url.getProtocol().equalsIgnoreCase("resource")) {
+                    return fileToUrlPreservingCqlTemplates(urlToResource(url).file());
+                } else {
+                    return url;
+                }
             }
             
         };
@@ -1422,6 +1411,23 @@ public class GeoServerDataDirectory implements ResourceStore {
             return Files.asResource(new File(uri.toURL().getFile()));
         }  else {
             return base.get(uri.normalize().getSchemeSpecificPart());
+        }
+    }
+
+    /**
+     * Wrapper for {@link DataUtilities#fileToURL} that unescapes braces used to delimit CQL templates.
+     */
+    public static URL fileToUrlPreservingCqlTemplates(File file) {
+        URL url = DataUtilities.fileToURL(file);
+        if (!file.getPath().contains("${")) {
+            // guard against situations in which braces are used but not for CQL templates
+            return url;
+        } else {
+            try {
+                return new URL(url.toExternalForm().replace("%7B", "{").replace("%7D", "}"));
+            } catch (MalformedURLException e) {
+                return null;
+            }
         }
     }
 

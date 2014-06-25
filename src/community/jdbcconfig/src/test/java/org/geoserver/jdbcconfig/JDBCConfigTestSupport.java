@@ -11,7 +11,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 
 import javax.servlet.ServletContext;
@@ -48,24 +50,126 @@ public class JDBCConfigTestSupport {
         return f;
     }
 
-//     String driver = "org.postgresql.Driver";
-//    
-//     String connectionUrl = "jdbc:postgresql://localhost:5432/geoserver";
-//    
-//     String initScriptName = "initdb.postgres.sql";
-//    
-//     String dropScriptName = "dropdb.postgres.sql";
+    public static class DBConfig {
+        String name;
+        String driver;
+        String connectionUrl;
+        String dbUser;
+        String dbPasswd;
+        BasicDataSource dataSource;
 
-    String driver = "org.h2.Driver";
+        public DBConfig(String name, String driver, String connectionUrl, String dbUser, String dbPasswd) {
+            this.name = name;
+            this.driver = driver;
+            this.connectionUrl = connectionUrl;
+            this.dbUser = dbUser;
+            this.dbPasswd = dbPasswd;
+        }
 
-    String connectionUrl = "jdbc:h2:file:${DATA_DIR}/geoserver";
+        DBConfig() {
+        }
 
-    String initScriptName = "initdb.h2.sql";
+        BasicDataSource dataSource() throws Exception {
+            if (dataSource != null) return dataSource;
 
-    String dropScriptName = "dropdb.h2.sql";
+            dataSource = new BasicDataSource() {
 
-     String dbUser = System.getProperty("user.name");
-     String dbPasswd = "";
+                @Override
+                public synchronized void close() throws SQLException {
+                    // do nothing
+                }
+
+            };
+            dataSource.setDriverClassName(driver);
+            dataSource.setUrl(connectionUrl.replace("${DATA_DIR}", createTempDir().getAbsolutePath()));
+            dataSource.setUsername(dbUser);
+            dataSource.setPassword(dbPasswd);
+
+            dataSource.setMinIdle(3);
+            dataSource.setMaxActive(10);
+            Connection connection = dataSource.getConnection();
+            connection.close();
+            return dataSource;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+
+        public String detailString() {
+            return "DBConfig{" + "name=" + name + ", driver=" + driver + ", connectionUrl=" + connectionUrl + ", dbUser=" + dbUser + ", dbPasswd=" + dbPasswd + '}';
+        }
+
+    }
+
+    private static List<Object[]> parameterizedDBConfigs;
+    public static final List<Object[]> parameterizedDBConfigs() {
+        if (parameterizedDBConfigs == null) {
+            parameterizedDBConfigs = new ArrayList<Object[]>();
+            for (DBConfig conf: getDBConfigurations()) {
+                parameterizedDBConfigs.add(new Object[] {conf});
+            }
+        }
+        return parameterizedDBConfigs;
+    }
+
+    static List<DBConfig> getDBConfigurations() {
+        ArrayList<DBConfig> configs = new ArrayList<DBConfig>();
+
+        dbConfig(configs, "h2", "org.h2.Driver", "jdbc:h2:file:${DATA_DIR}/geoserver");
+        dbConfig(configs, "postgres", "org.postgresql.Driver", "jdbc:postgresql://localhost:5432/geoserver");
+        dbConfig(configs, "oracle", "oracle.jdbc.OracleDriver", "jdbc:oracle:thin:@//localhost:49161/xe");
+
+        return configs;
+    }
+
+    static String getProperty(String dbName, String property) {
+        return System.getProperty("jdbcconfig." + dbName + "." + property);
+    }
+
+    public static void dbConfig(List<DBConfig> configs, String name, String driver, String connectionUrl) {
+        try {
+            Class.forName(driver);
+        } catch (ClassNotFoundException cnfe) {
+            System.err.println("skipping " + name + " tests, enable via maven profile");
+            return;
+        }
+        if ("true".equals(System.getProperty("jdbcconfig." + name + ".skip"))) {
+            System.err.println("skipping " + name + " tests, enable via maven profile");
+            return;
+        }
+        DBConfig conf = new DBConfig();
+        conf.name = name;
+        conf.driver = driver;
+        conf.connectionUrl = connectionUrl;
+        conf.dbUser = System.getProperty("user.name");
+        conf.dbPasswd = "";
+
+        connectionUrl = getProperty(name, "connectionUrl");
+        if (connectionUrl != null) {
+            conf.connectionUrl = connectionUrl;
+        }
+        String dbUser = getProperty(name, "dbUser");
+        if (dbUser != null) {
+            conf.dbUser = dbUser;
+        }
+        String dbPass = getProperty(name, "dbPasswd");
+        if (dbPass != null) {
+            conf.dbPasswd = dbPass;
+        }
+        try {
+            conf.dataSource();
+        } catch (Exception ex) {
+            System.err.println("Unable to connect to datastore, either disable test or specify correct configuration:");
+            System.out.println(ex.getMessage());
+            System.out.println("Current configuration : " + conf.detailString());
+            return;
+        }
+        configs.add(conf);
+    }
+
+    private final DBConfig dbConfig;
 
     private WebApplicationContext appContext;
 
@@ -76,6 +180,10 @@ public class JDBCConfigTestSupport {
     private BasicDataSource dataSource;
 
     private ConfigDatabase configDb;
+
+    public JDBCConfigTestSupport(DBConfig dbConfig) {
+        this.dbConfig = dbConfig;
+    }
 
     public void setUp() throws Exception {
         ConfigDatabase.LOGGER.setLevel(Level.FINER);
@@ -94,21 +202,7 @@ public class JDBCConfigTestSupport {
 //        FileUtils.deleteDirectory(testDbDir);
 //        testDbDir.mkdirs();
 
-        dataSource = new BasicDataSource();
-        dataSource.setDriverClassName(driver);
-        dataSource.setUrl(connectionUrl.replace("${DATA_DIR}",
-            resourceLoader.getBaseDirectory().getAbsolutePath()));
-        dataSource.setUsername(dbUser);
-        dataSource.setPassword(dbPasswd);
-
-        dataSource.setMinIdle(3);
-        dataSource.setMaxActive(10);
-        try {
-            Connection connection = dataSource.getConnection();
-            connection.close();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        dataSource = dbConfig.dataSource();
 
         try {
             dropDb(dataSource);
@@ -168,10 +262,12 @@ public class JDBCConfigTestSupport {
     }
 
     private void initDb(DataSource dataSource) throws Exception {
+        String initScriptName = "initdb." + dbConfig.name + ".sql";
         runScript(initScriptName);
     }
 
     private void dropDb(DataSource dataSource) throws Exception {
+        String dropScriptName = "dropdb." + dbConfig.name + ".sql";
         runScript(dropScriptName);
     }
 

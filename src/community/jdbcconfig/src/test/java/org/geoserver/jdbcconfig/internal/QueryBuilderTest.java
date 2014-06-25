@@ -39,7 +39,7 @@ public class QueryBuilderTest extends TestCase {
 
     public void setUp() throws Exception {
         dbMappings = new DbMappings();
-        testSupport = new JDBCConfigTestSupport();
+        testSupport = new JDBCConfigTestSupport((JDBCConfigTestSupport.DBConfig) JDBCConfigTestSupport.parameterizedDBConfigs().get(0)[0]);
         testSupport.setUp();
         dbMappings = testSupport.getDbMappings();
     }

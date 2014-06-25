@@ -10,6 +10,9 @@
   <packaging>jar</packaging>
   <version>2.6-SNAPSHOT</version>
   <name>GeoServer JDBC KV Catalog</name>
+  <properties>
+      <jdbcconfig.postgres.skip>true</jdbcconfig.postgres.skip>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -86,5 +89,40 @@
       <artifactId>xmlunit</artifactId>
       <scope>test</scope>
     </dependency>
+    
   </dependencies>
+  <profiles>
+      <profile>
+          <id>oracle</id>
+          <dependencies>
+            <dependency>
+                <groupId>com.oracle</groupId>
+                <artifactId>ojdbc14</artifactId>
+                <scope>test</scope>
+                <version>10.2.0.3.0</version>
+            </dependency>
+          </dependencies>
+      </profile>
+      <profile>
+          <!-- by default, skip postgres tests but allow to be enabled. can't do
+          as like oracle since the dependency is already present -->
+          <id>postgres</id>
+          <properties>
+              <jdbcconfig.postgres.skip>false</jdbcconfig.postgres.skip>
+          </properties>
+      </profile>
+  </profiles>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <systemPropertyVariables>
+            <jdbcconfig.postgres.skip>${jdbcconfig.postgres.skip}</jdbcconfig.postgres.skip>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

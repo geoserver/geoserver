@@ -21,8 +21,6 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.util.Collection;
 
-import junit.framework.TestCase;
-
 import org.easymock.Capture;
 import org.easymock.IAnswer;
 import org.geoserver.catalog.Catalog;
@@ -37,6 +35,12 @@ import org.geoserver.config.ServiceInfo;
 import org.geoserver.jdbcconfig.JDBCConfigTestSupport;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSInfoImpl;
+import static org.junit.Assert.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import static org.easymock.EasyMock.*;
 
@@ -44,7 +48,8 @@ import static org.easymock.EasyMock.*;
  * @author groldan
  * 
  */
-public class ConfigDatabaseTest extends TestCase {
+@RunWith(Parameterized.class)
+public class ConfigDatabaseTest {
 
     private JDBCConfigTestSupport testSupport;
 
@@ -52,9 +57,17 @@ public class ConfigDatabaseTest extends TestCase {
     
     private GeoServer geoServer;
 
-    @Override
-    protected void setUp() throws Exception {
-        testSupport = new JDBCConfigTestSupport();
+    public ConfigDatabaseTest(JDBCConfigTestSupport.DBConfig dbConfig) {
+        testSupport = new JDBCConfigTestSupport(dbConfig);
+    }
+
+    @Parameterized.Parameters(name = "{0}")
+    public static Iterable<Object[]> data() {
+        return JDBCConfigTestSupport.parameterizedDBConfigs();
+    }
+
+    @Before
+    public void setUp() throws Exception {
         testSupport.setUp();
         database = testSupport.getDatabase();
         
@@ -73,13 +86,14 @@ public class ConfigDatabaseTest extends TestCase {
         database.setGeoServer(geoServer);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         verify(geoServer);
         database.dispose();
         testSupport.tearDown();
     }
 
+    @Test
     public void testAdd() throws Exception {
         
         WorkspaceInfoImpl ws = new WorkspaceInfoImpl();
@@ -117,6 +131,7 @@ public class ConfigDatabaseTest extends TestCase {
         return addedDs;
     }
 
+    @Test
     public void testModifyWorkspace() throws Exception {
         WorkspaceInfo ws = addWorkspace();
         ws.setName("newName");
@@ -144,7 +159,8 @@ public class ConfigDatabaseTest extends TestCase {
         }
         assertEquals(info, saved);
     }
-    
+
+    @Test
     public void testModifyService(){
         
         // Create a service to modify
@@ -162,7 +178,8 @@ public class ConfigDatabaseTest extends TestCase {
         testSaved(service);
 
     }
-    
+
+    @Test
     public void testCacheCatalog() throws Exception {
         // Simulates the situation where multiple GeoServer instances are sharing a database.
         
@@ -192,7 +209,8 @@ public class ConfigDatabaseTest extends TestCase {
         WorkspaceInfo ws3 = database.getById(ws.getId(), WorkspaceInfo.class);
         assertEquals("name2", ws3.getName());
     }
-    
+
+    @Test
     public void testCacheConfig() throws Exception {
         // Simulates the situation where multiple GeoServer instances are sharing a database.
       

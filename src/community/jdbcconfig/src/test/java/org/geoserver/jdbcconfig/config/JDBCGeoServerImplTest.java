@@ -23,16 +23,27 @@ import org.geoserver.jdbcconfig.catalog.JDBCCatalogFacade;
 import org.geoserver.jdbcconfig.internal.ConfigDatabase;
 import org.junit.After;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
+@RunWith(Parameterized.class)
 public class JDBCGeoServerImplTest extends GeoServerImplTest {
 
     private JDBCGeoServerFacade facade;
 
     private JDBCConfigTestSupport testSupport;
 
+    public JDBCGeoServerImplTest(JDBCConfigTestSupport.DBConfig dbConfig) {
+        testSupport = new JDBCConfigTestSupport(dbConfig);
+    }
+
+    @Parameterized.Parameters(name = "{0}")
+    public static Iterable<Object[]> data() {
+        return JDBCConfigTestSupport.parameterizedDBConfigs();
+    }
+
     @Override
     public void setUp() throws Exception {
-        testSupport = new JDBCConfigTestSupport();
         testSupport.setUp();
 
         ConfigDatabase configDb = testSupport.getDatabase();

@@ -23,11 +23,12 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.ResourceInfo;
-import org.geotools.feature.FeatureTypes;
+// import org.geotools.feature.FeatureTypes;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.opengeo.gsr.core.exception.ServiceError;
+import org.opengeo.gsr.core.feature.FeatureEncoder;
 import org.opengeo.gsr.core.feature.FieldTypeEnum;
 import org.opengeo.gsr.core.format.GeoServicesJsonFormat;
 import org.opengeo.gsr.core.geometry.GeometryEncoder;
@@ -229,7 +230,7 @@ public class LayerResource extends Resource {
                 json.key("objectIdField").value("objectid");
 
                 // globalIdField - placeholder for FeatureId
-                json.key("objectIdField").value("objectid");
+                json.key("objectIdField").value("");
 
                 // typeIdField - not applicable
 
@@ -252,7 +253,7 @@ public class LayerResource extends Resource {
                         if (field == schema.getGeometryDescriptor()) {
                             continue; // continue skip default geometry
                         }
-                        jsonField(json, field);
+                        FeatureEncoder.descriptorToJson(field, json);
                     }
                     json.endArray();
                 }
@@ -274,71 +275,6 @@ public class LayerResource extends Resource {
             finally {
                 writer.close();
                 outputStream.close();
-            }
-        }
-
-        /**
-         * Encode Field.
-         * 
-         * @param json
-         * @param field
-         */
-        private void jsonField(JSONBuilder json, PropertyDescriptor field) {
-            // Similar to LayerListResource encodeencodeSchemaProperties
-            // Similar to FeatureEncoder descriptorToJson. 
-            json.object();			
-            json.key("name").value(field.getName().getLocalPart());
-
-            FieldTypeEnum type = FieldTypeEnum.forClass(field.getType().getBinding());						
-            json.key("type").value(type.getFieldType());
-            json.key("alias").value(field.getName().toString());
-
-            int length = FeatureTypes.getFieldLength(field);
-
-            // String, Date, GlobalID, GUID and XML
-            switch (type) {
-                case STRING:
-                case DATE:
-                case GUID:
-                case GLOBAL_ID:
-                case XML:
-                    json.key("length").value(length == -1 ? 4000 : length);
-                    json.key("editable").value("false");
-                    break;				
-                default:
-                    // length and editable are optional
-            }
-            json.key("nullable").value(field.isNillable() ? "true" : "false");
-            json.key("domain");		
-            jsonDomain(json, field.getType());
-
-            json.endObject();
-        }
-
-        private void jsonDomain(JSONBuilder json, PropertyType type) {
-            Class<?> binding = type.getBinding();
-            if (Enum.class.isAssignableFrom(binding)) {
-                List<Enum> values = EnumUtils.getEnumList(binding);
-
-                json.object();
-                json.key("type").value("codedValue");
-                json.key("name").value(type.getName().getLocalPart());
-                json.key("codedValues");
-                {
-                    json.array();
-                    for(Enum value : values){
-                        json.object();
-                        json.key("name").value(value.name());
-                        json.key("code").value(value.ordinal());
-
-                        json.endObject();
-                    }
-                    json.endArray();
-                }
-                json.endObject();
-            }
-            else {
-                json.value(null);				
             }
         }
 

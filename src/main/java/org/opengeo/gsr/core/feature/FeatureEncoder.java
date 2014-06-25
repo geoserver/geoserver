@@ -12,6 +12,7 @@ import net.sf.json.util.JSONBuilder;
 
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.feature.FeatureTypes;
 import org.opengeo.gsr.core.geometry.GeometryEncoder;
 import org.opengeo.gsr.core.geometry.GeometryTypeEnum;
 import org.opengeo.gsr.core.geometry.SpatialReference;
@@ -85,7 +86,7 @@ public class FeatureEncoder {
         }
         json.endObject();
     }
-    
+
     public static void featureToJson(org.opengis.feature.Feature feature, JSONBuilder json, boolean returnGeometry) {
         GeometryAttribute geometry = feature.getDefaultGeometryProperty();
         json.object();
@@ -116,17 +117,35 @@ public class FeatureEncoder {
         json.endObject();
     }
     
-    private static void descriptorToJson(PropertyDescriptor desc, JSONBuilder json) {
-        String name = desc.getName().getLocalPart();
-        FieldTypeEnum type = FieldTypeEnum.forClass(desc.getType().getBinding());
-        String alias = name;
-        // TODO: For text fields we are expected to include a "length" field.
-        
-        json.object()
-          .key("name").value(name)
-          .key("type").value(type.getFieldType())
-          .key("alias").value(alias)
-        .endObject();
+    public static void descriptorToJson(PropertyDescriptor field, JSONBuilder json) {
+        // Similar to LayerListResource encodeencodeSchemaProperties
+        // Similar to FeatureEncoder descriptorToJson. 
+        json.object();			
+        json.key("name").value(field.getName().getLocalPart());
+
+        FieldTypeEnum type = FieldTypeEnum.forClass(field.getType().getBinding());						
+        json.key("type").value(type.getFieldType());
+        json.key("alias").value(field.getName().toString());
+
+        int length = FeatureTypes.getFieldLength(field);
+
+        // String, Date, GlobalID, GUID and XML
+        switch (type) {
+            case STRING:
+            case DATE:
+            case GUID:
+            case GLOBAL_ID:
+            case XML:
+                json.key("length").value(length == -1 ? 4000 : length);
+                json.key("editable").value("false");
+                break;				
+            default:
+                // length and editable are optional
+        }
+        json.key("nullable").value(field.isNillable() ? "true" : "false");
+        json.key("domain").value(null);		
+
+        json.endObject();
     }
 
     public static <T extends FeatureType, F extends Feature>

@@ -92,7 +92,7 @@ layouts:
                 maxWidth: 100
                 maxHeight: 30
                 spacingAfter: 200
-                url: 'http://geoserver.org/download/attachments/10158143/pbGS-Bttn228x68.png'
+                url: 'http://geoserver.org/img/geoserver-logo.png'
 
     #-------------------------------------------------------------------------
     mainPage:

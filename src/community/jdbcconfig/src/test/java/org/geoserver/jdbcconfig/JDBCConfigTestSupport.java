@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.logging.Level;
 
@@ -28,7 +29,13 @@ import org.geoserver.jdbcconfig.internal.XStreamInfoSerialBinding;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.context.WebApplicationContext;
 
 @SuppressWarnings("unused")
@@ -109,11 +116,14 @@ public class JDBCConfigTestSupport {
         }
         initDb(dataSource);
 
-        XStreamInfoSerialBinding binding = new XStreamInfoSerialBinding(
-                new XStreamPersisterFactory());
+        // use a context to initialize the ConfigDatabase as this will enable
+        // transaction management making the tests much faster (and correcter)
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
+        // use the dataSource we just created
+        context.getBean(Config.class).real = dataSource;
+        configDb = context.getBean(ConfigDatabase.class);
 
         catalog = new CatalogImpl();
-        configDb = new ConfigDatabase(dataSource, binding);
         configDb.setCatalog(catalog);
         configDb.initDb(null);
     }
@@ -187,5 +197,37 @@ public class JDBCConfigTestSupport {
 
     public CatalogImpl getCatalog() {
         return catalog;
+    }
+
+    @Configuration
+    @EnableTransactionManagement
+    public static class Config {
+        DataSource real;
+        // we need a datasource immediately, but don't have one so use this as
+        // a delegate that uses the 'real' DataSource
+        DataSource lazy = new BasicDataSource() {
+
+            @Override
+            protected synchronized DataSource createDataSource() throws SQLException {
+                return real;
+            }
+
+        };
+
+        @Bean
+        public PlatformTransactionManager transactionManager() {
+            return new DataSourceTransactionManager(dataSource());
+        }
+
+        @Bean
+        public ConfigDatabase configDatabase() {
+            return new ConfigDatabase(dataSource(), new XStreamInfoSerialBinding(
+                new XStreamPersisterFactory()));
+        }
+
+        @Bean
+        public DataSource dataSource() {
+            return lazy;
+        }
     }
 }

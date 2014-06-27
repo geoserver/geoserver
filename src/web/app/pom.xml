@@ -268,7 +268,7 @@
               <maxIdleTime>10000</maxIdleTime>
             </connector>
           </connectors>
-          <stopPort>8395</stopPort>
+          <stopPort>${jetty.stopPort}</stopPort>
           <stopKey>GEOSERVER_JETTY_STOPKEY</stopKey>
           <contextPath>geoserver</contextPath>
           <daemon>false</daemon>
@@ -411,6 +411,11 @@
           <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-oracle</artifactId>
           <version>2.6-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc14</artifactId>
+            <version>10.2.0.3.0</version>
         </dependency>
       </dependencies>
     </profile>

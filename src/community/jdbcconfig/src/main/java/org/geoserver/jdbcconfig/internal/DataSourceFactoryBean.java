@@ -111,7 +111,6 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Disposabl
             }
             throw ex;
         }
-        
         return ds;
     }
     

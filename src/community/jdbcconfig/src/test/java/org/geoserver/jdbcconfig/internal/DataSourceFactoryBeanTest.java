@@ -15,6 +15,7 @@ import org.easymock.classextension.EasyMock;
 import org.junit.Test;
 
 import com.google.common.base.Optional;
+import java.sql.DatabaseMetaData;
 
 /**
  * 
@@ -192,8 +193,14 @@ public class DataSourceFactoryBeanTest {
     
     private void expectVerifyConnect(DataSource ds) throws Exception {
         Connection conn = createMock(Connection.class);
+        // the 2 times expectations are due to checking the database metadata
+        // during Dialect initialization
         conn.close();expectLastCall();
+        DatabaseMetaData metadata = EasyMock.createMock(DatabaseMetaData.class);
+        expect(metadata.getDriverName()).andReturn("test");
+        expect(conn.getMetaData()).andReturn(metadata);
         replay(conn);
+        replay(metadata);
         expect(ds.getConnection()).andReturn(conn);
     }
 }

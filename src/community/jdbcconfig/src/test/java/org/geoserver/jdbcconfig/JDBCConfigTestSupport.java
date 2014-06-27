@@ -16,28 +16,31 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 
+import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.geoserver.catalog.impl.CatalogImpl;
-import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.util.XStreamPersisterFactory;
-import org.geoserver.jdbcconfig.JDBCGeoServerLoader;
 import org.geoserver.jdbcconfig.internal.ConfigDatabase;
 import org.geoserver.jdbcconfig.internal.DbMappings;
+import org.geoserver.jdbcconfig.internal.Dialect;
 import org.geoserver.jdbcconfig.internal.Util;
 import org.geoserver.jdbcconfig.internal.XStreamInfoSerialBinding;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.WebApplicationContext;
 
 @SuppressWarnings("unused")
@@ -57,6 +60,7 @@ public class JDBCConfigTestSupport {
         String dbUser;
         String dbPasswd;
         BasicDataSource dataSource;
+        boolean initialized = false;
 
         public DBConfig(String name, String driver, String connectionUrl, String dbUser, String dbPasswd) {
             this.name = name;
@@ -90,6 +94,19 @@ public class JDBCConfigTestSupport {
             Connection connection = dataSource.getConnection();
             connection.close();
             return dataSource;
+        }
+
+        public String getInitScript() {
+            return "initdb." + name + ".sql";
+
+        }
+
+        public String getDropScript() {
+            return "dropdb." + name + ".sql";
+        }
+
+        public String getResetScript() {
+            return "resetdb." + name + ".sql";
         }
 
         @Override
@@ -204,11 +221,8 @@ public class JDBCConfigTestSupport {
 
         dataSource = dbConfig.dataSource();
 
-        try {
-            dropDb(dataSource);
-        } catch (Exception ignored) {
-        }
-        initDb(dataSource);
+        dropDb();
+        initDb();
 
         // use a context to initialize the ConfigDatabase as this will enable
         // transaction management making the tests much faster (and correcter)
@@ -235,9 +249,6 @@ public class JDBCConfigTestSupport {
     }
 
     public void tearDown() throws Exception {
-        if (dataSource != null) {
-            dropDb(dataSource);
-        }
         try {
             if (configDb != null) {
                 configDb.dispose();
@@ -261,26 +272,53 @@ public class JDBCConfigTestSupport {
         return configDb;
     }
 
-    private void initDb(DataSource dataSource) throws Exception {
-        String initScriptName = "initdb." + dbConfig.name + ".sql";
-        runScript(initScriptName);
+    private void initDb() throws Exception {
+        if (!dbConfig.initialized) {
+            runScript(dbConfig.getInitScript(), null, true);
+            dbConfig.initialized = true;
+        }
     }
 
-    private void dropDb(DataSource dataSource) throws Exception {
-        String dropScriptName = "dropdb." + dbConfig.name + ".sql";
-        runScript(dropScriptName);
+    private void dropDb() throws Exception {
+        URL url = JDBCGeoServerLoader.class.getResource(dbConfig.getResetScript());
+        if (url != null && dbConfig.initialized) {
+            runScript(dbConfig.getResetScript(), null, true);
+        } else {
+            // drop script cannot be run in a transaction - if a statement fails
+            // the whole thing aborts
+            runScript(dbConfig.getDropScript(), null, false);
+            dbConfig.initialized = false;
+        }
     }
 
-    private void runScript(String dbScriptName) throws IOException {
-        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(dataSource);
-
-        URL url = JDBCGeoServerLoader.class.getResource(dbScriptName);
+    public void runScript(String dbScriptName, Logger logger, boolean tx) throws IOException {
+        final URL url = JDBCGeoServerLoader.class.getResource(dbScriptName);
         if (url == null) {
             throw new IllegalArgumentException("Script not found: " + getClass().getName() + "/"
                     + dbScriptName);
         }
 
-        Util.runScript(url, template.getJdbcOperations(), null);
+        if (!tx) {
+            NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(dataSource);
+            Util.runScript(url, template.getJdbcOperations(), null);
+        } else {
+            DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
+            NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(transactionManager.getDataSource());
+            TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+            final JdbcOperations jdbcOperations = template.getJdbcOperations();
+            transactionTemplate.execute(new TransactionCallback<Object>() {
+
+                @Override
+                public Object doInTransaction(TransactionStatus ts) {
+                    try {
+                        Util.runScript(url, jdbcOperations, null);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    return null;
+                }
+            });
+        }
     }
 
     public DataSource getDataSource() {

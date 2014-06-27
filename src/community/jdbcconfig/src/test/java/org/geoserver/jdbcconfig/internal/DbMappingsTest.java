@@ -43,7 +43,7 @@ public class DbMappingsTest {
     public void testInitDb() throws Exception {
         DataSource dataSource = testSupport.getDataSource();
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(dataSource);
-        DbMappings dbInit = new DbMappings();
+        DbMappings dbInit = new DbMappings(new Dialect());
         dbInit.initDb(template);
     }
 }

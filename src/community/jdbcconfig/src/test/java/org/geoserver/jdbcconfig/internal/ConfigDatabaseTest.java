@@ -192,8 +192,8 @@ public class ConfigDatabaseTest {
         Connection conn = testSupport.getDataSource().getConnection();
         try {
             Statement stmt = conn.createStatement();
-            assertEquals(1, stmt.executeUpdate("UPDATE object_property SET value='name2' WHERE property_type=(SELECT oid FROM property_type WHERE type_id = (SELECT oid FROM type WHERE typename='org.geoserver.catalog.WorkspaceInfo') AND name='name') AND id = '"+ws.getId()+"';"));
-            assertEquals(1, stmt.executeUpdate("UPDATE object SET blob=(SELECT replace(blob, '<name>name1</name>', '<name>name2</name>') FROM object WHERE id = '"+ws.getId()+"');"));
+            assertEquals(1, stmt.executeUpdate("UPDATE object_property SET value='name2' WHERE property_type=(SELECT oid FROM property_type WHERE type_id = (SELECT oid FROM type WHERE typename='org.geoserver.catalog.WorkspaceInfo') AND name='name') AND id = '"+ws.getId()+"'"));
+            assertEquals(1, stmt.executeUpdate("UPDATE object SET blob=(SELECT replace(blob, '<name>name1</name>', '<name>name2</name>') FROM object WHERE id = '"+ws.getId()+"')"));
         } finally {
             conn.close();
         }
@@ -230,7 +230,7 @@ public class ConfigDatabaseTest {
         try {
             Statement stmt = conn.createStatement();
             //assertEquals(1, stmt.executeUpdate("UPDATE object_property SET value='Bar' WHERE property_type=(SELECT oid FROM property_type WHERE type_id = (SELECT oid FROM type WHERE typename='org.geoserver.wms.ServiceInfo') AND name='maintainer') AND id = '"+service.getId()+"';"));
-            assertEquals(1, stmt.executeUpdate("UPDATE object SET blob=(SELECT replace(blob, '<maintainer>Foo</maintainer>', '<maintainer>Bar</maintainer>') FROM object WHERE id = '"+service.getId()+"');"));
+            assertEquals(1, stmt.executeUpdate("UPDATE object SET blob=(SELECT replace(blob, '<maintainer>Foo</maintainer>', '<maintainer>Bar</maintainer>') FROM object WHERE id = '"+service.getId()+"')"));
         } finally {
             conn.close();
         }

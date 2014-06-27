@@ -46,6 +46,9 @@ public class Util {
             }
             buf.append(sql).append(" ");
             if (sql.endsWith(";")) {
+                // oracle hates semi-colons here, just use as a separator
+                // for knowing when to execute a stmt, but don't include
+                buf.setLength(buf.length() - 2);
                 String stmt = buf.toString();
                 boolean skipError = stmt.startsWith("?");
                 if (skipError) {
@@ -58,6 +61,9 @@ public class Util {
                     jdbc.update(stmt);
                 }
                 catch(DataAccessException e) {
+                    if (logger != null) {
+                        logger.warning(e.getMessage());
+                    }
                     if (!skipError) {
                         throw e;
                     }

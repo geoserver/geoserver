@@ -37,8 +37,11 @@ public class QueryBuilderTest extends TestCase {
 
     private DbMappings dbMappings;
 
+    Dialect dialect;
+
     public void setUp() throws Exception {
-        dbMappings = new DbMappings();
+        dialect = new Dialect();
+        dbMappings = new DbMappings(dialect);
         testSupport = new JDBCConfigTestSupport((JDBCConfigTestSupport.DBConfig) JDBCConfigTestSupport.parameterizedDBConfigs().get(0)[0]);
         testSupport.setUp();
         dbMappings = testSupport.getDbMappings();
@@ -50,14 +53,14 @@ public class QueryBuilderTest extends TestCase {
 
     public void testQueryAll() {
         Filter filter = Predicates.equal("name", "ws1");
-        StringBuilder build = QueryBuilder.forIds(WorkspaceInfo.class, dbMappings).filter(filter)
+        StringBuilder build = QueryBuilder.forIds(dialect, WorkspaceInfo.class, dbMappings).filter(filter)
                 .build();
 
     }
     
     public void testSort1() {
         Filter filter = Predicates.acceptAll();
-        StringBuilder build = QueryBuilder.forIds(WorkspaceInfo.class, dbMappings)
+        StringBuilder build = QueryBuilder.forIds(dialect, WorkspaceInfo.class, dbMappings)
                 .filter(filter)
                 .sortOrder(Predicates.asc("foo"))
                 .build();
@@ -65,7 +68,7 @@ public class QueryBuilderTest extends TestCase {
     }
     public void testSort2() {
         Filter filter = Predicates.acceptAll();
-        StringBuilder build = QueryBuilder.forIds(WorkspaceInfo.class, dbMappings)
+        StringBuilder build = QueryBuilder.forIds(dialect, WorkspaceInfo.class, dbMappings)
                 .filter(filter)
                 .sortOrder(Predicates.asc("foo"),Predicates.desc("bar"))
                 .build();
@@ -73,7 +76,7 @@ public class QueryBuilderTest extends TestCase {
     }
     public void testSort3() {
         Filter filter = Predicates.acceptAll();
-        StringBuilder build = QueryBuilder.forIds(WorkspaceInfo.class, dbMappings)
+        StringBuilder build = QueryBuilder.forIds(dialect, WorkspaceInfo.class, dbMappings)
                 .filter(filter)
                 .sortOrder(Predicates.asc("foo"),Predicates.desc("bar"),Predicates.asc("baz"))
                 .build();
@@ -81,7 +84,7 @@ public class QueryBuilderTest extends TestCase {
     }
     public void testSort3WithFilter() {
         Filter filter = Predicates.equal("name", "quux");
-        StringBuilder build = QueryBuilder.forIds(WorkspaceInfo.class, dbMappings)
+        StringBuilder build = QueryBuilder.forIds(dialect, WorkspaceInfo.class, dbMappings)
                 .filter(filter)
                 .sortOrder(Predicates.asc("foo"),Predicates.desc("bar"),Predicates.asc("baz"))
                 .build();

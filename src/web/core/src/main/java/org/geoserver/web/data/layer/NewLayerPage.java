@@ -46,8 +46,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataStore;
-import org.geotools.data.wfs.WFSDataStore;
-import org.geotools.data.wfs.impl.WFSContentDataStore;
+import org.geotools.data.wfs.impl.WFSDataStore;
 import org.geotools.data.wms.WebMapServer;
 import org.geotools.jdbc.JDBCDataStore;
 
@@ -285,8 +284,8 @@ public class NewLayerPage extends GeoServerSecuredPage {
 
                 createSQLViewContainer.setVisible(da instanceof JDBCDataStore);
                 
-                if (da instanceof WFSContentDataStore) {
-                    createCascadedWFSStoredQueryContainer.setVisible(((WFSContentDataStore)da).supportsStoredQueries());
+                if (da instanceof WFSDataStore) {
+                    createCascadedWFSStoredQueryContainer.setVisible(((WFSDataStore)da).supportsStoredQueries());
                 }
             } catch (IOException e) {
                 LOGGER.log(Level.FINEST, e.getMessage());

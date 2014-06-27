@@ -76,7 +76,7 @@ import org.geotools.data.ows.SimpleHttpClient;
 import org.geotools.data.ows.WMSCapabilities;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.store.ContentDataStore;
-import org.geotools.data.wfs.impl.WFSContentDataStore;
+import org.geotools.data.wfs.impl.WFSDataStore;
 import org.geotools.data.wfs.internal.v2_0.storedquery.StoredQueryConfiguration;
 import org.geotools.data.wms.WebMapServer;
 import org.geotools.factory.Hints;
@@ -857,8 +857,9 @@ public class ResourcePool {
                     } else if (isCascadedStoredQuery(info, dataAccess)) {
 
                         StoredQueryConfiguration sqc = info.getMetadata().get(FeatureTypeInfo.STORED_QUERY_CONFIGURATION, StoredQueryConfiguration.class);
-                        WFSContentDataStore wstore = (WFSContentDataStore)dataAccess;
+                        WFSDataStore wstore = (WFSDataStore)dataAccess;
 
+                        // TODO: use reflection?
                         if(!wstore.getConfiguredStoredQueries().containsValue(info.getName())) {
                             wstore.addStoredQuery(info.getNativeName(), sqc.getStoredQueryId());
                         }
@@ -884,7 +885,7 @@ public class ResourcePool {
         DataAccess<? extends FeatureType, ? extends Feature> dataAccess = getDataStore(info.getStore());
         
         JDBCDataStore jstore = null;
-        WFSContentDataStore wstore = null;
+        WFSDataStore wstore = null;
 
         String vtName = null;
         String csqName = null;
@@ -918,7 +919,7 @@ public class ResourcePool {
                 ft = jstore.getSchema(vtName);
             }
         } else if (isCascadedStoredQuery(info, dataAccess)) {
-            wstore = (WFSContentDataStore) dataAccess;
+            wstore = (WFSDataStore) dataAccess;
             StoredQueryConfiguration sqc = 
                     info.getMetadata().get(FeatureTypeInfo.STORED_QUERY_CONFIGURATION, StoredQueryConfiguration.class);
             
@@ -961,7 +962,7 @@ public class ResourcePool {
 
     private boolean isCascadedStoredQuery(FeatureTypeInfo info,
             DataAccess<? extends FeatureType, ? extends Feature> dataAccess) {
-        return dataAccess instanceof WFSContentDataStore && info.getMetadata() != null &&
+        return dataAccess instanceof WFSDataStore && info.getMetadata() != null &&
                 (info.getMetadata().get(FeatureTypeInfo.STORED_QUERY_CONFIGURATION) instanceof 
                         StoredQueryConfiguration);
     }

@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.geoserver.config.GeoServerInfo;
 import org.geotools.data.FeatureSource;
-import org.geotools.data.wfs.impl.WFSContentDataStore;
 import org.geotools.factory.Hints;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;

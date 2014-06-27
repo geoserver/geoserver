@@ -39,7 +39,7 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.GeoServerDataProvider.BeanProperty;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geotools.data.DataAccess;
-import org.geotools.data.wfs.impl.WFSContentDataStore;
+import org.geotools.data.wfs.impl.WFSDataStore;
 import org.geotools.data.wfs.internal.v2_0.storedquery.ParameterMapping;
 import org.geotools.data.wfs.internal.v2_0.storedquery.ParameterMappingBlockValue;
 import org.geotools.data.wfs.internal.v2_0.storedquery.ParameterMappingDefaultValue;
@@ -172,18 +172,18 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
 
     protected List<StoredQueryListItemType> listStoredQueries()  {
         try {
-            WFSContentDataStore contentStore = getContentDataStore();
+            WFSDataStore contentStore = getContentDataStore();
             return contentStore.getStoredQueryListResponse().getStoredQuery();
         } catch(IOException ie) {
             throw new RuntimeException("Uanble to list stored queries", ie);
         }
     }
 
-    protected WFSContentDataStore getContentDataStore() throws IOException {
+    protected WFSDataStore getContentDataStore() throws IOException {
         DataStoreInfo store = getCatalog().getStore(storeId, DataStoreInfo.class);
         DataAccess da = store.getDataStore(null);
         
-        return (WFSContentDataStore)da;
+        return (WFSDataStore)da;
     }
     
     public static String createStoredQueryTitle(StoredQueryListItemType object) {
@@ -329,7 +329,7 @@ public abstract class CascadedWFSStoredQueryAbstractPage extends GeoServerSecure
                 
                 StoredQueryDescriptionType desc;
                 try {
-                    WFSContentDataStore contentStore = getContentDataStore();
+                    WFSDataStore contentStore = getContentDataStore();
                     desc = contentStore.getStoredQueryDescriptionType(storedQueryId);
                 } catch(IOException ie) {
                     throw new RuntimeException("Unable to describe stored query", ie);

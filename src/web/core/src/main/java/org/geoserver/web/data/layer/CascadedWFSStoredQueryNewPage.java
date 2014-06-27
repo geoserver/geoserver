@@ -37,7 +37,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.web.data.resource.ResourceConfigurationPage;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.data.DataAccess;
-import org.geotools.data.wfs.impl.WFSContentDataStore;
+import org.geotools.data.wfs.impl.WFSDataStore;
 import org.geotools.data.wfs.internal.v2_0.storedquery.StoredQueryConfiguration;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.Name;
@@ -96,7 +96,7 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
 
         try {
             DataStoreInfo dsInfo = getCatalog().getStore(storeId, DataStoreInfo.class);
-            WFSContentDataStore directDs = getContentDataStore();
+            WFSDataStore directDs = getContentDataStore();
             DataAccess da = dsInfo.getDataStore(null);
 
             Name typeName = directDs.addStoredQuery(getNativeName(), config.getStoredQueryId());

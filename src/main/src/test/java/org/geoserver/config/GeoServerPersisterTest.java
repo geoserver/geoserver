@@ -696,7 +696,7 @@ public class GeoServerPersisterTest extends GeoServerSystemTestSupport {
         
         // Insert an absolute path to test
         String content = new String(Files.readAllBytes(styleFile.toPath()), StandardCharsets.UTF_8);
-        content = content.replaceAll("./burg03.svg", DataUtilities.fileToURL(target.getCanonicalFile()).toString());
+        content = content.replaceAll("./burg03.svg", "http://doesnotexist.example.org/burg03.svg");
         Files.write(styleFile.toPath(), content.getBytes(StandardCharsets.UTF_8));
         new File( testData.getDataDirectoryRoot(), "styles/burg03.svg").delete();
         

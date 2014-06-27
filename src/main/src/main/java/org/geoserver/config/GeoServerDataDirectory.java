@@ -1397,7 +1397,7 @@ public class GeoServerDataDirectory implements ResourceStore {
         if(url.getProtocol().equalsIgnoreCase("resource")) {
             return get(url.getPath());
         } else if (url.getProtocol().equalsIgnoreCase("file")){
-            return Files.asResource(new File(url.getPath()));
+            return Files.asResource(DataUtilities.urlToFile(url));
         } else {
             return null;
         }

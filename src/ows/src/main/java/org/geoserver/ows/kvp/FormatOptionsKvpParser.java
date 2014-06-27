@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 
+import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.KvpParser;
 import org.geoserver.ows.util.CaseInsensitiveMap;
 import org.geoserver.ows.util.KvpUtils;
@@ -32,7 +33,7 @@ public class FormatOptionsKvpParser extends KvpParser implements ApplicationCont
      * application context used to lookup KvpParsers
      */
     ApplicationContext applicationContext;
-
+    
     public FormatOptionsKvpParser() {
         this("format_options");
     }
@@ -53,38 +54,29 @@ public class FormatOptionsKvpParser extends KvpParser implements ApplicationCont
     }
 
     public Object parse(String value) throws Exception {
-        List parsers = GeoServerExtensions.extensions(KvpParser.class, applicationContext);
         Map formatOptions = new CaseInsensitiveMap(new HashMap());
 
         List<String> kvps = KvpUtils.escapedTokens(value, ';');
         
+        
+        // build map of unparsed key - value pairs
         for (String kvp : kvps) {
             List<String> kv = KvpUtils.escapedTokens(kvp, ':', 2);
             String key = kv.get(0);
             String raw = kv.size() == 1 ? "true" : KvpUtils.unescape(kv.get(1));
-               
-            Object parsed = null;
-
-            for (Iterator p = parsers.iterator(); p.hasNext();) {
-                KvpParser parser = (KvpParser) p.next();
-                if ( key.equalsIgnoreCase( parser.getKey() ) ) {
-                    parsed = parser.parse( raw );
-                    if ( parsed != null ) {
-
-                        break;
-                    }
-                }
-            }
-
-            if (parsed == null) {
-                if(LOGGER.isLoggable(Level.FINER))
-                    LOGGER.finer( "Could not find kvp parser for: '" + key + "'. Storing as raw string.");
-                parsed = raw;
-            }
-
-            formatOptions.put(key, parsed);
+            formatOptions.put(key, raw);
         }
-
+        // we use service, request, version info for this parser (if available)
+        // to restrict the parsers list used for options parsing (see GEOS-6555)
+        List<Throwable> errors = KvpUtils
+                .parse(formatOptions, getService(), getRequest(),
+                        getVersion() == null ? null : getVersion().toString());
+        
+        if(errors != null && errors.size() > 0) {
+            throw new Exception(errors.get(0));
+        }
+        
         return formatOptions;
     }
+
 }

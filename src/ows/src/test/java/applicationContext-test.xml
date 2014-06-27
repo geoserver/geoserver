@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    
+
+    <!-- kvp parsers -->
+    <bean id="testKvpParser" class="org.geoserver.ows.kvp.FakeKvpParser">
+        <constructor-arg index="0" value="test"/>
+        <constructor-arg index="1" value="java.util.List"/>
+        <property name="request" value="TestRequest"/>
+        <property name="service" value="TestService"/>
+        <property name="version" value="TestVersion"/>
+    </bean>
+    
+</beans>

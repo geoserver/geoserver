@@ -147,6 +147,7 @@ import com.vividsolutions.jts.geom.Polygon;
 public class GWC implements DisposableBean, InitializingBean, ApplicationContextAware {
 
     private static final String GLOBAL_LOCK_KEY = "global";
+    public static final String WORKSPACE_PARAM = "WORKSPACE";
 
     /**
      * @see #get()
@@ -1155,8 +1156,11 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      */
     public Resource dispatchOwsRequest(final Map<String, String> params, Cookie[] cookies)
             throws Exception {
-
-        FakeHttpServletRequest req = new FakeHttpServletRequest(params, cookies);
+        
+        // If the WORKSPACE parameter is set, remove it and use it to set the workspace of the request
+        String workspace = params.remove(WORKSPACE_PARAM);
+        
+        FakeHttpServletRequest req = new FakeHttpServletRequest(params, cookies, workspace);
         FakeHttpServletResponse resp = new FakeHttpServletResponse();
 
         owsDispatcher.handleRequest(req, resp);

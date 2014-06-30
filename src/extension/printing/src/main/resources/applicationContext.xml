@@ -48,6 +48,12 @@
     
     <bean id="mapPrinter" class="org.mapfish.print.MapPrinter" scope="prototype"></bean>
     <bean id="configFactory" class="org.mapfish.print.config.ConfigFactory"></bean>
+	<bean id="threadResources" class="org.mapfish.print.ThreadResources">
+        <property name="connectionTimeout" value="30000"/>
+        <property name="socketTimeout" value="30000" />
+        <property name="globalParallelFetches" value="200"/>
+        <property name="perHostParallelFetches" value="30" />
+	</bean>
 
     <!-- Define MapReaderFactories -->
     <bean id="mapReaderFactoryFinder" class="org.mapfish.print.map.readers.MapReaderFactoryFinder"/>
@@ -116,4 +122,12 @@
     <bean id="fileCachingJaiMosaicOutputFactory" class="org.mapfish.print.output.FileCachingJaiMosaicOutputFactory"/>
     <bean id="inMemoryJaiMosaicOutputFactory" class="org.mapfish.print.output.InMemoryJaiMosaicOutputFactory"/>
     <bean id="pdfOutputFactory" class="org.mapfish.print.output.PdfOutputFactory"/>
+
+
+    <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" lazy-init="false"/>
+    <bean id="healthCheckRegistry" class="com.codahale.metrics.health.HealthCheckRegistry" lazy-init="false"/>
+    <bean id="loggingMetricsConfigurator" class="org.mapfish.print.metrics.LoggingMetricsConfigurator"  lazy-init="false"/>
+    <bean id="jvmMetricsConfigurator" class="org.mapfish.print.metrics.JvmMetricsConfigurator" lazy-init="false"/>
+    <bean id="jmlMetricsReporter" class="org.mapfish.print.metrics.JmxMetricsReporter" lazy-init="false"/>
+
 </beans>

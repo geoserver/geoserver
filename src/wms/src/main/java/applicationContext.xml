@@ -230,12 +230,17 @@
  	<bean id="heightKvpParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
 		<constructor-arg value="height"/>
  	</bean>
- 	<bean id="wmsFormatOptionsKvpParser" class="org.geoserver.ows.kvp.FormatOptionsKvpParser"/>
+ 	<bean id="wmsFormatOptionsKvpParser" class="org.geoserver.ows.kvp.FormatOptionsKvpParser">
+ 	  <constructor-arg index="0" value="format_options"/>
+ 	  <property name="service" value="WMS"/>
+ 	</bean>
  	<bean id="wmsEnviromentKvpParser" class="org.geoserver.ows.kvp.FormatOptionsKvpParser">
  		<constructor-arg index="0" value="env"/>
+ 		<property name="service" value="WMS"/>
  	</bean>
  	<bean id="wmsLegendOptionsKvpParser" class="org.geoserver.ows.kvp.FormatOptionsKvpParser">
  		<constructor-arg index="0" value="legend_options"/>
+ 		<property name="service" value="WMS"/>
  	</bean>
   <bean id="wmsSqlViewKvpParser" class="org.geoserver.ows.kvp.ViewParamsKvpParser">
     <!-- cannot set the service or it won't work for the reflectors -->

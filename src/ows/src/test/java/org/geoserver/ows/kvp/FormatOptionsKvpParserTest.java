@@ -6,9 +6,17 @@ package org.geoserver.ows.kvp;
 
 import java.text.ParseException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import junit.framework.TestCase;
+
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geotools.util.Version;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
         
 /**
@@ -19,10 +27,18 @@ import junit.framework.TestCase;
 public class FormatOptionsKvpParserTest extends TestCase {
     
     private FormatOptionsKvpParser parser;
+    
+    Map<String, String> kvp = new HashMap<String,String>();
 
     @Override
     protected void setUp() throws Exception {
         parser = new FormatOptionsKvpParser();
+        new GeoServerExtensions().setApplicationContext(null);
+        Dispatcher.REQUEST.remove();
+        
+        kvp.put("SERVICE", "TestService");
+        kvp.put("VERSION", "TestVersion");
+        kvp.put("REQUEST", "TestRequest");
     }
     
     /**
@@ -101,6 +117,58 @@ public class FormatOptionsKvpParserTest extends TestCase {
         Map<String,String> actual = (Map<String,String>)parser.parse("key1:value:1;key2:value:2;key3:value:3");
         assertEquals(expected.size(), actual.size());
         assertEquals(expected, actual);
+    }
+    
+    /**
+     * Tests that values are parsed using the set of KvpParser configured for 
+     * the current service/version/request.
+     */
+    public void testParseUsingServiceParsers() throws Exception {
+        // configure a parser that parses "test" key as a List
+        // (look at applicationContext-test.xml)
+        parser.setService("TestService");
+        parser.setRequest("TestRequest");
+        parser.setVersion(new Version("TestVersion"));
+        
+        // first test without any configured parser
+        Map actual = (Map)parser.parse("test:dummy");
+        assertTrue(actual.containsKey("test"));
+        assertNotNull(actual.get("test"));
+        assertTrue(actual.get("test") instanceof String);
+        
+        
+        // load test parser from application context
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("applicationContext-test.xml");
+        context.refresh();
+        new GeoServerExtensions().setApplicationContext(context);
+        
+        actual = (Map)parser.parse("test:dummy");
+        assertTrue(actual.containsKey("test"));
+        assertNotNull(actual.get("test"));
+        assertTrue(actual.get("test") instanceof List);
+    }
+    
+    /**
+     * Tests that values are parsed using the set of KvpParser configured for the current service/version/request.
+     */
+    public void testParseUsingWrongServiceParsers() throws Exception {
+        // we configure the parser with an unknown service,
+        // so that default parsing is done
+        parser.setService("WrongService");
+        parser.setRequest("TestRequest");
+        parser.setVersion(new Version("TestVersion"));
+        
+        
+        // load test parser from application context
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("applicationContext-test.xml");
+        context.refresh();
+        new GeoServerExtensions().setApplicationContext(context);
+        
+        Map actual = (Map)parser.parse("test:dummy");
+        assertTrue(actual.containsKey("test"));
+        assertNotNull(actual.get("test"));
+        // still a String, no parser is matching
+        assertTrue(actual.get("test") instanceof String);
     }
 
 }

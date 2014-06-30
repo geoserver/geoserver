@@ -372,7 +372,8 @@ public class KvpUtils {
     }
     
     /**
-     * Parses a map of key value pairs.
+     * Parses a map of key value pairs, using the given service, version, request
+     * to constrain the used parsers list.
      * <p>
      * Important: This method modifies the map, overriding original values with
      * parsed values.  
@@ -390,15 +391,9 @@ public class KvpUtils {
      * 
      * @return A list of errors that occured.
      */
-    public static List<Throwable> parse(Map kvp) {
-
+    public static List<Throwable> parse(Map kvp, String service, String request, String version) {
         // look up parser objects
         List<KvpParser> parsers = GeoServerExtensions.extensions(KvpParser.class);
-
-        //strip out parsers which do not match current service/request/version
-        String service = KvpUtils.getSingleValue(kvp, "service");
-        String version = KvpUtils.getSingleValue(kvp, "version");
-        String request = KvpUtils.getSingleValue(kvp, "request");
         
         purgeParsers(parsers, service, version, request);
 
@@ -441,6 +436,34 @@ public class KvpUtils {
         }
 
         return errors;
+    }
+    
+    /**
+     * Parses a map of key value pairs.
+     * <p>
+     * Important: This method modifies the map, overriding original values with
+     * parsed values.  
+     * </p>
+     * <p>
+     * This routine performs a lookup of {@link KvpParser} to parse the kvp 
+     * entries.
+     * </p>
+     * <p>
+     * If an individual parse fails, this method saves the exception, and adds
+     * it to the list that is returned.
+     * </p>
+     * 
+     * @param rawKvp raw or unparsed kvp.
+     * 
+     * @return A list of errors that occured.
+     */
+    public static List<Throwable> parse(Map kvp) {
+        //strip out parsers which do not match current service/request/version
+        String service = KvpUtils.getSingleValue(kvp, "service");
+        String version = KvpUtils.getSingleValue(kvp, "version");
+        String request = KvpUtils.getSingleValue(kvp, "request");
+        
+        return parse(kvp, service, version, request);
     }
 
     /**

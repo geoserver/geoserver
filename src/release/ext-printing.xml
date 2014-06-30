@@ -9,12 +9,12 @@
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
-        <include>jtsio*</include>
+        <include>itextpdf*</include>
+        <include>metrics-*</include>
         <include>jyaml*</include>
         <include>mapfish-geo-lib*</include>
         <include>gs-printing-*.jar</include>
         <include>print-lib-*.jar</include>
-        <include>pvalsecc-*.jar</include>
         <include>xercesImpl-*.jar</include>
         <include>xml-apis-xerces-*.jar</include>
       </includes>

@@ -171,6 +171,67 @@ HTTP command::
 
 Returns the PDF. Can be called only during a limited time since the server side temporary file is deleted afterwards.
 
+Multiple maps on a single page
+******************************
+To print more than one map on a single page you need to:
+ * specify several map blocks in a page of the yaml file, each with a distinct name property value
+ * use a particular syntax in the spec to bind different rendering properties to each map block
+ 
+This is possible specifying a _maps_ object in spec root object with a distinct key - object pair for each map. The
+key will refer the map block name as defined in yaml file. The object will contain layers and srs for the named map.
+Another _maps_ object has to be specified inside the page object to describe positioning, scale and so on.
+
+.. code-block:: javascript
+
+    {
+        ...
+        maps: {
+            "main": {
+                layers: [
+                    ...
+                ],
+                srs: 'EPSG:4326'
+            },
+            "other": {
+                layers: [
+                    ...
+                ],
+                srs: 'EPSG:4326'
+            }
+        },
+        ...
+        pages: [
+            {
+                maps: {
+                    "main": {
+                        center: [6, 45.5],
+                        scale: 4000000,
+                        dpi: 190,
+                        geodetic: false,
+                        strictEpsg4326: false,
+                        ...CUSTOM_PARAMS...
+                    },
+                    "other": {
+                        center: [7.2, 38.6],
+                        scale: 1000000,
+                        dpi: 300,
+                        geodetic: false,
+                        strictEpsg4326: false,
+                        ...CUSTOM_PARAMS...
+                    }
+                }
+                
+            }
+        ],
+        ...
+    }
+
+Other config blocks have been enabled to multiple maps usage.
+The scalebar block can be bound to a specific map, specifying a name property that matches the map
+name.
+Also, in text blocks you can use the ${scale.<mapname>} placeholder to print the scale of the map
+whose name is <mapname>.
+
 Layers Params
 *************
 

@@ -26,7 +26,7 @@ import org.junit.Test;
 
 public class JDBCGeoServerImplTest extends GeoServerImplTest {
 
-    private GeoServerFacade facade;
+    private JDBCGeoServerFacade facade;
 
     private JDBCConfigTestSupport testSupport;
 
@@ -37,6 +37,7 @@ public class JDBCGeoServerImplTest extends GeoServerImplTest {
 
         ConfigDatabase configDb = testSupport.getDatabase();
         facade = new JDBCGeoServerFacade(configDb);
+        facade.setResourceLoader(testSupport.getResourceLoader());
 
         super.setUp();
     }

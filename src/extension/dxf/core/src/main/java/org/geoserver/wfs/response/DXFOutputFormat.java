@@ -200,19 +200,28 @@ public class DXFOutputFormat extends WFSGetFeatureOutputFormat {
         String blocks = (String) gft.getFormatOptions().get("ASBLOCKS");
         String colors = (String) gft.getFormatOptions().get("COLORS");
         String ltypes = (String) gft.getFormatOptions().get("LTYPES");
-        String layerNames = (String) gft.getFormatOptions().get("LAYERS");
+        String[] layers = null;
+        if(gft.getFormatOptions().get("LAYERS") instanceof String) {
+            layers = ((String) gft.getFormatOptions().get("LAYERS")).split(",");
+        } else if(gft.getFormatOptions().get("LAYERS") instanceof List) {
+            layers = (String[]) ((List) gft.getFormatOptions().get("LAYERS")).toArray(new String[0]);
+        }
+        if(layers != null) {
+            for(int count = 0; count < layers.length; count++) {
+                layers[count] = layers[count].toUpperCase();
+            }
+        }
         String writeAttributes = (String) gft.getFormatOptions().get("WITHATTRIBUTES");
-        LOGGER.log(Level.FINE,"Format options: "+version+"; "+blocks+"; "+colors+"; "+ltypes+"; "+layerNames+"; "+writeAttributes);
+        LOGGER.log(Level.FINE,"Format options: "+version+"; "+blocks+"; "+colors+"; "+ltypes+"; "+StringUtils.join(layers, ",")+"; "+writeAttributes);
         // get a suitable DXFWriter, for the requested version (null -> get any writer)
         DXFWriter dxfWriter = DXFWriterFinder.getWriter(version, w);
         
         if (dxfWriter != null) {
             LOGGER.log(Level.INFO,"DXFWriter: "+dxfWriter.getDescription());
-            String[] layers = null;
-            if(layerNames!=null)
-                layers=layerNames.toUpperCase().split(",");
-            else
+
+            if(layers == null) {
                 layers=getLayerNames(gft.getQueries());
+            }
             LOGGER.log(Level.FINE,"Layers names: "+StringUtils.join(layers,","));
             dxfWriter.setOption("layers", layers);
             if(writeAttributes != null) {

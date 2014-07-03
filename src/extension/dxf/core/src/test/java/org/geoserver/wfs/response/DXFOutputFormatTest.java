@@ -10,6 +10,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wfs.WFSTestSupport;
 import org.junit.Test;
 
@@ -21,6 +23,15 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
  *
  */
 public class DXFOutputFormatTest extends WFSTestSupport {
+
+
+    
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        // by default we parse layers format_options as a string
+        LayersKvpParser.parseAsList = false;
+    }
 
     /**
      * Checks that dxf contains all the elements of sequence, in order.
@@ -265,6 +276,24 @@ public class DXFOutputFormatTest extends WFSTestSupport {
         MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=Points,MPoints&outputFormat=dxf&format_options=layers:MyLayer1,MyLayer2");
         String sResponse = testBasicResult(resp, "Points_MPoints");
         checkSequence(sResponse,new String[] {"LAYER","LAYER","LAYER","MYLAYER1","LAYER","MYLAYER2"});        
+    }
+    
+    /**
+     * Test fix for GEOS-6402.
+     * @throws Exception
+     */
+    @Test
+    public void testLayerNamesParsing() throws Exception {
+        
+        MockHttpServletResponse resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=Points,MPoints&outputFormat=dxf&format_options=layers:MyLayer1,MyLayer2");
+        String sResponse = testBasicResult(resp, "Points_MPoints");
+        checkSequence(sResponse,new String[] {"LAYER","LAYER","LAYER","MYLAYER1","LAYER","MYLAYER2"});
+        
+        // now repeat the test parsing layers format_options as a list, instead of a string
+        LayersKvpParser.parseAsList = true;
+        resp = getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typeName=Points,MPoints&outputFormat=dxf&format_options=layers:MyLayer1,MyLayer2");
+        sResponse = testBasicResult(resp, "Points_MPoints");
+        checkSequence(sResponse,new String[] {"LAYER","LAYER","LAYER","MYLAYER1","LAYER","MYLAYER2"});
     }
     
     /**

@@ -620,6 +620,9 @@ public class Importer implements DisposableBean, ApplicationListener {
             //also since this resource has no native crs set the project policy to force declared
             task.getLayer().getResource().setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
         }
+        else {
+            task.getLayer().getResource().setProjectionPolicy(ProjectionPolicy.NONE);
+        }
 
         //bounds
         if (r.getNativeBoundingBox() == null) {

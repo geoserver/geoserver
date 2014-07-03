@@ -78,6 +78,7 @@ public abstract class ImporterTestSupport extends GeoServerTestSupport {
         LayerInfo layer = getCatalog().getLayerByName(layerName);
         assertNotNull(layer);
         assertNotNull(layer.getDefaultStyle());
+        assertNotNull(layer.getResource().getProjectionPolicy());
         
         if (layer.getType() == LayerInfo.Type.VECTOR) {
             FeatureTypeInfo featureType = (FeatureTypeInfo) layer.getResource();

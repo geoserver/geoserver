@@ -63,6 +63,12 @@
     <classifier>tests</classifier>
     <scope>test</scope>
   </dependency>
+  <dependency>
+    <groupId>org.geotools</groupId>
+    <artifactId>gt-imagemosaic</artifactId>
+    
+    <scope>test</scope>
+  </dependency>
 
   <!--  NetCDF logging dependencies -->
   <dependency>
@@ -102,6 +108,12 @@
    <groupId>xmlunit</groupId>
    <artifactId>xmlunit</artifactId>
    <scope>test</scope>
+  </dependency>
+  <dependency>
+  	<groupId>org.geotools</groupId>
+  	<artifactId>gt-jts-wrapper</artifactId>
+  	<version>${gt.version}</version>
+  	<scope>test</scope>
   </dependency>
  </dependencies>
 </project>

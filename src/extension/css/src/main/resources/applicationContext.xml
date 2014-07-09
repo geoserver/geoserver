@@ -13,4 +13,6 @@
     <property name="descriptionKey" value="CssDemoPage.description"/>
     <property name="componentClass" value="org.geoserver.community.css.web.CssDemoPage"/>
   </bean>
+
+  <bean id="cssStyleHandler" class="org.geoserver.community.css.web.CssStyleHandler"/>
 </beans>

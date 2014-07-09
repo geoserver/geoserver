@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.io.StringReader;
 import java.util.List;
 
 import org.geoserver.platform.resource.Resource;
@@ -64,7 +65,11 @@ public abstract class StyleHandler {
         if (input instanceof InputStream) {
             return new InputStreamReader((InputStream)input);
         }
-        
+
+        if (input instanceof String) {
+            return new StringReader((String)input);
+        }
+
         if (input instanceof File) {
             return new FileReader((File)input);
         }

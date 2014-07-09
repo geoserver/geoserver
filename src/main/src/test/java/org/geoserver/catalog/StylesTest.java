@@ -1,18 +1,21 @@
 package org.geoserver.catalog;
 
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.GeoServerTestSupport;
+import org.geotools.styling.*;
+import org.junit.Test;
 
-import junit.framework.Test;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.util.Properties;
 
-public class StylesTest extends GeoServerTestSupport {
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-    /**
-     * This is a READ ONLY TEST so we can use one time setup
-     */
-    public static Test suite() {
-        return new OneTimeTestSetup(new StylesTest());
-    }
+public class StylesTest extends GeoServerSystemTestSupport {
 
+    @Test
     public void testLookup() throws Exception {
         assertTrue(
             Styles.lookupHandler(SLD10Handler.FORMAT, SLD10Handler.VERSION) instanceof SLD10Handler);
@@ -22,6 +25,8 @@ public class StylesTest extends GeoServerTestSupport {
             Styles.lookupHandler(SLD10Handler.FORMAT, null) instanceof SLD10Handler);
         assertTrue(
             Styles.lookupHandler(SLD11Handler.FORMAT, null) instanceof SLD10Handler);
+        assertTrue(
+            Styles.lookupHandler(PropertyStyleHandler.FORMAT, null) instanceof PropertyStyleHandler);
         try {
             Styles.lookupHandler(null, null);
             fail();
@@ -34,4 +39,23 @@ public class StylesTest extends GeoServerTestSupport {
         }
         catch(Exception e) {}
     }
+
+    @Test
+    public void testParse() throws Exception {
+        Properties props = new Properties();
+        props.setProperty("type", "point");
+        props.setProperty("color", "ff0000");
+
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        props.store(bout, null);
+
+        StyledLayerDescriptor sld =
+            Styles.parse(new ByteArrayInputStream(bout.toByteArray()), PropertyStyleHandler.FORMAT);
+        assertNotNull(sld);
+
+        Style style = Styles.style(sld);
+        PointSymbolizer point = SLD.pointSymbolizer(style);
+        assertNotNull(point);
+    }
+
 }

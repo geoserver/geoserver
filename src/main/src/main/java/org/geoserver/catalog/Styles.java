@@ -350,9 +350,10 @@ public class Styles {
     static StyledLayerDescriptor doParse(StyleHandler handler, Object input, ResourceLocator resourceLocator,
         EntityResolver entityResolver) throws IOException {
 
-        if (entityResolver != null) {
-            return assertXMLStyleHandler(handler).parse(input, resourceLocator, entityResolver);
-        } else {
+        if (handler instanceof XMLStyleHandler) {
+            return ((XMLStyleHandler)handler).parse(input, resourceLocator, entityResolver);
+        }
+        else {
             return handler.parse(input, resourceLocator);
         }
     }

@@ -59,16 +59,16 @@ import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
-import org.geoserver.platform.resource.Files;
-import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
+import org.geoserver.security.GeoServerSecurityManager.FilterHelper;
 import org.geoserver.security.auth.AuthenticationCache;
 import org.geoserver.security.auth.GeoServerRootAuthenticationProvider;
-import org.geoserver.security.auth.LRUAuthenticationCacheImpl;
+import org.geoserver.security.auth.GuavaAuthenticationCacheImpl;
 import org.geoserver.security.auth.UsernamePasswordAuthenticationProvider;
 import org.geoserver.security.concurrent.LockingKeyStoreProvider;
 import org.geoserver.security.concurrent.LockingRoleService;
@@ -79,12 +79,12 @@ import org.geoserver.security.config.ExceptionTranslationFilterConfig;
 import org.geoserver.security.config.FileBasedSecurityServiceConfig;
 import org.geoserver.security.config.J2eeAuthenticationBaseFilterConfig;
 import org.geoserver.security.config.J2eeAuthenticationBaseFilterConfig.J2EERoleSource;
-import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
-import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource;
-import org.geoserver.security.config.RoleFilterConfig;
 import org.geoserver.security.config.LogoutFilterConfig;
 import org.geoserver.security.config.PasswordPolicyConfig;
+import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
+import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource;
 import org.geoserver.security.config.RememberMeAuthenticationFilterConfig;
+import org.geoserver.security.config.RoleFilterConfig;
 import org.geoserver.security.config.RoleSource;
 import org.geoserver.security.config.SSLFilterConfig;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
@@ -609,7 +609,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
 
     AuthenticationCache lookupAuthenticationCache() {
         AuthenticationCache authCache = GeoServerExtensions.bean(AuthenticationCache.class);
-        return authCache != null ? authCache : new LRUAuthenticationCacheImpl(1000);
+        return authCache != null ? authCache : new GuavaAuthenticationCacheImpl(1000);
     }
 
     public RememberMeServices getRememberMeService() {

@@ -565,12 +565,8 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
             String language = getStyleFormat(getMap);
             EntityResolver entityResolver = entityResolverProvider.getEntityResolver();
 
-            if (getMap.getSldVersion() != null) {
-                return Styles.validate(stream, language, new Version(getMap.getSldVersion()), entityResolver);
-            }
-            else {
-                return Styles.validate(stream, language, entityResolver);
-            }
+            Version sldVersion = getMap.getSldVersion() != null ? new Version(getMap.getSldVersion()) : null;
+            return Styles.handler(language).validate(stream, sldVersion, entityResolver);
         } 
         catch (IOException e) {
             throw new ServiceException("Error validating style", e);
@@ -581,23 +577,16 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
      * Parses an sld document.
      */
     private StyledLayerDescriptor parseSld(GetMapRequest getMap, InputStream stream) {
-        StyledLayerDescriptor sld;
         try {
             String format = getStyleFormat(getMap);
             EntityResolver entityResolver = entityResolverProvider.getEntityResolver();
 
-            if (getMap.getSldVersion() != null) {
-                sld = Styles.parse(stream, format, new Version(getMap.getSldVersion()), null, entityResolver);
-            }
-            else {
-                sld = Styles.parse(stream, format, null, entityResolver);
-            }
+            Version sldVersion = getMap.getSldVersion() != null ?  new Version(getMap.getSldVersion()) : null;
+            return Styles.handler(format).parse(stream, sldVersion, null, entityResolver);
         }
         catch(IOException e) {
             throw new ServiceException("Error parsing style", e);
         }
-       
-        return sld;
     }
 
     /*

@@ -1708,8 +1708,7 @@ public class ResourcePool {
             BufferedOutputStream out = new BufferedOutputStream( new FileOutputStream( styleFile ) );
             
             try {
-                Styles.encode(Styles.sld(style), info.getFormat(), info.getFormatVersion(), 
-                    format, out);
+                Styles.handler(info.getFormat()).encode(Styles.sld(style), info.getFormatVersion(), format, out);
                 clear(info);
             }
             finally {

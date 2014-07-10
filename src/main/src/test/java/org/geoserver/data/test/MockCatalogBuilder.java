@@ -514,8 +514,8 @@ public class MockCatalogBuilder {
         }
         
         String sId = newId();
-        String format = SLD10Handler.FORMAT;
-        Version version = SLD10Handler.VERSION;
+        String format = SLDHandler.FORMAT;
+        Version version = SLDHandler.V_10;
     
         final StyleInfo s = createNiceMock(StyleInfo.class);
         styles.add(s);
@@ -525,8 +525,8 @@ public class MockCatalogBuilder {
         expect(s.getFilename()).andReturn(filename).anyTimes();
         expect(s.getSLDVersion()).andReturn(version).anyTimes();
         try {
-            expect(s.getStyle()).andReturn(Styles.style(Styles.parse(
-                getClass().getResourceAsStream(filename), format, version, null, null))).anyTimes();
+            expect(s.getStyle()).andReturn(Styles.style(new SLDHandler().parse(
+                getClass().getResourceAsStream(filename), version, null, null))).anyTimes();
         }
         catch(IOException e) {
             throw new RuntimeException(e);

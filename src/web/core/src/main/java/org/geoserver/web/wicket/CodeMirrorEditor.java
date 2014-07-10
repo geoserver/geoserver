@@ -46,7 +46,8 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         new ResourceReference(CodeMirrorEditor.class, "js/codemirror/js/groovy.js"),
         new ResourceReference(CodeMirrorEditor.class, "js/codemirror/js/javascript.js"),
         new ResourceReference(CodeMirrorEditor.class, "js/codemirror/js/python.js"),
-        new ResourceReference(CodeMirrorEditor.class, "js/codemirror/js/ruby.js")
+        new ResourceReference(CodeMirrorEditor.class, "js/codemirror/js/ruby.js"),
+        new ResourceReference(CodeMirrorEditor.class, "js/codemirror/js/css.js")
     };
     
 

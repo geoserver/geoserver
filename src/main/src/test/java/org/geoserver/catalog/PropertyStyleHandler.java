@@ -4,6 +4,7 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.*;
 import org.geotools.util.Version;
 import org.opengis.filter.FilterFactory;
+import org.xml.sax.EntityResolver;
 
 import java.awt.*;
 import java.io.IOException;
@@ -23,13 +24,14 @@ public class PropertyStyleHandler extends StyleHandler {
     FilterFactory filterFactory;
 
     public PropertyStyleHandler() {
-        super(FORMAT, new Version("1.0.0"));
+        super("Property", FORMAT);
         styleFactory = CommonFactoryFinder.getStyleFactory();
         filterFactory = CommonFactoryFinder.getFilterFactory();
     }
 
     @Override
-    public StyledLayerDescriptor parse(Object input, ResourceLocator resourceLocator) throws IOException {
+    public StyledLayerDescriptor parse(Object input, Version version, ResourceLocator resourceLocator,
+       EntityResolver enityResolver) throws IOException {
         Properties p = new Properties();
         p.load(toReader(input));
 
@@ -91,12 +93,12 @@ public class PropertyStyleHandler extends StyleHandler {
     }
 
     @Override
-    public void encode(StyledLayerDescriptor sld, boolean pretty, OutputStream output) throws IOException {
+    public void encode(StyledLayerDescriptor sld, Version version, boolean pretty, OutputStream output) throws IOException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<Exception> validate(Object input) throws IOException {
+    public List<Exception> validate(Object input, Version version, EntityResolver entityResolver) throws IOException {
         return Collections.emptyList();
     }
 }

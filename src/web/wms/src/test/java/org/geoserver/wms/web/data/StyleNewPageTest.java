@@ -35,7 +35,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
         
         tester.assertComponent("form:name", TextField.class);
-        tester.assertComponent("form:SLD:editorContainer:editorParent:editor", TextArea.class);
+        tester.assertComponent("form:styleEditor:editorContainer:editorParent:editor", TextArea.class);
         tester.assertComponent("uploadForm:filename", FileUploadField.class);
         
         tester.assertModelValue("form:name", null);
@@ -52,14 +52,14 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         upload.submit();
         
         tester.assertRenderedPage(StyleNewPage.class);
-        tester.assertModelValue("form:SLD", sld);
+        tester.assertModelValue("form:styleEditor", sld);
     }
     
     public void testMissingName() throws Exception {
         FormTester form = tester.newFormTester("form");
         File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
         String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
-        form.setValue("SLD:editorContainer:editor", sld);
+        form.setValue("styleEditor:editorContainer:editor", sld);
         form.submit();
        
         
@@ -75,7 +75,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
        
         
         tester.assertRenderedPage(StyleNewPage.class);
-        tester.assertErrorMessages(new String[] {"Field 'SLD' is required."});
+        tester.assertErrorMessages(new String[] {"Field 'styleEditor' is required."});
     }
 
     @Test
@@ -84,7 +84,7 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         FormTester form = tester.newFormTester("form");
         File styleFile = new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
         String sld = IOUtils.toString(new FileReader(styleFile)).replaceAll("\r\n", "\n").replaceAll("\r", "\n");
-        form.setValue("SLD:editorContainer:editorParent:editor", sld);
+        form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
         form.setValue("name", "test");
         form.submit();
         

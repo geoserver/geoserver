@@ -17,24 +17,16 @@ public class StylesTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testLookup() throws Exception {
-        assertTrue(
-            Styles.lookupHandler(SLD10Handler.FORMAT, SLD10Handler.VERSION) instanceof SLD10Handler);
-        assertTrue(
-            Styles.lookupHandler(SLD11Handler.FORMAT, SLD11Handler.VERSION) instanceof SLD11Handler);
-        assertTrue(
-            Styles.lookupHandler(SLD10Handler.FORMAT, null) instanceof SLD10Handler);
-        assertTrue(
-            Styles.lookupHandler(SLD11Handler.FORMAT, null) instanceof SLD10Handler);
-        assertTrue(
-            Styles.lookupHandler(PropertyStyleHandler.FORMAT, null) instanceof PropertyStyleHandler);
+        assertTrue(Styles.handler(SLDHandler.FORMAT) instanceof SLDHandler);
+        assertTrue(Styles.handler(PropertyStyleHandler.FORMAT) instanceof PropertyStyleHandler);
         try {
-            Styles.lookupHandler(null, null);
+            Styles.handler(null);
             fail();
         }
         catch(Exception e) {}
 
         try {
-            Styles.lookupHandler("foo", null);
+            Styles.handler("foo");
             fail();
         }
         catch(Exception e) {}
@@ -49,8 +41,8 @@ public class StylesTest extends GeoServerSystemTestSupport {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         props.store(bout, null);
 
-        StyledLayerDescriptor sld =
-            Styles.parse(new ByteArrayInputStream(bout.toByteArray()), PropertyStyleHandler.FORMAT);
+        StyledLayerDescriptor sld = Styles.handler(PropertyStyleHandler.FORMAT)
+            .parse(new ByteArrayInputStream(bout.toByteArray()), null, null, null);
         assertNotNull(sld);
 
         Style style = Styles.style(sld);

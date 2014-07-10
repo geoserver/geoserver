@@ -14,6 +14,9 @@
         <li>
             <label for="format"><wicket:message key="format">Format</wicket:message></label>
             <select wicket:id="format"></select>
+            <div wicket:id="formatReadOnly" class="info-link" style="display: inline-block;">
+              <wicket:message key="formatReadOnly"></wicket:message>
+            </div>
         </li>
         <li>
             <label for="name"><wicket:message key="copyFrom">CopyFrom</wicket:message></label>
@@ -21,12 +24,12 @@
             <a href="#" wicket:id="copy"><wicket:message key="copy">Copy</wicket:message></a>
         </li>
     </ul>
-    <div class="field textarea" wicket:id="SLD"> </div>
+    <div class="field textarea" wicket:id="styleEditor"> </div>
     
     </form>
 
     <form wicket:id="uploadForm" id="uploadForm"><label
-        for="filename"><wicket:message key="sldFile">SLD file</wicket:message></label>
+        for="filename"><wicket:message key="styleFile">Style file</wicket:message></label>
     <input type="file" wicket:id="filename"></input> <a id="uploadFormSubmit" href="#"
         onclick="document.forms['uploadForm'].submit()"><wicket:message key="upload">Upload</wicket:message></a>
     </form>

@@ -16,46 +16,112 @@ import org.geotools.styling.ResourceLocator;
 import org.geotools.styling.StyleFactory;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.Version;
+import org.xml.sax.EntityResolver;
 
 /**
  * Extension point for handling a style of a particular language/version.
  * <p>
  * </p>
- * @author Justin Deoliveira, OpenGeo
+ * @author Justin Deoliveira, Boundless
  *
  */
 public abstract class StyleHandler {
 
     protected static StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory(null);
 
+    String name;
     String format;
-    Version version;
 
-    protected StyleHandler(String format, Version version) {
+    protected StyleHandler(String name, String format) {
+        this.name = name;
         this.format = format;
-        this.version = version;
     }
 
-    public final String getFormat() {
+    /**
+     * Human readable name of the handler.
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Format identifier for the handler.
+     */
+    public String getFormat() {
         return format;
     }
 
-    public Version getVersion() {
-        return version;
+    /**
+     * Returns the file extension for the format.
+     * <p>
+     * Defaults to {@link #getFormat()}.
+     * </p>
+     */
+    public String getFileExtension() {
+        return getFormat();
     }
 
-    public abstract StyledLayerDescriptor parse(Object input, ResourceLocator resourceLocator) throws IOException;
+    /**
+     * Returns the identifier for the mode used for syntax highlighting
+     * in the code mirror editor.
+     * <p>
+     * Defaults to {@link #getFormat()}
+     * </p>
+     */
+    public String getCodeMirrorEditMode() {
+        return getFormat();
+    }
 
-    public abstract void encode(StyledLayerDescriptor sld, boolean pretty, OutputStream output) 
+    /**
+     * Parses a style resource.
+     *
+     * @param input The style input, see {@link #toReader(Object)} for accepted inputs.
+     * @param version Optional version of the format, maybe <code>null</code>
+     * @param resourceLocator Optional locator for resources (icons, etc...) referenced by the style, may be
+     *                        <code>null</code>.
+     * @param entityResolver Optional entity resolver for XML based formats, may be <code>null</code>.
+     *
+     */
+    public abstract StyledLayerDescriptor parse(Object input, Version version, ResourceLocator resourceLocator,
+        EntityResolver entityResolver) throws IOException;
+
+    /**
+     * Encodes a style.
+     *
+     * @param sld The style to encode.
+     * @param version The version of the format to use to encode the style, may be <code>null</code>.
+     * @param pretty Flag controlling whether or not the style shold be encoded in pretty form.
+     * @param output The stream to write teh encoded style to.
+     */
+    public abstract void encode(StyledLayerDescriptor sld, Version version, boolean pretty, OutputStream output)
         throws IOException;
 
-    public abstract List<Exception> validate(Object input) throws IOException;
+    /**
+     * Validates a style resource.
+     *
+     * @param input The style input, see {@link #toReader(Object)} for accepted inputs.
+     * @param version The version of the format to use to validate the style, may be <code>null</code>.
+     *
+     * @return Any validation errors, or empty list if the style is valid.
+     */
+    public abstract List<Exception> validate(Object input, Version version, EntityResolver entityResolver) throws IOException;
+
+    /**
+     * Determines the version of the format/language of the specified style resource.
+     * <p>
+     *  This method should only be overriden by formats that support multiple versions. The default
+     *  implementation just returns 1.0.0.
+     * </p>
+     * @param input The style input, see {@link #toReader(Object)} for accepted inputs.
+     */
+    public Version version(Object input) throws IOException {
+        return new Version("1.0.0");
+    }
 
     /**
      * Turns input into a Reader.
      *
      * @param input A {@link Reader}, {@link java.io.InputStream}, {@link File}, or {@link Resource}.
-     *
      */
     protected Reader toReader(Object input) throws IOException {
         if (input instanceof Reader) {

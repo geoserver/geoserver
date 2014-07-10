@@ -11,10 +11,12 @@ import org.geotools.styling.ResourceLocator;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.Version;
+import org.xml.sax.EntityResolver;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -22,30 +24,30 @@ import java.util.List;
  *
  * Justin Deoliveira, Boundless
  */
-public class CssStyleHandler extends StyleHandler {
+public class CssHandler extends StyleHandler {
 
     public static final String FORMAT = "css";
 
-    protected CssStyleHandler() {
-        super(FORMAT, new Version("1.0.0"));
+    protected CssHandler() {
+        super("CSS", FORMAT);
     }
 
     @Override
-    public StyledLayerDescriptor parse(Object input, ResourceLocator resourceLocator) throws IOException {
+    public StyledLayerDescriptor parse(Object input, Version version, ResourceLocator resourceLocator, EntityResolver entityResolver) throws IOException {
         Style style = CSS2SLD.convert(toReader(input));
         return Styles.sld(style);
     }
 
     @Override
-    public void encode(StyledLayerDescriptor sld, boolean pretty, OutputStream output) throws IOException {
+    public void encode(StyledLayerDescriptor sld, Version version, boolean pretty, OutputStream output) throws IOException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<Exception> validate(Object input) throws IOException {
+    public List<Exception> validate(Object input, Version version, EntityResolver entityResolver) throws IOException {
         try {
             CSS2SLD.convert(toReader(input));
-            return null;
+            return Collections.emptyList();
         }
         catch(Exception e) {
             return Arrays.asList(e);

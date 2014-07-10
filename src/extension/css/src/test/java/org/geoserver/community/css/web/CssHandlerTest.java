@@ -9,12 +9,12 @@ import java.io.IOException;
 
 import static org.junit.Assert.assertNotNull;
 
-public class CssStyleHandlerTest extends GeoServerSystemTestSupport {
+public class CssHandlerTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testParseThroughStyles() throws IOException {
         String css = "* { fill: lightgrey; }";
-        StyledLayerDescriptor sld = Styles.parse(css, CssStyleHandler.FORMAT);
+        StyledLayerDescriptor sld = Styles.handler(CssHandler.FORMAT).parse(css, null, null, null);
         assertNotNull(sld);
 
         PolygonSymbolizer ps = SLD.polySymbolizer(Styles.style(sld));

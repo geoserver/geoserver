@@ -6,11 +6,7 @@ package org.geoserver.catalog.impl;
 
 import java.io.IOException;
 
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CatalogVisitor;
-import org.geoserver.catalog.SLD10Handler;
-import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.*;
 import org.geotools.styling.Style;
 import org.geotools.util.Version;
 
@@ -26,9 +22,9 @@ public class StyleInfoImpl implements StyleInfo {
     //not used, maininting this property for xstream backward compatability
     protected Version sldVersion = null;
 
-    protected String format = SLD10Handler.FORMAT;
+    protected String format = SLDHandler.FORMAT;
 
-    protected Version languageVersion = SLD10Handler.VERSION;
+    protected Version languageVersion = SLDHandler.V_10;
 
     protected String filename;
 
@@ -177,14 +173,14 @@ public class StyleInfoImpl implements StyleInfo {
         // the version property, and a transition from the deprecated sldVersion property
 
         if (format == null) {
-            format = SLD10Handler.FORMAT;
+            format = SLDHandler.FORMAT;
         }
 
         if (languageVersion == null && sldVersion != null) {
             languageVersion = sldVersion;
         }
         if (languageVersion == null) {
-            languageVersion = new Version("1.0.0");
+            languageVersion = SLDHandler.V_10;
         }
 
         return this;

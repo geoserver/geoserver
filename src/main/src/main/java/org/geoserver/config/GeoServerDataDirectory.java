@@ -47,13 +47,7 @@ import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.geotools.data.DataUtilities;
-import org.geotools.styling.AbstractStyleVisitor;
-import org.geotools.styling.ChannelSelection;
-import org.geotools.styling.DefaultResourceLocator;
-import org.geotools.styling.ExternalGraphic;
-import org.geotools.styling.SelectedChannelType;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyledLayerDescriptor;
+import org.geotools.styling.*;
 
 /**
  * File or Resource access to GeoServer data directory. In addition to paths Catalog obhjects such as workspace or FeatureTypeInfo can be used to
@@ -1209,7 +1203,8 @@ public class GeoServerDataDirectory implements ResourceStore {
         }
         final DefaultResourceLocator locator = new DefaultResourceLocator();
         locator.setSourceUrl(resourceToUrl(styleResource));
-        final StyledLayerDescriptor sld = Styles.parse(styleResource, s.getFormat(), s.getFormatVersion(), locator, null);
+        StyledLayerDescriptor sld =
+            Styles.handler(s.getFormat()).parse(styleResource, s.getFormatVersion(), locator, null);
         final Style style = Styles.style(sld);
         assert style!=null;
         return style;
@@ -1243,7 +1238,8 @@ public class GeoServerDataDirectory implements ResourceStore {
             
         };
         locator.setSourceUrl(resourceToUrl(styleResource));
-        final StyledLayerDescriptor sld = Styles.parse(input, s.getFormat(), s.getFormatVersion(), locator, null);
+        final StyledLayerDescriptor sld =
+            Styles.handler(s.getFormat()).parse(input, s.getFormatVersion(), locator, null);
         final Style style = Styles.style(sld);
         
         assert style!=null;

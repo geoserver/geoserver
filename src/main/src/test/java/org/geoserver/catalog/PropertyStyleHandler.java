@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Justin Deoliveira, Boundless
+ * Test style handler based on properties format.
  */
 public class PropertyStyleHandler extends StyleHandler {
 

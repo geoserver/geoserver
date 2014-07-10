@@ -47,7 +47,13 @@ import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.geotools.data.DataUtilities;
-import org.geotools.styling.*;
+import org.geotools.styling.AbstractStyleVisitor;
+import org.geotools.styling.ChannelSelection;
+import org.geotools.styling.DefaultResourceLocator;
+import org.geotools.styling.ExternalGraphic;
+import org.geotools.styling.SelectedChannelType;
+import org.geotools.styling.Style;
+import org.geotools.styling.StyledLayerDescriptor;
 
 /**
  * File or Resource access to GeoServer data directory. In addition to paths Catalog obhjects such as workspace or FeatureTypeInfo can be used to

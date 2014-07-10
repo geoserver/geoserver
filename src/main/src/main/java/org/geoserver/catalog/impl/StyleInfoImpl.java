@@ -24,7 +24,7 @@ public class StyleInfoImpl implements StyleInfo {
 
     protected String format = SLDHandler.FORMAT;
 
-    protected Version languageVersion = SLDHandler.V_10;
+    protected Version languageVersion = SLDHandler.VERSION_10;
 
     protected String filename;
 
@@ -180,7 +180,7 @@ public class StyleInfoImpl implements StyleInfo {
             languageVersion = sldVersion;
         }
         if (languageVersion == null) {
-            languageVersion = SLDHandler.V_10;
+            languageVersion = SLDHandler.VERSION_10;
         }
 
         return this;

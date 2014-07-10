@@ -19,6 +19,7 @@ import java.util.Properties;
 public class PropertyStyleHandler extends StyleHandler {
 
     public static final String FORMAT = "psl";
+    public static final String MIMETYPE = "application/prs.gs.psl";
 
     StyleFactory styleFactory;
     FilterFactory filterFactory;
@@ -27,6 +28,16 @@ public class PropertyStyleHandler extends StyleHandler {
         super("Property", FORMAT);
         styleFactory = CommonFactoryFinder.getStyleFactory();
         filterFactory = CommonFactoryFinder.getFilterFactory();
+    }
+
+    @Override
+    public String getFileExtension() {
+        return "properties";
+    }
+
+    @Override
+    public String mimeType(Version version) {
+        return MIMETYPE;
     }
 
     @Override
@@ -94,7 +105,23 @@ public class PropertyStyleHandler extends StyleHandler {
 
     @Override
     public void encode(StyledLayerDescriptor sld, Version version, boolean pretty, OutputStream output) throws IOException {
-        throw new UnsupportedOperationException();
+        Properties props = new Properties();
+        for (Symbolizer sym : SLD.symbolizers(Styles.style(sld))) {
+            if (sym instanceof PointSymbolizer) {
+                props.put("type", "point");
+            }
+            else if (sym instanceof LineSymbolizer) {
+                props.put("type", "line");
+            }
+            else if (sym instanceof PolygonSymbolizer) {
+                props.put("type", "polygon");
+            }
+            else if (sym instanceof RasterSymbolizer) {
+                props.put("type", "raster");
+            }
+        }
+
+        props.store(output, null);
     }
 
     @Override

@@ -515,7 +515,7 @@ public class MockCatalogBuilder {
         
         String sId = newId();
         String format = SLDHandler.FORMAT;
-        Version version = SLDHandler.V_10;
+        Version version = SLDHandler.VERSION_10;
     
         final StyleInfo s = createNiceMock(StyleInfo.class);
         styles.add(s);

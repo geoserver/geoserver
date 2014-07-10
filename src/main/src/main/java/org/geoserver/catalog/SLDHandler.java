@@ -12,14 +12,13 @@ import org.geotools.xml.Parser;
 import org.vfny.geoserver.util.SLDValidator;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.*;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -41,16 +40,33 @@ public class SLDHandler extends StyleHandler {
     static int XML_LOOKAHEAD = 8192;
 
     public static final String FORMAT = "sld";
-    public static final Version V_10 = new Version("1.0.0");
-    public static final Version V_11 = new Version("1.1.0");
+
+    public static final Version VERSION_10 = new Version("1.0.0");
+    public static final Version VERSION_11 = new Version("1.1.0");
+
+    public static final String MIMETYPE_10 = "application/vnd.ogc.sld+xml";
+    public static final String MIMETYPE_11 = "application/vnd.ogc.se+xml";
 
     public SLDHandler() {
         super("SLD", FORMAT);
     }
 
     @Override
+    public List<Version> getVersions() {
+        return Arrays.asList(VERSION_10, VERSION_11);
+    }
+
+    @Override
     public String getCodeMirrorEditMode() {
         return "xml";
+    }
+
+    @Override
+    public String mimeType(Version version) {
+        if (version != null && VERSION_11.equals(version)) {
+            return MIMETYPE_11;
+        }
+        return MIMETYPE_10;
     }
 
     @Override
@@ -61,7 +77,7 @@ public class SLDHandler extends StyleHandler {
             input = versionAndReader[1];
         }
 
-        if (V_11.compareTo(version) == 0) {
+        if (VERSION_11.compareTo(version) == 0) {
             return parse11(input, resourceLocator, entityResolver);
         }
         else {
@@ -146,7 +162,7 @@ public class SLDHandler extends StyleHandler {
 
     @Override
     public void encode(StyledLayerDescriptor sld, Version version, boolean pretty, OutputStream output) throws IOException {
-        if (version != null && V_11.compareTo(version) == 0) {
+        if (version != null && VERSION_11.compareTo(version) == 0) {
             encode11(sld, pretty, output);
         }
         else {
@@ -182,7 +198,7 @@ public class SLDHandler extends StyleHandler {
             input = versionAndReader[1];
         }
 
-        if (version != null && V_11.compareTo(version) == 0) {
+        if (version != null && VERSION_11.compareTo(version) == 0) {
             return validate11(input, entityResolver);
         }
         else {

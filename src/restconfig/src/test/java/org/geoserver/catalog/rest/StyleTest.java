@@ -11,13 +11,17 @@ import static org.junit.Assert.*;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.List;
+import java.util.Properties;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PropertyStyleHandler;
+import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.data.test.SystemTestData;
@@ -126,7 +130,7 @@ public class StyleTest extends CatalogRESTTestSupport {
     @Test
     public void testGetAsSLD() throws Exception {
         Document dom = getAsDOM( "/rest/styles/Ponds.sld");
-        
+
         assertEquals( "sld:StyledLayerDescriptor", dom.getDocumentElement().getNodeName() );
     }
 
@@ -165,7 +169,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         String xml = newSLDXML();
 
         MockHttpServletResponse response = 
-            postAsServletResponse( "/rest/styles", xml, StyleResource.MEDIATYPE_SLD.toString());
+            postAsServletResponse( "/rest/styles", xml, SLDHandler.MIMETYPE_10);
         assertEquals( 201, response.getStatusCode() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/styles/foo" ) );
@@ -180,7 +184,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         String xml = newSLDXML();
 
         MockHttpServletResponse response = 
-            postAsServletResponse( "/rest/workspaces/gs/styles", xml, StyleResource.MEDIATYPE_SLD.toString());
+            postAsServletResponse( "/rest/workspaces/gs/styles", xml, SLDHandler.MIMETYPE_10);
         assertEquals( 201, response.getStatusCode() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/workspaces/gs/styles/foo" ) );
@@ -196,7 +200,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         String xml = newSLDXML();
 
         MockHttpServletResponse response = 
-            postAsServletResponse( "/rest/styles?name=bar", xml, StyleResource.MEDIATYPE_SLD.toString());
+            postAsServletResponse( "/rest/styles?name=bar", xml, SLDHandler.MIMETYPE_10);
         assertEquals( 201, response.getStatusCode() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/styles/bar" ) );
@@ -244,12 +248,12 @@ public class StyleTest extends CatalogRESTTestSupport {
         String xml = newSLDXML();
 
         MockHttpServletResponse response = 
-            putAsServletResponse( "/rest/styles/Ponds", xml, StyleResource.MEDIATYPE_SLD.toString());
+            putAsServletResponse( "/rest/styles/Ponds", xml, SLDHandler.MIMETYPE_10);
         assertEquals( 200, response.getStatusCode() );
         
         Style s = catalog.getStyleByName( "Ponds" ).getStyle();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        new SLDFormat().write(s, out);
+        new StyleFormat(SLDHandler.MIMETYPE_10, SLDHandler.VERSION_10, false, new SLDHandler()).write(s, out);
         
         xml = new String(out.toByteArray());
         assertTrue(xml.contains("<sld:Name>foo</sld:Name>"));
@@ -320,7 +324,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         String xml = newSLDXML();
 
         MockHttpServletResponse response = 
-            postAsServletResponse( "/rest/styles", xml, StyleResource.MEDIATYPE_SLD.toString());
+            postAsServletResponse( "/rest/styles", xml, SLDHandler.MIMETYPE_10);
         assertNotNull( catalog.getStyleByName( "foo" ) );
         
         //ensure the style not deleted on disk
@@ -338,7 +342,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         String xml = newSLDXML();
 
         MockHttpServletResponse response = 
-            postAsServletResponse( "/rest/styles", xml, StyleResource.MEDIATYPE_SLD.toString());
+            postAsServletResponse( "/rest/styles", xml, SLDHandler.MIMETYPE_10);
         assertNotNull( catalog.getStyleByName( "foo" ) );
         
         //ensure the style not deleted on disk
@@ -447,5 +451,31 @@ public class StyleTest extends CatalogRESTTestSupport {
         LayerInfo l2 = catalog.getLayerByName("cite:BasicPolygons");
         assertEquals( nstyles, l2.getStyles().size() );
         assertEquals( catalog.getStyleByName( "Ponds"), l2.getDefaultStyle() );
+    }
+
+    @Test
+    public void testPostAsPSL() throws Exception {
+        Properties props = new Properties();
+        props.put("type", "point");
+        props.put("color", "ff0000");
+
+        StringWriter out = new StringWriter();
+        props.store(out, null);
+
+        MockHttpServletResponse response =
+            postAsServletResponse( "/rest/styles?name=foo", out.toString(), PropertyStyleHandler.MIMETYPE);
+        assertEquals( 201, response.getStatusCode() );
+        assertNotNull( response.getHeader( "Location") );
+        assertTrue( response.getHeader("Location").endsWith( "/styles/foo" ) );
+
+        assertNotNull( catalog.getStyleByName( "foo" ) );
+    }
+
+    @Test
+    public void testGetAsPSL() throws Exception {
+        Properties props = new Properties();
+        props.load(get("/rest/styles/Ponds.properties"));
+
+        assertEquals("polygon", props.getProperty("type"));
     }
 }

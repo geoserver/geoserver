@@ -27,9 +27,15 @@ import java.util.List;
 public class CssHandler extends StyleHandler {
 
     public static final String FORMAT = "css";
+    public static final String MIME_TYPE = "application/vnd.geo+css";
 
     protected CssHandler() {
         super("CSS", FORMAT);
+    }
+
+    @Override
+    public String mimeType(Version version) {
+        return MIME_TYPE;
     }
 
     @Override

@@ -108,15 +108,47 @@ public class Styles {
         return sld;
     }
 
+    /**
+     * Looks up a style handler by format, file extension, or mime type.
+     *
+     * @param format The format, file extension, or mime type.
+     *
+     * @see StyleHandler#getFormat()
+     * @see StyleHandler#getFileExtension()
+     * @see StyleHandler#mimeType(org.geotools.util.Version)
+     */
     public static StyleHandler handler(String format) {
         if (format == null) {
             throw new IllegalArgumentException("Style format must not be null");
         }
 
+        List<StyleHandler> allHandlers = handlers();
         List<StyleHandler> matches = new ArrayList();
-        for (StyleHandler h : GeoServerExtensions.extensions(StyleHandler.class)) {
+
+        // look by format
+        for (StyleHandler h : allHandlers) {
             if (format.equalsIgnoreCase(h.getFormat())) {
                 matches.add(h);
+            }
+        }
+
+        if (matches.isEmpty()) {
+            // look by mime type
+            for (StyleHandler h : allHandlers) {
+                for (Version ver : h.getVersions()) {
+                    if (h.mimeType(ver).equals(format)) {
+                        matches.add(h);
+                    }
+                }
+            }
+        }
+
+        if (matches.isEmpty()) {
+            // look by file extension
+            for (StyleHandler h : allHandlers) {
+                if (format.equalsIgnoreCase(h.getFileExtension())) {
+                    matches.add(h);
+                }
             }
         }
 
@@ -137,5 +169,12 @@ public class Styles {
             }
         });
         throw new IllegalArgumentException("Multiple style handlers: " + handlerNames + " found for format: " + format);
+    }
+
+    /**
+     * Returns all registered style handlers.
+     */
+    public static List<StyleHandler> handlers() {
+        return GeoServerExtensions.extensions(StyleHandler.class);
     }
 }

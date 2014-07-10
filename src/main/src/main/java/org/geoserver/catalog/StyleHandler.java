@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.Arrays;
 import java.util.List;
 
 import org.geoserver.platform.resource.Resource;
@@ -49,6 +50,13 @@ public abstract class StyleHandler {
      */
     public String getFormat() {
         return format;
+    }
+
+    /**
+     * Supported format versions.
+     */
+    public List<Version> getVersions() {
+        return Arrays.asList(new Version("1.0.0"));
     }
 
     /**
@@ -105,6 +113,12 @@ public abstract class StyleHandler {
      * @return Any validation errors, or empty list if the style is valid.
      */
     public abstract List<Exception> validate(Object input, Version version, EntityResolver entityResolver) throws IOException;
+
+    /**
+     * Returns the format mime type for the specified version.
+     *
+     */
+    public abstract String mimeType(Version version);
 
     /**
      * Determines the version of the format/language of the specified style resource.

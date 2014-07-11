@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -112,11 +113,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         new File(dataDirRoot.getAbsolutePath() + File.separator
                 + LegendSampleImpl.LEGEND_SAMPLES_FOLDER).mkdir();
         
-        testData.copyTo(
-                getClass().getResourceAsStream("/legendURL/BasicPolygons.png"),
-                LegendSampleImpl.LEGEND_SAMPLES_FOLDER + "/BasicPolygons.png");
-        testData.copyTo(getClass().getResourceAsStream("/legendURL/Bridges.png"),
-                LegendSampleImpl.LEGEND_SAMPLES_FOLDER + "/Bridges.png");
+        
         testData.addStyle("squares","squares.sld",GetFeatureInfoTest.class,catalog);
         testData.addVectorLayer(SQUARES,Collections.EMPTY_MAP,"squares.properties",
                 GetCapabilitiesLegendURLTest.class,catalog);
@@ -131,7 +128,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
     }
     
     @Before
-    public void internalSetUp() {
+    public void internalSetUp() throws IOException {
         
         
         this.catalog = getCatalog();
@@ -152,6 +149,12 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         req = new GetCapabilitiesRequest();
         req.setBaseUrl(baseUrl);
 
+        getTestData().copyTo(
+                getClass().getResourceAsStream("/legendURL/BasicPolygons.png"),
+                LegendSampleImpl.LEGEND_SAMPLES_FOLDER + "/BasicPolygons.png");
+        getTestData().copyTo(getClass().getResourceAsStream("/legendURL/Bridges.png"),
+                LegendSampleImpl.LEGEND_SAMPLES_FOLDER + "/Bridges.png");
+        
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         namespaces.put("wms", "http://www.opengis.net/wms");
@@ -261,6 +264,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         File sampleFile = getSampleFile("Bridges");
         
         long lastTime = sampleFile.lastModified();
+        long lastLength = sampleFile.length();
         long previousTime = sldResource.lastmodified();
         sldResource.file().setLastModified(lastTime + 1000);
         
@@ -279,7 +283,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         assertEquals("20", legendURL.getAttribute("width"));
         assertTrue(legendURL.hasAttribute("height"));
         assertEquals("20", legendURL.getAttribute("height"));
-        assertTrue(getSampleFile("Bridges").lastModified() > lastTime);
+        assertFalse(getSampleFile("Bridges").length() == lastLength);
         sldResource.file().setLastModified(previousTime);
     }
     
@@ -295,6 +299,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         File sampleFile = getSampleFile("Bridges");
         
         long lastTime = sampleFile.lastModified();
+        long lastLength = sampleFile.length();
         long previousTime = sldResource.lastmodified();
         sldResource.file().setLastModified(lastTime + 1000);
         
@@ -312,7 +317,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         assertEquals("20", legendURL.getAttribute("width"));
         assertTrue(legendURL.hasAttribute("height"));
         assertEquals("20", legendURL.getAttribute("height"));
-        assertTrue(getSampleFile("Bridges").lastModified() > lastTime);
+        assertFalse(getSampleFile("Bridges").length() == lastLength);
         sldResource.file().setLastModified(previousTime);
     }
     

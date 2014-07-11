@@ -1273,10 +1273,15 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 if(sampleStyle != null) {
                     // delegate to legendSample the calculus of proper legend size for
                     // the given style
-                    Dimension dimension = legendSample.getLegendURLSize(sampleStyle);
-                    if(dimension != null) {
-                        legendWidth = (int)dimension.getWidth();
-                        legendHeight = (int)dimension.getHeight();
+                    Dimension dimension;
+                    try {
+                        dimension = legendSample.getLegendURLSize(sampleStyle);
+                        if(dimension != null) {
+                            legendWidth = (int)dimension.getWidth();
+                            legendHeight = (int)dimension.getHeight();
+                        }
+                    } catch (Exception e) {
+                        LOGGER.log(Level.WARNING, "Error getting LegendURL dimensions from sample", e);
                     }
                 }
                 

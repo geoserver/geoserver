@@ -5,6 +5,7 @@
 package org.geoserver.wms.capabilities;
 
 import java.awt.Dimension;
+import java.io.IOException;
 
 import org.geoserver.catalog.StyleInfo;
 
@@ -22,6 +23,8 @@ public interface LegendSample {
      * 
      * @param style
      * @return
+     * @throws IOException 
+     * @throws Exception 
      */
-    public Dimension getLegendURLSize(StyleInfo style);
+    public Dimension getLegendURLSize(StyleInfo style) throws Exception;
 }

@@ -99,16 +99,24 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
     public static QName SQUARES = new QName(MockData.CITE_URI, "squares", MockData.CITE_PREFIX);
     public static QName STATES = new QName(MockData.CITE_URI, "states", MockData.CITE_PREFIX);
     
+    
     /**
      * Adds required styles to test the selection of maximum and minimum denominator from style's rules.
      */
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
-        
         this.catalog = getCatalog();
-        testData.copyTo(getClass().getResourceAsStream("/legendURL/BasicPolygons.png"), "styles/BasicPolygons.png");
-        testData.copyTo(getClass().getResourceAsStream("/legendURL/Bridges.png"), "styles/Bridges.png");
+        File dataDirRoot = testData.getDataDirectoryRoot();
+        // create legendsamples folder
+        new File(dataDirRoot.getAbsolutePath() + File.separator
+                + LegendSampleImpl.LEGEND_SAMPLES_FOLDER).mkdir();
+        
+        testData.copyTo(
+                getClass().getResourceAsStream("/legendURL/BasicPolygons.png"),
+                LegendSampleImpl.LEGEND_SAMPLES_FOLDER + "/BasicPolygons.png");
+        testData.copyTo(getClass().getResourceAsStream("/legendURL/Bridges.png"),
+                LegendSampleImpl.LEGEND_SAMPLES_FOLDER + "/Bridges.png");
         testData.addStyle("squares","squares.sld",GetFeatureInfoTest.class,catalog);
         testData.addVectorLayer(SQUARES,Collections.EMPTY_MAP,"squares.properties",
                 GetCapabilitiesLegendURLTest.class,catalog);
@@ -204,8 +212,14 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         assertTrue(legendURL.hasAttribute("height"));
         assertFalse("20".equals(legendURL.getAttribute("height")));
         
-        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class); 
-        assertEquals(Resource.Type.RESOURCE, loader.get(Paths.path("styles", "squares.png")).getType());
+        File sampleFile = getSampleFile("squares");
+        assertTrue(sampleFile.exists());
+    }
+
+    private File getSampleFile(String sampleName) {
+        return new File(testData.getDataDirectoryRoot().getAbsolutePath()
+                + File.separator + LegendSampleImpl.LEGEND_SAMPLES_FOLDER + File.separator
+                + sampleName + ".png");
     }
     
     /**
@@ -231,8 +245,8 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         assertTrue(legendURL.hasAttribute("height"));
         assertFalse("20".equals(legendURL.getAttribute("height")));
         
-        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class); 
-        assertEquals(Resource.Type.RESOURCE, loader.get(Paths.path("workspaces", "cite", "styles", "states.png")).getType());
+        File sampleFile = getSampleFile("cite_states");
+        assertTrue(sampleFile.exists());
     }
     
     /**
@@ -243,11 +257,12 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
     @Test
     public void testCachedLegendURLUpdatedSize() throws Exception {
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
-        File sldFile = loader.get(Paths.path("styles", "Bridges.sld")).file();
-        File sampleFile = loader.get(Paths.path("styles", "Bridges.png")).file();
+        Resource sldResource = loader.get(Paths.path("styles", "Bridges.sld"));
+        File sampleFile = getSampleFile("Bridges");
+        
         long lastTime = sampleFile.lastModified();
-        long previousTime = sldFile.lastModified();
-        sldFile.setLastModified(lastTime + 1000);
+        long previousTime = sldResource.lastmodified();
+        sldResource.file().setLastModified(lastTime + 1000);
         
         // force cleaning of samples cache, to get updates on files
         ((LegendSampleImpl)GeoServerExtensions.bean(LegendSample.class)).reloaded();
@@ -264,8 +279,8 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         assertEquals("20", legendURL.getAttribute("width"));
         assertTrue(legendURL.hasAttribute("height"));
         assertEquals("20", legendURL.getAttribute("height"));
-        assertTrue(sampleFile.lastModified() > lastTime);
-        sldFile.setLastModified(previousTime);
+        assertTrue(getSampleFile("Bridges").lastModified() > lastTime);
+        sldResource.file().setLastModified(previousTime);
     }
     
     /**
@@ -276,12 +291,13 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
     @Test
     public void testCachedLegendURLUpdatedSize2() throws Exception {
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
-        File sldFile = loader.get(Paths.path("styles", "Bridges.sld")).file();
-        File sampleFile = loader.get(Paths.path("styles", "Bridges.png")).file();
+        Resource sldResource = loader.get(Paths.path("styles", "Bridges.sld"));
+        File sampleFile = getSampleFile("Bridges");
+        
         long lastTime = sampleFile.lastModified();
-        long previousTime = sldFile.lastModified();
-        sldFile.setLastModified(lastTime + 1000);
-
+        long previousTime = sldResource.lastmodified();
+        sldResource.file().setLastModified(lastTime + 1000);
+        
         catalog.firePostModified(catalog.getStyleByName("Bridges"));
         
         TransformerBase tr = createTransformer();
@@ -296,8 +312,8 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         assertEquals("20", legendURL.getAttribute("width"));
         assertTrue(legendURL.hasAttribute("height"));
         assertEquals("20", legendURL.getAttribute("height"));
-        assertTrue(sampleFile.lastModified() > lastTime);
-        sldFile.setLastModified(previousTime);
+        assertTrue(getSampleFile("Bridges").lastModified() > lastTime);
+        sldResource.file().setLastModified(previousTime);
     }
     
     private String getLegendURLXPath(String layerName) {

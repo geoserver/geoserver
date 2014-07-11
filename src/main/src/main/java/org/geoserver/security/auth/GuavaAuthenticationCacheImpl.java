@@ -159,6 +159,14 @@ public class GuavaAuthenticationCacheImpl implements AuthenticationCache {
             }
             return null;
         }
+        long currentTime=System.currentTimeMillis();
+        if(entry.hasExpired(currentTime)) {
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.fine("Entry has expired");
+            }
+            cache.invalidate(entry);
+            return null;
+        }
         entry.setLastAccessed(System.currentTimeMillis());
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("AuthenticationCache found an entry for " + filterName
@@ -174,8 +182,7 @@ public class GuavaAuthenticationCacheImpl implements AuthenticationCache {
                 : this.timeToIdleSeconds;
         timeToLiveSeconds = timeToLiveSeconds != null ? timeToLiveSeconds
                 : this.timeToLiveSeconds;
-        // by entry timeIdle and timeToLive are currently not supported
-        // global timeouts are always applied
+        
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("AuthenticationCache adding new entry for " + filterName
                     + ", " + cacheKey);

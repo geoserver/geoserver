@@ -23,6 +23,7 @@ import org.geoserver.catalog.impl.AbstractDecorator;
 import org.geotools.data.FeatureSource;
 import org.geotools.factory.Hints;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.measure.Measure;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
@@ -284,5 +285,25 @@ public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<Featur
     @Override
     public void setOverridingServiceSRS(boolean overridingServiceSRS) {
         delegate.setOverridingServiceSRS(overridingServiceSRS);
+    }
+
+    @Override
+    public Measure getLinearizationTolerance() {
+        return delegate.getLinearizationTolerance();
+    }
+
+    @Override
+    public void setLinearizationTolerance(Measure tolerance) {
+        delegate.setLinearizationTolerance(tolerance);
+    }
+    
+    @Override
+    public boolean isCircularArcPresent() {
+    	return delegate.isCircularArcPresent();
+    }
+    
+    @Override
+    public void setCircularArcPresent(boolean enabled) {
+    	delegate.setCircularArcPresent(enabled);
     }
 }

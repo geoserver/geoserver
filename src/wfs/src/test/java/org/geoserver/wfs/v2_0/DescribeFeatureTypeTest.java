@@ -36,6 +36,11 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class DescribeFeatureTypeTest extends WFS20TestSupport {
 	
+    @Override
+    protected String getLogConfiguration() {
+        return "/DEFAULT_LOGGING.properties";
+    }
+    
 	@Override
     protected void setUpInternal(SystemTestData dataDirectory) throws Exception {
     	DataStoreInfo di = getCatalog().getDataStoreByName(CiteTestData.CITE_PREFIX);

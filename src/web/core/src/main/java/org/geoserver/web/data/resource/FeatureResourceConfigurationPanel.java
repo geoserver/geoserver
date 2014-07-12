@@ -5,6 +5,7 @@
 package org.geoserver.web.data.resource;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
@@ -18,14 +19,21 @@ import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.util.convert.ConversionException;
+import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -35,6 +43,9 @@ import org.geoserver.web.data.layer.SQLViewEditPage;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.jdbc.VirtualTable;
+import org.geotools.measure.Measure;
+import org.geotools.util.Converters;
+import org.geotools.util.MeasureConverterFactory;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
 
@@ -46,7 +57,13 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
     
     public FeatureResourceConfigurationPanel(String id, final IModel model) {
         super(id, model);
+
+        CheckBox circularArcs = new CheckBox("circularArcPresent");
+        add(circularArcs);
         
+        TextField<Measure> tolerance = new TextField<Measure>("linearizationTolerance", Measure.class);
+        add(tolerance);
+
         final Fragment attributePanel = new Fragment("attributePanel", "attributePanelFragment", this);
         attributePanel.setOutputMarkupId(true);
         add(attributePanel);

@@ -23,6 +23,9 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.measure.quantity.Quantity;
+import javax.measure.unit.Unit;
+
 import org.apache.commons.collections.MultiHashMap;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.AttributionInfo;
@@ -104,12 +107,14 @@ import org.geotools.jdbc.RegexpValidator;
 import org.geotools.jdbc.VirtualTable;
 import org.geotools.jdbc.VirtualTableParameter;
 import org.geotools.jdbc.VirtualTableParameter.Validator;
+import org.geotools.measure.Measure;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.crs.DefaultProjectedCRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.referencing.wkt.Formattable;
 import org.geotools.util.Converters;
+import org.geotools.util.MeasureConverterFactory;
 import org.geotools.util.NumberRange;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.GridGeometry;
@@ -439,7 +444,8 @@ public class XStreamPersister {
         xs.registerConverter(new VirtualTableConverter());
         xs.registerConverter(new KeywordInfoConverter());
         xs.registerConverter(new SettingsInfoConverter());
-
+        xs.registerConverter(new MeasureConverter());
+        
         // register Virtual structure handling
         registerBreifMapComplexType("virtualTable", VirtualTable.class);
         registerBreifMapComplexType("coverageView", CoverageView.class);
@@ -2060,6 +2066,37 @@ public class XStreamPersister {
             return sb.toString();
         }
     }
+    
+    static class MeasureConverter extends AbstractSingleValueConverter {
+
+    	org.geotools.util.Converter str2Measure = new MeasureConverterFactory().createConverter(String.class, Measure.class, null);
+    	org.geotools.util.Converter measure2Str = new MeasureConverterFactory().createConverter(Measure.class, String.class, null);
+
+    	
+        @Override
+        public boolean canConvert(Class type) {
+            return Measure.class.isAssignableFrom(type);
+        }
+
+        @Override
+        public Object fromString(String str) {
+        	try {
+				return str2Measure.convert(str, Measure.class);
+			} catch (Exception e) {
+				throw new IllegalArgumentException(e);
+			}
+        }
+
+        @Override
+        public String toString(Object obj) {
+        	try {
+				return measure2Str.convert(obj, String.class);
+			} catch (Exception e) {
+				throw new IllegalArgumentException(e);
+			}
+        }
+    }
+
 
     class KeywordListConverter extends LaxCollectionConverter {
 

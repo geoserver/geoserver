@@ -34,6 +34,11 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.measure.converter.UnitConverter;
+import javax.measure.unit.NonSI;
+import javax.measure.unit.SI;
+import javax.measure.unit.Unit;
+
 import org.apache.commons.io.IOUtils;
 import org.eclipse.xsd.XSDElementDeclaration;
 import org.eclipse.xsd.XSDParticle;
@@ -54,7 +59,6 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceNotification;
-import org.geoserver.platform.resource.ResourceNotification.Kind;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
@@ -84,7 +88,9 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml2.GML;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.VirtualTable;
+import org.geotools.measure.Measure;
 import org.geotools.referencing.CRS;
+import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.styling.Style;
 import org.geotools.util.SoftValueHashMap;
 import org.geotools.util.logging.Logging;
@@ -100,6 +106,11 @@ import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.crs.GeographicCRS;
+import org.opengis.referencing.crs.SingleCRS;
+import org.opengis.referencing.cs.AxisDirection;
+import org.opengis.referencing.cs.CoordinateSystem;
+import org.opengis.referencing.cs.CoordinateSystemAxis;
 import org.opengis.referencing.operation.TransformException;
 import org.springframework.context.ApplicationContext;
 import org.vfny.geoserver.global.GeoServerFeatureLocking;
@@ -116,6 +127,12 @@ import org.vfny.geoserver.util.DataStoreUtils;
  *
  */
 public class ResourcePool {
+
+	/**
+	 * OGC "cilyndrical earth" model, we'll use it to translate meters to degrees (yes, it's ugly)
+	 */
+    final static double OGC_DEGREE_TO_METERS = 6378137.0 * 2.0 * Math.PI / 360;
+    final static double OGC_METERS_TO_DEGREES = 1 / OGC_DEGREE_TO_METERS;
 
     private static final String PROJECTION_POLICY_SEPARATOR = "_pp_";
 
@@ -487,10 +504,10 @@ public class ResourcePool {
         DataAccess<? extends FeatureType, ? extends Feature> dataStore = null;
         try {
             String id = info.getId();
-            dataStore = (DataAccess<? extends FeatureType, ? extends Feature>) dataStoreCache.get(id);
+            dataStore = dataStoreCache.get(id);
             if ( dataStore == null ) {
                 synchronized (dataStoreCache) {
-                    dataStore = (DataAccess<? extends FeatureType, ? extends Feature>) dataStoreCache.get( id );
+                    dataStore = dataStoreCache.get( id );
                     if ( dataStore == null ) {
                         //create data store
                         Map<String, Serializable> connectionParameters = info.getConnectionParameters();
@@ -669,10 +686,10 @@ public class ResourcePool {
         }
         
         //check the cache
-        List<AttributeTypeInfo> atts = (List<AttributeTypeInfo>) featureTypeAttributeCache.get(info.getId());
+        List<AttributeTypeInfo> atts = featureTypeAttributeCache.get(info.getId());
         if (atts == null) {
             synchronized (featureTypeAttributeCache) {
-                atts = (List<AttributeTypeInfo>) featureTypeAttributeCache.get(info.getId());
+                atts = featureTypeAttributeCache.get(info.getId());
                 if (atts == null) {
                     //load from feature type
                     atts = loadAttributes(info);
@@ -709,7 +726,7 @@ public class ResourcePool {
             att.setMaxOccurs(pd.getMaxOccurs());
             att.setNillable(pd.isNillable());
             att.setBinding(pd.getType().getBinding());
-            int length = FeatureTypes.getFieldLength((AttributeDescriptor) pd);
+            int length = FeatureTypes.getFieldLength(pd);
             if(length > 0) {
                 att.setLength(length);
             }
@@ -833,10 +850,10 @@ public class ResourcePool {
     
     FeatureType getCacheableFeatureType( FeatureTypeInfo info, boolean handleProjectionPolicy ) throws IOException {
         String key = getFeatureTypeInfoKey(info, handleProjectionPolicy);
-        FeatureType ft = (FeatureType) featureTypeCache.get( key );
+        FeatureType ft = featureTypeCache.get( key );
         if ( ft == null ) {
             synchronized ( featureTypeCache ) {
-                ft = (FeatureType) featureTypeCache.get( key );
+                ft = featureTypeCache.get( key );
                 if ( ft == null ) {
                     
                     //grab the underlying feature type
@@ -960,7 +977,7 @@ public class ResourcePool {
                 
                     AttributeDescriptor ad = (AttributeDescriptor) pd;
                     ad = handleDescriptor(ad, info);
-                    tb.add( (AttributeDescriptor) ad );
+                    tb.add( ad );
                 }
             }
             ft = tb.buildFeatureType();
@@ -1216,12 +1233,67 @@ public class ResourcePool {
             }
 
             //return a normal 
-            return GeoServerFeatureLocking.create(fs, schema,
-                    info.getFilter(), resultCRS, info.getProjectionPolicy().getCode());
+            return GeoServerFeatureLocking.create(fs, schema, info.getFilter(), resultCRS, info
+                    .getProjectionPolicy().getCode(), getTolerance(info));
         }
     }
     
-    public GridCoverageReader getGridCoverageReader(CoverageInfo info, Hints hints) 
+    private Double getTolerance(FeatureTypeInfo info) {
+    	// get the measure, if null, no linearization tolerance is available
+		Measure mt = info.getLinearizationTolerance();
+		if(mt == null) {
+			return null;
+		}
+		
+		// if the user did not specify a unit of measure, we use it as an absolute value
+		if(mt.getUnit() == null) {
+			return mt.doubleValue();
+		}
+		
+		// should not happen, but let's cover all our bases
+		CoordinateReferenceSystem crs = info.getCRS();
+		if(crs == null) {
+			return mt.doubleValue();
+		}
+		
+		// let's get the target unit
+		SingleCRS horizontalCRS = CRS.getHorizontalCRS(crs);
+		Unit targetUnit;
+		if(horizontalCRS != null) {
+			// leap of faith, the first axis is an horizontal one (
+			targetUnit = getFirstAxisUnit(horizontalCRS.getCoordinateSystem());
+		} else {
+			// leap of faith, the first axis is an horizontal one (
+			targetUnit = getFirstAxisUnit(crs.getCoordinateSystem());
+		}
+		
+		if((targetUnit != null && targetUnit == NonSI.DEGREE_ANGLE) || horizontalCRS instanceof GeographicCRS || crs instanceof GeographicCRS) {
+			// assume we're working against a type of geographic crs, must estimate the degrees equivalent
+			// to the measure, we are going to use a very rough estimate (cylindrical earth model)
+			// TODO: maybe look at the layer bbox and get a better estimate computed at the center of the bbox
+			UnitConverter converter = mt.getUnit().getConverterTo(SI.METER);
+			double tolMeters = converter.convert(mt.doubleValue());
+			return tolMeters * OGC_METERS_TO_DEGREES;
+		} else if(targetUnit != null && targetUnit.isCompatible(SI.METER)) {
+			// ok, we assume the target is not a geographic one, but we might
+			// have to convert between meters and feet maybe
+			UnitConverter converter = mt.getUnit().getConverterTo(targetUnit);
+			return converter.convert(mt.doubleValue());
+		} else {
+			return mt.doubleValue();
+		}
+		
+	}
+
+	private Unit<?> getFirstAxisUnit(
+			CoordinateSystem coordinateSystem) {
+		if(coordinateSystem == null || coordinateSystem.getDimension() > 0) {
+			return null;
+		}
+		return coordinateSystem.getAxis(0).getUnit();
+	}
+
+	public GridCoverageReader getGridCoverageReader(CoverageInfo info, Hints hints) 
             throws IOException {
         return getGridCoverageReader(info, (String) null, hints); 
     }
@@ -1295,11 +1367,11 @@ public class ResourcePool {
             }
             
             key = new CoverageHintReaderKey(info.getId(), hints);
-            reader = (GridCoverage2DReader) hintCoverageReaderCache.get( key );
+            reader = hintCoverageReaderCache.get( key );
         } else {
             key = info.getId();
             if(key != null) {
-                reader = (GridCoverageReader) coverageReaderCache.get( key );
+                reader = coverageReaderCache.get( key );
             }
         }
         
@@ -1308,9 +1380,9 @@ public class ResourcePool {
             synchronized ( hints != null ? hintCoverageReaderCache : coverageReaderCache ) {
                 if (key != null) {
                     if (hints != null) {
-                        reader = (GridCoverageReader) hintCoverageReaderCache.get(key);
+                        reader = hintCoverageReaderCache.get(key);
                     } else {
-                        reader = (GridCoverageReader) coverageReaderCache.get(key);
+                        reader = coverageReaderCache.get(key);
                     }
                 }
                 if (reader == null) {
@@ -1370,7 +1442,7 @@ public class ResourcePool {
             }
             // Avoid dimensions wrapping since we have a multi-coverage reader 
             // but no coveragename have been specified
-            return (GridCoverage2DReader) reader;
+            return reader;
 
         }
     }
@@ -1531,10 +1603,10 @@ public class ResourcePool {
     public WebMapServer getWebMapServer(WMSStoreInfo info) throws IOException {
         try {
             String id = info.getId();
-            WebMapServer wms = (WebMapServer) wmsCache.get(id);
+            WebMapServer wms = wmsCache.get(id);
             if (wms == null) {
                 synchronized (wmsCache) {
-                    wms = (WebMapServer) wmsCache.get(id);
+                    wms = wmsCache.get(id);
                     if (wms == null) {
                         HTTPClient client = getHTTPClient(info);
                         String capabilitiesURL = info.getCapabilitiesURL();
@@ -1831,7 +1903,7 @@ public class ResourcePool {
         public V remove(Object key) {
             V object = super.remove(key);
             if (object != null) {
-                dispose((K) key, (V) object);
+                dispose((K) key, object);
             }
             return object;
         }

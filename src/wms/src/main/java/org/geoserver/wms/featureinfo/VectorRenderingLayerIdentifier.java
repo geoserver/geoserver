@@ -521,8 +521,6 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             // feature caught by more than one rule?
             if(feature == previous) {
                 return;
-            } else {
-                previous = feature;
             }
             
             // note: we need to extract the raster here, caching it will make us
@@ -532,9 +530,9 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             
             // scan and clean the hit area
             boolean hit = false;
-            for (int row = hitArea.y; row < (hitArea.y + hitArea.height); row++) {
+            for (int row = hitArea.y; row < (hitArea.y + hitArea.height) && !hit; row++) {
                 int idx = row * scanlineStride + hitArea.x;
-                for (int col = hitArea.x; col < (hitArea.x + hitArea.width); col++) {
+                for (int col = hitArea.x; col < (hitArea.x + hitArea.width) && !hit; col++) {
                     final int color = pixels[idx];
                     final int alpha = cm.getAlpha(color);
                     if (!hit && alpha > 0) {
@@ -546,6 +544,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             }
             
             if (hit) {
+                previous = feature;
                 if(features.size() < maxFeatures) {
                     features.add(feature);
                 } else {

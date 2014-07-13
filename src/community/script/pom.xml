@@ -101,6 +101,15 @@
 
  <profiles>
    <profile>
+     <id>script-web</id>
+     <activation>
+       <activeByDefault>true</activeByDefault>
+     </activation>
+     <modules>
+       <module>web</module>
+     </modules>
+   </profile>
+   <profile>
      <id>script-bsh</id>
      <activation>
        <activeByDefault>true</activeByDefault>

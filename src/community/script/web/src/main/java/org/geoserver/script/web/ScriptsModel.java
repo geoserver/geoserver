@@ -10,12 +10,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.script.ScriptManager;
+import org.geotools.util.logging.Logging;
 
 public class ScriptsModel extends LoadableDetachableModel {
+
+    private static final Logger LOGGER = Logging.getLogger("org.geoserver.script.web");
 
     @Override
     protected Object load() {
@@ -39,7 +43,6 @@ public class ScriptsModel extends LoadableDetachableModel {
     protected List<Script> getScripts() {
         List<Script> scripts = new ArrayList<Script>();
         ScriptManager scriptManager = (ScriptManager) GeoServerExtensions.bean("scriptMgr");
-
         try {
             File[] dirs = { scriptManager.getWpsRoot(), scriptManager.getWfsTxRoot(),
                     scriptManager.getFunctionRoot(), scriptManager.getAppRoot() };
@@ -47,7 +50,15 @@ public class ScriptsModel extends LoadableDetachableModel {
                 File[] files = dir.listFiles();
                 for (File file : files) {
                     if (dir.getName().equals("apps")) {
-                        scripts.add(new Script(scriptManager.findAppMainScript(file)));
+                        if (file.isDirectory()) {
+                            File mainFile = scriptManager.findAppMainScript(file);
+                            if (mainFile != null) {
+                                Script script = new Script(mainFile);
+                                scripts.add(script);
+                            } else {
+                                LOGGER.info("Could not find main app file in " + file.getAbsolutePath());
+                            }
+                        }
                     } else if (dir.getName().equals("wps")) {
                         if (file.isDirectory()) {
                             File[] fs = file.listFiles();

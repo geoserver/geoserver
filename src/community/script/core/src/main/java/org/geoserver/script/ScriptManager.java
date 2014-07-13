@@ -175,10 +175,12 @@ public class ScriptManager implements InitializingBean {
      */
     public File findAppMainScript(File appDir) {
         File main = null;
-        for (File f : appDir.listFiles()) {
-            if ("main".equals(FilenameUtils.getBaseName(f.getName()))) {
-                main = f;
-                break;
+        if (appDir != null) {
+            for (File f : appDir.listFiles()) {
+                if ("main".equals(FilenameUtils.getBaseName(f.getName()))) {
+                    main = f;
+                    break;
+                }
             }
         }
         return main;
@@ -393,13 +395,14 @@ public class ScriptManager implements InitializingBean {
     }
     
     /**
-     * Find the File based on the name, ScriptType and extension
+     * Find the File based on the name, ScriptType and extension.  The File and it's parent directories
+     * do not have to exist, they will be created.
      * @param name The name of the script
-     * @param type The ScriptType
+     * @param type The ScriptType (wps, function wfstx, app)
      * @param extension The extension (js, py, groovy)
      * @return The script File
      */
-    public File getFile(String name, ScriptType type, String extension) throws IOException {
+    public File findScriptFile(String name, ScriptType type, String extension) throws IOException {
         File dir = null;
         if (type == ScriptType.WPS) {
             dir = this.getWpsRoot();
@@ -413,7 +416,7 @@ public class ScriptManager implements InitializingBean {
         if (type == ScriptType.APP) {
             File appDir = new File(dir, name);
             appDir.mkdirs();
-            return new File(appDir,  "main." + extension);
+            return new File(appDir, "main." + extension);
         } else {
             return new File(dir, name + "." + extension);
         }

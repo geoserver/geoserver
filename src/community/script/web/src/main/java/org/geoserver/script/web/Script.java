@@ -66,7 +66,7 @@ public class Script implements Serializable {
             if (name.contains(":")) {
                 name = name.replace(":",File.separator);
             }
-            File f = scriptManager.getFile(name, ScriptType.getByLabel(type), extension);
+            File f = scriptManager.findScriptFile(name, ScriptType.getByLabel(type), extension);
             return f;
         } catch (IOException ex) {
             LOGGER.warning(String.format(

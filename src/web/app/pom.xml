@@ -941,6 +941,19 @@
       </dependencies>
     </profile>
     <profile>
+      <id>script-web</id>
+      <activation>
+        <property><name>script</name></property>
+      </activation>
+      <dependencies>
+          <dependency>
+              <groupId>org.geoserver.script</groupId>
+              <artifactId>gs-script-web</artifactId>
+              <version>${project.version}</version>
+          </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>xslt</id>
       <activation>
         <property><name>xslt</name></property>

@@ -193,7 +193,9 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
                  Filter ruleFilter = copy.getFilter();
                  Filter filter = ruleFilter == null || ruleFilter == Filter.INCLUDE ? geomCheck : ff.and(geomCheck, ruleFilter);
                  RuleImpl extra = new RuleImpl(copy);
+                 extra.setFilter(filter);
                  extra.symbolizers().clear();
+                 extra.symbolizers().add(sb.createPolygonSymbolizer());
                  extraRules.add(extra);
              }
             

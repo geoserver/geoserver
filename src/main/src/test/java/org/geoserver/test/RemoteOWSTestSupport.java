@@ -54,7 +54,7 @@ public class RemoteOWSTestSupport {
                 try {
                     WFSDataStoreFactory factory = new WFSDataStoreFactory();
                     Map<String, Serializable> params = new HashMap(factory.getImplementationHints());
-                    URL url = new URL(WFS_SERVER_URL + "service=WFS&request=GetCapabilities");
+                    URL url = new URL(WFS_SERVER_URL + "service=WFS&request=GetCapabilities&version=1.1.0");
                     params.put(WFSDataStoreFactory.URL.key, url);
                     params.put(WFSDataStoreFactory.TRY_GZIP.key, Boolean.TRUE);
                     //give it five seconds to respond...

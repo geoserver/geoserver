@@ -99,7 +99,9 @@ public abstract class StyleHandler {
 
     /**
      * Encodes a style.
-     *
+     * <p>
+     * Handlers that don't support encoding should through {@link java.lang.UnsupportedOperationException}.
+     * </p>
      * @param sld The style to encode.
      * @param version The version of the format to use to encode the style, may be <code>null</code>.
      * @param pretty Flag controlling whether or not the style shold be encoded in pretty form.
@@ -110,7 +112,10 @@ public abstract class StyleHandler {
 
     /**
      * Validates a style resource.
-     *
+     * <p>
+     * For handlers that don't support an extended form of validation (like against an XML schema) this implementation
+     * should at a minimum attempt to parse the input and return any parsing errors.
+     * </p>
      * @param input The style input, see {@link #toReader(Object)} for accepted inputs.
      * @param version The version of the format to use to validate the style, may be <code>null</code>.
      *

@@ -10,10 +10,9 @@ import java.io.IOException;
 import org.geoserver.catalog.StyleInfo;
 
 /**
- * Simple interface for a LegendSample manager. Currently it only allows getting
- * sample size (width x height) of a given StyleInfo object. In the future we
- * could add other sample related functionality (for example to create a cache
- * of samples to be used in GetLegendGraphic).
+ * Acess to LegendSample information for a StyleInfo object. Currently it only allows getting sample
+ * size (width x height) of a given StyleInfo object. In the future we could add other sample
+ * related functionality (for example to create a cache of samples to be used in GetLegendGraphic).
  * 
  * @author Mauro Bartolomeoli (mauro.bartolomeoli @ geo-solutions.it)
  */
@@ -22,7 +21,7 @@ public interface LegendSample {
      * Calculates sample icon size (width x height) for the given style.
      * 
      * @param style
-     * @return
+     * @return legend dimensions 
      * @throws IOException 
      * @throws Exception 
      */

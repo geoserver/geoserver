@@ -171,7 +171,7 @@ public class LegendSampleImpl implements CatalogListener, LegendSample,
      * Calculates legendURL size (width x height) for the given style.
      * 
      * @param style
-     * @return
+     * @return legend dimensions
      * @throws IOException 
      */
     public Dimension getLegendURLSize(StyleInfo style) throws Exception {
@@ -342,7 +342,7 @@ public class LegendSampleImpl implements CatalogListener, LegendSample,
     
     @Override
     public void onDispose() {
-    
+        catalog.removeListener( this );
     }
     
     @Override

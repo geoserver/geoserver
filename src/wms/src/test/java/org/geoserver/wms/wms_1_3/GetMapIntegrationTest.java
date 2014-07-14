@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.Collections;
 
 import javax.xml.namespace.QName;
@@ -213,13 +214,13 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         Document dom = getAsDOM("wms?bbox=" + bbox + "&styles="
                 + "&layers=" + layers + "&Format=image/png" + "&request=GetMap" + "&width=550"
                 + "&height=250" + "&srs=EPSG:4326" + "&SLD_VERSION=1.0.0" + "&SLD_BODY="
-                + STATES_SLD10_INVALID.replaceAll("=", "%3D") + "&VALIDATESCHEMA=true");
+                + STATES_SLD10_INVALID.replaceAll("=", "%3D") + "&VALIDATESCHEMA=true", Charset.defaultCharset().displayName());
         assertEquals("ServiceExceptionReport", dom.getDocumentElement().getNodeName());
         
         dom = getAsDOM("wms?bbox=" + bbox + "&styles="
                 + "&layers=" + layers + "&Format=image/png" + "&request=GetMap" + "&width=550"
                 + "&height=250" + "&srs=EPSG:4326" + "&SLD_VERSION=1.0.0" + "&SLD_BODY="
-                + STATES_SLD11.replaceAll("=", "%3D") + "&VALIDATESCHEMA=true");
+                + STATES_SLD11.replaceAll("=", "%3D") + "&VALIDATESCHEMA=true", Charset.defaultCharset().displayName());
         assertEquals("ServiceExceptionReport", dom.getDocumentElement().getNodeName());
     }
     
@@ -243,7 +244,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         Document dom = getAsDOM("wms?bbox=" + bbox + "&styles="
                 + "&layers=" + layers + "&Format=image/png" + "&request=GetMap" + "&width=550"
                 + "&height=250" + "&srs=EPSG:4326" + "&SLD_VERSION=1.1.0" + "&SLD_BODY="
-                + STATES_SLD11_INVALID.replaceAll("=", "%3D") + "&VALIDATESCHEMA=true");
+                + STATES_SLD11_INVALID.replaceAll("=", "%3D") + "&VALIDATESCHEMA=true", Charset.defaultCharset().displayName());
         assertEquals("ServiceExceptionReport", dom.getDocumentElement().getNodeName());
     }
     
@@ -253,7 +254,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         Document dom = getAsDOM("wms?bbox=" + bbox + "&styles="
                 + "&layers=" + layers + "&Format=image/png" + "&request=GetMap" + "&width=550"
                 + "&height=250" + "&srs=EPSG:4326" + "&SLD_VERSION=1.0.0" + "&SLD_BODY="
-                + STATES_SLD11.replaceAll("=", "%3D") + "&VALIDATESCHEMA=true");
+                + STATES_SLD11.replaceAll("=", "%3D") + "&VALIDATESCHEMA=true", Charset.defaultCharset().displayName());
         assertEquals("ServiceExceptionReport", dom.getDocumentElement().getNodeName());
         
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox + "&styles="

@@ -10,8 +10,14 @@ import java.io.OutputStream;
 
 import javax.xml.transform.TransformerException;
 
+import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.StyleHandler;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
+import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.rest.PageInfo;
 import org.geoserver.rest.format.StreamDataFormat;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.NamedLayer;
@@ -43,10 +49,32 @@ public class StyleFormat extends StreamDataFormat {
 
     @Override
     protected void write(Object object, OutputStream out) throws IOException {
-        Style style = (Style) object;
-        StyledLayerDescriptor sld = Styles.sld(style);
+        if (object instanceof StyleInfo) {
+            StyleInfo style = (StyleInfo) object;
+            // optimization, if the requested format is the same as the native format
+            // of the style, stream the file directly from the disk, otherwise encode
+            // the style in the requested format
+            if (handler.getFormat().equalsIgnoreCase(style.getFormat())) {
+                copyFromFile(style, out);
+                return;
+            }
+        }
 
+        Style style = object instanceof StyleInfo ? ((StyleInfo)object).getStyle() : (Style) object;
+        StyledLayerDescriptor sld = Styles.sld(style);
         handler.encode(sld, version, prettyPrint, out);
+    }
+
+    void copyFromFile(StyleInfo style, OutputStream out) throws IOException {
+        GeoServerDataDirectory dd = GeoServerExtensions.bean(GeoServerDataDirectory.class);
+        Resource resource = dd.style(style);
+        InputStream in = resource.in();
+        try {
+            IOUtils.copy(in, out);
+        }
+        finally {
+            in.close();
+        }
     }
 
     @Override

@@ -131,7 +131,7 @@ public class StyleTest extends CatalogRESTTestSupport {
     public void testGetAsSLD() throws Exception {
         Document dom = getAsDOM( "/rest/styles/Ponds.sld");
 
-        assertEquals( "sld:StyledLayerDescriptor", dom.getDocumentElement().getNodeName() );
+        assertEquals( "StyledLayerDescriptor", dom.getDocumentElement().getNodeName() );
     }
 
     @Test

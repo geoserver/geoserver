@@ -53,18 +53,7 @@ public class StyleResource extends AbstractCatalogResource {
         LOGGER.fine( "GET style " + style );
         StyleInfo sinfo = workspace == null ? catalog.getStyleByName( style ) : 
             catalog.getStyleByName(workspace,style);
-        
-        //check the format, if specified as sld, return the sld itself
-        DataFormat format = getFormatGet();
-        if ( format instanceof StyleFormat) {
-            try {
-                return sinfo.getStyle();
-            } 
-            catch (IOException e) {
-                throw new RestletException( "", Status.SERVER_ERROR_INTERNAL, e );
-            }
-        }
-        
+
         return sinfo;
     }
 

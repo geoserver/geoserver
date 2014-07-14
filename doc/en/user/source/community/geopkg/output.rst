@@ -12,7 +12,7 @@ The following additional parameters can be passed on using :ref:`format_options`
   * ``min_zoom``, ``max_zoom``, ``min_column``, ``max_column``, ``min_row``, ``max_row``: set the minimum and maximum zoom level, column, and rows
   * ``gridset``: name of gridset to use (otherwise default for CRS is used)
         
-GeoPackage WMS Output Format
+GeoPackage WFS Output Format
 ----------------------------    
 
 Any WFS :ref:`wfs_getfeature` request can be returned as a Geopackage by specifying ``format=geopackage``” as output format (see :ref:`wfs_output_formats`). The returned result will be a GeoPackage file with a single features layer.

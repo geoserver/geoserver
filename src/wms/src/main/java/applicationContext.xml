@@ -745,4 +745,9 @@
     </property>    
   </bean>
   
+  <bean id="legendSample" class="org.geoserver.wms.capabilities.LegendSampleImpl">
+    <constructor-arg ref="catalog"/>
+    <constructor-arg ref="resourceLoader"/>
+  </bean>
+  
 </beans>

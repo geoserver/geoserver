@@ -17,10 +17,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.geoserver.catalog.SLDHandler;
 import org.geoserver.ows.util.CaseInsensitiveMap;
 import org.geotools.styling.Style;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
+import org.geotools.util.Version;
 import org.opengis.filter.Filter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -140,23 +142,72 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
 
     /**
      * Gets the url specified by the "SLD" parameter.
+     * <p>
+     * This parameter is an alias for "STYLE_URL".
+     * </p>
      */
     public URL getSld() {
-        return this.optionalParams.sld;
+        return getStyleUrl();
+    }
+
+    /**
+     * Gets the url specified by the "STYLE_URL" parameter.
+     * <p>
+     * This parameter is used to point to a remote style via url.
+     * </p>
+     */
+    public URL getStyleUrl() {
+        return this.optionalParams.styleUrl;
     }
 
     /**
      * Gets the string specified the "SLD_BODY" parameter.
+     * <p>
+     * This parameter is an alias for "STYLE_BODY".
+     * </p>
      */
     public String getSldBody() {
-        return this.optionalParams.sldBody;
+        return getStyleBody();
+    }
+
+    /**
+     * Gets the String specified by the "STYLE_BODY" parameter.
+     * <p>
+     * This parameter is used to directly supply a complete style in the request.
+     * </p>
+     */
+    public String getStyleBody() {
+        return this.optionalParams.styleBody;
     }
 
     /**
      * Gets the string specified by the "SLD_VERSION" parameter.
+     * <p>
+     * This parameter is an alias for "STYLE_VERSION".
+     * </p>
      */
     public String getSldVersion() {
-        return this.optionalParams.sldVersion;
+        return getStyleVersion();
+    }
+
+    /**
+     * Gets the String specified by the "STYLE_VERSION" parameter.
+     * <p>
+     * This parameter is used to supply a version of the style language being specified.
+     * It only applies when the style is being supplied directly in the request with one
+     * of the "STYLE_URL", "STYLE_BODY" parameters.
+     *
+     * </p>
+     */
+    public String getStyleVersion() {
+        return this.optionalParams.styleVersion;
+    }
+
+    /**
+     * Returns {@link #getStyleVersion()} as a Version object, or null if no version is set.
+     */
+    public Version styleVersion() {
+        return getStyleVersion() != null ? new Version(getStyleVersion()) : null;
     }
 
     /**
@@ -362,21 +413,42 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
      * Sets the url specified by the "SLD" parameter.
      */
     public void setSld(URL sld) {
-        this.optionalParams.sld = sld;
+        setStyleUrl(sld);
+    }
+
+    /**
+     * Sets the url specified by the "STYLE_URL" parameter.
+     */
+    public void setStyleUrl(URL styleUrl) {
+        this.optionalParams.styleUrl = styleUrl;
     }
 
     /**
      * Sets the string specified by the "SLD_BODY" parameter
      */
     public void setSldBody(String sldBody) {
-        this.optionalParams.sldBody = sldBody;
+        setStyleBody(sldBody);
+    }
+
+    /**
+     * Sets the url specified by the "STYLE_BODY" parameter.
+     */
+    public void setStyleBody(String styleBody) {
+        this.optionalParams.styleBody = styleBody;
     }
 
     /**
      * Sets the string specified by the "SLD_VERSION" parameter
      */
     public void setSldVersion(String sldVersion) {
-        this.optionalParams.sldVersion = sldVersion;
+        setStyleVersion(sldVersion);
+    }
+
+    /**
+     * Sets the url specified by the "STYLE_VERSION" parameter.
+     */
+    public void setStyleVersion(String styleVersion) {
+        this.optionalParams.styleVersion = styleVersion;
     }
 
     /**
@@ -659,24 +731,24 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
         List<Object> elevation = Collections.emptyList();
 
         /**
-         * SLD parameter
+         * STYLE_URL parameter
          */
-        URL sld;
+        URL styleUrl;
 
         /**
-         * SLD_BODY parameter
+         * STYLE_BODY parameter
          */
-        String sldBody;
+        String styleBody;
 
         /** 
-         * SLD_VERSION parameter
+         * STYLE_VERSION parameter
          */
-        String sldVersion;
+        String styleVersion;
 
         /**
          * STYLE_FORMAT parameter
          */
-        String styleFormat;
+        String styleFormat = SLDHandler.FORMAT;
 
         /** flag to validate SLD parameter */
         Boolean validateSLD = Boolean.FALSE;

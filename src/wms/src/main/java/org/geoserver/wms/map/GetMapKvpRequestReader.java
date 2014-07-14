@@ -255,7 +255,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
             if (getMap.getValidateSchema().booleanValue()) {
                 ByteArrayInputStream stream = new ByteArrayInputStream(getMap.getSldBody()
                         .getBytes());
-                List errors = validateSld(stream, getMap);
+                List errors = validateStyle(stream, getMap);
 
                 if (errors.size() != 0) {
                     throw new ServiceException(SLDValidator.getErrorMessage(
@@ -264,7 +264,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
             }
 
             InputStream input = new ByteArrayInputStream(getMap.getSldBody().getBytes());
-            StyledLayerDescriptor sld = parseSld(getMap, input);
+            StyledLayerDescriptor sld = parseStyle(getMap, input);
             processSld(getMap, requestedLayerInfos, sld, styleNameList);
 
             // set filter in, we'll check consistency later
@@ -274,20 +274,20 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
                 LOGGER.fine("Getting layers and styles from reomte SLD");
             }
 
-            URL sldUrl = getMap.getSld();
+            URL styleUrl = getMap.getStyleUrl();
 
             if (getMap.getValidateSchema().booleanValue()) {
-                InputStream input = Requests.getInputStream(sldUrl);
+                InputStream input = Requests.getInputStream(styleUrl);
                 List errors = null;
 
                 try {
-                    errors = validateSld(input, getMap);
+                    errors = validateStyle(input, getMap);
                 } finally {
                     input.close();
                 }
 
                 if ((errors != null) && (errors.size() != 0)) {
-                    input = Requests.getInputStream(sldUrl);
+                    input = Requests.getInputStream(styleUrl);
 
                     try {
                         throw new ServiceException(SLDValidator.getErrorMessage(input, errors));
@@ -299,10 +299,10 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
 
             // JD: GEOS-420, Wrap the sldUrl in getINputStream method in order
             // to do compression
-            InputStream input = Requests.getInputStream(sldUrl);
+            InputStream input = Requests.getInputStream(styleUrl);
 
             try {
-                StyledLayerDescriptor sld = parseSld(getMap, input);
+                StyledLayerDescriptor sld = parseStyle(getMap, input);
                 processSld(getMap, requestedLayerInfos, sld, styleNameList);
             } finally {
                 input.close();
@@ -557,16 +557,15 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
     }   
     
     /**
-     * validates an sld document.
+     * validates an style document.
      * 
      */
-    private List validateSld(InputStream stream, GetMapRequest getMap) {
+    private List validateStyle(InputStream stream, GetMapRequest getMap) {
         try {
             String language = getStyleFormat(getMap);
             EntityResolver entityResolver = entityResolverProvider.getEntityResolver();
 
-            Version sldVersion = getMap.getSldVersion() != null ? new Version(getMap.getSldVersion()) : null;
-            return Styles.handler(language).validate(stream, sldVersion, entityResolver);
+            return Styles.handler(language).validate(stream, getMap.styleVersion(), entityResolver);
         } 
         catch (IOException e) {
             throw new ServiceException("Error validating style", e);
@@ -574,15 +573,14 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
     }
     
     /**
-     * Parses an sld document.
+     * Parses an style document.
      */
-    private StyledLayerDescriptor parseSld(GetMapRequest getMap, InputStream stream) {
+    private StyledLayerDescriptor parseStyle(GetMapRequest getMap, InputStream stream) {
         try {
             String format = getStyleFormat(getMap);
             EntityResolver entityResolver = entityResolverProvider.getEntityResolver();
 
-            Version sldVersion = getMap.getSldVersion() != null ?  new Version(getMap.getSldVersion()) : null;
-            return Styles.handler(format).parse(stream, sldVersion, null, entityResolver);
+            return Styles.handler(format).parse(stream, getMap.styleVersion(), null, entityResolver);
         }
         catch(IOException e) {
             throw new ServiceException("Error parsing style", e);

@@ -3,8 +3,9 @@
 Debian
 ======
 
-Setup a local geoserver instance with tomcat7 in Debian wheezy/sid.
+.. warning:: Under construction
 
+Setup a local geoserver instance with tomcat7 in Debian wheezy/sid.
 
 Preparation
 -----------

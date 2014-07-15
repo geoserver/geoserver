@@ -96,15 +96,39 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         } else if (clientProperties.isBrowserMozillaFirefox()) {
             enableCodeMirror = clientProperties.getBrowserVersionMajor() >= 3;
         } else if (clientProperties.isBrowserSafari()) {
+            ClientProperties props = extractVersion(clientProperties.getNavigatorAppVersion());
             enableCodeMirror = clientProperties.getBrowserVersionMajor() > 5
                     || (clientProperties.getBrowserVersionMajor() == 5 && clientProperties
-                            .getBrowserVersionMinor() >= 2);
+                            .getBrowserVersionMinor() >= 2)
+                    // Wicket is unable to parse version for safari
+                    || props.getBrowserVersionMajor() > 5
+                    || (props.getBrowserVersionMajor() == 5 && props.getBrowserVersionMinor() >= 2);
         } else if (clientProperties.isBrowserOpera()) {
             enableCodeMirror = clientProperties.getBrowserVersionMajor() >= 9;
         }
         return enableCodeMirror;
     }
-    
+
+    private ClientProperties extractVersion(String appVersion) {
+        ClientProperties props = new ClientProperties();
+        props.setBrowserVersionMajor(-1);
+        props.setBrowserVersionMinor(-1);
+        String versionStr = "Version/";
+        int start = appVersion.indexOf(versionStr);
+        if (start > -1) {
+            int end = appVersion.indexOf(" ", start);
+            String version = appVersion.substring(start + versionStr.length(), end);
+            String[] versions = version.split("\\.");
+            if (versions.length > 0) {
+                props.setBrowserVersionMajor(Integer.parseInt(versions[0]));
+            }
+            if (versions.length > 1) {
+                props.setBrowserVersionMinor(Integer.parseInt(versions[1]));
+            }
+        }
+        return props;
+    }
+
     public CodeMirrorEditor(String id, IModel<String> model) {
         this(id, "xml", model);
     }

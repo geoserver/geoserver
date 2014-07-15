@@ -1,0 +1,41 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<wicket:head>
+    <style type="text/css">
+       #tableBody fieldset.leftwise, #tableBody fieldset.rightwise {
+         width: 40%;
+       }
+     </style>
+</wicket:head>
+<body>
+<wicket:extend>
+<form wicket:id="form">
+  <ul>
+    <li>
+      <label for="name">Name</label>
+      <div wicket:id="nameLabel"></div>
+      <input wicket:id="name" id="name" type="hidden" />
+    </li>
+    <li>
+      <label for="type">Type</label>
+      <div wicket:id="typeLabel"></div>
+      <input wicket:id="type" id="type" type="hidden" />
+    </li>
+    <li>
+      <label for="extension">Extension</label>
+      <div wicket:id="extensionLabel"></div>
+      <input wicket:id="extension" id="extension" type="hidden" />
+    </li>
+    <li>
+      <label for="contents">Content</label>
+      <div wicket:id="contents" id="contents" style="height: 350px; width: 100%"></div>
+    </li>
+    <li class="button-group selfclear">
+      <a href="#" wicket:id="submit"><wicket:message key="submit">Save</wicket:message></a>
+      <a href="#" wicket:id="cancel"><wicket:message key="cancel">Cancel</wicket:message></a>
+    </li>
+  </ul>
+</form>
+<div wicket:id="dialog"></div>
+</wicket:extend>
+</body>
+</html>

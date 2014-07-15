@@ -191,6 +191,24 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         assertTrue(legendURL.hasAttribute("height"));
         assertEquals("10", legendURL.getAttribute("height"));
     }
+    
+    /**
+     * Tests that folder for legend samples is created, if missing.
+     * @throws Exception
+     */
+    @Test
+    public void testCachedLegendURLFolderCreated() throws Exception {
+        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        
+        File samplesFolder = new File(loader.getBaseDirectory().getAbsolutePath() + File.separator
+                + LegendSampleImpl.LEGEND_SAMPLES_FOLDER);
+        removeFileOrFolder(samplesFolder);
+        TransformerBase tr = createTransformer();
+        tr.setIndentation(2);
+        Document dom = WMSTestSupport.transform(req, tr);
+        
+        assertTrue(samplesFolder.exists());
+    }
 
     /**
      * Tests that not existing icons are created on disk and
@@ -325,6 +343,25 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         return "/"+ getElementPrefix() + getRootElement() + "/"+ getElementPrefix() + "Capability/"+ getElementPrefix() + "Layer/"+ getElementPrefix() + "Layer["+ getElementPrefix() + "Name/text()='"+layerName+"']/"+ getElementPrefix() + "Style/"+ getElementPrefix() + "LegendURL";
     }
 
+    private void removeFileOrFolder(File file) {
+        if (!file.exists()) {
+            return;
+        }
+
+        if (!file.isDirectory()) {
+            file.delete();
+        } else {
+    
+            String[] list = file.list();
+            for (int i = 0; i < list.length; i++) {
+                removeFileOrFolder(new File(file.getAbsolutePath() + File.separator + list[i]));
+            }
+    
+            file.delete();
+        }
+        
+    }
+    
     /**
      * Each WMS version suite of tests has its own TransformerBase implementation.
      *  

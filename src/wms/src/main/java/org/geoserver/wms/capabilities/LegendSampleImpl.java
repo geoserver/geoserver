@@ -223,14 +223,19 @@ public class LegendSampleImpl implements CatalogListener, LegendSample,
             PNGWriter writer = new PNGWriter();
             FileOutputStream outStream = null;
             try {
-                outStream = new FileOutputStream(
-                        sampleLegendFolder.getAbsolutePath() + File.separator +
+                File sampleFile = new File(sampleLegendFolder.getAbsolutePath() + File.separator +
                         getSampleFileName(style));
+                if(!sampleFile.getParentFile().exists()) {
+                    sampleFile.getParentFile().mkdirs();
+                }
+                outStream = new FileOutputStream(sampleFile);
                 writer.writePNG(image, outStream, 0.0f, FilterType.FILTER_NONE);
                 removeStyleSampleInvalidation(style);
                 return new Dimension(image.getWidth(), image.getHeight());
             } finally {
-                outStream.close();
+                if(outStream != null) {
+                    outStream.close();
+                }
             }
 
         }

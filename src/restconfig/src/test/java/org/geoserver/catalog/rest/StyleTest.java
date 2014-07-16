@@ -467,7 +467,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         props.store(out, "comment!");
 
         MockHttpServletResponse response =
-            postAsServletResponse( "/rest/styles?name=foo", out.toString(), PropertyStyleHandler.MIMETYPE);
+                postAsServletResponse( "/rest/styles?name=foo", out.toString(), PropertyStyleHandler.MIMETYPE);
         assertEquals( 201, response.getStatusCode() );
         assertNotNull( response.getHeader( "Location") );
         assertTrue( response.getHeader("Location").endsWith( "/styles/foo" ) );
@@ -582,7 +582,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         props.store(out, "comment!");
 
         MockHttpServletResponse response =
-                putAsServletResponse( "/rest/styles/foo?raw=true", out.toString(), PropertyStyleHandler.MIMETYPE);
+            putAsServletResponse( "/rest/styles/foo?raw=true", out.toString(), PropertyStyleHandler.MIMETYPE);
         assertEquals( 200, response.getStatusCode() );
 
         Resource style = getDataDirectory().style(getCatalog().getStyleByName("foo"));
@@ -605,5 +605,39 @@ public class StyleTest extends CatalogRESTTestSupport {
         finally {
             in.close();
         }
+    }
+
+    @Test
+    public void testPostAsSE() throws Exception {
+        String xml =
+            "<StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\" " +
+            "       xmlns:se=\"http://www.opengis.net/se\" version=\"1.1.0\"> "+
+            " <NamedLayer> "+
+            "  <UserStyle> "+
+            "   <se:Name>UserSelection</se:Name> "+
+            "   <se:FeatureTypeStyle> "+
+            "    <se:Rule> "+
+            "     <se:PolygonSymbolizer> "+
+            "      <se:Fill> "+
+            "       <se:SvgParameter name=\"fill\">#FF0000</se:SvgParameter> "+
+            "      </se:Fill> "+
+            "     </se:PolygonSymbolizer> "+
+            "    </se:Rule> "+
+            "   </se:FeatureTypeStyle> "+
+            "  </UserStyle> "+
+            " </NamedLayer> "+
+            "</StyledLayerDescriptor>";
+
+        MockHttpServletResponse response =
+                postAsServletResponse( "/rest/styles?name=foo", xml, SLDHandler.MIMETYPE_11);
+        assertEquals( 201, response.getStatusCode() );
+        assertNotNull( response.getHeader( "Location") );
+        assertTrue( response.getHeader("Location").endsWith( "/styles/foo" ) );
+
+        StyleInfo style = catalog.getStyleByName("foo");
+        assertNotNull(style);
+
+        assertEquals("sld", style.getFormat());
+        assertEquals(SLDHandler.VERSION_11, style.getFormatVersion());
     }
 }

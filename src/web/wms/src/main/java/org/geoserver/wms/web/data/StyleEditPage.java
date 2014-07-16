@@ -71,6 +71,10 @@ public class StyleEditPage extends AbstractStylePage {
             //always disable the workspace toggle
             f.get("workspace").setEnabled(false);
         }
+
+        // format only settable upon creation
+        formatChoice.setEnabled(false);
+        formatReadOnlyMessage.setVisible(true);
     }
     
     public StyleEditPage(StyleInfo style) {
@@ -83,13 +87,13 @@ public class StyleEditPage extends AbstractStylePage {
         // write out the file and save name modifications
         try {
             StyleInfo style = (StyleInfo) styleForm.getModelObject();
-            Version version = Styles.findVersion(new ByteArrayInputStream(rawSLD.getBytes()));
+            Version version = Styles.handler(formatChoice.getModelObject()).version(rawStyle);
             style.setSLDVersion(version);
             
             // write out the SLD
             try {
                 getCatalog().getResourcePool().writeStyle(style,
-                        new ByteArrayInputStream(rawSLD.getBytes()));
+                        new ByteArrayInputStream(rawStyle.getBytes()));
             } catch (IOException e) {
                 throw new WicketRuntimeException(e);
             }

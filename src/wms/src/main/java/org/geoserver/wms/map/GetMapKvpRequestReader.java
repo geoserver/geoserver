@@ -28,6 +28,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
 import org.geoserver.catalog.WMSLayerInfo;
@@ -76,6 +77,7 @@ import org.opengis.filter.identity.FeatureId;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.vfny.geoserver.util.Requests;
 import org.vfny.geoserver.util.SLDValidator;
+import org.xml.sax.EntityResolver;
 
 public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServletRequestAware {
 
@@ -253,7 +255,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
             if (getMap.getValidateSchema().booleanValue()) {
                 ByteArrayInputStream stream = new ByteArrayInputStream(getMap.getSldBody()
                         .getBytes());
-                List errors = validateSld(stream, getMap);
+                List errors = validateStyle(stream, getMap);
 
                 if (errors.size() != 0) {
                     throw new ServiceException(SLDValidator.getErrorMessage(
@@ -262,7 +264,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
             }
 
             InputStream input = new ByteArrayInputStream(getMap.getSldBody().getBytes());
-            StyledLayerDescriptor sld = parseSld(getMap, input);
+            StyledLayerDescriptor sld = parseStyle(getMap, input);
             processSld(getMap, requestedLayerInfos, sld, styleNameList);
 
             // set filter in, we'll check consistency later
@@ -272,20 +274,20 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
                 LOGGER.fine("Getting layers and styles from reomte SLD");
             }
 
-            URL sldUrl = getMap.getSld();
+            URL styleUrl = getMap.getStyleUrl();
 
             if (getMap.getValidateSchema().booleanValue()) {
-                InputStream input = Requests.getInputStream(sldUrl);
+                InputStream input = Requests.getInputStream(styleUrl);
                 List errors = null;
 
                 try {
-                    errors = validateSld(input, getMap);
+                    errors = validateStyle(input, getMap);
                 } finally {
                     input.close();
                 }
 
                 if ((errors != null) && (errors.size() != 0)) {
-                    input = Requests.getInputStream(sldUrl);
+                    input = Requests.getInputStream(styleUrl);
 
                     try {
                         throw new ServiceException(SLDValidator.getErrorMessage(input, errors));
@@ -297,10 +299,10 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
 
             // JD: GEOS-420, Wrap the sldUrl in getINputStream method in order
             // to do compression
-            InputStream input = Requests.getInputStream(sldUrl);
+            InputStream input = Requests.getInputStream(styleUrl);
 
             try {
-                StyledLayerDescriptor sld = parseSld(getMap, input);
+                StyledLayerDescriptor sld = parseStyle(getMap, input);
                 processSld(getMap, requestedLayerInfos, sld, styleNameList);
             } finally {
                 input.close();
@@ -555,17 +557,15 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
     }   
     
     /**
-     * validates an sld document.
+     * validates an style document.
      * 
      */
-    private List validateSld(InputStream stream, GetMapRequest getMap) {
+    private List validateStyle(InputStream stream, GetMapRequest getMap) {
         try {
-            if (getMap.getSldVersion() != null) {
-                return Styles.validate(stream, entityResolverProvider.getEntityResolver(), new Version(getMap.getSldVersion()));
-            }
-            else {
-                return Styles.validate(stream, entityResolverProvider.getEntityResolver());
-            }
+            String language = getStyleFormat(getMap);
+            EntityResolver entityResolver = entityResolverProvider.getEntityResolver();
+
+            return Styles.handler(language).validate(stream, getMap.styleVersion(), entityResolver);
         } 
         catch (IOException e) {
             throw new ServiceException("Error validating style", e);
@@ -573,23 +573,25 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements HttpServ
     }
     
     /**
-     * Parses an sld document.
+     * Parses an style document.
      */
-    private StyledLayerDescriptor parseSld(GetMapRequest getMap, InputStream stream) {
-        StyledLayerDescriptor sld;
+    private StyledLayerDescriptor parseStyle(GetMapRequest getMap, InputStream stream) {
         try {
-            if (getMap.getSldVersion() != null) {
-                sld = Styles.parse(stream, entityResolverProvider.getEntityResolver(), new Version(getMap.getSldVersion()));
-            }
-            else {
-                sld = Styles.parse(stream, entityResolverProvider.getEntityResolver());
-            }
+            String format = getStyleFormat(getMap);
+            EntityResolver entityResolver = entityResolverProvider.getEntityResolver();
+
+            return Styles.handler(format).parse(stream, getMap.styleVersion(), null, entityResolver);
         }
         catch(IOException e) {
             throw new ServiceException("Error parsing style", e);
         }
-       
-        return sld;
+    }
+
+    /*
+     * Get style language from request, falling back on SLD as default. 
+     */
+    private String getStyleFormat(GetMapRequest request) {
+        return request.getStyleFormat() != null ? request.getStyleFormat() : SLDHandler.FORMAT;
     }
 
     private void processSld(final GetMapRequest request, final List<?> requestedLayers,

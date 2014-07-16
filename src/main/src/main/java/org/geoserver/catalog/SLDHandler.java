@@ -74,6 +74,14 @@ public class SLDHandler extends StyleHandler {
     }
 
     @Override
+    public Version versionForMimeType(String mimeType) {
+        if (mimeType.equals(MIMETYPE_11)) {
+            return VERSION_11;
+        }
+        return VERSION_10;
+    }
+
+    @Override
     public StyledLayerDescriptor parse(Object input, Version version, ResourceLocator resourceLocator, EntityResolver entityResolver) throws IOException {
         if (version == null) {
             Object[] versionAndReader = getVersionAndReader(input);

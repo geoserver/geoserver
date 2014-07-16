@@ -130,6 +130,17 @@ public abstract class StyleHandler {
     public abstract String mimeType(Version version);
 
     /**
+     * Returns the format version for the specified mime type.
+     * <p>
+     *  This method should only be overriden by formats that support multiple versions. The default
+     *  implementation just returns 1.0.0.
+     * </p>
+     */
+    public Version versionForMimeType(String mimeType) {
+        return new Version("1.0.0");
+    }
+
+    /**
      * Determines the version of the format/language of the specified style resource.
      * <p>
      *  This method should only be overriden by formats that support multiple versions. The default

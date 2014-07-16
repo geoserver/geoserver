@@ -945,6 +945,15 @@ public class WCSDimensionsSubsetHelper {
         return requests;
     }
 
+    public Set<GridCoverageRequest> splitRequestToSet() throws MismatchedDimensionException, UnsupportedOperationException, IOException, TransformException, FactoryException {
+        List<GridCoverageRequest> list = splitRequest();
+        Set<GridCoverageRequest> set = new HashSet<GridCoverageRequest>();
+        for (GridCoverageRequest request : list) {
+            set.add(request);
+        }
+        return set;
+    }
+
     /**
      * Update the subset (temporal, vertical, custom) of the request by inspecting the reader DimensionsDescriptor and
      * collecting proper values from the current feature.
@@ -1043,7 +1052,7 @@ public class WCSDimensionsSubsetHelper {
         // elevation subset
         filter = filterElevation(filter, gcr, coverageName, reader);
 
-        //TODO: parse dimensionsSubset
+        // dimensionsSubset
         filter = filterDimensions(filter, gcr, coverageName, reader);
 
         Query query = new Query(null, filter);

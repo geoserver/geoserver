@@ -8,15 +8,20 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
+import java.util.UUID;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.rest.RestletException;
 import org.geoserver.rest.format.DataFormat;
 import org.geotools.styling.Style;
@@ -38,7 +43,7 @@ public class StyleResource extends AbstractCatalogResource {
 
         for (StyleHandler sh : Styles.handlers()) {
             for (Version ver : sh.getVersions()) {
-                formats.add(new StyleFormat(sh.mimeType(ver), ver, false, sh));
+                formats.add(new StyleFormat(sh.mimeType(ver), ver, false, sh, request));
             }
         }
 
@@ -64,7 +69,7 @@ public class StyleResource extends AbstractCatalogResource {
         }
         return getAttribute("style") == null;
     }
-    
+
     @Override
     protected String handleObjectPost(Object object) throws Exception {
         String workspace = getAttribute("workspace");
@@ -103,79 +108,82 @@ public class StyleResource extends AbstractCatalogResource {
 
             return style.getName();
         }
-        else if ( object instanceof Style ) {
-            Style style = (Style) object;
-            
+        else if (object instanceof Style || object instanceof InputStream) {
+
             //figure out the name of the new style, first check if specified directly
-            String name = getRequest().getResourceRef().getQueryAsForm().getFirstValue( "name");
-            
-            if ( name == null ) {
-                //infer name from sld
-                name = style.getName();
+            String name = getRequest().getResourceRef().getQueryAsForm().getFirstValue("name");
+            ;
+
+            if (name == null) {
+                name = findNameFromObject(object);
             }
-            
-            if ( name == null ) {
-                throw new RestletException( "Style must have a name.", Status.CLIENT_ERROR_BAD_REQUEST );
-            }
-            
+
             //ensure that the style does not already exist
-            if ( catalog.getStyleByName(workspace, name ) != null ) {
-                throw new RestletException( "Style " + name + " already exists.", Status.CLIENT_ERROR_FORBIDDEN  );
-            }
-            
-            //serialize the style out into the data directory
-            StyleFormat styleFormat = (StyleFormat) getFormatPostOrPut();
-
-            GeoServerResourceLoader loader = catalog.getResourceLoader();
-            String path = "styles/" +  name + "." + styleFormat.getHandler().getFileExtension();
-            if (workspace != null) {
-                path = "workspaces/" + workspace + "/" + path;
+            if (catalog.getStyleByName(workspace, name) != null) {
+                throw new RestletException("Style " + name + " already exists.", Status.CLIENT_ERROR_FORBIDDEN);
             }
 
-            File f;
-            try {
-                f = loader.find(path);
-            } 
-            catch (IOException e) {
-                throw new RestletException( "Error looking up file", Status.SERVER_ERROR_INTERNAL, e );
-            }
-            
-            if ( f != null ) {
-                String msg = "SLD file " + path + ".sld already exists."; 
-                throw new RestletException( msg, Status.CLIENT_ERROR_FORBIDDEN);
-            }
-            
-            //TODO: have the writing out of the style delegate to ResourcePool.writeStyle()
-            try {
-                f = loader.createFile(path) ;
-                
-                //serialize the file to the styles directory
-                BufferedOutputStream out = new BufferedOutputStream( new FileOutputStream ( f ) );
-                styleFormat.toRepresentation(style).write(out);
-                
-                out.flush();
-                out.close();
-            } 
-            catch (IOException e) {
-                throw new RestletException( "Error creating file", Status.SERVER_ERROR_INTERNAL, e );
-            }
-            
-            //create a style info object
+            // style format/handler
+            StyleHandler styleFormat = ((StyleFormat) getFormatPostOrPut()).getHandler();
+
             StyleInfo sinfo = catalog.getFactory().createStyle();
-            sinfo.setName( name );
-            sinfo.setFilename( f.getName() );
+            sinfo.setName(name);
+            sinfo.setFilename(name + "." + styleFormat.getFileExtension());
+            sinfo.setFormat(styleFormat.getFormat());
+            sinfo.setFormatVersion(styleFormat.versionForMimeType(getRequest().getEntity().getMediaType().getName()));
 
             if (workspace != null) {
                 sinfo.setWorkspace(catalog.getWorkspaceByName(workspace));
             }
-            
-            catalog.add( sinfo );
-            
-            LOGGER.info( "POST SLD " + name);
+
+            // ensure that a existing resource does not already exist, because we may not want to overwrite it
+            GeoServerDataDirectory dataDir = new GeoServerDataDirectory(catalog.getResourceLoader());
+            if (dataDir.style(sinfo).getType() != Resource.Type.UNDEFINED) {
+                String msg = "Style resource " + sinfo.getFilename() + " already exists.";
+                throw new RestletException(msg, Status.CLIENT_ERROR_FORBIDDEN);
+            }
+
+            ResourcePool resourcePool = catalog.getResourcePool();
+            try {
+                if (object instanceof Style) {
+                    resourcePool.writeStyle(sinfo, (Style) object);
+                } else {
+                    resourcePool.writeStyle(sinfo, (InputStream) object);
+                }
+            } catch (IOException e) {
+                throw new RestletException("Error writing style", Status.SERVER_ERROR_INTERNAL, e);
+            }
+
+            catalog.add(sinfo);
+            LOGGER.info("POST Style " + name);
             return name;
         }
-        
+
         return null;
+    }
+
+    String findNameFromObject(Object object) {
+        String name = null;
+        if (object instanceof Style) {
+            name = ((Style)object).getName();
+        }
+
+        if (name == null) {
+            // generate a random one
+            for (int i = 0; name == null && i < 100; i++) {
+                String candidate = "style-"+UUID.randomUUID().toString().substring(0, 7);
+                if (catalog.getStyleByName(candidate) == null) {
+                    name = candidate;
+                }
+            }
+        }
+
+        if (name == null) {
+            throw new RestletException("Unable to generate style name, specify one with 'name' parameter",
+                Status.SERVER_ERROR_INTERNAL);
+        }
+
+        return name;
     }
 
     @Override
@@ -206,13 +214,21 @@ public class StyleResource extends AbstractCatalogResource {
             new CatalogBuilder( catalog ).updateStyle( original, s );
             catalog.save( original );
         }
-        else if ( object instanceof Style ) {
+        else if (object instanceof Style || object instanceof InputStream) {
             /*
              * Force the .sld file to be overriden and it's Style object cleared from the
              * ResourcePool cache
              */
             StyleInfo s = catalog.getStyleByName( workspace, style );
-            catalog.getResourcePool().writeStyle( s, (Style) object, true );
+
+            ResourcePool resourcePool = catalog.getResourcePool();
+            if (object instanceof Style) {
+                resourcePool.writeStyle(s, (Style) object, true);
+            }
+            else {
+                resourcePool.writeStyle(s, (InputStream)object);
+            }
+
             /*
              * make sure to save the StyleInfo so that the Catalog issues the notification events
              */

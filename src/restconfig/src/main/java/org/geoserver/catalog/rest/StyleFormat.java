@@ -27,20 +27,25 @@ import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.geotools.styling.StyledLayer;
 import org.geotools.styling.StyledLayerDescriptor;
+import org.geotools.util.Converters;
 import org.geotools.util.Version;
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
+import org.restlet.data.Request;
 
 public class StyleFormat extends StreamDataFormat {
 
     StyleHandler handler;
     Version version;
     boolean prettyPrint;
+    Request request;
     
-    public StyleFormat(String mimeType, Version version, boolean prettyPrint, StyleHandler handler) {
+    public StyleFormat(String mimeType, Version version, boolean prettyPrint, StyleHandler handler, Request request) {
         super(new MediaType(mimeType));
         this.version = version;
         this.prettyPrint = prettyPrint;
         this.handler = handler;
+        this.request = request;
     }
 
     public StyleHandler getHandler() {
@@ -79,6 +84,15 @@ public class StyleFormat extends StreamDataFormat {
 
     @Override
     protected Object read(InputStream in) throws IOException {
+        if (isRawUpload(request)) {
+            return in;
+        }
         return Styles.style(handler.parse(in, version, null, null));
+    }
+
+    boolean isRawUpload(Request request) {
+        Form q = request.getResourceRef().getQueryAsForm();
+        String raw = q.getFirstValue("raw");
+        return raw != null && Boolean.TRUE.equals(Converters.convert(raw, Boolean.class));
     }
 }

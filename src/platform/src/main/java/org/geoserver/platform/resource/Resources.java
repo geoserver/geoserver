@@ -5,11 +5,15 @@
 package org.geoserver.platform.resource;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.geoserver.platform.resource.Resource.Type;
 
 /**
@@ -57,7 +61,7 @@ public class Resources {
             return null;
         }
     }
-
+    
     /**
      * Checks {@link Resource#getType()} and returns existing dir() if available, or null for {@link Resource.Type#UNDEFINED} or
      * {@link Resource.Type#FILE}.
@@ -70,13 +74,34 @@ public class Resources {
      * @return Existing directory, or null
      */
     public static File directory(Resource resource) {
-        if (resource != null && resource.getType() == Type.DIRECTORY) {
-            return resource.dir();
-        } else {
-            return null;
-        }
+        return directory(resource, false);
     }
-
+    
+    /**
+     * If create is true or if a directory exists returns resource.dir, otherwise it returns null.
+     * 
+     * @see Resource#dir()
+     * 
+     * @param resource
+     * @param create
+     * @return directory, or null
+     */
+    public static File directory(Resource resource, boolean create) {
+        final File f;
+        if(resource==null) {
+            f = null;
+        } else if(create) {
+            f = resource.dir();
+        } else {
+            if (resource.getType() == Type.DIRECTORY) {
+                f = resource.dir();
+            } else {
+                f = null;
+            }
+        }
+        return f;
+    }
+    
     /**
      * Checks {@link Resource#getType()} and returns existing file() if available, or null for {@link Resource.Type#UNDEFINED} or
      * {@link Resource.Type#DIRECTORY}.
@@ -89,11 +114,32 @@ public class Resources {
      * @return Existing file, or null
      */
     public static File file(Resource resource) {
-        if (resource != null && resource.getType() == Type.RESOURCE) {
-            return resource.file();
+        return file(resource, false);
+    }
+
+    /**
+     * If create is true or if a file exists returns resource.file, otherwise it returns null.
+     * 
+     * @see Resource#file()
+     * 
+     * @param resource
+     * @param create
+     * @return file, or null
+     */
+    public static File file(Resource resource, boolean create) {
+        final File f;
+        if(resource==null) {
+            f = null;
+        } else if(create) {
+            f = resource.file();
         } else {
-            return null;
+            if (resource.getType() == Type.RESOURCE) {
+                f = resource.file();
+            } else {
+                f = null;
+            }
         }
+        return f;
     }
 
     /**
@@ -167,5 +213,70 @@ public class Resources {
             return results;
         }
         return Collections.emptyList();
+    }
+    
+    /**
+     * Write the contents of a stream into a resource
+     * @param data data to write
+     * @param destination resource to write to
+     * @throws IOException
+     */
+    public static void copy (InputStream data, Resource destination) throws IOException {
+        try(OutputStream out = destination.out()) {
+            IOUtils.copy(data, out);
+        }
+    }
+    
+    /**
+     * Write the contents of a resource into another resource
+     * @param data resource to read
+     * @param destination resource to write to
+     * @throws IOException
+     */
+    public static void copy (Resource data, Resource destination) throws IOException {
+        try(InputStream in = data.in()) {
+            copy(in, destination);
+        }
+    }
+    
+    /**
+     * Write the contents of a stream to a new Resource inside a directory
+     * @param data data to write
+     * @param directory parent directory to create the resource in
+     * @param filename file name of the new resource
+     * @throws IOException
+     */
+    public static void copy (InputStream data, Resource directory, String filename) throws IOException {
+        copy(data, directory.get(filename));
+    }
+    
+    /**
+     * Write the contents of a File to a new Resource with the same name inside a directory
+     * @param data data to write
+     * @param directory parent directory to create the resource in
+     * @throws IOException
+     */
+    public static void copy (File data, Resource directory) throws IOException {
+        String filename = data.getName();
+        try(InputStream in = new FileInputStream(data)) {
+            copy(data, directory.get(filename));
+        }
+    }
+    
+    /**
+     * Renames a resource by reading it and writing to the new resource, then deleting the old one.
+     * This is not atomic.
+     * @param source
+     * @param destination
+     * @throws IOException
+     * @return true if successful, false if either the write or delete failed.
+     */
+    public static boolean renameByCopy(Resource source, Resource destination) {
+        try {
+            copy(source, destination);
+            return source.delete();
+        } catch (IOException e) {
+            return false;
+        }
     }
 }

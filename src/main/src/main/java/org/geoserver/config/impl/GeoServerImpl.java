@@ -4,6 +4,8 @@
  */
 package org.geoserver.config.impl;
 
+import static org.geoserver.ows.util.OwsUtils.resolveCollections;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -11,29 +13,25 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.LocalWorkspaceCatalog;
-import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.ConfigurationListener;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerFacade;
 import org.geoserver.config.GeoServerFactory;
 import org.geoserver.config.GeoServerInfo;
-import org.geoserver.config.GeoServerLoader;
 import org.geoserver.config.GeoServerLoaderProxy;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.ows.LocalWorkspace;
-import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-
-import static org.geoserver.ows.util.OwsUtils.resolveCollections;
 
 public class GeoServerImpl implements GeoServer, ApplicationContextAware {
     
@@ -429,22 +427,38 @@ public class GeoServerImpl implements GeoServer, ApplicationContextAware {
     }
 
     public void reload() throws Exception {
-        // flush caches
-        reset();
-        
-        // reload configuration
-        GeoServerLoaderProxy loader = GeoServerExtensions.bean(GeoServerLoaderProxy.class);
-        synchronized (org.geoserver.config.GeoServer.CONFIGURATION_LOCK) {
-            getCatalog().getResourcePool().dispose();
-            loader.reload();
-        }
-        
-        // look for pluggable handlers
-        for(GeoServerLifecycleHandler handler : GeoServerExtensions.extensions(GeoServerLifecycleHandler.class)) {
+        // notify start of reload
+        List<GeoServerLifecycleHandler> handlers = GeoServerExtensions
+                .extensions(GeoServerLifecycleHandler.class);
+        for (GeoServerLifecycleHandler handler : handlers) {
             try {
-                handler.onReload();
-            } catch(Throwable t) {
-                LOGGER.log(Level.SEVERE, "A GeoServer lifecycle handler threw an exception during reload", t);
+                handler.beforeReload();
+            } catch (Throwable t) {
+                LOGGER.log(Level.SEVERE,
+                        "A GeoServer lifecycle handler threw an exception during reload", t);
+            }
+        }
+
+        // perform the reload
+        try {
+            // flush caches
+            reset();
+
+            // reload configuration
+            GeoServerLoaderProxy loader = GeoServerExtensions.bean(GeoServerLoaderProxy.class);
+            synchronized (org.geoserver.config.GeoServer.CONFIGURATION_LOCK) {
+                getCatalog().getResourcePool().dispose();
+                loader.reload();
+            }
+        } finally {
+            // notify end of reload
+            for (GeoServerLifecycleHandler handler : handlers) {
+                try {
+                    handler.onReload();
+                } catch (Throwable t) {
+                    LOGGER.log(Level.SEVERE,
+                            "A GeoServer lifecycle handler threw an exception during reload", t);
+                }
             }
         }
     }

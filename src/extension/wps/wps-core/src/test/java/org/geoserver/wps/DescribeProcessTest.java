@@ -91,6 +91,18 @@ public class DescribeProcessTest extends WPSTestSupport {
         assertXpathEvaluatesTo("EPSG:4326", "//Output[ows:Identifier='bounds']/BoundingBoxOutput/Supported/CRS", d);
     }
     
+    @Test
+    public void testDefaultValues() throws Exception {
+        Document d = getAsDOM(root()
+                + "service=wps&request=describeprocess&identifier=gs:GeorectifyCoverage");
+        // print(d);
+        checkValidationErrors(d);
+        assertXpathEvaluatesTo("true",
+                "//Input[ows:Identifier='transparent']/LiteralData/DefaultValue", d);
+        assertXpathEvaluatesTo("false", "//Input[ows:Identifier='store']/LiteralData/DefaultValue",
+                d);
+    }
+
     /* TODO Language Negotiation tests
     public void testGetLanguageGood() throws Exception { // Standard Test A.4.3.4
         Document d = getAsDOM( root() + "service=wps&request=describeprocess&identifier=gt:buffer&language=en-US" );

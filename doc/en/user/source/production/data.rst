@@ -52,9 +52,6 @@ Overviews are downsampled version of the same image, that is, a zoomed out versi
 
    gdaladdo -r average mytiff.tif 2 4 8 16
 
-For more hands on information on how to use GDAL utilites along with Geoserver, have a look at the 
-`BlueMarble data loading tutorial <http://geoserver.org/display/GEOSDOC/Load+NASA+Blue+Marble+Data>`_. 
-
 As a final note, Geotiff supports various kinds of compression, but we do suggest to not use it. Whilst it allows for much smaller files, the decompression process is expensive and will be performed on each data access, significantly slowing down rendering. In our experience, the decompression time is higher than the pure disk data reading.
 
 Handling huge data sets

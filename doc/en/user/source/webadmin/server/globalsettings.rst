@@ -95,7 +95,9 @@ This option is only useful with the application schema extensions.
 Feature type cache size
 -----------------------
 
-GeoServer can cache datastore connections and schemas in memory for performance reasons. The cache size should generally be greater than the number of distinct featuretypes that are expected to be accessed simultaneously. If possible, make this value larger than the total number of featuretypes on the server, but a setting too high may produce out-of-memory errors.
+GeoServer can cache datastore connections and schemas in memory for performance reasons. The cache size should generally be greater than the number of distinct featuretypes that are expected to be accessed simultaneously.
+If possible, make this value larger than the total number of featuretypes on the server, but a setting too high may produce out-of-memory errors. On the other hand, a value lower than the total number of your registered featuretypes may clear and reload the resource-cache more often, which can be expensive and e.g. delay WFS-Requests in the meantime.
+The default value for the Feature type cache size is 100.
 
 File Locking
 ------------
@@ -109,4 +111,11 @@ There are three options:
 **In-process locking**: Used to ensure individual configuration files cannot be modified by two web administration or REST sessions at the same time.
 
 **Disable Locking**: No file locking is used.
+
+REST PathMapper Root directory path
+-----------------------------------
+
+This parameter is used by the RESTful API as the `Root Directory` for the newly uploaded files, following the structure::
+
+	${rootDirectory}/workspace/store[/<file>]
  

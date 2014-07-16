@@ -83,8 +83,7 @@ public class GeoServerHomePage extends GeoServerBasePage {
         
         Authentication auth = getSession().getAuthentication();
         if(isAdmin(auth)) {
-            Stopwatch sw = new Stopwatch();
-            sw.start();
+            Stopwatch sw = Stopwatch.createStarted();
             Fragment f = new Fragment("catalogLinks", "catalogLinksFragment", this);
             Catalog catalog = getCatalog();
             

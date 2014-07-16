@@ -21,7 +21,7 @@ import org.springframework.security.core.Authentication;
  * 
  * @author Andrea Aime - GeoSolutions
  */
-public class TestResourceAccessManager implements ResourceAccessManager {
+public class TestResourceAccessManager extends AbstractResourceAccessManager {
     
     Map<String, Map<String, AccessLimits>> limits = new HashMap<String, Map<String,AccessLimits>>();  
 

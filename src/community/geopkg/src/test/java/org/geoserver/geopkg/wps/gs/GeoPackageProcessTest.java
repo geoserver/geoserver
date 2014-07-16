@@ -29,7 +29,7 @@ public class GeoPackageProcessTest extends WPSTestSupport {
     @Test
     public void testGeoPackageProcess() throws Exception{
         String urlPath = string(post("wps", getXml())).trim();
-        File file = getDataDirectory().findDataFile(urlPath.substring("http://localhost:8080/geoserver/".length()));
+        File file = getDataDirectory().findFile(urlPath.substring("http://localhost:8080/geoserver/".length()));
         assertNotNull(file);
         assertEquals("test.gpkg", file.getName());
         assertTrue(file.exists());

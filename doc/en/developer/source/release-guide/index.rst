@@ -174,19 +174,65 @@ Create the new download page:
 
 Update the download short cuts:
 
-#. If you are releasing a beta/RC, edit the `Latest version <http://geoserver.org/display/GEOS/Latest>`_ page and include the newly created release page, with a warning note::
+#. If you are releasing a beta/RC, edit the `dev version` setting for the website in `_config.yml <https://github.com/geoserver/geoserver.github.io/blob/master/_config.yml>`_.
 
-     {note}{*}Releases on this page are known to be unstable.* If you're looking for a stable release, you may want to be on the [Stable] download page.
-     {note}
-     {include:GeoServer 2.6-RC1}
-
-#. If you are releasing a stable version, edit the `Stable version <http://geoserver.org/display/GEOS/Stable>`_ page and include the newly created release page::
-
-      {include:GeoServer 2.5.0}
-
-#. If you are releasing a maintenance version, edit the `Maintenance version <http://geoserver.org/display/GEOS/Maintenance>`_ page and include the newly created release page::
-
-      {include:GeoServer 2.4.6}
+   Edit the details for `release/dev/index.html https://github.com/geoserver/geoserver.github.io/blob/master/release/dev/index.html>`_
+   
+   ```
+   ---
+   layout: release
+   title: GeoServer
+   version: 2.6-RC2
+   jira_version: 20356
+   release_date: August 18th, 2014
+   ---
+   ```
+   
+   We do not keep landing pages for beta releases so there is no need to create a copy of this file.
+   
+#. If you are releasing a stable version, edit the `stable_version` setting for the website in `_config.yml <https://github.com/geoserver/geoserver.github.io/blob/master/_config.yml>`_. If this is the first stable release you will want to remove the `dev version` setting (as we no longer need to offer a release candidate download).
+   
+   Edit the details for `release/stable/index.html <https://github.com/geoserver/geoserver.github.io/blob/master/release/stable/index.html>`_
+   
+   ```
+   ---
+   layout: release
+   title: GeoServer
+   version: 2.6.0
+   jira_version: 20402
+   release_date:  Sep 7, 2014
+   ---
+   ```
+   
+   And copy this page when you are done:
+   
+   ```
+   cp -R stable 2.6.0
+   ```
+   
+   Finally update the `download/index.html <https://github.com/geoserver/geoserver.github.io/blob/master/download/index.html>`_ page adding a link to 2.6.0 to the list.
+   
+#. If you are releasing a maintenance version, edit the `maintenance_version` setting for the website in `_config.yml <https://github.com/geoserver/geoserver.github.io/blob/master/_config.yml>`_.
+   
+   Edit the details for `release/maintenance/index.html <https://github.com/geoserver/geoserver.github.io/blob/master/release/stable/index.html>`_
+   
+   ```
+   ---
+   layout: release
+   title: GeoServer
+   version: 2.5.8
+   jira_version: 20457
+   release_date:  August 18, 2014
+   ---
+   ```
+   
+    And copy this page when you are done:
+   
+   ```
+   cp -R maintenance 2.5.8
+   ```
+   
+   Adding a link to the download page when you are done.
 
 Post the Documentation
 ----------------------
@@ -217,7 +263,7 @@ Post the Documentation
 #. Add a new entry in the table for the most recent release::
 
     <tr>
-      <td><strong><a href="http://geoserver.org/display/GEOS/GeoServer a.b.c">a.b.c</a></strong></td>
+      <td><strong><a href="http://geoserver.org/release/a.b.c/">a.b.c</a></strong></td>
       <td><a href="a.b.c/user/">User Manual</a></td>
       <td><a href="a.b.c/developer/">Developer Manual</a></td>
     </tr>
@@ -245,17 +291,17 @@ GeoServer Blog
    .. code-block:: html
 
       The GeoServer team is pleased to announce the release of
-      <a href="http://geoserver.org/display/GEOS/GeoServer+2.3.3">GeoServer 2.3.3</a>:
+      <a href="http://geoserver.org/release/2.5.1/">GeoServer 2.5.1</a>:
       <ul>
-         <li>Downloads (<a href="http://downloads.sourceforge.net/geoserver/geoserver-2.3.3-bin.zip">zip</a>,
-             <a href="http://downloads.sourceforge.net/geoserver/geoserver-2.3.3-war.zip">war</a>,
-             <a href="http://downloads.sourceforge.net/geoserver/geoserver-2.3.3.dmg">dmg</a> and
-             <a href="http://downloads.sourceforge.net/geoserver/geoserver-2.3.3.exe">exe</a>) are listed on the
-             <a href="http://geoserver.org/display/GEOS/GeoServer+2.3.3">GeoServer 2.3.3</a> page
+         <li>Downloads (<a href="http://sourceforge.net/projects/geoserver/files/GeoServer/2.5.1/geoserver-2.5.1-bin.zip/download">zip</a>,
+             <a href="http://sourceforge.net/projects/geoserver/files/GeoServer/2.5.1/geoserver-2.5.1-war.zip/download">war</a>,
+             <a href="http://sourceforge.net/projects/geoserver/files/GeoServer/2.5.1/geoserver-2.5.1.dmg/download">dmg</a> and
+             <a href="http://sourceforge.net/projects/geoserver/files/GeoServer/2.5.1/geoserver-2.5.1.exe/download">exe</a>) are listed on the
+             <a href="http://geoserver.org/release/2.5.1/">GeoServer 2.5.1</a> page
              along with documentation and extensions.
             <ul>
                <li>This release includes and is made in conjunction with
-                 <a href="http://geotoolsnews.blogspot.com.au/2013/06/geotools-93-released.html">GeoTools 9.3</a>.</li>
+                 <a href="http://geotoolsnews.blogspot.com/2014/05/geotools-111-released.html">GeoTools 11.1</a>.</li>
             </ul>
          </li>
          <li>Thanks to <a href="http://www.warwickshire.gov.uk/">Warwickshire County Council</a>
@@ -274,7 +320,7 @@ GeoServer Blog
          </li>
       </ul>
       More details can be found in the
-      <a href="http://jira.codehaus.org/secure/ReleaseNote.jspa?projectId=10311&amp;version=19231">GeoServer 2.3.3 Release Notes</a>.
+      <a href="http://jira.codehaus.org/secure/ReleaseNote.jspa?projectId=10311&amp;version=19231">GeoServer 2.5.1 Release Notes</a>.
 
 #. Examples of content:
 
@@ -301,27 +347,7 @@ GeoServer Blog
 
      Example: `GeoServer 2.3-beta released <http://blog.geoserver.org/2013/01/29/geoserver-2-3-beta-released/>`_
 
-
-
-#. Do not publish the post. Instead present it to the GeoServer outreach
-   team for review, and they will publish it.
-
-
-Update GeoServer Website
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-#. Navigate to http://geoserver.org/
-
-#. Click :guilabel:`Log In` in the top right corner.
-
-#. Enter your Confluence user name and password and click :guilabel:`Log In`.
-
-#. Navigate back to the home page http://geoserver.org and change the links at the top of
-   the page to include the new GeoServer download page and the blog post.  For example::
-
-    h6. 23 July 2013: [GeoServer 2.4-beta] released\!  [See what's new...|http://blog.geoserver.org/2013/07/22/geoserver-2-4-beta-released/]!
-
-#. Verify that the links work
+#. Do not publish the post right away. Instead ask the devel list for review.
 
 
 Mailing lists
@@ -333,32 +359,34 @@ Send an email to both the developers list and users list announcing the
 release. The message should be relatively short. You can base it on the blog post.
 The following is an example::
 
-   Subject: GeoServer 1.7.1 Released
+   Subject: GeoServer 2.5.1 Released
 
-   The GeoServer team is happy to announce the release of GeoServer 1.7.1.
+   The GeoServer team is happy to announce the release of GeoServer 2.5.1.
+  
    The release is available for download from:
 
-   http://geoserver.org/display/GEOS/GeoServer+1.7.1
+   http://geoserver.org/release/2.5.1/
+
+   GeoServer 2.5.1 is the next the stable release of GeoServer and is recommended for production deployment.
 
    This release comes with some exciting new features. The new and
    noteworthy include:
+   
+   * By popular request Top/Bottom labels when configuring layer group order
+   * You can now identify GeoServer “nodes” in a cluster by configuring a label and color in the UI. Documentation and example in the user guide.
+   * Have you ever run GeoServer and not quite gotten your file permissions correct? GeoServer now has better logging when it cannot your data directory and is required to “fall back” to the embedded data directory during start up.
+   * We have a new GRIB community module (community modules are not in the release until they pass a    QA check, but great to see new development taking shape)
+   * Documentation on the jp2kak extension now in the user guide
+   * Additional documentation for the image mosaic in the user guide with tutorials covering the plugin, raster time-series, time and elevation and footprint management.
+   * WCS 2.0 support continues to improve with DescribeCoverage now supporting null values
+   * Central Authentication Service (CAS) authentication has received a lot of QA this release and is now available in the GeoServer 2.5.x series.
+   * This release is made in conjunction with GeoTools 11.1
+   
+   Along with many other improvements and bug fixes:
+   
+   * https://jira.codehaus.org/secure/ReleaseNote.jspa?projectId=10311&version=20202
 
-      * KML Super Overlay and Regionating Support
-      * KML Extrude Support
-      * KML Reflector Improvements
-      * Mac OS X Installer
-      * Dutch Translation
-      * Improved Style for Web Admin Interface
-      * New SQL Server DataStore Extension
-      * Improved Oracle DataStore Extension
-      * Default Templates per Namespace
-
-   Along with many other improvements and bug fixes. The entire change log
-   for the 1.7.1 series is available in the issue tracker:
-
-   http://jira.codehaus.org/browse/GEOS/fixforversion/14502
-
-   A very special thanks to all those who contributed bug fixes, new
+   Thanks to Andrea and Jody (GeoSolutions and Boundless) for publishing this release. A very special thanks to all those who contributed bug fixes, new
    features, bug reports, and testing to this release.
 
    --

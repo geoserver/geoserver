@@ -10,12 +10,12 @@ GeoServer is packaged as a standalone servlet for use with existing servlet cont
 Java
 ----
 
-GeoServer requires Java to be installed on your system.  Oracle Java SE 6 or newer is strongly recommended.  (As of GeoServer 2.2.x, Oracle JRE 5 is no longer supported.)  A Java Development Kit (JDK) is not required to run GeoServer.  For more information about Java and GeoServer, please see the section on :ref:`production_java`.
-
+GeoServer requires a *Java 7* runtime to be installed on your system. For more information about Java and GeoServer, please see the section on :ref:`production_java`.
+ 
 Installation
 ------------
 
-#. Navigate to the `GeoServer Download page <http://geoserver.org/display/GEOS/Download>`_ and pick the appropriate version to download.
+#. Navigate to the `GeoServer Download page <http://geoserver.org/download>`_ and pick the appropriate version to download.
 
 #. Select :guilabel:`Web archive` on the download page.
 

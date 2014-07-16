@@ -20,7 +20,7 @@
   <artifactId>gs-dxf</artifactId>
   <packaging>pom</packaging>
   <version>2.6-SNAPSHOT</version>
-  <name>DXF output format</name>
+  <name>DXF WFS output format and WPS PPIO</name>
   
   <modules>
     <module>core</module>

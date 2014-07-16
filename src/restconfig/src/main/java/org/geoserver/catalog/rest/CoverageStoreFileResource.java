@@ -23,6 +23,7 @@ import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.DataUtilities;
+import org.geotools.factory.GeoTools;
 import org.opengis.coverage.grid.Format;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.restlet.data.Form;
@@ -82,10 +83,10 @@ public class CoverageStoreFileResource extends StoreFileResource {
             CoverageStoreInfo info = catalog.getCoverageStoreByName(workspace, coveragestore);
             GridCoverageReader reader = info.getGridCoverageReader(null, null);
             StructuredGridCoverage2DReader sr = (StructuredGridCoverage2DReader) reader;
-            
-            final File uploadedFile = doFileUpload(method, workspace, coveragestore, format);
-            
-            sr.harvest(null, uploadedFile, null);
+            // This method returns a List of the harvested files.
+            final List<File> uploadedFiles = doFileUpload(method, workspace, coveragestore, format);
+            // File Harvesting
+            sr.harvest(null, uploadedFiles, GeoTools.getDefaultHints());
         } catch(IOException e) {
             throw new RestletException("File harvest failed", Status.SERVER_ERROR_INTERNAL, e);
         }
@@ -101,7 +102,8 @@ public class CoverageStoreFileResource extends StoreFileResource {
         String format = getAttribute("format");
         String method = getUploadMethod(request);
         
-        final File uploadedFile = doFileUpload(method, workspace, coveragestore, format);
+        // doFileUpload returns a List of File but in the case of a Put operation the list contains only a value
+        final File uploadedFile = doFileUpload(method, workspace, coveragestore, format).get(0);
         
         // /////////////////////////////////////////////////////////////////////
         //
@@ -137,11 +139,33 @@ public class CoverageStoreFileResource extends StoreFileResource {
         if (isInlineUpload(method)) {
             //TODO: create a method to figure out the relative url instead of making assumption
             // about the structure
+            
+            String defaultRoot = File.separator + "data" + File.separator + workspace + File.separator + coveragestore;
+            
+            StringBuilder fileBuilder = new StringBuilder(uploadedFile.getAbsolutePath());
+            
             String url;
             if(uploadedFile.isDirectory() && uploadedFile.getName().equals(coveragestore)) {
-                url = "file:data/" + workspace + "/" + coveragestore;
+
+                int def = fileBuilder.indexOf(defaultRoot);
+                
+                if(def >= 0){
+                    url = "file:data/" + workspace + "/" + coveragestore;
+                }else{
+                    url = fileBuilder.toString();
+                }
             } else {
-                url = "file:data/" + workspace + "/" + coveragestore + "/" + uploadedFile.getName();
+
+                int def = fileBuilder.indexOf(defaultRoot);
+                
+                if(def >= 0){
+                    
+                    String itemPath = fileBuilder.substring(def + defaultRoot.length());
+                    
+                    url = "file:data/" + workspace + "/" + coveragestore + "/" + itemPath;
+                }else{
+                    url = fileBuilder.toString();
+                }
             }
             if (url.contains("+")) {
                 url = url.replace("+", "%2B");
@@ -338,8 +362,15 @@ public class CoverageStoreFileResource extends StoreFileResource {
             return directory;
         }
         for ( File f : directory.listFiles() ) {
-            if ( ((AbstractGridFormat)coverageFormat).accepts(f) ) {
-                return f;
+            if(f.isDirectory()){
+                File result = findPrimaryFile(f,format);
+                if(result!=null){
+                    return result;
+                }
+            }else{
+                if ( ((AbstractGridFormat)coverageFormat).accepts(f) ) {
+                    return f;
+                }
             }
         }
         

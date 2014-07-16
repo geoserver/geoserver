@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2014 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -59,16 +59,16 @@ import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
-import org.geoserver.platform.resource.Files;
-import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
+import org.geoserver.security.GeoServerSecurityManager.FilterHelper;
 import org.geoserver.security.auth.AuthenticationCache;
 import org.geoserver.security.auth.GeoServerRootAuthenticationProvider;
-import org.geoserver.security.auth.LRUAuthenticationCacheImpl;
+import org.geoserver.security.auth.GuavaAuthenticationCacheImpl;
 import org.geoserver.security.auth.UsernamePasswordAuthenticationProvider;
 import org.geoserver.security.concurrent.LockingKeyStoreProvider;
 import org.geoserver.security.concurrent.LockingRoleService;
@@ -79,12 +79,12 @@ import org.geoserver.security.config.ExceptionTranslationFilterConfig;
 import org.geoserver.security.config.FileBasedSecurityServiceConfig;
 import org.geoserver.security.config.J2eeAuthenticationBaseFilterConfig;
 import org.geoserver.security.config.J2eeAuthenticationBaseFilterConfig.J2EERoleSource;
-import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
-import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource;
-import org.geoserver.security.config.RoleFilterConfig;
 import org.geoserver.security.config.LogoutFilterConfig;
 import org.geoserver.security.config.PasswordPolicyConfig;
+import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
+import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource;
 import org.geoserver.security.config.RememberMeAuthenticationFilterConfig;
+import org.geoserver.security.config.RoleFilterConfig;
 import org.geoserver.security.config.RoleSource;
 import org.geoserver.security.config.SSLFilterConfig;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
@@ -326,9 +326,10 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
             // migrate from old security config
             try {
                 boolean migratedFrom21 = migrateFrom21();
+                removeErroneousAccessDeniedPage();
                 migrateFrom22(migratedFrom21);
                 migrateFrom23();
-                migrateFrom24();
+                migrateFrom24();                
             } catch (Exception e1) {
                 throw new RuntimeException(e1);
             }
@@ -608,7 +609,7 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
 
     AuthenticationCache lookupAuthenticationCache() {
         AuthenticationCache authCache = GeoServerExtensions.bean(AuthenticationCache.class);
-        return authCache != null ? authCache : new LRUAuthenticationCacheImpl(1000);
+        return authCache != null ? authCache : new GuavaAuthenticationCacheImpl(1000);
     }
 
     public RememberMeServices getRememberMeService() {
@@ -1043,8 +1044,8 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
         } catch (InvalidKeyException e) {
             strongEncryptionAvaialble = false; 
             LOGGER.warning("Strong cryptography is NOT available"+
-            "\nDownload and install of policy files recommended"+
-            "\nfrom http://www.oracle.com/technetwork/java/javase/downloads/jce-6-download-429243.html");
+            "\nDownload and installation the of unlimted length policy files is recommended"
+            );
         } catch (Exception ex) {
             LOGGER.log(Level.WARNING, "Strong cryptography is NOT available, unexpected error", ex);
             strongEncryptionAvaialble =false; //should not happen
@@ -2020,14 +2021,66 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
                 {"org.geoserver.security.GeoServerSecurityManagerTest","testMasterPasswordDump"},
                 {"org.geoserver.security.web.passwd.MasterPasswordInfoPage","dumpMasterPassword"}
         };
+                
+        String result = checkStackTrace(10, allowedMethods);
+        
+        if (result!=null) {
+            LOGGER.warning("Dump master password is called by an unautorized method\n"+result);
+            return false;
+        }
+        
+        String message = "The current master password is: ";
+        writeMasterPasswordInfo(file, message, getMasterPassword());
+        return true;
+    }
+    
+    /**
+     * Get master password for REST configuraton
+     * 
+     * The method inspects the stack trace to check for an authorized calling method.
+     * The authenticated principal has to be an administrator
+     * 
+     * If authorization fails, an IOException is thrown
+     * 
+     * @return
+     * @throws IOException
+     */
+    public char[] getMasterPasswordForREST() throws IOException {
+        
+        
+        if (checkAuthenticationForAdminRole()==false) {
+            throw new IOException("Unauthorized user tries to read master password");
+        }
+        
+        
+        String[][] allowedMethods = new String [][]{
+                {"org.geoserver.security.rest.MasterPasswordResource","getMap"}                
+        };
+        
+        String result = checkStackTrace(10, allowedMethods);
+        if (result!=null) {
+            throw new IOException ("Unauthorized method wants to read master password\n"+result);
+        }
+        
+        return getMasterPassword();
+    }
+
+
+    /**
+     * Checks if the stack trace contains allowed methods. 
+     * It it contains allowed methods, return <code>null</code>,
+     * if not return a String listing the methods. 
+     * 
+     * @param countMethodsToCheck
+     * @param allowedMethods
+     * @return
+     */
+    String checkStackTrace(int countMethodsToCheck,String[][] allowedMethods) {
         
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
         
-        
         boolean isAllowed=false;
-        int countMethodsToCheck=10;
-        // since different sdks have a different stack trace the 
-        // first 10 elements are checked
+        
         for (int i = 0; i< countMethodsToCheck;i++) {
             StackTraceElement element = stackTraceElements[i];
             for (String[] methodEntry : allowedMethods) {
@@ -2038,20 +2091,21 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
                 }
             }
         }
-        if (!isAllowed) {
-            LOGGER.warning("Dump master password is called by an unautorized method");
+        
+        if (isAllowed) {
+            return null;
+        }
+        else { 
+            StringBuffer buff = new StringBuffer();
             for (int i = 0; i< countMethodsToCheck;i++) {
                 StackTraceElement element = stackTraceElements[i];
-                LOGGER.warning(element.getClassName()+" : "+element.getMethodName());
+                buff.append(element.getClassName()).append(" : ").
+                    append(element.getMethodName()).append("\n");
             }
-            return false;
+            return buff.toString();
         }
         
-        String message = "The current master password is: ";
-        writeMasterPasswordInfo(file, message, getMasterPassword());
-        return true;
     }
-    
     
     /**
      * converts an 2.1.x security configuration to 2.2.x
@@ -2569,6 +2623,31 @@ public class GeoServerSecurityManager extends ProviderManager implements Applica
             migrated |= true;
         }
         return migrated;
+    }
+    
+    /**
+     * Remove erroneous access denied page (HTTP) 403 (see GEOS-4943)
+     * The page /accessDeniedPage does not exist and would not work
+     * if it exists.
+     * 
+     * @throws Exception
+     */
+    void removeErroneousAccessDeniedPage() throws Exception {
+         
+        ExceptionTranslationFilterConfig config = 
+                (ExceptionTranslationFilterConfig) loadFilterConfig(GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER);
+        if (config!=null && "/accessDenied.jsp".equals(config.getAccessDeniedErrorPage())) {
+            config.setAccessDeniedErrorPage(null);
+            saveFilter(config);
+        }
+        
+         config = 
+                (ExceptionTranslationFilterConfig) loadFilterConfig(GeoServerSecurityFilterChain.GUI_EXCEPTION_TRANSLATION_FILTER);
+        if (config!=null && "/accessDenied.jsp".equals(config.getAccessDeniedErrorPage())) {
+            config.setAccessDeniedErrorPage(null);
+            saveFilter(config);
+        }
+                    
     }
 
 

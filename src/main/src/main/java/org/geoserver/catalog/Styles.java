@@ -16,9 +16,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.annotation.Nullable;
 import javax.xml.transform.TransformerException;
 
 import org.geoserver.ows.util.RequestUtils;
+import org.geoserver.platform.resource.Resource;
 import org.geotools.data.DataUtilities;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.sld.v1_1.SLDConfiguration;
@@ -76,6 +78,12 @@ public class Styles {
      */
     public static StyledLayerDescriptor parse(Object input, EntityResolver entityResolver) throws IOException {
         Object[] obj = getVersionAndReader(input);
+        // if the input is a file we want to maintain it, as we are going to need
+        // relative references to image files
+        if (input instanceof File && obj[1] instanceof Reader) {
+            ((Reader) obj[1]).close();
+            obj[1] = input;
+        }
         return parse(obj[1], entityResolver, (Version)obj[0]);
     }
 
@@ -93,6 +101,21 @@ public class Styles {
      */
     public static StyledLayerDescriptor parse(Object input, EntityResolver entityResolver, Version version) throws IOException {
         return Handler.lookup(version).parse(input, entityResolver);
+    }
+    /**
+     * Parses a style document into a StyledLayerDescriptor object explicitly specifying version.
+     * <p>
+     * </p>
+     * @param input a File, Reader, or InputStream object.
+     * @param version The SLD version
+     * 
+     * @return The parsed StyleLayerDescriptor.
+     * 
+     * @throws IOException Any parsing errors that occur.
+     * @throws IllegalArgumentException If the specified version is not supported.
+     */
+    public static StyledLayerDescriptor parse(Object input, EntityResolver entityResolver, Version version, ResourceLocator locator) throws IOException {
+        return Handler.lookup(version).parse(input, entityResolver, locator);
     }
     
     /**
@@ -273,6 +296,10 @@ public class Styles {
             return new FileReader((File)input);
         }
         
+        if (input instanceof Resource) {
+            return new InputStreamReader(((Resource)input).in());
+        }
+        
         throw new IllegalArgumentException("Unable to turn " + input + " into reader");
     }
     
@@ -281,7 +308,14 @@ public class Styles {
             
             @Override
             public StyledLayerDescriptor parse(Object input, EntityResolver entityResolver) throws IOException {
+                return parse(input, entityResolver, null);
+            }
+            @Override
+            public StyledLayerDescriptor parse(Object input, EntityResolver entityResolver, @Nullable ResourceLocator locator) throws IOException {
                 SLDParser p = parser(input, entityResolver);
+                if(locator!=null) {
+                    p.setOnLineResourceLocator(locator);
+                }
                 StyledLayerDescriptor sld = p.parseSLD();
                 if (sld.getStyledLayers().length == 0) {
                     //most likely a style that is not a valid sld, try to actually parse out a 
@@ -335,20 +369,30 @@ public class Styles {
             
             @Override
             public StyledLayerDescriptor parse(Object input, EntityResolver entityResolver) throws IOException {
-                SLDConfiguration sld;
+                ResourceLocator locator;
                 if (input instanceof File) {
                     // setup for resolution of relative paths
                     final java.net.URL surl = DataUtilities.fileToURL((File) input);
+                    locator = new DefaultResourceLocator();
+                    ((DefaultResourceLocator)locator).setSourceUrl(surl);
+                } else {
+                    locator=null;
+                }
+                
+                return parse(input, entityResolver, locator);
+            }
+            @Override
+            public StyledLayerDescriptor parse(Object input, EntityResolver entityResolver, @Nullable final ResourceLocator locator) throws IOException {
+                SLDConfiguration sld;
+                if(locator==null) {
+                    sld = new SLDConfiguration();
+                } else {
                     sld = new SLDConfiguration() {
                         protected void configureContext(
                                 org.picocontainer.MutablePicoContainer container) {
-                            DefaultResourceLocator locator = new DefaultResourceLocator();
-                            locator.setSourceUrl(surl);
                             container.registerComponentInstance(ResourceLocator.class, locator);
                         };
                     };
-                } else {
-                    sld = new SLDConfiguration();
                 }
                 
                 try {
@@ -398,6 +442,7 @@ public class Styles {
         }
 
         protected abstract StyledLayerDescriptor parse(Object input, EntityResolver entityResolver) throws IOException;
+        protected abstract StyledLayerDescriptor parse(Object input, EntityResolver entityResolver, @Nullable ResourceLocator locator) throws IOException;
         
         protected abstract void encode(StyledLayerDescriptor sld, boolean format, OutputStream output) 
             throws IOException;

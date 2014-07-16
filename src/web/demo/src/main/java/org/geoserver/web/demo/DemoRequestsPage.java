@@ -255,7 +255,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
                 return new AjaxCallDecorator() {
                     @Override
                     public CharSequence decorateScript(CharSequence script) {
-                        return "document.getElementById('requestBody').value = document.gsEditors.requestBody.getCode();"
+                        return "document.getElementById('requestBody').value = document.gsEditors.requestBody.getValue();"
                                 + script;
                     }
                 };

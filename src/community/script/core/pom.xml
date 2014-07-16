@@ -17,7 +17,6 @@
  <name>Core Scripting Extension</name>
  
  <dependencies>
-   
    <dependency>
      <groupId>com.google.guava</groupId>
      <artifactId>guava</artifactId>

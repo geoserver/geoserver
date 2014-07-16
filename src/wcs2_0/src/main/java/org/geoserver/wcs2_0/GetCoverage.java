@@ -13,6 +13,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -196,7 +197,7 @@ public class GetCoverage {
             final GridCoverageFactory coverageFactory = CoverageFactoryFinder.getGridCoverageFactory(hints);
             if (reader instanceof StructuredGridCoverage2DReader && formatSupportMDOutput(request.getFormat())) {
                 // Split the main request into a List of requests in order to read more coverages to be stacked 
-                final List<GridCoverageRequest> requests = helper.splitRequest();
+                final Set<GridCoverageRequest> requests = helper.splitRequestToSet();
                 if (requests == null || requests.isEmpty()) {
                     throw new IllegalArgumentException("Splitting requests returned nothing");
                 } else {
@@ -216,8 +217,9 @@ public class GetCoverage {
                 // Object used for storing the sum of the output size of each internal coverage
                 ImageSizeRecorder incrementalInputSize=new ImageSizeRecorder(inputLimit,true);
                 // Image size estimation
-                int numRequests = requests.size();
-                GridCoverageRequest firstRequest = requests.remove(0);
+                final int numRequests = requests.size();
+                final Iterator<GridCoverageRequest> requestsIterator = requests.iterator();
+                GridCoverageRequest firstRequest = requestsIterator.next();
                 GridCoverage2D firstCoverage = setupCoverage(helper, firstRequest, request, reader, hints, extensions, dimensions,
                         incrementalOutputSize, incrementalInputSize, coverageFactory);
                 // check the first coverage memory usage
@@ -233,9 +235,10 @@ public class GetCoverage {
                 }
                 // If the estimated size does not exceed the limit, the first coverage is added to the GranuleStack
                 stack.addCoverage(firstCoverage);
-                
+
                 // Get a coverage for each subrequest
-                for (GridCoverageRequest subRequest: requests) {
+                while (requestsIterator.hasNext()) {
+                    GridCoverageRequest subRequest = requestsIterator.next();
                     GridCoverage2D singleCoverage = setupCoverage(helper, subRequest, request, reader, hints, extensions, dimensions,
                             incrementalOutputSize, incrementalInputSize, coverageFactory);
                     stack.addCoverage(singleCoverage);
@@ -520,9 +523,7 @@ public class GetCoverage {
         final CoordinateReferenceSystem coverageCRS = reader.getCoordinateReferenceSystem();
         GeneralEnvelope subset = request.getSpatialSubset();
         if(!CRS.equalsIgnoreMetadata(subset.getCoordinateReferenceSystem(), coverageCRS)){
-            subset= CRS.transform(
-                    CRS.findMathTransform(subset.getCoordinateReferenceSystem(), coverageCRS),
-                    subset);
+            subset = CRS.transform(subset, coverageCRS);
             subset.setCoordinateReferenceSystem(coverageCRS);
         }
         // k, now subset is in the CRS of the source coverage

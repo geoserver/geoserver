@@ -14,10 +14,12 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.platform.resource.Resource.Lock;
 import org.geotools.data.DataUtilities;
 import org.geotools.util.logging.Logging;
 
@@ -37,8 +39,8 @@ public final class Files {
      * This can be used to handle absolute file references that are not located
      * in the data directory.
      */
-    private static final class ResourceAdaptor implements Resource {
-        private final File file;
+    static final class ResourceAdaptor implements Resource {
+        final File file;
 
         private ResourceAdaptor(File file) {
             this.file = file;
@@ -73,18 +75,66 @@ public final class Files {
         @Override
         public InputStream in() {
             try {
+                file.createNewFile();
                 return new FileInputStream(file);
-            } catch (FileNotFoundException e) {
+            } catch (IOException e) {
                 throw new IllegalStateException(e);
             }
         }
 
         @Override
         public OutputStream out() {
+            // first save to a temp file
+            final File temp;
+            synchronized(this) {
+                File tryTemp;
+                do {
+                    UUID uuid = UUID.randomUUID();
+                    tryTemp = new File(file.getParentFile(), String.format("%s.%s.tmp", file.getName(), uuid));
+                } while(tryTemp.exists());
+                
+                temp = tryTemp;
+            }
             try {
-                return new FileOutputStream(file);
-            } catch (FileNotFoundException e) {
-                throw new IllegalStateException(e);
+                temp.createNewFile();
+                // OutputStream wrapper used to write to a temporary file
+                return new OutputStream() {
+                    FileOutputStream delegate = new FileOutputStream(temp);
+                
+                    @Override
+                    public void close() throws IOException {
+                        delegate.close();
+                        Files.move(temp, file);
+                    }
+                
+                    @Override
+                    public void write(byte[] b, int off, int len) throws IOException {
+                        delegate.write(b, off, len);
+                    }
+                
+                    @Override
+                    public void flush() throws IOException {
+                        delegate.flush();
+                    }
+                
+                    @Override
+                    public void write(byte[] b) throws IOException {
+                        delegate.write(b);
+                    }
+                
+                    @Override
+                    public void write(int b) throws IOException {
+                        delegate.write(b);
+                    }
+                };
+            } catch (IOException ex)  {
+                LOGGER.log(Level.WARNING, "Could not create temporary file {0} writing directly to {1} instead.", new Object[]{temp, file});
+                try {
+                    file.createNewFile();
+                    return new FileOutputStream(file);
+                } catch (IOException e) {
+                    throw new IllegalStateException(e);
+                }
             }
         }
 
@@ -115,7 +165,7 @@ public final class Files {
 
         @Override
         public List<Resource> list() {
-            return Collections.emptyList();
+            return null;
         }
 
         @Override
@@ -127,6 +177,48 @@ public final class Files {
         public String toString() {
             return "ResourceAdaptor("+file+")";
         }
+
+        @Override
+        public boolean delete() {
+            return file.delete();
+        }
+
+        @Override
+        public boolean renameTo(Resource dest) {
+            if(dest instanceof FileSystemResourceStore.FileSystemResource) {
+                return file.renameTo(((FileSystemResourceStore.FileSystemResource)dest).file);
+            } else if(dest instanceof ResourceAdaptor) {
+                    return file.renameTo(((ResourceAdaptor)dest).file);
+            } else {
+                return Resources.renameByCopy(this, dest);
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((file == null) ? 0 : file.hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            ResourceAdaptor other = (ResourceAdaptor) obj;
+            if (file == null) {
+                if (other.file != null)
+                    return false;
+            } else if (!file.equals(other.file))
+                return false;
+            return true;
+        }
+
     }
 
     private static final Logger LOGGER = Logging.getLogger(Files.class);

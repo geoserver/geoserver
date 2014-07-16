@@ -4,14 +4,10 @@
  */
 package org.geoserver.security.auth;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
-import junit.framework.TestCase;
-
-public class LRUAuthenticationCacheTest {
+public class LRUAuthenticationCacheTest extends BaseAuthenticationCacheTest{
 
     @Test
     public void testLRUCache() {
@@ -183,6 +179,11 @@ public class LRUAuthenticationCacheTest {
         assertNull(cache.get("filterb","key3"));
         assertNull(cache.get("filterb","key4"));
         
+    }
+
+    @Override
+    protected AuthenticationCache createAuthenticationCache() {
+        return new LRUAuthenticationCacheImpl(TIME_IDLE, TIME_LIVE, MAX_ENTRIES);
     }
 
 }

@@ -13,3 +13,4 @@ The Server section of the :ref:`web_admin` provides access to GeoServer configur
    globalsettings
    coverageaccess
    JAI
+   REST

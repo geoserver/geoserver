@@ -182,6 +182,8 @@ public class VFSWorker {
             }
         };
         target.copyFrom(source, selector);
+        source.close();
+        manager.closeFileSystem(source.getFileSystem());
     }
 
     @SuppressWarnings("unchecked")

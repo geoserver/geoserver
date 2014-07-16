@@ -5,16 +5,22 @@
 package org.geoserver.security.rest;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.MapResource;
 import org.geoserver.rest.RestletException;
+import org.geoserver.rest.format.DataFormat;
+import org.geoserver.rest.format.MapJSONFormat;
+import org.geoserver.rest.format.MapXMLFormat;
 import org.geoserver.security.GeoServerSecurityManager;
-import org.geoserver.security.MasterPasswordProvider;
 import org.geoserver.security.password.MasterPasswordProviderConfig;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 /**
@@ -25,16 +31,25 @@ import org.restlet.data.Status;
  */
 public class MasterPasswordResource extends MapResource {
 
-    static final String MP_CURRENT_KEY="MasterPassword"; 
-    static final String MP_NEW_KEY="NewMasterPassword";
+    static final String MP_CURRENT_KEY="oldMasterPassword"; 
+    static final String MP_NEW_KEY="newMasterPassword";
+    static final String XML_ROOT_ELEM="masterPassword";
     
     Map putMap;
     
     GeoServerSecurityManager getManager() {
         return GeoServerExtensions.bean(GeoServerSecurityManager.class);
     }
-    
-  
+       
+    @Override
+    protected List<DataFormat> createSupportedFormats(Request request,
+            Response response) {
+        ArrayList<DataFormat> formats = new ArrayList<DataFormat>();
+        formats.add( new MapXMLFormat(XML_ROOT_ELEM) );
+        formats.add( new MapJSONFormat() );
+        return formats;
+    }
+
 
     /** 
      * PUT is allowed if {@link MasterPasswordProviderConfig#isReadOnly()}

@@ -26,10 +26,10 @@ public class MasterPasswordResourceTest extends SecurityRESTTestSupport {
     final static String MP_URI_XML="/rest/security/masterpw.xml";
     
     String xmlTemplate=
-         "<root>"+
+         "<"+MasterPasswordResource.XML_ROOT_ELEM+">"+
            "<"+MasterPasswordResource.MP_CURRENT_KEY+">{0}</"+MasterPasswordResource.MP_CURRENT_KEY+">" +
            "<"+MasterPasswordResource.MP_NEW_KEY+">{1}</"+MasterPasswordResource.MP_NEW_KEY+">" +                 
-          "</root>";
+          "</"+MasterPasswordResource.XML_ROOT_ELEM+">";
     
     String jsonTemplate=
             "{\""+MasterPasswordResource.MP_CURRENT_KEY+"\":\"%s\"," +
@@ -38,8 +38,8 @@ public class MasterPasswordResourceTest extends SecurityRESTTestSupport {
     @Test
     public void testGetAsXML() throws Exception {        
         Document dom = getAsDOM( MP_URI_XML);
-        assertEquals( "root", dom.getDocumentElement().getNodeName() );
-        assertEquals( "geoserver", xp.evaluate( "/root/"+MasterPasswordResource.MP_CURRENT_KEY, dom) );
+        assertEquals( MasterPasswordResource.XML_ROOT_ELEM, dom.getDocumentElement().getNodeName() );
+        assertEquals( "geoserver", xp.evaluate( "/"+MasterPasswordResource.XML_ROOT_ELEM+"/"+MasterPasswordResource.MP_CURRENT_KEY, dom) );
     }
     
     @Test

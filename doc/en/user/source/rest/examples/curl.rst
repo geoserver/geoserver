@@ -895,10 +895,10 @@ File changes.xml
 
 .. code-block:: xml
 
-   <root>
-      <MasterPassword>-"}3a^Kh</MasterPassword>
-      <NewMasterPassword>geoserver1</NewMasterPassword>
-   </root>
+   <masterPassword>
+      <oldMasterPassword>-"}3a^Kh</oldMasterPassword>
+      <newMasterPassword>geoserver1</newMasterPassword>
+   </masterPassword>
 
 Changing the master password using the file:
 

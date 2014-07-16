@@ -41,17 +41,17 @@ Formats for PUT (master password change).
 
 .. code-block:: xml
  
-   <root>
-      <MasterPassword>oldPassword</MasterPassword>
-      <NewMasterPassword>newPassword</NewMasterPassword>
-   </root>
+   <masterPassword>
+      <oldMasterPassword>oldPassword</oldMasterPassword>
+      <newMasterPassword>newPassword</newMasterPassword>
+   </masterPassword>
 
 **JSON**
 
 .. code-block:: json
 
-   { "MasterPassword":"oldPassword",
-     "NewMasterPassword":"newPassword" }
+   { "oldMasterPassword":"oldPassword",
+     "newMasterPassword":"newPassword" }
 
 
 Exceptions

@@ -1625,13 +1625,13 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
 
         String expected = "-38.410785700000325 143.86545265833303 -38.40925703333365 143.86857949166634";
         String actual = evaluate(
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.179239']/gsml:shape/gml:Curve/gml:segments/gml:LineStringSegment/gml:posList",
+                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.179239']/gsml:shape/gml:MultiCurve/gml:curveMember/gml:LineString/gml:posList",
                 doc);
         assertTrue(this.isEqualGeometry(actual, expected, 5));
 
         expected = "-38.139133550000324 144.2364237333331 -38.13991570000029 144.2415325499997";
         actual = evaluate(
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.185969']/gsml:shape/gml:Curve/gml:segments/gml:LineStringSegment/gml:posList",
+                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.185969']/gsml:shape/gml:MultiCurve/gml:curveMember/gml:LineString/gml:posList",
                 doc);
         assertTrue(this.isEqualGeometry(actual, expected, 5));
         assertXpathEvaluatesTo(

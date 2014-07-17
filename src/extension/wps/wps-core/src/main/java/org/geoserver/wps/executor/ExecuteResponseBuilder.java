@@ -163,6 +163,7 @@ public class ExecuteResponseBuilder {
                     progressPercent = 100;
                 }
                 startedType.setPercentCompleted(new BigInteger(String.valueOf(progressPercent)));
+                startedType.setValue(status.getTask());
                 response.getStatus().setProcessStarted(startedType);
             } else if (status.getPhase() == ProcessState.COMPLETED) {
                 response.getStatus().setProcessSucceeded("Process succeeded.");

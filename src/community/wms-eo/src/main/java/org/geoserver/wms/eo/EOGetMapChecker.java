@@ -51,8 +51,8 @@ public class EOGetMapChecker extends GetMapCallbackAdapter implements GetMapCall
         
         // is this WMS 1.3.0? If not move along
         final GetMapRequest request = content.getRequest();
-        if(!request.getVersion().equalsIgnoreCase("1.3.0")){
-            return super.beforeRender(content);     
+        if(!"1.3.0".equalsIgnoreCase(request.getVersion())){
+            return super.beforeRender(content);
         }
         
 

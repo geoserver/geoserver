@@ -37,12 +37,15 @@ public class ExecutionStatus {
      * Process execution status (as a percentage between 0 and 100)
      */
     float progress;
+
+    String task;
     
-    public ExecutionStatus(Name processName, String executionId, ProcessState phase, float progress) {
+    public ExecutionStatus(Name processName, String executionId, ProcessState phase, float progress, String task) {
         this.processName = processName;
         this.executionId = executionId;
         this.phase = phase;
         this.progress = progress;
+        this.task = task;
     }
 
     public Name getProcessName() {
@@ -79,6 +82,14 @@ public class ExecutionStatus {
 
     public void setProgress(float progress) {
         this.progress = progress;
+    }
+    
+    public void setTask(String task) {
+        this.task = task;
+    }
+    
+    public String getTask() {
+        return task;
     }
 
 }

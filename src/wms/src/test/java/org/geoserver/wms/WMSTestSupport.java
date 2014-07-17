@@ -471,6 +471,17 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
 
         assertEquals(color, actual);
     }
+    
+    /**
+     * Checks the pixel i/j is fully transparent
+     * @param image
+     * @param i
+     * @param j
+     */
+    protected void assertPixelIsTransparent(BufferedImage image, int i, int j) {
+  	    int pixel = image.getRGB(i,j);
+        assertEquals(true, (pixel>>24) == 0x00);
+    }
 
     /**
      * Gets a specific pixel color from the specified buffered image

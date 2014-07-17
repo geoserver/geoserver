@@ -154,8 +154,10 @@ public abstract class RenderedImageMapResponse extends AbstractMapResponse {
                 || !supportsTranslucency
                 || (method == null && image.getColorModel().getTransparency() != Transparency.TRANSLUCENT);
 
+
+        // format: split on ';' to handle subtypes like 'image/gif;subtype=animated'
+        final String format = request.getFormat().split(";")[0];
         // do we have to use the bitmask quantizer?
-        final String format = request.getFormat();
         IndexColorModel icm = mapContent.getPalette();
         if (useBitmaskQuantizer) {
             // user provided palette?

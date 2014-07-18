@@ -617,10 +617,15 @@ public class Dispatcher extends AbstractController {
                 //track an exception 
                 Throwable t = null;
 
+                // Boolean used for evaluating if the request bean has been parsed in KVP or in XML
+                boolean kvpParsed = false;
+                boolean xmlParsed = false;
+
                 if (req.getKvp() != null && req.getKvp().size() > 0) {
                     //use the kvp reader mechanism
                     try {
                         requestBean = parseRequestKVP(parameterType, req);
+                        kvpParsed = true;
                     } 
                     catch (Exception e) {
                         //dont die now, there might be a body to parse
@@ -630,6 +635,7 @@ public class Dispatcher extends AbstractController {
                 if (req.getInput() != null) {
                     //use the xml reader mechanism
                     requestBean = parseRequestXML(requestBean,req.getInput(), req);
+                    xmlParsed = true;
                 }
                 
                 //if no reader found for the request, throw exception
@@ -641,7 +647,17 @@ public class Dispatcher extends AbstractController {
                     if ( t != null ) {
                         throw t;
                     }
-                    throw new ServiceException( "Could not find request reader (either kvp or xml) for: " + parameterType.getName() );
+                    if (kvpParsed && xmlParsed || (!kvpParsed && !xmlParsed)) {
+                        throw new ServiceException(
+                                "Could not find request reader (either kvp or xml) for: "
+                                        + parameterType.getName());
+                    } else if (kvpParsed) {
+                        throw new ServiceException("Could not parse the KVP for: "
+                                + parameterType.getName());
+                    } else {
+                        throw new ServiceException("Could not parse the XML for: "
+                                + parameterType.getName());
+                    }
                 }
                 
                 // GEOS-934  and GEOS-1288

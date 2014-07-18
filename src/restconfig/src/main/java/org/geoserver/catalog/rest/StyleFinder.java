@@ -5,14 +5,22 @@
 package org.geoserver.catalog.rest;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.StyleHandler;
+import org.geoserver.catalog.Styles;
+import org.geoserver.platform.ContextLoadedEvent;
 import org.geoserver.rest.RestletException;
+import org.geoserver.rest.format.MediaTypes;
+import org.geotools.util.Version;
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Resource;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
 
-public class StyleFinder extends AbstractCatalogFinder {
+public class StyleFinder extends AbstractCatalogFinder implements ApplicationListener {
 
     public StyleFinder(Catalog catalog) {
         super(catalog);
@@ -73,4 +81,14 @@ public class StyleFinder extends AbstractCatalogFinder {
         return new StyleResource(getContext(),request,response,catalog);
     }
 
+    @Override
+    public void onApplicationEvent(ApplicationEvent event) {
+        if (event instanceof ContextLoadedEvent) {
+            // register style format mime types
+            for (StyleHandler sh : Styles.handlers()) {
+                Version ver = sh.getVersions().iterator().next();
+                MediaTypes.registerExtension(sh.getFileExtension(), new MediaType(sh.mimeType(ver)));
+            }
+        }
+    }
 }

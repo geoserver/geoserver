@@ -485,6 +485,15 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 + STATES_SLD.replaceAll("=", "%3D"));
         checkImage(response);
     }
+
+    @Test
+    public void testStyleBody() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox + "&styles="
+                + "&layers=" + layers + "&Format=image/png" + "&request=GetMap" + "&width=550"
+                + "&height=250" + "&srs=EPSG:4326" + "&STYLE_BODY="
+                + STATES_SLD.replaceAll("=", "%3D"));
+        checkImage(response);
+    }
     
     @Test 
     public void testSldBody11() throws Exception {
@@ -494,12 +503,30 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                 + STATES_SLD11.replaceAll("=", "%3D"));
         checkImage(response);
     }
-    
+
+    @Test
+    public void testStyleBody11() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox + "&styles="
+                + "&layers=" + layers + "&Format=image/png" + "&request=GetMap" + "&width=550"
+                + "&height=250" + "&srs=EPSG:4326" + "&STYLE_BODY="
+                + STATES_SLD11.replaceAll("=", "%3D"));
+        checkImage(response);
+    }
+
     @Test
     public void testSldBodyNoVersion() throws Exception {
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox + "&styles="
                 + "&layers=" + layers + "&Format=image/png" + "&request=GetMap" + "&width=550"
                 + "&height=250" + "&srs=EPSG:4326" + "&SLD_BODY="
+                + STATES_SLD.replace(" version=\"1.1.0\"", "").replaceAll("=", "%3D"));
+        checkImage(response);
+    }
+
+    @Test
+    public void testStyleBodyNoVersion() throws Exception {
+        MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox + "&styles="
+                + "&layers=" + layers + "&Format=image/png" + "&request=GetMap" + "&width=550"
+                + "&height=250" + "&srs=EPSG:4326" + "&STYLE_BODY="
                 + STATES_SLD.replace(" version=\"1.1.0\"", "").replaceAll("=", "%3D"));
         checkImage(response);
     }
@@ -512,7 +539,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
 
         checkImage(response);
     }
-    
+
     @Test
     public void testSldBodyPost11() throws Exception {
         MockHttpServletResponse response = postAsServletResponse("wms?bbox=" + bbox

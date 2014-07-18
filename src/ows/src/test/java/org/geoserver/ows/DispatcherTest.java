@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.rmi.ServerException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -23,9 +24,11 @@ import junit.framework.TestCase;
 
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.test.CodeExpectingHttpServletResponse;
 import org.geotools.util.Version;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -512,5 +515,103 @@ public class DispatcherTest extends TestCase {
         dispatcher.exception(error, null, req);
 
         assertNull("Exception erroneously saved", req.error);
+    }
+
+    public void testDispatchXMLException() throws Exception {
+        // This test ensures that the text of the exception indicates that a wrong XML has been set
+        URL url = getClass().getResource("applicationContextNamespace.xml");
+        FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(
+                url.toString());
+
+        Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
+        MockHttpServletRequest request = new MockHttpServletRequest()
+
+        {
+            String encoding;
+
+            public int getServerPort() {
+                return 8080;
+            }
+
+            public String getCharacterEncoding() {
+                return encoding;
+            }
+
+            public void setCharacterEncoding(String encoding) {
+                this.encoding = encoding;
+            }
+        };
+
+        request.setScheme("http");
+        request.setServerName("localhost");
+
+        request.setContextPath("/geoserver");
+        request.setMethod("POST");
+
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        request.setContentType("application/xml");
+        request.setBodyContent("<h:Hello xmlns:h='http:/hello.org' />");
+        request.setRequestURI("http://localhost/geoserver/hello");
+
+        response = new MockHttpServletResponse();
+
+        // Dispatch the request
+        ModelAndView mov = dispatcher.handleRequestInternal(request, response);
+        // Service exception, null is returned.
+        assertNull(mov);
+        // Check the response
+        assertTrue(response.getOutputStreamContent().contains("Could not parse the XML"));
+    }
+
+    public void testDispatchKVPException() throws Exception {
+        // This test ensures that the text of the exception indicates that a wrong KVP has been set
+        URL url = getClass().getResource("applicationContext4.xml");
+
+        FileSystemXmlApplicationContext context = new FileSystemXmlApplicationContext(
+                url.toString());
+
+        Dispatcher dispatcher = (Dispatcher) context.getBean("dispatcher");
+
+        MockHttpServletRequest request = new MockHttpServletRequest()
+
+        {
+            String encoding;
+
+            public int getServerPort() {
+                return 8080;
+            }
+
+            public String getCharacterEncoding() {
+                return encoding;
+            }
+
+            public void setCharacterEncoding(String encoding) {
+                this.encoding = encoding;
+            }
+        };
+        request.setScheme("http");
+        request.setServerName("localhost");
+
+        request.setContextPath("/geoserver");
+        request.setMethod("GET");
+
+        // request.setupAddParameter("service", "hello");
+        request.setupAddParameter("request", "Hello");
+        // request.setupAddParameter("message", "Hello world!");
+        request.setRequestURI("http://localhost/geoserver/hello");
+
+        request.setQueryString("message=Hello World!");
+
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        response = new MockHttpServletResponse();
+
+        // Dispatch the request
+        ModelAndView mov = dispatcher.handleRequestInternal(request, response);
+        // Service exception, null is returned.
+        assertNull(mov);
+        // Check the response
+        assertTrue(response.getOutputStreamContent().contains("Could not parse the KVP"));
     }
 }

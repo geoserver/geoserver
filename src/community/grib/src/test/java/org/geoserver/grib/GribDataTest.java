@@ -15,10 +15,9 @@ import junit.framework.TestCase;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.io.grib.GRIBFormat;
-import org.geotools.coverage.io.netcdf.NetCDFFormat;
 import org.geotools.coverage.io.netcdf.NetCDFReader;
 import org.geotools.imageio.netcdf.NetCDFImageReaderSpi;
-import org.geotools.imageio.unidata.utilities.UnidataUtilities;
+import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
 import org.geotools.test.TestData;
 import org.junit.Assert;
 import org.junit.Test;
@@ -30,8 +29,8 @@ public class GribDataTest extends TestCase {
 
     @Test
     public void testFormatSupported() throws FileNotFoundException, IOException{
-        // Check if the Grib Library is available by calling the UnidataUtilities.isGribAvailable() method
-        Assert.assertTrue(UnidataUtilities.isGribAvailable());
+        // Check if the Grib Library is available by calling the NetCDFUtilities.isGribAvailable() method
+        Assert.assertTrue(NetCDFUtilities.isGribAvailable());
         // Selection of the input file
         File file = TestData.file(this, "sampleGrib.grb2");
         // Check if the grib file is accepted by the NetCDF driver

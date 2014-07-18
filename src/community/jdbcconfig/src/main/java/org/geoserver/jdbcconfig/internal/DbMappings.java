@@ -70,6 +70,8 @@ public class DbMappings {
 
     private static final Logger LOGGER = Logging.getLogger(DbMappings.class);
 
+    private final Dialect dialect;
+
     private BiMap<Integer, Class<?>> types;
 
     private BiMap<Class<?>, Integer> typeIds;
@@ -94,6 +96,10 @@ public class DbMappings {
             Float.class, //
             Double.class //
             );
+
+    public DbMappings(Dialect dialect) {
+        this.dialect = dialect;
+    }
 
     public Integer getTypeId(Class<?> type) {
         Integer typeId = typeIds.get(type);
@@ -280,13 +286,17 @@ public class DbMappings {
             @Override
             public PropertyType mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Integer oid = rs.getInt(1);
-                Integer targetPropertyOid = (Integer) rs.getObject(2);
+                // cannot use getInteger and we might get BigDecimal or Integer
+                Number targetPropertyOid = (Number) rs.getObject(2);
                 Integer objectTypeOid = rs.getInt(3);
                 String propertyName = rs.getString(4);
                 Boolean collectionProperty = rs.getBoolean(5);
                 Boolean textProperty = rs.getBoolean(6);
 
-                PropertyType pt = new PropertyType(oid, targetPropertyOid, objectTypeOid,
+                if (targetPropertyOid != null) {
+                    targetPropertyOid = targetPropertyOid.intValue();
+                }
+                PropertyType pt = new PropertyType(oid, (Integer) targetPropertyOid, objectTypeOid,
                         propertyName, collectionProperty, textProperty);
 
                 return pt;
@@ -335,7 +345,8 @@ public class DbMappings {
     private void createType(Class<? extends Info> clazz, NamedParameterJdbcOperations template) {
 
         final String typeName = clazz.getName();
-        String sql = "insert into type (typename) values (:typeName)";
+        String sql = String.format("insert into type (typename, oid) values (:typeName, %s)",
+                dialect.nextVal("seq_TYPE"));
         int update = template.update(sql, params("typeName", typeName));
         if (1 == update) {
             log("created type " + typeName);
@@ -468,21 +479,21 @@ public class DbMappings {
 
             Integer targetPropertyOid = targetProperty == null ? null : targetProperty.getOid();
 
-            String insert = "insert into property_type (target_property, type_id, name, collection, text) "
-                    + "values (:target, :type, :name, :collection, :isText)";
+            String insert = String.format("insert into property_type (oid, target_property, type_id, name, collection, text) "
+                    + "values (%s, :target, :type, :name, :collection, :isText)",
+                    dialect.nextVal("seq_PROPERTY_TYPE"));
 
             params = params("target", targetPropertyOid, "type", typeId, "name", propertyName,
                     "collection", isCollection, "isText", isText);
             logStatement(insert, params);
             KeyHolder keyHolder = new GeneratedKeyHolder();
-            template.update(insert, new MapSqlParameterSource(params), keyHolder);
+            template.update(insert, new MapSqlParameterSource(params), keyHolder, new String[] {"oid"});
 
             // looks like some db's return the pk different than others, so lets try both ways
             Number pTypeKey = (Number) keyHolder.getKeys().get("oid");
             if (pTypeKey == null) {
                 pTypeKey = keyHolder.getKey();
             }
-
             pType = new PropertyType(pTypeKey.intValue(), targetPropertyOid, typeId, propertyName,
                     isCollection, isText);
         } else {

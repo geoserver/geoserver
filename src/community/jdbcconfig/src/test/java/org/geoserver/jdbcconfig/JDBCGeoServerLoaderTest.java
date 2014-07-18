@@ -22,18 +22,22 @@ import org.geoserver.wms.WMSXStreamLoader;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameter;
+import org.junit.runners.Parameterized.Parameters;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.google.common.collect.Maps;
+import java.util.List;
 
-
+@RunWith(Parameterized.class)
 public class JDBCGeoServerLoaderTest {
 
     JDBCConfigTestSupport testSupport;
 
-    @Before
-    public void setUp() throws Exception {
-        testSupport = new JDBCConfigTestSupport() {
+    public JDBCGeoServerLoaderTest(JDBCConfigTestSupport.DBConfig dbConfig) {
+        testSupport = new JDBCConfigTestSupport(dbConfig) {
             @Override
             protected void configureAppContext(WebApplicationContext appContext) {
                 expect(appContext.getBeanNamesForType(XStreamServiceLoader.class))
@@ -42,9 +46,18 @@ public class JDBCGeoServerLoaderTest {
                     .andReturn(new String[]{}).anyTimes();
                 expect(appContext.getBean("wmsLoader"))
                     .andReturn(new WMSXStreamLoader(getResourceLoader())).anyTimes();
-                
+
             }
         };
+    }
+
+    @Parameters(name = "JDBCGeoServerLoaderTest-{0}")
+    public static Iterable<Object[]> data() {
+        return JDBCConfigTestSupport.parameterizedDBConfigs();
+    }
+
+    @Before
+    public void setUp() throws Exception {
         testSupport.setUp();
     }
 

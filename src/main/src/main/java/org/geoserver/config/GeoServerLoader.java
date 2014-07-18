@@ -371,13 +371,12 @@ public abstract class GeoServerLoader {
                                 FeatureTypeInfo ft = null;
                                 try {
                                     ft = depersist(xp,f,FeatureTypeInfo.class);
+                                    catalog.add(ft);
                                 }
                                 catch( Exception e ) {
                                     LOGGER.log( Level.WARNING, "Failed to load feature type '" + ftd.getName() +"'", e);
                                     continue;
                                 }
-                                
-                                catalog.add( ft );
                                 
                                 LOGGER.info( "Loaded feature type '" + ds.getName() +"'");
                                 

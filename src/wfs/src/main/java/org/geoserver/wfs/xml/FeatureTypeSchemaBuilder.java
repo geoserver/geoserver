@@ -49,12 +49,14 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.WFSInfo;
 import org.geotools.feature.NameImpl;
+import org.geotools.geometry.jts.CurvedGeometry;
 import org.geotools.gml2.GMLConfiguration;
 import org.geotools.gml3.v3_2.GML;
 import org.geotools.wfs.v2_0.WFS;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Schemas;
 import org.geotools.xs.XS;
+import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.ComplexType;
@@ -62,6 +64,8 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.feature.type.Schema;
+
+import com.vividsolutions.jts.geom.LineString;
 
 /**
  * Builds a {@link org.eclipse.xsd.XSDSchema} from {@link FeatureTypeInfo}
@@ -668,8 +672,11 @@ public abstract class FeatureTypeSchemaBuilder {
             throws IOException {
         if (!findTypeInSchema(featureTypeMeta, schema, factory)) {
             // build the type manually
-            XSDComplexTypeDefinition xsdComplexType = buildComplexSchemaContent(featureTypeMeta
-                    .getFeatureType(), schema, factory);
+            FeatureType featureType = featureTypeMeta.getFeatureType();
+            if(featureTypeMeta.isCircularArcPresent() && this.getClass().equals(GML3.class)) {
+            	featureType = new CurveTypeWrapper(featureType, true);
+            }
+			XSDComplexTypeDefinition xsdComplexType = buildComplexSchemaContent(featureType, schema, factory);
 
             XSDElementDeclaration element = factory.createXSDElementDeclaration();
             element.setName(featureTypeMeta.getName());
@@ -686,7 +693,8 @@ public abstract class FeatureTypeSchemaBuilder {
         }
     }
 
-    /**
+
+	/**
      * Construct an XSD type definition for a ComplexType. 
      * 
      * <p>

@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.measure.unit.SI;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
@@ -54,6 +55,7 @@ import org.geoserver.config.util.XStreamPersister.SRSConverter;
 import org.geotools.jdbc.RegexpValidator;
 import org.geotools.jdbc.VirtualTable;
 import org.geotools.jdbc.VirtualTableParameter;
+import org.geotools.measure.Measure;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.wkt.Formattable;
@@ -490,6 +492,7 @@ public class XStreamPersisterTest {
         ft.setAbstract( "abstract");
         ft.setSRS( "EPSG:4326");
         ft.setNativeCRS( CRS.decode( "EPSG:4326") );
+        ft.setLinearizationTolerance(new Measure(10, SI.METER));
         
         ByteArrayOutputStream out = out();
         persister.save( ft, out );
@@ -502,6 +505,7 @@ public class XStreamPersisterTest {
         assertEquals( ds, ft.getStore() );
         assertEquals( ns, ft.getNamespace() );
         assertEquals( "EPSG:4326", ft.getSRS() );
+        assertEquals( new Measure(10, SI.METER), ft.getLinearizationTolerance() );
         assertTrue( CRS.equalsIgnoreMetadata( CRS.decode( "EPSG:4326"), ft.getNativeCRS() ) ); 
     }
     

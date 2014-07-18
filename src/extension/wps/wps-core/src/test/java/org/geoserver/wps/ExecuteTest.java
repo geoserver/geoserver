@@ -872,9 +872,11 @@ public class ExecuteTest extends WPSTestSupport {
         // we move the clock forward, but we asked no status, nothing should change
         MonkeyProcess.progress("x3", 50f, true);
         dom = getAsDOM(statusLocation);
-        // print(dom);
+         print(dom);
         assertXpathExists("//wps:ProcessStarted", dom);
         assertXpathEvaluatesTo("" + Math.round(0.66 * 50), "//wps:ProcessStarted/@percentCompleted", dom);
+        assertXpathEvaluatesTo("Currently at 50.0", "//wps:ProcessStarted", dom);
+
         
         // now schedule the exit and wait for it to exit
         MonkeyProcess.exit("x3", collectionOfThings(), true);

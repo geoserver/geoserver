@@ -97,7 +97,7 @@ public class DefaultProcessManager implements ProcessManager, ExtensionPriority,
     public Map<String, Object> submitChained(String executionId, Name processName,
             Map<String, Object> inputs) throws ProcessException {
         // straight execution, no thread pooling, we're already running in the parent process thread
-        ProcessListener listener = new ProcessListener(new ExecutionStatus(processName, executionId, ProcessState.RUNNING, 0));
+        ProcessListener listener = new ProcessListener(new ExecutionStatus(processName, executionId, ProcessState.RUNNING, 0, null));
         ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName);
         if (pf == null) {
             throw new WPSException("No such process: " + processName);
@@ -256,11 +256,11 @@ public class DefaultProcessManager implements ProcessManager, ExtensionPriority,
         ProcessListener listener;
 
         public ExecutionStatusEx(Name processName, String executionId) {
-            super(processName, executionId, ProcessState.QUEUED, 0);
+            super(processName, executionId, ProcessState.QUEUED, 0, null);
         }
 
         public ExecutionStatus getStatus() {
-            return new ExecutionStatus(processName, executionId, phase, progress);
+            return new ExecutionStatus(processName, executionId, phase, progress, task);
         }
     }
 
@@ -293,6 +293,9 @@ public class DefaultProcessManager implements ProcessManager, ExtensionPriority,
         @Override
         public void setTask(InternationalString task) {
             this.task = task;
+            if(task != null) {
+                status.setTask(task.toString());
+            }
         }
 
         @Override

@@ -4,8 +4,7 @@
  */
 package org.geoserver.wfs.xml;
 
-import static org.geoserver.ows.util.ResponseUtils.buildURL;
-import static org.geoserver.ows.util.ResponseUtils.params;
+import static org.geoserver.ows.util.ResponseUtils.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,14 +48,12 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.WFSInfo;
 import org.geotools.feature.NameImpl;
-import org.geotools.geometry.jts.CurvedGeometry;
 import org.geotools.gml2.GMLConfiguration;
 import org.geotools.gml3.v3_2.GML;
 import org.geotools.wfs.v2_0.WFS;
 import org.geotools.xml.Configuration;
 import org.geotools.xml.Schemas;
 import org.geotools.xs.XS;
-import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.ComplexType;
@@ -64,8 +61,6 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.feature.type.Schema;
-
-import com.vividsolutions.jts.geom.LineString;
 
 /**
  * Builds a {@link org.eclipse.xsd.XSDSchema} from {@link FeatureTypeInfo}
@@ -459,7 +454,7 @@ public abstract class FeatureTypeSchemaBuilder {
             String schemaLocation) {
         XSDImport xsdImport = factory.createXSDImport();
         xsdImport.setNamespace(namespace);
-        xsdImport.setSchemaLocation((String) schemaLocation);
+        xsdImport.setSchemaLocation(schemaLocation);
         schema.getContents().add(xsdImport);
     }
 
@@ -505,7 +500,7 @@ public abstract class FeatureTypeSchemaBuilder {
             }
             
             // add secondary namespaces from catalog
-            for (Map.Entry<String, String> entry : (Set<Map.Entry<String, String>>) schema.getQNamePrefixToNamespaceMap()
+            for (Map.Entry<String, String> entry : schema.getQNamePrefixToNamespaceMap()
                     .entrySet()) {
                 if (!wfsSchema.getQNamePrefixToNamespaceMap().containsKey(entry.getKey())) {
                     wfsSchema.getQNamePrefixToNamespaceMap().put(entry.getKey(), entry.getValue());
@@ -674,7 +669,7 @@ public abstract class FeatureTypeSchemaBuilder {
             // build the type manually
             FeatureType featureType = featureTypeMeta.getFeatureType();
             if(featureTypeMeta.isCircularArcPresent() && this.getClass().equals(GML3.class)) {
-            	featureType = new CurveTypeWrapper(featureType, true);
+                featureType = new CurveTypeWrapper(featureType);
             }
 			XSDComplexTypeDefinition xsdComplexType = buildComplexSchemaContent(featureType, schema, factory);
 
@@ -786,7 +781,7 @@ public abstract class FeatureTypeSchemaBuilder {
 
     XSDTypeDefinition resolveTypeInSchema(XSDSchema schema, Name typeName) {
         XSDTypeDefinition type = null;
-        for (XSDTypeDefinition td : ((List<XSDTypeDefinition>)schema.getTypeDefinitions())) {
+        for (XSDTypeDefinition td : (schema.getTypeDefinitions())) {
             if (typeName.getNamespaceURI().equals(td.getTargetNamespace()) 
                 && typeName.getLocalPart().equals(td.getName())) {
                 type = td;

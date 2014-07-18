@@ -27,6 +27,7 @@ import org.geotools.data.crs.ReprojectFeatureResults;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.factory.Hints;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.feature.SchemaException;
 import org.geotools.feature.collection.MaxSimpleFeatureCollection;
@@ -98,20 +99,29 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
     protected ProjectionPolicy srsHandling;
 
     /**
+     * Distance used for curve linearization tolerance, as an absolute value expressed in the data
+     * native CRS
+     */
+    protected Double linearizationTolerance;
+
+    /**
      * Creates a new GeoServerFeatureSource object.
-     *
+     * 
      * @param source GeoTools2 FeatureSource
      * @param schema SimpleFeatureType returned by this FeatureSource
      * @param definitionQuery Filter used to limit results
      * @param declaredCRS Geometries will be forced or projected to this CRS
+     * @param linearizationTolerance Distance used for curve linearization tolerance, as an absolute
+     *        value expressed in the data native CRS
      */
     GeoServerFeatureSource(FeatureSource<SimpleFeatureType, SimpleFeature> source, SimpleFeatureType schema, Filter definitionQuery,
-        CoordinateReferenceSystem declaredCRS, int srsHandling) {
+        CoordinateReferenceSystem declaredCRS, int srsHandling, Double linearizationTolerance) {
         this.source = DataUtilities.simple(source);
         this.schema = schema;
         this.definitionQuery = definitionQuery;
         this.declaredCRS = declaredCRS;
         this.srsHandling = ProjectionPolicy.get( srsHandling );
+        this.linearizationTolerance = linearizationTolerance;
 
         if (this.definitionQuery == null) {
             this.definitionQuery = Filter.INCLUDE;
@@ -143,22 +153,22 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      * @param schema DOCUMENT ME!
      * @param definitionQuery DOCUMENT ME!
      * @param declaredCRS 
-     *
+     * @param linearizationTolerance TODO
      * @return
      */
     public static GeoServerFeatureSource create(FeatureSource <SimpleFeatureType, SimpleFeature> featureSource, SimpleFeatureType schema,
-        Filter definitionQuery, CoordinateReferenceSystem declaredCRS, int srsHandling) {
+        Filter definitionQuery, CoordinateReferenceSystem declaredCRS, int srsHandling, Double linearizationTolerance) {
         if (featureSource instanceof FeatureLocking) {
             return new GeoServerFeatureLocking(
                     (FeatureLocking<SimpleFeatureType, SimpleFeature>) featureSource, schema,
-                    definitionQuery, declaredCRS, srsHandling);
+                    definitionQuery, declaredCRS, srsHandling, linearizationTolerance);
         } else if (featureSource instanceof FeatureStore) {
             return new GeoServerFeatureStore(
                     (FeatureStore<SimpleFeatureType, SimpleFeature>) featureSource, schema,
-                    definitionQuery, declaredCRS, srsHandling);
+                    definitionQuery, declaredCRS, srsHandling, linearizationTolerance);
         }
 
-        return new GeoServerFeatureSource(featureSource, schema, definitionQuery, declaredCRS, srsHandling);
+        return new GeoServerFeatureSource(featureSource, schema, definitionQuery, declaredCRS, srsHandling, null);
     }
 
     /**
@@ -188,9 +198,15 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
             defQuery.setFilter(filter);
             defQuery.setPropertyNames(propNames);
 
-            //set sort by
+            // set sort by
             if (query.getSortBy() != null) {
                 defQuery.setSortBy(query.getSortBy());
+            }
+
+            // tell the data sources about the default linearization tolerance for curved
+            // geometries they might be reading
+            if (linearizationTolerance != null) {
+                query.getHints().put(Hints.LINEARIZATION_TOLERANCE, linearizationTolerance);
             }
 
             return defQuery;
@@ -541,10 +557,10 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
         // AA: added force coordinate system reset as well, since we cannot
         // trust GT2 datastores there neither.
         if ( newQuery.getCoordinateSystemReproject() != null ) {
-            ((Query)newQuery).setCoordinateSystemReproject(null);
+            newQuery.setCoordinateSystemReproject(null);
         }
         if ( newQuery.getCoordinateSystem() != null ) {
-            ((Query)newQuery).setCoordinateSystem(null);
+            newQuery.setCoordinateSystem(null);
         }
         return newQuery;
     }

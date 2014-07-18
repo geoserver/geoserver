@@ -39,6 +39,8 @@ import org.geoserver.web.util.DataDirectoryConverterLocator;
 import org.geoserver.web.util.GeoToolsConverterAdapter;
 import org.geoserver.web.util.converters.StringBBoxConverter;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.measure.Measure;
+import org.geotools.util.MeasureConverterFactory;
 import org.geotools.util.logging.Logging;
 import org.springframework.context.ApplicationContext;
 import org.wicketstuff.htmlvalidator.HtmlValidationResponseFilter;
@@ -242,6 +244,8 @@ public class GeoServerApplication extends SpringWebApplication {
         locator.set(File.class, dd.getConverter(File.class));
         locator.set(URI.class, dd.getConverter(URI.class));
         locator.set(URL.class, dd.getConverter(URL.class));
+        locator.set(Measure.class, new GeoToolsConverterAdapter(
+                MeasureConverterFactory.CONVERTER, Measure.class));
 
         return locator;
     }

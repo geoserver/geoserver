@@ -13,8 +13,10 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.StoreInfo;
 import org.geotools.data.FeatureSource;
 import org.geotools.factory.Hints;
+import org.geotools.measure.Measure;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
@@ -34,6 +36,17 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements
     
     boolean overridingServiceSRS;
     
+    boolean circularArcPresent;
+    
+    public boolean isCircularArcPresent() {
+    	return circularArcPresent;
+	}
+
+	public void setCircularArcPresent(boolean curveGeometryEnabled) {
+		this.circularArcPresent = curveGeometryEnabled;
+	}
+
+	Measure linearizationTolerance;
     
     protected FeatureTypeInfoImpl() {
     }
@@ -47,6 +60,11 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements
     }
 
     public DataStoreInfo getStore() {
+        StoreInfo storeInfo = super.getStore();
+        if (!(storeInfo instanceof DataStoreInfo)) {
+            LOGGER.warning("Failed to load actual store for " + this);
+            return null;
+        }
         return (DataStoreInfo) super.getStore();
     }
 
@@ -156,6 +174,13 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements
                 return false;
         } else if (!filter.equals(other.getFilter()))
             return false;
+        if (circularArcPresent != other.isCircularArcPresent())
+            return false;
+        if (linearizationTolerance == null) {
+            if (other.getLinearizationTolerance() != null)
+                return false;
+        } else if (!linearizationTolerance.equals(other.getLinearizationTolerance()))
+            return false;
         if (maxFeatures != other.getMaxFeatures())
             return false;
         if (numDecimals != other.getNumDecimals())
@@ -164,6 +189,16 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements
             return false;
         }
         return true;
+    }
+
+    @Override
+    public Measure getLinearizationTolerance() {
+        return linearizationTolerance;
+    }
+
+    @Override
+    public void setLinearizationTolerance(Measure tolerance) {
+        this.linearizationTolerance = tolerance;
     }
     
     

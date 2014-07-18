@@ -10,6 +10,7 @@ import java.util.List;
 import org.geoserver.config.GeoServerInfo;
 import org.geotools.data.FeatureSource;
 import org.geotools.factory.Hints;
+import org.geotools.measure.Measure;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
@@ -95,7 +96,24 @@ public interface FeatureTypeInfo extends ResourceInfo {
     void setNumDecimals( int numDecimals );
     
     /**
+     * Tolerance used to linearize this feature type, as an absolute value expressed in the
+     * geometries own CRS
+     * 
+     * @return
+     */
+    Measure getLinearizationTolerance();
+
+    /**
+     * Tolerance used to linearize this feature type, as an absolute value expressed in the
+     * geometries own CRS
+     * 
+     * @return
+     */
+    void setLinearizationTolerance(Measure tolerance);
+
+    /**
      * True if this feature type info is overriding the WFS global SRS list
+     * 
      * @return
      */
     boolean isOverridingServiceSRS();
@@ -149,6 +167,10 @@ public interface FeatureTypeInfo extends ResourceInfo {
      */
     FeatureSource<? extends FeatureType, ? extends Feature> getFeatureSource( ProgressListener listener, Hints hints )
             throws IOException;
+
+	boolean isCircularArcPresent();
+	
+	void setCircularArcPresent(boolean arcsPresent);
 
     /**
      * The live feature resource, an instance of of {@link FeatureResource}.

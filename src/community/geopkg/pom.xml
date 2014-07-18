@@ -62,11 +62,6 @@
    <artifactId>gt-render</artifactId>
    <version>${gt.version}</version>
   </dependency>
-  <dependency>
-   <groupId>org.geotools</groupId>
-   <artifactId>gt-wfs</artifactId>
-   <version>${gt.version}</version>
-  </dependency>  
  <dependency>
    <groupId>org.geoserver.extension</groupId>
    <artifactId>gs-wps-core</artifactId>

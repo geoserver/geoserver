@@ -7,33 +7,24 @@ Setting the location of the GeoServer data directory is dependent on the type of
 
 .. note::
   
-   If the location of the GeoServer data directory is not set explicitly, the directory ``data_dir`` under the root of the GeoServer installation is used.
-
+   If the location of the GeoServer data directory is not set explicitly, the directory ``data_dir`` under the root of the GeoServer installation is used by default.
 
 Windows
 -------
 
 On Windows platforms the location of the GeoServer data directory is controlled by the ``GEOSERVER_DATA_DIR`` environment variable. 
-The method of setting this variable depends on the Windows version.
 
-Windows XP
-^^^^^^^^^^
-
-#. From the Desktop or Start Menu right-click the ``My Computer`` icon and select ``Properties``. 
-
-#. On the resulting dialog select the ``Advanced`` tab and click the ``Environment Variables`` button.
+#. Open the System properties dialog
+   
+   * Windows: From the Desktop or Start Menu right click and select ``Properties`` to open the ``System`` control panel. With the ``System`` control panel open click on the ``Advanced System Settings`` link to open the ``System Properties``.
+   * Windows XP: From the Desktop or Start Menu right-click the ``My Computer`` icon and select ``Properties`` to open ``System Properties``.
+   
+#. From ``System Properties`` click on the ``Advanced`` tab and click the ``Environmental Variables`` button.
 
 #. Click the ``New`` button and create a environment variable called ``GEOSERVER_DATA_DIR`` and set it to the desired location.
 
    .. image:: geoserver_data_dir.png
       :align: center
-
-
-Windows Vista
-^^^^^^^^^^^^^
-
-  To be documented.
-
 
 Linux
 -----
@@ -43,7 +34,6 @@ On Linux platforms the location of the GeoServer data directory is controlled by
     % export GEOSERVER_DATA_DIR=/var/lib/geoserver_data
 
 Place the command in the ``.bash_profile`` or ``.bashrc`` file (again assuming a bash shell). Ensure that this done for the user running GeoServer.
-
 
 Mac OS X
 --------

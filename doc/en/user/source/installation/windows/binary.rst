@@ -15,14 +15,20 @@ Installation
 
 #. Select :guilabel:`OS-independent binary` on the download page.
 
-#. Download the archive, and unpack to the directory where you would like the program to be located.  A typical place would be :file:`C:\\Program Files\\GeoServer`.
+#. Download the archive, and unpack to the directory where you would like the program to be located.
+
+========= ===============================================
+Platform  Example Location 
+========= ===============================================
+Windows   :file:`C:\\Program Files\\GeoServer`
+========= ===============================================
 
 Setting environment variables
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You will need to set the ``JAVA_HOME`` environment variable if it is not already set.  This is the path to your JDK/JRE such that :file:`%JAVA_HOME%\\bin\\java.exe` exists.  You can download a JRE at `<http://www.oracle.com/technetwork/java/javase/downloads/index.html>`_.
+You will need to set the ``JAVA_HOME`` environment variable if it is not already set.  This is the path to your JRE (or JDK) such that :file:`%JAVA_HOME%\\bin\\java.exe` exists.  You can download a JRE at `<http://www.oracle.com/technetwork/java/javase/downloads/index.html>`_.
 
-.. note:: Oracle Java SE 6 or newer is strongly recommended.  (As of GeoServer 2.2.x, Oracle JRE 5 is no longer supported.)  A Java Development Kit (JDK) is not required to run GeoServer.  For more information about Java and GeoServer, please see the section on :ref:`production_java`.
+.. note:: Java 7 is required, as of GeoServer 2.6.x Java 5 is no longer supported. For more information about Java and GeoServer, please see the section on :ref:`production_java`.
 
 #. Navigate to :menuselection:`Control Panel --> System --> Advanced --> Environment Variables`.
 

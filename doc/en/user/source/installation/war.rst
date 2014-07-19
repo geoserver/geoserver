@@ -30,7 +30,7 @@ Running
 
 Use your container application's method of starting and stopping webapps to run GeoServer.
 
-#. To access the :ref:`web_admin`, open a browser and navigate to :file:`http://{container_application_URL}/geoserver`.  For example, with Tomcat running on port 8080 on localhost, the URL would be ``http://localhost:8080/geoserver``.
+#. To access the :ref:`web_admin`, open a browser and navigate to ``http://{container_application_URL}/geoserver`` .  For example, with Tomcat running on port 8080 on localhost, the URL would be ``http://localhost:8080/geoserver``.
 
 Uninstallation
 --------------

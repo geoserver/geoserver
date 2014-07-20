@@ -15,7 +15,7 @@ import java.util.List;
 public class YsldHandler extends StyleHandler {
 
     public static final String FORMAT = "ysld";
-    public static final String MIMETYPE = "application/vnd.ysld+yaml";
+    public static final String MIMETYPE = "application/vnd.geoserver.ysld+yaml";
 
     public YsldHandler() {
         super("Ysld", FORMAT);

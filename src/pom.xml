@@ -1380,18 +1380,21 @@
     <version>3.0</version>
    </plugin>
 
-   <!-- javadoc -->
+   <!-- ======================================================= -->
+   <!--     Javadoc generation.                                 -->
+   <!-- ======================================================= -->
    <plugin>
     <artifactId>maven-javadoc-plugin</artifactId>
     <version>2.9</version>
     <configuration>
-     <source>1.5</source>
+     <source>1.7</source>
      <version>false</version>
      <noqualifier>all</noqualifier>
+     <quiet>true</quiet>
      <maxmemory>256M</maxmemory>
-     <encoding>ISO-8859-1</encoding>
+     <encoding>UTF-8</encoding>
      <additionalparam>-keywords</additionalparam>
-
+     <breakiterator>true</breakiterator>
      <tags>
       <tag>
        <name>todo</name>
@@ -1421,16 +1424,16 @@
      </tags>
 
      <links>
-      <link>http://java.sun.com/j2se/1.5/docs/api</link>
+      <link>http://docs.oracle.com/javase/7/docs/api/</link>
+      <link>http://docs.oracle.com/javaee/7/api/</link>
       <link>http://download.java.net/media/jai/javadoc/1.1.3/jai-apidocs</link>
       <link>http://download.java.net/media/jai-imageio/javadoc/1.0_01</link>
-      <link>http://java.sun.com/products/java-media/3D/forDevelopers/j3dapi</link>
-      <!-- todo: update link to geotools javadocs 
-      <link>http://www.geotools.fr/javadoc/2.2/</link>
-      -->
+      <link>http://download.java.net/media/java3d/javadoc/1.5.1</link>
+      <link>http://jscience.org/api/</link>
+      <link>http://tsusiatsoftware.net/jts/javadoc</link>
+      <link>http://docs.geotools.org/latest/javadocs/</link>
       <link>http://xmlgraphics.apache.org/batik/javadoc</link>
       <link>http://www.1t3xt.info/api/</link>
-      <link>http://tsusiatsoftware.net/jts/javadoc</link>
       <link>http://freemarker.sourceforge.net/docs/api/</link>
       <link>http://wicket.apache.org/docs/wicket-1.3.2/wicket/apidocs</link>
      </links>

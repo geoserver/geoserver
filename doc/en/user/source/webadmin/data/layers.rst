@@ -85,6 +85,32 @@ Coverage Parameters (Raster)
 
 Optional coverage parameters are possible for certain types of raster data. WorldImage formats request a valid range of grid coordinates in two dimensions known as a :guilabel:`ReadGridGeometry2D.` For ImageMosaic, you can use :guilabel:`InputImageThresholdValue`, :guilabel:`InputTransparentColor`, and :guilabel:`OutputTransparentColor` to control the rendering of the mosaic in terms of thresholding and transparency. 
 
+Curves support (Vector)
+```````````````````````
+
+Starting GeoServer 2.6.0 GeoServer can handle geometries containing circular arcs (initially only from Oracle spatial and the "property data store",
+hopefully more data sources will follow).
+
+These geometries are kept in memory in their circular representation for as long as possible,
+are properly visually depicted in WMS, and encoded in GML 3.x as curved.
+
+Configuration wise there are two options pertaining the circular arcs:
+
+*  *"Linear geometries can contain circular arcs"* should be checked to inform the GML encoder
+   that the layer can contain circular arcs among other linear segments in the geometries, and thus
+   use "gml:Curve" in place of "gml:LineString" in GML 3.1 output format. This is required because
+   there is no quick way to know from the data sources if the linear geometries do contain circular arcs,
+   and the choice of top level GML elements influences whether it is possible, or not, to represent
+   circular arcs in their natural form
+*  *"Linearization tolerance"* instead controls how accurately the linearized version of geometries
+   matches the original circular version of them. The tolerance can be expressed as an absolute
+   number in the native unit of measure of the data, or it can be expressed in meters or feet
+   using the "m" and "ft" suffixes, e.g. "10m" or "15ft" 
+
+.. figure:: ../images/curved.png
+   :align: center
+   
+   *Curved geometry control*
      
 Feature Type Details (Vector)
 ````````````````````````````````

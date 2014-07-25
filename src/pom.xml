@@ -1199,8 +1199,8 @@
     <version>2.12.3</version>
     <configuration>
      <runOrder>alphabetical</runOrder>
-     <source>1.5</source>
-     <target>1.5</target>
+     <source>1.7</source>
+     <target>1.7</target>
      <includes>
       <include>**/*Test.java</include>
      </includes>
@@ -1223,6 +1223,7 @@
     <configuration>
      <descriptors>
       <descriptor>release/src.xml</descriptor>
+      <!--
       <descriptor>release/war.xml</descriptor>
       <descriptor>release/javadoc.xml</descriptor>
       <descriptor>release/bin.xml</descriptor>
@@ -1260,6 +1261,7 @@
       <descriptor>release/ext-libjpeg-turbo.xml</descriptor>
       <descriptor>release/ext-importer.xml</descriptor>
       <descriptor>release/ext-importer-bdb.xml</descriptor>
+      -->
      </descriptors>
      <finalName>geoserver-2.6-SNAPSHOT</finalName>
      <outputDirectory>${project.build.directory}/release</outputDirectory>

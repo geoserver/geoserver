@@ -44,10 +44,6 @@
    <artifactId>commons-beanutils</artifactId>
   </dependency>
   <dependency>
-   <groupId>commons-digester</groupId>
-   <artifactId>commons-digester</artifactId>
-  </dependency>
-  <dependency>
    <groupId>commons-fileupload</groupId>
    <artifactId>commons-fileupload</artifactId>
   </dependency>

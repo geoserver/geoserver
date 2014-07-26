@@ -30,10 +30,6 @@
       <artifactId>gs-wfs</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-wcs</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-render</artifactId>
     </dependency>

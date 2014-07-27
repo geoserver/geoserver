@@ -56,16 +56,8 @@
    <artifactId>commons-httpclient</artifactId>
   </dependency>
   <dependency>
-   <groupId>commons-validator</groupId>
-   <artifactId>commons-validator</artifactId>
-  </dependency>
-  <dependency>
    <groupId>org.freemarker</groupId>
    <artifactId>freemarker</artifactId>
-  </dependency>
-  <dependency>
-   <groupId>oro</groupId>
-   <artifactId>oro</artifactId>
   </dependency>
   <dependency>
    <groupId>org.geotools</groupId>
@@ -78,10 +70,6 @@
   <dependency>
    <groupId>org.geotools</groupId>
    <artifactId>gt-coverage</artifactId>
-  </dependency>
-  <dependency>
-   <groupId>org.geotools</groupId>
-   <artifactId>gt-validation</artifactId>
   </dependency>
   <dependency>
    <groupId>org.geotools</groupId>

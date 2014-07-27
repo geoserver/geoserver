@@ -25,6 +25,12 @@
    <artifactId>gs-main</artifactId>
    <version>2.6-SNAPSHOT</version>
   </dependency>
+  <dependency>
+   <groupId>org.geotools</groupId>
+   <artifactId>gt-validation</artifactId>
+   <version>${gt.version}</version>
+  </dependency>
+
  </dependencies>
 
 </project>

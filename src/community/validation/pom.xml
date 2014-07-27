@@ -10,11 +10,11 @@
 
  <parent>
   <groupId>org.geoserver</groupId>
-  <artifactId>extension</artifactId>
+  <artifactId>community</artifactId>
   <version>2.6-SNAPSHOT</version>
  </parent>
 
- <groupId>org.geoserver.extension</groupId>
+ <groupId>org.geoserver.community</groupId>
  <artifactId>gs-validation</artifactId>
  <packaging>jar</packaging>
  <name>Validation Module</name>

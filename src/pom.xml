@@ -1223,7 +1223,6 @@
     <configuration>
      <descriptors>
       <descriptor>release/src.xml</descriptor>
-      <!--
       <descriptor>release/war.xml</descriptor>
       <descriptor>release/javadoc.xml</descriptor>
       <descriptor>release/bin.xml</descriptor>
@@ -1261,7 +1260,6 @@
       <descriptor>release/ext-libjpeg-turbo.xml</descriptor>
       <descriptor>release/ext-importer.xml</descriptor>
       <descriptor>release/ext-importer-bdb.xml</descriptor>
-      -->
      </descriptors>
      <finalName>geoserver-2.6-SNAPSHOT</finalName>
      <outputDirectory>${project.build.directory}/release</outputDirectory>

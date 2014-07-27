@@ -183,6 +183,10 @@
     <bean id="importProcess" class="org.geoserver.wps.gs.ImportProcess">
       <constructor-arg index="0" ref="catalog"/>
     </bean>
+    
+    <bean id="pagedUniqueProcess" class="org.geoserver.wps.gs.PagedUniqueProcess">
+    </bean>
+    <bean id="pagedUniquePPIO" class="org.geoserver.wps.gs.PagedUniqueProcessPPIO"/>
 
     <bean id="aggregateProcessResultPPIO" class="org.geoserver.wps.gs.AggregateProcessPPIO"/>
 

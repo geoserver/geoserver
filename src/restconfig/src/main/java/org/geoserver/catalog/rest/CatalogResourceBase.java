@@ -161,6 +161,11 @@ public abstract class CatalogResourceBase extends ReflectiveResource {
                 checkAuthenticationForAdminRole();
     } 
     
+    /**
+     * Uses messages as a template to update resource.
+     * @param message Possibly incomplete ResourceInfo used to update resource
+     * @param resource Original resource (to be saved in catalog after modification)
+     */
     protected void calculateOptionalFields(ResourceInfo message, ResourceInfo resource) {
         Form form = getRequest().getResourceRef().getQueryAsForm();
         String calculate = form.getFirstValue("recalculate", true);

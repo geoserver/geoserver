@@ -5,8 +5,10 @@
 package org.geoserver.catalog.rest;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 import org.geoserver.catalog.AttributeTypeInfo;
@@ -229,20 +231,30 @@ public class FeatureTypeResource extends AbstractCatalogResource {
 
     @Override
     protected void handleObjectPut(Object object) throws Exception {
-        FeatureTypeInfo ft = (FeatureTypeInfo) object;
+        FeatureTypeInfo featureTypeUpdate = (FeatureTypeInfo) object;
         
         String workspace = getAttribute("workspace");
         String datastore = getAttribute("datastore");
         String featuretype = getAttribute("featuretype");
         
         DataStoreInfo ds = catalog.getDataStoreByName(workspace, datastore);
-        FeatureTypeInfo original = catalog.getFeatureTypeByDataStore( ds,  featuretype );
-        new CatalogBuilder(catalog).updateFeatureType(original,ft);
-        calculateOptionalFields(ft, original);
-        catalog.save( original );
+        FeatureTypeInfo featureTypeInfo = catalog.getFeatureTypeByDataStore( ds,  featuretype );
+        Map<String, Serializable> parametersCheck = featureTypeInfo.getStore().getConnectionParameters();
         
-        clear(original);
-        LOGGER.info( "PUT feature type" + datastore + "," + featuretype );
+        CatalogBuilder helper = new CatalogBuilder(catalog);
+        helper.updateFeatureType(featureTypeInfo,featureTypeUpdate);
+        calculateOptionalFields(featureTypeUpdate, featureTypeInfo);
+        catalog.save( featureTypeInfo );
+        catalog.getResourcePool().clear(featureTypeInfo);
+        
+        Map<String, Serializable> parameters = featureTypeInfo.getStore().getConnectionParameters();
+        if( parameters.equals(parametersCheck)){
+            LOGGER.info( "PUT FeatureType" + datastore + "," + featuretype + " updated metadata only");
+        }
+        else {
+            LOGGER.info( "PUT featureType" + datastore + "," + featuretype + " updated metadata and data access" );
+            catalog.getResourcePool().clear(featureTypeInfo.getStore());
+        }
     }
     
     @Override
@@ -275,14 +287,12 @@ public class FeatureTypeResource extends AbstractCatalogResource {
         }
         
         catalog.remove( ft );
-        clear(ft);
+        
+        // clear from resource pool
+        catalog.getResourcePool().clear(ft);
+        catalog.getResourcePool().clear(ft.getStore());
         
         LOGGER.info( "DELETE feature type" + datastore + "," + featuretype );
-    }
-    
-    void clear(FeatureTypeInfo info) {
-        catalog.getResourcePool().clear(info);
-        catalog.getResourcePool().clear(info.getStore());
     }
 
     @Override

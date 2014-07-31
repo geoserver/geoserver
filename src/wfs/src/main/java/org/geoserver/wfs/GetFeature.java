@@ -193,13 +193,7 @@ public class GetFeature {
      * @return NamespaceSupport from Catalog
      */
     public NamespaceSupport getNamespaceSupport() {
-        NamespaceSupport ns = new NamespaceSupport();
-        Iterator<NamespaceInfo> it = getCatalog().getNamespaces().iterator();
-        while (it.hasNext()) {
-            NamespaceInfo ni = it.next();
-            ns.declarePrefix(ni.getPrefix(), ni.getURI());
-        }
-        return ns;
+        return new CatalogNamespaceSupport(catalog);
     }
 
     /**

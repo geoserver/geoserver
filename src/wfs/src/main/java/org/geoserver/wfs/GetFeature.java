@@ -4,7 +4,7 @@
  */
 package org.geoserver.wfs;
 
-import static org.geoserver.ows.util.ResponseUtils.buildURL;
+import static org.geoserver.ows.util.ResponseUtils.*;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -293,7 +293,7 @@ public class GetFeature {
         // grab the view params is any
         List<Map<String, String>> viewParams = null;
         if(request.getViewParams() != null && request.getViewParams().size() > 0) {
-            viewParams = (List<Map<String, String>>) request.getViewParams();
+            viewParams = request.getViewParams();
         }
 
         int count = 0; // should probably be long
@@ -398,6 +398,9 @@ public class GetFeature {
 
                 //set up joins (if specified)
                 List<Join> joins = null;
+                String primaryAlias = null;
+                QName primaryTypeName = query.getTypeNames().get(0);
+                    FeatureTypeInfo primaryMeta = metas.get(0);
                 
                 //make sure filters are sane
                 //
@@ -419,11 +422,15 @@ public class GetFeature {
                                 throw new WFSException(request, 
                                         "Unable to preform join with specified filter: " + filter);
                             }
-                            //join, need to separate the joining filter from other filters
+                                // join, need to separate the joining filter from other filters
                             JoinExtractingVisitor extractor = 
                                     new JoinExtractingVisitor(metas, query.getAliases());
                             filter.accept(extractor, null);
 
+                            primaryAlias = extractor.getPrimaryAlias();
+                            primaryMeta = extractor.getPrimaryFeatureType();
+                            primaryTypeName = new QName(primaryMeta.getNamespace().getURI(),
+                                    primaryMeta.getNativeName());
                             joins = extractor.getJoins();
                             if (joins.size() != metas.size()-1) {
                                 throw new WFSException(request, String.format("Query specified %d types but %d " +
@@ -458,7 +465,7 @@ public class GetFeature {
                     hints = new Hints(ResourcePool.JOINS, joins);
                 }
                 FeatureSource<? extends FeatureType, ? extends Feature> source = 
-                    metas.get(0).getFeatureSource(null, hints);
+                    primaryMeta.getFeatureSource(null, hints);
 
                 // handle local maximum
                 int queryMaxFeatures = maxFeatures - count;
@@ -467,8 +474,9 @@ public class GetFeature {
                     queryMaxFeatures = metaMaxFeatures;
                 }
                 Map<String, String> viewParam = viewParams != null ? viewParams.get(i) : null;
-                org.geotools.data.Query gtQuery = toDataQuery(query, filter, offset, queryMaxFeatures, 
-                    source, request, allPropNames.get(0), viewParam, joins);
+                org.geotools.data.Query gtQuery = toDataQuery(query, filter, offset,
+                        queryMaxFeatures, source, request, allPropNames.get(0), viewParam,
+                            joins, primaryTypeName, primaryAlias);
 
                 LOGGER.fine("Query is " + query + "\n To gt2: " + gtQuery);
 
@@ -516,8 +524,9 @@ public class GetFeature {
                     else {
                         //no features might have been because of the offset that was specified, check 
                         // the size of the same query but with no offset
-                        org.geotools.data.Query q2 = toDataQuery(query, filter, 0, queryMaxFeatures, 
-                            source, request, allPropNames.get(0), viewParam, joins);
+                            org.geotools.data.Query q2 = toDataQuery(query, filter, 0,
+                                    queryMaxFeatures, source, request, allPropNames.get(0),
+                                    viewParam, joins, primaryTypeName, primaryAlias);
                         
                         //int size2 = getFeatures(request, source, q2).size();
                         int size2 = source.getCount(q2);
@@ -534,8 +543,9 @@ public class GetFeature {
                 if (calculateSize && queryMaxFeatures == Integer.MAX_VALUE && offset == 0) {
                     totalCountExecutors.add(new CountExecutor(size));
                 } else {
-                    org.geotools.data.Query qTotal = toDataQuery(query, filter, 0, Integer.MAX_VALUE, 
-                            source, request, allPropNames.get(0), viewParam, joins);
+                        org.geotools.data.Query qTotal = toDataQuery(query, filter, 0,
+                                Integer.MAX_VALUE, source, request, allPropNames.get(0), viewParam,
+                                joins, primaryTypeName, primaryAlias);
                     totalCountExecutors.add(new CountExecutor(source, qTotal));
                 }
 
@@ -898,9 +908,10 @@ public class GetFeature {
      * @return A Query for use with the FeatureSource interface
      *
      */
-    public org.geotools.data.Query toDataQuery(Query query, Filter filter, int offset, int maxFeatures,
-        FeatureSource<? extends FeatureType, ? extends Feature> source, GetFeatureRequest request, 
-        List<PropertyName> props, Map<String, String> viewParams, List<Join> joins) throws WFSException {
+    public org.geotools.data.Query toDataQuery(Query query, Filter filter, int offset,
+            int maxFeatures, FeatureSource<? extends FeatureType, ? extends Feature> source,
+            GetFeatureRequest request, List<PropertyName> props, Map<String, String> viewParams,
+            List<Join> joins, QName primaryTypeName, String primaryAlias) throws WFSException {
         
         String wfsVersion = request.getVersion();
         
@@ -929,11 +940,11 @@ public class GetFeature {
             transformedFilter = WFSReprojectionUtil.normalizeFilterCRS(filter, source.getSchema(), declaredCRS);
 
         //only handle non-joins for now
-        QName typeName = query.getTypeNames().get(0);
+        QName typeName = primaryTypeName;
         org.geotools.data.Query dataQuery = new org.geotools.data.Query(typeName.getLocalPart(), 
             transformedFilter, maxFeatures, props, query.getHandle());
-        if (!query.getAliases().isEmpty()) {
-            dataQuery.setAlias(query.getAliases().get(0)); 
+        if (primaryAlias != null) {
+            dataQuery.setAlias(primaryAlias);
         }
 
         //handle reprojection
@@ -957,7 +968,7 @@ public class GetFeature {
         //handle sorting
         List<SortBy> sortBy = query.getSortBy();
         if (sortBy != null) {
-            dataQuery.setSortBy((SortBy[]) sortBy.toArray(new SortBy[sortBy.size()]));
+            dataQuery.setSortBy(sortBy.toArray(new SortBy[sortBy.size()]));
         }
 
         //handle version, datastore may be able to use it

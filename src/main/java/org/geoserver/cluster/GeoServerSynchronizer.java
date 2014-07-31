@@ -17,7 +17,7 @@ public class GeoServerSynchronizer extends ConfigurationListenerAdapter
 
     protected ClusterConfigWatcher configWatcher;
 
-    public final void initialize(ClusterConfigWatcher configWatcher) {
+    public void initialize(ClusterConfigWatcher configWatcher) {
         this.configWatcher = configWatcher;
     }
 

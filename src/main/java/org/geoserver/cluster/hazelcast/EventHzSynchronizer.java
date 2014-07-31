@@ -1,5 +1,7 @@
 package org.geoserver.cluster.hazelcast;
 
+import static java.lang.String.format;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Iterator;
@@ -17,7 +19,6 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
-import org.geoserver.catalog.event.CatalogEvent;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
@@ -34,6 +35,8 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
+
+import com.google.common.collect.ImmutableList;
 
 /**
  * Synchronizer that converts cluster events and dispatches them the GeoServer config/catalog.
@@ -54,10 +57,12 @@ public class EventHzSynchronizer extends HzSynchronizer {
     protected void processEventQueue(Queue<Event> q) throws Exception {
         Catalog cat = gs.getCatalog();
         Iterator<Event> it = q.iterator();
-        while (it.hasNext()) {
-            Event e = it.next();
-            if (e instanceof ConfigChangeEvent) {
-                ConfigChangeEvent ce = (ConfigChangeEvent) e;
+        while (it.hasNext() && isStarted()) {
+            final Event event = it.next();
+            it.remove();
+            LOGGER.fine(format("%s - Processing event %s", nodeId(), event));
+            if (event instanceof ConfigChangeEvent) {
+                ConfigChangeEvent ce = (ConfigChangeEvent) event;
                 Type t = ce.getChangeType();
                 Class<? extends Info> clazz = ce.getObjectInterface();
                 String id = ce.getObjectId();
@@ -65,36 +70,17 @@ public class EventHzSynchronizer extends HzSynchronizer {
 
                 if (CatalogInfo.class.isAssignableFrom(clazz)) {
                     //catalog event
-                    CatalogInfo subj = null;
-                    if (WorkspaceInfo.class.isAssignableFrom(clazz)) {
-                        subj = cat.getWorkspace(id);
-                    }
-                    else if (NamespaceInfo.class.isAssignableFrom(clazz)) {
-                        subj = cat.getNamespace(id);
-                    }
-                    else if (StoreInfo.class.isAssignableFrom(clazz)) {
-                        subj = cat.getStore(id, (Class<StoreInfo>) clazz);
-                    }
-                    else if (ResourceInfo.class.isAssignableFrom(clazz)) {
-                        subj = cat.getResource(id, (Class<ResourceInfo>) clazz);
-                    }
-                    else if (LayerInfo.class.isAssignableFrom(clazz)) {
-                        subj = cat.getLayer(id);
-                    }
-                    else if (StyleInfo.class.isAssignableFrom(clazz)) {
-                        subj = cat.getStyle(id);
-                    }
-                    else if (LayerGroupInfo.class.isAssignableFrom(clazz)) {
-                        subj = cat.getLayerGroup(id);
-                    }
+                    CatalogInfo subj;
                     Method notifyMethod;
                     CatalogEventImpl evt;
                     switch(t) {
                     case ADD:
+                        subj = getCatalogInfo(cat, id, clazz);
                         notifyMethod = CatalogListener.class.getMethod("handleAddEvent", CatalogAddEvent.class);
                         evt = new CatalogAddEventImpl();
                         break;
                     case MODIFY:
+                        subj = getCatalogInfo(cat, id, clazz);
                         notifyMethod = CatalogListener.class.getMethod("handlePostModifyEvent", CatalogPostModifyEvent.class);
                         evt = new CatalogPostModifyEventImpl();
                         break;
@@ -108,26 +94,37 @@ public class EventHzSynchronizer extends HzSynchronizer {
                         throw new IllegalStateException("Should not happen");
                     }
                     
-                    if (subj == null) {
+                    if (subj == null) {//can't happen if type == DELETE
+                        ConfigChangeEvent removeEvent = new ConfigChangeEvent(id, name, clazz,
+                                Type.REMOVE);
+                        if (queue.contains(removeEvent)) {
+                            LOGGER.fine(format("%s - Ignoring event %s, a remove is queued.",
+                                    nodeId(), event));
+                            continue;
+                        }
                         //this could be latency in the catalog itself, abort processing since
                         // events need to processed in order and further events might depend 
                         // on this event
-                        LOGGER.warning(String.format("Received %s event for (%s, %s) but could" 
-                            + " not find in catalog", t.name(), id, clazz.getSimpleName()));
-                        return;
+                        String message = format(
+                                "%s - Error processing event %s but object not found in catalog", nodeId(),
+                                event);
+                        LOGGER.warning(message);
+                        continue;
                     }
                     
                     evt.setSource(subj);
-
                     try {
-                        for (CatalogListener l:cat.getListeners()){
+                        for (CatalogListener l: ImmutableList.copyOf(cat.getListeners())){
                             // Don't notify self otherwise the event bounces back out into the
                             // cluster.
-                            if(l!=this) notifyMethod.invoke(l, evt);
+                            if (l != this && isStarted()) {
+                                notifyMethod.invoke(l, evt);
+                            }
                         }
                     }
                     catch(Exception ex) {
-                        LOGGER.log(Level.WARNING, "Event dispatch failed", ex);
+                        LOGGER.log(Level.WARNING,
+                                format("%s - Event dispatch failed: %s", nodeId(), event), ex);
                     }
 
                 }
@@ -158,13 +155,32 @@ public class EventHzSynchronizer extends HzSynchronizer {
                             if(l!=this) notifyMethod.invoke(l, subj);
                         }
                         catch(Exception ex) {
-                            LOGGER.log(Level.WARNING, "Event dispatch failed", ex);
+                            LOGGER.log(Level.WARNING,
+                                    format("%s - Event dispatch failed: %s", nodeId(), event), ex);
                         }
                     }
                 }
             }
-            
-            it.remove();
         }
+    }
+
+    private CatalogInfo getCatalogInfo(Catalog cat, String id, Class<? extends Info> clazz) {
+        CatalogInfo subj = null;
+        if (WorkspaceInfo.class.isAssignableFrom(clazz)) {
+            subj = cat.getWorkspace(id);
+        } else if (NamespaceInfo.class.isAssignableFrom(clazz)) {
+            subj = cat.getNamespace(id);
+        } else if (StoreInfo.class.isAssignableFrom(clazz)) {
+            subj = cat.getStore(id, (Class<StoreInfo>) clazz);
+        } else if (ResourceInfo.class.isAssignableFrom(clazz)) {
+            subj = cat.getResource(id, (Class<ResourceInfo>) clazz);
+        } else if (LayerInfo.class.isAssignableFrom(clazz)) {
+            subj = cat.getLayer(id);
+        } else if (StyleInfo.class.isAssignableFrom(clazz)) {
+            subj = cat.getStyle(id);
+        } else if (LayerGroupInfo.class.isAssignableFrom(clazz)) {
+            subj = cat.getLayerGroup(id);
+        }
+        return subj;
     }
 }

@@ -11,8 +11,12 @@ public class EventHzSynchronizerSendTest extends HzSynchronizerSendTest {
             @Override
             ScheduledExecutorService getNewExecutor() {
                 return getMockExecutor();
-            }
+            }            
             
+            @Override
+            public boolean isStarted(){
+                return true;
+            }
         };
     }
 

@@ -1,13 +1,10 @@
 package org.geoserver.cluster.hazelcast;
 
-import static org.junit.Assert.*;
-import static org.easymock.EasyMock.*;
-import static org.hamcrest.CoreMatchers.*;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
 
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.wms.WMSInfo;
-import org.geoserver.wms.WMSInfoImpl;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
@@ -22,7 +19,8 @@ import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.GeoServerInfoImpl;
 import org.geoserver.config.impl.LoggingInfoImpl;
 import org.geoserver.config.impl.SettingsInfoImpl;
-import org.hamcrest.Matchers;
+import org.geoserver.wms.WMSInfo;
+import org.geoserver.wms.WMSInfoImpl;
 import org.junit.Test;
 
 import com.hazelcast.core.Message;
@@ -54,6 +52,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         {
             sync = getSynchronizer();
             sync.initialize(configWatcher);
+            sync.start();
             ConfigChangeEvent evt = new ConfigChangeEvent(layerId, layerName, LayerInfoImpl.class, Type.MODIFY);
             
             // Mock a message coming in from the cluster

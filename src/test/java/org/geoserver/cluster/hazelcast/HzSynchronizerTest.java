@@ -150,7 +150,7 @@ public abstract class HzSynchronizerTest {
      * @param mocks
      */
     protected void reset(Object... mocks) {
-        EasyMock.reset(myMocks().toArray());
+        //EasyMock.reset(myMocks().toArray());
         EasyMock.reset(mocks);
     }
     /**
@@ -158,7 +158,7 @@ public abstract class HzSynchronizerTest {
      * @param mocks
      */
     protected void verify(Object... mocks) {
-        EasyMock.verify(myMocks().toArray());
+        //EasyMock.verify(myMocks().toArray());
         EasyMock.verify(mocks);
     }
     

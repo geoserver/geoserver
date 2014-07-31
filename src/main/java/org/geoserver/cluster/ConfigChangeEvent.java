@@ -1,5 +1,7 @@
 package org.geoserver.cluster;
 
+import static com.google.common.base.Objects.equal;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,6 +43,8 @@ import org.geoserver.config.impl.ContactInfoImpl;
 import org.geoserver.config.impl.GeoServerInfoImpl;
 import org.geoserver.config.impl.LoggingInfoImpl;
 import org.geoserver.config.impl.SettingsInfoImpl;
+
+import com.google.common.base.Objects;
 
 /**
  * Event for 
@@ -111,6 +115,45 @@ public class ConfigChangeEvent extends Event {
         this.name = name;
         this.clazz = clazz;
         this.type = type;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder(String.valueOf(type)).append(" ");
+
+        Serializable source = getSource();
+        if (source != null) {
+            sb.append('(').append(source).append(") ");
+        }
+
+        sb.append("[id:").append(id).append(", name:").append(name).append("]");
+        return sb.toString();
+    }
+
+    /**
+     * Equals is based on {@link #getObjectId() id}, {@link #getObjectName() name}, and
+     * {@link #getChangeType() changeType}. {@link #getObjectClass() class} is left off because it
+     * can be a proxy class and id/name/type are good enough anyways (given ids are unique, no two
+     * objects of different class can have the same id).
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof ConfigChangeEvent)) {
+            return false;
+        }
+        ConfigChangeEvent e = (ConfigChangeEvent) o;
+        return equal(id, e.id) && equal(type, e.type);
+    }
+    
+    /**
+     * Hash code is based on {@link #getObjectId() id}, {@link #getObjectName() name}, and
+     * {@link #getChangeType() changeType}. {@link #getObjectClass() class} is left off because it
+     * can be a proxy class and id/name/type are good enough anyways (given ids are unique, no two
+     * objects of different class can have the same id).
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(ConfigChangeEvent.class, id, name, type);
     }
 
     public String getObjectId() {

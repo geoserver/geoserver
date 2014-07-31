@@ -22,7 +22,11 @@ public class ReloadHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
             ScheduledExecutorService getNewExecutor() {
                 return getMockExecutor();
             }
-            
+                        
+            @Override
+            public boolean isStarted(){
+                return true;
+            }
         };
     }
 

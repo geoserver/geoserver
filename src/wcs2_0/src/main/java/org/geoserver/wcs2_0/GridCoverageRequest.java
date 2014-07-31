@@ -9,7 +9,6 @@ import java.util.Map;
 
 import javax.media.jai.Interpolation;
 
-import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 import org.opengis.filter.Filter;
@@ -24,7 +23,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  */
 public class GridCoverageRequest {
 
-    GeneralEnvelope spatialSubset;
+    WCSEnvelope spatialSubset;
 
     DateRange temporalSubset;
 
@@ -40,11 +39,11 @@ public class GridCoverageRequest {
 
     Filter filter;
 
-    public GeneralEnvelope getSpatialSubset() {
+    public WCSEnvelope getSpatialSubset() {
         return spatialSubset;
     }
 
-    public void setSpatialSubset(GeneralEnvelope spatialSubset) {
+    public void setSpatialSubset(WCSEnvelope spatialSubset) {
         this.spatialSubset = spatialSubset;
     }
 

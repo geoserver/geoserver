@@ -1,13 +1,13 @@
 package org.geoserver.wcs2_0.kvp;
 
-import static junit.framework.TestCase.assertEquals;
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static junit.framework.TestCase.*;
 
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
+import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.wcs2_0.exception.WCS20Exception.WCS20ExceptionCode;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
@@ -32,17 +32,26 @@ public class SubsetKvpTest extends WCSKVPTestSupport {
 //         print(dom);
         
         // check the KVP extension 1.0.1
-        assertXpathEvaluatesTo("1", "count(//ows:ServiceIdentification[ows:Profile='http://www.opengis.net/spec/WCS_protocol-binding_get-kvp/1.0.1'])", dom);
+        XMLAssert
+                .assertXpathEvaluatesTo(
+                        "1",
+                        "count(//ows:ServiceIdentification[ows:Profile='http://www.opengis.net/spec/WCS_protocol-binding_get-kvp/1.0.1'])",
+                        dom);
         
         // proper case enforcing on values
         dom = getAsDOM("wcs?request=Getcapabilities&service=wCS");
         // print(dom);
         
         // check that we have the crs extension
-        assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport)", dom);
-        assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport//ows:Exception)", dom);
-        assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport//ows:Exception[@exceptionCode='InvalidParameterValue'])", dom);
-        assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport//ows:Exception[@locator='wCS'])", dom); 
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport)", dom);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport//ows:Exception)", dom);
+        XMLAssert
+                .assertXpathEvaluatesTo(
+                        "1",
+                        "count(//ows:ExceptionReport//ows:Exception[@exceptionCode='InvalidParameterValue'])",
+                        dom);
+        XMLAssert.assertXpathEvaluatesTo("1",
+                "count(//ows:ExceptionReport//ows:Exception[@locator='wCS'])", dom);
     }
     
     @Test
@@ -86,15 +95,6 @@ public class SubsetKvpTest extends WCSKVPTestSupport {
             assertEquals("application/xml", response.getContentType());
             checkOws20Exception(response, 404, WCS20ExceptionCode.InvalidSubsetting.getExceptionCode(),"");
             
-            // === trim low > high Long
-            response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                    + "&coverageId=wcs__BlueMarble&&Format=image/tiff"+
-                    "&subset=http://www.opengis.net/def/axis/OGC/0/Long(" +(sourceEnvelope.x+sourceEnvelope.width)+","+(sourceEnvelope.x)+")"+
-                    "&subset=http://www.opengis.net/def/axis/OGC/0/Lat(" +(sourceEnvelope.y+1.1*sourceEnvelope.height)+","+(sourceEnvelope.y+1.2*sourceEnvelope.height)
-            +")");    
-            assertEquals("application/xml", response.getContentType());
-            checkOws20Exception(response, 404, WCS20ExceptionCode.InvalidSubsetting.getExceptionCode(),Double.toString((sourceEnvelope.x+sourceEnvelope.width)));
-            
             // === trim low > high Lat
             response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
                     + "&coverageId=wcs__BlueMarble&&Format=image/tiff"+
@@ -103,8 +103,6 @@ public class SubsetKvpTest extends WCSKVPTestSupport {
             +")");    
             assertEquals("application/xml", response.getContentType());
             checkOws20Exception(response, 404, WCS20ExceptionCode.InvalidSubsetting.getExceptionCode(),Double.toString((sourceEnvelope.y+sourceEnvelope.height)));
-            
-
         } finally {
             try{
                 if(readerTarget!=null){

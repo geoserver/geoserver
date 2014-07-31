@@ -64,19 +64,31 @@ import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.coverage.processing.CoverageProcessor;
+import org.geotools.coverage.processing.operation.Mosaic;
+import org.geotools.coverage.processing.operation.Mosaic.GridGeometryPolicy;
 import org.geotools.factory.GeoTools;
 import org.geotools.factory.Hints;
+import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.ReferencingFactoryFinder;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.referencing.operation.projection.MapProjection;
+import org.geotools.referencing.operation.projection.MapProjection.AbstractProvider;
+import org.geotools.referencing.operation.projection.Mercator;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
+import org.geotools.renderer.crs.ProjectionHandler;
+import org.geotools.renderer.crs.ProjectionHandlerFinder;
 import org.geotools.resources.coverage.CoverageUtilities;
 import org.geotools.util.DefaultProgressListener;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.SampleDimension;
 import org.opengis.coverage.grid.GridCoverage;
+import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.coverage.processing.Operation;
+import org.opengis.geometry.BoundingBox;
 import org.opengis.geometry.Envelope;
 import org.opengis.parameter.GeneralParameterDescriptor;
 import org.opengis.parameter.GeneralParameterValue;
@@ -85,7 +97,11 @@ import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CRSAuthorityFactory;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.crs.GeographicCRS;
 import org.opengis.referencing.datum.PixelInCell;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.NoninvertibleTransformException;
+import org.opengis.referencing.operation.TransformException;
 import org.vfny.geoserver.util.WCSUtils;
 import org.vfny.geoserver.wcs.WcsException;
 
@@ -104,10 +120,19 @@ public class GetCoverage {
         //TODO: This one should be pluggable
         mdFormats = new HashSet<String>();
         mdFormats.add("application/x-netcdf");
+        final CoverageProcessor processor = new CoverageProcessor(new Hints(
+                Hints.LENIENT_DATUM_SHIFT, Boolean.TRUE));
+        MOSAIC_PARAMS = processor.getOperation("Mosaic").getParameters();
     }
+    
+    /** Cached factory for the {@link Mosaic} operation. */
+    final static Mosaic MOSAIC_FACTORY = new Mosaic();
+
+    /** Parameters used to control the {@link Mosaic} operation. */
+    static ParameterValueGroup MOSAIC_PARAMS;
 
     /** Logger.*/
-    private Logger LOGGER= Logging.getLogger(GetCoverage.class);
+    private static Logger LOGGER= Logging.getLogger(GetCoverage.class);
     
     private WCSInfo wcs;
     
@@ -122,7 +147,12 @@ public class GetCoverage {
     /** A URI authorithy with latlon order.*/
     private CRSAuthorityFactory latLonCRSFactory;
 
+    /** Factory used to create new coverages */
+    private GridCoverageFactory gridCoverageFactory;
+
     public final static String SRS_STARTER="http://www.opengis.net/def/crs/EPSG/0/";
+
+    private static final double EPS = 1e-6;
 
     public GetCoverage(WCSInfo serviceInfo, Catalog catalog, EnvelopeAxesLabelsMapper envelopeDimensionsMapper) {
         this.wcs = serviceInfo;
@@ -137,7 +167,8 @@ public class GetCoverage {
         
         hints.add(new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER,Boolean.FALSE));
         hints.add(new Hints(Hints.FORCE_AXIS_ORDER_HONORING, "http-uri"));
-        latLonCRSFactory = ReferencingFactoryFinder.getCRSAuthorityFactory("http://www.opengis.net/def", hints); 
+        latLonCRSFactory = ReferencingFactoryFinder.getCRSAuthorityFactory("http://www.opengis.net/def", hints);
+        this.gridCoverageFactory = CoverageFactoryFinder.getGridCoverageFactory(GeoTools.getDefaultHints());
     }
 
     /**
@@ -286,40 +317,62 @@ public class GetCoverage {
             ImageSizeRecorder incrementalOutputSize,
             ImageSizeRecorder incrementalInputSize,
             final GridCoverageFactory coverageFactory) throws Exception {
-        GridCoverage2D coverage = null;
+        List<GridCoverage2D> coverages = null;
         //
         // we setup the params to force the usage of imageread and to make it use
         // the right overview and so on
         // we really try to subset before reading with a grid geometry
         // we specify to work in streaming fashion
         // TODO elevation
-        coverage = readCoverage(helper.getCoverageInfo(), gridCoverageRequest, reader, hints,
+        coverages = readCoverage(helper.getCoverageInfo(), gridCoverageRequest, reader, hints,
                 incrementalInputSize);
-        if(coverage == null) {
+        if (coverages == null || coverages.isEmpty()) {
             throw new IllegalStateException("Unable to read a coverage for the current request" + coverageType.toString());
         }
 
         //
         // handle range subsetting
         //        
-        coverage=handleRangeSubsettingExtension(coverage, extensions,hints);
+        for (int i = 0; i < coverages.size(); i++) {
+            GridCoverage2D rangeSubsetted = handleRangeSubsettingExtension(coverages.get(i), extensions,
+                    hints);
+            coverages.set(i, rangeSubsetted);
+        }
 
         //
         // subsetting, is not really an extension
         //
-        coverage=handleSubsettingExtension(coverage,gridCoverageRequest.getSpatialSubset(),hints);
+        List<GridCoverage2D> temp = new ArrayList<>();
+        for (int i = 0; i < coverages.size(); i++) {
+            List<GridCoverage2D> subsetted = handleSubsettingExtension(coverages.get(i),
+                    gridCoverageRequest.getSpatialSubset(), hints);
+            temp.addAll(subsetted);
+        }
+        coverages = temp;
 
         //
         // scaling extension
         //
         // scaling is done in raster space with eventual interpolation
-        coverage=handleScaling(coverage,extensions,gridCoverageRequest.getSpatialInterpolation(),hints);
+        for (int i = 0; i < coverages.size(); i++) {
+            GridCoverage2D scaled = handleScaling(coverages.get(i), extensions,
+                    gridCoverageRequest.getSpatialInterpolation(), hints);
+            coverages.set(i, scaled);
+        }
 
         //
         // reprojection
         //
         // reproject the output coverage to an eventual outputCrs
-        coverage=handleReprojection(coverage,gridCoverageRequest.getOutputCRS(),gridCoverageRequest.getSpatialInterpolation(),hints);
+        for (int i = 0; i < coverages.size(); i++) {
+            GridCoverage2D reprojected = handleReprojection(coverages.get(i),
+                    gridCoverageRequest.getOutputCRS(),
+                    gridCoverageRequest.getSpatialInterpolation(), hints);
+            coverages.set(i, reprojected);
+        }
+
+        // after reprojection we can re-unite the coverages into one
+        GridCoverage2D coverage = mosaicCoverages(coverages, hints);
 
         //
         // axes swap management
@@ -359,6 +412,79 @@ public class GetCoverage {
         }
         
         return coverage;
+    }
+
+    private GridCoverage2D mosaicCoverages(final List<GridCoverage2D> coverages, final Hints hints)
+            throws FactoryException, TransformException {
+        GridCoverage2D first = coverages.get(0);
+        if (coverages.size() == 1) {
+            return first;
+        } 
+
+        // special case for crs that do wrap, we have to roll one of the coverages
+        CoordinateReferenceSystem crs = first.getCoordinateReferenceSystem2D();
+        MapProjection mapProjection = CRS.getMapProjection(crs);
+        if (crs instanceof GeographicCRS || mapProjection instanceof Mercator) {
+            double offset;
+            if (crs instanceof GeographicCRS) {
+                offset = 360;
+            } else {
+                offset = computeMercatorWorldSpan(crs, mapProjection);
+            }
+            for (int i = 1; i < coverages.size(); i++) {
+                GridCoverage2D c = coverages.get(i);
+                if (Math.abs(c.getEnvelope().getMinimum(0) + offset
+                        - first.getEnvelope().getMaximum(0)) < EPS) {
+                    GridCoverage2D displaced = displaceCoverage(coverages.get(1), offset);
+                    coverages.set(i, displaced);
+                }
+            }
+
+        }
+
+        // mosaic
+        try {
+            final ParameterValueGroup param = MOSAIC_PARAMS.clone();
+            param.parameter("sources").setValue(coverages);
+            param.parameter("policy").setValue(GridGeometryPolicy.FIRST.name());
+            return (GridCoverage2D) MOSAIC_FACTORY.doOperation(param, hints);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to mosaic the input coverages", e);
+        }
+    }
+
+    private GridCoverage2D displaceCoverage(GridCoverage2D coverage, double offset) {
+        // let's compute the new grid geometry
+        GridGeometry2D originalGG = coverage.getGridGeometry();
+        GridEnvelope gridRange = originalGG.getGridRange();
+        Envelope2D envelope = originalGG.getEnvelope2D();
+
+        double minx = envelope.getMinX() + offset;
+        double miny = envelope.getMinY();
+        double maxx = envelope.getMaxX() + offset;
+        double maxy = envelope.getMaxY();
+        ReferencedEnvelope translatedEnvelope = new ReferencedEnvelope(minx, maxx, miny, maxy,
+                envelope.getCoordinateReferenceSystem());
+
+        GridGeometry2D translatedGG = new GridGeometry2D(gridRange, translatedEnvelope);
+
+        GridCoverage2D translatedCoverage = gridCoverageFactory.create(coverage.getName(),
+                coverage.getRenderedImage(), translatedGG, coverage.getSampleDimensions(),
+                new GridCoverage2D[] { coverage }, coverage.getProperties());
+        return translatedCoverage;
+    }
+
+    private double computeMercatorWorldSpan(CoordinateReferenceSystem crs,
+            MapProjection mapProjection)
+            throws FactoryException, TransformException {
+        double centralMeridian = mapProjection.getParameterValues().parameter(
+                AbstractProvider.CENTRAL_MERIDIAN.getName().getCode()).doubleValue();
+        double[] src = new double[] { centralMeridian, 0, 180 + centralMeridian, 0 };
+        double[] dst = new double[4];
+        MathTransform mt = CRS.findMathTransform(DefaultGeographicCRS.WGS84, crs);
+        mt.transform(src, 0, dst, 0, 2);
+        double worldSpan = Math.abs(dst[2] - dst[0]);
+        return worldSpan;
     }
 
     private WCSDimensionsSubsetHelper parseGridCoverageRequest(CoverageInfo ci, GridCoverage2DReader reader,
@@ -495,14 +621,17 @@ public class GetCoverage {
     }
 
     /**
-     * This method is responsible for reading a coverage based on the specified request 
+     * This method is responsible for reading the data based on the specified request. It might
+     * return a single coverage, but if the request is a dateline crossing one, it will return two
+     * instead
+     * 
      * @param cinfo
      * @param reader
      * @param hints
      * @return
      * @throws Exception
      */
-    private GridCoverage2D readCoverage(
+    private List<GridCoverage2D> readCoverage(
             CoverageInfo cinfo, 
             GridCoverageRequest request, 
             GridCoverage2DReader reader, 
@@ -521,10 +650,73 @@ public class GetCoverage {
         //
         // get source crs
         final CoordinateReferenceSystem coverageCRS = reader.getCoordinateReferenceSystem();
-        GeneralEnvelope subset = request.getSpatialSubset();
+        WCSEnvelope subset = request.getSpatialSubset();
+        List<GridCoverage2D> result = new ArrayList<GridCoverage2D>();
+        List<GeneralEnvelope> readEnvelopes = new ArrayList<GeneralEnvelope>();
+        if (subset.isCrossingDateline()) {
+            GeneralEnvelope[] envelopes = subset.getNormalizedEnvelopes();
+            addEnvelopes(envelopes[0], readEnvelopes, coverageCRS);
+            addEnvelopes(envelopes[1], readEnvelopes, coverageCRS);
+        } else {
+            addEnvelopes(subset, readEnvelopes, coverageCRS);
+        }
+
+        List<GridCoverage2D> readCoverages = new ArrayList<>();
+        for (GeneralEnvelope readEnvelope : readEnvelopes) {
+            // check if a previous read already covered this envelope, readers
+            // can return more than we asked
+            boolean skip = false;
+            GridCoverage2D cov = null;
+            BoundingBox readBoundingBox = new Envelope2D(readEnvelope);
+            for (GridCoverage2D gc : readCoverages) {
+                Envelope2D gce = gc.getEnvelope2D();
+                if (gce.contains(readBoundingBox)) {
+                    cov = gc;
+                    break;
+                }
+            }
+            if (cov == null) {
+                cov = readCoverage(cinfo, request, reader, hints,
+                        incrementalInputSize, spatialInterpolation, coverageCRS, readEnvelope);
+                readCoverages.add(cov);
+            }
+            Envelope2D covEnvelope = cov.getEnvelope2D();
+            if (covEnvelope.contains(readBoundingBox)
+                    && (covEnvelope.getWidth() > readBoundingBox.getWidth() || covEnvelope
+                            .getHeight() > readBoundingBox.getHeight())) {
+                GridCoverage2D cropped = cropOnEnvelope(cov, readEnvelope);
+                result.add(cropped);
+            } else {
+                result.add(cov);
+            }
+        }
+
+        return result;
+    }
+
+    private void addEnvelopes(Envelope envelope, List<GeneralEnvelope> readEnvelopes,
+            CoordinateReferenceSystem readerCRS) throws TransformException, FactoryException {
+        // leverage GeoTools projection handlers to figure out exactly which areas we should be
+        // reading
+        ProjectionHandler handler = ProjectionHandlerFinder.getHandler(new ReferencedEnvelope(
+                envelope), readerCRS, false);
+        if (handler == null) {
+            readEnvelopes.add(new GeneralEnvelope(envelope));
+        } else {
+            List<ReferencedEnvelope> queryEnvelopes = handler.getQueryEnvelopes();
+            for (ReferencedEnvelope qe : queryEnvelopes) {
+                readEnvelopes.add(new GeneralEnvelope(qe));
+            }
+        }
+    }
+
+    private GridCoverage2D readCoverage(CoverageInfo cinfo, GridCoverageRequest request,
+            GridCoverage2DReader reader, Hints hints, ImageSizeRecorder incrementalInputSize,
+            Interpolation spatialInterpolation, final CoordinateReferenceSystem coverageCRS,
+            Envelope subset) throws TransformException, IOException,
+            NoninvertibleTransformException {
         if(!CRS.equalsIgnoreMetadata(subset.getCoordinateReferenceSystem(), coverageCRS)){
             subset = CRS.transform(subset, coverageCRS);
-            subset.setCoordinateReferenceSystem(coverageCRS);
         }
         // k, now subset is in the CRS of the source coverage
 
@@ -659,7 +851,6 @@ public class GetCoverage {
 
         // return
         return coverage;
-
     }
 
     /**
@@ -1020,24 +1211,55 @@ public class GetCoverage {
     }
 
     /**
-     * This method is reponsible for cropping the providede {@link GridCoverage} using the provided subset envelope.
+     * This method is reponsible for cropping the provided {@link GridCoverage} using the provided
+     * subset envelope.
      * 
      * <p>
      * The subset envelope at this stage should be in the native crs.
      * 
      * @param coverage the source {@link GridCoverage}
-     * @param subset  an instance of {@link GeneralEnvelope} that drives the crop operation.
+     * @param subset an instance of {@link GeneralEnvelope} that drives the crop operation.
      * @return a cropped version of the source {@link GridCoverage}
      */
-    private GridCoverage2D handleSubsettingExtension(
-            GridCoverage2D coverage, 
-            GeneralEnvelope subset,
+    private List<GridCoverage2D> handleSubsettingExtension(GridCoverage2D coverage,
+            WCSEnvelope subset,
             Hints hints) {
 
-        if(subset!=null){
-            return WCSUtils.crop(coverage, subset); // TODO I hate this classes that do it all
+        List<GridCoverage2D> result = new ArrayList<GridCoverage2D>();
+        if (subset != null) {
+            if (subset.isCrossingDateline()) {
+                Envelope2D coverageEnvelope = coverage.getEnvelope2D();
+                GeneralEnvelope[] normalizedEnvelopes = subset.getNormalizedEnvelopes();
+                for (int i = 0; i < normalizedEnvelopes.length; i++) {
+                    GeneralEnvelope ge = normalizedEnvelopes[i];
+                    if (ge.intersects(coverageEnvelope, false)) {
+                        GridCoverage2D cropped = cropOnEnvelope(coverage, ge);
+                        result.add(cropped);
+                    }
+                }
+            } else {
+                GridCoverage2D cropped = cropOnEnvelope(coverage, subset);
+                result.add(cropped);
+            }
         }
-        return coverage;
+        return result;
+    }
+
+    private GridCoverage2D cropOnEnvelope(GridCoverage2D coverage, Envelope cropEnvelope) {
+        CoordinateReferenceSystem sourceCRS = coverage.getCoordinateReferenceSystem();
+        CoordinateReferenceSystem subsettingCRS = cropEnvelope.getCoordinateReferenceSystem();
+        try {
+            if (!CRS.equalsIgnoreMetadata(subsettingCRS, sourceCRS)) {
+                cropEnvelope = CRS.transform(cropEnvelope, sourceCRS);
+            }
+        } catch (TransformException e) {
+            throw new WCS20Exception("Unable to initialize subsetting envelope",
+                    WCS20Exception.WCS20ExceptionCode.SubsettingCrsNotSupported,
+                    subsettingCRS.toWKT(), e);
+        }
+
+        GridCoverage2D cropped = WCSUtils.crop(coverage, cropEnvelope);
+        return cropped;
     }
 
     /**

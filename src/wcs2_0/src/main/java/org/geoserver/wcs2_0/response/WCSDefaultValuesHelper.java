@@ -24,7 +24,6 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.SortByImpl;
-import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
@@ -40,6 +39,7 @@ import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
+import org.opengis.geometry.Envelope;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
@@ -115,7 +115,7 @@ public class WCSDefaultValuesHelper {
         DateRange temporalSubset = subsettingRequest.getTemporalSubset();
         NumberRange<?> elevationSubset = subsettingRequest.getElevationSubset();
         Map<String, List<Object>> dimensionsSubset = subsettingRequest.getDimensionsSubset();
-        GeneralEnvelope envelopeSubset = subsettingRequest.getSpatialSubset();
+        Envelope envelopeSubset = subsettingRequest.getSpatialSubset();
         Filter originalFilter = subsettingRequest.getFilter();
 
         final int specifiedDimensionsSubset = dimensionsSubset != null ? dimensionsSubset.size() : 0;
@@ -292,7 +292,8 @@ public class WCSDefaultValuesHelper {
      * @return
      * @throws IOException 
      */
-    private Filter setFilters(Filter originalFilter, DateRange temporalSubset, NumberRange<?> elevationSubset, GeneralEnvelope envelopeSubset, 
+    private Filter setFilters(Filter originalFilter, DateRange temporalSubset,
+            NumberRange<?> elevationSubset, Envelope envelopeSubset,
             Map<String, List<Object>> dimensionSubset, StructuredGridCoverage2DReader reader, DimensionDescriptor timeDimension, 
             DimensionDescriptor elevationDimension, List<DimensionDescriptor> additionalDimensions) 
                     throws IOException {
@@ -344,7 +345,7 @@ public class WCSDefaultValuesHelper {
      * @return
      * @throws IOException
      */
-    private Filter setEnevelopeFilter(GeneralEnvelope envelopeSubset,
+    private Filter setEnevelopeFilter(Envelope envelopeSubset,
             StructuredGridCoverage2DReader reader) throws IOException {
         Filter envelopeFilter = null;
         if (envelopeSubset != null) {

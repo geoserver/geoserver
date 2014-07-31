@@ -165,6 +165,7 @@
         <module>mbtiles</module>
         <module>geopkg</module>
 		<module>grib</module>
+		<module>geofence</module>
       </modules>
     </profile>
     <profile>
@@ -292,6 +293,15 @@
       </activation>
       <modules>
         <module>grib</module>
+      </modules>
+    </profile>
+	<profile>
+      <id>geofence</id>
+	  <activation>
+        <property><name>geofence</name></property>
+      </activation>
+      <modules>
+        <module>geofence</module>
       </modules>
     </profile>
   </profiles>

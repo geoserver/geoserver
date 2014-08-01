@@ -49,7 +49,8 @@
           <descriptor>release/ext-geopkg.xml</descriptor>
           <descriptor>release/ext-grib.xml</descriptor>
           <descriptor>release/ext-dyndimension.xml</descriptor>
-		  <descriptor>release/ext-rest-ext.xml</descriptor>
+          <descriptor>release/ext-rest-ext.xml</descriptor>
+          <descriptor>release/ext-geofence.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -321,5 +322,14 @@
         <module>validation</module>
       </modules>
     </profile>
+    <profile>
+      <id>geofence</id>
+        <activation>
+          <property><name>geofence</name></property>
+        </activation>
+        <modules>
+          <module>geofence</module>
+        </modules>
+    </profile>    
   </profiles>
 </project>

@@ -1,6 +1,6 @@
 package org.geoserver.wms.featureinfo;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.io.File;
 
@@ -35,6 +35,7 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
         testData.addStyle("two-rules", "two-rules.sld", this.getClass(), getCatalog());
         testData.addStyle("two-fts", "two-fts.sld", this.getClass(), getCatalog());
         testData.addStyle("dashed", "dashed.sld",this.getClass(), getCatalog());
+        testData.addStyle("polydash", "polydash.sld", this.getClass(), getCatalog());
     }
     
     @After 
@@ -147,6 +148,20 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
         assertEquals(1, result.getJSONArray("features").size());
     }
     
+    @Test
+    public void testFillStrokeDashArray() throws Exception {
+        String layer = getLayerId(MockData.FORESTS);
+        String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&format=jpeg"
+                + "&request=GetFeatureInfo&layers=" + layer + "&query_layers=" + layer
+                + "&styles=polydash" + "&width=20&height=20&x=10&y=10&info_format=application/json";
+
+        System.out.println("The response iTESTs: " + getAsString(request));
+        JSONObject result = (JSONObject) getAsJSON(request);
+        // we used to get two results when two rules matched the same feature
+        // print(result);
+        assertEquals(1, result.getJSONArray("features").size());
+    }
+
     @Test
     public void testGenericGeometry() throws Exception {
     	String layer = getLayerId(MockData.GENERICENTITY);

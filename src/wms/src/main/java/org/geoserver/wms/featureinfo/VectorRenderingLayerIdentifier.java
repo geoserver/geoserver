@@ -4,6 +4,10 @@
  */
 package org.geoserver.wms.featureinfo;
 
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Composite;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.RenderingHints.Key;
@@ -167,8 +171,10 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             Envelope targetModelSpace = JTS.transform(targetRasterSpace, new AffineTransform2D(screenToWorld));
             
             // prepare the image we are going to check rendering against
-            int paintAreaSize = (int) radius * 2 + 1;
-            final BufferedImage image = ImageTypeSpecifier.createFromBufferedImageType(BufferedImage.TYPE_INT_ARGB).createBufferedImage(paintAreaSize, paintAreaSize);
+            int paintAreaSize = radius * 2 + 1;
+            final BufferedImage image = ImageTypeSpecifier.createFromBufferedImageType(
+                    BufferedImage.TYPE_INT_ARGB).createBufferedImage(paintAreaSize,
+                    paintAreaSize);
             image.setAccelerationPriority(0);
     
             // and now the listener that will check for painted pixels
@@ -186,10 +192,20 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             // and now run the rendering _almost_ like a GetMap
             RenderedImageMapOutputFormat rim = new RenderedImageMapOutputFormat(wms) {
     
+                private Graphics2D graphics;
+
                 @Override
                 protected RenderedImage prepareImage(int width, int height, IndexColorModel palette,
                         boolean transparent) {
                     return image;
+                }
+
+                @Override
+                protected Graphics2D getGraphics(boolean transparent, Color bgColor,
+                        RenderedImage preparedImage, Map<Key, Object> hintsMap) {
+                    graphics = super.getGraphics(transparent, bgColor, preparedImage,
+                            hintsMap);
+                    return graphics;
                 }
     
                 @Override
@@ -202,7 +218,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
                     hints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
     
                     // TODO: should we disable the screenmap as well?
-    
+                    featureInfoListener.setGraphics(graphics);
                     featureInfoListener.setRenderer(renderer);
                     renderer.addRenderListener(featureInfoListener);
                 }
@@ -471,6 +487,8 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
         
         Feature previous;
 
+        Graphics2D graphics;
+
         public FeatureInfoRenderListener(BufferedImage bi, Rectangle hitArea, int maxFeatures) {
             verifyColorModel(bi);
             Raster raster = getRaster(bi);
@@ -479,6 +497,10 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             this.maxFeatures = maxFeatures;
             this.cm = bi.getColorModel();
             this.bi = bi;
+        }
+
+        public void setGraphics(Graphics2D graphics) {
+            this.graphics = graphics;
         }
 
         public void setRenderer(StreamingRenderer renderer) {
@@ -520,6 +542,9 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             
             // feature caught by more than one rule?
             if(feature == previous) {
+                // clean the hit area anyways before returning, as the feature might
+                // have been rendered twice in a row coloring the hit area twice
+                cleanHitArea();
                 return;
             }
             
@@ -528,7 +553,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             Raster raster = getRaster(bi);
             int[] pixels = ((java.awt.image.DataBufferInt) raster.getDataBuffer()).getData();
             
-            // scan and clean the hit area
+            // scan and clean the hit area, bail out early if we find a hit
             boolean hit = false;
             for (int row = hitArea.y; row < (hitArea.y + hitArea.height) && !hit; row++) {
                 int idx = row * scanlineStride + hitArea.x;
@@ -538,7 +563,6 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
                     if (!hit && alpha > 0) {
                         hit = true;
                     }
-                    pixels[idx] = 0;
                     idx++;
                 }
             }
@@ -552,6 +576,17 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
                     renderer.stopRendering();
                 }
             }
+
+            // clean the hit area to prepare for next feature
+            cleanHitArea();
+        }
+
+        private void cleanHitArea() {
+            Composite oldComposite = graphics.getComposite();
+            graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC));
+            graphics.setColor(new Color(0, true));
+            graphics.fillRect(hitArea.x, hitArea.y, hitArea.width, hitArea.height);
+            graphics.setComposite(oldComposite);
         }
 
         @Override

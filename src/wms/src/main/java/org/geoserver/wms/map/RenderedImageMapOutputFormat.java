@@ -344,8 +344,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 palette, useAlpha);
         final Map<RenderingHints.Key, Object> hintsMap = new HashMap<RenderingHints.Key, Object>();
 
-        final Graphics2D graphic = ImageUtils.prepareTransparency(transparent, bgColor,
-                preparedImage, hintsMap);
+        final Graphics2D graphic = getGraphics(transparent, bgColor, preparedImage, hintsMap);
 
         // set up the antialias hints
         if (AA_NONE.equals(antialias)) {
@@ -524,6 +523,12 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
         RenderedImageMap map = buildMap(mapContent, image);
         return map;
+    }
+
+    protected Graphics2D getGraphics(final boolean transparent, final Color bgColor,
+            final RenderedImage preparedImage, final Map<RenderingHints.Key, Object> hintsMap) {
+        return ImageUtils.prepareTransparency(transparent, bgColor,
+                preparedImage, hintsMap);
     }
 
     /**

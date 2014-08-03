@@ -3,6 +3,9 @@ package org.geoserver.wms.featureinfo;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.util.Collections;
+
+import javax.xml.namespace.QName;
 
 import net.sf.json.JSONObject;
 
@@ -14,6 +17,8 @@ import org.junit.After;
 import org.junit.Test;
 
 public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
+
+    public static QName GRID = new QName(MockData.CITE_URI, "grid", MockData.CITE_PREFIX);
 	
 	@Override
 	protected String getLogConfiguration() {
@@ -29,6 +34,9 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
         File symbol = new File("./src/test/resources/org/geoserver/wms/featureinfo/box-offset.png");
         FileUtils.copyFileToDirectory(symbol, styles);
         
+        testData.addVectorLayer(GRID, Collections.EMPTY_MAP, "grid.properties",
+                RenderingBasedFeatureInfoTest.class, getCatalog());
+
         testData.addStyle("ranged", "ranged.sld",this.getClass(), getCatalog());
         testData.addStyle("dynamic", "dynamic.sld",this.getClass(), getCatalog());
         testData.addStyle("symbol-uom", "symbol-uom.sld", this.getClass(), getCatalog());
@@ -36,6 +44,7 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
         testData.addStyle("two-fts", "two-fts.sld", this.getClass(), getCatalog());
         testData.addStyle("dashed", "dashed.sld",this.getClass(), getCatalog());
         testData.addStyle("polydash", "polydash.sld", this.getClass(), getCatalog());
+        testData.addStyle("doublepoly", "doublepoly.sld", this.getClass(), getCatalog());
     }
     
     @After 
@@ -181,6 +190,20 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
     			+ "&WIDTH=397&HEIGHT=512&format=image%2Fpng&styles=dashed&srs=EPSG%3A4326&version=1.1.1&x=182&y=241";
         JSONObject result = (JSONObject) getAsJSON(request);
         // we used to get no results 
+        assertEquals(1, result.getJSONArray("features").size());
+    }
+
+    @Test
+    public void testDoublePoly() throws Exception {
+        String layer = getLayerId(GRID);
+        String request = "wms?REQUEST=GetFeatureInfo&&BBOX=0,0,3,3&SERVICE=WMS"
+                + "&INFO_FORMAT=application/json&FEATURE_COUNT=50&QUERY_LAYERS="
+                + layer
+                + "&Layers="
+                + layer
+                + "&WIDTH=90&HEIGHT=90&format=image%2Fpng&styles=doublepoly&srs=EPSG%3A4326&version=1.1.1&x=34&y=34";
+        JSONObject result = (JSONObject) getAsJSON(request);
+        // we used to get two results
         assertEquals(1, result.getJSONArray("features").size());
     }
 

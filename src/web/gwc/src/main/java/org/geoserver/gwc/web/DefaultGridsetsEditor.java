@@ -158,7 +158,8 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
 
                 List<String> selectedIds = selection.getObject();
                 selectedIds.add(selectedGridset);
-
+                // Execute setPageable() in order to re-create the inner record list updated.
+                defaultGridsetsTable.setPageable(false);
                 target.addComponent(defaultGridsetsTable);
                 target.addComponent(availableGridSets);
             }

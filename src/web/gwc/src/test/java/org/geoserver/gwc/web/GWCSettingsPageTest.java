@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.gwc.ConfigurableLockProvider;
@@ -232,5 +233,54 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         // check the lock provider has been changed
         lockProvider = (ConfigurableLockProvider) gwc.getLockProvider();
         assertTrue(lockProvider.getDelegate() instanceof NIOLockProvider);
+    }
+
+    @Test
+    public void testNewDefaultGridSet() throws IOException {
+        GWC gwc = GWC.get();
+        GWCConfig config = gwc.getConfig();
+        config.setCacheLayersByDefault(true);
+        gwc.saveConfig(config);
+        // Creation of a new page to test
+        GWCSettingsPage page = new GWCSettingsPage();
+        // Start the page
+        tester.startPage(page);
+        // Ensure the page is correctly rendered
+        tester.assertRenderedPage(GWCSettingsPage.class);
+        // Ensure the component cachedGridsets belongs to the DefaultGridsetsEditor class
+        tester.assertComponent("form:cachingOptionsPanel:container:configs:cachedGridsets",
+                DefaultGridsetsEditor.class);
+        // Get the available GridSets
+        DropDownChoice<String> availableItems = (DropDownChoice<String>) tester
+                .getComponentFromLastRenderedPage("form:cachingOptionsPanel:container:configs:cachedGridsets:availableGridsets");
+        // Ensure the component is present
+        assertNotNull(availableItems);
+        // Get the first item
+        String item = availableItems.getChoices().get(0);
+        // Ensure the item is not null
+        assertNotNull(item);
+        // Ensure the item is GlobalCRS84Pixel
+        assertTrue(item.equalsIgnoreCase("GlobalCRS84Pixel"));
+
+        // Selection of the form tests
+        FormTester form = tester.newFormTester("form");
+        form.select("cachingOptionsPanel:container:configs:cachedGridsets:availableGridsets", 0);
+        tester.executeAjaxEvent(
+                "form:cachingOptionsPanel:container:configs:cachedGridsets:addGridset", "onclick");
+        // Check that the page is correctly rendered
+        tester.assertRenderedPage(GWCSettingsPage.class);
+        // Save the changes
+        form.submit("submit");
+        // Check no exception has been thrown
+        tester.assertNoErrorMessage();
+        // Restart the page
+        tester.startPage(page);
+        // Ensure the page is correctly rendered
+        tester.assertRenderedPage(GWCSettingsPage.class);
+        // Get the list of available elements
+        availableItems = (DropDownChoice<String>) tester
+                .getComponentFromLastRenderedPage("form:cachingOptionsPanel:container:configs:cachedGridsets:availableGridsets");
+        // Ensure that the one used above is no more present
+        assertFalse(availableItems.getChoices().contains(item));
     }
 }

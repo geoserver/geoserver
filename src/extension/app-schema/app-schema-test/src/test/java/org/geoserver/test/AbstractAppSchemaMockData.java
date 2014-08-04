@@ -214,6 +214,14 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
         }
         setUpCatalog();
     }
+    
+    public boolean isOracleOnlineTest() {
+        return "oracle".equals(onlineTestId); 
+    }
+    
+    public boolean isPostgisOnlineTest() {
+        return "postgis".equals(onlineTestId);
+    }
 
     /**
      * 
@@ -536,17 +544,18 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      * @throws Exception
      */
     private void createTablesInTestDatabase() throws Exception {
-        if (onlineTestId != null) {
-            AbstractReferenceDataSetup setup = null;
-            if (onlineTestId.equals("oracle")) {            	
-            	if (is3D) {
-            		setup = AppSchemaTestOracleSetup.get3DInstance(propertiesFiles);
-            	} else {
-                    setup = AppSchemaTestOracleSetup.getInstance(propertiesFiles);
-            	}
-            } else if (onlineTestId.equals("postgis")) {
-                setup = AppSchemaTestPostgisSetup.getInstance(propertiesFiles);
+        AbstractReferenceDataSetup setup = null;
+        if (isOracleOnlineTest()) {
+            if (is3D) {
+                setup = AppSchemaTestOracleSetup.get3DInstance(propertiesFiles);
+            } else {
+                setup = AppSchemaTestOracleSetup.getInstance(propertiesFiles);
             }
+            // Run the sql script through setup
+            setup.setUp();
+            setup.tearDown();
+        } else if (isPostgisOnlineTest()) {
+            setup = AppSchemaTestPostgisSetup.getInstance(propertiesFiles);
             // Run the sql script through setup
             setup.setUp();
             setup.tearDown();

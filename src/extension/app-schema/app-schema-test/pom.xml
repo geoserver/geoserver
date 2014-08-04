@@ -179,7 +179,8 @@
                                 <!-- To be run separately online in app-schema-oracle-test and app-schema-postgis-test -->				
                                 <exclude>**/SortByTest.java</exclude>
                                 <exclude>**/IdFunctionWfsWithJoiningTest.java</exclude>
-				 <exclude>**/XPathPredicateTest.java</exclude>
+                                <exclude>**/XPathPredicateTest.java</exclude>
+                                <exclude>**/PagingTest.java</exclude>
                                 <exclude>${test.exclude.pattern}</exclude>
 					        </excludes>
 				        </configuration>
@@ -231,7 +232,7 @@
                                 <exclude>**/SortByTest.java</exclude>
                                 <exclude>**/PagingTest.java</exclude>
                                 <exclude>**/IdFunctionWfsWithJoiningTest.java</exclude>
-				 <exclude>**/XPathPredicateTest.java</exclude>
+                                <exclude>**/XPathPredicateTest.java</exclude>
                                 <exclude>${test.exclude.pattern}</exclude>
 					        </excludes>
 					        <argLine>-Xmx${test.maxHeapSize} -XX:MaxPermSize=${test.maxPermSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=true</argLine>

@@ -314,6 +314,11 @@
 	<bean id="getStylesKvpReader" class="org.geoserver.sld.GetStylesKvpRequestReader">
 		<constructor-arg ref="wms"/> 
 	</bean>
+  
+    <bean id="scaleMethodKvpReader" class="org.geoserver.ows.kvp.EnumKvpParser">
+       <constructor-arg value="scaleMethod"/>
+       <constructor-arg value="org.geoserver.wms.ScaleComputationMethod"/>
+    </bean>
 		
 	<!-- xml request readers -->
     <bean id="wmsCapabilitiesXmlReader" 

@@ -111,6 +111,8 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
         if (DefaultWebMapService.isLineWidthOptimizationEnabled()) {
             rendererParams.put(StreamingRenderer.LINE_WIDTH_OPTIMIZATION_KEY, true);
         }
+        rendererParams.put(StreamingRenderer.SCALE_COMPUTATION_METHOD_KEY,
+                mapContent.getRendererScaleMethod());
         renderer.setRendererHints(rendererParams);
         renderer.setMapContent(mapContent);
         return renderer;

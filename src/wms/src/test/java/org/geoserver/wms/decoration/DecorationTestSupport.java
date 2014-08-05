@@ -4,7 +4,7 @@ package org.geoserver.wms.decoration;
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -32,6 +32,8 @@ public class DecorationTestSupport {
         }
     
         WMSMapContent map = new WMSMapContent(request);
+        map.setMapWidth(request.getWidth());
+        map.setMapHeight(request.getHeight());
         map.getViewport().setBounds(
                 new ReferencedEnvelope(new Envelope(0, 0.01, 0, 0.01),
                         DefaultGeographicCRS.WGS84));

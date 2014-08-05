@@ -73,11 +73,7 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
     }
 
     public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContext) {
-        double scaleDenominator = RendererUtilities.calculateOGCScale(
-            mapContext.getViewport().getBounds(),
-            mapContext.getRequest().getWidth(),
-            mapContext.getRequest().getFormatOptions()
-        );
+        double scaleDenominator = mapContext.getScaleDenominator(true);
         double dpi = RendererUtilities.getDpi(mapContext.getRequest().getFormatOptions());
         double standardDpi = RendererUtilities.getDpi(Collections.emptyMap());
         double scaleFactor = dpi / standardDpi;

@@ -19,7 +19,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.wms.WMSMapContent;
-import org.geotools.renderer.lite.RendererUtilities;
 
 public class ScaleLineDecoration implements MapDecoration {
     /** A logger for this class. */
@@ -96,7 +95,7 @@ public class ScaleLineDecoration implements MapDecoration {
     public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent){
     	FontMetrics metrics = g2d.getFontMetrics(g2d.getFont());
     	return new Dimension(
-            suggestedWidth, 8 + (int)((metrics.getHeight() + metrics.getDescent()) * 2)
+            suggestedWidth, 8 + (metrics.getHeight() + metrics.getDescent()) * 2
         );
     }
     
@@ -129,7 +128,7 @@ public class ScaleLineDecoration implements MapDecoration {
     	// Set the font size.
     	g2d.setFont(oldFont.deriveFont(this.fontSize));
     	
-    	double scaleDenominator = mapContent.getScaleDenominator();
+        double scaleDenominator = mapContent.getScaleDenominator(true);
     	
     	String curMapUnits = "m";
     	
@@ -176,7 +175,7 @@ public class ScaleLineDecoration implements MapDecoration {
     	int leftX = (int)paintArea.getMinX() + ((int)paintArea.getWidth() - Math.max(topPx, bottomPx)) / 2;
     	
     	FontMetrics metrics = g2d.getFontMetrics(g2d.getFont());
-    	int prongHeight = (int)metrics.getHeight() + metrics.getDescent();
+    	int prongHeight = metrics.getHeight() + metrics.getDescent();
     	
     	g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 
@@ -219,12 +218,12 @@ public class ScaleLineDecoration implements MapDecoration {
     	g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, oldAntialias);
 
         g2d.drawString(topText, 
-            leftX + (int)((topPx - metrics.stringWidth(topText)) / 2), 
+            leftX + (topPx - metrics.stringWidth(topText)) / 2, 
             centerY - prongHeight + metrics.getAscent()
         );
     	
         g2d.drawString(bottomText, 
-            leftX + (int)((bottomPx - metrics.stringWidth(bottomText)) / 2), 
+            leftX + (bottomPx - metrics.stringWidth(bottomText)) / 2, 
             centerY + metrics.getHeight()
         );
         

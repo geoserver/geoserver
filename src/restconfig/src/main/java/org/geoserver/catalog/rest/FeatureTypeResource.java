@@ -248,7 +248,10 @@ public class FeatureTypeResource extends AbstractCatalogResource {
         catalog.getResourcePool().clear(featureTypeInfo);
         
         Map<String, Serializable> parameters = featureTypeInfo.getStore().getConnectionParameters();
-        if( parameters.equals(parametersCheck)){
+        MetadataMap mdm = featureTypeInfo.getMetadata();
+        boolean virtual = mdm != null && mdm.containsKey(FeatureTypeInfo.JDBC_VIRTUAL_TABLE);
+        
+        if( !virtual && parameters.equals(parametersCheck)){
             LOGGER.info( "PUT FeatureType" + datastore + "," + featuretype + " updated metadata only");
         }
         else {
@@ -289,9 +292,12 @@ public class FeatureTypeResource extends AbstractCatalogResource {
         catalog.remove( ft );
         
         // clear from resource pool
-        catalog.getResourcePool().clear(ft);
-        catalog.getResourcePool().clear(ft.getStore());
-        
+        catalog.getResourcePool().clear(ft);        
+        List<FeatureTypeInfo> siblings = catalog.getFeatureTypesByDataStore(ds);
+        if( siblings.size() == 0 ){
+            // clean up cached DataAccess if no longer in use
+            catalog.getResourcePool().clear(ds);
+        }
         LOGGER.info( "DELETE feature type" + datastore + "," + featuretype );
     }
 

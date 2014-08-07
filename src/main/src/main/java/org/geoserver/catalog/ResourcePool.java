@@ -109,12 +109,18 @@ import org.vfny.geoserver.util.DataStoreUtils;
  * <p>
  * Provides caches for:
  * <ul>
- * <li>{@link #crsCache}</li>
- * <li>{@link #dataStoreCache} </li>
+ * <li>{@link #crsCache} - quick lookup of CoorrdinateReferenceSystem by srs name</li>
+ * <li>{@link #dataStoreCache} - live {@link DataAccess} connections. Responsible for maintaining lifecycle with an
+ * appropriate call to {@link DataAccess#dispose()} when no longer in use.</li>
+ * <li>{@link #featureTypeCache} </li>
+ * <li>{@link #featureTypeAttributeCache} </li>
+ * <li>{@link #wmsCache} </li>
+ * <li>{@link #coverageReaderCache} </li>
+ * <li>{@link #hintCoverageReaderCache} </li>
+ * <li>{@link #styleCache} </li>
  * </p>
  * 
- * @author Justin Deoliveira, The Open Planning Project
- *
+ * @author Justin Deoliveira, Boundless
  */
 public class ResourcePool {
 
@@ -493,10 +499,10 @@ public class ResourcePool {
         DataAccess<? extends FeatureType, ? extends Feature> dataStore = null;
         try {
             String id = info.getId();
-            dataStore = (DataAccess) dataStoreCache.get(id);
+            dataStore = dataStoreCache.get(id);
             if ( dataStore == null ) {
                 synchronized (dataStoreCache) {
-                    dataStore = (DataAccess) dataStoreCache.get( id );
+                    dataStore = dataStoreCache.get( id );
                     if ( dataStore == null ) {
                         //create data store
                         Map<String, Serializable> connectionParameters = info.getConnectionParameters();
@@ -1831,24 +1837,6 @@ public class ResourcePool {
                 LOGGER.warning( "Error occured disposing data access '" + name + "' "+implementation );
                 LOGGER.log(Level.FINE, "", e );
             }
-        }
-        /**
-         * Ensures {@link #dispose(String, DataAccess)} is called when clearing a DataAccess
-         * from the resource pool.
-         * <p>
-         * This method should only be called when the DataAccess is no longer in use. Any threads
-         * still using the DataAccess will have their service interrupted possibly resulting in
-         * data loss.
-         * 
-         * @param key Key from DataStoreInfo used to access DataAccess connection
-         */
-        @Override
-        public DataAccess remove(final Object key) {
-            final DataAccess object = super.remove(key);
-            if (object != null) {
-                dispose( (String) key, object);
-            }
-            return object;
         }
     }
     

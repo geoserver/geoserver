@@ -79,6 +79,11 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>it.geosolutions.imageio-ext</groupId>
+      <artifactId>imageio-ext-png</artifactId>
+      <version>${imageio-ext.version}</version>
+    </dependency>
+    <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId> 
     </dependency>

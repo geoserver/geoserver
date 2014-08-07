@@ -29,6 +29,7 @@ import javax.media.jai.JAI;
 import javax.media.jai.OperationRegistry;
 import javax.media.jai.RegistryElementDescriptor;
 import javax.media.jai.RegistryMode;
+import javax.media.jai.remote.SerializableRenderedImage;
 import javax.media.jai.util.ImagingListener;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -81,12 +82,30 @@ public class GeoserverInitStartupListener implements ServletContextListener {
             @Override
             public boolean errorOccurred(String message, Throwable thrown, Object where,
                     boolean isRetryable) throws RuntimeException {
-                if (message.contains("Continuing in pure Java mode")) {
+                if (isSerializableRenderedImageFinalization(where, thrown)) {
+                    LOGGER.log(Level.FINEST, message, thrown);
+                } else if (message.contains("Continuing in pure Java mode")) {
                     LOGGER.log(Level.FINE, message, thrown);
                 } else {
                     LOGGER.log(Level.INFO, message, thrown);
                 }
                 return false; // we are not trying to recover
+            }
+
+            private boolean isSerializableRenderedImageFinalization(Object where, Throwable t) {
+                if (!(where instanceof SerializableRenderedImage)) {
+                    return false;
+                }
+
+                // check if it's the finalizer
+                StackTraceElement[] elements = t.getStackTrace();
+                for (StackTraceElement element : elements) {
+                    if (element.getMethodName().equals("finalize")
+                            && element.getClassName().endsWith("SerializableRenderedImage"))
+                        return true;
+                }
+
+                return false;
             }
         });
                         

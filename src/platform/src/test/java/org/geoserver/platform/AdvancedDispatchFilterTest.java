@@ -11,10 +11,10 @@ import static org.junit.Assert.*;
  * @author tw
  */
 public class AdvancedDispatchFilterTest {
-
+    
     public AdvancedDispatchFilterTest() {
     }
-
+  
     /**
      * Test of destroy method, of class AdvancedDispatchFilter.
      */
@@ -25,15 +25,15 @@ public class AdvancedDispatchFilterTest {
         request.setRequestURL("/test?name=0");
         MockHttpServletResponse response = new MockHttpServletResponse();
         MockFilterChain filterChain = new MockFilterChain();
-
+        
         AdvancedDispatchFilter instance = new AdvancedDispatchFilter();
         try {
             instance.doFilter(request, response, filterChain);
         } catch (Exception ex) {
             fail("should work");
-        }
+        } 
     }
-
+    
     /**
      * Need to handle a null result from getPathInfo.
      */
@@ -65,6 +65,6 @@ public class AdvancedDispatchFilterTest {
      * name MockHttpServletRequest.
      */
     class MyMockRequest extends MockHttpServletRequest {
-
+        
     }
 }

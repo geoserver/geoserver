@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Logger;
 
+import org.geoserver.catalog.Catalog;
 import org.geoserver.cluster.ClusterConfig;
 import org.geoserver.cluster.ClusterConfigWatcher;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -35,6 +36,8 @@ public class HzCluster implements DisposableBean, InitializingBean {
     HazelcastInstance hz;
     GeoServerResourceLoader rl;
     ClusterConfigWatcher watcher;
+
+    private Catalog rawCatalog;
 
     /**
      * Get a file from the cluster config directory. Create it by copying a template from the
@@ -125,6 +128,17 @@ public class HzCluster implements DisposableBean, InitializingBean {
         rl=dd.getResourceLoader();
     }
     
+    /**
+     * For Spring initialisation, don't call otherwise.
+     */
+    public void setRawCatalog(Catalog rawCatalog) throws IOException {
+        this.rawCatalog = rawCatalog;
+    }
+
+    public Catalog getRawCatalog() {
+        return rawCatalog;
+    }
+
     ClusterConfigWatcher loadConfig() throws IOException {
         File f = getConfigFile(HzCluster.CONFIG_FILENAME, HzCluster.class);
         

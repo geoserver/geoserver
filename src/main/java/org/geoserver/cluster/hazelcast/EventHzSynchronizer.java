@@ -105,11 +105,20 @@ public class EventHzSynchronizer extends HzSynchronizer {
                         //this could be latency in the catalog itself, abort processing since
                         // events need to processed in order and further events might depend 
                         // on this event
-                        String message = format(
-                                "%s - Error processing event %s but object not found in catalog", nodeId(),
-                                event);
-                        LOGGER.warning(message);
-                        continue;
+                        Catalog rawCatalog = cluster.getRawCatalog();
+                        subj = getCatalogInfo(rawCatalog, id, clazz);
+                        if (subj == null) {
+                            String message = format(
+                                    "%s - Error processing event %s: object not found in catalog",
+                                    nodeId(), event);
+                            LOGGER.warning(message);
+                            continue;
+                        }else{
+                            String message = format(
+                                    "%s - Object for event %s not found in secured catalog but found in RAW catalog!",
+                                    nodeId(), event);
+                            LOGGER.info(message);
+                        }
                     }
                     
                     evt.setSource(subj);

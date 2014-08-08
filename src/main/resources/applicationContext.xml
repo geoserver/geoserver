@@ -15,6 +15,7 @@
    <bean id="hzCluster" 
          class="org.geoserver.cluster.hazelcast.HzCluster">
       <property name="dataDirectory" ref="dataDirectory"/>
+      <property name="rawCatalog" ref="rawCatalog"/>
    </bean>
 
 </beans>

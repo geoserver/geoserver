@@ -39,7 +39,7 @@ public class YsldHandler extends StyleHandler {
 
     @Override
     public void encode(StyledLayerDescriptor sld, Version version, boolean pretty, OutputStream output) throws IOException {
-        throw new UnsupportedOperationException();
+        Ysld.encode(sld, output);
     }
 
     @Override

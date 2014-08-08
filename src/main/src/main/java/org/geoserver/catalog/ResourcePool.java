@@ -1838,8 +1838,10 @@ public class ResourcePool {
         protected void dispose(String key, FeatureType featureType) {
             String id = key.substring(0, key.indexOf(PROJECTION_POLICY_SEPARATOR));
         	FeatureTypeInfo info = catalog.getFeatureType(id);
-            LOGGER.info( "Disposing feature type '" + info.getName() + "'");
-            fireDisposed(info, featureType);
+            if(info != null){
+                LOGGER.info( "Disposing feature type '" + info.getName() + "'");
+                fireDisposed(info, featureType);
+            }
         }
     }
     /**

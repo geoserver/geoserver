@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2014 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -576,14 +576,28 @@ public class WMS implements ApplicationContextAware {
     }
 
     /**
-     * Returns all available map output formats.
+     * Returns all allowed map output formats. 
+     */
+    public Collection<GetMapOutputFormat> getAllowedMapFormats() {
+        List<GetMapOutputFormat> result = new ArrayList<GetMapOutputFormat>();
+        for (GetMapOutputFormat producer:  WMSExtensions.findMapProducers(applicationContext)) {
+            if (isAllowedGetMapFormat(producer)) {
+                result.add(producer);
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Returns all  map output formats. 
      */
     public Collection<GetMapOutputFormat> getAvailableMapFormats() {
         return WMSExtensions.findMapProducers(applicationContext);
     }
 
+
     /**
-     * Grabs the list of available MIME-Types for the GetMap operation from the set of
+     * Grabs the list of allowed MIME-Types for the GetMap operation from the set of
      * {@link GetMapOutputFormat}s registered in the application context.
      * 
      * @param applicationContext
@@ -599,10 +613,86 @@ public class WMS implements ApplicationContextAware {
         for (GetMapOutputFormat producer : producers) {
             formats.addAll(producer.getOutputFormatNames());
         }
+        return formats;
+
+    }
+    
+    /**
+     * @return all allowed GetMap format names
+     */
+    public Set<String> getAllowedMapFormatNames() {
+
+        final Collection<GetMapOutputFormat> producers;
+        producers = WMSExtensions.findMapProducers(applicationContext);
+        final Set<String> formats = new HashSet<String>();
+
+        for (GetMapOutputFormat producer : producers) {
+            if (isAllowedGetMapFormat(producer)==false) {
+                continue; // skip this producer, its mime type is not allowed
+            }
+            formats.addAll(producer.getOutputFormatNames());
+        }
 
         return formats;
 
     }
+
+    
+    /**
+     * Checks is a getMap mime type is allowed
+     * 
+     * @param format
+     * @return
+     */
+    public boolean isAllowedGetMapFormat(GetMapOutputFormat format) {
+        
+        if  (getServiceInfo().isGetMapMimeTypeCheckingEnabled()==false)
+            return true;
+        Set<String> mimeTypes = getServiceInfo().getGetMapMimeTypes();
+        return mimeTypes.contains(format.getMimeType());
+    }
+    
+    /**
+     * Checks is a getFeatureInfo mime type is allowed
+     * 
+     * @param format
+     * @return
+     */
+    public boolean isAllowedGetFeatureInfoFormat(GetFeatureInfoOutputFormat format) {
+        if (getServiceInfo().isGetFeatureInfoMimeTypeCheckingEnabled()==false)
+            return true;
+        Set<String> mimeTypes = getServiceInfo().getGetFeatureInfoMimeTypes();
+        return mimeTypes.contains(format.getContentType());
+    }
+
+    /**
+     * create a {@link ServiceException} for an unallowed
+     * GetFeatureInfo format
+     * 
+     * @param requestFormat
+     * @return
+     */
+    public ServiceException unallowedGetFeatureInfoFormatException(String requestFormat) {
+        ServiceException e = new ServiceException("Getting feature info using "
+                + requestFormat + " is not allowed", "ForbiddenFormat");
+        e.setCode("ForbiddenFormat");
+        return e;
+    }
+
+    /**
+     * create a {@link ServiceException} for an unallowed
+     * GetMap format
+     * 
+     * @param requestFormat
+     * @return
+     */
+    public ServiceException unallowedGetMapFormatException(String requestFormat) {
+        ServiceException e = new ServiceException("Creating maps using "
+            + requestFormat + " is not allowed", "ForbiddenFormat");
+        e.setCode("ForbiddenFormat");
+        return e;
+    }
+
 
     public Set<String> getAvailableLegendGraphicsFormats() {
 
@@ -653,14 +743,31 @@ public class WMS implements ApplicationContextAware {
         return null;
     }
 
+    /**
+     * @return a list of all getFeatureInfo content types
+     */
     public List<String> getAvailableFeatureInfoFormats() {
-        List<GetFeatureInfoOutputFormat> outputFormats;
-        outputFormats = WMSExtensions.findFeatureInfoFormats(applicationContext);
-        List<String> mimeTypes = new ArrayList<String>(outputFormats.size());
-        for (GetFeatureInfoOutputFormat format : outputFormats) {
+        List<String> mimeTypes = new ArrayList<String>();
+        for (GetFeatureInfoOutputFormat format : WMSExtensions.findFeatureInfoFormats(applicationContext)) {
             mimeTypes.add(format.getContentType());
         }
         return mimeTypes;
+        
+    }
+    
+    /**
+     * @return a list of all allowed getFeature info content types
+     */
+    public List<String> getAllowedFeatureInfoFormats() {
+        List<String> mimeTypes = new ArrayList<String>();
+        for (GetFeatureInfoOutputFormat format : WMSExtensions.findFeatureInfoFormats(applicationContext)) {
+            if (isAllowedGetFeatureInfoFormat(format)==false) {
+                continue; // skip this format
+            }                
+            mimeTypes.add(format.getContentType());
+        }
+        return mimeTypes;
+        
     }
 
     /**

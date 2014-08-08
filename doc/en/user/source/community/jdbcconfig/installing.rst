@@ -5,7 +5,7 @@ Installing JDBCConfig
 
 To install the JDBCConfig module:
 
-#. `Download <http://geoserver.org/display/GEOS/Download>`_ the module. The file name is called :file:`geoserver-*-jdbcconfig-plugin.zip`, where ``*`` is the version/snapshot name.
+#. `Download <http://geoserver.org/download>`_ the module. The file name is called :file:`geoserver-*-jdbcconfig-plugin.zip`, where ``*`` is the version/snapshot name.
 
 #. Extract this file and place the JARs in ``WEB-INF/lib``.
 

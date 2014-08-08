@@ -88,7 +88,7 @@
             </goals>
             <configuration>
               <sourceDirectory>src/main/java/org/geoserver/wcs/kvp/rangesubset</sourceDirectory>
-              <outputDirectory>target/generated-sources/jjtree</outputDirectory>
+              <outputDirectory>target/jjtree</outputDirectory>
             </configuration>
           </execution>
           <execution>
@@ -97,7 +97,7 @@
               <goal>javacc</goal>
             </goals>
             <configuration>
-              <sourceDirectory>target/generated-sources/jjtree/</sourceDirectory>
+              <sourceDirectory>target/jjtree/</sourceDirectory>
               <outputDirectory>target/generated-sources/javacc</outputDirectory>
             </configuration>
           </execution>

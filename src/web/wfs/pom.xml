@@ -57,10 +57,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.geotools</groupId>
-			<artifactId>gt-validation</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.geotools</groupId>
 			<artifactId>gt-data</artifactId>
 		</dependency>
   </dependencies>

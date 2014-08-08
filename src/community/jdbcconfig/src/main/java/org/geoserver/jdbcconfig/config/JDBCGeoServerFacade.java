@@ -73,6 +73,9 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
     private void reinitializeLogging() {
         try {
             LoggingInfo realLogInfo = this.getLogging();
+            if (realLogInfo == null) {
+                return;
+            }
             LoggingInfo startLogInfo = LoggingStartupContextListener.getLogging(resourceLoader);
             
             // Doing this reflectively so that if LoggingInfo gets new properties, this should still

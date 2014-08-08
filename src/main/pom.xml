@@ -44,10 +44,6 @@
    <artifactId>commons-beanutils</artifactId>
   </dependency>
   <dependency>
-   <groupId>commons-digester</groupId>
-   <artifactId>commons-digester</artifactId>
-  </dependency>
-  <dependency>
    <groupId>commons-fileupload</groupId>
    <artifactId>commons-fileupload</artifactId>
   </dependency>
@@ -60,16 +56,8 @@
    <artifactId>commons-httpclient</artifactId>
   </dependency>
   <dependency>
-   <groupId>commons-validator</groupId>
-   <artifactId>commons-validator</artifactId>
-  </dependency>
-  <dependency>
    <groupId>org.freemarker</groupId>
    <artifactId>freemarker</artifactId>
-  </dependency>
-  <dependency>
-   <groupId>oro</groupId>
-   <artifactId>oro</artifactId>
   </dependency>
   <dependency>
    <groupId>org.geotools</groupId>
@@ -82,10 +70,6 @@
   <dependency>
    <groupId>org.geotools</groupId>
    <artifactId>gt-coverage</artifactId>
-  </dependency>
-  <dependency>
-   <groupId>org.geotools</groupId>
-   <artifactId>gt-validation</artifactId>
   </dependency>
   <dependency>
    <groupId>org.geotools</groupId>
@@ -130,6 +114,10 @@
   <dependency>
     <groupId>com.google.guava</groupId>
     <artifactId>guava</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>com.google.code.findbugs</groupId>
+    <artifactId>jsr305</artifactId>
   </dependency>
   
   <dependency>
@@ -188,7 +176,7 @@
   </dependency>
   <dependency>
    <groupId>org.geotools</groupId>
-   <artifactId>gt-wfs</artifactId>
+   <artifactId>gt-wfs-ng</artifactId>
    <scope>test</scope>
   </dependency>
   <dependency>

@@ -55,7 +55,8 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
         tester.assertComponent("demoRequestsForm", Form.class);
         tester.assertComponent("demoRequestsForm:demoRequestsList", DropDownChoice.class);
         tester.assertComponent("demoRequestsForm:url", TextField.class);
-        tester.assertComponent("demoRequestsForm:body:editorContainer:editor", TextArea.class);
+        tester.assertComponent("demoRequestsForm:body:editorContainer:editorParent:editor",
+                TextArea.class);
         tester.assertComponent("demoRequestsForm:username", TextField.class);
         tester.assertComponent("demoRequestsForm:password", PasswordTextField.class);
         tester.assertComponent("demoRequestsForm:submit", AjaxSubmitLink.class);

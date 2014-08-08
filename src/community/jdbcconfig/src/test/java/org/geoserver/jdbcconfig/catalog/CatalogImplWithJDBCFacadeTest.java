@@ -25,17 +25,31 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
 
 import com.google.common.collect.Lists;
+import java.util.logging.Level;
+import org.geotools.util.logging.Logging;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
+@RunWith(Parameterized.class)
 public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.CatalogImplTest {
 
     private JDBCCatalogFacade facade;
 
     private JDBCConfigTestSupport testSupport;
 
+    public CatalogImplWithJDBCFacadeTest(JDBCConfigTestSupport.DBConfig dbConfig) {
+        testSupport = new JDBCConfigTestSupport(dbConfig);
+    }
+
+    @Parameterized.Parameters(name = "{0}")
+    public static Iterable<Object[]> data() {
+        return JDBCConfigTestSupport.parameterizedDBConfigs();
+    }
+
     @Override
     public void setUp() throws Exception {
         super.GET_LAYER_BY_ID_WITH_CONCURRENT_ADD_TEST_COUNT = 10;
-        testSupport = new JDBCConfigTestSupport();
+        
         testSupport.setUp();
 
         ConfigDatabase configDb = testSupport.getDatabase();
@@ -159,4 +173,25 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
 //            e.printStackTrace();
 //        }
 //    }
+
+    /**
+     * Allow execution of a single test method with a hard-coded DBConfig. Due
+     * to the way junit/maven work with parameterized tests, running a single
+     * test was not possible at the time of the change.
+     *
+     * To do so, use the public constructor of DBConfig, create your test, call
+     * setUp and then the test(s) of interest as in the example below.
+     */
+    public static void main(String[] args) throws Exception {
+        Logging.getLogger("").getHandlers()[0].setLevel(Level.ALL);
+        Logging.getLogger("org.geoserver.jdbcconfig.internal").setLevel(Level.ALL);
+
+        JDBCConfigTestSupport.DBConfig config = new JDBCConfigTestSupport.DBConfig(
+                "oracle", "oracle.jdbc.OracleDriver",
+                "jdbc:oracle:thin:system/oracle@//localhost:49161/xe",
+                "system", "oracle");
+        CatalogImplWithJDBCFacadeTest test = new CatalogImplWithJDBCFacadeTest(config);
+        test.setUp();
+        test.testOrderBy();
+    }
 }

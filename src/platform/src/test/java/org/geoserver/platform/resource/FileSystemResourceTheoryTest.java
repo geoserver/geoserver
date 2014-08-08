@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -243,5 +244,29 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
         public String toString() {
             return "Await [event=" + event + "]";
         }        
+    }
+    @Override
+    protected Resource getDirectory() {
+        try {
+            folder.newFolder("NonTestDir");
+        } catch (IOException e) {
+            fail();
+        }
+        return store.get("NonTestDir");
+    }
+
+    @Override
+    protected Resource getResource() {
+        try {
+            folder.newFile("NonTestFile");
+        } catch (IOException e) {
+            fail();
+        }
+        return store.get("NonTestFile");
+    }
+
+    @Override
+    protected Resource getUndefined() {
+        return store.get("NonTestUndef");
     }
 }

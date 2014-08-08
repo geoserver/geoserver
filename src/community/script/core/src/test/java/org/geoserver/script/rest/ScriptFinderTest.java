@@ -305,6 +305,19 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         assertEquals("print 'foo'", resp.getOutputStreamContent());
     }
 
+    public void testGetWpsWithNamespace() throws Exception {
+        MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/wps/foo.py");
+        assertEquals(404, resp.getStatusCode());
+
+        File dir = scriptMgr.findOrCreateScriptDir("wps");
+        File nsDir = new File(dir, "bar");
+        FileUtils.writeStringToFile(new File(nsDir, "foo.py"), "print 'foo'");
+
+        resp = getAsServletResponse("/rest/scripts/wps/bar:foo.py");
+        assertEquals(200, resp.getStatusCode());
+        assertEquals("print 'foo'", resp.getOutputStreamContent());
+    }
+    
     public void testPutWps() throws Exception {
         assertNull(scriptMgr.findScriptFile("wps/bar.py"));
 
@@ -316,6 +329,17 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         assertNotNull(scriptMgr.findScriptFile("wps/bar.py"));
     }
 
+    public void testPutWpsWithNamespace() throws Exception {
+        assertNull(scriptMgr.findScriptFile("wps/foo/bar.py"));
+
+        String body = "print 'hello';";
+        MockHttpServletResponse resp = putAsServletResponse("/rest/scripts/wps/foo:bar.py", body,
+                "text/plain");
+        assertEquals(201, resp.getStatusCode());
+
+        assertNotNull(scriptMgr.findScriptFile("wps/foo/bar.py"));
+    }
+    
     public void testGetAllWps() throws Exception {
         // Make sure we get an empty response
         JSON json = getAsJSON("/rest/scripts/wps.json");
@@ -325,37 +349,41 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
         File dir = scriptMgr.findOrCreateScriptDir("wps");
         FileUtils.writeStringToFile(new File(dir, "foo.py"), "print 'foo'");
         FileUtils.writeStringToFile(new File(dir, "bar.py"), "print 'bar'");
-
+        // Add WPS script with custom namespace
+        File subDir = new File(dir, "custom");
+        FileUtils.writeStringToFile(new File(subDir, "buffer.py"), "print 'buffer'");
+        
         // JSON
         json = getAsJSON("/rest/scripts/wps.json");
         JSONArray scripts = ((JSONObject) json).getJSONObject("scripts").getJSONArray("script");
-        assertEquals(2, scripts.size());
+        assertEquals(3, scripts.size());
         for (int i = 0; i < scripts.size(); i++) {
             JSONObject script = scripts.getJSONObject(i);
             assertTrue(script.containsKey("name"));
             assertTrue(script.containsKey("href"));
             String name = script.getString("name");
-            assertTrue(name.equals("foo.py") || name.equals("bar.py"));
+            assertTrue(name.equals("foo.py") || name.equals("bar.py") || name.equals("custom:buffer.py"));
             String href = script.getString("href");
             assertTrue(href.equals("http://localhost/geoserver/rest/scripts/wps/foo.py")
-                    || href.equals("http://localhost/geoserver/rest/scripts/wps/bar.py"));
+                    || href.equals("http://localhost/geoserver/rest/scripts/wps/bar.py")
+                    || href.equals("http://localhost/geoserver/rest/scripts/wps/custom:buffer.py"));
         }
 
         // XML
         Document doc = getAsDOM("/rest/scripts/wps.xml");
         assertEquals("scripts", doc.getDocumentElement().getTagName());
         NodeList scriptNodes = doc.getElementsByTagName("script");
-        assertEquals(2, scriptNodes.getLength());
+        assertEquals(3, scriptNodes.getLength());
 
         // HTML
         Document htmlDom = getAsDOM("/rest/scripts/wps.html");
         NodeList links = xp.getMatchingNodes("//html:a", htmlDom);
-        assertEquals(2, links.getLength());
+        assertEquals(3, links.getLength());
 
         // HTML - No extension
         htmlDom = getAsDOM("/rest/scripts/wps");
         links = xp.getMatchingNodes("//html:a", htmlDom);
-        assertEquals(2, links.getLength());
+        assertEquals(3, links.getLength());
     }
 
     public void testDeleteWps() throws Exception {
@@ -374,5 +402,25 @@ public class ScriptFinderTest extends ScriptIntTestSupport {
 
         resp = getAsServletResponse("/rest/scripts/wps/foo.py");
         assertEquals(404, resp.getStatusCode());
+    }
+    
+    public void testDeleteWpsWithNamespace() throws Exception {
+        MockHttpServletResponse resp = getAsServletResponse("/rest/scripts/wps/bar:foo.py");
+        assertEquals(404, resp.getStatusCode());
+
+        File dir = scriptMgr.findOrCreateScriptDir("wps");
+        File nsDir = new File(dir, "bar");
+        FileUtils.writeStringToFile(new File(nsDir, "foo.py"), "print 'foo'");
+
+        resp = getAsServletResponse("/rest/scripts/wps/bar:foo.py");
+        assertEquals(200, resp.getStatusCode());
+        assertEquals("print 'foo'", resp.getOutputStreamContent());
+
+        resp = deleteAsServletResponse("/rest/scripts/wps/bar:foo.py");
+        assertEquals(200, resp.getStatusCode());
+
+        resp = getAsServletResponse("/rest/scripts/wps/bar:foo.py");
+        assertEquals(404, resp.getStatusCode());
+
     }
 }

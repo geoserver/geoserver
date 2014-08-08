@@ -6,6 +6,7 @@ package org.geoserver.script.wps;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.script.ScriptEngine;
@@ -32,6 +33,11 @@ import org.opengis.util.ProgressListener;
  *
  */
 public class ScriptProcess implements Process {
+
+    /**
+     * The name of the input that, by convention, receives the StatusMonitor
+     */
+    static final String MONITOR = "monitor";
 
     /** process name*/
     Name name;
@@ -66,7 +72,19 @@ public class ScriptProcess implements Process {
     }
 
     public Map<String, Parameter<?>> getInputs() throws ScriptException, IOException {
-        return hook.getInputs(fw.readIfModified());
+        Map<String, Parameter<?>> inputs = hook.getInputs(fw.readIfModified());
+        if (inputs == null) {
+            return null;
+        }
+
+        if (inputs.get(MONITOR) == null) {
+            return inputs;
+        }
+        // remove the monitor
+        Map<String, Parameter<?>> result = new HashMap<String, Parameter<?>>();
+        result.putAll(inputs);
+        result.remove(MONITOR);
+        return result;
     }
 
     public Map<String, Parameter<?>> getOutputs() throws ScriptException, IOException {
@@ -74,10 +92,19 @@ public class ScriptProcess implements Process {
     }
 
     @Override
-    public Map<String, Object> execute(Map<String, Object> input,
-            ProgressListener monitor) throws ProcessException {
+    public Map<String, Object> execute(Map<String, Object> input, ProgressListener listener)
+            throws ProcessException {
 
         try {
+            if (listener != null) {
+                Map<String, Parameter<?>> inputParams = hook.getInputs(fw.readIfModified());
+                if (inputParams.get(MONITOR) != null) {
+                    StatusMonitor monitor = new StatusMonitor(listener);
+                    Map<String, Object> inputReplacement = new HashMap<String, Object>(input);
+                    inputReplacement.put(MONITOR, monitor);
+                    input = inputReplacement;
+                }
+            }
             return hook.run(input, fw.readIfModified());
         } catch (Exception e) {
             throw new ProcessException(e);

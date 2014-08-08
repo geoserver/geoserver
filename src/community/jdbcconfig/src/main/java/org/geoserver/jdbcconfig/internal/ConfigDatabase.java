@@ -104,6 +104,9 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import org.springframework.jdbc.core.RowMapper;
 
 /**
  * 
@@ -111,6 +114,10 @@ import com.google.common.collect.Lists;
 public class ConfigDatabase {
 
     public static final Logger LOGGER = Logging.getLogger(ConfigDatabase.class);
+
+    private Dialect dialect;
+
+    private DataSource dataSource;
 
     private DbMappings dbMappings;
 
@@ -148,8 +155,9 @@ public class ConfigDatabase {
 
         this.binding = binding;
         this.template = new NamedParameterJdbcTemplate(dataSource);
-
-        this.dbMappings = new DbMappings();
+        // cannot use dataSource at this point due to spring context config hack
+        // in place to support tx during testing
+        this.dataSource = dataSource;
 
         this.catalogRowMapper = new InfoRowMapper<CatalogInfo>(CatalogInfo.class, binding);
         this.configRowMapper = new InfoRowMapper<Info>(Info.class, binding);
@@ -160,8 +168,16 @@ public class ConfigDatabase {
         cache = cacheProvider.getCache("catalog");
     }
 
+    private Dialect dialect() {
+        if (dialect == null) {
+            this.dialect = Dialect.detect(dataSource);
+        }
+        return dialect;
+    }
+
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void initDb(@Nullable URL initScript) throws IOException {
+        this.dbMappings = new DbMappings(dialect());
         if (null != initScript) {
             runInitScript(initScript);
         }
@@ -208,7 +224,7 @@ public class ConfigDatabase {
     
     public <T extends CatalogInfo> int count(final Class<T> of, final Filter filter) {
 
-        QueryBuilder<T> sqlBuilder = QueryBuilder.forCount(of, dbMappings).filter(filter);
+        QueryBuilder<T> sqlBuilder = QueryBuilder.forCount(dialect, of, dbMappings).filter(filter);
 
         final StringBuilder sql = sqlBuilder.build();
         final Filter unsupportedFilter = sqlBuilder.getUnsupportedFilter();
@@ -254,7 +270,7 @@ public class ConfigDatabase {
         checkArgument(offset == null || offset.intValue() >= 0);
         checkArgument(limit == null || limit.intValue() >= 0);
 
-        QueryBuilder<T> sqlBuilder = QueryBuilder.forIds(of, dbMappings).filter(filter)
+        QueryBuilder<T> sqlBuilder = QueryBuilder.forIds(dialect, of, dbMappings).filter(filter)
                 .offset(offset).limit(limit).sortOrder(sortOrder);
 
         final StringBuilder sql = sqlBuilder.build();
@@ -269,8 +285,15 @@ public class ConfigDatabase {
         }
         logStatement(sql, namedParameters);
 
-        Stopwatch sw = new Stopwatch().start();
-        List<String> ids = template.queryForList(sql.toString(), namedParameters, String.class);
+        Stopwatch sw = Stopwatch.createStarted();
+        // the oracle offset/limit implementation returns a two column result set
+        // with rownum in the 2nd - queryForList will throw an exception
+        List<String> ids = template.query(sql.toString(), namedParameters, new RowMapper<String>() {
+            @Override
+            public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return rs.getString(1);
+            }
+        });
         sw.stop();
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine(Joiner.on("").join("query returned ", ids.size(), " records in ",
@@ -304,7 +327,7 @@ public class ConfigDatabase {
 
     private <T extends Info> CloseableIterator<T> applyOffsetLimit(CloseableIterator<T> iterator, Integer offset, Integer limit){
         if (offset != null) {
-            Iterators.skip(iterator, offset.intValue());
+            Iterators.advance(iterator, offset.intValue());
         }
         if (limit != null) {
             iterator = CloseableIteratorAdapter.limit(iterator, limit.intValue());
@@ -354,10 +377,11 @@ public class ConfigDatabase {
         final Integer typeId = dbMappings.getTypeId(interf);
 
         Map<String, ?> params = params("type_id", typeId, "id", id, "blob", blob);
-        final String statement = "insert into object (type_id, id, blob) values (:type_id, :id, :blob)";
+        final String statement = String.format("insert into object (oid, type_id, id, blob) values (%s, :type_id, :id, :blob)",
+                dialect.nextVal("seq_OBJECT"));
         logStatement(statement, params);
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        int updateCount = template.update(statement, new MapSqlParameterSource(params), keyHolder);
+        int updateCount = template.update(statement, new MapSqlParameterSource(params), keyHolder, new String[] {"oid"});
         checkState(updateCount == 1, "Insert statement failed");
         // looks like some db's return the pk different than others, so lets try both ways
         Number key = (Number) keyHolder.getKeys().get("oid");

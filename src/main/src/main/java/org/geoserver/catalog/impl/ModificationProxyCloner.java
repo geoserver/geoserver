@@ -4,7 +4,7 @@
  */
 package org.geoserver.catalog.impl;
 
-import java.io.Serializable;
+import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -114,7 +114,7 @@ class ModificationProxyCloner {
         
 
         if(source instanceof Serializable) {
-            return (T) SerializationUtils.clone((Serializable) source);
+            return (T) cloneSerializable((Serializable)source);
         } else {
             XStreamPersister persister = XSTREAM_PERSISTER_FACTORY.createXMLPersister();
             XStream xs = persister.getXStream();
@@ -123,7 +123,18 @@ class ModificationProxyCloner {
             return copy;
         }
     }
-    
+
+    static <T extends Serializable> T cloneSerializable(T source) {
+        byte[] bytes = SerializationUtils.serialize(source);
+        try {
+            ObjectInputStream input =
+                new ModProxyObjectInputStream(new ByteArrayInputStream(bytes));
+            return (T) input.readObject();
+        } catch (Exception e) {
+            throw new RuntimeException("Error cloning serializable object", e);
+        }
+    }
+
     static Class getDeepestCatalogInfoInterface(CatalogInfo object) {
         Class<? extends CatalogInfo> sourceClass = object.getClass();
         Class result = CATALOGINFO_INTERFACE_CACHE.get(sourceClass);
@@ -228,4 +239,26 @@ class ModificationProxyCloner {
         return copy;
     }
 
+    /**
+     * Custom object output stream used to ensure a stable class loader used.
+     */
+    static class ModProxyObjectInputStream extends ObjectInputStream {
+
+        ClassLoader classLoader;
+
+        public ModProxyObjectInputStream(InputStream input) throws IOException {
+            super(input);
+            this.classLoader = ModificationProxy.class.getClassLoader();
+        }
+
+        @Override
+        protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
+            String name = desc.getName();
+            try {
+                return Class.forName(name, false, classLoader);
+            } catch (ClassNotFoundException ex) {
+                return super.resolveClass(desc);
+            }
+        }
+    }
 }

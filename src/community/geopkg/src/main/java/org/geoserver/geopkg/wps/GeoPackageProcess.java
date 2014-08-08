@@ -258,12 +258,12 @@ public class GeoPackageProcess implements GSProcess {
 
                request.setBgColor(tiles.getBgColor());
                request.setTransparent(tiles.isTransparent());
-               request.setSldBody(tiles.getSldBody());
+               request.setStyleBody(tiles.getSldBody());
                if (tiles.getSld() != null) {
-                   request.setSld(tiles.getSld().toURL());
+                   request.setStyleUrl(tiles.getSld().toURL());
                }
                else if (tiles.getSldBody() != null) {
-                   request.setSldBody(tiles.getSldBody());
+                   request.setStyleBody(tiles.getSldBody());
                }
                else {
                    request.setStyles(new ArrayList<Style>());

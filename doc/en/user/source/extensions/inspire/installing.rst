@@ -3,7 +3,7 @@
 Installing the INSPIRE extension
 ================================
 
-The INSPIRE extension is a official extension available at `GeoServer download <http://geoserver.org/display/GEOS/Download>`_ pages (starting with GeoServer 2.3.2).
+The INSPIRE extension is a official extension available at `GeoServer download <http://geoserver.org/download>`_ pages (starting with GeoServer 2.3.2).
 
 #. Download the inspire zip release file from the download page of your version of GeoServer
 

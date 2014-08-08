@@ -238,13 +238,13 @@ public class ResourceAccessManagerWMSTest extends WMSTestSupport {
         // a Texas one
         int[] pixel = new int[4];
         image.getData().getPixel(368, 227, pixel);
-        assertEquals(77, pixel[0]);
-        assertEquals(77, pixel[1]);
+        assertEquals(130, pixel[0]);
+        assertEquals(130, pixel[1]);
         assertEquals(255, pixel[2]);
         // a California one
         image.getData().getPixel(191, 178, pixel);
-        assertEquals(77, pixel[0]);
-        assertEquals(77, pixel[1]);
+        assertEquals(130, pixel[0]);
+        assertEquals(130, pixel[1]);
         assertEquals(255, pixel[2]);
     }
 
@@ -282,8 +282,8 @@ public class ResourceAccessManagerWMSTest extends WMSTestSupport {
         // a Texas one
         int[] pixel = new int[4];
         image.getData().getPixel(368, 227, pixel);
-        assertEquals(77, pixel[0]);
-        assertEquals(77, pixel[1]);
+        assertEquals(130, pixel[0]);
+        assertEquals(130, pixel[1]);
         assertEquals(255, pixel[2]);
         // a California one, this one should be white
         image.getData().getPixel(191, 178, pixel);

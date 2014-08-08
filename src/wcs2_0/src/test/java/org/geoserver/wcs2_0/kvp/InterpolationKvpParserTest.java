@@ -1,14 +1,21 @@
 package org.geoserver.wcs2_0.kvp;
 
 import static org.junit.Assert.*;
+
+import java.util.List;
+
 import net.opengis.wcs20.InterpolationAxisType;
 import net.opengis.wcs20.InterpolationType;
 
 import org.eclipse.emf.common.util.EList;
+import org.geoserver.ows.KvpParser;
+import org.geoserver.ows.util.KvpUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.OWS20Exception;
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Test;
 
-public class InterpolationKvpParserTest {
+public class InterpolationKvpParserTest extends GeoServerSystemTestSupport{
 
     InterpolationKvpParser parser = new InterpolationKvpParser();
     
@@ -72,6 +79,21 @@ public class InterpolationKvpParserTest {
         assertEquals("http://www.opengis.net/def/axis/OGC/1/longitude", axes.get(1).getAxis());
         assertEquals("http://www.opengis.net/def/interpolation/OGC/1/nearest", axes.get(1).getInterpolationMethod());
     }
-    
+
+    @Test
+    public void testParserForVersion() throws Exception {
+        // look up parser objects
+        List<KvpParser> parsers = GeoServerExtensions.extensions(KvpParser.class);
+        KvpParser parser = KvpUtils.findParser("interpolation", "WCS", null, "2.0.0", parsers);
+        assertNotNull(parser);
+        // Ensure the correct parser is taken
+        assertEquals(parser.getClass(), InterpolationKvpParser.class);
+        // Version 2.0.1
+        parser = KvpUtils.findParser("interpolation", "WCS", null, "2.0.1", parsers);
+        assertNotNull(parser);
+        // Ensure the correct parser is taken
+        assertEquals(parser.getClass(), InterpolationKvpParser.class);
+    }
+
 }
 

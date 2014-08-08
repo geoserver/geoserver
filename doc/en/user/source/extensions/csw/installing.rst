@@ -5,7 +5,7 @@ Installing Catalog Services for Web (CSW)
 
 To install the CSW module:
 
-#. `Download <http://geoserver.org/display/GEOS/Download>`_ the module. The file name is called :file:`geoserver-*-csw-plugin.zip`, where ``*`` is the version/snapshot name.
+#. `Download <http://geoserver.org/download>`_ the module. The file name is called :file:`geoserver-*-csw-plugin.zip`, where ``*`` is the version/snapshot name.
 
 #. Extract this file and place the JARs in ``WEB-INF/lib``.
 

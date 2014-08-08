@@ -23,6 +23,7 @@ import javax.imageio.ImageIO;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.wicket.Component;
+import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Session;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -32,6 +33,7 @@ import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.DynamicWebResource;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
@@ -44,10 +46,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.lang.Bytes;
-import org.geoserver.catalog.ResourcePool;
-import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.Styles;
-import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.*;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.ows.util.ResponseUtils;
@@ -90,8 +89,10 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
     protected Form styleForm;
 
     protected CodeMirrorEditor editor;
-    
-    String rawSLD;
+
+    protected MarkupContainer formatReadOnlyMessage;
+
+    String rawStyle;
 
     private Image legend;
 
@@ -100,6 +101,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
     private WebMarkupContainer legendContainer;
 
     private DropDownChoice<WorkspaceInfo> wsChoice;
+    DropDownChoice<String> formatChoice;
 
     public AbstractStylePage() {
     }
@@ -108,7 +110,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         initUI(style);
     }
 
-    protected void initUI(StyleInfo style) {
+    protected void initUI(final StyleInfo style) {
         IModel<StyleInfo> styleModel = new CompoundPropertyModel(style != null ? 
             new StyleDetachableModel(style) : getCatalog().getFactory().createStyle());
         
@@ -134,7 +136,32 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         }
 
         styleForm.add(wsChoice);
-        styleForm.add( editor = new CodeMirrorEditor("SLD", new PropertyModel(this, "rawSLD")) );
+
+        formatChoice = new DropDownChoice<String>("format", new StyleFormatsModel(), new ChoiceRenderer<String>() {
+            @Override
+            public String getIdValue(String object, int index) {
+                return object;
+            }
+
+            @Override
+            public Object getDisplayValue(String object) {
+                return Styles.handler(object).getName();
+            }
+        });
+        formatChoice.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                target.appendJavascript(String.format(
+                    "document.gsEditors.editor.setOption('mode', '%s');", styleHandler().getCodeMirrorEditMode()));
+            }
+        });
+        styleForm.add(formatChoice);
+
+        formatReadOnlyMessage = new WebMarkupContainer("formatReadOnly", new Model());
+        formatReadOnlyMessage.setVisible(false);
+        styleForm.add(formatReadOnlyMessage);
+
+        styleForm.add( editor = new CodeMirrorEditor("styleEditor", new PropertyModel(this, "rawStyle")) );
         // force the id otherwise this blasted thing won't be usable from other forms
         editor.setTextAreaMarkupId("editor");
         editor.setOutputMarkupId(true);
@@ -143,10 +170,10 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
         if (style != null) {
             try {
-                setRawSLD(readFile(style));
+                setRawStyle(readFile(style));
             } catch (IOException e) {
                 // ouch, the style file is gone! Register a generic error message
-                Session.get().error(new ParamResourceModel("sldNotFound", this, style.getFilename()).getString());
+                Session.get().error(new ParamResourceModel("styleNotFound", this, style.getFilename()).getString());
             }
         }
 
@@ -213,7 +240,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                         try {
                             styleFile = dd.findOrCreateStyleSldFile(si);
                             FileUtils.writeStringToFile(styleFile, lastStyle);
-                            StyledLayerDescriptor sld = Styles.parse(styleFile, null);
+                            StyledLayerDescriptor sld = styleHandler().parse(styleFile, null, null, null);
                             if (sld != null && sld.getStyledLayers().length > 0) {
                                 Style style = null;
                                 StyledLayer sl = sld.getStyledLayers()[0];
@@ -259,6 +286,10 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         });
     }
 
+    StyleHandler styleHandler() {
+        return Styles.handler(formatChoice.getModelObject());
+    }
+
     Form uploadForm(final Form form) {
         return new Form("uploadForm") {
             @Override
@@ -272,8 +303,8 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
                 try {
                     IOUtils.copy(upload.getInputStream(), bout);
-                    setRawSLD(new InputStreamReader(new ByteArrayInputStream(bout.toByteArray()), "UTF-8"));
-                    editor.setModelObject(rawSLD);
+                    setRawStyle(new InputStreamReader(new ByteArrayInputStream(bout.toByteArray()), "UTF-8"));
+                    editor.setModelObject(rawStyle);
                 } catch (IOException e) {
                     throw new WicketRuntimeException(e);
                 }
@@ -296,6 +327,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
             @Override
             protected void onClick(AjaxRequestTarget target, Form form) {
                 editor.processInput();
+                formatChoice.processInput();
                 List<Exception> errors = validateSLD();
                 
                 if ( errors.isEmpty() ) {
@@ -349,9 +381,9 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
     
     List<Exception> validateSLD() {
         try {
-            final String sld = editor.getInput();            
+            final String sld = editor.getInput();
             ByteArrayInputStream input = new ByteArrayInputStream(sld.getBytes());
-            List<Exception> validationErrors = Styles.validate(input, null);
+            List<Exception> validationErrors = styleHandler().validate(input, null, null);
             return validationErrors;
         } catch( Exception e ) {
             return Arrays.asList( e );
@@ -371,7 +403,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                     try {
                         // same here, force validation or the field won't be udpated
                         editor.reset();
-                        setRawSLD(readFile(style));
+                        setRawStyle(readFile(style));
                     } catch (Exception e) {
                         error("Errors occurred loading the '" + style.getName() + "' style");
                     }
@@ -408,7 +440,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         return pool.readStyle(style);
     }
     
-    public void setRawSLD(Reader in) throws IOException {
+    public void setRawStyle(Reader in) throws IOException {
         BufferedReader bin = null;
         if ( in instanceof BufferedReader ) {
             bin = (BufferedReader) in;
@@ -423,8 +455,8 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
             builder.append(line).append("\n");
         }
 
-        this.rawSLD = builder.toString();
-        editor.setModelObject(rawSLD);
+        this.rawStyle = builder.toString();
+        editor.setModelObject(rawStyle);
         in.close();
     }
 

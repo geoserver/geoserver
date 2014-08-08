@@ -7,8 +7,28 @@ package org.geoserver.jdbcconfig.internal;
 import javax.annotation.Nullable;
 
 import com.google.common.base.Joiner;
+import java.sql.Connection;
+import java.sql.SQLException;
+import javax.sql.DataSource;
 
 public class Dialect {
+
+    public static Dialect detect(DataSource dataSource) {
+        Dialect dialect;
+        try {
+            Connection conn = dataSource.getConnection();
+            String driver = conn.getMetaData().getDriverName();
+            if (driver.contains("Oracle")) {
+                dialect = new OracleDialect();
+            } else {
+                dialect = new Dialect();
+            }
+            conn.close();
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+        return dialect;
+    }
 
     public void applyOffsetLimit(StringBuilder sql, @Nullable Integer offset,
             @Nullable Integer limit) {
@@ -22,6 +42,10 @@ public class Dialect {
         if (offset != null) {
             sql.append(" offset ").append(offset);
         }
+    }
+
+    public String nextVal(String sequence) {
+        return "DEFAULT";
     }
 
     public CharSequence propertyName(String propertyName) {

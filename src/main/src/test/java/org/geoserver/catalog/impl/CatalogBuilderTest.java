@@ -301,8 +301,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         CatalogBuilder cb = new CatalogBuilder(cat);
         WMSStoreInfo wms = cb.buildWMSStore("demo");
         wms.setCapabilitiesURL(RemoteOWSTestSupport.WMS_SERVER_URL
-                + "service=WMS&request=GetCapabilities");
-        cat.save(wms);
+                + "service=WMS&request=GetCapabilities&version=1.1.0");
 
         cb.setStore(wms);
         WMSLayerInfo wmsLayer = cb.buildWMSLayer("topp:states");
@@ -323,7 +322,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         assertEquals("topp:states", wmsLayer.getNativeName());
         assertEquals("EPSG:4326", wmsLayer.getSRS());
         assertEquals("USA Population", wmsLayer.getTitle());
-        assertEquals("This is some census data on the states.", wmsLayer.getAbstract());
+        assertEquals("2000 census data for United States.", wmsLayer.getAbstract());
         
         assertEquals(CRS.decode("EPSG:4326"), wmsLayer.getNativeCRS());
         assertNotNull(wmsLayer.getNativeBoundingBox());

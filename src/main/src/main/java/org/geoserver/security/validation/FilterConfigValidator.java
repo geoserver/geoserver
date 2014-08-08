@@ -247,14 +247,6 @@ public class FilterConfigValidator extends SecurityConfigValidator {
     
     public void validateFilterConfig(ExceptionTranslationFilterConfig config) throws FilterConfigException {
         
-        if (isNotEmpty(config.getAccessDeniedErrorPage())==false) {
-            throw createFilterException(FilterConfigException.ACCESS_DENIED_PAGE_NEEDED);
-        }
-        
-        if (config.getAccessDeniedErrorPage().startsWith("/")==false) {
-            throw createFilterException(FilterConfigException.ACCESS_DENIED_PAGE_PREFIX);
-        }
-
         
         if (isNotEmpty(config.getAuthenticationFilterName())) {            
             try {

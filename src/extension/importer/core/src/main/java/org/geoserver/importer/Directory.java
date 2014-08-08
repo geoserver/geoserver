@@ -95,7 +95,9 @@ public class Directory extends FileData {
             vfs.extractTo(file, this.file);
 
             LOGGER.fine("deleting " + file.getAbsolutePath());
-            file.delete();
+            if (!file.delete()) {
+                throw new IOException("unable to delete file");
+            }
         }
     }
     
@@ -443,7 +445,9 @@ public class Directory extends FileData {
                     if (LOGGER.isLoggable(Level.FINE)) {
                         LOGGER.fine("Deleting file " + f.getAbsolutePath());
                     }
-                    f.delete();
+                    if (!f.delete()) {
+                        throw new IOException("unable to delete " + f);
+                    }
                 }
             }
         }

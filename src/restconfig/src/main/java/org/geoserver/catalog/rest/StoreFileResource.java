@@ -6,6 +6,7 @@ package org.geoserver.catalog.rest;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,12 +17,16 @@ import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.RestletException;
 import org.geoserver.rest.util.RESTUploadPathMapper;
 import org.geoserver.rest.util.RESTUtils;
+import org.geotools.data.DataUtilities;
 import org.geotools.util.logging.Logging;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -101,19 +106,46 @@ public abstract class StoreFileResource extends Resource {
          return handleFileUpload(storeName, workspaceName, format, directory);
      }
 
-    private File createFinalRoot(String workspaceName, String storeName)
-            throws IOException {
-        File directory;
-        directory = catalog.getResourceLoader().findOrCreateDirectory("data", workspaceName,
-                storeName);
+    private File createFinalRoot(String workspaceName, String storeName) throws IOException {
+        // Check if the Request is a POST request, in order to search for an existing coverage
+        Method method = getRequest().getMethod();
+        boolean isPost = method.equals(Method.POST);
+        File directory = null;
+        if (isPost && storeName != null) {
+            // Check if the coverage already exists
+            CoverageStoreInfo coverage = catalog.getCoverageStoreByName(storeName);
+            if (coverage != null) {
+                if (workspaceName == null
+                        || (workspaceName != null && coverage.getWorkspace().getName()
+                                .equalsIgnoreCase(workspaceName))) {
+                    // If the coverage exists then the associated directory is defined by its URL
+                    File dirFile = DataUtilities.urlToFile(new URL(coverage.getURL()));
+                    // If the directory does not exists, it means that the path is relative and then
+                    // the directory is searched inside the data directory
+                    if (!dirFile.exists()) {
+                        directory = catalog.getResourceLoader().findOrCreateDirectory(dirFile, "");
+                    } else {
+                        // Else the directory is used
+                        directory = dirFile;
+                    }
+                }
+            }
+        }
+        // If the directory has not been found then it is created directly
+        if (directory == null) {
+            directory = catalog.getResourceLoader().findOrCreateDirectory("data", workspaceName,
+                    storeName);
+        }
+
         // Selection of the original ROOT directory path
         StringBuilder root = new StringBuilder(directory.getAbsolutePath());
         // StoreParams to use for the mapping.
         Map<String, String> storeParams = new HashMap<String, String>();
         // Listing of the available pathMappers
-        List<RESTUploadPathMapper> mappers = GeoServerExtensions.extensions(RESTUploadPathMapper.class);
+        List<RESTUploadPathMapper> mappers = GeoServerExtensions
+                .extensions(RESTUploadPathMapper.class);
         // Mapping of the root directory
-        for(RESTUploadPathMapper mapper : mappers){
+        for (RESTUploadPathMapper mapper : mappers) {
             mapper.mapStorePath(root, workspaceName, storeName, storeParams);
         }
         // Creation of a new File pointing to the new root

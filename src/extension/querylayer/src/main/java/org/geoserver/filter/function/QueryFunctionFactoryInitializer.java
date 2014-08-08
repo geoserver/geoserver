@@ -29,6 +29,10 @@ public class QueryFunctionFactoryInitializer implements GeoServerLifecycleHandle
         // nothing do to
     }
 
+    public void beforeReload() {
+        // nothing to do
+    }
+
     public void onReload() {
         configure();
 

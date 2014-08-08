@@ -81,6 +81,8 @@ public class MapJSONFormat extends StreamDataFormat {
             return json;
         } else if (obj instanceof Number) {
             return obj;
+        } else if (obj instanceof Boolean) {
+            return obj;
         } else if (obj == null) {
             return JSONNull.getInstance();
         } else {

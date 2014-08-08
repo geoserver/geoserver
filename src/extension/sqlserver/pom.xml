@@ -32,7 +32,7 @@
       <dependencies>
         <dependency>
           <groupId>com.microsoft</groupId>
-          <artifactId>sqljdbc</artifactId>
+          <artifactId>sqljdbc4</artifactId>
           <version>${sqlServerDriverVersion}</version>
         </dependency>
       </dependencies>

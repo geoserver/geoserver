@@ -52,6 +52,8 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
 
     private PropertyName defaultGeometryExpression;
 
+    private boolean addSolidLineSymbolier;
+
     public FeatureInfoStylePreprocessor(FeatureType schema) {
         this.schema = schema;
         this.defaultGeometryExpression = ff.property("");
@@ -172,8 +174,15 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
     public void visit(Rule rule) {
         geometriesOnLineSymbolizer.clear();
         geometriesOnPolygonSymbolizer.clear();
+        addSolidLineSymbolier = false;
         super.visit(rule);
         Rule copy = (Rule) pages.peek();
+        if (addSolidLineSymbolier) {
+            // add also a black line to make sure we get something in output even
+            // if the user clicks in between symbols or dashes
+            LineSymbolizer ls = sb.createLineSymbolizer(Color.BLACK);
+            copy.symbolizers().add(ls);
+        }
         // check all the geometries that are on line, but not on polygon
         geometriesOnLineSymbolizer.removeAll(geometriesOnPolygonSymbolizer);
         for (Expression geom : geometriesOnLineSymbolizer) {
@@ -193,7 +202,9 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
                  Filter ruleFilter = copy.getFilter();
                  Filter filter = ruleFilter == null || ruleFilter == Filter.INCLUDE ? geomCheck : ff.and(geomCheck, ruleFilter);
                  RuleImpl extra = new RuleImpl(copy);
+                 extra.setFilter(filter);
                  extra.symbolizers().clear();
+                 extra.symbolizers().add(sb.createPolygonSymbolizer());
                  extraRules.add(extra);
              }
             
@@ -215,9 +226,7 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
             float[] dashArray = stroke.getDashArray();
             Graphic graphicStroke = stroke.getGraphicStroke();
             if (graphicStroke != null || dashArray != null && dashArray.length > 0) {
-                // add also a black line to make sure we get something in output even
-                // if the user clicks in between symbols or dashes
-                pages.push(sb.createLineSymbolizer(Color.BLACK));
+                addSolidLineSymbolier = true;
             }
         }
     }

@@ -19,7 +19,7 @@ import org.vfny.geoserver.wcs.WcsException;
 public class InterpolationMethodKvpParser extends KvpParser {
 
     public InterpolationMethodKvpParser() {
-        super("interpolationMethod", InterpolationMethodType.class);
+        super("interpolation", InterpolationMethodType.class);
     }
 
     @Override

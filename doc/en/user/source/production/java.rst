@@ -3,13 +3,22 @@
 Java Considerations
 ===================
 
-Use Oracle JRE
---------------
+Use Supported JRE
+-----------------
 
-.. note::  As of version 2.0, a Java Runtime Environment (JRE) is sufficient to run GeoServer.  GeoServer no longer requires a Java Development Kit (JDK).
+GeoServer's speed depends a lot on the chosen Java Runtime Environment (JRE).  For best performance, use *Oracle JRE 7* (also known as JRE 1.7). JREs other than those tested may work correctly, but are generally not recommended.  As an example users of OpenJDK 1.6 report GeoServer 2.5 to be working with reduced 2D rendering performance.
 
-GeoServer's speed depends a lot on the chosen Java Runtime Environment (JRE).  For best performance, use `Oracle JRE 6 <http://www.oracle.com/technetwork/java/javase/downloads/index.html>`_ (also known as JRE 1.6) or newer.  (As of GeoServer 2.2.x, Oracle JRE 5 is no longer supported.)  JREs other than those released by Oracle may work correctly, but are generally not tested or supported.  Users report GeoServer to be working with OpenJDK, but expect reductions in 2D rendering performance.
- 
+Tested:
+
+* Java 7 - GeoServer 2.6.x and above (OpenJDK and Oracle JRE tested)
+* Java 6 - GeoServer 2.3.x to GeoServer 2.5.x (Oracle JRE tested)
+* Java 5 - GeoServer 2.2.x and earlier (Sun JRE tested)
+
+Unsupported:
+
+* Java 8 - unsupported with known issues (does not currently build)
+   
+As of GeoServer 2.0, a Java Runtime Environment (JRE) is sufficient to run GeoServer.  GeoServer no longer requires a Java Development Kit (JDK).
 
 Install native JAI and JAI Image I/O extensions
 -----------------------------------------------
@@ -84,3 +93,58 @@ Once the installation is complete, you may optionally remove the original JAI fi
    jai_codec-x.y.z.jar
    
 where ``x``, ``y``, and ``z`` refer to specific version numbers.
+
+.. _java_policyfiles:
+
+Installing Unlimited Strength Jurisdiction Policy Files
+-------------------------------------------------------
+These policy files are needed for unlimited cryptography. As an example, Java does not support AES
+with a key length of 256 bit. Installing the policy files removes these restrictions.
+
+Open JDK
+````````
+
+Since Open JDK is Open Source, the policy files are already installed.   
+
+Oracle Java
+```````````
+
+The policy files are available at   
+
+* `Java 6 JCE policy jars <http://www.oracle.com/technetwork/java/javase/downloads/jce-6-download-429243.html>`_
+* `Java 7 JCE policy jars <http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html>`_
+* `Java 8 JCE policy jars <http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html>`_ 
+
+The download contains two files, **local_policy.jar** and  **US_export_policy.jar**. The default
+versions of these two files are stored in JRE_HOME/lib/security. Replace these two files with the
+versions from the download. 
+
+
+Test if unlimited key length is available
+"""""""""""""""""""""""""""""""""""""""""
+
+Start or restart GeoServer and login as administrator. The annotated warning should have disappeared.
+
+.. figure:: ../webadmin/security/images/unlimitedkey.png
+   :align: center
+  
+
+
+Additionally, the GeoServer log file should contain the following line::
+
+   "Strong cryptography is available"
+
+.. note::
+
+   The replacement has to be done for each update of the Java runtime. 
+
+IBM Java
+````````
+
+The policy files are available at
+
+* `IBM JCE policy jars <https://www14.software.ibm.com/webapp/iwm/web/preLogin.do?source=jcesdk>`_ 
+
+An IBM ID is needed to log in. The installation is identical to Oracle.
+
+ 

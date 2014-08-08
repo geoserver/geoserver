@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (c) 2001 - 2013 Vito
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <bean id="WCSResponseInterceptor" class="org.geoserver.wcs2_0.WCSResponseInterceptor">
+        <constructor-arg ref="geoServer"/>
+    </bean>
+</beans>

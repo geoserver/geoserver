@@ -84,7 +84,20 @@ You can invoke the GeoWebCache WMS instead at this URL::
    
 In other words, add ``/gwc/service/wms`` in between the path to your GeoServer instance and the WMS call.
 
-As soon as tiles are requested through GeoWebCache, GeoWebCache automatically starts saving them. This means that initial requests for tiles will not be accelerated since GeoServer will still need to generate the tiles. To automate this process of requesting tiles, you can **seed** the cache. See the section on :ref:`gwc_seeding` for more details.
+This end-point works using either:
+
+* WMS-C: A tileset description is included in the WMS GetCapabilities document instructing clients how to retrieve content as a series of tiles (each retrieved by a GetMap request). This technique supports HTTP caching taking advantage of the browser cache and any caching proxies deployed. This technique requires a client to be created with tile server support.
+* full-wms mode: GeoWebCache behaves as normal WMS supported ad-hoc WMS GetMapRequests. Each WMS Request is handled by obtaining the tiles required and stitching the result into a single image. This technique relies only on internal tile cache, but supports ad-hoc GetMap requests and does not require a client be constructed with tile server support.
+  
+  To enable this mode add the following in :file:`geowebcache.xml` configuration file:
+   
+  .. code-block:: xml
+     
+     <fullWMS>true</fullWMS>
+   
+  The fullWMS setting only effects the ``/gwc/service/wms`` endpoint and is not used by direct WMS integration.
+
+As soon as tiles are requested through the ``gwc/service/wms`` endpoint GeoWebCache automatically starts saving them. The initial requests for each tile will not be accelerated since GeoServer will  need to generate the tile and store it from subsequent use. To automate this process of requesting tiles, you can **seed** the cache. See the section on :ref:`gwc_seeding` for more details.
 
 .. _gwc_diskquota:
 

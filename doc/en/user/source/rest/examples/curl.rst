@@ -878,3 +878,33 @@ Where coverageconfig.xml may look like this
     </coverage>
 
 .. note:: When specifying only the coverage name, the coverage will be automatically configured
+
+
+Master Password Change
+----------------------
+
+The master password can be fetched wit a GET request.
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XGET   http://localhost:8080/geoserver/rest/security/masterpw.xml
+
+A generated master password may be **-"}3a^Kh**. Next step is creating an XML file.
+
+File changes.xml
+
+.. code-block:: xml
+
+   <masterPassword>
+      <oldMasterPassword>-"}3a^Kh</oldMasterPassword>
+      <newMasterPassword>geoserver1</newMasterPassword>
+   </masterPassword>
+
+Changing the master password using the file:
+
+.. code-block:: console
+
+   curl -v -u admin:geoserver -XPUT -H "Content-type: text/xml" -d @change.xml http://localhost:8080/geoserver/rest/security/masterpw.xml
+   
+   
+   

@@ -648,7 +648,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
                 if (query.getPropertyNames() == null || query.getPropertyNames().length == 0) {
                     q.setPropertyNames(propertyNames);
                 } else {
-                    Set<String> names = new LinkedHashSet<>(Arrays.asList(propertyNames));
+                    Set<String> names = new LinkedHashSet<String>(Arrays.asList(propertyNames));
                     names.addAll(Arrays.asList(q.getPropertyNames()));
                     String[] newNames = names.toArray(new String[names.size()]);
                     q.setPropertyNames(newNames);

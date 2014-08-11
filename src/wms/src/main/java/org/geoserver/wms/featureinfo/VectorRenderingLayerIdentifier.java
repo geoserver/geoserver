@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,6 +50,8 @@ import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.Hints;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.FeatureLayer;
@@ -181,8 +184,8 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             int mid = radius;
             int hitAreaSize = buffer * 2 + 1;
             Rectangle hitArea = new Rectangle(mid - buffer, mid - buffer, hitAreaSize, hitAreaSize);
-            final FeatureInfoRenderListener featureInfoListener = new FeatureInfoRenderListener(image,
-                    hitArea, maxFeatures);
+            final FeatureInfoRenderListener featureInfoListener = new FeatureInfoRenderListener(
+                    image, hitArea, maxFeatures, params.getPropertyNames());
 
             // update the map context
             mc.getViewport().setBounds(new ReferencedEnvelope(targetModelSpace, getMap.getCrs()));
@@ -345,7 +348,8 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
                 : Integer.MAX_VALUE;
         definitionQuery.setMaxFeatures(maxFeatures);
 
-        FeatureLayer result = new FeatureLayer(new AllAttributesFeatureSource(featureSource), style);
+        FeatureLayer result = new FeatureLayer(new AllAttributesFeatureSource(featureSource,
+                params.getPropertyNames()), style);
         result.setQuery(definitionQuery);
 
         return result;
@@ -477,6 +481,10 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
 
         List<SimpleFeature> features = new ArrayList<SimpleFeature>();
 
+        String[] propertyNames;
+
+        SimpleFeatureBuilder retypeBuilder;
+
         private int maxFeatures;
         
         ColorModel cm;
@@ -489,7 +497,8 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
 
         Graphics2D graphics;
 
-        public FeatureInfoRenderListener(BufferedImage bi, Rectangle hitArea, int maxFeatures) {
+        public FeatureInfoRenderListener(BufferedImage bi, Rectangle hitArea, int maxFeatures,
+                String[] propertyNames) {
             verifyColorModel(bi);
             Raster raster = getRaster(bi);
             this.scanlineStride = raster.getDataBuffer().getSize() / raster.getHeight();
@@ -570,7 +579,8 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             if (hit) {
                 previous = feature;
                 if(features.size() < maxFeatures) {
-                    features.add(feature);
+                    SimpleFeature retyped = retype(feature);
+                    features.add(retyped);
                 } else {
                     // we're done, stop rendering
                     renderer.stopRendering();
@@ -579,6 +589,19 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
 
             // clean the hit area to prepare for next feature
             cleanHitArea();
+        }
+
+        private SimpleFeature retype(SimpleFeature feature) {
+            if (propertyNames == null) {
+                return feature;
+            } else {
+                if (retypeBuilder == null) {
+                    SimpleFeatureType targetType = SimpleFeatureTypeBuilder.retype(
+                            feature.getFeatureType(), propertyNames);
+                    retypeBuilder = new SimpleFeatureBuilder(targetType);
+                }
+                return SimpleFeatureBuilder.retype(feature, retypeBuilder);
+            }
         }
 
         private void cleanHitArea() {
@@ -597,25 +620,40 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
     }
     
     /**
-     * A tiny wrapper that forces all attributes of a feature to be returned: we need this
-     * in order to collect full features, the renderer normally tries to get only the attributes
-     * it needs for performance reasons
+     * A tiny wrapper that forces the attributes needed by getfeatureinfo to be returned: the
+     * renderer normally tries to get only the attributes it needs for performance reasons
      * 
      * @author Andrea Aime - GeoSolutions
-     *
+     * 
      * @param <T>
      * @param <F>
      */
     static class AllAttributesFeatureSource extends DecoratingFeatureSource<FeatureType, Feature> {
 
-        public AllAttributesFeatureSource(FeatureSource delegate) {
+        String[] propertyNames;
+
+        public AllAttributesFeatureSource(FeatureSource delegate, String[] propertyNames) {
             super(delegate);
+            this.propertyNames = propertyNames;
         }
         
         @Override
         public FeatureCollection getFeatures(Query query) throws IOException {
             Query q = new Query(query);
-            q.setProperties(Query.ALL_PROPERTIES);
+            if (propertyNames == null || propertyNames.length == 0) {
+                // no property selection, we return them all
+                q.setProperties(Query.ALL_PROPERTIES);
+            } else {
+                // properties got selected, mix them with the ones needed by the renderer
+                if (query.getPropertyNames() == null || query.getPropertyNames().length == 0) {
+                    q.setPropertyNames(propertyNames);
+                } else {
+                    Set<String> names = new LinkedHashSet<>(Arrays.asList(propertyNames));
+                    names.addAll(Arrays.asList(q.getPropertyNames()));
+                    String[] newNames = names.toArray(new String[names.size()]);
+                    q.setPropertyNames(newNames);
+                }
+            }
             return super.getFeatures(q);
         }
         

@@ -1,114 +1,13 @@
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.wms.worldwind.etc1;
 
 
 import java.nio.ByteBuffer;
 
 public class BlockETC1Compressor {
-	// Copyright 2009 Google Inc.
-	// 			 2011 Nicolas CASTEL
-	//
-	// Licensed under the Apache License, Version 2.0 (the "License");
-	// you may not use this file except in compliance with the License.
-	// You may obtain a copy of the License at
-	//
-	//	     http://www.apache.org/licenses/LICENSE-2.0
-	//
-	// Unless required by applicable law or agreed to in writing, software
-	// distributed under the License is distributed on an "AS IS" BASIS,
-	// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	// See the License for the specific language governing permissions and
-	// limitations under the License.
-
-	/* From http://www.khronos.org/registry/gles/extensions/OES/OES_compressed_ETC1_RGB8_texture.txt
-
-	 The number of bits that represent a 4x4 texel block is 64 bits if
-	 <internalformat> is given by ETC1_RGB8_OES.
-
-	 The data for a block is a number of bytes,
-
-	 {q0, q1, q2, q3, q4, q5, q6, q7}
-
-	 where byte q0 is located at the lowest memory address and q7 at
-	 the highest. The 64 bits specifying the block is then represented
-	 by the following 64 bit integer:
-
-	 int64bit = 256*(256*(256*(256*(256*(256*(256*q0+q1)+q2)+q3)+q4)+q5)+q6)+q7;
-
-	 ETC1_RGB8_OES:
-
-	 a) bit layout in bits 63 through 32 if diffbit = 0
-
-	 63 62 61 60 59 58 57 56 55 54 53 52 51 50 49 48
-	 -----------------------------------------------
-	 | base col1 | base col2 | base col1 | base col2 |
-	 | R1 (4bits)| R2 (4bits)| G1 (4bits)| G2 (4bits)|
-	 -----------------------------------------------
-
-	 47 46 45 44 43 42 41 40 39 38 37 36 35 34  33  32
-	 ---------------------------------------------------
-	 | base col1 | base col2 | table  | table  |diff|flip|
-	 | B1 (4bits)| B2 (4bits)| cw 1   | cw 2   |bit |bit |
-	 ---------------------------------------------------
-
-
-	 b) bit layout in bits 63 through 32 if diffbit = 1
-
-	 63 62 61 60 59 58 57 56 55 54 53 52 51 50 49 48
-	 -----------------------------------------------
-	 | base col1    | dcol 2 | base col1    | dcol 2 |
-	 | R1' (5 bits) | dR2    | G1' (5 bits) | dG2    |
-	 -----------------------------------------------
-
-	 47 46 45 44 43 42 41 40 39 38 37 36 35 34  33  32
-	 ---------------------------------------------------
-	 | base col 1   | dcol 2 | table  | table  |diff|flip|
-	 | B1' (5 bits) | dB2    | cw 1   | cw 2   |bit |bit |
-	 ---------------------------------------------------
-
-
-	 c) bit layout in bits 31 through 0 (in both cases)
-
-	 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16
-	 -----------------------------------------------
-	 |       most significant pixel index bits       |
-	 | p| o| n| m| l| k| j| i| h| g| f| e| d| c| b| a|
-	 -----------------------------------------------
-
-	 15 14 13 12 11 10  9  8  7  6  5  4  3   2   1  0
-	 --------------------------------------------------
-	 |         least significant pixel index bits       |
-	 | p| o| n| m| l| k| j| i| h| g| f| e| d| c | b | a |
-	 --------------------------------------------------
-
-
-	 Add table 3.17.2: Intensity modifier sets for ETC1 compressed textures:
-
-	 table codeword                modifier table
-	 ------------------        ----------------------
-	 0                     -8  -2  2   8
-	 1                    -17  -5  5  17
-	 2                    -29  -9  9  29
-	 3                    -42 -13 13  42
-	 4                    -60 -18 18  60
-	 5                    -80 -24 24  80
-	 6                   -106 -33 33 106
-	 7                   -183 -47 47 183
-
-
-	 Add table 3.17.3 Mapping from pixel index values to modifier values for
-	 ETC1 compressed textures:
-
-	 pixel index value
-	 ---------------
-	 msb     lsb           resulting modifier value
-	 -----   -----          -------------------------
-	 1       1            -b (large negative value)
-	 1       0            -a (small negative value)
-	 0       0             a (small positive value)
-	 0       1             b (large positive value)
-
-
-	 */
 
 	static final int kModifierTable[] = {
 	/* 0 */2, 8, -2, -8,
@@ -184,74 +83,6 @@ public class BlockETC1Compressor {
 	    return convert5To8((int) ((0x1f & base) + kLookup[(int) (0x7 & diff)]));
 	}
 
-	static
-	void decode_subblock(byte [] pOut, int r, int g, int b, int [] table, int tableindice,
-	        long low, boolean second, boolean flipped) {
-	    int baseX = 0;
-	    int baseY = 0;
-	    if (second) {
-	        if (flipped) {
-	            baseY = 2;
-	        } else {
-	            baseX = 2;
-	        }
-	    }
-	    for (int i = 0; i < 8; i++) {
-	        int x, y;
-	        if (flipped) {
-	            x = baseX + (i >> 1);
-	            y = baseY + (i & 1);
-	        } else {
-	            x = baseX + (i >> 2);
-	            y = baseY + (i & 3);
-	        }
-	        int k = y + (x * 4);
-	        long offset = ((low >> k) & 1) | ((low >> (k + 15)) & 2);
-	        long delta = table[(int) (tableindice+offset)];
-	        
-	        int q = 3 * (x + 4 * y);
-	        pOut[++q] = (byte) clamp(r + delta);
-	        pOut[++q] = (byte) clamp(g + delta);
-	        pOut[++q] = (byte) clamp(b + delta);
-	    }
-	}
-
-	// Input is an ETC1 compressed version of the data.
-	// Output is a 4 x 4 square of 3-byte pixels in form R, G, B
-	static void etc1_decode_block(ByteBuffer data, byte[]  pOut) {
-	    long high = ((data.get() << 24) | (data.get() << 16) | (data.get() << 8) | data.get()) & 0xffffffff;
-	    long low = (data.get() << 24) | (data.get() << 16) | (data.get() << 8) | data.get() & 0xffffffff;
-	    int r1, r2, g1, g2, b1, b2;
-	    if ((high & 2)>0) {
-	        // differential
-	    	long rBase = high >> 27;
-	    	long gBase = high >> 19;
-	    	long bBase = high >> 11;
-	        r1 = convert5To8((int) rBase);
-	        r2 = convertDiff(rBase, high >> 24);
-	        g1 = convert5To8((int) gBase);
-	        g2 = convertDiff(gBase, high >> 16);
-	        b1 = convert5To8((int) bBase);
-	        b2 = convertDiff(bBase, high >> 8);
-	    } else {
-	        // not differential
-	        r1 = convert4To8((int) (high >> 28));
-	        r2 = convert4To8((int) (high >> 24));
-	        g1 = convert4To8((int) (high >> 20));
-	        g2 = convert4To8((int) (high >> 16));
-	        b1 = convert4To8((int) (high >> 12));
-	        b2 = convert4To8((int) (high >> 8));
-	    }
-	    int tableIndexA = (int) (7 & (high >> 5));
-	    int tableIndexB = (int) (7 & (high >> 2));
-	    int tableA = tableIndexA * 4;
-	    int tableB = tableIndexB * 4;
-	    boolean flipped = (high & 1) != 0;
-	    decode_subblock(pOut, r1, g1, b1, kModifierTable, tableA, low, false, flipped);
-	    decode_subblock(pOut, r2, g2, b2, kModifierTable, tableB, low, true, flipped);
-	}
-
-	
 	static class etc_compressed {
 		public long high;
 		public long low;

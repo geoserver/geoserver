@@ -1,9 +1,7 @@
-/*
- * Copyright (C) 2012 United States Government as represented by the Administrator of the
- * National Aeronautics and Space Administration.
- * All Rights Reserved.
+/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
-
 package org.geoserver.wms.worldwind.etc1;
 
 import gov.nasa.worldwind.formats.dds.DXTCompressionAttributes;
@@ -15,8 +13,6 @@ import java.awt.image.Raster;
 
 /**
  * @author nicastel
- * @author dcollins
- * @version $Id: DXT1Compressor.java 733 2012-09-02 17:15:09Z dcollins $
  */
 public class ETC1Compressor implements DXTCompressor
 {

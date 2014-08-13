@@ -11,12 +11,15 @@ import java.util.logging.Level;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.Radio;
 import org.apache.wicket.markup.html.form.RadioGroup;
+import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -24,14 +27,17 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.validation.validator.MinimumValidator;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.util.MapModel;
+import org.geoserver.web.wicket.LiveCollectionModel;
+import org.geoserver.web.wicket.SRSListTextArea;
 import org.geoserver.wfs.GMLInfo;
-import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.GMLInfo.SrsNameStyle;
+import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.response.ShapeZipOutputFormat;
 
 @SuppressWarnings("serial")
@@ -123,6 +129,18 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
             LOGGER.log(Level.INFO, e.getMessage(), e);
         }
         
+        // other srs list
+        TextArea srsList = new SRSListTextArea("srs", LiveCollectionModel.list(new PropertyModel(info, "sRS")));
+        form.add(srsList);
+        form.add(new AjaxLink("otherSRSHelp") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                dialog.showInfo(target, 
+                    new StringResourceModel("otherSRS", WFSAdminPage.this, null), 
+                    new StringResourceModel("otherSRS.message",WFSAdminPage.this, null));
+            }
+        });
+
     }
     
     static class GMLPanel extends Panel {

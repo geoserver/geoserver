@@ -64,6 +64,11 @@ public class CoverageStoreNewPage extends AbstractCoverageStorePage {
                     "The coverage store could not be saved. Failure message: " + e.getMessage());
         }
 
+        onSuccessfulSave(info, catalog, savedStore);
+    }
+
+    protected void onSuccessfulSave(final CoverageStoreInfo info, final Catalog catalog,
+            CoverageStoreInfo savedStore) {
         // the StoreInfo save succeeded... try to present the list of coverages (well, _the_
         // coverage while the getotools coverage api does not allow for more than one
         NewLayerPage layerChooserPage;

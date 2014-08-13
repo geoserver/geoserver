@@ -11,6 +11,7 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.flow.ControlFlowConfigurator;
 import org.geoserver.flow.FlowController;
 import org.geoserver.flow.controller.BasicOWSController;
@@ -18,9 +19,11 @@ import org.geoserver.flow.controller.GlobalFlowController;
 import org.geoserver.flow.controller.IpFlowController;
 import org.geoserver.flow.controller.SingleIpFlowController;
 import org.geoserver.flow.controller.UserFlowController;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.PropertyFileWatcher;
 import org.geotools.util.logging.Logging;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 /**
  * Basic property file based {@link ControlFlowConfigurator} implementation
@@ -30,14 +33,16 @@ import org.vfny.geoserver.global.GeoserverDataDirectory;
  */
 public class DefaultControlFlowConfigurator implements ControlFlowConfigurator {
     static final Logger LOGGER = Logging.getLogger(DefaultControlFlowConfigurator.class);
-
+    static final String PROPERTYFILENAME="controlflow.properties";
     PropertyFileWatcher configFile;
 
     long timeout = -1;
 
+    /** Default watches controlflow.properties */
     public DefaultControlFlowConfigurator() {
-        configFile = new PropertyFileWatcher(new File(
-                GeoserverDataDirectory.getGeoserverDataDirectory(), "controlflow.properties"));
+        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        Resource controlflow = loader.get(PROPERTYFILENAME);
+        configFile = new PropertyFileWatcher(controlflow);        
     }
 
     /**
@@ -59,15 +64,20 @@ public class DefaultControlFlowConfigurator implements ControlFlowConfigurator {
             String value = (String) p.get(okey);
             LOGGER.info("Loading control-flow configuration: " + key + "=" + value);
 
-            String[] keys = key.trim().split("\\s*\\.\\s*");
+            String[] keys = key.split("\\s*\\.\\s*");
 
             int queueSize = 0;
             StringTokenizer tokenizer = new StringTokenizer(value, ",");
             try {
-                if (tokenizer.countTokens() == 1) {
-                    queueSize = Integer.parseInt(value);
-                } else {
-                    queueSize = Integer.parseInt(tokenizer.nextToken());
+            	//ip.blacklist and ip.whitelist properties aren't integer values
+            	if(!"ip.blacklist".equals(key) && !"ip.whitelist".equals(key)){
+                    if (tokenizer.countTokens() == 1) {
+                        queueSize = Integer.parseInt(value);
+                    } else {
+                        queueSize = Integer.parseInt(tokenizer.nextToken());
+                    }
+                }else{
+                	continue;
                 }
             } catch (NumberFormatException e) {
                 LOGGER.severe("Rules should be assigned just a queue size, instead " + okey
@@ -97,8 +107,10 @@ public class DefaultControlFlowConfigurator implements ControlFlowConfigurator {
                 if (keys.length == 1) {
                     controller = new IpFlowController(queueSize);
                 } else if (keys.length > 1) {
-                    String ip = key.substring("ip.".length());
-                    controller = new SingleIpFlowController(queueSize, ip);
+                	if(!"blacklist".equals(keys[1]) && !"whitelist".equals(keys[1])){
+                		String ip = key.substring("ip.".length());
+                		controller = new SingleIpFlowController(queueSize, ip);
+                	}
                 }
             }
             if (controller == null) {

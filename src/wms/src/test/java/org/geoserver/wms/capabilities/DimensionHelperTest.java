@@ -4,23 +4,70 @@
  */
 package org.geoserver.wms.capabilities;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Random;
 import java.util.TimeZone;
 
+import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.catalog.DimensionPresentation;
+import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.util.ISO8601Formatter;
+import org.geoserver.wms.WMS;
+import org.geoserver.wms.capabilities.DimensionHelper.Mode;
+import org.junit.Before;
 import org.junit.Test;
+import org.xml.sax.Attributes;
+
+import com.vividsolutions.jts.util.Assert;
 
 /**
  * A test for proper ISO8601 formatting.
  * @author Ian Schneider <ischneider@opengeo.org>
  */
 public class DimensionHelperTest {
+
+    protected DimensionHelper dimensionHelper;
+
+    @Before
+    public void setUp() {
+        
+        dimensionHelper = new DimensionHelper(Mode.WMS13, WMS.get()) {
+
+            @Override
+            protected void element(String element, String content, Attributes atts) {
+                // Capabilities_1_3_0_Translator.this.element(element, content, atts);
+            }
+
+            @Override
+            protected void element(String element, String content) {
+                // Capabilities_1_3_0_Translator.this.element(element, content);
+            }
+        };
+    }
+    
+    @Test
+    public void testGetCustomDomainRepresentation() {
+        final String[] vals=new String[]{"value with spaces", "value", "  other values "}; 
+        final List<String> values=new ArrayList<String>();
+        for (String val : vals)
+            values.add(val);
+        DimensionInfo dimensionInfo=new DimensionInfoImpl();
+        dimensionInfo.setPresentation(DimensionPresentation.LIST);
+        dimensionInfo.setResolution(new BigDecimal(1));
+        String customDimRepr=dimensionHelper.getCustomDomainRepresentation(dimensionInfo, values);
+        //value with spaces,value
+        Assert.equals(customDimRepr, vals[0]+","+vals[1]+","+vals[2].trim());
+        //System.out.print(vals.toString());
+
+    }
     
     @Test
     public void testNegativeYears() {

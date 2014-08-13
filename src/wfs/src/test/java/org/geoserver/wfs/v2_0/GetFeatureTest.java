@@ -22,7 +22,6 @@ import org.geoserver.wfs.StoredQuery;
 import org.geoserver.wfs.WFSInfo;
 import org.geotools.filter.v2_0.FES;
 import org.geotools.gml3.v3_2.GML;
-
 import org.geotools.wfs.v2_0.WFS;
 import org.junit.Before;
 import org.junit.Test;
@@ -383,6 +382,74 @@ public class GetFeatureTest extends WFS20TestSupport {
     }
 
     @Test
+    public void testResultTypeHitsNumberMatched() throws Exception {
+        WFSInfo wfs = getWFS();
+        int oldMaxFeatures = wfs.getMaxFeatures();
+        boolean hitsIgnoreMaxFeatures = wfs.isHitsIgnoreMaxFeatures();
+        
+        try {
+            // we ignore max features for number matched, regardless of the hits ingore max features setting
+            wfs.setMaxFeatures(1);
+            wfs.setHitsIgnoreMaxFeatures(true);
+            getGeoServer().save( wfs );
+
+            Document doc = getAsDOM("wfs?request=GetFeature&typename=cdf:Seven&version=2.0.0&resultType=hits&service=wfs");
+            assertGML32(doc);
+            print(doc);
+            assertEquals("7", doc.getDocumentElement().getAttribute("numberMatched"));
+            assertEquals("0", doc.getDocumentElement().getAttribute("numberReturned"));
+            
+            // and we are consistent in the results mode too
+            doc = getAsDOM("wfs?request=GetFeature&typename=cdf:Seven&version=2.0.0&resultType=results&service=wfs");
+            assertGML32(doc);
+            assertEquals("7", doc.getDocumentElement().getAttribute("numberMatched"));
+            assertEquals("1", doc.getDocumentElement().getAttribute("numberReturned"));
+
+            // try hits ignores max features the other way
+            doc = getAsDOM("wfs?request=GetFeature&typename=cdf:Seven&version=2.0.0&resultType=hits&service=wfs");
+            wfs.setHitsIgnoreMaxFeatures(false);
+            getGeoServer().save( wfs );
+            assertEquals("7", doc.getDocumentElement().getAttribute("numberMatched"));
+            assertEquals("0", doc.getDocumentElement().getAttribute("numberReturned"));
+            
+            // and we are consistent in the results mode too
+            doc = getAsDOM("wfs?request=GetFeature&typename=cdf:Seven&version=2.0.0&resultType=results&service=wfs");
+            assertGML32(doc);
+            assertEquals("7", doc.getDocumentElement().getAttribute("numberMatched"));
+            assertEquals("1", doc.getDocumentElement().getAttribute("numberReturned"));
+        } finally {
+            wfs.setMaxFeatures(oldMaxFeatures);
+            wfs.setHitsIgnoreMaxFeatures(hitsIgnoreMaxFeatures);
+            getGeoServer().save( wfs );
+        }
+    }
+
+    @Test
+    public void testNumReturnedMatchedWithMaxFeatures() throws Exception {
+        WFSInfo wfs = getWFS();
+        int oldMaxFeatures = wfs.getMaxFeatures();
+        boolean oldHitsIgnoreMaxFeatures = wfs.isHitsIgnoreMaxFeatures();
+        
+        try {
+            
+            wfs.setMaxFeatures(1);
+            wfs.setHitsIgnoreMaxFeatures(true);
+            getGeoServer().save( wfs );
+
+            Document doc = getAsDOM("wfs?request=GetFeature&typename=cdf:Seven&version=2.0.0&resultType=results&service=wfs");
+            assertGML32(doc);
+
+            assertEquals("7", doc.getDocumentElement().getAttribute("numberMatched"));
+            assertEquals("1", doc.getDocumentElement().getAttribute("numberReturned"));
+
+        } finally {
+            wfs.setMaxFeatures(oldMaxFeatures);
+            wfs.setHitsIgnoreMaxFeatures(oldHitsIgnoreMaxFeatures);
+            getGeoServer().save( wfs );
+        }
+    }
+
+    @Test
     public void testWithSRS() throws Exception {
         String xml = "<wfs:GetFeature version='2.0.0' service='WFS' xmlns:wfs='"+WFS.NAMESPACE+"' >"
                 + "<wfs:Query xmlns:cdf='http://www.opengis.net/cite/data' typeNames='cdf:Other' " +
@@ -460,12 +527,12 @@ public class GetFeatureTest extends WFS20TestSupport {
                 + "xmlns:fes='" + FES.NAMESPACE + "' "
                 + "xmlns:wfs='" + WFS.NAMESPACE + "'> "
                 + "<wfs:Query typeNames='cdf:Other'> "
-                + "<wfs:PropertyName>cdf:string2</wfs:PropertyName> "
                 + "</wfs:Query> " + "</wfs:GetFeature>";
     
             Document doc = postAsDOM("wfs", xml);
             assertGML32(doc);
-            
+            NodeList aggregatedBoundList = doc.getElementsByTagName("wfs:boundedBy");
+            assertFalse(aggregatedBoundList.getLength() == 0);
             NodeList features = doc.getElementsByTagName("cdf:Other");
             assertFalse(features.getLength() == 0);
     
@@ -479,6 +546,41 @@ public class GetFeatureTest extends WFS20TestSupport {
                 assertEquals(1, boxList.getLength());
                 Element box = (Element) boxList.item(0);
                 assertTrue(box.hasAttribute("srsName"));
+            }
+        } finally {
+            wfs.setFeatureBounding(oldFeatureBounding);
+            getGeoServer().save( wfs );
+        }
+    }
+
+    @Test
+    public void testPostWithBoundsDisabled() throws Exception {
+        // enable feature bounds computation
+        WFSInfo wfs = getWFS();
+        boolean oldFeatureBounding = wfs.isFeatureBounding();
+        wfs.setFeatureBounding(false);
+        getGeoServer().save( wfs );
+
+        try {
+            String xml = "<wfs:GetFeature service='WFS' version='2.0.0' "
+                + "xmlns:cdf='http://www.opengis.net/cite/data' "
+                + "xmlns:fes='" + FES.NAMESPACE + "' "
+                + "xmlns:wfs='" + WFS.NAMESPACE + "'> "
+                + "<wfs:Query typeNames='cdf:Other'> "
+                + "</wfs:Query> " + "</wfs:GetFeature>";
+
+            Document doc = postAsDOM("wfs", xml);
+            assertGML32(doc);
+            NodeList aggregatedBoundList = doc.getElementsByTagName("wfs:boundedBy");
+            assertTrue(aggregatedBoundList.getLength() == 0);
+            NodeList features = doc.getElementsByTagName("cdf:Other");
+            assertFalse(features.getLength() == 0);
+
+            for (int i = 0; i < features.getLength(); i++) {
+                Element feature = (Element) features.item(i);
+                assertTrue(feature.hasAttribute("gml:id"));
+                NodeList boundList = feature.getElementsByTagName("gml:boundedBy");
+                assertEquals(0, boundList.getLength());
             }
         } finally {
             wfs.setFeatureBounding(oldFeatureBounding);

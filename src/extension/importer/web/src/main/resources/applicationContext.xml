@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  <!-- 
+    wicket ui stuff
+   -->
+  <bean id="importDataMenuPage" class="org.geoserver.web.MenuPageInfo">
+    <property name="id" value="importData" />
+    <property name="category" ref="dataCategory"/>
+    <property name="titleKey" value="ImportDataPage.menu" />
+    <property name="descriptionKey" value="ImportDataPage.description" />
+    <property name="componentClass" value="org.geoserver.importer.web.ImportDataPage" />
+    <property name="order" value="6"/>
+    <property name="icon" value="map_add.png"/>
+  </bean>
+
+</beans>

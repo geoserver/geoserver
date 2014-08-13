@@ -89,6 +89,7 @@
           <li>
             <label><wicket:message key="watermarkUrl">Watermark URL</wicket:message></label>
             <input wicket:id="watermark.uRL" class="field text" type="text"></input>
+            <a href="#" wicket:id="chooser"><wicket:message key="browse">...</wicket:message></a>
           </li>
           <li>
             <label><wicket:message key="watermarkTransparency">Watermark Transparency (0 - 100)</wicket:message></label>
@@ -165,6 +166,38 @@
         </ul>
       </fieldset>
     </li>
+    <li>
+      <fieldset>
+        <legend><span><wicket:message key="scalehintOptions">Scalehint Options</wicket:message></span></legend>
+        <ul>
+          <li>
+            <input class="field checkbox" type="checkbox" wicket:id="scalehint.mapunitsPixel"></input>
+            <label class="choice"><wicket:message key="scalehintUnitsPixel">Show the Scalehint as units per diagonal pixel in the GetCapability response</wicket:message></label>
+          </li>
+        </ul>
+      </fieldset>      
+    </li>
+    <li>
+      <fieldset>
+        <legend><span><wicket:message key="getMapMimeTypes"></wicket:message></span></legend>
+        <ul>
+	        <li>	            
+	        <div wicket:id="getMapMimeTypes"></div>
+	        </li>
+        </ul>
+      </fieldset>
+    </li>
+    <li>
+      <fieldset>
+        <legend><span><wicket:message key="getFeatureInfoMimeTypes"></wicket:message></span></legend>
+        <ul>
+	        <li>	                
+	        <div wicket:id="getFeatureInfoMimeTypes"></div>
+	        </li>
+        </ul>
+      </fieldset>
+    </li>        
+    <div wicket:id="modal"></div>
   </wicket:extend>
 </body>
 </html>

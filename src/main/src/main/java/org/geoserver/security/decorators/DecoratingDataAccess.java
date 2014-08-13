@@ -58,4 +58,8 @@ public abstract class DecoratingDataAccess<T extends FeatureType, F extends Feat
     public void updateSchema(Name typeName, T featureType) throws IOException {
         delegate.updateSchema(typeName, featureType);
     }
+
+    public void removeSchema(Name typeName) throws IOException {
+        delegate.removeSchema(typeName);
+    }
 }

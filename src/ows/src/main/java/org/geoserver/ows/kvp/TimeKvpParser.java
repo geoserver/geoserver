@@ -41,32 +41,37 @@ import org.geotools.util.DateRange;
  */
 public class TimeKvpParser extends KvpParser {    
     private static enum FormatAndPrecision {
-    	MILLISECOND("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Calendar.MILLISECOND),
-    	SECOND("yyyy-MM-dd'T'HH:mm:ss'Z'", Calendar.SECOND),
-    	MINUTE("yyyy-MM-dd'T'HH:mm'Z'", Calendar.MINUTE),
-    	HOUR("yyyy-MM-dd'T'HH'Z'", Calendar.HOUR_OF_DAY),
-    	DAY("yyyy-MM-dd", Calendar.DAY_OF_MONTH),
-    	MONTH("yyyy-MM", Calendar.MONTH),
-    	YEAR("yyyy", Calendar.YEAR);
-    	
-    	public final SimpleDateFormat format;
-		public final int precision;
+        MILLISECOND("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Calendar.MILLISECOND),
+        SECOND("yyyy-MM-dd'T'HH:mm:ss'Z'", Calendar.SECOND),
+        MINUTE("yyyy-MM-dd'T'HH:mm'Z'", Calendar.MINUTE),
+        HOUR("yyyy-MM-dd'T'HH'Z'", Calendar.HOUR_OF_DAY),
+        DAY("yyyy-MM-dd", Calendar.DAY_OF_MONTH),
+        MONTH("yyyy-MM", Calendar.MONTH),
+        YEAR("yyyy", Calendar.YEAR);
 
-		FormatAndPrecision(String format, int precision) {
-    		this.format = new SimpleDateFormat(format);
-    		this.format.setTimeZone(UTC_TZ);
-    		this.precision = precision;
-    	}
-		
-		public DateRange expand(Date d) {
-			Calendar c = new GregorianCalendar(UTC_TZ);
-			c.setTime(d);
-			c.add(this.precision, 1);
-			c.add(Calendar.MILLISECOND, -1);
-			return new DateRange(d, c.getTime());
-		}
+        public final String format;
+        public final int precision;
+
+        FormatAndPrecision(final String format, int precision) {
+            this.format = format;
+            this.precision = precision;
+        }
+
+        public SimpleDateFormat getFormat() {
+            SimpleDateFormat sdf = new SimpleDateFormat(format);
+            sdf.setTimeZone(UTC_TZ);
+            return sdf;
+        }
+
+        public DateRange expand(Date d) {
+            Calendar c = new GregorianCalendar(UTC_TZ);
+            c.setTime(d);
+            c.add(this.precision, 1);
+            c.add(Calendar.MILLISECOND, -1);
+            return new DateRange(d, c.getTime());
+        }
     }
-    
+
     /**
      * UTC timezone to serve as reference
      */
@@ -169,12 +174,12 @@ public class TimeKvpParser extends KvpParser {
         for(String date: listDates){
             // is it a date or a period?
             if(date.indexOf("/")<=0){
-            	Object o = getFuzzyDate(date);
-            	if (o instanceof Date) {
-            		addDate(result, (Date)o);
-            	} else {
-            		addPeriod(result, (DateRange)o);
-            	}
+                Object o = getFuzzyDate(date);
+                if (o instanceof Date) {
+                    addDate(result, (Date)o);
+                } else {
+                    addPeriod(result, (DateRange)o);
+                }
             } else {
                 // period
                 String[] period = date.split("/");
@@ -220,17 +225,17 @@ public class TimeKvpParser extends KvpParser {
     
     private static Date beginning(Object dateOrDateRange) {
         if (dateOrDateRange instanceof DateRange) {
-        	return ((DateRange) dateOrDateRange).getMinValue();
+            return ((DateRange) dateOrDateRange).getMinValue();
         } else {
-        	return (Date) dateOrDateRange;
+            return (Date) dateOrDateRange;
         }
     }
     
     private static Date end(Object dateOrDateRange) {
         if (dateOrDateRange instanceof DateRange) {
-        	return ((DateRange) dateOrDateRange).getMaxValue();
+            return ((DateRange) dateOrDateRange).getMaxValue();
         } else {
-        	return (Date) dateOrDateRange;
+            return (Date) dateOrDateRange;
         }
     }
     
@@ -262,15 +267,15 @@ public class TimeKvpParser extends KvpParser {
     }
     
     private static void addDate(Collection result, Date newDate) {
-    	for (Iterator<?> it = result.iterator(); it.hasNext(); ) {
-    		final Object element = it.next();
-    		if (element instanceof Date) {
-    			if (newDate.equals(element)) return;
-    		} else if (((DateRange) element).contains(newDate)) {
-    			return;
-    		}
-    	}
-    	result.add(newDate);
+        for (Iterator<?> it = result.iterator(); it.hasNext(); ) {
+            final Object element = it.next();
+            if (element instanceof Date) {
+                if (newDate.equals(element)) return;
+            } else if (((DateRange) element).contains(newDate)) {
+                return;
+            }
+        }
+        result.add(newDate);
     }
 
     /**
@@ -282,25 +287,25 @@ public class TimeKvpParser extends KvpParser {
      * @throws ParseException if the string can not be parsed.
      */
     static Object getFuzzyDate(final String value) throws ParseException {
-    	
-    	// special handling for current keyword (we accept both wms and wcs ways)
-    	if(value.equalsIgnoreCase("current") || value.equalsIgnoreCase("now")) {
-    		return null;
-    	}
-    	
-    	for (FormatAndPrecision f : FormatAndPrecision.values()) {
-    		ParsePosition pos = new ParsePosition(0);
-    		Date time = f.format.parse(value, pos);
-    		if (pos.getIndex() == value.length()) {
-    			DateRange range  = f.expand(time);
-    			if (range.getMinValue().equals(range.getMaxValue())) {
-    				return range.getMinValue();
-    			} else {
-    				return range;
-    			}
-    		}
-    	}
-    	
+
+        // special handling for current keyword (we accept both wms and wcs ways)
+        if(value.equalsIgnoreCase("current") || value.equalsIgnoreCase("now")) {
+            return null;
+        }
+
+        for (FormatAndPrecision f : FormatAndPrecision.values()) {
+            ParsePosition pos = new ParsePosition(0);
+            Date time = f.getFormat().parse(value, pos);
+            if (pos.getIndex() == value.length()) {
+                DateRange range  = f.expand(time);
+                if (range.getMinValue().equals(range.getMaxValue())) {
+                    return range.getMinValue();
+                } else {
+                    return range;
+                }
+            }
+        }
+
         throw new ParseException("Invalid date: " + value, 0);
     }
     

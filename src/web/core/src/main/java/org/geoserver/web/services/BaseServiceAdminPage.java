@@ -123,6 +123,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         
         //add the extension panels
         ListView extensionPanels = createExtensionPanelList("extensions", infoModel);
+        extensionPanels.setReuseItems(true);
         form.add(extensionPanels);
         
         SubmitLink submit = new SubmitLink("submit",new StringResourceModel( "save", (Component)null, null) ) {

@@ -66,6 +66,7 @@ import org.springframework.util.Assert;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterators;
 
 /**
  * Wraps the catalog and applies the security directives provided by a {@link ResourceAccessManager}
@@ -687,7 +688,14 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             return ws;
     }
 
-    protected WrapperPolicy buildWrapperPolicy(Authentication user, @Nonnull CatalogInfo info) {
+    /**
+     * Check how an access manager responds to a user accessing a catalog object and return the result.
+     * @param accessManager the access manager to ask
+     * @param user the user accessing the object
+     * @param info the catalog object being accessed
+     * @return the combination of access level and response policy to apply to the request
+     */
+    WrapperPolicy buildWrapperPolicy(@Nonnull ResourceAccessManager accessManager, Authentication user, @Nonnull CatalogInfo info) {
         Assert.notNull(info);
 
         if (info instanceof NamespaceInfo) {
@@ -700,25 +708,25 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
                 ws = delegate.getFactory().createWorkspace();
                 ws.setName(((NamespaceInfo) info).getPrefix());
             }
-            return buildWrapperPolicy(user, ws, ws.getName());
+            return buildWrapperPolicy(accessManager, user, ws, ws.getName());
 
         }
 
         if (info instanceof WorkspaceInfo) {
-            return buildWrapperPolicy(user, info, ((WorkspaceInfo) info).getName());
+            return buildWrapperPolicy(accessManager, user, info, ((WorkspaceInfo) info).getName());
         }
 
         if (info instanceof StoreInfo) {
-            return buildWrapperPolicy(user, ((StoreInfo) info).getWorkspace(),
+            return buildWrapperPolicy(accessManager, user, ((StoreInfo) info).getWorkspace(),
                     ((StoreInfo) info).getName());
         }
 
         if (info instanceof ResourceInfo) {
-            return buildWrapperPolicy(user, info, ((ResourceInfo) info).getName());
+            return buildWrapperPolicy(accessManager, user, info, ((ResourceInfo) info).getName());
         }
 
         if (info instanceof LayerInfo) {
-            return buildWrapperPolicy(user, info, ((LayerInfo) info).getName());
+            return buildWrapperPolicy(accessManager, user, info, ((LayerInfo) info).getName());
         }
 
         if (info instanceof LayerGroupInfo) {
@@ -727,7 +735,7 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             WrapperPolicy mostRestrictive = WrapperPolicy.readWrite(null);
 
             for (PublishedInfo layer : ((LayerGroupInfo) info).getLayers()) {
-                WrapperPolicy policy = buildWrapperPolicy(user, layer, layer.getName());
+                WrapperPolicy policy = buildWrapperPolicy(accessManager, user, layer, layer.getName());
                 if (AccessLevel.HIDDEN.equals(policy.getAccessLevel())) {
                     return policy;
                 }
@@ -743,7 +751,10 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
 
         throw new IllegalArgumentException("Can't build wrapper policy for objects of type "
                 + info.getClass().getName());
-
+    }
+    
+    protected WrapperPolicy buildWrapperPolicy(Authentication user, @Nonnull CatalogInfo info) {
+        return buildWrapperPolicy(accessManager, user, info);
     }
 
     /**
@@ -758,6 +769,11 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
      */
     public WrapperPolicy buildWrapperPolicy(Authentication user,
             CatalogInfo info, String resourceName) {
+        return SecureCatalogImpl.buildWrapperPolicy(accessManager, user, info, resourceName);
+    }
+    
+    static WrapperPolicy buildWrapperPolicy(ResourceAccessManager accessManager, 
+            Authentication user, CatalogInfo info, String resourceName) {
         boolean canRead = true;
         boolean canWrite = true;
 
@@ -1388,7 +1404,13 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         final CloseableIterator<T> filteredWrapped;
         filteredWrapped = CloseableIteratorAdapter.transform(filtered, securityWrapper);
 
-        return filteredWrapped;
+        // wrap the iterator in a notNull filter to ensure any filtered
+        // layers (result is null) don't get passed on from the securityWrapper
+        // Function. When the AccessLevel is HIDDEN and a layer gets filtered 
+        // out via a CatalogFilter - for example, this can happen with a
+        // LocalWorkspaceCatalogFilter and a virtual service request
+        return new CloseableIteratorAdapter(Iterators.filter(filteredWrapped,
+                com.google.common.base.Predicates.notNull()));
     }
 
     /**
@@ -1442,39 +1464,21 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             // these kind of objects are not secured
             return filter;
         }
-
-        org.opengis.filter.expression.Function visible = new InternalVolatileFunction() {
-            /**
-             * Returns {@code false} if the catalog info shall be hidden, {@code true} otherwise.
-             */
-            @Override
-            public Boolean evaluate(Object object) {
-                WrapperPolicy policy = buildWrapperPolicy(user, (CatalogInfo)object);
-                AccessLevel accessLevel = policy.getAccessLevel();
-                boolean visible = !AccessLevel.HIDDEN.equals(accessLevel);
-                return Boolean.valueOf(visible);
-            }
-        };
-
-        FilterFactory factory = Predicates.factory;
-
+        
+        Filter securityFilter = this.accessManager.getSecurityFilter(user, infoType);
+        
         // create a filter combined with the security credentials check
-        Filter securityFilter = factory.equals(factory.literal(Boolean.TRUE), visible);
         return Predicates.and(filter, securityFilter);
     }
 
     /**
-     * Checks if the current user is authenticated and is the administrator
+     * Checks if the current user is authenticated and is the administrator.
+     * Protected to allow overriding in tests.
      */
-    private boolean isAdmin(Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated())
-            return false;
-
-        for (GrantedAuthority authority : authentication.getAuthorities()) {
-            if ("ROLE_ADMINISTRATOR".equals(authority.getAuthority()))
-                return true;
-        }
-        return false;
+    protected boolean isAdmin(Authentication authentication) {
+        
+        return GeoServerExtensions.bean(GeoServerSecurityManager.class).
+                checkAuthenticationForAdminRole(authentication);
     }
 
     public void removeListeners(Class listenerClass) {

@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -45,6 +46,7 @@ import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wps.BinaryEncoderDelegate;
 import org.geoserver.wps.CDataEncoderDelegate;
+import org.geoserver.wps.RawDataEncoderDelegate;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.XMLEncoderDelegate;
 import org.geoserver.wps.executor.ExecutionStatus.ProcessState;
@@ -54,19 +56,24 @@ import org.geoserver.wps.ppio.CDataPPIO;
 import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geoserver.wps.ppio.LiteralPPIO;
 import org.geoserver.wps.ppio.ProcessParameterIO;
+import org.geoserver.wps.ppio.RawDataPPIO;
 import org.geoserver.wps.ppio.XMLPPIO;
 import org.geoserver.wps.process.GeoServerProcessors;
+import org.geoserver.wps.process.RawData;
 import org.geoserver.wps.resource.GridCoverageResource;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.data.Parameter;
 import org.geotools.process.ProcessFactory;
 import org.geotools.util.Converters;
+import org.geotools.util.logging.Logging;
 import org.geotools.xml.EMFUtils;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.feature.type.Name;
 import org.springframework.context.ApplicationContext;
 
 public class ExecuteResponseBuilder {
+    
+    static final Logger LOGGER = Logging.getLogger(ExecuteResponseBuilder.class);
 
     ExecuteType request;
 
@@ -150,8 +157,16 @@ public class ExecuteResponseBuilder {
                 response.getStatus().setProcessAccepted("Process accepted.");
             } else if (status.getPhase() == ProcessState.RUNNING) {
                 ProcessStartedType startedType = f.createProcessStartedType();
-                int progressPercent = Math.round(status.getProgress() * 100);
+                int progressPercent = Math.round(status.getProgress());
+                if(progressPercent < 0) {
+                    LOGGER.warning("Progress reported is below zero, fixing it to 0: " + progressPercent);
+                    progressPercent = 0;
+                } else if(progressPercent > 100) {
+                    LOGGER.warning("Progress reported is above 100, fixing it to 100: " + progressPercent);
+                    progressPercent = 100;
+                }
                 startedType.setPercentCompleted(new BigInteger(String.valueOf(progressPercent)));
+                startedType.setValue(status.getTask());
                 response.getStatus().setProcessStarted(startedType);
             } else if (status.getPhase() == ProcessState.COMPLETED) {
                 response.getStatus().setProcessSucceeded("Process succeeded.");
@@ -282,7 +297,12 @@ public class ExecuteResponseBuilder {
                 kvp.put("request", "GetExecutionResult");
                 kvp.put("executionId", executionId);
                 kvp.put("outputId", file.getName());
-                kvp.put("mimetype", cppio.getMimeType());
+                if(o instanceof RawData) {
+                	RawData rawData = (RawData) o;
+                	kvp.put("mimetype", rawData.getMimeType());
+                } else {
+                	kvp.put("mimetype", cppio.getMimeType());
+                }
                 outputReference.setHref(ResponseUtils.buildURL(request.getBaseUrl(), "ows", kvp, URLType.SERVICE));
                 outputReference.setMimeType(cppio.getMimeType());
             } else {
@@ -305,12 +325,18 @@ public class ExecuteResponseBuilder {
                     ComplexPPIO cppio = (ComplexPPIO) ppio;
                     complex.setMimeType(cppio.getMimeType());
 
-                    if (cppio instanceof XMLPPIO) {
+                    if (cppio instanceof RawDataPPIO) {
+                        RawData rawData = (RawData) o;
+                        complex.setMimeType(rawData.getMimeType());
+                        complex.setEncoding("base64");
+                        complex.getData().add(new RawDataEncoderDelegate(rawData));
+                    } else if (cppio instanceof XMLPPIO) {
                         // encode directly
                         complex.getData().add(new XMLEncoderDelegate((XMLPPIO) cppio, o));
                     } else if (cppio instanceof CDataPPIO) {
                         complex.getData().add(new CDataEncoderDelegate((CDataPPIO) cppio, o));
                     } else if (cppio instanceof BinaryPPIO) {
+                        complex.setEncoding("base64");
                         complex.getData().add(new BinaryEncoderDelegate((BinaryPPIO) cppio, o));
                     } else {
                         throw new WPSException("Don't know how to encode an output whose PPIO is "

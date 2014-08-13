@@ -23,7 +23,7 @@ import org.geoserver.catalog.*;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.ows.util.OwsUtils;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.data.DataAccess;
@@ -351,7 +351,7 @@ public class MockCatalogBuilder {
         CatalogBuilder cb = new CatalogBuilder(new CatalogImpl());
         cb.setStore(cs);
     
-        AbstractGridCoverage2DReader reader = cs.getFormat().getReader(cs.getURL());
+        GridCoverage2DReader reader = cs.getFormat().getReader(cs.getURL());
         if (reader == null) {
             throw new RuntimeException("No reader for " + cs.getURL());
         }
@@ -365,6 +365,7 @@ public class MockCatalogBuilder {
     
         final CoverageInfo c = createNiceMock(CoverageInfo.class);
         coverages.add(c);
+        final List<CoverageInfo> coverageList = coverages;
     
         if (srs == null) {
             srs = real.getSRS();
@@ -397,6 +398,7 @@ public class MockCatalogBuilder {
         //    .andReturn(ft).anyTimes();
     
         //expect(catalog.getCoverageByStore(cs, name)).andReturn(c).anyTimes();
+        expect(catalog.getCoveragesByStore(cs)).andReturn(coverageList).anyTimes();
         expect(catalog.getCoverageByCoverageStore(cs, name)).andReturn(c).anyTimes();
     
         c.accept((CatalogVisitor)anyObject());
@@ -512,7 +514,8 @@ public class MockCatalogBuilder {
         }
         
         String sId = newId();
-        Version version = Styles.Handler.SLD_10.getVersion();
+        String format = SLDHandler.FORMAT;
+        Version version = SLDHandler.VERSION_10;
     
         final StyleInfo s = createNiceMock(StyleInfo.class);
         styles.add(s);
@@ -522,8 +525,8 @@ public class MockCatalogBuilder {
         expect(s.getFilename()).andReturn(filename).anyTimes();
         expect(s.getSLDVersion()).andReturn(version).anyTimes();
         try {
-            expect(s.getStyle()).andReturn(Styles.style(Styles.parse(
-                getClass().getResourceAsStream(filename), version))).anyTimes();
+            expect(s.getStyle()).andReturn(Styles.style(new SLDHandler().parse(
+                getClass().getResourceAsStream(filename), version, null, null))).anyTimes();
         }
         catch(IOException e) {
             throw new RuntimeException(e);

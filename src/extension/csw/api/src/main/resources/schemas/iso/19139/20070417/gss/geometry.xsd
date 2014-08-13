@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gss="http://www.isotc211.org/2005/gss" targetNamespace="http://www.isotc211.org/2005/gss" elementFormDefault="qualified" version="2012-07-13">
+	<!-- ================================= Annotation ================================ -->
+	<xs:annotation>
+		<xs:documentation>Geographic Spatial Schema (GSS) extensible markup language is a component of the XML Schema Implementation of Geographic Information Metadata documented in ISO/TS 19139:2007. GSS includes all the definitions of http://www.isotc211.org/2005/gss namespace. The root document of this namespace is the file gss.xsd. This geometry.xsd schema contains the implementation of GM_Object and GM_Point. The encoding of these classes is mapped to ISO 19136 geometric types.</xs:documentation>
+	</xs:annotation>
+	<!-- ================================== Imports ================================== -->
+	<xs:import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+	<xs:import namespace="http://www.isotc211.org/2005/gco" schemaLocation="http://schemas.opengis.net/iso/19139/20070417/gco/gco.xsd"/>
+	<xs:include schemaLocation="gss.xsd"/>
+	<!-- ########################################################################### -->
+	<!-- ########################################################################### -->
+	<!-- ================================== Classes ================================= -->
+	<!-- ........................................................................ -->
+	<!--==XCGE: gml:Point==-->
+	<!-- ........................................................................ -->
+	<xs:complexType name="GM_Point_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gml:Point"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<!-- ........................................................................ -->
+	<!--==XCGE: gml:AbstractGeometry==-->
+	<!-- ........................................................................ -->
+	<xs:complexType name="GM_Object_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gml:AbstractGeometry"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+</xs:schema>

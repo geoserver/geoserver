@@ -59,6 +59,11 @@
 
 
   <bean id="wcs100BBoxKvpParser" class="org.geoserver.wcs.kvp.BBoxKvpParser" />
+  
+  <bean id="wcs100InterpolationKvpParser" class="org.geoserver.wcs.kvp.InterpolationMethodKvpParser" >
+      <property name="service" value="WCS" />
+      <property name="version" value="1.0.0" />
+   </bean>
 
 
 

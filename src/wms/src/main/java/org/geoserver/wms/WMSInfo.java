@@ -1,10 +1,11 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2014 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms;
 
 import java.util.List;
+import java.util.Set;
 
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
@@ -40,7 +41,30 @@ public interface WMSInfo extends ServiceInfo {
      * The srs's that the wms service supports.
      */
     List<String> getSRS();
+    
+    /**
+     * A set of mime types allowed for a getMap request. Active
+     * if {@link #isGetMapMimeTypeCheckingEnabled()} returns <code>true</code>
+     * 
+     */
+    Set<String> getGetMapMimeTypes();
 
+    boolean isGetMapMimeTypeCheckingEnabled();
+
+    void setGetMapMimeTypeCheckingEnabled(boolean getMapMimeTypeCheckingEnabled);
+    
+            
+    /**
+     * A set of mime types allowed for a getFeatureInfo request. Active
+     * if {@link #isGetFeatureInfoMimeTypeCheckingEnabled()} returns <code>true</code>
+     * 
+     */
+    Set<String> getGetFeatureInfoMimeTypes();
+    
+    boolean isGetFeatureInfoMimeTypeCheckingEnabled();
+    
+    void setGetFeatureInfoMimeTypeCheckingEnabled(boolean getFeatureInfoMimeTypeCheckingEnabled);
+    
     /**
      * Flag controlling whether the WMS service, for each layer, should declare a bounding box 
      * for every CRS supported, in it's capabilities document. 

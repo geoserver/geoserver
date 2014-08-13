@@ -17,7 +17,6 @@ import javax.measure.unit.Unit;
 import javax.media.jai.PlanarImage;
 
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
-import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.catalog.impl.ResourceInfoImpl;
 import org.geoserver.catalog.impl.StoreInfoImpl;
@@ -31,16 +30,15 @@ import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.ows.CRSEnvelope;
 import org.geotools.data.ows.Layer;
-import org.geotools.data.wms.WebMapServer;
 import org.geotools.factory.GeoTools;
+import org.geotools.feature.FeatureTypes;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.GeneralEnvelope;
-import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
@@ -51,9 +49,11 @@ import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.Format;
 import org.opengis.coverage.grid.GridEnvelope;
+import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.Name;
+import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.metadata.Identifier;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
@@ -351,8 +351,12 @@ public class CatalogBuilder {
         ftinfo.setEnabled(true);
 
         // naming
-        ftinfo.setNativeName(featureType.getName().getLocalPart());
-        ftinfo.setName(featureType.getName().getLocalPart());
+        Name name = featureSource.getName();
+        if (name == null) {
+            name = featureType.getName();
+        }
+        ftinfo.setNativeName(name.getLocalPart());
+        ftinfo.setName(name.getLocalPart());
 
         WorkspaceInfo workspace = store.getWorkspace();
         NamespaceInfo namespace = catalog.getNamespaceByPrefix(workspace.getName());
@@ -423,7 +427,7 @@ public class CatalogBuilder {
      * This method calls through to {@link #doSetupBounds(ResourceInfo, Object)}.
      * </p>
      */
-    public void setupBounds(CoverageInfo cinfo, AbstractGridCoverage2DReader coverageReader) 
+    public void setupBounds(CoverageInfo cinfo, GridCoverage2DReader coverageReader) 
         throws IOException {
         doSetupBounds(cinfo, coverageReader);
     }
@@ -515,7 +519,8 @@ public class CatalogBuilder {
             if (!CRS.equalsIgnoreMetadata(DefaultGeographicCRS.WGS84, declaredCRS)) {
                 // transform
                 try {
-                	return JTS.toGeographic( nativeBounds );
+                    ReferencedEnvelope bounds = new ReferencedEnvelope(nativeBounds, declaredCRS);
+                    return bounds.transform(DefaultGeographicCRS.WGS84, true);
                 } catch (Exception e) {
                     throw (IOException) new IOException("transform error").initCause(e);
                 }
@@ -578,18 +583,23 @@ public class CatalogBuilder {
             // the coverage bounds computation path is a bit more linear, the
             // readers always return the bounds and in the proper CRS (afaik)
             CoverageInfo cinfo = (CoverageInfo) rinfo;            
-            AbstractGridCoverage2DReader reader = null;
-            if (data instanceof AbstractGridCoverage2DReader) {
-                reader = (AbstractGridCoverage2DReader) data;
+            GridCoverage2DReader reader = null;
+            if (data instanceof GridCoverage2DReader) {
+                reader = (GridCoverage2DReader) data;
             }
             else {
-                reader = (AbstractGridCoverage2DReader) 
+                reader = (GridCoverage2DReader) 
                     cinfo.getGridCoverageReader(null, GeoTools.getDefaultHints());
             }
 
             // get  bounds
             bounds = new ReferencedEnvelope(reader.getOriginalEnvelope());
            
+        } else if(rinfo instanceof WMSLayerInfo) {
+            // the logic to compute the native bounds is pretty convoluted,
+            // let's rebuild the layer info
+            WMSLayerInfo rebuilt = buildWMSLayer(rinfo.getStore(), rinfo.getNativeName());
+            bounds = rebuilt.getNativeBoundingBox();
         }
 
         // apply the bounds, taking into account the reprojection policy if need be
@@ -708,7 +718,7 @@ public class CatalogBuilder {
         OwsUtils.resolveCollections(wmsLayer);
 
         // get a fully initialized version we can copy from
-        WMSLayerInfo full = buildWMSLayer(wmsLayer.getNativeName());
+        WMSLayerInfo full = buildWMSLayer(store, wmsLayer.getNativeName());
 
         // setup the srs if missing
         if (wmsLayer.getSRS() == null) {
@@ -755,10 +765,20 @@ public class CatalogBuilder {
      * Initialize a coverage object and set any unset info.
      */
     public void initCoverage(CoverageInfo cinfo) throws Exception {
+        initCoverage(cinfo, null);
+    }
+    
+    /**
+     * Initialize a coverage object and set any unset info.
+     */
+    public void initCoverage(CoverageInfo cinfo, final String coverageName) throws Exception {
     	CoverageStoreInfo csinfo = (CoverageStoreInfo) store;
-        AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) catalog
-            	.getResourcePool().getGridCoverageReader(csinfo, GeoTools.getDefaultHints());
-
+        GridCoverage2DReader reader = (GridCoverage2DReader) catalog
+            	.getResourcePool().getGridCoverageReader(cinfo, GeoTools.getDefaultHints());
+        if(coverageName != null) {
+            reader = SingleGridCoverage2DReader.wrap(reader, coverageName);
+        }
+        
         initResourceInfo(cinfo);
 
         if (reader == null)
@@ -766,7 +786,7 @@ public class CatalogBuilder {
                     + csinfo.getFormat().getName());
 
         if (cinfo.getNativeCRS() == null) {
-        	cinfo.setNativeCRS(reader.getCrs());
+        	cinfo.setNativeCRS(reader.getCoordinateReferenceSystem());
         }
 
         CoordinateReferenceSystem nativeCRS = cinfo.getNativeCRS();
@@ -802,7 +822,7 @@ public class CatalogBuilder {
             cinfo.setGrid(new GridGeometry2D(originalRange, reader.getOriginalGridToWorld(PixelInCell.CELL_CENTER), nativeCRS));
         }
     }
-
+    
     /**
      * Builds the default coverage contained in the current store
      * 
@@ -810,28 +830,51 @@ public class CatalogBuilder {
      * @throws Exception
      */
     public CoverageInfo buildCoverage() throws Exception {
+        return buildCoverage(null);
+    }
+
+    /**
+     * Builds the default coverage contained in the current store
+     * 
+     * @return
+     * @throws Exception
+     */
+    public CoverageInfo buildCoverage(String coverageName) throws Exception {
         if (store == null || !(store instanceof CoverageStoreInfo)) {
             throw new IllegalStateException("Coverage store not set.");
         }
 
         CoverageStoreInfo csinfo = (CoverageStoreInfo) store;
-        AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) catalog
+        GridCoverage2DReader reader = (GridCoverage2DReader) catalog
                 .getResourcePool().getGridCoverageReader(csinfo, GeoTools.getDefaultHints());
 
         if (reader == null)
             throw new Exception("Unable to acquire a reader for this coverage with format: "
                     + csinfo.getFormat().getName());
 
-        return buildCoverage(reader, null);
+        return buildCoverage(reader, coverageName, null);
     }
 
     /**
      * Builds a coverage from a geotools grid coverage reader.
      * @param customParameters 
      */
-    public CoverageInfo buildCoverage(AbstractGridCoverage2DReader reader, Map customParameters) throws Exception {
+    public CoverageInfo buildCoverage(GridCoverage2DReader reader, Map customParameters) throws Exception {
+        return buildCoverage(reader, null, customParameters);
+    }
+    
+    /**
+     * Builds a coverage from a geotools grid coverage reader.
+     * @param customParameters 
+     */
+    public CoverageInfo buildCoverage(GridCoverage2DReader reader, String coverageName, Map customParameters) throws Exception {
         if (store == null || !(store instanceof CoverageStoreInfo)) {
             throw new IllegalStateException("Coverage store not set.");
+        }
+        
+        // if we are dealing with a multicoverage reader, wrap to simplify code
+        if (coverageName != null) {
+            reader = SingleGridCoverage2DReader.wrap(reader, coverageName);
         }
 
         CoverageStoreInfo csinfo = (CoverageStoreInfo) store;
@@ -847,7 +890,8 @@ public class CatalogBuilder {
         }
         cinfo.setNamespace(namespace);
 
-        CoordinateReferenceSystem nativeCRS = reader.getCrs();
+        GeneralEnvelope envelope = reader.getOriginalEnvelope();
+        CoordinateReferenceSystem nativeCRS = envelope.getCoordinateReferenceSystem();
         cinfo.setNativeCRS(nativeCRS);
 
         // mind the default projection policy, Coverages do not have a flexible
@@ -861,7 +905,7 @@ public class CatalogBuilder {
             cinfo.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
         }
 
-        GeneralEnvelope envelope = reader.getOriginalEnvelope();
+        
         cinfo.setNativeBoundingBox(new ReferencedEnvelope(envelope));
         cinfo.setLatLonBoundingBox(new ReferencedEnvelope(CoverageStoreUtils.getWGS84LonLatEnvelope(envelope)));
 
@@ -902,14 +946,21 @@ public class CatalogBuilder {
         if (customParameters != null) {
         	parameters.putAll(customParameters);
         }
-        
+
         // make sure mosaics with many superimposed tiles won't blow up with 
         // a "too many open files" exception
         String maxAllowedTiles = ImageMosaicFormat.MAX_ALLOWED_TILES.getName().toString();
-        if(parameters.keySet().contains(maxAllowedTiles)) {
+        if (parameters.keySet().contains(maxAllowedTiles)) {
             parameters.put(maxAllowedTiles, 1);
         }
-        
+
+        // Since the read sample image won't be greater than 5x5 pixels and we are limiting the
+        // number of granules to 1, we may do direct read instead of using JAI
+        String useJaiImageRead = ImageMosaicFormat.USE_JAI_IMAGEREAD.getName().toString();
+        if (parameters.keySet().contains(useJaiImageRead)) {
+            parameters.put(useJaiImageRead, false);
+        }
+
         parameters.put(AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString(), new GridGeometry2D(testRange, testEnvelope));
 
         // try to read this coverage
@@ -922,26 +973,9 @@ public class CatalogBuilder {
         parameters.remove(AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString());
 
         cinfo.getDimensions().addAll(getCoverageDimensions(gc.getSampleDimensions()));
-        // TODO:
-        // dimentionNames = getDimensionNames(gc);
-        /*
-         * StringBuilder cvName =null; int count = 0; while (true) { final StringBuilder key = new
-         * StringBuilder(gc.getName().toString()); if (count > 0) { key.append("_").append(count); }
-         * 
-         * Map coverages = dataConfig.getCoverages(); Set cvKeySet = coverages.keySet(); boolean
-         * key_exists = false;
-         * 
-         * for (Iterator it = cvKeySet.iterator(); it.hasNext();) { String cvKey = ((String)
-         * it.next()).toLowerCase(); if (cvKey.endsWith(key.toString().toLowerCase())) { key_exists
-         * = true; } }
-         * 
-         * if (!key_exists) { cvName = key; break; } else { count++; } }
-         * 
-         * String name = cvName.toString();
-         */
         String name = gc.getName().toString();
         cinfo.setName(name);
-        cinfo.setNativeName(name);
+        cinfo.setNativeCoverageName(coverageName);
         cinfo.setTitle(name);
         cinfo.setDescription(new StringBuilder("Generated from ").append(format.getName()).toString());
 
@@ -1013,18 +1047,26 @@ public class CatalogBuilder {
 
         for (int i = 0; i < length; i++) {
             CoverageDimensionInfo dim = catalog.getFactory().createCoverageDimension();
-            dim.setName(sampleDimensions[i].getDescription().toString(Locale.getDefault()));
+            GridSampleDimension sd = sampleDimensions[i];
+            String name = sd.getDescription().toString(Locale.getDefault());
+            dim.setName(name);
 
             StringBuilder label = new StringBuilder("GridSampleDimension".intern());
-            final Unit uom = sampleDimensions[i].getUnits();
+            final Unit uom = sd.getUnits();
 
+            String uName = name.toUpperCase();
             if (uom != null) {
                 label.append("(".intern());
                 parseUOM(label, uom);
                 label.append(")".intern());
+                dim.setUnit(uom.toString());
+            } else if(uName.startsWith("RED") || uName.startsWith("GREEN") || uName.startsWith("BLUE")) {
+                // radiance in SI
+                dim.setUnit("W.m-2.Sr-1");
             }
+            
+            dim.setDimensionType(sd.getSampleDimensionType());
 
-            GridSampleDimension sd = sampleDimensions[i];
             label.append("[".intern());
             label.append(sd.getMinimumValue());
             label.append(",".intern());
@@ -1055,19 +1097,22 @@ public class CatalogBuilder {
                     }
                 }
             }
-
+            
             dims.add(dim);
         }
 
         return dims;
     }
-
+    
     public WMSLayerInfo buildWMSLayer(String layerName) throws IOException {
+        return buildWMSLayer(this.store, layerName);
+    }
+
+    WMSLayerInfo buildWMSLayer(StoreInfo store, String layerName) throws IOException {
         if (store == null || !(store instanceof WMSStoreInfo)) {
             throw new IllegalStateException("WMS store not set.");
         }
 
-        WMSStoreInfo wms = (WMSStoreInfo) store;
         WMSLayerInfo wli = catalog.getFactory().createWMSLayer();
 
         wli.setName(layerName);
@@ -1125,17 +1170,6 @@ public class CatalogBuilder {
             ReferencedEnvelope re = new ReferencedEnvelope(envelope.getMinimum(0), envelope
                     .getMaximum(0), envelope.getMinimum(1), envelope.getMaximum(1), wli
                     .getNativeCRS());
-            // are we in crazy wms 1.3 land?
-            WebMapServer mapServer = wms.getWebMapServer(null);
-            Version version = new Version(mapServer.getCapabilities().getVersion());
-            if(axisFlipped(version, srs)) {
-                // flip axis, the wms code won't actually use the crs
-                double minx = re.getMinX();
-                double miny = re.getMinY();
-                double maxx = re.getMaxX();
-                double maxy = re.getMaxY();
-                re = new ReferencedEnvelope(miny, maxy, minx, maxx, wli.getNativeCRS());
-            }
             wli.setNativeBoundingBox(re);
         }
         CRSEnvelope llbbox = layer.getLatLonBoundingBox();
@@ -1197,9 +1231,9 @@ public class CatalogBuilder {
 
     void parseUOM(StringBuilder label, Unit uom) {
         String uomString = uom.toString();
-        uomString = uomString.replaceAll("�", "^2");
-        uomString = uomString.replaceAll("�", "^3");
-        uomString = uomString.replaceAll("�", "A");
+        uomString = uomString.replaceAll("\u00B2", "^2");
+        uomString = uomString.replaceAll("\u00B3", "^3");
+        uomString = uomString.replaceAll("\u212B", "A");
         uomString = uomString.replaceAll("�", "");
         label.append(uomString);
     }
@@ -1455,5 +1489,31 @@ public class CatalogBuilder {
      */
     public void attach(WorkspaceInfo wsInfo) {
         // nothing to do
+    }
+    
+    /**
+     * Extracts the AttributeTypeInfo by copying them from the specified feature type.
+     * @param ft The schema to be harvested
+     * @param info The optional feature type info from which all the attributes belong to
+     * @return
+     */
+    public List<AttributeTypeInfo> getAttributes(FeatureType ft, FeatureTypeInfo info) {
+        List<AttributeTypeInfo> attributes = new ArrayList<AttributeTypeInfo>();
+        for (PropertyDescriptor pd : ft.getDescriptors()) {
+            AttributeTypeInfo att = catalog.getFactory().createAttribute();
+            att.setFeatureType(info);
+            att.setName(pd.getName().getLocalPart());
+            att.setMinOccurs(pd.getMinOccurs());
+            att.setMaxOccurs(pd.getMaxOccurs());
+            att.setNillable(pd.isNillable());
+            att.setBinding(pd.getType().getBinding());
+            int length = FeatureTypes.getFieldLength((AttributeDescriptor) pd);
+            if(length > 0) {
+                att.setLength(length);
+            }
+            attributes.add(att);
+        }
+        
+        return attributes;
     }
 }

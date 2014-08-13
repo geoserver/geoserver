@@ -71,7 +71,7 @@
                 <AttributeMapping>
                     <targetAttribute>gsml:GeologicUnit</targetAttribute>
                     <idExpression>
-                        <OCQL>getID()</OCQL>
+                        <OCQL>GML_ID</OCQL>
                     </idExpression>
                 </AttributeMapping>
                 <AttributeMapping>
@@ -107,7 +107,7 @@
                         FEATURE_LINK
 		            </targetAttribute>
                     <sourceExpression>
-                        <OCQL>getId()</OCQL>
+                        <OCQL>GML_ID</OCQL>
                     </sourceExpression>
                 </AttributeMapping>
                 <AttributeMapping>
@@ -129,14 +129,14 @@
                         gsml:occurrence
 		            </targetAttribute>
                     <sourceExpression>
-                        <OCQL>getId()</OCQL><!--no strTrim() for unit testing purposes-->
+                        <OCQL>GML_ID</OCQL><!--no strTrim() for unit testing purposes-->
                         <linkElement>gsml:MappedFeature</linkElement>
                         <linkField>gsml:specification</linkField>
                     </sourceExpression>
                     <isMultiple>true</isMultiple>
                     <ClientProperty>
                         <name>xlink:href</name>
-                        <value>strConcat('urn:cgi:feature:MappedFeature:', getId())</value>
+                        <value>strConcat('urn:cgi:feature:MappedFeature:', ID)</value>
                     </ClientProperty>
                 </AttributeMapping>
             </attributeMappings>

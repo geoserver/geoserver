@@ -6,14 +6,21 @@ package org.geoserver.config;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
-import static org.junit.Assert.*;
+import static org.geoserver.config.FileExistsMatcher.fileExists;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.io.FileUtils;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -28,10 +35,9 @@ import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.data.util.IOUtils;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.SystemTest;
-
+import org.geotools.data.DataUtilities;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -65,6 +71,7 @@ public class GeoServerPersisterTest extends GeoServerSystemTestSupport {
         removeNamespace("bar");
         removeStyle(null, "foostyle");
         removeStyle("gs", "foostyle");
+        removeStyle(null, "boostyle");
         
         getCatalog().setDefaultWorkspace(getCatalog().getWorkspaceByName("gs"));
     }
@@ -525,6 +532,46 @@ public class GeoServerPersisterTest extends GeoServerSystemTestSupport {
     }
 
     @Test
+    public void testRenameStyle() throws Exception {
+        testAddStyle();
+        File sldFile = new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld");
+        sldFile.createNewFile();
+
+        StyleInfo s = catalog.getStyleByName("foostyle");
+        s.setName("boostyle");
+        catalog.save(s);
+
+        File f = new File(testData.getDataDirectoryRoot(), "styles/boostyle.xml");
+        Document dom = dom(f);
+
+        assertXpathEvaluatesTo("boostyle.sld", "/style/filename", dom);
+        File renamedSldFile = new File(testData.getDataDirectoryRoot(), "styles/boostyle.sld");
+        assertThat( sldFile, not(fileExists()) );
+        assertThat( renamedSldFile, fileExists() );
+    }
+
+    @Test
+    public void testRenameStyleConflict() throws Exception {
+        testAddStyle();
+        File sldFile = new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld");
+        sldFile.createNewFile();
+        File conflictingFile = new File(testData.getDataDirectoryRoot(), "styles/boostyle.sld");
+        conflictingFile.createNewFile();
+
+        StyleInfo s = catalog.getStyleByName("foostyle");
+        s.setName("boostyle");
+        catalog.save(s);
+
+        File f = new File(testData.getDataDirectoryRoot(), "styles/boostyle.xml");
+        Document dom = dom(f);
+
+        assertXpathEvaluatesTo("boostyle1.sld", "/style/filename", dom);
+        File renamedSldFile = new File(testData.getDataDirectoryRoot(), "styles/boostyle1.sld");
+        assertThat( sldFile, not(fileExists()) );
+        assertThat( renamedSldFile, fileExists() );
+    }
+
+    @Test
     public void testModifyStyleChangeWorkspace() throws Exception {
         testAddStyle();
         
@@ -574,21 +621,146 @@ public class GeoServerPersisterTest extends GeoServerSystemTestSupport {
         FileUtils.copyURLToFile(getClass().getResource("burg02.svg"), 
             new File(testData.getDataDirectoryRoot(), "styles/burg02.svg"));
         
-        assertTrue(new File( testData.getDataDirectoryRoot(), "styles/foostyle.xml").exists());
-        assertTrue(new File( testData.getDataDirectoryRoot(), "styles/foostyle.sld").exists());
-        assertTrue(new File( testData.getDataDirectoryRoot(), "styles/burg02.svg").exists());
+        assertThat(new File( testData.getDataDirectoryRoot(), "styles/foostyle.xml"), fileExists());
+        assertThat(new File( testData.getDataDirectoryRoot(), "styles/foostyle.sld"), fileExists());
+        assertThat(new File( testData.getDataDirectoryRoot(), "styles/burg02.svg"), fileExists());
         
         StyleInfo s = catalog.getStyleByName( "foostyle" );
         s.setWorkspace(catalog.getDefaultWorkspace());
         catalog.save( s );
 
-        assertFalse(new File( testData.getDataDirectoryRoot(), "styles/foostyle.xml").exists());
-        assertFalse(new File( testData.getDataDirectoryRoot(), "styles/foostyle.sld").exists());
-        assertTrue(new File( testData.getDataDirectoryRoot(), "styles/burg02.svg").exists());
+        assertThat(new File( testData.getDataDirectoryRoot(), "styles/foostyle.xml"), not(fileExists()));
+        assertThat(new File( testData.getDataDirectoryRoot(), "styles/foostyle.sld"), not(fileExists()));
+        assertThat(new File( testData.getDataDirectoryRoot(), "styles/burg02.svg"), fileExists());
         
-        assertTrue(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.xml").exists());
-        assertTrue(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.sld").exists());
-        assertTrue(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/burg02.svg").exists());
+        assertThat(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.xml"), fileExists());
+        assertThat(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.sld"), fileExists());
+        assertThat(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/burg02.svg"), fileExists());
+    }
+    
+    @Test
+    public void testModifyStyleWithResourcesInParentDirChangeWorkspace() throws Exception {
+        testAddStyle();
+
+        // If a relative URI with parent references is used, give up on trying to copy the resource.
+        // The style will break but copying arbitrary files from parent directories around is a bad
+        // idea.  Handle the rest normally. KS
+        
+        FileUtils.copyURLToFile(getClass().getResource("burgParentReference.sld"), 
+            new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld"));
+        FileUtils.copyURLToFile(getClass().getResource("burg02.svg"), 
+                new File(testData.getDataDirectoryRoot(), "styles/burg02.svg"));
+        FileUtils.copyURLToFile(getClass().getResource("burg02.svg"), 
+                new File(testData.getDataDirectoryRoot(), "burg03.svg"));
+        
+        new File( testData.getDataDirectoryRoot(), "styles/burg03.svg").delete();
+
+        assertThat(new File( testData.getDataDirectoryRoot(), "styles/foostyle.xml"), fileExists());
+        assertThat(new File( testData.getDataDirectoryRoot(), "styles/foostyle.sld"), fileExists());
+        assertThat(new File( testData.getDataDirectoryRoot(), "styles/burg02.svg"), fileExists());
+        assertThat(new File( testData.getDataDirectoryRoot(), "burg03.svg"), fileExists());
+        assertThat(new File( testData.getDataDirectoryRoot(), "styles/burg03.svg"), not(fileExists()));
+        
+        StyleInfo s = catalog.getStyleByName( "foostyle" );
+        
+        s.setWorkspace(catalog.getDefaultWorkspace());
+        catalog.save( s );
+
+        assertThat(new File( testData.getDataDirectoryRoot(), "styles/foostyle.xml"), not(fileExists()));
+        assertThat(new File( testData.getDataDirectoryRoot(), "styles/foostyle.sld"), not(fileExists()));
+        assertThat(new File( testData.getDataDirectoryRoot(), "burg03.svg"), fileExists());
+        assertThat(new File( testData.getDataDirectoryRoot(), "styles/burg02.svg"), fileExists());
+        
+        assertThat(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.xml"), fileExists());
+        assertThat(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.sld"), fileExists());
+        assertThat(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/burg03.svg"), not(fileExists()));
+        assertThat(new File( testData.getDataDirectoryRoot(), "workspaces/gs/burg03.svg"), not(fileExists()));
+        assertThat(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/burg02.svg"), fileExists());
+    }
+    
+    @Test
+    public void testModifyStyleWithResourcesAbsoluteChangeWorkspace() throws Exception {
+        testAddStyle();
+
+        // If an absolute uri is used, don't copy it anywhere.  The reference is absolute
+        // so it will still work. 
+        
+        File styleFile = new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld");
+        FileUtils.copyURLToFile(getClass().getResource("burgParentReference.sld"), 
+            styleFile);
+        FileUtils.copyURLToFile(getClass().getResource("burg02.svg"), 
+                new File(testData.getDataDirectoryRoot(), "styles/burg02.svg"));
+        File target = new File(testData.getDataDirectoryRoot(), "burg03.svg");
+        FileUtils.copyURLToFile(getClass().getResource("burg02.svg"), 
+                target);
+        
+        // Insert an absolute path to test
+        String content = new String(Files.readAllBytes(styleFile.toPath()), StandardCharsets.UTF_8);
+        content = content.replaceAll("./burg03.svg", "http://doesnotexist.example.org/burg03.svg");
+        Files.write(styleFile.toPath(), content.getBytes(StandardCharsets.UTF_8));
+        new File( testData.getDataDirectoryRoot(), "styles/burg03.svg").delete();
+        
+        assertThat(new File( testData.getDataDirectoryRoot(), "styles/foostyle.xml"), fileExists());
+        assertThat(new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld"), fileExists());
+        assertThat(new File( testData.getDataDirectoryRoot(), "styles/burg02.svg"), fileExists());
+        assertThat(target, fileExists());
+        assertThat(new File( testData.getDataDirectoryRoot(), "styles/burg03.svg"), not(fileExists()));
+        
+        StyleInfo s = catalog.getStyleByName( "foostyle" );
+        
+        s.setWorkspace(catalog.getDefaultWorkspace());
+        catalog.save( s );
+
+        assertThat(new File( testData.getDataDirectoryRoot(), "styles/foostyle.xml"), not(fileExists()));
+        assertThat(new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld"), not(fileExists()));
+        assertThat(target, fileExists());
+        assertThat(new File( testData.getDataDirectoryRoot(), "styles/burg02.svg"), fileExists());
+        
+        assertThat(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.xml"), fileExists());
+        assertThat(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.sld"), fileExists());
+        assertThat(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/burg03.svg"), not(fileExists()));
+        assertThat(new File( testData.getDataDirectoryRoot(), "workspaces/gs/burg03.svg"), not(fileExists()));
+        assertThat(new File( testData.getDataDirectoryRoot(), "workspaces/gs"+target.getPath()), not(fileExists()));
+        assertThat(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles"+target.getPath()), not(fileExists()));
+        assertThat(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/burg02.svg"), fileExists());
+    }
+    @Test
+    public void testModifyStyleWithResourcesRemoteChangeWorkspace() throws Exception {
+        testAddStyle();
+
+        // If an absolute uri is used, don't copy it anywhere.  The reference is absolute
+        // so it will still work. 
+        
+        File styleFile = new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld");
+        FileUtils.copyURLToFile(getClass().getResource("burgRemoteReference.sld"), 
+            styleFile);
+        FileUtils.copyURLToFile(getClass().getResource("burg02.svg"), 
+                new File(testData.getDataDirectoryRoot(), "styles/burg02.svg"));
+        
+        new File( testData.getDataDirectoryRoot(), "styles/burg03.svg").delete();
+        new File( testData.getDataDirectoryRoot(), "burg03.svg").delete();
+        
+        assertThat(new File( testData.getDataDirectoryRoot(), "styles/foostyle.xml"), fileExists());
+        assertThat(new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld"), fileExists());
+        assertThat(new File( testData.getDataDirectoryRoot(), "styles/burg02.svg"), fileExists());
+        assertThat(new File( testData.getDataDirectoryRoot(), "styles/burg03.svg"), not(fileExists()));
+        assertThat(new File( testData.getDataDirectoryRoot(), "burg03.svg"), not(fileExists()));
+        
+        StyleInfo s = catalog.getStyleByName( "foostyle" );
+        
+        s.setWorkspace(catalog.getDefaultWorkspace());
+        catalog.save( s );
+
+        assertThat(new File( testData.getDataDirectoryRoot(), "styles/foostyle.xml"), not(fileExists()));
+        assertThat(new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld"), not(fileExists()));
+        assertThat(new File( testData.getDataDirectoryRoot(), "styles/burg02.svg"), fileExists());
+        
+        assertThat(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.xml"), fileExists());
+        assertThat(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.sld"), fileExists());
+        assertThat(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/burg03.svg"), not(fileExists()));
+        assertThat(new File( testData.getDataDirectoryRoot(), "workspaces/gs/burg03.svg"), not(fileExists()));
+        assertThat(new File( testData.getDataDirectoryRoot(), "workspaces/gs/example.com/burg03.svg"), not(fileExists()));
+        assertThat(new File( testData.getDataDirectoryRoot(), "workspaces/gs/styles/burg02.svg"), fileExists());
     }
     
     @Test
@@ -602,7 +774,7 @@ public class GeoServerPersisterTest extends GeoServerSystemTestSupport {
         StyleInfo s = catalog.getStyleByName( "foostyle" );
         catalog.remove( s );
         
-        assertFalse( f.exists() );
+        assertThat( f, not(fileExists()) );
     }
 
     @Test
@@ -646,9 +818,16 @@ public class GeoServerPersisterTest extends GeoServerSystemTestSupport {
         assertTrue( f.exists() );
     }
     
+    private File file( File base, String unixPath ){
+        File file = base;
+        for( String item : unixPath.split("/")){
+           file = new File( file, item ); 
+        }
+        return file;
+    }
     @Test
     public void testAddLayerGroupWithWorkspace() throws Exception {
-        File f = new File( testData.getDataDirectoryRoot(), "workspaces/acme/layergroups/foolayergroup.xml");
+        File f = file( testData.getDataDirectoryRoot(), "workspaces/acme/layergroups/foolayergroup.xml");
         assertFalse( f.exists() );
 
         testAddLayer();
@@ -700,22 +879,27 @@ public class GeoServerPersisterTest extends GeoServerSystemTestSupport {
         catalog.save(lg);
         
         assertFalse(f.exists());
-        assertTrue(new File( testData.getDataDirectoryRoot(), 
-            "workspaces/acme/layergroups/lg.xml").exists());
+        
+        String path = testData.getDataDirectoryRoot().getAbsolutePath();
+        assertTrue("data directory "+path,testData.getDataDirectoryRoot().exists());
+        File file = new File( testData.getDataDirectoryRoot(), 
+            "workspaces/acme/layergroups/lg.xml");
+        assertTrue(file.getPath(),file.exists());
     }
 
     @Test
     public void testRemoveLayerGroup() throws Exception {
         testAddLayerGroup();
         
-        File f = new File( testData.getDataDirectoryRoot(), 
+        File dataDirectoryRoot = testData.getDataDirectoryRoot();
+        File f = new File( dataDirectoryRoot, 
             "layergroups/lg.xml");
         assertTrue( f.exists() );
         
         LayerGroupInfo lg = catalog.getLayerGroupByName( "lg" );
         catalog.remove( lg );
         
-        assertFalse( f.exists() );
+        assertFalse( "removed lg",f.exists() );
     }
 
     @Test

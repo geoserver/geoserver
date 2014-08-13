@@ -4,65 +4,74 @@
  */
 package org.geoserver.wfs.response;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.platform.resource.ResourceListener;
+import org.geoserver.platform.resource.ResourceNotification;
 import org.geotools.util.logging.Logging;
-import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 import com.thoughtworks.xstream.XStream;
 
 /**
  * Loads the ogr2ogr.xml configuration file and configures the output format accordingly.
+ * 
  * <p>Also keeps tabs on the configuration file, reloading the file as needed. 
  * @author Administrator
  *
  */
-public class Ogr2OgrConfigurator implements ApplicationListener {
+public class Ogr2OgrConfigurator implements ApplicationListener<ContextClosedEvent> {
     private static final Logger LOGGER = Logging.getLogger(Ogr2OgrConfigurator.class);
 
     Ogr2OgrOutputFormat of;
 
     OGRWrapper wrapper;
 
-    File configFile;
+    Resource configFile;
     
-    Timer timer;
+    // ConfigurationPoller
+    private ResourceListener listener = new ResourceListener() {
+        public void changed(ResourceNotification notify) {
+            loadConfiguration();
+        }
+    };
 
-    public Ogr2OgrConfigurator(Ogr2OgrOutputFormat format, long pollInterval) {
-        this.of = format;
-        configFile = new File(GeoserverDataDirectory.getGeoserverDataDirectory(), "ogr2ogr.xml");
-        timer = new Timer(true);
-        timer.schedule(new ConfigurationPoller(), pollInterval);
-    }
-    
     public Ogr2OgrConfigurator(Ogr2OgrOutputFormat format) {
-        this(format, 1000);
+        this.of = format;
+        
+        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        configFile = loader.get("ogr2ogr.xml");
+        configFile.addListener( listener );
     }
 
     protected void loadConfiguration() {
         // start with the default configuration, override if we can load the file
         OgrConfiguration configuration = OgrConfiguration.DEFAULT;
         try {
-            if (configFile.exists()) {
-                XStream xstream = buildXStream();
-                configuration = (OgrConfiguration) xstream.fromXML(new FileInputStream(configFile));
+            if (configFile.getType() == Type.RESOURCE) {
+                InputStream in = configFile.in();
+                try {
+                    XStream xstream = buildXStream();
+                    configuration = (OgrConfiguration) xstream.fromXML( in);
+                }
+                finally {
+                    in.close();
+                }
             }
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error reading the ogr2ogr.xml configuration file", e);
         }
 
         if (configuration == null) {
-            LOGGER
-                    .log(Level.INFO,
+            LOGGER.log(Level.INFO,
                             "Could not find/load the ogr2ogr.xml configuration file, using internal defaults");
         }
 
@@ -94,29 +103,13 @@ public class Ogr2OgrConfigurator implements ApplicationListener {
         xstream.addImplicitCollection(OgrFormat.class, "options", "option", String.class);
         return xstream;
     }
-    
-    private class ConfigurationPoller extends TimerTask {
-        Long lastModified = null;
-        
-        public ConfigurationPoller() {
-            run();
-        }
-        
-        public void run() {
-            long newLastModified = configFile.exists() ? configFile.lastModified() : -1;
-            if(lastModified == null || newLastModified != lastModified) {
-                lastModified = newLastModified;
-                loadConfiguration();
-            }
-        }
-    }
 
     /**
      * Kill all threads on web app context shutdown to avoid permgen leaks
      */
-    public void onApplicationEvent(ApplicationEvent event) {
-        if(event instanceof ContextClosedEvent) {
-            timer.cancel();
+    public void onApplicationEvent(ContextClosedEvent event) {
+        if( configFile != null ){
+            configFile.removeListener(listener);
         }
     }
 

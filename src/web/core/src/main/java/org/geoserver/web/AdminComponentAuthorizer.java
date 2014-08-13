@@ -17,10 +17,6 @@ import org.springframework.security.core.GrantedAuthority;
 public class AdminComponentAuthorizer implements ComponentAuthorizer {
 
     public boolean isAccessAllowed(Class componentClass, Authentication authentication) {
-        if (authentication == null) {
-            return false;
-        }
-
         return getSecurityManager().checkAuthenticationForAdminRole(authentication);
     }
 

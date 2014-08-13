@@ -13,27 +13,41 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.ListChoice;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.validation.validator.MinimumValidator;
 import org.apache.wicket.validation.validator.UrlValidator;
+import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ResourceErrorHandling;
+import org.geoserver.config.SettingsInfo;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.LockProvider;
 import org.geoserver.web.GeoServerApplication;
-import org.geoserver.web.GeoServerHomePage;
+import org.geoserver.web.data.settings.SettingsPluginPanelInfo;
+import org.geoserver.web.wicket.LocalizedChoiceRenderer;
+import org.geoserver.web.wicket.ParamResourceModel;
+import org.springframework.context.ApplicationContext;
 
 public class GlobalSettingsPage extends ServerAdminPage {
+
+
     private static final long serialVersionUID = 4716657682337915996L;
 
     static final List<String> DEFAULT_LOG_PROFILES = Arrays.asList("DEFAULT_LOGGING.properties",
@@ -46,7 +60,8 @@ public class GlobalSettingsPage extends ServerAdminPage {
         final IModel globalInfoModel = getGlobalInfoModel();
         final IModel loggingInfoModel = getLoggingInfoModel();
         
-        Form form = new Form("form", new CompoundPropertyModel(globalInfoModel));
+        CompoundPropertyModel compoundPropertyModel = new CompoundPropertyModel(globalInfoModel);
+        Form form = new Form("form", compoundPropertyModel);
 
         add(form);
 
@@ -55,7 +70,8 @@ public class GlobalSettingsPage extends ServerAdminPage {
         form.add(new CheckBox("globalServices"));
         form.add(new TextField<Integer>("numDecimals").add(new MinimumValidator<Integer>(0)));
         form.add(new DropDownChoice("charset", AVAILABLE_CHARSETS));
-        form.add(new DropDownChoice<ResourceErrorHandling>("resourceErrorHandling", Arrays.asList(ResourceErrorHandling.values())));
+        form.add(new DropDownChoice<ResourceErrorHandling>("resourceErrorHandling", Arrays.asList(ResourceErrorHandling.values()),
+                new ResourceErrorHandlingRenderer()));
         form.add(new TextField("proxyBaseUrl").add(new UrlValidator()));
         
         logLevelsAppend(form, loggingInfoModel);
@@ -67,7 +83,25 @@ public class GlobalSettingsPage extends ServerAdminPage {
         xmlPostRequestLogBufferSize.add(new MinimumValidator<Integer>(0));
         form.add(xmlPostRequestLogBufferSize);
 
+        form.add(new CheckBox("xmlExternalEntitiesEnabled"));    
+        
         form.add(new TextField<Integer>("featureTypeCacheSize").add(new MinimumValidator<Integer>(0)));
+       
+        IModel<String> lockProviderModel = new PropertyModel<String>(globalInfoModel, "lockProviderName");
+        ApplicationContext applicationContext = GeoServerApplication.get().getApplicationContext();
+        List<String> providers = new ArrayList<String>( Arrays.asList(applicationContext.getBeanNamesForType( LockProvider.class )));
+        providers.remove("lockProvider"); // remove the global lock provider
+        Collections.sort(providers);;
+        
+        DropDownChoice<String> lockProviderChoice = new DropDownChoice<String>("lockProvider", lockProviderModel, providers, new LocalizedChoiceRenderer(this));
+        
+        form.add( lockProviderChoice );
+        
+        // Extension plugin for Global Settings
+        // Loading of the settings from the Global Info
+        IModel<SettingsInfo> settingsModel = new PropertyModel<SettingsInfo>(globalInfoModel, "settings");
+        ListView extensions = SettingsPluginPanelInfo.createExtensions("extensions", settingsModel, getGeoServerApplication());
+        form.add(extensions);
         
         Button submit = new Button("submit", new StringResourceModel("submit", this, null)) {
             @Override
@@ -117,4 +151,18 @@ public class GlobalSettingsPage extends ServerAdminPage {
         form.add(new ListChoice("log4jConfigFile", new PropertyModel(loggingInfoModel,
                 "level"), logProfiles));
     }
-};
+    
+    class ResourceErrorHandlingRenderer implements IChoiceRenderer<ResourceErrorHandling> {
+
+        @Override
+        public Object getDisplayValue(ResourceErrorHandling object) {
+            return new ParamResourceModel(object.name(), GlobalSettingsPage.this).getString();
+        }
+
+        @Override
+        public String getIdValue(ResourceErrorHandling object, int index) {
+            return object.name();
+        }
+
+    }
+}

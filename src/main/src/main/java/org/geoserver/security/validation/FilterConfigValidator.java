@@ -13,6 +13,7 @@ import org.geoserver.security.config.AnonymousAuthenticationFilterConfig;
 import org.geoserver.security.config.BasicAuthenticationFilterConfig;
 import org.geoserver.security.config.DigestAuthenticationFilterConfig;
 import org.geoserver.security.config.ExceptionTranslationFilterConfig;
+import org.geoserver.security.config.J2eeAuthenticationBaseFilterConfig;
 import org.geoserver.security.config.J2eeAuthenticationFilterConfig;
 import org.geoserver.security.config.LogoutFilterConfig;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
@@ -177,7 +178,7 @@ public class FilterConfigValidator extends SecurityConfigValidator {
     }
 
     public void validateFilterConfig(X509CertificateAuthenticationFilterConfig config) throws FilterConfigException {        
-        validateFilterConfig((PreAuthenticatedUserNameFilterConfig) config); 
+        validateFilterConfig((J2eeAuthenticationBaseFilterConfig) config); 
     }
 
     public void validateFilterConfig(UsernamePasswordAuthenticationFilterConfig config) throws FilterConfigException {
@@ -189,6 +190,16 @@ public class FilterConfigValidator extends SecurityConfigValidator {
         }
     }
 
+    public void validateFilterConfig(J2eeAuthenticationBaseFilterConfig config) throws FilterConfigException {
+        validateFilterConfig((PreAuthenticatedUserNameFilterConfig) config);
+        
+        if (config.getRoleSource().
+                equals(J2eeAuthenticationBaseFilterConfig.J2EERoleSource.J2EE)) {
+            checkExistingRoleService(config.getRoleServiceName());
+        }
+            
+    }
+    
     public void validateFilterConfig(RequestHeaderAuthenticationFilterConfig config) throws FilterConfigException {
         
         if (isNotEmpty(config.getPrincipalHeaderAttribute())==false)
@@ -203,15 +214,15 @@ public class FilterConfigValidator extends SecurityConfigValidator {
             throw createFilterException(FilterConfigException.ROLE_SOURCE_NEEDED);
         
         if (config.getRoleSource().
-                equals(RequestHeaderAuthenticationFilterConfig.RoleSource.RoleService))
+                equals(PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource.RoleService))
             checkExistingRoleService(config.getRoleServiceName());
 
         if (config.getRoleSource().
-                equals(RequestHeaderAuthenticationFilterConfig.RoleSource.UserGroupService))
+                equals(PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource.UserGroupService))
                 checkExistingUGService(config.getUserGroupServiceName());
         
         if (config.getRoleSource().
-                equals(RequestHeaderAuthenticationFilterConfig.RoleSource.Header)) {
+                equals(PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource.Header)) {
             if (isNotEmpty(config.getRolesHeaderAttribute())==false)
                 throw createFilterException(FilterConfigException.ROLES_HEADER_ATTRIBUTE_NEEDED);
             if (isNotEmpty(config.getRoleConverterName())) {
@@ -226,22 +237,16 @@ public class FilterConfigValidator extends SecurityConfigValidator {
         }
 
     }
+    
+
 
     
     public void validateFilterConfig(J2eeAuthenticationFilterConfig config) throws FilterConfigException {        
-        checkExistingRoleService(config.getRoleServiceName());
+        validateFilterConfig((J2eeAuthenticationBaseFilterConfig)config);
     }
     
     public void validateFilterConfig(ExceptionTranslationFilterConfig config) throws FilterConfigException {
         
-        if (isNotEmpty(config.getAccessDeniedErrorPage())==false) {
-            throw createFilterException(FilterConfigException.ACCESS_DENIED_PAGE_NEEDED);
-        }
-        
-        if (config.getAccessDeniedErrorPage().startsWith("/")==false) {
-            throw createFilterException(FilterConfigException.ACCESS_DENIED_PAGE_PREFIX);
-        }
-
         
         if (isNotEmpty(config.getAuthenticationFilterName())) {            
             try {

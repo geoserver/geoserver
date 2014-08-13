@@ -56,14 +56,14 @@ public class StyleNewPage extends AbstractStylePage {
                 s.setFilename(s.getName() + ".sld");
             }
             catalog.getResourcePool().writeStyle(s,
-                    new ByteArrayInputStream(rawSLD.getBytes()));
+                    new ByteArrayInputStream(rawStyle.getBytes()));
         } catch (IOException e) {
             throw new WicketRuntimeException(e);
         }
         
         // store in the catalog
         try {
-            Version version = Styles.findVersion(new ByteArrayInputStream(rawSLD.getBytes()));
+            Version version = styleHandler().version(rawStyle);
             s.setSLDVersion(version);
             getCatalog().add(s);
         } catch (Exception e) {

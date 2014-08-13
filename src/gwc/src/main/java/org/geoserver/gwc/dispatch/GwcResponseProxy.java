@@ -6,6 +6,7 @@ package org.geoserver.gwc.dispatch;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Map;
 
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
@@ -26,12 +27,28 @@ public class GwcResponseProxy extends Response {
 
     @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
-
         GwcOperationProxy op = (GwcOperationProxy) value;
         String mimeType = op.getMimeType();
         return mimeType;
     }
-
+    
+    @Override
+    public String[][] getHeaders(Object value, Operation operation) throws ServiceException {
+        GwcOperationProxy op = (GwcOperationProxy) value;
+        Map<String, String> responseHeaders = op.getResponseHeaders();
+        if (responseHeaders == null || responseHeaders.size() == 0) {
+            return null;
+        }
+        String[][] headers = new String[responseHeaders.size()][2];
+        int index = 0;
+        for (java.util.Map.Entry<String, String> entry : responseHeaders.entrySet()) {
+            headers[index][0] = entry.getKey();
+            headers[index][1] = entry.getValue();
+            index++;
+        }
+        return headers;
+    }
+    
     @Override
     public void write(Object value, OutputStream output, Operation operation) throws IOException,
             ServiceException {
@@ -39,6 +56,12 @@ public class GwcResponseProxy extends Response {
         GwcOperationProxy op = (GwcOperationProxy) value;
         byte[] contents = op.getContents();
         output.write(contents);
+    }
+    
+    @Override
+    public String getPreferredDisposition(Object value, Operation operation) {
+        // do not override the content disposition set by GWC
+        return null;
     }
 
 }

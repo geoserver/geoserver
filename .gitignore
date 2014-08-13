@@ -3,6 +3,12 @@ target
 .settings
 .classpath
 .project
+.metadata
 *.class
 *.pyc
 
+/.metadata/
+
+# Intellij
+.idea/
+*.iml

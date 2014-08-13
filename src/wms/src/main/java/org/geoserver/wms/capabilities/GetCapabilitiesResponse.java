@@ -9,9 +9,7 @@ import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.StringReader;
 import java.util.List;
 
 import javax.xml.parsers.SAXParser;
@@ -75,7 +73,7 @@ import org.xml.sax.XMLReader;
  * @author groldan
  * 
  */
-public class GetCapabilitiesResponse extends Response {
+public class GetCapabilitiesResponse extends BaseCapabilitiesResponse {
 
     private WMS wms;
 
@@ -85,26 +83,10 @@ public class GetCapabilitiesResponse extends Response {
      *            check of internal DTD elements shall be added to the output document
      */
     public GetCapabilitiesResponse(final WMS wms) {
-        super(GetCapabilitiesTransformer.class);
+        super(GetCapabilitiesTransformer.class,GetCapabilitiesTransformer.WMS_CAPS_MIME);
         this.wms = wms;
     }
 
-    /**
-     * @return {@code "text/xml"}
-     * @see org.geoserver.ows.Response#getMimeType(java.lang.Object,
-     *      org.geoserver.platform.Operation)
-     */
-    @Override
-    public String getMimeType(final Object value, final Operation operation)
-            throws ServiceException {
-
-        if (value instanceof GetCapabilitiesTransformer) {
-            return GetCapabilitiesTransformer.WMS_CAPS_MIME;
-        }
-
-        throw new IllegalArgumentException(value == null ? "null" : value.getClass().getName()
-                + "/" + operation.getId());
-    }
 
     /**
      * @param value
@@ -164,7 +146,7 @@ public class GetCapabilitiesResponse extends Response {
 
             // Set the full DTD declaration, including internal elements provided by
             // ExtendedCapabilitiesProviders, as an stylesheet parameter
-            dtdIncludeTransformer.setParameter("DTDDeclaration", internalDTDDeclaration.toString());
+            dtdIncludeTransformer.setParameter("DTDDeclaration", internalDTDDeclaration);
 
             Source source;
             try {

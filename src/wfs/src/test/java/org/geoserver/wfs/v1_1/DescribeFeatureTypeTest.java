@@ -15,6 +15,7 @@ import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
@@ -103,7 +104,7 @@ public class DescribeFeatureTypeTest extends WFSTestSupport {
                 + "</wfs:TypeName>" //
                 + "</wfs:DescribeFeatureType>";
         Document doc = postAsDOM("wfs", xml);
-        print(doc);
+        // print(doc);
         assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
         NodeList nodes = doc.getDocumentElement().getChildNodes();
         boolean seenComplexType = false;
@@ -172,34 +173,42 @@ public class DescribeFeatureTypeTest extends WFSTestSupport {
         final QName typeName = CiteTestData.STREAMS;
         // make sure typeName _is_ in the default namespace
         Catalog catalog = getCatalog();
-        catalog.setDefaultNamespace(catalog.getNamespaceByURI(typeName.getNamespaceURI()));
-        FeatureTypeInfo typeInfo = catalog.getFeatureTypeByName(typeName.getNamespaceURI(), typeName.getLocalPart());
-        typeInfo.setEnabled(true);
-        catalog.save(typeInfo);
-        DataStoreInfo store = typeInfo.getStore();
-        store.setEnabled(true);
-        catalog.save(store);
+        NamespaceInfo defaultNs = catalog.getDefaultNamespace();
         
-        // and request typeName without prefix
-        String path = "ows?service=WFS&version=1.1.0&request=DescribeFeatureType&typeName="
-            + typeName.getLocalPart();
-        Document doc;
-    
-        //first, non cite compliant mode should find the type even if namespace is not specified
         GeoServer geoServer = getGeoServer();
         WFSInfo service = geoServer.getService(WFSInfo.class);
-        service.setCiteCompliant(false);
-        geoServer.save(service);
-        doc = getAsDOM(path);
-        //print(doc);
-        assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
-
-        //then, in cite compliance more, it should not find the type name
-        service.setCiteCompliant(true);
-        geoServer.save(service);
-        doc = getAsDOM(path);
-        //print(doc);
-        assertEquals("ows:ExceptionReport", doc.getDocumentElement().getNodeName());
+        try {
+            catalog.setDefaultNamespace(catalog.getNamespaceByURI(typeName.getNamespaceURI()));
+            FeatureTypeInfo typeInfo = catalog.getFeatureTypeByName(typeName.getNamespaceURI(), typeName.getLocalPart());
+            typeInfo.setEnabled(true);
+            catalog.save(typeInfo);
+            DataStoreInfo store = typeInfo.getStore();
+            store.setEnabled(true);
+            catalog.save(store);
+            
+            // and request typeName without prefix
+            String path = "ows?service=WFS&version=1.1.0&request=DescribeFeatureType&typeName="
+                + typeName.getLocalPart();
+            Document doc;
+        
+            //first, non cite compliant mode should find the type even if namespace is not specified
+            service.setCiteCompliant(false);
+            geoServer.save(service);
+            doc = getAsDOM(path);
+            //print(doc);
+            assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
+    
+            //then, in cite compliance more, it should not find the type name
+            service.setCiteCompliant(true);
+            geoServer.save(service);
+            doc = getAsDOM(path);
+            //print(doc);
+            assertEquals("ows:ExceptionReport", doc.getDocumentElement().getNodeName());
+        } finally {
+            catalog.setDefaultNamespace(defaultNs);
+            service.setCiteCompliant(false);
+            geoServer.save(service);
+        }
     }
     
     /**
@@ -211,15 +220,20 @@ public class DescribeFeatureTypeTest extends WFSTestSupport {
     public void testPrefixedGetStrictCite() throws Exception {
         GeoServer geoServer = getGeoServer();
         WFSInfo service = geoServer.getService(WFSInfo.class);
-        service.setCiteCompliant(true);
-        geoServer.save(service);
-        
-        final QName typeName = CiteTestData.POLYGONS;
-        String path = "ows?service=WFS&version=1.1.0&request=DescribeFeatureType&typeName="
-                + getLayerId(typeName);
-        Document doc = getAsDOM(path);
-        //print(doc);
-        assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
+        try {
+            service.setCiteCompliant(true);
+            geoServer.save(service);
+            
+            final QName typeName = CiteTestData.POLYGONS;
+            String path = "ows?service=WFS&version=1.1.0&request=DescribeFeatureType&typeName="
+                    + getLayerId(typeName);
+            Document doc = getAsDOM(path);
+            //print(doc);
+            assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
+        } finally {
+            service.setCiteCompliant(false);
+            geoServer.save(service);
+        }
     }
     
     @Test
@@ -241,7 +255,13 @@ public class DescribeFeatureTypeTest extends WFSTestSupport {
         XMLAssert.assertXpathNotExists("//xsd:element[@name = 'name']", dom);
         XMLAssert.assertXpathNotExists("//xsd:element[@name = 'description']", dom);
         
+        wfs = getWFS();
+        gml = wfs.getGML().get(WFSInfo.Version.V_11);
         gml.setOverrideGMLAttributes(true);
+        getGeoServer().save(wfs);
+        wfs = getWFS();
+        gml = wfs.getGML().get(WFSInfo.Version.V_11);
+        assertTrue(gml.getOverrideGMLAttributes());
         dom = getAsDOM("ows?service=WFS&version=1.1.0&request=DescribeFeatureType" +
                 "&typename=" + getLayerId(CiteTestData.PRIMITIVEGEOFEATURE));
         XMLAssert.assertXpathExists("//xsd:element[@name = 'name']", dom);

@@ -8,13 +8,16 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.RenderedImage;
 import java.io.File;
+import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
@@ -23,7 +26,9 @@ import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.PropertyStyleHandler;
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
@@ -48,6 +53,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         super.onSetUp(testData);
         Catalog catalog=getCatalog();
         testData.addStyle("indexed","indexed.sld",getClass(),catalog);
+        testData.addStyle("crop_raster","CropTransform.sld",getClass(),catalog);
  
         Map props = new HashMap();
         props.put(LayerProperty.STYLE, "indexed");
@@ -221,5 +227,49 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         } finally {
             XMLUnit.setXpathNamespaceContext(oldContext);
         }
+    }
+    
+    @Test
+    public void testRasterRenderingTx() throws Exception {
+        System.out.println(getCatalog().getCoverages());
+        
+        String layer = getLayerId(MockData.USA_WORLDIMG);
+        String url = "wms?service=WMS&VERSION=1.1.1&request=GetMap&styles="
+                + "&format=image/png&layers="  + layer + "&WIDTH=100&HEIGHT=100"
+                + "&srs=epsg:4326&BBOX=-130,49,-125,54";
+        
+        BufferedImage image = getAsImage(url, "image/png");
+        Color color = getPixelColor(image, 25, 25);
+        // the color is not white, nor white-ish
+        assertTrue(color.getRed() + color.getGreen() + color.getBlue() < (250 * 3));
+        
+        // now crop and check the image is cut
+        url = "wms?service=WMS&VERSION=1.1.1&request=GetMap&styles=crop_raster"
+                + "&format=image/png&layers="  + layer + "&WIDTH=100&HEIGHT=100"
+                + "&srs=epsg:4326&BBOX=-130,49,-125,54";
+        image = getAsImage(url, "image/png");
+        color = getPixelColor(image, 25, 25);
+        // the color is white, or white-ish
+        assertTrue(color.getRed() + color.getGreen() + color.getBlue() > (250 * 3));
+    }
+
+    @Test
+    public void testGetMapWithPropertyStyle() throws Exception {
+        Properties props = new Properties();
+        props.put("type", "point");
+        props.put("color", "00ffff");
+        StringWriter w = new StringWriter();
+        props.store(w, null);
+
+        String bbox = "-180,-90,180,90";
+        String layer = getLayerId(CiteTestData.POINTS);
+
+        MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox +
+            "&layers=" + layer +
+            "&sld_body=" + w.toString() +
+            "&style_format=" + PropertyStyleHandler.FORMAT +
+            "&Format=image/png" + "&request=GetMap" +
+            "&width=550" + "&height=250" + "&srs=EPSG:4326");
+        checkImage(response);
     }
 }

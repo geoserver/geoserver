@@ -5,27 +5,35 @@
 package org.geoserver.kml;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.Map;
+import java.util.logging.Logger;
 
+import org.geoserver.kml.builder.SimpleNetworkLinkBuilder;
+import org.geoserver.kml.builder.SuperOverlayNetworkLinkBuilder;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.AbstractMapOutputFormat;
-import org.geoserver.wms.map.XMLTransformerMap;
+import org.geotools.util.logging.Logging;
+
+import de.micromata.opengis.kml.v_2_2_0.Kml;
 
 /**
+ * TODO: - handle superoverlay and caching
+ * 
+ * @author Andrea Aime - GeoSolutions
  * 
  */
 public class NetworkLinkMapOutputFormat extends AbstractMapOutputFormat {
+    static final Logger LOGGER = Logging.getLogger(NetworkLinkMapOutputFormat.class);
+
     /**
      * Official KMZ mime type, tweaked to output NetworkLink
      */
-    static final String KML_MIME_TYPE = KMLMapOutputFormat.MIME_TYPE + ";mode=networklink";
+    public static final String KML_MIME_TYPE = KMLMapOutputFormat.MIME_TYPE + ";mode=networklink";
 
-    static final String KMZ_MIME_TYPE = KMZMapOutputFormat.MIME_TYPE + ";mode=networklink";
+    public static final String KMZ_MIME_TYPE = KMZMapOutputFormat.MIME_TYPE + ";mode=networklink";
 
     public static final String[] OUTPUT_FORMATS = { KML_MIME_TYPE, KMZ_MIME_TYPE };
 
@@ -41,35 +49,47 @@ public class NetworkLinkMapOutputFormat extends AbstractMapOutputFormat {
      * writeTo(). This way the output can be streamed directly to the output response and not
      * written to disk first, then loaded in and then sent to the response.
      * 
-     * @param mapContent
-     *            WMSMapContext describing what layers, styles, area of interest etc are to be used
-     *            when producing the map.
+     * @param mapContent WMSMapContext describing what layers, styles, area of interest etc are to
+     *        be used when producing the map.
      * @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent)
      */
     @SuppressWarnings("rawtypes")
-    public XMLTransformerMap produceMap(WMSMapContent mapContent) throws ServiceException,
-            IOException {
-        KMLNetworkLinkTransformer transformer = new KMLNetworkLinkTransformer(wms, mapContent);
-        transformer.setIndentation(3);
-        Charset encoding = wms.getCharSet();
-        transformer.setEncoding(encoding);
-        Map fo = mapContent.getRequest().getFormatOptions();
-        Boolean superoverlay = (Boolean) fo.get("superoverlay");
+    public KMLMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
+        GetMapRequest request = mapContent.getRequest();
+
+        // restore normal kml types (no network link mode)
+        boolean kmz = false;
+        if (NetworkLinkMapOutputFormat.KML_MIME_TYPE.equals(request.getFormat())) {
+            request.setFormat(KMLMapOutputFormat.MIME_TYPE);
+        } else {
+            kmz = true;
+            request.setFormat(KMZMapOutputFormat.MIME_TYPE);
+        }
+
+        // check the superoverlay modes
+        Boolean superoverlay = (Boolean) request.getFormatOptions().get("superoverlay");
         if (superoverlay == null) {
             superoverlay = Boolean.FALSE;
         }
-        transformer.setEncodeAsRegion(superoverlay);
-        GetMapRequest request = mapContent.getRequest();
-        boolean cachedMode = "cached".equals(KMLUtils.getSuperoverlayMode(request, wms));
-        transformer.setCachedMode(cachedMode);
 
-        String mimeType = request.getFormat();
-        XMLTransformerMap wmsResponse = new XMLTransformerMap(mapContent, transformer, mapContent,
-                mimeType);
-        return wmsResponse;
+        // build the kml according to the building mode
+        Kml kml = null;
+        KmlEncodingContext context = new KmlEncodingContext(mapContent, wms, kmz);
+        if (superoverlay) {
+            kml  = new SuperOverlayNetworkLinkBuilder(context).buildKMLDocument();
+        } else {
+            kml  = new SimpleNetworkLinkBuilder(context).buildKMLDocument();
+        }
+
+        // build the output map
+        String mime = kmz ? KMZMapOutputFormat.MIME_TYPE : KMLMapOutputFormat.MIME_TYPE;
+        KMLMap map = new KMLMap(mapContent, null, kml, mime);
+        map.setContentDispositionHeader(mapContent, kmz ? ".kmz" : ".kml");
+        return map;
     }
 
     public MapProducerCapabilities getCapabilities(String format) {
         return KMLMapOutputFormat.KML_CAPABILITIES;
     }
+
 }

@@ -20,6 +20,10 @@ public class SecuredLayerInfo extends DecoratingLayerInfo {
         super(delegate);
         this.policy = policy;
     }
+    
+    public WrapperPolicy getWrapperPolicy() {
+        return policy;
+    }
 
     @Override
     public ResourceInfo getResource() {

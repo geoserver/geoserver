@@ -8,17 +8,21 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Throwables.propagate;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.geotools.util.logging.Logging;
 import org.geowebcache.config.XMLGridSubset;
 import org.geowebcache.filter.parameters.ParameterFilter;
-import org.geowebcache.filter.parameters.StringParameterFilter;
 import org.geowebcache.filter.request.RequestFilter;
 import org.geowebcache.layer.ExpirationRule;
 import org.geowebcache.layer.meta.LayerMetaInformation;
@@ -28,13 +32,17 @@ import org.geowebcache.util.GWCVars;
 
 import com.google.common.collect.ImmutableSet;
 
+
 /**
  * @author groldan
  * 
  */
 public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLayerInfo {
 
-    public static final long serialVersionUID = -3664183627578933094L;
+    /** serialVersionUID */
+    private static final long serialVersionUID = 8277055420849712230L;
+
+    private static final Logger LOGGER = Logging.getLogger(GeoServerTileLayerInfoImpl.class);
 
     private String id;
 
@@ -71,14 +79,11 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
      * @see GWCVars#CACHE_USE_WMS_BACKEND_VALUE
      * @see GWCVars#CACHE_VALUE_UNSET
      */
-    @SuppressWarnings("unused")
-    transient private int expireCache;
+    private int expireCache;
 
-    @SuppressWarnings("unused")
-    transient private List<ExpirationRule> expireCacheList;
+    private List<ExpirationRule> expireCacheList;
 
-    @SuppressWarnings("unused")
-    transient private int expireClients;
+    private int expireClients;
 
     @SuppressWarnings("unused")
     transient private List<ExpirationRule> expireClientsList;
@@ -91,13 +96,19 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
 
     @SuppressWarnings("unused")
     transient private Boolean queryable;
-
+    
+    // The actual storage
+    transient private Map<String, ParameterFilter> parameterFiltersMap;
+    
+    // Just used for serialize/deserialize to make xstream keep the same format it used to.
     private Set<ParameterFilter> parameterFilters;
 
     // //// GeoServerTileLayer specific properties //////
     private int gutter;
 
-    private boolean autoCacheStyles;
+    // For backward compatibility with 2.2 and 2.3
+    // FIXME  need to hide this when serializing back out
+    private Boolean autoCacheStyles;
 
     public GeoServerTileLayerInfoImpl() {
         readResolve();
@@ -114,10 +125,32 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
         }
         gridSubsets = nonNull(gridSubsets);
         mimeFormats = nonNull(mimeFormats);
+        
+        // Convert the deserialized set into a map.
         parameterFilters = nonNull(parameterFilters);
+        setParameterFilters(parameterFilters);
+        
+        // Apply the old autoCacheStyles flag if it was specified.
+        if(autoCacheStyles!=null){
+            if(autoCacheStyles) {
+                if(!isAutoCacheStyles()){
+                    addParameterFilter(new StyleParameterFilter());
+                }
+            } else {
+                if(isAutoCacheStyles()){
+                    this.removeParameterFilter("STYLES");
+                }
+            }
+            autoCacheStyles = null;
+        }
         return this;
     }
 
+    private final Object writeReplace() {
+        parameterFilters = getParameterFilters();
+        return this;
+    }
+    
     /**
      * @see java.lang.Object#clone()
      */
@@ -130,21 +163,24 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
             throw propagate(e);
         }
         clone.metaWidthHeight = metaWidthHeight.clone();
-        clone.gridSubsets = nonNull(null);
+        clone.gridSubsets = nonNull((Set<XMLGridSubset>)null);
         for (XMLGridSubset gs : gridSubsets) {
             clone.gridSubsets.add(gs.clone());
         }
-        clone.mimeFormats = nonNull(null);
+        clone.mimeFormats = nonNull((Set<String>)null);
         clone.mimeFormats.addAll(mimeFormats);
-        clone.parameterFilters = nonNull(null);
-        for (ParameterFilter pf : parameterFilters) {
-            clone.parameterFilters.add(pf.clone());
+        clone.parameterFiltersMap = nonNull((Map<String, ParameterFilter>)null);
+        for (ParameterFilter pf : parameterFiltersMap.values()) {
+            clone.addParameterFilter(pf.clone());
         }
         return clone;
     }
 
     private <T> Set<T> nonNull(Set<T> set) {
         return set == null ? new HashSet<T>() : set;
+    }
+    private <K,T> Map<K, T> nonNull(Map<K,T> set) {
+        return set == null ? new HashMap<K,T>() : set;
     }
 
     /**
@@ -212,21 +248,48 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
         checkArgument(metaTilingX > 0);
         metaWidthHeight[0] = metaTilingX;
     }
+    
+    public int getExpireCache() {
+        return expireCache;
+    }
+    
+    public void setExpireCache(int expireCache) {
+        this.expireCache = expireCache;
+    }
+    
+    public List<ExpirationRule> getExpireCacheList() {
+        return expireCacheList;
+    }
+    
+    public void setExpireCacheList(List<ExpirationRule> expireCacheList) {
+        this.expireCacheList = expireCacheList;
+    }
+    
+    @Override
+    public int getExpireClients() {
+    	return expireClients;
+    }
+    
+    @Override
+    public void setExpireClients(int seconds) {
+    	expireClients = seconds;
+    }
 
     /**
      * @see org.geoserver.gwc.layer.GeoServerTileLayerInfo#cachedStyles()
      */
     @Override
     public ImmutableSet<String> cachedStyles() {
-
-        ParameterFilter styleQualifier = TileLayerInfoUtil.findParameterFilter("STYLES",
-                getParameterFilters());
-
-        if (styleQualifier != null) {
-            if (styleQualifier instanceof StringParameterFilter) {
-                StringParameterFilter sp = (StringParameterFilter) styleQualifier;
-                return ImmutableSet.copyOf(sp.getLegalValues());
+        ParameterFilter styleQualifier = getParameterFilter("STYLES");
+        try {
+            if (styleQualifier != null) {
+                List<String> styles = styleQualifier.getLegalValues();
+                if(styles!=null) {
+                    return ImmutableSet.copyOf(styles);
+                }
             }
+        } catch (IllegalStateException ex) {
+            LOGGER.log(Level.WARNING, "StyleParameterFilter was not initialized properly", ex);
         }
         return ImmutableSet.of();
     }
@@ -289,15 +352,27 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
      */
     @Override
     public boolean isAutoCacheStyles() {
-        return autoCacheStyles;
+        ParameterFilter filter = getParameterFilter("STYLES");
+        return filter!=null && filter instanceof StyleParameterFilter &&
+                ((StyleParameterFilter)filter).getStyles()==null;
     }
 
     /**
      * @see org.geoserver.gwc.layer.GeoServerTileLayerInfo#setAutoCacheStyles(boolean)
+     * @deprecated
      */
     @Override
     public void setAutoCacheStyles(boolean autoCacheStyles) {
-        this.autoCacheStyles = autoCacheStyles;
+        if(autoCacheStyles){
+            // Add a default StyleParameterFilter.
+            ParameterFilter newFilter = new StyleParameterFilter();
+            addParameterFilter(newFilter);
+        } else {
+            ParameterFilter filter = getParameterFilter("STYLES");
+            if(filter!=null && filter instanceof StyleParameterFilter){
+                parameterFilters.remove(filter);
+            }
+        }
     }
 
     /**
@@ -305,12 +380,15 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
      */
     @Override
     public Set<ParameterFilter> getParameterFilters() {
-        return parameterFilters;
+        return new HashSet<ParameterFilter>(parameterFiltersMap.values());
     }
 
     @Override
     public void setParameterFilters(Set<ParameterFilter> parameterFilters) {
-        this.parameterFilters = nonNull(parameterFilters);
+        parameterFiltersMap = new HashMap<String, ParameterFilter>();
+        for (ParameterFilter pf: parameterFilters){
+            addParameterFilter(pf);
+        }
     }
 
     @Override
@@ -329,4 +407,18 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
         // return GeoServerTileLayerInfoLoader.marshalJson(this);
     }
 
+    @Override
+    public boolean addParameterFilter(ParameterFilter parameterFilter) {
+        return parameterFiltersMap.put(parameterFilter.getKey().toUpperCase(), parameterFilter) !=null;
+    }
+
+    @Override
+    public boolean removeParameterFilter(String key) {
+        return parameterFiltersMap.remove(key.toUpperCase()) !=null;
+    }
+    
+    @Override
+    public ParameterFilter getParameterFilter(String key) {
+        return parameterFiltersMap.get(key.toUpperCase());
+    }
 }

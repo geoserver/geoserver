@@ -5,7 +5,6 @@
 package org.geoserver.web.data.store;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.apache.wicket.model.IModel;
@@ -42,15 +41,5 @@ public class StoresModel extends LoadableDetachableModel<List<StoreInfo>> {
         if (workspace != null) {
             workspace.detach();
         }
-    }
-    
-    protected static class StoreNameComparator implements Comparator<StoreInfo> {
-        public StoreNameComparator() {
-        }
-
-        public int compare(StoreInfo o1, StoreInfo o2) {
-            return o1.getName().compareTo(o2.getName());
-        }
-        
     }
 }

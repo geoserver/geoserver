@@ -10,19 +10,19 @@ This section provides an overview of the GeoServer security subsystem api.
 Security Manager
 ----------------
 
-The ``GeoServerSecurityManager`` class is the main facade for the security 
+The ``GeoServerSecurityManager`` class is the main facade for the security
 subsystem. It plays a similar role to that of the ``GeoServer`` and ``Catalog``
-interfaces for the configuration and catalog subsystems respectively. Some of 
+interfaces for the configuration and catalog subsystems respectively. Some of
 the duties of this class include:
 
-* Access to security services such as user group and role services, 
-  authentication providers, etc... 
+* Access to security services such as user group and role services,
+  authentication providers, etc...
 * Manage the lifecycle of security services
 * CRUD operations for security service configurations
-* Access to various singleton classes such as ``ResourceAccessManager``,  
-  ``KeyStoreProvider``, ``AuthenticationCache``, 
-  ``GeoServerSecurityFilterChain``, etc..  
-* Implement the spring security AuthentictionProviderManager interface 
+* Access to various singleton classes such as ``ResourceAccessManager``,
+  ``KeyStoreProvider``, ``AuthenticationCache``,
+  ``GeoServerSecurityFilterChain``, etc..
+* Implement the spring security AuthentictionProviderManager interface
   providing the list of active :ref:`auth_provider` instances.
 
 Security Services
@@ -34,19 +34,19 @@ Security Services
 * Role services
 * Authentication filters
 * Authentication providers
-* Master password providers 
+* Master password providers
 
-The interface provides some common methods for all security services, 
+The interface provides some common methods for all security services,
 including::
 
     void initializeFromConfig(SecurityNamedServiceConfig config);
 
 Every type of security service corresponds to a configuration object for that
-service. The configuration object is a simple java bean that contains the 
+service. The configuration object is a simple java bean that contains the
 service configuration. These objects are persisted via xstream in the GeoServer
 data directory. See :ref:`service_config` for more details.
 
-Security services are created via methods provided by the securty manager. For 
+Security services are created via methods provided by the securty manager. For
 instance to create a new xml user group service::
 
    GeoServerSecurityManager mgr = ...;
@@ -55,7 +55,7 @@ instance to create a new xml user group service::
    config.setFilename("users.xml");
    mgr.saveUserGroupService(config);
 
-An instance of a security service is obtained by looking it up by the name 
+An instance of a security service is obtained by looking it up by the name
 matching its configuration object::
 
    GeoServerUserGroupService ugService = mgr.loadUserGroupService("foo");
@@ -74,8 +74,8 @@ And modified accordingly::
 UserGroup Service/Store
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-The ``GeoServerUserGroupService`` and ``GeoServerUserGroupStore`` interfaces provides a database 
-for users and groups. A GeoServerUserGroupService may be read only in that it acts solely 
+The ``GeoServerUserGroupService`` and ``GeoServerUserGroupStore`` interfaces provides a database
+for users and groups. A GeoServerUserGroupService may be read only in that it acts solely
 as a source without the ability to create new or edit existing users and groups.
 
 The interfaces provide access to users and groups::
@@ -106,8 +106,8 @@ runtime.
 Role Service/Store
 ^^^^^^^^^^^^^^^^^^
 
-``GeoServerRoleService`` and ``GeoServerRoleStore`` provide a database for roles and role 
-associations for users and groups. Like user group services a ``GeoServerRoleService`` 
+``GeoServerRoleService`` and ``GeoServerRoleStore`` provide a database for roles and role
+associations for users and groups. Like user group services a ``GeoServerRoleService``
 may be read only::
 
   GeoServerRoleService roleService = mgr.loadRoleService("default");
@@ -122,7 +122,7 @@ may be read only::
     store.addRole(role);
     store.associateRoleToGroup(role, "users");
     store.store();
-  } 
+  }
 
 .. _auth_provider:
 
@@ -130,9 +130,9 @@ Authentication Provider
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 ``GeoServerAuthenticationProvider`` is an extension of the spring security ``AuthenticationProvider``
-interface and is responsible for performing authentication of user credentials. 
+interface and is responsible for performing authentication of user credentials.
 
-The class extends the ``AuthenticationProvider`` contract and provides methods 
+The class extends the ``AuthenticationProvider`` contract and provides methods
 for authentication that provide access to the current request to make it
 easier for providers that require request information to perform authentication::
 
@@ -143,12 +143,12 @@ easier for providers that require request information to perform authentication:
     }
 
     /**
-     * Same function as {@link #authenticate(Authentication)} but is provided with 
+     * Same function as {@link #authenticate(Authentication)} but is provided with
      * the current request object.
      */
-    public abstract Authentication authenticate(Authentication authentication, 
+    public abstract Authentication authenticate(Authentication authentication,
         HttpServletRequest request) throws AuthenticationException;
-        
+
 The list of active authentication providers is maintained by the GeoServerSecurityManager
 which extends the spring security ``AuthenticationProviderManager`` interface.
 
@@ -158,17 +158,17 @@ Authentication Filter
 ^^^^^^^^^^^^^^^^^^^^^
 
 ``GeoServerSecurityFilter`` is the base class for servlet filters that play a part
-in the authentication process. Such filters can play two roles. 
-The first is to gather authentication credentials to passed off to a provider for 
+in the authentication process. Such filters can play two roles.
+The first is to gather authentication credentials to passed off to a provider for
 actual authentication. An example would be a filter for doing HTTP basic auth.
 
-The second role is to perform "pre-authentication" in which involves doing 
+The second role is to perform "pre-authentication" in which involves doing
 authentication by recognizing authentication that has already taken place "outside"
 of GeoServer. An example would be when using a security proxy such as Siteminder or
-a "J2ee" authentication which involves delegating to the servlet container for 
+a "J2ee" authentication which involves delegating to the servlet container for
 doing authentication.
 
-Security filters are maintained in the :ref:`filter chain <auth_filter_chain>` which maintains 
+Security filters are maintained in the :ref:`filter chain <auth_filter_chain>` which maintains
 the mapping of the filters to be applied to a specific type of request. For example
 the filters applied to a web ui request are different than those applied to an OGC
 or REST request.
@@ -179,13 +179,13 @@ or REST request.
 Password Policy
 ^^^^^^^^^^^^^^^
 
-``PasswordPolicy`` is the interface for validating user passwords,applying constraints such 
+``PasswordPolicy`` is the interface for validating user passwords,applying constraints such
 as password length, character mix, etc...
 
 MasterPasswordProvider
 ^^^^^^^^^^^^^^^^^^^^^^
 
-Security service that provides a method for obtaining the GeoServer master password. 
+Security service that provides a method for obtaining the GeoServer master password.
 The master password serves two purposes.
 
 #. Is the password for the GeoServer "root" account
@@ -196,7 +196,7 @@ The master password serves two purposes.
 Security Plugin Provider
 ------------------------
 
-The ``GeoServerSecurityProvider`` is the actual extension point that allows for the 
+The ``GeoServerSecurityProvider`` is the actual extension point that allows for the
 plugging in of instances of the services discussed above. The single interface covers
 all the security services.
 
@@ -206,17 +206,17 @@ with a user group service::
    public Class<? extends GeoServerUserGroupService> getUserGroupServiceClass() {
        return null;
    }
-   
+
    public GeoServerUserGroupService createUserGroupService(SecurityNamedServiceConfig config)
        throws IOException {
        return null;
    }
 
-The first method reports on the specific class of user group service it implements. 
+The first method reports on the specific class of user group service it implements.
 This is how a specific security provider is chosen from a specific configuration object.
 ``SecurityNamedServiceConfig.getClassName()`` is used to locate the provider.
 
-The second method creates an instance of the security service from a specified 
+The second method creates an instance of the security service from a specified
 configuration object. Providers are registered via spring, for example::
 
   <bean id="ldapSecurityProvider" class="org.geoserver.security.ldap.LDAPSecurityProvider">
@@ -229,16 +229,16 @@ Security Configuration
 Service Configuration
 ^^^^^^^^^^^^^^^^^^^^^
 
-As mentioned above each type of security service corresponds to a configuration class. 
+As mentioned above each type of security service corresponds to a configuration class.
 The ``SecurityNamedServiceConfig`` is the base class for all such configuration classes
-and maintains three properties that all classes inherit. The first is name for the 
+and maintains three properties that all classes inherit. The first is name for the
 configuration::
 
     /**
      * The name of the service.
      */
     String getName();
-    
+
 This name is used to reference both the configuration directly, or to the corresponding
 service implementation. For example consider a user group service named "foo"::
 
@@ -262,13 +262,13 @@ The third property is an internal identifier, similar to how catalog and configu
 objects have an id::
 
     /**
-     * Internal id of the config object. 
+     * Internal id of the config object.
      * <p>
      * This method should be used by client code.
      * </p>
      */
     String getId();
-    
+
 The main purpose of this id is to detect if the security service
 config has been persisted or not.
 
@@ -283,7 +283,7 @@ type::
       pwpolicy/
       role/
       usergroup/
-      
+
 Under each directory are additional subdirectories for each named service of that type.
 For example, out of the box GeoServer security is configured with the following:
 
@@ -301,7 +301,7 @@ This would correspond to the following directory structure::
       usergroup/
         default/
 
-Let's say an additional authentication provider named "ldap" was added. The tree would look 
+Let's say an additional authentication provider named "ldap" was added. The tree would look
 like::
 
     security/
@@ -312,11 +312,11 @@ like::
       .
       .
 
-Inside each named configuration directory is a file named ``config.xml`` that contains the 
+Inside each named configuration directory is a file named ``config.xml`` that contains the
 direct xstream serialization of the configuration object. For example the default user
 group service configuration is persisted in the file ``security/usergroup/default/config.xml``
 and looks like::
-    
+
     <userGroupService>
       <id>7aacccc3:13660a38ccb:-7ffd</id>
       <name>default</name>
@@ -326,19 +326,19 @@ and looks like::
       <validating>true</validating>
       <passwordEncoderName>pbePasswordEncoder</passwordEncoderName>
       <passwordPolicyName>default</passwordPolicyName>
-    </userGroupService> 
+    </userGroupService>
 
 
 Global Configuration
 ^^^^^^^^^^^^^^^^^^^^
 
-Aside from configuration objects for the various security services is the ``SecurityManagerConfig`` 
+Aside from configuration objects for the various security services is the ``SecurityManagerConfig``
 class which provides the same function but for global security settings. It contains a number of
 configuration properties such as the active role service, the list of authentication providers
-and filters making up the active :ref:`auth_filter_chain`, and configuration for remember me 
+and filters making up the active :ref:`auth_filter_chain`, and configuration for remember me
 services.
 
-Interacting with the global configuration is much like interacting with a security service 
+Interacting with the global configuration is much like interacting with a security service
 configuration::
 
     SecurityManagerConfig config = mgr.getSecurityConfig();
@@ -351,18 +351,18 @@ configuration::
 Authentication Chain
 --------------------
 
-The ``GeoServerSecurityFilterChain`` class is a data structure that maintains mappings 
-from request type to a list of named :ref:`security filters <_auth_filter>`. This class is 
-persisted with the rest of the global security configuration as available as a property 
+The ``GeoServerSecurityFilterChain`` class is a data structure that maintains mappings
+from request type to a list of named :ref:`security filters <auth_filter>`. This class is
+persisted with the rest of the global security configuration as available as a property
 of the ``SecurityManagerConfig`` class::
 
    GeoServerSecurityFilterChain filterChain = mgr.getSecurityConfig().getFilterChain();
-   
+
 The filterChain is essentially a map whose keys are strings corresponding to ant request
-patterns. The values are lists of :ref:`_auth_filter` names.
+patterns. The values are lists of :ref:`auth_filter` names.
 
 ``GeoServerSecurityFilterChainProxy`` is an extension of the spring security ``FilterChainProxy``
-and is responsible for creating the actual filter chain from the 
+and is responsible for creating the actual filter chain from the
 ``GeoServerSecurityFilterChain`` configuration object.
 
 

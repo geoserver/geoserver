@@ -94,6 +94,8 @@ public class WPSRequestBuilder extends GeoServerBasePage {
                         .singletonMap("strict", "true"), URLType.SERVICE);
                 request.setRequestUrl(url);
                 request.setRequestBody((String) responseWindow.getDefaultModelObject());
+                request.setUserName(builder.username);
+                request.setPassword(builder.password);
                 return new DemoRequestResponse(new Model(request));
             }
         });

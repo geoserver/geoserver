@@ -1,0 +1,32 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+    <wicket:panel>
+        <ul>
+            <!-- TIME -->
+            <li>
+                <fieldset>
+                    <legend>
+                        <span><wicket:message key="defaultConfigs">defaultConfigs</wicket:message></span>
+                    </legend>
+                    <p>
+                        <wicket:message key="DynamicDimensionsTabPanel.description">description</wicket:message>
+                    </p>
+                    <div wicket:id="editor"></div>
+                </fieldset>
+            </li>
+
+        </ul>
+    </wicket:panel>
+
+    <wicket:fragment wicket:id="policyChoice">
+        <select type wicket:id="choice"></select>
+    </wicket:fragment>
+    
+    <wicket:fragment wicket:id="ecqlEditor">
+        <textarea rows="1" wicket:id="editor" style="height:1.5em;"></textarea>
+    </wicket:fragment>
+    
+
+</body>
+</html>

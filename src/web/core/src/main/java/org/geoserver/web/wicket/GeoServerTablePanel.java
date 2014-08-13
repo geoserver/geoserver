@@ -16,7 +16,7 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
-import org.apache.wicket.markup.html.IHeaderResponse;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -78,6 +78,8 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     
     boolean sortable = true;
     
+    boolean selectable = true;
+    
     /**
      * An array of the selected items in the current page. Gets wiped out each
      * time the current page, the sorting or the filtering changes.
@@ -108,27 +110,19 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         listContainer = new WebMarkupContainer("listContainer");
 
         // build the filter form
-        filterForm = new Form("filterForm") {
-            @Override
-            public void renderHead(IHeaderResponse response) {
-                if (isRootForm()) return;
-
-                //in subforms (on dialogs) the forms onsubmit doesn;t forward to the submit links
-                // onclick, so we manually do it outselves
-                String markupId = filterForm.getMarkupId();
-                String js = 
-                "if (Wicket.Browser.isSafari() || Wicket.Browser.isIE()) {" + 
-                    "n = document.getElementById('" + markupId + "'); " + 
-                    "while (n.nodeName.toLowerCase() != 'form') { n = n.parentElement; }; " + 
-                    "n.setAttribute('onsubmit', \"return document.getElementById('" + hiddenSubmit.getMarkupId()+ "').onclick();\");" + 
-                 "}";
-                response.renderOnLoadJavascript(js);
-            }
-            
-        };
+        filterForm = new Form("filterForm");
         filterForm.setOutputMarkupId(true);
         add(filterForm);
-        filterForm.add(filter = new TextField("filter", new Model()));
+        filter = new TextField<String>("filter", new Model<String>()) {
+            @Override
+            protected void onComponentTag(ComponentTag tag) {
+                super.onComponentTag(tag);
+                tag.put("onkeypress", "if(event.keyCode == 13) {document.getElementById('"
+                        + hiddenSubmit.getMarkupId() + "').click();return false;}");
+
+            }
+        };
+        filterForm.add(filter);
         filter.add(new SimpleAttributeModifier("title", String.valueOf(new ResourceModel(
                 "GeoServerTablePanel.search", "Search").getObject())));
         filterForm.add(hiddenSubmit = hiddenSubmit());
@@ -155,34 +149,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
                 cnt.setVisible(selectable);
                 item.add(cnt);
 
-                // create one component per viewable property
-                ListView items = new ListView("itemProperties", dataProvider.getVisibleProperties()) {
-
-                    @Override
-                    protected void populateItem(ListItem item) {
-                        Property<T> property = (Property<T>) item.getModelObject();
-                        
-                        Component component = getComponentForProperty("component", itemModel,
-                                property);
-                        
-                        if(component == null) {
-                            // show a plain label if the the subclass did not create any component
-                            component = new Label("component", property.getModel(itemModel));
-                        } else if (!"component".equals(component.getId())) {
-                            // add some checks for the id, the error message
-                            // that wicket returns in case of mismatch is not
-                            // that helpful
-                            throw new IllegalArgumentException("getComponentForProperty asked "
-                                    + "to build a component " + "with id = 'component' "
-                                    + "for property '" + property.getName() + "', but got '"
-                                    + component.getId() + "' instead");
-                        }
-                        item.add(component);
-                        onPopulateItem(property, item);
-                    }
-                };
-                items.setReuseItems(true);
-                item.add(items);
+                buildRowListView(dataProvider, item, itemModel);
             }
 
         };
@@ -196,7 +163,20 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         listContainer.add(cnt);
         
         // add the sorting links
-        listContainer.add(new ListView("sortableLinks", dataProvider.getVisibleProperties()) {
+        listContainer.add(buildLinksListView(dataProvider));
+
+        // add the paging navigator and set the items per page
+        dataView.setItemsPerPage(DEFAULT_ITEMS_PER_PAGE);
+        pagerDelegate = new PagerDelegate();
+        
+        filterForm.add(navigatorTop = new Pager("navigatorTop"));
+        navigatorTop.setOutputMarkupId(true);
+        add(navigatorBottom = new Pager("navigatorBottom"));
+        navigatorBottom.setOutputMarkupId(true);
+    }
+
+    protected ListView buildLinksListView(final GeoServerDataProvider<T> dataProvider) {
+        return new ListView("sortableLinks", dataProvider.getVisibleProperties()) {
 
             @Override
             protected void populateItem(ListItem item) {
@@ -215,18 +195,39 @@ public abstract class GeoServerTablePanel<T> extends Panel {
                 }
             }
 
-        });
-
-        // add the paging navigator and set the items per page
-        dataView.setItemsPerPage(DEFAULT_ITEMS_PER_PAGE);
-        pagerDelegate = new PagerDelegate();
-        
-        filterForm.add(navigatorTop = new Pager("navigatorTop"));
-        navigatorTop.setOutputMarkupId(true);
-        add(navigatorBottom = new Pager("navigatorBottom"));
-        navigatorBottom.setOutputMarkupId(true);
+        };
     }
-    
+
+    protected void buildRowListView(final GeoServerDataProvider<T> dataProvider, Item item,
+            final IModel itemModel) {
+        // create one component per viewable property
+        ListView items = new ListView("itemProperties", dataProvider.getVisibleProperties()) {
+
+            @Override
+            protected void populateItem(ListItem item) {
+                Property<T> property = (Property<T>) item.getModelObject();
+
+                Component component = getComponentForProperty("component", itemModel, property);
+
+                if (component == null) {
+                    // show a plain label if the the subclass did not create any component
+                    component = new Label("component", property.getModel(itemModel));
+                } else if (!"component".equals(component.getId())) {
+                    // add some checks for the id, the error message
+                    // that wicket returns in case of mismatch is not
+                    // that helpful
+                    throw new IllegalArgumentException("getComponentForProperty asked "
+                            + "to build a component " + "with id = 'component' " + "for property '"
+                            + property.getName() + "', but got '" + component.getId() + "' instead");
+                }
+                item.add(component);
+                onPopulateItem(property, item);
+            }
+        };
+        items.setReuseItems(true);
+        item.add(items);
+    }
+
     /**
      * Sets the item reuse strategy for the table. Should be {@link ReuseIfModelsEqualStrategy} if
      * you're building an editable table, {@link DefaultItemReuseStrategy} otherwise
@@ -283,8 +284,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
      * @param property
      * @return
      */
-    IModel getPropertyTitle(Property<T> property) {
-        String pageName = this.getPage().getClass().getSimpleName();
+    protected IModel getPropertyTitle(Property<T> property) {
         ResourceModel resMod = new ResourceModel("th." + property.getName(),  property.getName());
         return resMod;
     }
@@ -344,6 +344,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     protected CheckBox selectOneCheckbox(Item item) {
         CheckBox cb = new CheckBox("selectItem", new SelectionModel(item.getIndex()));
         cb.setOutputMarkupId(true);
+        cb.setVisible(selectable);
         cb.add(new AjaxFormComponentUpdatingBehavior("onclick") {
 
             @Override
@@ -357,6 +358,15 @@ public abstract class GeoServerTablePanel<T> extends Panel {
             
         });
         return cb;
+    }
+    
+    /**
+     * When set to false, will prevent the selection checkboxes from showing up
+     * @param selectable
+     */
+    public void setSelectable(boolean selectable) {
+        this.selectable = selectable;
+        selectAll.setVisible(selectable);
     }
     
     void setSelection(boolean selected) {
@@ -527,7 +537,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
      * Called each time a new table item/column is created.
      * <p>
      * By default this method does nothing, subclasses may override for instance to add an attribute
-     * to the &lt;td> element created for the column.
+     * to the &lt;td&gt; element created for the column.
      * </p>
      */
     protected void onPopulateItem(Property<T> property, ListItem item) {

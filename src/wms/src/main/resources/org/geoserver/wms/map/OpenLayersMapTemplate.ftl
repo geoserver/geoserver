@@ -147,11 +147,9 @@
                     "${layerName} - Tiled", "${baseUrl}/${servicePath}",
                     {
                         <#list parameters as param>
-                        ${param.name}: '${param.value?js_string}',
+                        "${param.name?js_string}": '${param.value?js_string}',
                         </#list>
-                        format: format,
-                        tiled: true,
-                        tilesOrigin : map.maxExtent.left + ',' + map.maxExtent.bottom
+                        format: format
                     },
                     {
                         buffer: 0,
@@ -166,7 +164,7 @@
                     "${layerName} - Untiled", "${baseUrl}/${servicePath}",
                     {
                         <#list parameters as param>
-                        ${param.name}: '${param.value?js_string}',
+                        "${param.name?js_string}": '${param.value?js_string}',
                         </#list>
                         format: format
                     },
@@ -207,7 +205,7 @@
                         <#assign skipped=["request","bbox","width","height","format", "styles"]>
                         <#list parameters as param>            
                         <#if !(skipped?seq_contains(param.name?lower_case))>
-                        ${param.name?capitalize}: '${param.value?js_string}',
+                        "${(param.name?js_string)?capitalize}": '${param.value?js_string}',
                         </#if>
                         </#list>
                         WIDTH: map.size.w,

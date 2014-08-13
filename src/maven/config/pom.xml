@@ -10,12 +10,12 @@
  
  <parent>
   <groupId>org.geoserver</groupId>
-  <artifactId>maven</artifactId>
-  <version>2.4-SNAPSHOT</version>
+  <artifactId>gs-maven</artifactId>
+  <version>2.6-SNAPSHOT</version>
  </parent>
  
  <groupId>org.geoserver.maven</groupId>
- <artifactId>config</artifactId>
+ <artifactId>gs-config</artifactId>
  <packaging>maven-plugin</packaging>
  <name>Configuration Deployment PlugIn</name>
  

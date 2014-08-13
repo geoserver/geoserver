@@ -5,8 +5,10 @@
 
 package org.geoserver.security.file;
 
+import java.io.File;
 import java.io.IOException;
 
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.event.RoleLoadedEvent;
 import org.geoserver.security.event.RoleLoadedListener;
@@ -21,19 +23,28 @@ import org.geoserver.security.event.RoleLoadedListener;
 public class RoleFileWatcher extends FileWatcher implements RoleLoadedListener{
     
     
-    public RoleFileWatcher(String fileName,GeoServerRoleService service) {
-        super(fileName);
+    public RoleFileWatcher(Resource resource, GeoServerRoleService service) {
+        super(resource);        
         this.service=service;
         checkAndConfigure();
     }
-
-    public RoleFileWatcher(String fileName,GeoServerRoleService service,long lastModified) {
-        super(fileName);
+    public RoleFileWatcher(File file, GeoServerRoleService service) {
+        super(file);        
+        this.service=service;
+        checkAndConfigure();
+    }
+    public RoleFileWatcher(Resource resource, GeoServerRoleService service, long lastModified) {
+        super(resource);
         this.service=service;
         this.lastModified=lastModified;
         checkAndConfigure();
     }
-
+    public RoleFileWatcher(File file, GeoServerRoleService service, long lastModified) {
+        super(file);
+        this.service=service;
+        this.lastModified=lastModified;
+        checkAndConfigure();
+    }
     
     protected GeoServerRoleService service;
     
@@ -81,7 +92,7 @@ public class RoleFileWatcher extends FileWatcher implements RoleLoadedListener{
     @Override
     public void rolesChanged(RoleLoadedEvent event) {
         // avoid reloads
-        setLastModified(file.lastModified());
-        LOGGER.info("Adjusted last modified for file: " +filename);        
+        setLastModified(resource.lastmodified());
+        LOGGER.info("Adjusted last modified for file: " +path);        
     }
 }

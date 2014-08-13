@@ -130,9 +130,9 @@ public class CoverageUtils {
             }
 
             return (!parameters.isEmpty())? 
-            		(GeneralParameterValue[]) parameters.toArray(new GeneralParameterValue[parameters.size()]): null;
+            		(GeneralParameterValue[]) parameters.toArray(new GeneralParameterValue[parameters.size()]): new GeneralParameterValue[0];
         } else {
-            return null;
+            return new GeneralParameterValue[0];
         }
     }
 

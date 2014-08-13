@@ -58,10 +58,14 @@ function upload_installer() {
   fi
 }
 
-# start_installer_job <hudson_url> <tag>
+# start_installer_job <hudson_url> <user> <key> <tag>
 # starts a hudson installer job
 function start_installer_job() {
-  curl -k --connect-timeout 10 "$1/job/geoserver-installer/buildWithParameters?TAG=$2"
+  local job_url="$1/job/geoserver-installer/buildWithParameters?TAG=$4&token=buildme"
+  local creds=$2:$3 
+
+  echo "executing installer job $job_url with credentials $creds"
+  curl -k --connect-timeout 10 --user $creds $job_url
 }
 
 function is_primary_branch_num() {

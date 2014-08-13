@@ -5,7 +5,6 @@
      <fieldset>
       <legend>
         <span><wicket:message key="GeoServerTileLayerEditor.title">Tile caching configuration</wicket:message></span>
-        <a href="#" class="help-link"></a>
       </legend>
       <ul>
         <li>
@@ -40,17 +39,16 @@
                   </span></span>
               </li>
               <li>
-                <label><wicket:message key="parameterFilters">Parameter Filters:</wicket:message></label>
-                <input id="cacheNonDefaultStyles" wicket:id="cacheNonDefaultStyles" class="field checkbox" type="checkbox"/>
-                <label for="cacheNonDefaultStyles" wicket:id="cacheNonDefaultStylesLabel" class="choice">Cache non default styles</label>
+                <label for="expireCache" class="text"><wicket:message key="expireCache">Expire server cache after n seconds (set to 0 to use source setting)</wicket:message></label>
+                <input id="tileExpireCache" wicket:id="expireCache" class="field text" style="width: 80px;" type="text"/>
               </li>
               <li>
-                <input id="timeParameterFilter" wicket:id="timeParameterFilter" class="field checkbox" type="checkbox"/>
-                <label for="timeParameterFilter" wicket:id="timeParameterFilterLabel" class="choice">Cache non default styles</label>
+                <label for="expireClients" class="text"><wicket:message key="expireClients">Expire client cache after n seconds (set to 0 to use server setting)</wicket:message></label>
+                <input id="tileExpireClients" wicket:id="expireClients" class="field text" style="width: 80px;" type="text"/>
               </li>
               <li>
-                <input id="elevationParameterFilter" wicket:id="elevationParameterFilter" class="field checkbox" type="checkbox"/>
-                <label for="elevationParameterFilter" wicket:id="elevationParameterFilterLabel" class="choice">Cache non default styles</label>
+                <label><wicket:message key="parameterFilters">ParameterFilters:</wicket:message></label>
+                <span wicket:id="parameterFilters"></span>
               </li>
               <li>
                 <label><wicket:message key="cachedGridsets">Cached Grid Sets:</wicket:message></label>

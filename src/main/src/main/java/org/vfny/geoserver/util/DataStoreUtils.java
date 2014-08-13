@@ -23,6 +23,7 @@ import org.geoserver.data.DataAccessFactoryProducer;
 import org.geoserver.feature.FeatureSourceUtils;
 import org.geoserver.feature.retype.RetypingDataStore;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataAccessFactory;
 import org.geotools.data.DataAccessFinder;
@@ -34,7 +35,6 @@ import org.geotools.data.DataAccessFactory.Param;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -52,25 +52,6 @@ public abstract class DataStoreUtils {
      * logger
      */
     static Logger LOGGER = Logging.getLogger("org.geoserver.data");
-    
-    /**
-     * Uses the standard datastore factory mechanism, but first manipulates the
-     * specified parameters so that data dir relative paths gets turned into
-     * absolute ones
-     * @param params
-     * @param sc
-     * @return
-     * @throws IOException
-     * @deprecated as for 2.0.x
-     */
-    public static DataStore acquireDataStore(Map params, ServletContext sc)
-        throws IOException {
-        //DJB: changed this for geoserver_data_dir   	
-        //String baseDir = sc.getRealPath("/");
-        File baseDir = GeoserverDataDirectory.getGeoserverDataDirectory();
-
-        return getDataStore(ResourcePool.getParams(params, baseDir.getAbsolutePath()));
-    }
     
     /**
      * Looks up the datastore using the given params, verbatim, and then
@@ -120,15 +101,34 @@ public abstract class DataStoreUtils {
         return store;
     }
 
-    public static Map getParams(Map m) {
+    /**
+     * processed parameters with relative URLs resolved against data directory.
+     * @param m
+     * @return processed parameters with relative URLs resolved against data directory
+     * @deprecated Unused, call {@link ResourcePool#getParams(Map, GeoServerResourceLoader)} directly.
+     */
+    public static<K,V> Map<K,V> getParams(Map<K,V> m) {
         return getParams(m,null);
     }
     
-    public static Map getParams(Map m, ServletContext sc) {
-        File data_dir = GeoserverDataDirectory.getGeoserverDataDirectory();
-        String baseDir = data_dir.getPath();
-
-        return ResourcePool.getParams(m, baseDir);
+    /**
+     * processed parameters with relative URLs resolved against data directory.
+     * @param m
+     * @param sc Context used to create GeoServerResourceLoader if required
+     * @return processed parameters with relative URLs resolved against data directory
+     * @deprecated Unused, call {@link ResourcePool#getParams(Map, GeoServerResourceLoader)} directly.
+     */
+    public static<K,V> Map<K,V> getParams(Map<K,V> m, ServletContext sc) {
+        GeoServerResourceLoader loader;
+        if( sc != null ){
+            String basePath = GeoServerResourceLoader.lookupGeoServerDataDirectory(sc);
+            File baseDir = new File(basePath);
+            loader = new GeoServerResourceLoader( baseDir );
+        }
+        else {
+            loader = GeoServerExtensions.bean( GeoServerResourceLoader.class);
+        }
+        return ResourcePool.getParams(m, loader );
     }
 
     /**
@@ -202,21 +202,21 @@ public abstract class DataStoreUtils {
      * extension point.
      *
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     static DataAccessFactory initializeDataStoreFactory( DataAccessFactory factory ) {
-        List initializers = GeoServerExtensions.extensions( DataStoreFactoryInitializer.class );
-        for ( Iterator i = initializers.iterator(); i.hasNext(); ) {
-            DataStoreFactoryInitializer initer = (DataStoreFactoryInitializer) i.next();
+        List<DataStoreFactoryInitializer> initializers = GeoServerExtensions.extensions( DataStoreFactoryInitializer.class );
+        for ( DataStoreFactoryInitializer initer : initializers ) {
             if ( initer.getFactoryClass().isAssignableFrom( factory.getClass() ) ) {
                 try {
                     initer.initialize( factory );
                 }
                 catch( Throwable t ) {
+                    final Logger LOGGER2 = Logging.getLogger( "org.geoserver.platform" );
                     String msg = "Error occured processing extension: " + initer.getClass().getName();
-                    GeoServerExtensions.LOGGER.log( Level.WARNING, msg, t );
+                    LOGGER2.log( Level.WARNING, msg, t );
                 }
             }
-        }
-        
+        }        
         return factory;
     }
     

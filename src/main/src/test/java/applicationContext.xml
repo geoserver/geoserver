@@ -9,5 +9,7 @@
   <!-- memory backend provider -->
   <bean id="memorySecurityProvider" class="org.geoserver.security.impl.MemorySecurityProvider"/>
  <!-- memory read only backend provider -->
-  <bean id="memoryRISecurityProvider" class="org.geoserver.security.impl.MemoryReadOnlySecurityProvider"/>  
+  <bean id="memoryRISecurityProvider" class="org.geoserver.security.impl.MemoryReadOnlySecurityProvider"/>
+
+  <bean id="propStyleHandler" class="org.geoserver.catalog.PropertyStyleHandler"/>
 </beans>

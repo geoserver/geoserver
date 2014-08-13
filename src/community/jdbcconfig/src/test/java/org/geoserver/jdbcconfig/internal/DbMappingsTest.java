@@ -6,30 +6,44 @@ package org.geoserver.jdbcconfig.internal;
 
 import javax.sql.DataSource;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import org.geoserver.jdbcconfig.JDBCConfigTestSupport;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
-public class DbMappingsTest extends TestCase {
+@RunWith(Parameterized.class)
+public class DbMappingsTest {
 
     private JDBCConfigTestSupport testSupport;
 
-    @Override
-    protected void setUp() throws Exception {
-        testSupport = new JDBCConfigTestSupport();
+    public DbMappingsTest(JDBCConfigTestSupport.DBConfig dbConfig) {
+        testSupport = new JDBCConfigTestSupport(dbConfig);
+    }
+
+    @Parameterized.Parameters(name = "{0}")
+    public static Iterable<Object[]> data() {
+        return JDBCConfigTestSupport.parameterizedDBConfigs();
+    }
+
+    @Before
+    public void setUp() throws Exception {
         testSupport.setUp();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         testSupport.tearDown();
     }
 
+    @Test
     public void testInitDb() throws Exception {
         DataSource dataSource = testSupport.getDataSource();
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(dataSource);
-        DbMappings dbInit = new DbMappings();
+        DbMappings dbInit = new DbMappings(new Dialect());
         dbInit.initDb(template);
     }
 }

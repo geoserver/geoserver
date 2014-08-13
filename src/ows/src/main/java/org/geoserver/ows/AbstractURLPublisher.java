@@ -10,8 +10,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -64,7 +66,7 @@ public abstract class AbstractURLPublisher extends AbstractController {
         
         File file = DataUtilities.urlToFile(url);
         if(file != null && file.exists() && file.isDirectory()) {
-            String uri = request.getRequestURI().toString();
+            String uri = request.getRequestURI();
             uri += uri.endsWith("/") ? "index.html" : "/index.html";
             
             response.addHeader("Location", uri);
@@ -73,7 +75,10 @@ public abstract class AbstractURLPublisher extends AbstractController {
             return null;
         }
         
-        
+        if (file != null && checkNotModified(request, file.lastModified())) {
+            response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+            return null;
+        }
 
         // set the mime if known by the servlet container, set nothing otherwise
         // (Tomcat behaves like this when it does not recognize the file format)
@@ -94,11 +99,7 @@ public abstract class AbstractURLPublisher extends AbstractController {
 
             long lastModified = connection.getLastModified();
             if (lastModified > 0) {
-                SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss",
-                        Locale.ENGLISH);
-                format.setTimeZone(TimeZone.getTimeZone("GMT"));
-                String formatted = format.format(new Date(lastModified)) + " GMT";
-                response.setHeader("Last-Modified", formatted);
+                response.setHeader("Last-Modified", lastModified(lastModified));
             }
 
             // Guessing the charset (and closing the stream)
@@ -134,6 +135,39 @@ public abstract class AbstractURLPublisher extends AbstractController {
         }
 
         return null;
+    }
+
+    private boolean checkNotModified(HttpServletRequest request, long timeStamp) {
+        Enumeration headers = request.getHeaders("If-Modified-Since");
+        String header = headers != null && headers.hasMoreElements() ? headers.nextElement().toString() : null;
+        if (header != null && header.length() > 0) {
+            long ifModSinceSeconds = lastModified(header);
+            // the HTTP header has second precision
+            long timeStampSeconds = 1000 * (timeStamp / 1000);
+            return ifModSinceSeconds >= timeStampSeconds;
+        }
+        return false;
+    }
+
+    static String lastModified(long timeStamp) {
+        SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss",
+                Locale.ENGLISH);
+        format.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return format.format(new Date(timeStamp)) + " GMT";
+    }
+
+    static long lastModified(String timeStamp) {
+        long ifModifiedSince = Long.MIN_VALUE;
+        try {
+            SimpleDateFormat fmt = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss",
+                    Locale.ENGLISH);
+            fmt.setTimeZone(TimeZone.getTimeZone("GMT"));
+            ifModifiedSince = fmt.parse(timeStamp).getTime();
+        } catch (ParseException pe) {
+            // dang
+        }
+        // the HTTP header has second precision
+        return 1000 * (ifModifiedSince / 1000);
     }
 
     /**

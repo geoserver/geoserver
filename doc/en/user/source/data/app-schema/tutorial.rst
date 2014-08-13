@@ -186,13 +186,13 @@ The first mapping sets the ``gml:id`` to be the feature id specified in the sour
             gsml:GeologicUnit
         </targetAttribute>
         <idExpression>
-            <OCQL>getId()</OCQL>
+            <OCQL>ID</OCQL>
         </idExpression>
     </AttributeMapping>
 
 * ``targetAttribute`` is the XPath to the element for which the mapping applies, in this case, the top-level feature type.
 
-* ``idExpression`` is a special form that can only be used to set the ``gml:id`` on a feature. For database sources, ``getId()`` will synthesise an id from the table or view name, a dot ".", and the primary key of the table. If this is not desirable, any other field or CQL expression can be used, if it evaluates to an `NCName <http://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-NCName>`_.
+* ``idExpression`` is a special form that can only be used to set the ``gml:id`` on a feature. Any field or CQL expression can be used, if it evaluates to an `NCName <http://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-NCName>`_.
 
 
 Ordinary mapping

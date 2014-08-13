@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.Page;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -34,11 +35,14 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.protocol.http.WebRequest;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.web.GeoServerBasePage;
 import org.geoserver.web.wicket.CodeMirrorEditor;
 import org.geotools.util.logging.Logging;
 import org.vfny.geoserver.global.ConfigurationException;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
+import org.geoserver.config.GeoServer;
 
 /**
  * 
@@ -63,8 +67,10 @@ public class DemoRequestsPage extends GeoServerBasePage {
 
     public DemoRequestsPage() {
         try {
-            demoDir = GeoserverDataDirectory.findCreateConfigDir("demo/");
-        } catch (ConfigurationException e) {
+            GeoServerResourceLoader loader = this.getGeoServer().getCatalog().getResourceLoader();
+            Resource demo = loader.get("demo");
+            demoDir = demo.dir(); // find or create
+        } catch (Exception e) {
             throw new WicketRuntimeException("Can't access demo requests directory: "
                     + e.getMessage());
         }
@@ -147,13 +153,24 @@ public class DemoRequestsPage extends GeoServerBasePage {
             protected void onSubmit(AjaxRequestTarget target) {
                 final String reqFileName = demoRequestsList.getModelValue();
                 final String contents;
-
+                String proxyBaseUrl;
                 final String baseUrl;
                 {
                     WebRequest request = (WebRequest) DemoRequestsPage.this.getRequest();
                     HttpServletRequest httpServletRequest;
-                    httpServletRequest = ((WebRequest) request).getHttpServletRequest();
-                    baseUrl = ResponseUtils.baseURL(httpServletRequest);
+                    httpServletRequest = ((WebRequest) request).getHttpServletRequest();                   
+                    proxyBaseUrl = GeoServerExtensions.getProperty("PROXY_BASE_URL");                    
+                    if (StringUtils.isEmpty(proxyBaseUrl)) {
+                        GeoServer gs = getGeoServer();
+                        proxyBaseUrl = gs.getGlobal().getSettings().getProxyBaseUrl();
+                        if (StringUtils.isEmpty(proxyBaseUrl)) {
+                            baseUrl = ResponseUtils.baseURL(httpServletRequest);
+                        } else {
+                            baseUrl = proxyBaseUrl;
+                        }
+                    } else {
+                        baseUrl = proxyBaseUrl;
+                    }
                 }
                 try {
                     contents = getFileContents(reqFileName);
@@ -165,12 +182,12 @@ public class DemoRequestsPage extends GeoServerBasePage {
                 boolean demoRequestIsHttpGet = reqFileName.endsWith(".url");
                 final String service = reqFileName.substring(0, reqFileName.indexOf('_'))
                         .toLowerCase();
-                final String serviceUrl = baseUrl + service;
                 if (demoRequestIsHttpGet) {
                     String url = baseUrl + contents;
                     urlTextField.setModelObject(url);
                     body.setModelObject("");
                 } else {
+                    String serviceUrl = baseUrl + service;
                     urlTextField.setModelObject(serviceUrl);
                     body.setModelObject(contents);
                 }
@@ -238,7 +255,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
                 return new AjaxCallDecorator() {
                     @Override
                     public CharSequence decorateScript(CharSequence script) {
-                        return "document.getElementById('requestBody').value = document.gsEditors.requestBody.getCode();"
+                        return "document.getElementById('requestBody').value = document.gsEditors.requestBody.getValue();"
                                 + script;
                     }
                 };

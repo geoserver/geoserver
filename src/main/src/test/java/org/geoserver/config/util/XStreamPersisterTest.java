@@ -15,9 +15,11 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.measure.unit.SI;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
@@ -27,6 +29,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -52,6 +55,7 @@ import org.geoserver.config.util.XStreamPersister.SRSConverter;
 import org.geotools.jdbc.RegexpValidator;
 import org.geotools.jdbc.VirtualTable;
 import org.geotools.jdbc.VirtualTableParameter;
+import org.geotools.measure.Measure;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.wkt.Formattable;
@@ -109,7 +113,6 @@ public class XStreamPersisterTest {
         g1.setUpdateSequence( 123 );
         g1.setVerbose( true );
         g1.setVerboseExceptions( true );
-        
         g1.getMetadata().put( "one", new Integer(1) );
         g1.getMetadata().put( "two", new Double(2.2) );
         
@@ -489,6 +492,7 @@ public class XStreamPersisterTest {
         ft.setAbstract( "abstract");
         ft.setSRS( "EPSG:4326");
         ft.setNativeCRS( CRS.decode( "EPSG:4326") );
+        ft.setLinearizationTolerance(new Measure(10, SI.METER));
         
         ByteArrayOutputStream out = out();
         persister.save( ft, out );
@@ -501,6 +505,7 @@ public class XStreamPersisterTest {
         assertEquals( ds, ft.getStore() );
         assertEquals( ns, ft.getNamespace() );
         assertEquals( "EPSG:4326", ft.getSRS() );
+        assertEquals( new Measure(10, SI.METER), ft.getLinearizationTolerance() );
         assertTrue( CRS.equalsIgnoreMetadata( CRS.decode( "EPSG:4326"), ft.getNativeCRS() ) ); 
     }
     
@@ -702,8 +707,7 @@ public class XStreamPersisterTest {
         catalog.add( ft );
         
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        persister.save(ft, out);
-        
+        persister.save(ft, out);        
         // System.out.println(out.toString());
         
         persister.setCatalog( catalog );
@@ -711,6 +715,73 @@ public class XStreamPersisterTest {
         VirtualTable vt2 = (VirtualTable) ft.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE);
         assertNotNull(vt2);
         assertEquals(vt, vt2);
+    }
+    
+    /**
+     * Test for GEOS-6052
+     * @throws Exception
+     */
+    @Test
+    public void testVirtualTableMissingEscapeSql() throws Exception {
+        Catalog catalog = new CatalogImpl();
+        CatalogFactory cFactory = catalog.getFactory();
+        
+        WorkspaceInfo ws = cFactory.createWorkspace();
+        ws.setName( "foo" );
+        catalog.add( ws );
+        
+        NamespaceInfo ns = cFactory.createNamespace();
+        ns.setPrefix( "acme" );
+        ns.setURI( "http://acme.org" );
+        catalog.add( ns );
+        
+        DataStoreInfo ds = cFactory.createDataStore();
+        ds.setWorkspace( ws );
+        ds.setName( "foo" );
+        catalog.add( ds );
+        
+        persister.setCatalog( catalog );
+        FeatureTypeInfo ft = persister.load( getClass().getResourceAsStream("/org/geoserver/config/virtualtable_error.xml") , FeatureTypeInfo.class );
+        VirtualTable vt2 = (VirtualTable) ft.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE);
+        assertNotNull(vt2);
+        assertEquals(1,ft.getMetadata().size());
+        
+    }
+    
+    /**
+     * Another Test for GEOS-6052
+     * @throws Exception
+     */
+    @Test
+    public void testVirtualTableMissingEscapeSqlDoesntSkipElements() throws Exception {
+        Catalog catalog = new CatalogImpl();
+        CatalogFactory cFactory = catalog.getFactory();
+        
+        WorkspaceInfo ws = cFactory.createWorkspace();
+        ws.setName( "foo" );
+        catalog.add( ws );
+        
+        NamespaceInfo ns = cFactory.createNamespace();
+        ns.setPrefix( "acme" );
+        ns.setURI( "http://acme.org" );
+        catalog.add( ns );
+        
+        DataStoreInfo ds = cFactory.createDataStore();
+        ds.setWorkspace( ws );
+        ds.setName( "foo" );
+        catalog.add( ds );
+        
+        persister.setCatalog( catalog );
+        FeatureTypeInfo ft = persister.load( getClass().getResourceAsStream("/org/geoserver/config/virtualtable_error_2.xml") , FeatureTypeInfo.class );
+        VirtualTable vt2 = (VirtualTable) ft.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE);
+        assertNotNull(vt2);
+        assertEquals(1,ft.getMetadata().size());
+        assertEquals(1, vt2.getGeometries().size());
+        String geometryName = vt2.getGeometries().iterator().next();
+        assertEquals("geometry", geometryName);
+        assertNotNull(vt2.getGeometryType(geometryName));
+        assertNotNull(vt2.getNativeSrid(geometryName));
+        
     }
 
     @Test
@@ -761,6 +832,39 @@ public class XStreamPersisterTest {
         assertTrue(CRS.equalsIgnoreMetadata(crs, crs2));
     }
 
+    @Test
+    public void testPersisterCustomization() throws Exception {
+        Catalog catalog = new CatalogImpl();
+        CatalogFactory cFactory = catalog.getFactory();
+
+        WorkspaceInfo ws = cFactory.createWorkspace();
+        ws.setName("foo");
+        ws.getMetadata().put("banana", new SweetBanana("Musa acuminata"));
+
+        XStreamPersisterFactory factory = new XStreamPersisterFactory();
+        factory.addInitializer(new XStreamPersisterInitializer() {
+
+            @Override
+            public void init(XStreamPersister persister) {
+                persister.getXStream().alias("sweetBanana", SweetBanana.class);
+                persister.getXStream().aliasAttribute(SweetBanana.class, "scientificName", "name");
+                persister.registerBreifMapComplexType("sweetBanana", SweetBanana.class);
+            }
+        });
+        XStreamPersister persister = factory.createXMLPersister();
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        persister.save(ws, out);
+
+        WorkspaceInfo ws2 = persister.load(in(out), WorkspaceInfo.class);
+        assertEquals(ws, ws2);
+
+        Document dom = dom(in(out));
+        // print(in(out));
+        XMLAssert.assertXpathEvaluatesTo("Musa acuminata",
+                "/workspace/metadata/entry[@key='banana']/sweetBanana/@name", dom);
+    }
+
     ByteArrayOutputStream out() {
         return new ByteArrayOutputStream();
     }
@@ -789,5 +893,15 @@ public class XStreamPersisterTest {
         tx.setOutputProperty( OutputKeys.INDENT, "yes" );
         
         tx.transform( new StreamSource( in ), new StreamResult( System.out ) );
+    }
+
+    static class SweetBanana implements Serializable {
+        String scientificName;
+
+        public SweetBanana(String scientificName) {
+            super();
+            this.scientificName = scientificName;
+        }
+
     }
 }

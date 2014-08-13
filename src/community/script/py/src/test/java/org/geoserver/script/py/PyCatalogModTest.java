@@ -14,48 +14,52 @@ import javax.script.ScriptEngine;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerExtensionsHelper;
+import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.script.ScriptTestSupport;
 import org.geotools.data.DataStore;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.h2.tools.DeleteDbFiles;
 import org.springframework.context.ApplicationContext;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 public class PyCatalogModTest extends ScriptTestSupport {
 
     Catalog cat;
     ScriptEngine e;
-
+    
     public void setUp() throws Exception {
         super.setUp();
+        GeoServerExtensionsHelper.init( null ); // suppress extension lookup warnings
         
         DeleteDbFiles.execute("target", "bar", false);
+        GeoServerResourceLoader resourceLoader = scriptMgr.getDataDirectory().getResourceLoader();
         
         cat = new CatalogImpl();
-        cat.setResourceLoader(scriptMgr.getDataDirectory().getResourceLoader());
-
+        cat.setResourceLoader(resourceLoader);
+        
         ApplicationContext context = createNiceMock(ApplicationContext.class);
         expect(context.getBean("catalog")).andReturn(cat).anyTimes();
-        expect(context.getBeanNamesForType((Class)anyObject())).andReturn(new String[]{}).anyTimes();
+        expect(context.getBean("resourceLoader")).andReturn( resourceLoader );
+        expect(context.getBeanNamesForType(GeoServerResourceLoader.class)).andReturn(new String[]{"resourceLoader"}).anyTimes();
+        expect(context.getBeanNamesForType((Class<?>)anyObject())).andReturn(new String[]{}).anyTimes();
         replay(context);
         
-        new GeoServerExtensions().setApplicationContext(context);
+        GeoServerExtensionsHelper.init( context ); // mock context to use for test
         e = scriptMgr.createNewEngine("py");
-
-        GeoserverDataDirectory.setResourceLoader(scriptMgr.getDataDirectory().getResourceLoader());
     }
 
     public void tearDown() throws Exception {
         super.tearDown();
-
-        new GeoServerExtensions().setApplicationContext(null);
+        GeoServerExtensionsHelper.init( null ); // clear mock context
         DeleteDbFiles.execute("target", "bar", false);
     }
 
     public void testAddWorkspace() throws Exception {
+        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        assertNotNull("resourceLoader",loader);
+        
         assertEquals(0, cat.getWorkspaces().size());
         
         e.eval("from geoserver.catalog import Workspace");

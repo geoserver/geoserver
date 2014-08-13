@@ -22,7 +22,7 @@ import org.geoserver.wms.map.XMLTransformerMap;
 public class RSSGeoRSSMapOutputFormat implements GetMapOutputFormat {
 
     /** the actual mime type for the response header */
-    private static String MIME_TYPE = "application/xml";
+    private static String MIME_TYPE = "application/rss+xml";
     
     static final MapProducerCapabilities RSS_CAPABILITIES = new MapProducerCapabilities(false, false, false, true, null);
 

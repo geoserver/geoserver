@@ -10,6 +10,10 @@ import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.same;
+import static org.mockito.Matchers.argThat;
+
+import static org.hamcrest.Matchers.*;
+
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -32,6 +36,8 @@ import org.geoserver.catalog.event.impl.CatalogPostModifyEventImpl;
 import org.geoserver.gwc.GWC;
 import org.geowebcache.filter.parameters.ParameterFilter;
 import org.geowebcache.filter.parameters.StringParameterFilter;
+import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -136,20 +142,20 @@ public class CatalogStyleChangeListenerTest {
     @Test public void testRenameAlternateStyle() throws Exception {
 
         Set<ParameterFilter> params = new HashSet<ParameterFilter>();
-        when(mockTileLayerInfo.getParameterFilters()).thenReturn(params);
+        StyleParameterFilter newStyleFilter = new StyleParameterFilter();
+        newStyleFilter.setStyles(ImmutableSet.of(STYLE_NAME));
+        params.add(newStyleFilter);
+        
         TileLayerInfoUtil.setCachedStyles(mockTileLayerInfo, null, ImmutableSet.of(STYLE_NAME));
-        assertEquals(1, params.size());
+        
+        verify(mockTileLayerInfo).addParameterFilter((ParameterFilter) argThat(allOf(hasProperty("key", is("STYLES")), hasProperty("styles", is(ImmutableSet.of(STYLE_NAME))))));
 
         ImmutableSet<String> styles = ImmutableSet.of(STYLE_NAME);
         when(mockTileLayerInfo.cachedStyles()).thenReturn(styles);
 
         listener.handleModifyEvent(styleNameModifyEvent);
 
-        assertEquals(1, params.size());
-        ParameterFilter updated = params.iterator().next();
-        assertTrue(updated instanceof StringParameterFilter);
-        assertEquals(Lists.newArrayList(STYLE_NAME_MODIFIED),
-                ((StringParameterFilter) updated).getValues());
+        verify(mockTileLayerInfo).addParameterFilter((ParameterFilter) argThat(allOf(hasProperty("key", is("STYLES")), hasProperty("styles", is(ImmutableSet.of(STYLE_NAME_MODIFIED))))));
 
         verify(mockTileLayer, times(1)).resetParameterFilters();
         verify(mockMediator, times(1)).truncateByLayerAndStyle(eq(PREFIXED_RESOURCE_NAME),

@@ -28,13 +28,15 @@ The app-schema module looks to GeoServer just like any other data store and so c
    app-schema-resolution
    supported-gml-versions
    secondary-namespaces
-   vocab-functions
+   cql-functions
    property-interpolation
    data-stores
    feature-chaining
    polymorphism
    data-access-integration
    wms-support
+   wfs-2.0-support
    joining
    tutorial
+   
 

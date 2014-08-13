@@ -19,7 +19,7 @@ import org.restlet.resource.Resource;
 public class StoreFileFinder extends AbstractCatalogFinder {
 
     
-    protected static HashMap<String,String> formatToCoverageStoreFormat = new HashMap();
+    protected static final HashMap<String,String> formatToCoverageStoreFormat = new HashMap();
     static {
         for (Format format : CoverageStoreUtils.formats) {
             formatToCoverageStoreFormat.put(format.getName().toLowerCase(), format.getName());
@@ -36,7 +36,6 @@ public class StoreFileFinder extends AbstractCatalogFinder {
         //figure out what kind of store this maps to
         String format = getAttribute(request, "format");
         String datastore = getAttribute(request, "datastore");
-        String coveragestore = getAttribute(request, "coveragestore");
         
         if ( datastore != null ) {
             return new DataStoreFileResource(request,response,format,catalog);
@@ -45,7 +44,8 @@ public class StoreFileFinder extends AbstractCatalogFinder {
             String coverageFormatName = formatToCoverageStoreFormat.get( format );
             
             if ( coverageFormatName == null ) {
-                throw new RestletException( "Unsupported format: " + format, Status.CLIENT_ERROR_BAD_REQUEST );
+                throw new RestletException( "Unsupported format: " + format + ", available formats are: " 
+                        + formatToCoverageStoreFormat.keySet().toString(), Status.CLIENT_ERROR_BAD_REQUEST);
             }
             
             Format coverageFormat = null;

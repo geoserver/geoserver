@@ -23,6 +23,8 @@ import org.w3c.dom.NodeList;
 public class GetFeatureTest extends WFSTestSupport {
 	
     public static QName NULL_GEOMETRIES = new QName(SystemTestData.CITE_URI, "NullGeometries", SystemTestData.CITE_PREFIX);
+    
+    public static QName FIFTEEN_DUPLICATE = new QName(SystemTestData.CITE_URI, "Fifteen", SystemTestData.CITE_PREFIX);
         
     @Override
     protected void setUpInternal(SystemTestData data) throws Exception {
@@ -31,6 +33,7 @@ public class GetFeatureTest extends WFSTestSupport {
     	getGeoServer().save(wfs);
     	
     	data.addVectorLayer (NULL_GEOMETRIES, Collections.EMPTY_MAP, getClass(), getCatalog());
+    	data.addVectorLayer (FIFTEEN_DUPLICATE, Collections.EMPTY_MAP, getClass(), getCatalog());
     }
        
     @Test

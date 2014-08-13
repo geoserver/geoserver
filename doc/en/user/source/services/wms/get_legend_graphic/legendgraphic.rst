@@ -69,7 +69,7 @@ Controlling legend appearance with LEGEND_OPTIONS
 GeoServer allows finer control over the legend appearance via the vendor parameter ``LEGEND_OPTIONS``.
 The general format of ``LEGEND_OPTIONS`` is the same as ``FORMAT_OPTIONS``, that is::
 
-  ...&LEGEND_OPTION=key1:v1;key2:v2;...;keyn:vn
+  ...&LEGEND_OPTIONS=key1:v1;key2:v2;...;keyn:vn
   
 Here is a description of the various parameters that can be used in ``LEGEND_OPTIONS``:
 
@@ -128,7 +128,7 @@ Just to jump right to the conclusions (which is a bad practice I know, but no on
 
 	http://localhost:8081/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=100&HEIGHT=20&LAYER=it.geosolutions:di08031_da&LEGEND_OPTIONS=forceRule:True;dx:0.2;dy:0.2;mx:0.2;my:0.2;fontStyle:bold;borderColor:0000ff;border:true;fontColor:ff0000;fontSize:18
 
-Do not worry if it seems like something written in ancient dead language, I am going to explain the various params here below. Nevertheless it is important to point out that basic info on how to create and set params can be found in this `page <http://geoserver.org/display/GEOSDOC/GetLegendGraphic+Improvements>`_.
+Do not worry if it seems like something written in ancient dead language, I am going to explain the various params here below. Nevertheless it is important to point out that basic info on how to create and set params can be found in this `page <http://rancor.boundlessgeo.com:8080/display/GEOSDOC/GetLegendGraphic+Improvements>`_.
 
 .. figure:: img/rasterlegend2.png
    :align: center 
@@ -180,7 +180,7 @@ Refer to the SLD rainfall_classes.sld in attachment. Notice that the first legen
 The various control parameters and how to set them
 ''''''''''''''''''''''''''''''''''''''''''''''''''
 
-I am now going to briefly explain the various parameters tht we can use to control the layout and content of the legend (refer also to this `page <http://geoserver.org/display/GEOSDOC/GetLegendGraphic+Improvements>`_). Here below I have put a request that puts all the various options at tow::
+I am now going to briefly explain the various parameters tht we can use to control the layout and content of the legend (refer also to this `page <http://rancor.boundlessgeo.com:8080/display/GEOSDOC/GetLegendGraphic+Improvements>`_). Here below I have put a request that puts all the various options at tow::
 
 	http://localhost:8081/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=100&HEIGHT=20&LAYER=it.geosolutions:di08031_da&LEGEND_OPTIONS=forceRule:True;dx:0.2;dy:0.2;mx:0.2;my:0.2;fontStyle:bold;borderColor:0000ff;border:true;fontColor:ff0000;fontSize:18
 

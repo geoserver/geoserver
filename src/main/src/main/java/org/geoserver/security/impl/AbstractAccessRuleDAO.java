@@ -22,6 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.PropertyFileWatcher;
 import org.geotools.util.logging.Logging;
 
@@ -77,7 +78,8 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<?>> {
     protected AbstractAccessRuleDAO(File securityDirectory, String propertyFileName) {
         this.securityDir = securityDirectory; 
         this.propertyFileName = propertyFileName;
-        this.dd = org.vfny.geoserver.global.GeoserverDataDirectory.accessor();
+        this.dd = GeoServerExtensions.bean(GeoServerDataDirectory.class);
+        //this.dd = org.vfny.geoserver.global.GeoserverDataDirectory.accessor();
     }
     
     /**

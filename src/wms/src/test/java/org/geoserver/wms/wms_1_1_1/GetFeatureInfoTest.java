@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2014 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -9,6 +9,8 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,11 +18,10 @@ import java.util.logging.Level;
 
 import javax.xml.namespace.QName;
 
-import org.junit.Test;
-
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.StyleInfo;
@@ -33,12 +34,19 @@ import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
+import org.geoserver.wms.featureinfo.GML3FeatureInfoOutputFormat;
+import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
+import org.geoserver.wms.featureinfo.TextFeatureInfoOutputFormat;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.geometry.jts.ReferencedEnvelope3D;
+import org.geotools.referencing.CRS;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.geotools.util.logging.Logging;
+import org.junit.Test;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.w3c.dom.Document;
@@ -50,7 +58,9 @@ public class GetFeatureInfoTest extends WMSTestSupport {
     public static QName TASMANIA_BM = new QName(WCS_URI, "BlueMarble", WCS_PREFIX);
     public static QName SQUARES = new QName(MockData.CITE_URI, "squares", MockData.CITE_PREFIX);
     public static QName CUSTOM = new QName(MockData.CITE_URI, "custom", MockData.CITE_PREFIX);
-
+    
+    public static QName POINT_TEST_2D = new QName(MockData.CITE_URI, "point_test_2d", MockData.CITE_PREFIX);
+    public static QName POINT_TEST_3D = new QName(MockData.CITE_URI, "point_test_3d", MockData.CITE_PREFIX);
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -88,9 +98,11 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         testData.addStyle("raster","raster.sld",GetFeatureInfoTest.class,catalog);
         testData.addStyle("rasterScales","rasterScales.sld",GetFeatureInfoTest.class,catalog);
         testData.addStyle("squares","squares.sld",GetFeatureInfoTest.class,catalog);
+        testData.addStyle("point_test","point_test.sld",GetFeatureInfoTest.class,catalog);
+        testData.addStyle("scaleBased","scaleBased.sld",GetFeatureInfoTest.class,catalog);
         testData.addVectorLayer(SQUARES,Collections.EMPTY_MAP,"squares.properties",
                 GetFeatureInfoTest.class,catalog);
-        Map propertyMap = new HashMap();
+        Map propertyMap = new HashMap<SystemTestData.LayerProperty, Object>();
         propertyMap.put(LayerProperty.STYLE,"raster");
         testData.addRasterLayer(TASMANIA_BM, "tazbm.tiff","tiff",propertyMap,
                 SystemTestData.class,catalog);
@@ -98,12 +110,76 @@ public class GetFeatureInfoTest extends WMSTestSupport {
                 "raster-filter-test.zip",null, propertyMap,SystemTestData.class, catalog);
         testData.addRasterLayer(CUSTOM, 
                 "custom.zip", null,propertyMap,GetFeatureInfoTest.class, catalog);
+        
+        Map<LayerProperty, Object> properties = new HashMap<SystemTestData.LayerProperty, Object>();
+        properties.put(LayerProperty.LATLON_ENVELOPE, new ReferencedEnvelope(130.875825803896,
+                130.898939990319, -16.4491956225999, -16.4338185791628, CRS.decode("EPSG:4326")));
+        properties.put(LayerProperty.ENVELOPE, new ReferencedEnvelope(130.875825803896,
+                130.898939990319, -16.4491956225999, -16.4338185791628, CRS.decode("EPSG:4326")));
+        properties.put(LayerProperty.SRS, 4326);
+
+        testData.addVectorLayer(POINT_TEST_2D, properties, "point_test_2d.properties",
+                GetFeatureInfoTest.class, catalog);
+
+        properties = new HashMap<SystemTestData.LayerProperty, Object>();
+        properties.put(LayerProperty.LATLON_ENVELOPE, new ReferencedEnvelope(130.875825803896,
+                130.898939990319, -16.4491956225999, -16.4338185791628, CRS.decode("EPSG:4326")));
+        properties.put(LayerProperty.ENVELOPE, new ReferencedEnvelope3D(130.875825803896,
+                130.898939990319, -16.4491956225999, -16.4338185791628, 95.1442741322517,
+                98.1069524121285, CRS.decode("EPSG:4326")));
+        properties.put(LayerProperty.SRS, 4939);
+        testData.addVectorLayer(POINT_TEST_3D, properties, "point_test_3d.properties",
+                GetFeatureInfoTest.class, catalog);
     }
     
     
 
     
     /**
+     * Test GetFeatureInfo with 3D content, and the result returns the expected point.
+     */
+    @Test
+    public void testPoint3d() throws Exception {
+
+        FeatureTypeInfo info = getCatalog()
+                .getFeatureTypeByName(MockData.CITE_URI, "point_test_3d");
+
+        ReferencedEnvelope b = info.getLatLonBoundingBox();
+        String bbox = b.minX() + "," + b.minY() + "," + b.maxX() + "," + b.maxY()
+                + "&srs=EPSG:4326";
+
+        // first request against 2D dataset
+        String layer2d = getLayerId(POINT_TEST_2D);
+        String base2d = "wms?version=1.1.1&format=png&info_format=text/html&request=GetFeatureInfo&layers="
+                + layer2d
+                + "&query_layers="
+                + layer2d
+                + "&styles=point_test&bbox="
+                + bbox
+                + "&feature_count=10";
+
+        Document dom2d = getAsDOM(base2d + "&width=" + 10 + "&height=" + 10 + "&x=" + 5 + "&y=" + 5);
+        // print(dom2d);
+        assertXpathEvaluatesTo("11", "count(/html/body/table/tr)", dom2d);
+
+        // second request against 3D dataset
+        String layer3d = getLayerId(POINT_TEST_3D);
+        String base3d = "wms?version=1.1.1&format=png&info_format=text/html&request=GetFeatureInfo&layers="
+                + layer3d
+                + "&query_layers="
+                + layer3d
+                + "&styles=point_test&bbox="
+                + bbox
+                + "&feature_count=10";
+
+        Document dom3d = getAsDOM(base3d + "&width=" + 10 + "&height=" + 10 + "&x=" + 5 + "&y=" + 5);
+        print(dom3d);
+        assertXpathEvaluatesTo("11", "count(/html/body/table/tr)", dom3d);
+
+    }
+
+
+	/**
      * Tests GML output does not break when asking for an area that has no data with
      * GML feature bounding enabled
      * 
@@ -137,6 +213,47 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         assertNotNull(result);
         assertTrue(result.indexOf("Green Forest") > 0);
     }
+    
+    @Test
+    public void testAllowedMimeTypes() throws Exception {
+        
+        WMSInfo wms = getWMS().getServiceInfo();
+        GetFeatureInfoOutputFormat format = new TextFeatureInfoOutputFormat(getWMS());        
+        wms.getGetFeatureInfoMimeTypes().add(format.getContentType());
+        wms.setGetFeatureInfoMimeTypeCheckingEnabled(true);
+        getGeoServer().save(wms);
+
+        // check mime type allowed
+        String layer = getLayerId(MockData.FORESTS);
+        String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg" +
+                "&info_format=text/plain&request=GetFeatureInfo&layers="
+                + layer + "&query_layers=" + layer + "&width=20&height=20&x=10&y=10";
+        String result = getAsString(request);
+        // System.out.println(result);
+        assertNotNull(result);
+        assertTrue(result.indexOf("Green Forest") > 0);
+        
+        // check mime type not allowed
+        request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg" +
+                "&info_format="+GML3FeatureInfoOutputFormat.FORMAT+"&request=GetFeatureInfo&layers="
+                + layer + "&query_layers=" + layer + "&width=20&height=20&x=10&y=10";
+
+        result = getAsString(request);
+        assertTrue(result.indexOf("ForbiddenFormat") > 0);        
+        
+        wms.getGetFeatureInfoMimeTypes().clear();
+        wms.setGetFeatureInfoMimeTypeCheckingEnabled(false);
+        getGeoServer().save(wms);
+ 
+        request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg" +
+                "&info_format="+GML3FeatureInfoOutputFormat.FORMAT+"&request=GetFeatureInfo&layers="
+                + layer + "&query_layers=" + layer + "&width=20&height=20&x=10&y=10";
+
+        result = getAsString(request);
+        assertTrue(result.indexOf("Green Forest") > 0);
+    }
+
+    
     
     /**
      * Tests property selection 
@@ -221,8 +338,10 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         String layer = getLayerId(MockData.BASIC_POLYGONS);
         String base = "wms?version=1.1.1&bbox=-4.5,-2.,4.5,7&format=jpeg&info_format=text/html" +
                 "&request=GetFeatureInfo&layers="
-                + layer + "&query_layers=" + layer + "&width=300&height=300&x=114&y=229";
-        Document dom = getAsDOM(base + "&styles=");
+                + layer + "&query_layers=" + layer + "&width=300&height=300&x=111&y=229";
+        String url = base + "&styles=";
+        Document dom = getAsDOM(url);
+        print(dom);
         // make sure the document is empty, the style we chose has thin lines
         assertXpathEvaluatesTo("0", "count(/html/body/table/tr)", dom);
 
@@ -242,13 +361,13 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         String layer = getLayerId(MockData.BASIC_POLYGONS);
         String base = "wms?version=1.1.1&bbox=-4.5,-2.,4.5,7&format=jpeg&info_format=text/html" +
                 "&request=GetFeatureInfo&layers="
-                + layer + "&query_layers=" + layer + "&width=300&height=300&x=114&y=229&styles=paramStroke";
+                + layer + "&query_layers=" + layer + "&width=300&height=300&x=111&y=229&styles=paramStroke";
         Document dom = getAsDOM(base);
         // make sure the document is empty, the style we chose has thin lines
         assertXpathEvaluatesTo("0", "count(/html/body/table/tr)", dom);
 
         // another request that will catch one feature due to the style with a thick stroke, make sure it's in
-        dom = getAsDOM(base + "&env=thickness:10");
+        dom = getAsDOM(base + "&env=thickness:12");
         // print(dom);
         assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[starts-with(.,'BasicPolygons.')])", dom);
         assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[. = 'BasicPolygons.1107531493630'])", dom);
@@ -668,4 +787,21 @@ public class GetFeatureInfoTest extends WMSTestSupport {
        Document dom = getAsDOM(request);
        assertEquals("wfs:FeatureCollection", dom.getDocumentElement().getNodeName());
    }
+   
+   /**
+    * The rendering engine has a 10-6 tolerance when evaluating rule scale activation, GetFeatureInfo did not
+    * @throws Exception
+    */
+   @Test 
+   public void testScaleTolerance() throws Exception {
+       String layer = getLayerId(MockData.BASIC_POLYGONS);
+       String getMap = "wms?version=1.1.1&bbox=-10000,20000,10000,40000&srs=EPSG:900913&styles=scaleBased&format=image/png&info_format=text/html" +
+               "&request=GetMap&layers="
+               + layer + "&query_layers=" + layer + "&width=2041&height=2041";
+       
+       BufferedImage image = getAsImage(getMap, "image/png");
+       // ImageIO.write(image, "png", new File("/tmp/test.png"));
+       assertPixel(image, 150, 150, Color.BLUE);
+   }
+   
 }

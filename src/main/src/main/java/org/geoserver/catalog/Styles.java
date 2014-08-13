@@ -14,27 +14,27 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.annotation.Nullable;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.stream.StreamSource;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import org.geoserver.ows.util.RequestUtils;
+import org.geoserver.platform.resource.Resource;
+import org.geotools.data.DataUtilities;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.sld.v1_1.SLDConfiguration;
-import org.geotools.styling.NamedLayer;
-import org.geotools.styling.NamedStyle;
-import org.geotools.styling.SLDParser;
-import org.geotools.styling.SLDTransformer;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyleFactory;
-import org.geotools.styling.StyledLayerDescriptor;
-import org.geotools.styling.UserLayer;
+import org.geotools.styling.*;
 import org.geotools.util.Version;
 import org.geotools.util.logging.Logging;
 import org.geotools.xml.Parser;
 import org.vfny.geoserver.util.SLDValidator;
+import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -42,9 +42,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 /**
  * Provides methods to parse/encode style documents. 
- * <p>
- * Currently SLD versions 1.0, and 1.1 are supported.
- * </p>
+ *
  * @author Justin Deoliveira, OpenGeo
  */
 public class Styles {
@@ -52,97 +50,7 @@ public class Styles {
     /** logger */
     static Logger LOGGER = Logging.getLogger("org.geoserver.wms");
     
-    /**
-     * number of bytes to "look ahead" when pre parsing xml document.
-     * TODO: make this configurable, and possibley link it to the same value 
-     * used by the ows dispatcher.
-     */
-    static int XML_LOOKAHEAD = 8192;
-    
     static StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory(null);
-
-    /**
-     * Parses a style document into a StyleLayerDescriptor determining style type/version 
-     * from the content itself.
-     *  
-     * @param input a File, Reader, or InputStream object.
-     * 
-     * @return The parsed style.
-     * 
-     * @throws IOException Any parsing errors that occur.
-     * @throws IllegalArgumentException If the type of the style can not be determined.
-     */
-    public static StyledLayerDescriptor parse(Object input) throws IOException {
-        Object[] obj = getVersionAndReader(input);
-        return parse(obj[1], (Version)obj[0]);
-    }
-
-    /**
-     * Parses a style document into a StyledLayerDescriptor object explicitly specifying version.
-     * <p>
-     * </p>
-     * @param input a File, Reader, or InputStream object.
-     * @param version The SLD version
-     * 
-     * @return The parsed StyleLayerDescriptor.
-     * 
-     * @throws IOException Any parsing errors that occur.
-     * @throws IllegalArgumentException If the specified version is not supported.
-     */
-    public static StyledLayerDescriptor parse(Object input, Version version) throws IOException {
-        return Handler.lookup(version).parse(input);
-    }
-    
-    /**
-     * Encodes a StyledLayerDescriptor object to a style document.
-     * <p>
-     * </p>
-     * @param sld The StyledLayerDescriptor object
-     * @param version The SLD version
-     * @param format Specifies if the serialized SLD should be formatted or not.
-     * @param output The output stream to serialize to.
-     * 
-     * @throws IOException Any encoding errors that occur.
-     * @throws IllegalArgumentException If the specified version is not supported.
-     */
-    public static void encode(StyledLayerDescriptor sld, Version version, boolean format, 
-            OutputStream output) throws IOException {
-        
-        Handler.lookup(version).encode(sld, format, output);
-    }
-    
-    /**
-     * Performs schema validation on an style document determining style type from the content
-     * itself. 
-     * 
-     * @param input A File, Reader, or InputStream object.
-     * 
-     * @return A list of validation exceptions, empty if no errors are present and the document is
-     *   valid.
-     * 
-     * @throws IOException Any parsing errors that occur.
-     * @throws IllegalArgumentException If the specified version is not supported.
-     */
-    public static List<Exception> validate(Object input) throws IOException {
-        Object[] obj = getVersionAndReader(input);
-        return validate(obj[1], (Version)obj[0]);
-    }
-
-    /**
-     * Performs schema validation on an style document, specifying the version.
-     * 
-     * @param input A File, Reader, or InputStream object.
-     * @param version The SLD version
-     * 
-     * @return A list of validation exceptions, empty if no errors are present and the document is
-     *   valid.
-     * 
-     * @throws IOException Any parsing errors that occur.
-     * @throws IllegalArgumentException If the specified version is not supported.
-     */
-    public static List<Exception> validate(Object input, Version version) throws IOException {
-        return Handler.lookup(version).validate(input);
-    }
 
     /**
      * Convenience method to pull a UserSyle from a StyledLayerDescriptor.
@@ -200,193 +108,73 @@ public class Styles {
         return sld;
     }
 
-    public static Version findVersion(Object input) throws IOException{
-        Object[] versionAndReader = getVersionAndReader(input);
-        return (Version) versionAndReader[0];
-    }
     /**
-     * Helper method for finding which style handler/version to use from the actual content.
+     * Looks up a style handler by format, file extension, or mime type.
+     *
+     * @param format The format, file extension, or mime type.
+     *
+     * @see StyleHandler#getFormat()
+     * @see StyleHandler#getFileExtension()
+     * @see StyleHandler#mimeType(org.geotools.util.Version)
      */
-    static Object[] getVersionAndReader(Object input) throws IOException {
-        //need to determine version of sld from actual content
-        BufferedReader reader = null;
-        
-        if (input instanceof InputStream) {
-            reader = RequestUtils.getBufferedXMLReader((InputStream) input, 8192);
-        }
-        else {
-            reader = RequestUtils.getBufferedXMLReader(toReader(input), 8192);
-        }
-            
-        if (!reader.ready()) {
-            return null;
+    public static StyleHandler handler(String format) {
+        if (format == null) {
+            throw new IllegalArgumentException("Style format must not be null");
         }
 
-        String version;
-        try {
-            //create stream parser
-            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-            factory.setNamespaceAware(true);
-            factory.setValidating(false);
+        List<StyleHandler> allHandlers = handlers();
+        List<StyleHandler> matches = new ArrayList();
 
-            //parse root element
-            XmlPullParser parser = factory.newPullParser();
-            parser.setInput(reader);
-            parser.nextTag();
-
-            version = null;
-            for (int i = 0; i < parser.getAttributeCount(); i++) {
-                if ("version".equals(parser.getAttributeName(i))) {
-                    version = parser.getAttributeValue(i);
-                }
+        // look by format
+        for (StyleHandler h : allHandlers) {
+            if (format.equalsIgnoreCase(h.getFormat())) {
+                matches.add(h);
             }
-
-            parser.setInput(null);
-        } 
-        catch (XmlPullParserException e) {
-            throw (IOException) new IOException("Error parsing content").initCause(e);
         }
 
-        //reset input stream
-        reader.reset();
-        
-        if (version == null) {
-            LOGGER.warning("Could not determine SLD version from content. Assuming 1.0.0");
-            version = "1.0.0";
-        }
-        
-        return new Object[]{new Version(version), reader};
-    }
-    
-    static Reader toReader(Object input) throws IOException {
-        if (input instanceof Reader) {
-            return (Reader) input;
-        }
-        
-        if (input instanceof InputStream) {
-            return new InputStreamReader((InputStream)input);
-        }
-        
-        if (input instanceof File) {
-            return new FileReader((File)input);
-        }
-        
-        throw new IllegalArgumentException("Unable to turn " + input + " into reader");
-    }
-    
-    public static enum Handler {
-        SLD_10("1.0.0") {
-            
-            @Override
-            public StyledLayerDescriptor parse(Object input) throws IOException {
-                SLDParser p = parser(input);
-                StyledLayerDescriptor sld = p.parseSLD();
-                if (sld.getStyledLayers().length == 0) {
-                    //most likely a style that is not a valid sld, try to actually parse out a 
-                    // style and then wrap it in an sld
-                    Style[] style = p.readDOM();
-                    if (style.length > 0) {
-                        NamedLayer l = styleFactory.createNamedLayer();
-                        l.addStyle(style[0]);
-                        sld.addStyledLayer(l);
+        if (matches.isEmpty()) {
+            // look by mime type
+            for (StyleHandler h : allHandlers) {
+                for (Version ver : h.getVersions()) {
+                    if (h.mimeType(ver).equals(format)) {
+                        matches.add(h);
                     }
                 }
-                
-                return sld;
             }
-            
-            @Override
-            protected List<Exception> validate(Object input) throws IOException {
-                return new SLDValidator().validateSLD(new InputSource(toReader(input)));
-            }
-            
-            @Override
-            public void encode(StyledLayerDescriptor sld, boolean format, OutputStream output) throws IOException {
-                SLDTransformer tx = new SLDTransformer();
-                if (format) {
-                    tx.setIndentation(2);
-                }
-                try {
-                    tx.transform( sld, output );
-                } 
-                catch (TransformerException e) {
-                    throw (IOException) new IOException("Error writing style").initCause(e);
-                }
-            }
-            
-            
-            SLDParser parser(Object input) throws IOException {
-                if (input instanceof File) {
-                    return new SLDParser(styleFactory, (File) input);
-                }
-                else {
-                    return new SLDParser(styleFactory, toReader(input));
-                }
-            }
-        },
-        
-        SLD_11("1.1.0") {
-            
-            @Override
-            public StyledLayerDescriptor parse(Object input) throws IOException {
-                SLDConfiguration sld = new SLDConfiguration();
-                try {
-                    return (StyledLayerDescriptor) new Parser(sld).parse(toReader(input));
-                } 
-                catch(Exception e) {
-                    if (e instanceof IOException) throw (IOException) e;
-                    throw (IOException) new IOException().initCause(e);
-                }
-            }
-            
-            @Override
-            protected List<Exception> validate(Object input) throws IOException {
-                SLDConfiguration sld = new SLDConfiguration();
-                Parser p = new Parser(sld);
-                p.setValidating(true);
-                
-                try {
-                    p.parse(toReader(input));
-                    return p.getValidationErrors();
-                } 
-                catch(Exception e) {
-                    e.printStackTrace();
-                    List validationErrors = new ArrayList<Exception>(p.getValidationErrors());
-                    validationErrors.add(0, e);
-                    return validationErrors;
-                }
-            }
-
-            @Override
-            public void encode(StyledLayerDescriptor sld, boolean format, OutputStream output) throws IOException {
-                // TODO Auto-generated method stub
-            }  
-        };
-        
-        private Version version;
-        
-        private Handler(String version) {
-            this.version = new org.geotools.util.Version(version);
-        }
-        
-        public Version getVersion() {
-            return version;
         }
 
-        protected abstract StyledLayerDescriptor parse(Object input) throws IOException;
-        
-        protected abstract void encode(StyledLayerDescriptor sld, boolean format, OutputStream output) 
-            throws IOException;
-        
-        protected abstract List<Exception> validate(Object input) throws IOException;
-        
-        public static Handler lookup(Version version) {
-            for (Handler h : values()) {
-                if (h.getVersion().equals(version)) {
-                    return h;
+        if (matches.isEmpty()) {
+            // look by file extension
+            for (StyleHandler h : allHandlers) {
+                if (format.equalsIgnoreCase(h.getFileExtension())) {
+                    matches.add(h);
                 }
             }
-            throw new IllegalArgumentException("No support for SLD " + version);
         }
-    };
+
+        if (matches.isEmpty()) {
+            throw new RuntimeException(
+                "No such style handler: format = " + format);
+        }
+
+        if (matches.size() == 1) {
+            return matches.get(0);
+        }
+
+        List<String> handlerNames = Lists.transform(matches, new Function<StyleHandler, String>() {
+            @Nullable
+            @Override
+            public String apply(@Nullable StyleHandler styleHandler) {
+                return styleHandler.getName();
+            }
+        });
+        throw new IllegalArgumentException("Multiple style handlers: " + handlerNames + " found for format: " + format);
+    }
+
+    /**
+     * Returns all registered style handlers.
+     */
+    public static List<StyleHandler> handlers() {
+        return GeoServerExtensions.extensions(StyleHandler.class);
+    }
 }

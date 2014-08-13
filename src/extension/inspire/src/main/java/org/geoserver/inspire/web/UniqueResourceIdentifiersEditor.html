@@ -1,0 +1,27 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+	<wicket:panel>
+		<div wicket:id="container">
+			<div wicket:id="identifiers"></div>
+		</div>
+
+		<div>
+			<span>
+				<button wicket:id="addIdentifier">
+					<wicket:message key="addIdentifier">Add Identifier</wicket:message>
+				</button>
+			</span>
+		</div>
+	</wicket:panel>
+
+	<wicket:fragment wicket:id="txtFragment">
+		<span wicket:id="border"><input wicket:id="txt"
+			type="text" class="text"></input></span>
+	</wicket:fragment>
+	<wicket:fragment wicket:id="removeFragment">
+		<a href="#" wicket:id="remove"><wicket:message key="remove">Remove</wicket:message></a>
+	</wicket:fragment>
+
+</body>
+</html>

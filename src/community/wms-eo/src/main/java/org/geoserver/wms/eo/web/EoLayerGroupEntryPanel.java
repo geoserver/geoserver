@@ -12,23 +12,21 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.CheckBox;
-import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.markup.repeater.DefaultItemReuseStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.web.data.layergroup.LayerGroupEntry;
-import org.geoserver.web.data.style.StyleDetachableModel;
+import org.geoserver.web.GeoServerApplication;
+import org.geoserver.web.data.layergroup.LayerGroupEntryPanel;
 import org.geoserver.web.wicket.GeoServerDataProvider;
-import org.geoserver.web.wicket.GeoServerDataProvider.BeanProperty;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ImageAjaxLink;
@@ -36,130 +34,85 @@ import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geoserver.wms.eo.EoLayerType;
 
-
 /**
  * Allows to edit the list of layers contained in a layer group
  */
+@SuppressWarnings("serial")
 public class EoLayerGroupEntryPanel extends Panel {
 
-    private ModalWindow popupWindow;
-    private LayerGroupEntryProvider entryProvider;
-    private GeoServerTablePanel<LayerGroupEntry> layerTable;
-    private List<LayerGroupEntry> items;
-
+    ModalWindow popupWindow;
+    LayerGroupEntryProvider entryProvider;
+    GeoServerTablePanel<EoLayerGroupEntry> layerTable;
+    List<EoLayerGroupEntry> items;
+    EoLayerType layerType;
+    String layerGroupName;
     
-    public EoLayerGroupEntryPanel(String id, final LayerGroupInfo layerGroup) {
-        super(id);
-
-        items = new ArrayList<LayerGroupEntry>();
-        for (int i = 0; i < layerGroup.getLayers().size(); i++) {
-            PublishedInfo layer = layerGroup.getLayers().get(i);
-            if (layer instanceof LayerInfo) {
-                String type = (String) layer.getMetadata().get(EoLayerType.KEY);
-                if (EoLayerType.BAND_COVERAGE.name().equals(type) ||
-                        EoLayerType.COVERAGE_OUTLINE.name().equals(type)) {
-                    // skip this layer
-                    continue;
+    public EoLayerGroupEntryPanel( String id, LayerGroupInfo layerGroup, ModalWindow popupWindow) {
+        super( id );
+        this.popupWindow = popupWindow;
+        
+        Catalog catalog = GeoServerApplication.get().getCatalog();
+        
+        this.layerGroupName = layerGroup.getName();
+        items = new ArrayList<EoLayerGroupEntry>();
+        for ( int i = 0; i < layerGroup.getLayers().size(); i++ ) {
+            PublishedInfo layer = layerGroup.getLayers().get( i );
+            StyleInfo style = layerGroup.getStyles().get( i );
+            if(style == null) {
+                LayerInfo li = catalog.getLayer(layer.getId());
+                if(layer != null) {
+                    style = li.getDefaultStyle();
                 }
             }
-            
-            StyleInfo style = layerGroup.getStyles().get(i);
-            items.add(new LayerGroupEntry(layer, style));
+            items.add( new EoLayerGroupEntry( (LayerInfo) layer, style, layerGroup.getName() ) );
         }
-
-        add(popupWindow = new ModalWindow("popup"));
-
+        
         // layers
-        entryProvider = new LayerGroupEntryProvider(items);
-        add(layerTable = new GeoServerTablePanel<LayerGroupEntry>("layers", entryProvider) {
+        final EoLayerTypeRenderer eoLayerTypeRenderer = new EoLayerTypeRenderer();
+        entryProvider = new LayerGroupEntryProvider( items );
+        layerTable = new GeoServerTablePanel<EoLayerGroupEntry>("layers",entryProvider) {
 
             @Override
-            protected Component getComponentForProperty(String id, IModel itemModel, Property<LayerGroupEntry> property) {
-                if (property == LayerGroupEntryProvider.LAYER) {
-                    return layerLink(id, itemModel);
+            protected Component getComponentForProperty(String id, IModel itemModel,
+                    Property<EoLayerGroupEntry> property) {
+                if ( property == LayerGroupEntryProvider.LAYER ) {
+                    EoLayerGroupEntry entry = (EoLayerGroupEntry) itemModel.getObject();
+                    return new Label( id, entry.getLayer().prefixedName());
                 }
-                if (property == LayerGroupEntryProvider.DEFAULT_STYLE) {
-                    return defaultStyleCheckbox(id, itemModel);
+                if ( property == LayerGroupEntryProvider.TYPE) {
+                    EoLayerType type = (EoLayerType) property.getModel(itemModel).getObject();
+                    return new Label(id, (String) eoLayerTypeRenderer.getDisplayValue(type));
                 }
-                if (property == LayerGroupEntryProvider.STYLE) {
-                    return styleLink(id, itemModel);
+                if ( property == LayerGroupEntryProvider.STYLE ) {
+                    return styleLink( id, itemModel );
                 }
-                if (property == LayerGroupEntryProvider.REMOVE) {
-                    return removeLink(id, itemModel);
+                if ( property == LayerGroupEntryProvider.REMOVE ) {
+                    return removeLink( id, itemModel );
                 }
-                if (property == LayerGroupEntryProvider.POSITION) {
-                    return positionPanel(id, itemModel);
+                if ( property == LayerGroupEntryProvider.POSITION ) {
+                    return positionPanel( id, itemModel ); 
                 }
-
+                
                 return null;
             }
-        }.setFilterable(false));
-        layerTable.setOutputMarkupId(true);
-
-        final Panel addLayerPanel = new AddEoLayerPanel(popupWindow.getContentId(), layerGroup) {
-            @Override
-            protected void onCancel(AjaxRequestTarget target) {
-                popupWindow.close(target);
-            }
-            
-            @Override
-            protected void onSubmit(AjaxRequestTarget target, LayerInfo maskLayer, LayerInfo paramsLayer) {
-                if (maskLayer != null) {
-                    entryProvider.getItems().add(new LayerGroupEntry(maskLayer, maskLayer.getDefaultStyle()));
-                }                       
-                
-                if (paramsLayer != null) {
-                    entryProvider.getItems().add(new LayerGroupEntry(paramsLayer, paramsLayer.getDefaultStyle()));                
-                }
-
-                target.addComponent(layerTable);
-                
-                popupWindow.close(target);
-            }
         };
+        layerTable.setFilterable( false );
+        layerTable.setSortable(false);
+        layerTable.setOutputMarkupId( true );
+        layerTable.setItemReuseStrategy(new DefaultItemReuseStrategy());
+        add(layerTable);
+
         
-        add(new AjaxLink("addLayer") {
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                popupWindow.setInitialHeight(375);
-                popupWindow.setInitialWidth(525);
-                popupWindow.setTitle(new ParamResourceModel("chooseLayer", this));
-                popupWindow.setContent(addLayerPanel);
-                popupWindow.show(target);
-            }
-        });
+
     }
     
-    public List<LayerGroupEntry> getEntries() {
+    public List<EoLayerGroupEntry> getEntries() {
         return items;
     }
     
-    private Component layerLink(String id, IModel itemModel) {
-        LayerGroupEntry entry = (LayerGroupEntry) itemModel.getObject();
-        return new Label( id, entry.getLayer().prefixedName());
-    }
-    
-    private Component defaultStyleCheckbox(String id, IModel itemModel) {
-        final LayerGroupEntry entry = (LayerGroupEntry) itemModel.getObject();
-        Fragment f = new Fragment(id, "defaultStyle", this);
-        CheckBox ds = new CheckBox("checkbox", new Model(entry.isDefaultStyle()));
-        ds.add(new OnChangeAjaxBehavior() {
-            
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                Boolean useDefault = (Boolean) getComponent().getDefaultModelObject();
-                entry.setDefaultStyle(useDefault);
-                target.addComponent(layerTable);
-                
-            }
-        });
-        f.add(ds);
-        return f;
-    }
-    
-    private Component styleLink(String id, final IModel itemModel) {
+    Component styleLink(String id, final IModel itemModel) {
         // decide if the style is the default and the current style name
-        LayerGroupEntry entry = (LayerGroupEntry) itemModel.getObject();
+        EoLayerGroupEntry entry = (EoLayerGroupEntry) itemModel.getObject();
         String styleName = null;
         boolean defaultStyle = true;
         if(entry.getStyle() != null) {
@@ -173,23 +126,23 @@ public class EoLayerGroupEntryPanel extends Panel {
         }
             
         // build and returns the link, but disable it if the style is the default
-        SimpleAjaxLink link = new SimpleAjaxLink( id, new Model(styleName)) {
+        SimpleAjaxLink<String> link = new SimpleAjaxLink<String>( id, new Model(styleName)) {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
+                final EoLayerGroupEntry entry = (EoLayerGroupEntry) itemModel.getObject();
+                
                 popupWindow.setInitialHeight( 375 );
                 popupWindow.setInitialWidth( 525 );
                 popupWindow.setTitle(new ParamResourceModel("chooseStyle", this));
-                popupWindow.setContent( new StyleListPanel( popupWindow.getContentId() ) {
+                popupWindow.setContent( new EoStyleListPanel( popupWindow.getContentId(), entry.getLayerType()) {
                     @Override
                     protected void handleStyle(StyleInfo style, AjaxRequestTarget target) {
-                        popupWindow.close( target );
-                        
-                        LayerGroupEntry entry = (LayerGroupEntry) itemModel.getObject();
                         entry.setStyle( style );
                         
                         //redraw
                         target.addComponent( layerTable );
+                        popupWindow.close( target );
                     }
                 });
                 popupWindow.show(target);
@@ -200,140 +153,130 @@ public class EoLayerGroupEntryPanel extends Panel {
         return link;
     }
     
-    private Component removeLink(String id, IModel itemModel) {
-        final LayerGroupEntry entry = (LayerGroupEntry) itemModel.getObject();
-        ImageAjaxLink link = new ImageAjaxLink(id, new ResourceReference(getClass(), "../../../web/img/icons/silk/delete.png")) {
+    Component removeLink(String id, IModel itemModel) {
+        final EoLayerGroupEntry entry = (EoLayerGroupEntry) itemModel.getObject();
+        ImageAjaxLink link = new ImageAjaxLink( id, new ResourceReference( LayerGroupEntryPanel.class, "../../img/icons/silk/delete.png") ) {
             @Override
             protected void onClick(AjaxRequestTarget target) {
-                items.remove(entry);
-                target.addComponent(layerTable);
+                
+                items.remove( entry );
+                target.addComponent( layerTable );
             }
         };
-        link.getImage().add(
-                new AttributeModifier("alt", true, new ParamResourceModel("EoLayerGroupEditPage.th.remove", link)));
+        link.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("AbstractLayerGroupPage.th.remove", link)));
         return link;
     }
     
-    private Component positionPanel(String id, IModel itemModel) {
-        return new PositionPanel(id, (LayerGroupEntry) itemModel.getObject());
+    Component positionPanel(String id, IModel itemModel) {
+        return new PositionPanel( id, (EoLayerGroupEntry) itemModel.getObject() );
     }
   
-    static class LayerGroupEntryProvider extends GeoServerDataProvider<LayerGroupEntry> {
+    static class LayerGroupEntryProvider extends GeoServerDataProvider<EoLayerGroupEntry> {
 
-        public static Property<LayerGroupEntry> LAYER = new PropertyPlaceholder<LayerGroupEntry>("layer");
-        public static Property<LayerGroupEntry> DEFAULT_STYLE = new PropertyPlaceholder<LayerGroupEntry>("defaultStyle");
-        public static Property<LayerGroupEntry> STYLE = new PropertyPlaceholder<LayerGroupEntry>("style");
-        public static Property<LayerGroupEntry> REMOVE = new PropertyPlaceholder<LayerGroupEntry>("remove");
-        public static Property<LayerGroupEntry> POSITION = new PropertyPlaceholder<LayerGroupEntry>("position");
+        public static Property<EoLayerGroupEntry> LAYER = 
+            new PropertyPlaceholder<EoLayerGroupEntry>( "sourceLayer");
+        
+        public static Property<EoLayerGroupEntry> LAYER_SUBNAME = 
+                new BeanProperty<EoLayerGroupEntry>( "layer", "layerSubName");
 
-        static List PROPERTIES = Arrays.asList(POSITION, LAYER, DEFAULT_STYLE, STYLE, REMOVE);
+        
+        public static Property<EoLayerGroupEntry> STYLE = 
+            new PropertyPlaceholder<EoLayerGroupEntry>( "style" );
+        
+        public static Property<EoLayerGroupEntry> TYPE = 
+                new BeanProperty<EoLayerGroupEntry>( "layerType", "layerType" );
 
-        List<LayerGroupEntry> items;
+        
+        public static Property<EoLayerGroupEntry> REMOVE = 
+            new PropertyPlaceholder<EoLayerGroupEntry>( "remove" );
+        
+        public static Property<EoLayerGroupEntry> POSITION = 
+            new PropertyPlaceholder<EoLayerGroupEntry>( "position" );
 
-        public LayerGroupEntryProvider(List<LayerGroupEntry> items) {
+        static List PROPERTIES = Arrays.asList( POSITION, LAYER, LAYER_SUBNAME, TYPE, STYLE, REMOVE );
+        
+        List<EoLayerGroupEntry> items;
+        
+        public LayerGroupEntryProvider( List<EoLayerGroupEntry> items ) {
             this.items = items;
         }
-
+        
         @Override
-        protected List<LayerGroupEntry> getItems() {
-            return items;
+        protected List<EoLayerGroupEntry> getItems() {
+            return items; 
         }
 
         @Override
-        protected List<Property<LayerGroupEntry>> getProperties() {
+        protected List<Property<EoLayerGroupEntry>> getProperties() {
             return PROPERTIES;
         }
+
     }
 
     class PositionPanel extends Panel {
-
-        private LayerGroupEntry entry;
-        private ImageAjaxLink upLink;
-        private ImageAjaxLink downLink;
         
-        public PositionPanel(String id, LayerGroupEntry entry) {
-            super(id);
+        EoLayerGroupEntry entry;
+        private ImageAjaxLink upLink;
+        private ImageAjaxLink downLink;        
+        
+        public PositionPanel( String id, final EoLayerGroupEntry entry ) {
+            super( id );
             this.entry = entry;
             this.setOutputMarkupId(true);
             
-            upLink = new ImageAjaxLink("up", new ResourceReference(getClass(),
-                    "../../../web/img/icons/silk/arrow_up.png")) {
+            upLink = new ImageAjaxLink( "up", new ResourceReference( LayerGroupEntryPanel.class, "../../img/icons/silk/arrow_up.png") ) {
                 @Override
                 protected void onClick(AjaxRequestTarget target) {
-                    int index = items.indexOf(PositionPanel.this.entry);
-                    items.remove(index);
+                    int index = items.indexOf( PositionPanel.this.entry );
+                    items.remove( index );
                     items.add(Math.max(0, index - 1), PositionPanel.this.entry);
-                    target.addComponent(layerTable);
+                    target.addComponent( layerTable );
                     target.addComponent(this);
                     target.addComponent(downLink);   
-                    target.addComponent(upLink);
+                    target.addComponent(upLink);                    
+                }
+                
+                @Override
+                protected void onComponentTag(ComponentTag tag) {
+                    if ( items.indexOf( entry ) == 0 ) {
+                        tag.put("style", "visibility:hidden");
+                    } else {
+                        tag.put("style", "visibility:visible");
+                    }
                 }
             };
             upLink.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("up", upLink)));
             upLink.setOutputMarkupId(true);
-            add(upLink);
-            
-            downLink = new ImageAjaxLink("down", new ResourceReference(
-                    getClass(), "../../../web/img/icons/silk/arrow_down.png")) {
+            add( upLink);            
+
+            downLink = new ImageAjaxLink( "down", new ResourceReference( LayerGroupEntryPanel.class, "../../img/icons/silk/arrow_down.png") ) {
                 @Override
                 protected void onClick(AjaxRequestTarget target) {
-                    int index = items.indexOf(PositionPanel.this.entry);
-                    items.remove(index);
+                    int index = items.indexOf( PositionPanel.this.entry );
+                    items.remove( index );
                     items.add(Math.min(items.size(), index + 1), PositionPanel.this.entry);
-                    target.addComponent(layerTable);
+                    target.addComponent( layerTable );
                     target.addComponent(this);                    
                     target.addComponent(downLink);   
-                    target.addComponent(upLink);
+                    target.addComponent(upLink);                    
+                }
+                
+                @Override
+                protected void onComponentTag(ComponentTag tag) {
+                    if ( items.indexOf( entry ) == items.size() - 1) {
+                        tag.put("style", "visibility:hidden");
+                    } else {
+                        tag.put("style", "visibility:visible");
+                    }
                 }
             };
-            downLink.getImage()
-                    .add(new AttributeModifier("alt", true, new ParamResourceModel("down",
-                            downLink)));
+            downLink.getImage().add(new AttributeModifier("alt", true, new ParamResourceModel("down", downLink)));
             downLink.setOutputMarkupId(true);
-            add(downLink);
+            add( downLink);
         }
     }
-        
-    abstract static class StyleListPanel extends GeoServerTablePanel<StyleInfo> {
 
-        static Property<StyleInfo> NAME = new BeanProperty<StyleInfo>("name", "name");
-
-        public StyleListPanel(String id) {
-            super(id, new GeoServerDataProvider<StyleInfo>() {
-                @Override
-                protected List<StyleInfo> getItems() {
-                    return getCatalog().getStyles();
-                }
-
-                @Override
-                protected List<Property<StyleInfo>> getProperties() {
-                    return Arrays.asList(NAME);
-                }
-
-                public IModel newModel(Object object) {
-                    return new StyleDetachableModel((StyleInfo) object);
-                }
-            });
-            getTopPager().setVisible(false);
-        }
-
-        @Override
-        protected Component getComponentForProperty(String id, IModel itemModel,
-                Property<StyleInfo> property) {
-            final StyleInfo style = (StyleInfo) itemModel.getObject();
-            if (property == NAME) {
-                return new SimpleAjaxLink(id, NAME.getModel(itemModel)) {
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        handleStyle(style, target);
-                    }
-                };
-            }
-
-            return null;
-        }
-
-        protected abstract void handleStyle(StyleInfo style, AjaxRequestTarget target);
-
+    public void setLayerGroupName(String layerGroupName) {
+        this.layerGroupName = layerGroupName;
     }
 }

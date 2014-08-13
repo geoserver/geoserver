@@ -16,6 +16,7 @@ import javax.xml.namespace.QName;
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.QueryType;
 import net.opengis.wfs.WfsFactory;
+import org.eclipse.emf.common.util.EList;
 
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
@@ -161,8 +162,8 @@ public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
         GetFeatureType req = WfsFactory.eINSTANCE.createGetFeatureType();
         Object read = reader.read(req, parsed, raw);
         GetFeatureType parsedReq = (GetFeatureType) read;
-        assertEquals(1, parsedReq.getMetadata().size());
-        List<Map<String, String>> viewParams = (List<Map<String, String>>) parsedReq.getMetadata().get(GetFeature.SQL_VIEW_PARAMS);
+        assertEquals(1, parsedReq.getViewParams().size());
+        List<Map> viewParams = (EList<Map>) parsedReq.getViewParams();
         assertEquals(1, viewParams.size());
         Map<String, String> vp1 = viewParams.get(0);
         assertEquals("WHERE PERSONS > 1000000", vp1.get("where"));
@@ -183,8 +184,7 @@ public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
         GetFeatureType req = WfsFactory.eINSTANCE.createGetFeatureType();
         Object read = reader.read(req, parsed, raw);
         GetFeatureType parsedReq = (GetFeatureType) read;
-        assertEquals(1, parsedReq.getMetadata().size());
-        List<Map<String, String>> viewParams = (List<Map<String, String>>) parsedReq.getMetadata().get(GetFeature.SQL_VIEW_PARAMS);
+        List<Map> viewParams = (EList<Map>) parsedReq.getViewParams();
         assertEquals(2, viewParams.size());
         Map<String, String> vp1 = viewParams.get(0);
         assertEquals("WHERE PERSONS > 1000000", vp1.get("where"));
@@ -208,8 +208,7 @@ public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
         GetFeatureType req = WfsFactory.eINSTANCE.createGetFeatureType();
         Object read = reader.read(req, parsed, raw);
         GetFeatureType parsedReq = (GetFeatureType) read;
-        assertEquals(1, parsedReq.getMetadata().size());
-        List<Map<String, String>> viewParams = (List<Map<String, String>>) parsedReq.getMetadata().get(GetFeature.SQL_VIEW_PARAMS);
+        List<Map> viewParams = (EList<Map>) parsedReq.getViewParams();
         assertEquals(2, viewParams.size());
         Map<String, String> vp1 = viewParams.get(0);
         assertEquals("WHERE PERSONS > 1000000", vp1.get("where"));

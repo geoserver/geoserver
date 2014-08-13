@@ -75,7 +75,7 @@ import org.geoserver.security.xml.XMLRoleService;
 import org.geoserver.security.xml.XMLUserGroupService;
 import org.geoserver.test.GeoServerMockTestSupport;
 import org.geoserver.test.GeoServerSystemTestSupport;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.data.DataAccess;
@@ -90,7 +90,6 @@ import org.geotools.referencing.CRS;
 import org.geotools.util.Version;
 import org.opengis.feature.type.FeatureType;
 import org.springframework.context.ApplicationContext;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 /**
  * Test setup uses for GeoServer mock tests.

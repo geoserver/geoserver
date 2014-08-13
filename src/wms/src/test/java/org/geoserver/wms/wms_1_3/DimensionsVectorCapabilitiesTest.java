@@ -6,6 +6,7 @@ package org.geoserver.wms.wms_1_3;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
+import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -77,7 +78,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         assertXpathEvaluatesTo("ISO8601", "//wms:Layer/wms:Dimension/@units", dom);
         // check we have the extent
         assertXpathEvaluatesTo("time", "//wms:Layer/wms:Dimension/@name", dom);
-        assertXpathEvaluatesTo("current", "//wms:Layer/wms:Dimension/@default", dom);
+        assertXpathEvaluatesTo(DimensionDefaultValueSetting.TIME_CURRENT, "//wms:Layer/wms:Dimension/@default", dom);
         // and that it is empty
         assertXpathEvaluatesTo("", "//wms:Layer/wms:Dimension", dom);
     }
@@ -115,7 +116,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         assertXpathEvaluatesTo("1", "count(//wms:Layer/wms:Dimension)", dom);
         assertXpathEvaluatesTo("elevation", "//wms:Layer/wms:Dimension/@name", dom);
         assertXpathEvaluatesTo("0.0", "//wms:Layer/wms:Dimension/@default", dom);
-        assertXpathEvaluatesTo("0.0/3.0/3.0", "//wms:Layer/wms:Dimension", dom);
+        assertXpathEvaluatesTo("0.0/3.0/0", "//wms:Layer/wms:Dimension", dom);
     }
     
     @Test
@@ -170,7 +171,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         // check we have the extent        
         assertXpathEvaluatesTo("1", "count(//wms:Layer/wms:Dimension)", dom);
         assertXpathEvaluatesTo("time", "//wms:Layer/wms:Dimension/@name", dom);
-        assertXpathEvaluatesTo("current", "//wms:Layer/wms:Dimension/@default", dom);
+        assertXpathEvaluatesTo(DimensionDefaultValueSetting.TIME_CURRENT, "//wms:Layer/wms:Dimension/@default", dom);
         assertXpathEvaluatesTo("2011-05-01T00:00:00.000Z,2011-05-02T00:00:00.000Z,2011-05-03T00:00:00.000Z,2011-05-04T00:00:00.000Z", "//wms:Layer/wms:Dimension", dom);
     }
     
@@ -188,8 +189,8 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         // check we have the extent        
         assertXpathEvaluatesTo("1", "count(//wms:Layer/wms:Dimension)", dom);
         assertXpathEvaluatesTo("time", "//wms:Layer/wms:Dimension/@name", dom);
-        assertXpathEvaluatesTo("current", "//wms:Layer/wms:Dimension/@default", dom);
-        assertXpathEvaluatesTo("2011-05-01T00:00:00.000Z/2011-05-04T00:00:00.000Z/P3D", "//wms:Layer/wms:Dimension", dom);
+        assertXpathEvaluatesTo(DimensionDefaultValueSetting.TIME_CURRENT, "//wms:Layer/wms:Dimension/@default", dom);
+        assertXpathEvaluatesTo("2011-05-01T00:00:00.000Z/2011-05-04T00:00:00.000Z/PT1S", "//wms:Layer/wms:Dimension", dom);
     }
     
     @Test 
@@ -206,7 +207,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         // check we have the extent        
         assertXpathEvaluatesTo("1", "count(//wms:Layer/wms:Dimension)", dom);
         assertXpathEvaluatesTo("time", "//wms:Layer/wms:Dimension/@name", dom);
-        assertXpathEvaluatesTo("current", "//wms:Layer/wms:Dimension/@default", dom);
+        assertXpathEvaluatesTo(DimensionDefaultValueSetting.TIME_CURRENT, "//wms:Layer/wms:Dimension/@default", dom);
         assertXpathEvaluatesTo("2011-05-01T00:00:00.000Z/2011-05-04T00:00:00.000Z/P1D", "//wms:Layer/wms:Dimension", dom);
     }
     
@@ -229,7 +230,7 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         assertXpathEvaluatesTo("0.0,1.0,2.0,3.0", "//wms:Layer/wms:Dimension[@name='elevation']", dom);
         // check we have the extent for time
         assertXpathEvaluatesTo("1", "count(//wms:Layer/wms:Dimension[@name='time'])", dom);
-        assertXpathEvaluatesTo("current", "//wms:Layer/wms:Dimension[@name='time']/@default", dom);
+        assertXpathEvaluatesTo(DimensionDefaultValueSetting.TIME_CURRENT, "//wms:Layer/wms:Dimension[@name='time']/@default", dom);
         assertXpathEvaluatesTo("2011-05-01T00:00:00.000Z,2011-05-02T00:00:00.000Z,2011-05-03T00:00:00.000Z,2011-05-04T00:00:00.000Z", 
                 "//wms:Layer/wms:Dimension[@name='time']", dom);
     }

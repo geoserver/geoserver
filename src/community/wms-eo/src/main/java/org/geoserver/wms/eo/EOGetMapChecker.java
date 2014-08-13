@@ -1,21 +1,10 @@
-/*
- *    GeoTools - The Open Source Java GIS Toolkit
- *    http://geotools.org
- *
- *    (C) 2002-2011, Open Source Geospatial Foundation (OSGeo)
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the GNU Lesser General Public
- *    License as published by the Free Software Foundation;
- *    version 2.1 of the License.
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *    Lesser General Public License for more details.
+/* Copyright (c) 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 package org.geoserver.wms.eo;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -46,7 +35,6 @@ import org.opengis.referencing.ReferenceIdentifier;
  * -2- Set the merge behavior for the underlying mosaic
  * 
  * @author Simone Giannecchini, GeoSOlutions SAS
- *
  */
 public class EOGetMapChecker extends GetMapCallbackAdapter implements GetMapCallback {
     /** BAND_COVERAGE_VALUE */
@@ -63,8 +51,8 @@ public class EOGetMapChecker extends GetMapCallbackAdapter implements GetMapCall
         
         // is this WMS 1.3.0? If not move along
         final GetMapRequest request = content.getRequest();
-        if(!request.getVersion().equalsIgnoreCase("1.3.0")){
-            return super.beforeRender(content);     
+        if(!"1.3.0".equalsIgnoreCase(request.getVersion())){
+            return super.beforeRender(content);
         }
         
 
@@ -94,59 +82,63 @@ public class EOGetMapChecker extends GetMapCallbackAdapter implements GetMapCall
         final GeneralParameterValue[] params = readerLayer.getParams();
         
         // get the read parameters for this reader
-        final Set<ParameterDescriptor<List>> dynamicParameters = readerLayer.getReader().getDynamicParameters();
-        if(dynamicParameters.isEmpty()){
-            throw new IllegalStateException("Layer "+readerLayer.getTitle()+ " has no additional dimensions which are required for an EO BANDS layer");
-        }
-        final Set<ReferenceIdentifier> dynamicParametersNames= new HashSet<ReferenceIdentifier>();
-        for(ParameterDescriptor<List> param:dynamicParameters){
-            dynamicParametersNames.add(param.getName());
-        }
-        
-        //looking for the readparams to control dimensions
-        // -1- control band stacking
-        // -2- check that a valid number of bands has been called
-        boolean foundMergeBehavior=false; 
-        int foundCustomDimensions=0;
-        for(int i=0;i<params.length;i++){
-            final ParameterValue param = (ParameterValue) params[i];
-            final ParameterDescriptor descriptor = param.getDescriptor();
-            final ReferenceIdentifier name = descriptor.getName();
-            
-            // MERGE_BEHAVIOR
-            if (name.equals(ImageMosaicFormat.MERGE_BEHAVIOR.getName())) {
-                foundMergeBehavior=true;
-                param.setValue(MergeBehavior.STACK.toString());
-            } else {
-                //Dynamic Parameters checks
-                // -1- only one can have multiple values with cardinality 3
-                if(dynamicParametersNames.contains(name)){
-                    final List paramValues=(List) param.getValue();
-                    final int size = paramValues.size();
-                    if(size!=1&&size!=3){
-                        throw new ServiceException(
-                                "Wrong number of values provided to this GetMap for EO BANDS layer. Paremeter:"+name.getCode()+" #:"+size,
-                                "InvalidDimensionValue");
-                    }
-                    foundCustomDimensions++;
-                }
-             
+        try {
+            final Set<ParameterDescriptor<List>> dynamicParameters = readerLayer.getReader().getDynamicParameters();
+            if(dynamicParameters.isEmpty()){
+                throw new IllegalStateException("Layer "+readerLayer.getTitle()+ " has no additional dimensions which are required for an EO BANDS layer");
             }
-        }
-        // did we find all the custom dimensions
-        if(foundCustomDimensions!=dynamicParameters.size()){
-            throw new IllegalArgumentException("Not all the dimensions for this EO BANDS layer were requested. Please, check the GetMap request.");
-        }
+            final Set<ReferenceIdentifier> dynamicParametersNames= new HashSet<ReferenceIdentifier>();
+            for(ParameterDescriptor<List> param:dynamicParameters){
+                dynamicParametersNames.add(param.getName());
+            }
         
-        // check if we found and set the merge behavior
-        if(!foundMergeBehavior){
-            // should not happen
-            throw new IllegalStateException("Unable to impose Stacking merge behavior!");
+            //looking for the readparams to control dimensions
+            // -1- control band stacking
+            // -2- check that a valid number of bands has been called
+            boolean foundMergeBehavior=false; 
+            int foundCustomDimensions=0;
+            for(int i=0;i<params.length;i++){
+                final ParameterValue param = (ParameterValue) params[i];
+                final ParameterDescriptor descriptor = param.getDescriptor();
+                final ReferenceIdentifier name = descriptor.getName();
+                
+                // MERGE_BEHAVIOR
+                if (name.equals(ImageMosaicFormat.MERGE_BEHAVIOR.getName())) {
+                    foundMergeBehavior=true;
+                    param.setValue(MergeBehavior.STACK.toString());
+                } else {
+                    //Dynamic Parameters checks
+                    // -1- only one can have multiple values with cardinality 3
+                    if(dynamicParametersNames.contains(name)){
+                        final List paramValues=(List) param.getValue();
+                        final int size = paramValues.size();
+                        if(size!=1&&size!=3){
+                            throw new ServiceException(
+                                    "Wrong number of values provided to this GetMap for EO BANDS layer. Paremeter:"+name.getCode()+" #:"+size,
+                                    "InvalidDimensionValue");
+                        }
+                        foundCustomDimensions++;
+                    }
+                 
+                }
+            }
+            // did we find all the custom dimensions
+            if(foundCustomDimensions!=dynamicParameters.size()){
+                throw new IllegalArgumentException("Not all the dimensions for this EO BANDS layer were requested. Please, check the GetMap request.");
+            }
             
+            // check if we found and set the merge behavior
+            if(!foundMergeBehavior){
+                // should not happen
+                throw new IllegalStateException("Unable to impose Stacking merge behavior!");
+                
+            }
+            
+            // move on as usual
+            return super.beforeRender(content);
+        } catch(IOException e) {
+            throw new ServiceException(e);
         }
-        
-        // move on as usual
-        return super.beforeRender(content);   
     }
 
 }

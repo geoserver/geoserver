@@ -153,33 +153,116 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
      */
     @Override
     public Object visit(PropertyIsEqualTo filter, Object extraData) {
-        PropertyName expression1 = (PropertyName) filter.getExpression1();
-        Literal expression2 = (Literal) filter.getExpression2();
+
         MatchAction matchAction = filter.getMatchAction();
-        boolean matchingCase = filter.isMatchingCase();
-
-        final String propertyTypesParam = propertyTypesParam(expression1);
-
-        final String expectedValue = expression2.evaluate(null, String.class);
-        String valueParam = newParam("value", expectedValue);
-
-        switch (matchAction) {
-        // TODO: respect match action
-        case ALL:
-            break;
-        case ANY:
-            break;
-        case ONE:
-            break;
-        default:
-            throw new IllegalArgumentException("MatchAction: " + matchAction);
+        boolean matchingCase = filter.isMatchingCase(); 
+        
+        if (!(filter.getExpression1() instanceof Literal) && !(filter.getExpression2() instanceof Literal)) {
+            
+            //comparing two fields with each other
+            
+            PropertyName expression1 = (PropertyName) filter.getExpression1();
+            PropertyName expression2 = (PropertyName) filter.getExpression2();
+                
+            final String propertyTypesParam1 = propertyTypesParam(expression1);
+            final String propertyTypesParam2 = propertyTypesParam(expression2);
+            
+            //respect matchCase
+            String valueCol1 = matchingCase ? "o1.value" : "UPPER(o1.value)";
+            String valueCol2 = matchingCase ? "o2.value" : "UPPER(o2.value)";
+        
+            StringBuilder builder;
+            
+            switch (matchAction) {
+            //respect matchaction
+            case ALL: // all = another value for the property may not occur
+                builder = append(extraData,
+                        "oid NOT IN (SELECT o1.oid FROM object_property o1, object_property o2 WHERE(o1.oid=o2.oid)  ",
+                        "AND o1.property_type IN (:", propertyTypesParam1, ") ",
+                        "AND o2.property_type IN (:", propertyTypesParam2, ") ",
+                        "AND ", valueCol1, " != ", valueCol2, " ) /* ", filter.toString(), 
+                      " */ \n");
+                break;
+            case ANY: //any = the value for the property must occur at least once
+                builder = append(extraData,
+                        "oid IN (SELECT o1.oid FROM object_property o1, object_property o2 WHERE(o1.oid=o2.oid)  ",
+                        "AND o1.property_type IN (:", propertyTypesParam1, ") ",
+                        "AND o2.property_type IN (:", propertyTypesParam2, ") ",
+                        "AND ", valueCol1, " = ", valueCol2, " ) /* ", filter.toString(),
+                        " */ \n");
+                break;
+            case ONE: //one = the value for the property must occur exactly once
+                builder = append(extraData,
+                        "oid IN (SELECT o1.oid FROM object_property o1, object_property o2 WHERE(o1.oid=o2.oid) ",
+                        "AND o1.property_type IN (:", propertyTypesParam1, ") ",
+                        "AND o2.property_type IN (:", propertyTypesParam2, ") ",
+                        "AND ", valueCol1, " = ", valueCol2,
+                        " GROUP BY (oid) HAVING COUNT(oid)=1) /* ", filter.toString(), "/* ", filter.toString(),
+                        " */ \n");
+                break;
+            default:
+                throw new IllegalArgumentException("MatchAction: " + matchAction);
+            }
+              
+            return builder;
+            
+        } else {
+            
+            //comparing a literal with a field
+            
+            PropertyName expression1;
+            Literal expression2;
+            
+            
+            //decide which is the literal
+            if (filter.getExpression1() instanceof Literal) {            
+                expression1 = (PropertyName) filter.getExpression2();
+                expression2 = (Literal) filter.getExpression1();
+                
+            } else {
+                expression1 = (PropertyName) filter.getExpression1();
+                expression2 = (Literal) filter.getExpression2();
+            }        
+                
+            final String propertyTypesParam = propertyTypesParam(expression1);
+    
+            //respect match case
+            String expectedValue = expression2.evaluate(null, String.class);
+            if (!matchingCase) {
+                expectedValue = expectedValue.toUpperCase();
+            }
+            String valueParam = newParam("value", expectedValue);
+                        
+            StringBuilder builder;
+            String valueCol = matchingCase ? "value" : "UPPER(value)";
+                
+            switch (matchAction) {
+            // respect match action
+            case ALL: // all = another value for the property may not occur
+                builder = append(extraData,
+                        "oid NOT IN (SELECT oid FROM object_property WHERE property_type IN (:",
+                        propertyTypesParam, ") AND ", valueCol, " != :", valueParam, ") /* ", filter.toString(),
+                        " */ \n");
+                break;
+            case ANY: //any = the value for the property must occur at least once
+                builder = append(extraData,
+                        "oid IN (SELECT oid FROM object_property WHERE property_type IN (:",
+                        propertyTypesParam, ") AND ", valueCol, " = :", valueParam, ") /* ", filter.toString(),
+                        " */ \n");
+                break;
+            case ONE: //one = the value for the property must occur exactly once
+                builder = append(extraData,
+                        "oid IN (SELECT oid FROM object_property WHERE property_type IN (:",
+                       propertyTypesParam, ") AND ", valueCol, " = :", valueParam,
+                        " GROUP BY (oid) HAVING COUNT(oid)=1) /* ", filter.toString(),
+                        " */ \n");
+                break;
+            default:
+                throw new IllegalArgumentException("MatchAction: " + matchAction);
+            }
+    
+            return builder;
         }
-
-        StringBuilder builder = append(extraData,
-                "oid IN (SELECT oid FROM object_property WHERE property_type IN (:",
-                propertyTypesParam, ") AND value = :", valueParam, ") /* ", filter.toString(),
-                " */ \n");
-        return builder;
     }
 
     /**
@@ -206,12 +289,35 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
         final String pattern = LikeFilterImpl
                 .convertToSQL92(esc, multi, single, matchCase, literal);
 
+        //respect match case
         String valueCol = matchCase ? "value" : "UPPER(value)";
 
-        StringBuilder builder = append(extraData,
-                "oid IN (SELECT oid FROM object_property WHERE property_type IN (:",
-                propertyTypesParam, ") AND ", valueCol, " LIKE '", pattern, "') /* ",
-                filter.toString(), " */ \n");
+        StringBuilder builder;
+        
+        switch (matchAction) {
+        // respect match action
+        case ALL: // all = another value for the property may not occur
+            builder = append(extraData,
+                    "oid NOT IN (SELECT oid FROM object_property WHERE property_type IN (:",
+                    propertyTypesParam, ") AND NOT(", valueCol, " LIKE '", pattern, "')) /* ",
+                    filter.toString(), " */ \n");
+            break;
+        case ANY: //any = the value for the property must occur at least once
+            builder = append(extraData,
+                    "oid IN (SELECT oid FROM object_property WHERE property_type IN (:",
+                    propertyTypesParam, ") AND ", valueCol, " LIKE '", pattern, "') /* ",
+                    filter.toString(), " */ \n");
+            break;
+        case ONE:  //one = the value for the property must occur exactly once
+            builder = append(extraData,
+                    "oid IN (SELECT oid FROM object_property WHERE property_type IN (:",
+                    propertyTypesParam, ") AND ", valueCol, " LIKE '", pattern, "' ",
+                    "GROUP BY (oid) HAVING COUNT(oid)=1 ) /* ", filter.toString(), " */ \n");
+            break;
+        default:
+            throw new IllegalArgumentException("MatchAction: " + matchAction);
+        }
+        
         return builder;
     }
 
@@ -331,8 +437,9 @@ public class FilterToCatalogSQL implements FilterVisitor, ExpressionVisitor {
      */
     @Override
     public Object visit(Not filter, Object extraData) {
+        
+        return (StringBuilder) filter.getFilter().accept(this, append (extraData, " NOT "));
 
-        return extraData;
     }
 
     /**

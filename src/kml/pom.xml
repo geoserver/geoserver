@@ -1,42 +1,67 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<!-- Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights 
+  reserved. This code is licensed under the GPL 2.0 license, available at the 
+  root application directory. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>2.4-SNAPSHOT</version>
+    <version>2.6-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
-  <artifactId>kml</artifactId>
+  <artifactId>gs-kml</artifactId>
   <packaging>jar</packaging>
-  <name>Web Map Service KML output formats</name>
+  <name>KML support for GeoServer</name>
 
   <dependencies>
+
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>wms</artifactId>
+      <artifactId>gs-wms</artifactId>
     </dependency>
-    <!-- test dependencies -->
+
+    <dependency>
+      <groupId>de.micromata.jak</groupId>
+      <artifactId>JavaAPIforKml</artifactId>
+      <version>2.2.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-impl</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-xjc</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>wms</artifactId>
+      <artifactId>gs-ows</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>ows</artifactId>
+      <artifactId>gs-main</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
+      <artifactId>gs-wms</artifactId>
       <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wfs</artifactId>
+      <classifier>tests</classifier>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -45,19 +70,19 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.easymock</groupId>
-      <artifactId>easymock</artifactId>
+      <groupId>xmlunit</groupId>
+      <artifactId>xmlunit</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-     <groupId>org.easymock</groupId>
-     <artifactId>easymockclassextension</artifactId>
-     <version>2.3</version>
-	 <scope>test</scope>
+      <groupId>org.easymock</groupId>
+      <artifactId>easymockclassextension</artifactId>
+      <version>2.3</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>xmlunit</groupId>
-      <artifactId>xmlunit</artifactId>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-library</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -66,8 +91,11 @@
     <testResources>
       <testResource>
         <directory>src/test/resources</directory>
-      </testResource>     
+      </testResource>
     </testResources>
+
+    <plugins>
+    </plugins>
   </build>
 
 </project>

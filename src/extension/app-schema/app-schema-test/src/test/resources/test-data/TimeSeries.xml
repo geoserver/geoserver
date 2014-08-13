@@ -92,7 +92,7 @@
 				<AttributeMapping>
 					<targetAttribute>csml:value/csml:PointSeriesCoverage/csml:pointSeriesDomain/csml:TimeSeries/csml:timePositionList</targetAttribute>					
 					<sourceExpression>
-						<OCQL>dateFormat('yyyy-MM-dd', POSITION)</OCQL>
+						<OCQL>FormatDateTimezone('yyyy-MM-dd', POSITION, 'UTC')</OCQL>
 					</sourceExpression>
 					<isList>true</isList>
      			</AttributeMapping>
@@ -111,7 +111,7 @@
 				<AttributeMapping>
 					<targetAttribute>csml:value/csml:PointSeriesCoverage/gml:rangeSet/gml:ValueArray/gml:valueComponent</targetAttribute>
 					<sourceExpression>
-					    <OCQL>getID()</OCQL>
+					    <OCQL>ROW_ID</OCQL>
 						<linkElement>gml:QuantityList</linkElement>						
 						<linkField>FEATURE_LINK</linkField>
 					</sourceExpression>	
@@ -140,7 +140,7 @@
 			    <AttributeMapping>
 			        <targetAttribute>FEATURE_LINK</targetAttribute>
 			        <sourceExpression>
-					    <OCQL>getID()</OCQL>
+					    <OCQL>ROW_ID</OCQL>
 					</sourceExpression>
 			    </AttributeMapping>
 				<AttributeMapping>

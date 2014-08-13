@@ -10,7 +10,7 @@ import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.security.AccessLevel;
 import org.geoserver.security.Response;
 import org.geoserver.security.WrapperPolicy;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataStore;
@@ -50,7 +50,7 @@ public class DefaultSecureDataFactory implements SecuredObjectFactory {
                 || FeatureLocking.class.isAssignableFrom(clazz)
                 || FeatureCollection.class.isAssignableFrom(clazz)
                 || FeatureIterator.class.isAssignableFrom(clazz) 
-                || AbstractGridCoverage2DReader.class.isAssignableFrom(clazz)
+                || GridCoverage2DReader.class.isAssignableFrom(clazz)
                 || AbstractGridFormat.class.isAssignableFrom(clazz)
                 || WebMapServer.class.isAssignableFrom(clazz);
     }
@@ -115,8 +115,8 @@ public class DefaultSecureDataFactory implements SecuredObjectFactory {
         }
         
         // try coverage readers and formats
-        if(AbstractGridCoverage2DReader.class.isAssignableFrom(clazz)) {
-            return new SecuredGridCoverage2DReader((AbstractGridCoverage2DReader) object, policy);
+        if(GridCoverage2DReader.class.isAssignableFrom(clazz)) {
+            return new SecuredGridCoverage2DReader((GridCoverage2DReader) object, policy);
         } else if(AbstractGridFormat.class.isAssignableFrom(clazz)) {
             return new SecuredGridFormat((AbstractGridFormat) object, policy);
         }

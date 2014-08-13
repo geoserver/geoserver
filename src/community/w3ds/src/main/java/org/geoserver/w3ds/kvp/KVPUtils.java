@@ -8,7 +8,6 @@
 package org.geoserver.w3ds.kvp;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -18,10 +17,8 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.ows.util.KvpUtils;
-import org.geoserver.w3ds.types.W3DSLayer;
 import org.geoserver.w3ds.types.W3DSLayerInfo;
 import org.geoserver.w3ds.types.W3DSRequest;
 import org.geoserver.w3ds.utilities.Format;
@@ -30,7 +27,6 @@ import org.geoserver.w3ds.utilities.X3DInfoExtract;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.opengis.geometry.Envelope;
-import org.opengis.metadata.MetaData;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.xml.sax.SAXException;
@@ -72,22 +68,25 @@ public class KVPUtils {
 					"Invalid parameter BOUNDINGBOX (MIN_Y [" + miny + "] is "
 							+ "greater than MAX_Y [" + maxy + "]): " + bboxstr);
 		}
-		ReferencedEnvelope crs_e = new ReferencedEnvelope(CRS.getEnvelope(crs));
 		ReferencedEnvelope bbox_e = new ReferencedEnvelope(minx, maxx, miny,
 				maxy, crs);
-		if (!crs_e.covers(bbox_e)) {
-			// The specification says: If the Bounding Box values are
-			// not defined for the given CRS (e.g., latitudes greater than 90
-			// degrees in CRS:84), the
-			// server should return empty content for areas outside the valid
-			// range of the CRS.
-			LOGGER.warning("CRS [" + crs.getName().getCodeSpace() + ":"
-					+ crs.getName().getCode()
-					+ "] envelope don't covers the boundingbox [" + bboxstr
-					+ "] envelope");
-			// throw new
-			// IllegalArgumentException("Invalid mandatory parameter BOUNDINGBOX (crs envelope don't covers the boundingbox envelope): "
-			// + bboxstr);
+		Envelope crsEnvelope = CRS.getEnvelope(crs);
+		if (crsEnvelope != null) {
+			ReferencedEnvelope crs_e = new ReferencedEnvelope(CRS.getEnvelope(crs));
+			if (!crs_e.covers(bbox_e)) {
+				// The specification says: If the Bounding Box values are
+				// not defined for the given CRS (e.g., latitudes greater than 90
+				// degrees in CRS:84), the
+				// server should return empty content for areas outside the valid
+				// range of the CRS.
+				LOGGER.warning("CRS [" + crs.getName().getCodeSpace() + ":"
+						+ crs.getName().getCode()
+						+ "] envelope don't covers the boundingbox [" + bboxstr
+						+ "] envelope");
+				// throw new
+				// IllegalArgumentException("Invalid mandatory parameter BOUNDINGBOX (crs envelope don't covers the boundingbox envelope): "
+				// + bboxstr);
+			}
 		}
 		// Isto só tá assim porque tinha um erro tem que se corrigir
 		// return new ReferencedEnvelope(crs_e.intersection(bbox_e), crs);

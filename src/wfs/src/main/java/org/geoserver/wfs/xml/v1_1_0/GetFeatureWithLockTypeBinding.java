@@ -143,7 +143,7 @@ public class GetFeatureWithLockTypeBinding extends AbstractComplexBinding {
 
         //&lt;xsd:attribute default="5" name="expiry" type="xsd:positiveInteger" use="optional"&gt;
         if (node.hasAttribute("expiry")) {
-            getFeatureWithLock.setExpiry((BigInteger) node.getChildValue("expiry"));
+            getFeatureWithLock.setExpiry((BigInteger) node.getAttributeValue("expiry"));
         }
 
         //&lt;xsd:attribute default="results" name="resultType" type="wfs:ResultTypeType" use="optional"&gt;

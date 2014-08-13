@@ -151,17 +151,11 @@ public class GeoServerTemplateLoader2Test {
         expect(cat.getFeatureTypeByName(ft.getName())).andReturn(null).once();
         replay(dd, cat);
         
-        org.vfny.geoserver.global.GeoserverDataDirectory.setCatalog(cat);
-        try {
-            GeoServerTemplateLoader tl = new GeoServerTemplateLoader(getClass(), dd);
-            tl.setCatalog(cat);
-            tl.setFeatureType(ft);
-            tl.findTemplateSource("header.ftl");
-    
-            verify(cat);
-        }
-        finally {
-            org.vfny.geoserver.global.GeoserverDataDirectory.setCatalog(null);
-        }
+        GeoServerTemplateLoader tl = new GeoServerTemplateLoader(getClass(), dd);
+        tl.setCatalog(cat);
+        tl.setFeatureType(ft);
+        tl.findTemplateSource("header.ftl");
+
+        verify(cat);
     }
 }

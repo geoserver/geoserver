@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gts="http://www.isotc211.org/2005/gts" targetNamespace="http://www.isotc211.org/2005/gts" elementFormDefault="qualified" version="2012-07-13">
+	<!-- ================================= Annotation ================================ -->
+	<xs:annotation>
+		<xs:documentation>Geographic Temporal Schema (GTS) extensible markup language is a component of the XML Schema Implementation of Geographic Information Metadata documented in ISO/TS 19139:2007. GTS includes all the definitions of http://www.isotc211.org/2005/gts namespace. The root document of this namespace is the file gts.xsd. The temporalObjects.xsd schema contains the XML implementation of TM_Object, TM_Primitive and TM_PeriodDuration from ISO 19108. The encoding of these classes is mapped to ISO 19136 temporal types and W3C built-in types.</xs:documentation>
+	</xs:annotation>
+	<!-- ================================== Imports ================================== -->
+	<xs:import namespace="http://www.opengis.net/gml/3.2" schemaLocation="http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+	<xs:import namespace="http://www.isotc211.org/2005/gco" schemaLocation="http://schemas.opengis.net/iso/19139/20070417/gco/gco.xsd"/>
+	<xs:include schemaLocation="gts.xsd"/>
+	<!-- ########################################################################### -->
+	<!-- ########################################################################### -->
+	<!-- ================================== Classes ================================= -->
+	<!-- ........................................................................ -->
+	<!--==XCGE: gml:AbstractTimePrimitive==-->
+	<!-- ........................................................................ -->
+	<xs:complexType name="TM_Primitive_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gml:AbstractTimePrimitive"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="gco:ObjectReference"/>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+	<!-- ........................................................................ -->
+	<xs:element name="TM_PeriodDuration" type="xs:duration"/>
+	<!-- ........................................................................ -->
+	<xs:complexType name="TM_PeriodDuration_PropertyType">
+		<xs:sequence minOccurs="0">
+			<xs:element ref="gts:TM_PeriodDuration"/>
+		</xs:sequence>
+		<xs:attribute ref="gco:nilReason"/>
+	</xs:complexType>
+	<!-- =========================================================================== -->
+</xs:schema>

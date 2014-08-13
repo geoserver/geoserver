@@ -8,19 +8,19 @@
  <modelVersion>4.0.0</modelVersion>
  <parent>
   <groupId>org.geoserver.extension</groupId>
-  <artifactId>monitor</artifactId>
-  <version>2.4-SNAPSHOT</version>
+  <artifactId>gs-monitor</artifactId>
+  <version>2.6-SNAPSHOT</version>
  </parent>
 
  <groupId>org.geoserver.extension</groupId>
- <artifactId>monitor-hibernate</artifactId>
+ <artifactId>gs-monitor-hibernate</artifactId>
  <packaging>jar</packaging>
  <name>Monitor Hibernate Extension</name>
 
  <dependencies>
   <dependency>
    <groupId>org.geoserver.extension</groupId>
-   <artifactId>monitor-core</artifactId>
+   <artifactId>gs-monitor-core</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
@@ -50,7 +50,7 @@
 
   <dependency>
    <groupId>org.geoserver.extension</groupId>
-   <artifactId>monitor-core</artifactId>
+   <artifactId>gs-monitor-core</artifactId>
    <version>${project.version}</version>
    <classifier>tests</classifier>
    <scope>test</scope>

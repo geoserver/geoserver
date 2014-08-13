@@ -21,14 +21,14 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.kvp.PaletteManager;
 import org.geoserver.wms.map.PNGMapResponse.QuantizeMethod;
-import org.geoserver.wms.map.quantize.CachingColorIndexer;
-import org.geoserver.wms.map.quantize.ColorIndexer;
-import org.geoserver.wms.map.quantize.ColorIndexerDescriptor;
-import org.geoserver.wms.map.quantize.LRUColorIndexer;
-import org.geoserver.wms.map.quantize.Quantizer;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.image.ImageWorker;
+import org.geotools.image.palette.CachingColorIndexer;
+import org.geotools.image.palette.ColorIndexer;
+import org.geotools.image.palette.ColorIndexerDescriptor;
 import org.geotools.image.palette.InverseColorMapOp;
+import org.geotools.image.palette.LRUColorIndexer;
+import org.geotools.image.palette.Quantizer;
 import org.springframework.util.Assert;
 
 /**
@@ -154,8 +154,10 @@ public abstract class RenderedImageMapResponse extends AbstractMapResponse {
                 || !supportsTranslucency
                 || (method == null && image.getColorModel().getTransparency() != Transparency.TRANSLUCENT);
 
+
+        // format: split on ';' to handle subtypes like 'image/gif;subtype=animated'
+        final String format = request.getFormat().split(";")[0];
         // do we have to use the bitmask quantizer?
-        final String format = request.getFormat();
         IndexColorModel icm = mapContent.getPalette();
         if (useBitmaskQuantizer) {
             // user provided palette?

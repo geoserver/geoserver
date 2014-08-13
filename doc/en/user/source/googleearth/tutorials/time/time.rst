@@ -62,7 +62,7 @@ Trying it Out
 -------------
 Ok time to try it out.
 
-1. Navigate to http://localhost:8080/geoserver/wms/kml_reflect?layers=inet_weu&legend=true. This should cause Google Earth to open.
+1. Navigate to http://localhost:8080/geoserver/wms/kml?layers=inet_weu&legend=true. This should cause Google Earth to open.
 
 .. figure:: try1.png
    :align: center

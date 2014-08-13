@@ -5,9 +5,11 @@
 package org.geoserver.wps.gs;
 
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.image.DataBuffer;
-import java.awt.image.RenderedImage;
 import java.awt.image.WritableRaster;
 import java.util.Map;
 import java.util.Vector;
@@ -20,6 +22,7 @@ import javax.media.jai.GeometricOpImage;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.Interpolation;
 import javax.media.jai.InterpolationNearest;
+import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
 import javax.media.jai.RasterAccessor;
 import javax.media.jai.RasterFormatTag;
@@ -27,12 +30,14 @@ import javax.media.jai.iterator.RandomIter;
 import javax.media.jai.iterator.RandomIterFactory;
 
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.GridEnvelope2D;
+import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.operation.matrix.XAffineTransform;
+import org.geotools.util.Utilities;
 import org.opengis.metadata.spatial.PixelOrientation;
-import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.NoninvertibleTransformException;
 import org.opengis.referencing.operation.TransformException;
 
 import com.sun.media.jai.util.ImageUtil;
@@ -48,30 +53,58 @@ import com.sun.media.jai.util.ImageUtil;
  * 
  * @author ETj <etj at geo-solutions.it>
  */
+@SuppressWarnings("unchecked")
 public class GridCoverage2DRIA extends GeometricOpImage {
+
+    /** DEFAULT_BORDEREXTENDER */
+    public static final BorderExtender DEFAULT_BORDEREXTENDER = BorderExtender.createInstance(BorderExtender.BORDER_COPY);
 
     private final static Logger LOGGER = Logger.getLogger(GridCoverage2DRIA.class.getName());
 
     private final GridCoverage2D src;
 
-    private final GridCoverage2D dst;
+    private final GridGeometry2D dstGridGeometry;
 
-    private final MathTransform g2wd;
+    private AffineTransform g2wd;
 
-    private final MathTransform g2ws;
+    private AffineTransform g2ws;
 
-    private final MathTransform w2gd;
+    private AffineTransform w2gd;
 
-    private final MathTransform w2gs;
+    private AffineTransform w2gs;
 
-    private final MathTransform src2dstCRSTransform;
+    private MathTransform src2dstCRSTransform;
 
-    private final MathTransform dst2srcCRSTransform;
+    private MathTransform dst2srcCRSTransform;
 
     /** Color table representing source's IndexColorModel. */
-    private byte[][] ctable = null; // ETj: just for keeping compiler quiet: let's see if we really
+	// just for keeping compiler quiet: let's see if we really need it
+    private byte[][] ctable = null;
 
-    // need it
+    /** Do we need a reprojection.*/
+    private boolean needReprojection;
+
+    private AffineTransform concatenatedForwardTransform;
+
+    private AffineTransform concatenatedBackwardTransform;
+
+    private int kwidth;
+
+    private int kheight;
+
+    private int maxX;
+
+    private int maxY;
+
+    private RandomIter iter;
+
+    private int lpad;
+
+    private int tpad;
+
+    private int rpad;
+
+    private int bpad;
 
     /**
      * Wrap the src coverage in the dst layout. <BR>
@@ -87,16 +120,43 @@ public class GridCoverage2DRIA extends GeometricOpImage {
      *            bands will share the same nodata value.
      * @return an instance of Coverage2RenderedImageAdapter
      */
-    public static GridCoverage2DRIA create(final GridCoverage2D src, final GridCoverage2D dst,
-            final double nodata) {
+    public static GridCoverage2DRIA create(final GridCoverage2D src, final GridCoverage2D dst, final double nodata) {
 
-        // === Create Layout
-        final ImageLayout imageLayout = new ImageLayout(dst.getRenderedImage());
+        Utilities.ensureNonNull("dst", dst);
+        return GridCoverage2DRIA.create(src, dst.getGridGeometry(), nodata);
+    }
+    
+    /**
+     * Wrap the src coverage in the dst {@link GridGeometry2D}. <BR>
+     * The resulting RenderedImage will contain the data in src, and will be accessible via the grid
+     * specs of dst,
+     * 
+     * @param src
+     *            the data coverage to be remapped on dst grid
+     * @param dstGridGeometry
+     *            the final {@link GridGeometry2D}
+     * @param nodata
+     *            the nodata value to set for cells not covered by src but included in dst. All
+     *            bands will share the same nodata value.
+     * @return an instance of Coverage2RenderedImageAdapter
+     */
+    public static GridCoverage2DRIA create(final GridCoverage2D src, final GridGeometry2D dstGridGeometry, double nodata) {
+
+        Utilities.ensureNonNull("dstGridGeometry", dstGridGeometry);
+        Utilities.ensureNonNull("src", src);
+        
+        
+        // === Create destination Layout, retaining source tiling to minimize quirks
+        // TODO allow to override tiling
+        final GridEnvelope2D destinationRasterDimension = dstGridGeometry.getGridRange2D();
+        final ImageLayout imageLayout = new ImageLayout();
+        imageLayout.setMinX(destinationRasterDimension.x).setMinY(destinationRasterDimension.y);
+        imageLayout.setWidth(destinationRasterDimension.width).setHeight(destinationRasterDimension.height);
+        imageLayout.setTileHeight(src.getRenderedImage().getSampleModel().getHeight()).setTileWidth(src.getRenderedImage().getSampleModel().getWidth());
 
         //
         // SampleModel and ColorModel are related to data itself, so we
         // copy them from the source
-
         imageLayout.setColorModel(src.getRenderedImage().getColorModel());
         imageLayout.setSampleModel(src.getRenderedImage().getSampleModel());
 
@@ -107,54 +167,133 @@ public class GridCoverage2DRIA extends GeometricOpImage {
         // so to avoid problems with interpolation at source raster borders.
         //
         BorderExtender extender = new BorderExtenderConstant(new double[] { nodata });
-
-        return new GridCoverage2DRIA(src, dst, vectorize(src.getRenderedImage()), imageLayout,
-                null, false, extender, Interpolation.getInstance(Interpolation.INTERP_NEAREST),
+        
+        // add tile caching to the mix
+        final RenderingHints hints= new RenderingHints(JAI.KEY_TILE_CACHE, JAI.getDefaultInstance().getTileCache());
+        return new GridCoverage2DRIA(src, dstGridGeometry, vectorize(src.getRenderedImage()), imageLayout,
+                hints, false, extender, Interpolation.getInstance(Interpolation.INTERP_NEAREST),
                 new double[] { nodata });
     }
 
-    protected GridCoverage2DRIA(final GridCoverage2D src, final GridCoverage2D dst,
+    @SuppressWarnings("rawtypes")
+    protected GridCoverage2DRIA(final GridCoverage2D src, final GridGeometry2D dstGridGeometry,
             final Vector sources, final ImageLayout layout, final Map configuration,
             final boolean cobbleSources, final BorderExtender extender, final Interpolation interp,
             final double[] nodata) {
 
         super(sources, layout, configuration, cobbleSources, extender, interp, nodata);
 
+        // put aside ths source GridCoverage2D
         this.src = src;
-        this.dst = dst;
+        this.dstGridGeometry = new GridGeometry2D(dstGridGeometry);
 
+        // init tranformations between spaces
+        initTransformations(); 
+        
+        // initi iterators and so on
+        initIterator();
+
+    }
+
+    /**
+     * 
+     */
+    private void initIterator() {
+        
+        // --- check interpolation
+        kwidth = interp.getWidth();
+        kheight = interp.getHeight();
+        if (interp != null) {
+            lpad = interp.getLeftPadding();
+            rpad = interp.getRightPadding();
+            tpad = interp.getTopPadding();
+            bpad = interp.getBottomPadding();
+        } else {
+            lpad = rpad = tpad = bpad = 0;
+        }
+        // do we really need an extender?
+
+        // --- check extender
+        if(extender==null){
+            extender=GridCoverage2DRIA.DEFAULT_BORDEREXTENDER;
+        }
+        PlanarImage srcImage=PlanarImage.wrapRenderedImage(src.getRenderedImage());
+        if (!(lpad==rpad&&rpad==tpad&&tpad==bpad&&bpad==0)) {// there is need to extend
+            minX = srcImage.getMinX();
+            maxX = srcImage.getMaxX()-1;
+            minY = srcImage.getMinY();
+            maxY = srcImage.getMaxY()-1;
+            Rectangle bounds = new Rectangle(
+                    srcImage.getMinX() - lpad, 
+                    srcImage.getMinY() - tpad, 
+                    srcImage.getWidth() + lpad + rpad, 
+                    srcImage.getHeight() + tpad + bpad);
+            iter = RandomIterFactory.create(srcImage.getExtendedData(bounds, extender), bounds);
+        } else {
+            minX = srcImage.getMinX();
+            maxX = srcImage.getMaxX()-1;
+            minY = srcImage.getMinY();
+            maxY = srcImage.getMaxY()-1;
+            iter = RandomIterFactory.create(srcImage, srcImage.getBounds());
+        }
+        
+    }
+
+    /**
+     * @param src
+     * @param dstGridGeometry
+     * @throws IllegalArgumentException
+     */
+    private void initTransformations()
+            throws IllegalArgumentException {
         // === Take one for all all the transformation we need to pass from
         // model, sample, src, target and viceversa.
-        g2wd = dst.getGridGeometry().getGridToCRS2D(PixelOrientation.UPPER_LEFT);
+        g2wd = (AffineTransform) dstGridGeometry.getGridToCRS2D(PixelOrientation.UPPER_LEFT);
 
         try {
-            w2gd = g2wd.inverse();
-        } catch (org.opengis.referencing.operation.NoninvertibleTransformException e) {
-            throw new IllegalArgumentException("Can't compute destination W2G", e);
+            w2gd = g2wd.createInverse();
+        }  catch (NoninvertibleTransformException e) {
+            throw new IllegalArgumentException("Can't compute source W2G", e);
         }
 
-        g2ws = src.getGridGeometry().getGridToCRS2D(PixelOrientation.UPPER_LEFT);
-
+        g2ws = (AffineTransform) src.getGridGeometry().getGridToCRS2D(PixelOrientation.UPPER_LEFT);
         try {
-            w2gs = g2ws.inverse();
-        } catch (org.opengis.referencing.operation.NoninvertibleTransformException e) {
+            w2gs = g2ws.createInverse();
+        }  catch (NoninvertibleTransformException e) {
             throw new IllegalArgumentException("Can't compute source W2G", e);
         }
 
         try {
             CoordinateReferenceSystem sourceCRS = src.getCoordinateReferenceSystem2D();
-            CoordinateReferenceSystem targetCRS = dst.getCoordinateReferenceSystem2D();
+            CoordinateReferenceSystem targetCRS = dstGridGeometry.getCoordinateReferenceSystem2D();
+            if(!CRS.equalsIgnoreMetadata(sourceCRS, targetCRS)){
+                src2dstCRSTransform = CRS.findMathTransform(sourceCRS, targetCRS, true);
+                dst2srcCRSTransform = src2dstCRSTransform.inverse();
+                if(!src2dstCRSTransform.isIdentity()){
+                    needReprojection=true;
+                    return;
+                } 
+            }
+            
+            // === if we got here we don't need to reproject, let's concatenate the transforms
+            // we don't reproject, let's simplify
+            needReprojection=false;
+            concatenatedForwardTransform=(AffineTransform) w2gd.clone();
+            concatenatedForwardTransform.concatenate(g2ws);  
+            concatenatedBackwardTransform=concatenatedForwardTransform.createInverse();
+            if(XAffineTransform.isIdentity(concatenatedForwardTransform, 1E-6)){ // TODO improve this check
+                concatenatedForwardTransform=new AffineTransform();// identity
+                concatenatedBackwardTransform=new AffineTransform();// identity
+            }            
 
-            src2dstCRSTransform = CRS.findMathTransform(sourceCRS, targetCRS, true);
-            dst2srcCRSTransform = src2dstCRSTransform.inverse();
-        } catch (FactoryException e) {
-            throw new IllegalArgumentException("Can't create a transform between CRS", e);
-        } catch (NoninvertibleTransformException e) {
+        } catch (Exception e) {
             throw new IllegalArgumentException("Can't create a transform between CRS", e);
         }
-
     }
 
+    /**
+     * Maps the provided point from source space to destination space for the provided source.
+     */
     @Override
     public Point2D mapSourcePoint(Point2D srcPt, int sourceIndex) {
         if (srcPt == null) {
@@ -166,30 +305,25 @@ public class GridCoverage2DRIA extends GeometricOpImage {
         double coords[] = new double[] { srcPt.getX(), srcPt.getY() };
 
         try {
-            mapSrcPoint(coords);
+            mapSourcePoint(coords);
         } catch (TransformException e) {
-            LOGGER.log(Level.WARNING, "Error transforming coords", e);
+            if(LOGGER.isLoggable(Level.WARNING)){
+                LOGGER.log(Level.WARNING, "Error transforming coords", e);
+            }
             return null;
         }
 
         Point2D ret = ((Point2D) srcPt.clone());
         ret.setLocation(coords[0], coords[1]);
-        if (inside(ret, src.getRenderedImage()))
+        if (dstGridGeometry.getGridRange2D().contains(ret))
             return ret;
         else {
             LOGGER.log(Level.WARNING, "{0} mapped to {1} lies outside {2},{3}+{4}x{5}",
-                    new Object[] { srcPt, ret, src.getRenderedImage().getMinX(),
-                            src.getRenderedImage().getMinX(), src.getRenderedImage().getWidth(),
-                            src.getRenderedImage().getHeight() });
+                    new Object[] { srcPt, ret, dstGridGeometry.getGridRange2D().x,
+                    dstGridGeometry.getGridRange2D().y, dstGridGeometry.getGridRange2D().width+dstGridGeometry.getGridRange2D().x,
+                    dstGridGeometry.getGridRange2D().height+dstGridGeometry.getGridRange2D().y });
             return null;
         }
-    }
-
-    private static boolean inside(Point2D point, RenderedImage ri) {
-        double x = point.getX();
-        double y = point.getY();
-        return x >= ri.getMinX() && x <= ri.getMinX() + ri.getWidth() && y >= ri.getMinY()
-                && y <= ri.getMinY() + ri.getHeight();
     }
 
     /**
@@ -236,9 +370,9 @@ public class GridCoverage2DRIA extends GeometricOpImage {
         float[] pts = rect2PointArr(pxRect);
 
         try {
-            g2wd.transform(pts, 0, pts, 0, 4);
-            dst2srcCRSTransform.transform(pts, 0, pts, 0, 4);
-            w2gs.transform(pts, 0, pts, 0, 4);
+            g2ws.transform(pts, 0, pts, 0, 4);
+            src2dstCRSTransform.transform(pts, 0, pts, 0, 4);
+            w2gd.transform(pts, 0, pts, 0, 4);
         } catch (TransformException e) {
             LOGGER.log(Level.WARNING, "Error transforming coords", e);
             return null;
@@ -248,11 +382,15 @@ public class GridCoverage2DRIA extends GeometricOpImage {
         return srcRect; // .intersection(src.getGridGeometry().getGridRange2D());
     }
 
+    /**
+     * Maps the provided point from destination space to source space for the provided source.
+     */
     @Override
     public Point2D mapDestPoint(Point2D destPt, int sourceIndex) {
         if (destPt == null) {
             throw new IllegalArgumentException("Bad dest pt");// JaiI18N.getString("Generic0"));
-        } else if (sourceIndex < 0 || sourceIndex >= getNumSources()) {
+        } 
+        if (sourceIndex < 0 || sourceIndex >= getNumSources()) {
             throw new IndexOutOfBoundsException("Bad src");// JaiI18N.getString("Generic1"));
         }
 
@@ -267,28 +405,55 @@ public class GridCoverage2DRIA extends GeometricOpImage {
 
         Point2D ret = ((Point2D) destPt.clone());
         ret.setLocation(coords[0], coords[1]);
-        if (dst.getGridGeometry().getEnvelope2D().contains(ret))
+        if (src.getGridGeometry().getGridRange2D().contains(coords[0],coords[1]))
             return ret;
         else
             return null;
     }
 
+    /**
+     * Maps the provided point from destination space to source space for the provided source.
+     */
     private void mapDestPoint(double[] coords) throws TransformException {
         final int npoints = coords.length / 2;
-        g2ws.transform(coords, 0, coords, 0, npoints);
-        src2dstCRSTransform.transform(coords, 0, coords, 0, npoints);
-        w2gd.transform(coords, 0, coords, 0, npoints);
+        // == optimized route
+        if(!needReprojection){
+            if(!concatenatedBackwardTransform.isIdentity()){
+                concatenatedBackwardTransform.transform(coords, 0, coords, 0, npoints);
+            }
+            return;
+        }    
+        
+        // == standard route
+        g2wd.transform(coords, 0, coords, 0, npoints); // going from raster to model in destination
+        dst2srcCRSTransform.transform(coords, 0, coords, 0, npoints); // reprojection
+        w2gs.transform(coords, 0, coords, 0, npoints); // from model to raster in source space
     }
 
-    private void mapSrcPoint(double[] coords) throws TransformException {
+    /**
+     * Maps the provided point from source space to destination space for the provided source.
+     */
+    private void mapSourcePoint(double[] coords) throws TransformException {
         final int npoints = coords.length / 2;
+        
+        // optimized route
+        if(!needReprojection){
+            if(!concatenatedForwardTransform.isIdentity()){
+                concatenatedForwardTransform.transform(coords, 0, coords, 0, npoints);
+            }
+            return;
+        }
+        
+        // == going from source to destination raster space
         // StringBuilder sb = new StringBuilder();
         // sb.append("SRC[").append(coords[0]).append(',').append(coords[1]).append(']').append("--g2wd->");
-        g2wd.transform(coords, 0, coords, 0, npoints);
+        g2ws.transform(coords, 0, coords, 0, npoints);
+        
         // sb.append("[").append(coords[0]).append(',').append(coords[1]).append(']').append("--d2sCRS->");
-        dst2srcCRSTransform.transform(coords, 0, coords, 0, npoints);
+        src2dstCRSTransform.transform(coords, 0, coords, 0, npoints);
+        
         // sb.append('[').append(coords[0]).append(',').append(coords[1]).append(']').append("--w2gs->");
-        w2gs.transform(coords, 0, coords, 0, npoints);
+        w2gd.transform(coords, 0, coords, 0, npoints);
         // sb.append('[').append(coords[0]).append(',').append(coords[1]).append(']');
         // System.out.println(sb);
     }
@@ -331,9 +496,9 @@ public class GridCoverage2DRIA extends GeometricOpImage {
         float[] pts = rect2PointArr(destRect);
 
         try {
-            g2ws.transform(pts, 0, pts, 0, 4);
-            src2dstCRSTransform.transform(pts, 0, pts, 0, 4);
-            w2gd.transform(pts, 0, pts, 0, 4);
+            g2wd.transform(pts, 0, pts, 0, 4);
+            dst2srcCRSTransform.transform(pts, 0, pts, 0, 4);
+            w2gs.transform(pts, 0, pts, 0, 4);
         } catch (TransformException e) {
             LOGGER.log(Level.WARNING, "Error transforming coords", e);
             return null;
@@ -433,38 +598,6 @@ public class GridCoverage2DRIA extends GeometricOpImage {
     }
 
     private void computeRectByte(PlanarImage src, RasterAccessor dst) {
-        int lpad, rpad, tpad, bpad;
-        if (interp != null) {
-            lpad = interp.getLeftPadding();
-            rpad = interp.getRightPadding();
-            tpad = interp.getTopPadding();
-            bpad = interp.getBottomPadding();
-        } else {
-            lpad = rpad = tpad = bpad = 0;
-        }
-
-        int minX, maxX, minY, maxY;
-        RandomIter iter;
-        if (extender != null) {
-            minX = src.getMinX();
-            maxX = src.getMaxX();
-            minY = src.getMinY();
-            maxY = src.getMaxY();
-            Rectangle bounds = new Rectangle(src.getMinX() - lpad, src.getMinY() - tpad, src
-                    .getWidth()
-                    + lpad + rpad, src.getHeight() + tpad + bpad);
-            iter = RandomIterFactory.create(src.getExtendedData(bounds, extender), bounds);
-        } else {
-            minX = src.getMinX() + lpad;
-            maxX = src.getMaxX() - rpad;
-            minY = src.getMinY() + tpad;
-            maxY = src.getMaxY() - bpad;
-            iter = RandomIterFactory.create(src, src.getBounds());
-        }
-
-        int kwidth = interp.getWidth();
-        int kheight = interp.getHeight();
-
         int dstWidth = dst.getWidth();
         int dstHeight = dst.getHeight();
         int dstBands = dst.getNumBands();
@@ -477,8 +610,6 @@ public class GridCoverage2DRIA extends GeometricOpImage {
         int precH = 1 << interp.getSubsampleBitsH();
         int precV = 1 << interp.getSubsampleBitsV();
 
-        float[] warpData = new float[2 * dstWidth];
-
         int[][] samples = new int[kheight][kwidth];
 
         int lineOffset = 0;
@@ -489,24 +620,38 @@ public class GridCoverage2DRIA extends GeometricOpImage {
         }
 
         if (ctable == null) { // source does not have IndexColorModel
+            
+            // == cycle on destination image
+            int minx=dst.getX(),x=0;
+            int miny=dst.getY(),y=0;
+            final double coords[] = new double[2];        // temp point            
+            // == cycle on Y
             for (int h = 0; h < dstHeight; h++) {
                 int pixelOffset = lineOffset;
                 lineOffset += lineStride;
 
-                // warp.warpRect(dst.getX(), dst.getY() + h, dstWidth, 1, warpData);
-                warpRect(dst.getX(), dst.getY() + h, dstWidth, 1, warpData);
 
-                int count = 0;
+                y=miny+h;
+                // --- cycle on X
                 for (int w = 0; w < dstWidth; w++) {
-                    float sx = warpData[count++];
-                    float sy = warpData[count++];
+                    x=minx+w;
+                    // map destinaton point to source point
+                    try {
+                        coords[0]=x;
+                        coords[1]=y;
+                        mapDestPoint(coords);
+                    } catch (TransformException e) {
+                        LOGGER.log(Level.FINER, e.getMessage(), e);
+                        throw new RuntimeException(e);
+                    }
+                    
+                    // compute integer position in source space
+                    int xint = floor(coords[0]);
+                    int yint = floor(coords[1]);
+                    int xfrac = (int) ((coords[0] - xint) * precH);
+                    int yfrac = (int) ((coords[1] - yint) * precV);
 
-                    int xint = floor(sx);
-                    int yint = floor(sy);
-                    int xfrac = (int) ((sx - xint) * precH);
-                    int yfrac = (int) ((sy - yint) * precV);
-
-                    if (xint < minX || xint >= maxX || yint < minY || yint >= maxY) {
+                    if (xint < minX || xint > maxX || yint < minY || yint > maxY) {
                         /* Fill with a background color. */
                         if (setBackground) {
                             for (int b = 0; b < dstBands; b++) {
@@ -514,18 +659,27 @@ public class GridCoverage2DRIA extends GeometricOpImage {
                             }
                         }
                     } else {
-                        xint -= lpad;
-                        yint -= tpad;
+                        // --- optimize nearest interpolation
+                        if( interp instanceof InterpolationNearest){
+                            for (int b = 0; b < dstBands; b++) {
+                                data[b][pixelOffset + bandOffsets[b]] = ImageUtil.clampByte(iter.getSample(xint, yint, b));
+                            }                        
+                           
+                        } else {
 
-                        for (int b = 0; b < dstBands; b++) {
-                            for (int j = 0; j < kheight; j++) {
-                                for (int i = 0; i < kwidth; i++) {
-                                    samples[j][i] = iter.getSample(xint + i, yint + j, b) & 0xFF;
+                            xint -= lpad;
+                            yint -= tpad;
+
+                            for (int b = 0; b < dstBands; b++) {
+                                for (int j = 0; j < kheight; j++) {
+                                    for (int i = 0; i < kwidth; i++) {
+                                        samples[j][i] = iter.getSample(xint + i, yint + j, b) & 0xFF;
+                                    }
                                 }
-                            }
 
-                            data[b][pixelOffset + bandOffsets[b]] = ImageUtil.clampByte(interp
-                                    .interpolate(samples, xfrac, yfrac));
+                                data[b][pixelOffset + bandOffsets[b]] = 
+                                    ImageUtil.clampByte(interp.interpolate(samples, xfrac, yfrac));
+                            }
                         }
                     }
 
@@ -533,22 +687,35 @@ public class GridCoverage2DRIA extends GeometricOpImage {
                 }
             }
         } else { // source has IndexColorModel
+            // == cycle on destination image
+            int minx=dst.getX(),x=0;
+            int miny=dst.getY(),y=0;
+            final double coords[] = new double[2]; // temp point
+            // --- cycle on Y
             for (int h = 0; h < dstHeight; h++) {
                 int pixelOffset = lineOffset;
                 lineOffset += lineStride;
-
-                // warp.warpRect(dst.getX(), dst.getY() + h, dstWidth, 1, warpData);
-                warpRect(dst.getX(), dst.getY() + h, dstWidth, 1, warpData);
-
-                int count = 0;
+                y=miny+h; // y coord in the position to set in dest space
+                
+                // --- cycle on X
                 for (int w = 0; w < dstWidth; w++) {
-                    float sx = warpData[count++];
-                    float sy = warpData[count++];
-
-                    int xint = floor(sx);
-                    int yint = floor(sy);
-                    int xfrac = (int) ((sx - xint) * precH);
-                    int yfrac = (int) ((sy - yint) * precV);
+                    x=minx+w; // x coord in the position to set in dest space
+                    
+                    // map destinaton point to source space for getting the values
+                    try {
+                        coords[0]=x;
+                        coords[1]=y;
+                        mapDestPoint(coords);
+                    } catch (TransformException e) {
+                        LOGGER.log(Level.FINER, e.getMessage(), e);
+                        throw new RuntimeException(e);
+                    }
+                    
+                    // compute integer position in source space
+                    int xint = floor(coords[0]);
+                    int yint = floor(coords[1]);
+                    int xfrac = (int) ((coords[0] - xint) * precH);
+                    int yfrac = (int) ((coords[1] - yint) * precV);
 
                     if (xint < minX || xint >= maxX || yint < minY || yint >= maxY) {
                         /* Fill with a background color. */
@@ -582,38 +749,6 @@ public class GridCoverage2DRIA extends GeometricOpImage {
     }
 
     private void computeRectUShort(PlanarImage src, RasterAccessor dst) {
-        int lpad, rpad, tpad, bpad;
-        if (interp != null) {
-            lpad = interp.getLeftPadding();
-            rpad = interp.getRightPadding();
-            tpad = interp.getTopPadding();
-            bpad = interp.getBottomPadding();
-        } else {
-            lpad = rpad = tpad = bpad = 0;
-        }
-
-        int minX, maxX, minY, maxY;
-        RandomIter iter;
-        if (extender != null) {
-            minX = src.getMinX();
-            maxX = src.getMaxX();
-            minY = src.getMinY();
-            maxY = src.getMaxY();
-            Rectangle bounds = new Rectangle(src.getMinX() - lpad, src.getMinY() - tpad, src
-                    .getWidth()
-                    + lpad + rpad, src.getHeight() + tpad + bpad);
-            iter = RandomIterFactory.create(src.getExtendedData(bounds, extender), bounds);
-        } else {
-            minX = src.getMinX() + lpad;
-            maxX = src.getMaxX() - rpad;
-            minY = src.getMinY() + tpad;
-            maxY = src.getMaxY() - bpad;
-            iter = RandomIterFactory.create(src, src.getBounds());
-        }
-
-        int kwidth = interp.getWidth();
-        int kheight = interp.getHeight();
-
         int dstWidth = dst.getWidth();
         int dstHeight = dst.getHeight();
         int dstBands = dst.getNumBands();
@@ -626,7 +761,6 @@ public class GridCoverage2DRIA extends GeometricOpImage {
         int precH = 1 << interp.getSubsampleBitsH();
         int precV = 1 << interp.getSubsampleBitsV();
 
-        float[] warpData = new float[2 * dstWidth];
 
         int[][] samples = new int[kheight][kwidth];
 
@@ -637,24 +771,37 @@ public class GridCoverage2DRIA extends GeometricOpImage {
             backgroundUShort[i] = (short) backgroundValues[i];
         }
 
+        // == cycle on destination image
+        int minx=dst.getX(),x=0;
+        int miny=dst.getY(),y=0;
+        final double coords[] = new double[2]; // temp point
+        // --- cycle on Y
         for (int h = 0; h < dstHeight; h++) {
             int pixelOffset = lineOffset;
             lineOffset += lineStride;
-
-            // warp.warpRect(dst.getX(), dst.getY() + h, dstWidth, 1, warpData);
-            warpRect(dst.getX(), dst.getY() + h, dstWidth, 1, warpData);
-
-            int count = 0;
+            y=miny+h; // y coord in the position to set in dest space
+            
+            // --- cycle on X
             for (int w = 0; w < dstWidth; w++) {
-                float sx = warpData[count++];
-                float sy = warpData[count++];
+                x=minx+w; // x coord in the position to set in dest space
+                
+                // map destinaton point to source space for getting the values
+                try {
+                    coords[0]=x;
+                    coords[1]=y;
+                    mapDestPoint(coords);
+                } catch (TransformException e) {
+                    LOGGER.log(Level.FINER, e.getMessage(), e);
+                    throw new RuntimeException(e);
+                }
+                
+                // compute integer position in source space
+                int xint = floor(coords[0]);
+                int yint = floor(coords[1]);
+                int xfrac = (int) ((coords[0] - xint) * precH);
+                int yfrac = (int) ((coords[1] - yint) * precV);
 
-                int xint = floor(sx);
-                int yint = floor(sy);
-                int xfrac = (int) ((sx - xint) * precH);
-                int yfrac = (int) ((sy - yint) * precV);
-
-                if (xint < minX || xint >= maxX || yint < minY || yint >= maxY) {
+                if (xint < minX || xint > maxX || yint < minY || yint > maxY) {
                     /* Fill with a background color. */
                     if (setBackground) {
                         for (int b = 0; b < dstBands; b++) {
@@ -662,18 +809,25 @@ public class GridCoverage2DRIA extends GeometricOpImage {
                         }
                     }
                 } else {
-                    xint -= lpad;
-                    yint -= tpad;
-
-                    for (int b = 0; b < dstBands; b++) {
-                        for (int j = 0; j < kheight; j++) {
-                            for (int i = 0; i < kwidth; i++) {
-                                samples[j][i] = iter.getSample(xint + i, yint + j, b) & 0xFFFF;
+                    // --- optimize nearest interpolation
+                    if( interp instanceof InterpolationNearest){
+                        for (int b = 0; b < dstBands; b++) {
+                            data[b][pixelOffset + bandOffsets[b]] = ImageUtil.clampUShort(iter.getSample(xint, yint, b));
+                        }                        
+                       
+                    } else {
+                        xint -= lpad;
+                        yint -= tpad;
+    
+                        for (int b = 0; b < dstBands; b++) {
+                            for (int j = 0; j < kheight; j++) {
+                                for (int i = 0; i < kwidth; i++) {
+                                    samples[j][i] = iter.getSample(xint + i, yint + j, b) & 0xFFFF;
+                                }
                             }
+    
+                            data[b][pixelOffset + bandOffsets[b]] = ImageUtil.clampUShort(interp.interpolate(samples, xfrac, yfrac));
                         }
-
-                        data[b][pixelOffset + bandOffsets[b]] = ImageUtil.clampUShort(interp
-                                .interpolate(samples, xfrac, yfrac));
                     }
                 }
 
@@ -683,37 +837,6 @@ public class GridCoverage2DRIA extends GeometricOpImage {
     }
 
     private void computeRectShort(PlanarImage src, RasterAccessor dst) {
-        int lpad, rpad, tpad, bpad;
-        if (interp != null) {
-            lpad = interp.getLeftPadding();
-            rpad = interp.getRightPadding();
-            tpad = interp.getTopPadding();
-            bpad = interp.getBottomPadding();
-        } else {
-            lpad = rpad = tpad = bpad = 0;
-        }
-
-        int minX, maxX, minY, maxY;
-        RandomIter iter;
-        if (extender != null) {
-            minX = src.getMinX();
-            maxX = src.getMaxX();
-            minY = src.getMinY();
-            maxY = src.getMaxY();
-            Rectangle bounds = new Rectangle(src.getMinX() - lpad, src.getMinY() - tpad, src
-                    .getWidth()
-                    + lpad + rpad, src.getHeight() + tpad + bpad);
-            iter = RandomIterFactory.create(src.getExtendedData(bounds, extender), bounds);
-        } else {
-            minX = src.getMinX() + lpad;
-            maxX = src.getMaxX() - rpad;
-            minY = src.getMinY() + tpad;
-            maxY = src.getMaxY() - bpad;
-            iter = RandomIterFactory.create(src, src.getBounds());
-        }
-
-        int kwidth = interp.getWidth();
-        int kheight = interp.getHeight();
 
         int dstWidth = dst.getWidth();
         int dstHeight = dst.getHeight();
@@ -727,8 +850,6 @@ public class GridCoverage2DRIA extends GeometricOpImage {
         int precH = 1 << interp.getSubsampleBitsH();
         int precV = 1 << interp.getSubsampleBitsV();
 
-        float[] warpData = new float[2 * dstWidth];
-
         int[][] samples = new int[kheight][kwidth];
 
         int lineOffset = 0;
@@ -738,24 +859,37 @@ public class GridCoverage2DRIA extends GeometricOpImage {
             backgroundShort[i] = (short) backgroundValues[i];
         }
 
+        // == cycle on destination image
+        int minx=dst.getX(),x=0;
+        int miny=dst.getY(),y=0;
+        final double coords[] = new double[2]; // temp point
+        // --- cycle on Y
         for (int h = 0; h < dstHeight; h++) {
             int pixelOffset = lineOffset;
             lineOffset += lineStride;
-
-            // warp.warpRect(dst.getX(), dst.getY() + h, dstWidth, 1, warpData);
-            warpRect(dst.getX(), dst.getY() + h, dstWidth, 1, warpData);
-
-            int count = 0;
+            y=miny+h; // y coord in the position to set in dest space
+            
+            // --- cycle on X
             for (int w = 0; w < dstWidth; w++) {
-                float sx = warpData[count++];
-                float sy = warpData[count++];
+                x=minx+w; // x coord in the position to set in dest space
+                
+                // map destinaton point to source space for getting the values
+                try {
+                    coords[0]=x;
+                    coords[1]=y;
+                    mapDestPoint(coords);
+                } catch (TransformException e) {
+                    LOGGER.log(Level.FINER, e.getMessage(), e);
+                    throw new RuntimeException(e);
+                }
+                
+                // compute integer position in source space
+                int xint = floor(coords[0]);
+                int yint = floor(coords[1]);
+                int xfrac = (int) ((coords[0] - xint) * precH);
+                int yfrac = (int) ((coords[1] - yint) * precV);
 
-                int xint = floor(sx);
-                int yint = floor(sy);
-                int xfrac = (int) ((sx - xint) * precH);
-                int yfrac = (int) ((sy - yint) * precV);
-
-                if (xint < minX || xint >= maxX || yint < minY || yint >= maxY) {
+                if (xint < minX || xint > maxX || yint < minY || yint > maxY) {
                     /* Fill with a background color. */
                     if (setBackground) {
                         for (int b = 0; b < dstBands; b++) {
@@ -763,18 +897,25 @@ public class GridCoverage2DRIA extends GeometricOpImage {
                         }
                     }
                 } else {
-                    xint -= lpad;
-                    yint -= tpad;
-
-                    for (int b = 0; b < dstBands; b++) {
-                        for (int j = 0; j < kheight; j++) {
-                            for (int i = 0; i < kwidth; i++) {
-                                samples[j][i] = iter.getSample(xint + i, yint + j, b);
+                    // --- optimize nearest interpolation
+                    if( interp instanceof InterpolationNearest){
+                        for (int b = 0; b < dstBands; b++) {
+                            data[b][pixelOffset + bandOffsets[b]] = ImageUtil.clampShort(iter.getSample(xint, yint, b));
+                        }                        
+                       
+                    } else {                    
+                        xint -= lpad;
+                        yint -= tpad;
+    
+                        for (int b = 0; b < dstBands; b++) {
+                            for (int j = 0; j < kheight; j++) {
+                                for (int i = 0; i < kwidth; i++) {
+                                    samples[j][i] = iter.getSample(xint + i, yint + j, b);
+                                }
                             }
+    
+                            data[b][pixelOffset + bandOffsets[b]] = ImageUtil.clampShort(interp.interpolate(samples, xfrac, yfrac));
                         }
-
-                        data[b][pixelOffset + bandOffsets[b]] = ImageUtil.clampShort(interp
-                                .interpolate(samples, xfrac, yfrac));
                     }
                 }
 
@@ -784,37 +925,6 @@ public class GridCoverage2DRIA extends GeometricOpImage {
     }
 
     private void computeRectInt(PlanarImage src, RasterAccessor dst) {
-        int lpad, rpad, tpad, bpad;
-        if (interp != null) {
-            lpad = interp.getLeftPadding();
-            rpad = interp.getRightPadding();
-            tpad = interp.getTopPadding();
-            bpad = interp.getBottomPadding();
-        } else {
-            lpad = rpad = tpad = bpad = 0;
-        }
-
-        int minX, maxX, minY, maxY;
-        RandomIter iter;
-        if (extender != null) {
-            minX = src.getMinX();
-            maxX = src.getMaxX();
-            minY = src.getMinY();
-            maxY = src.getMaxY();
-            Rectangle bounds = new Rectangle(src.getMinX() - lpad, src.getMinY() - tpad, src
-                    .getWidth()
-                    + lpad + rpad, src.getHeight() + tpad + bpad);
-            iter = RandomIterFactory.create(src.getExtendedData(bounds, extender), bounds);
-        } else {
-            minX = src.getMinX() + lpad;
-            maxX = src.getMaxX() - rpad;
-            minY = src.getMinY() + tpad;
-            maxY = src.getMaxY() - bpad;
-            iter = RandomIterFactory.create(src, src.getBounds());
-        }
-
-        int kwidth = interp.getWidth();
-        int kheight = interp.getHeight();
 
         int dstWidth = dst.getWidth();
         int dstHeight = dst.getHeight();
@@ -828,8 +938,6 @@ public class GridCoverage2DRIA extends GeometricOpImage {
         int precH = 1 << interp.getSubsampleBitsH();
         int precV = 1 << interp.getSubsampleBitsV();
 
-        float[] warpData = new float[2 * dstWidth];
-
         int[][] samples = new int[kheight][kwidth];
 
         int lineOffset = 0;
@@ -839,24 +947,37 @@ public class GridCoverage2DRIA extends GeometricOpImage {
             backgroundInt[i] = (int) backgroundValues[i];
         }
 
+        // == cycle on destination image
+        int minx=dst.getX(),x=0;
+        int miny=dst.getY(),y=0;
+        final double coords[] = new double[2]; // temp point
+        // --- cycle on Y
         for (int h = 0; h < dstHeight; h++) {
             int pixelOffset = lineOffset;
             lineOffset += lineStride;
-
-            // warp.warpRect(dst.getX(), dst.getY() + h, dstWidth, 1, warpData);
-            warpRect(dst.getX(), dst.getY() + h, dstWidth, 1, warpData);
-
-            int count = 0;
+            y=miny+h; // y coord in the position to set in dest space
+            
+            // --- cycle on X
             for (int w = 0; w < dstWidth; w++) {
-                float sx = warpData[count++];
-                float sy = warpData[count++];
+                x=minx+w; // x coord in the position to set in dest space
+                
+                // map destinaton point to source space for getting the values
+                try {
+                    coords[0]=x;
+                    coords[1]=y;
+                    mapDestPoint(coords);
+                } catch (TransformException e) {
+                    LOGGER.log(Level.FINER, e.getMessage(), e);
+                    throw new RuntimeException(e);
+                }
+                
+                // compute integer position in source space
+                int xint = floor(coords[0]);
+                int yint = floor(coords[1]);
+                int xfrac = (int) ((coords[0] - xint) * precH);
+                int yfrac = (int) ((coords[1] - yint) * precV);
 
-                int xint = floor(sx);
-                int yint = floor(sy);
-                int xfrac = (int) ((sx - xint) * precH);
-                int yfrac = (int) ((sy - yint) * precV);
-
-                if (xint < minX || xint >= maxX || yint < minY || yint >= maxY) {
+                if (xint < minX || xint > maxX || yint < minY || yint > maxY) {
                     /* Fill with a background color. */
                     if (setBackground) {
                         for (int b = 0; b < dstBands; b++) {
@@ -864,18 +985,25 @@ public class GridCoverage2DRIA extends GeometricOpImage {
                         }
                     }
                 } else {
-                    xint -= lpad;
-                    yint -= tpad;
-
-                    for (int b = 0; b < dstBands; b++) {
-                        for (int j = 0; j < kheight; j++) {
-                            for (int i = 0; i < kwidth; i++) {
-                                samples[j][i] = iter.getSample(xint + i, yint + j, b);
+                    // --- optimize nearest interpolation
+                    if( interp instanceof InterpolationNearest){
+                        for (int b = 0; b < dstBands; b++) {
+                            data[b][pixelOffset + bandOffsets[b]] = iter.getSample(xint, yint, b);
+                        }                        
+                       
+                    } else {
+                        xint -= lpad;
+                        yint -= tpad;
+    
+                        for (int b = 0; b < dstBands; b++) {
+                            for (int j = 0; j < kheight; j++) {
+                                for (int i = 0; i < kwidth; i++) {
+                                    samples[j][i] = iter.getSample(xint + i, yint + j, b);
+                                }
                             }
+    
+                            data[b][pixelOffset + bandOffsets[b]] = interp.interpolate(samples, xfrac, yfrac);
                         }
-
-                        data[b][pixelOffset + bandOffsets[b]] = interp.interpolate(samples, xfrac,
-                                yfrac);
                     }
                 }
 
@@ -885,135 +1013,88 @@ public class GridCoverage2DRIA extends GeometricOpImage {
     }
 
     private void computeRectFloat(PlanarImage src, RasterAccessor dst) {
-        int lpad, rpad, tpad, bpad;
-        if (interp != null) {
-            lpad = interp.getLeftPadding();
-            rpad = interp.getRightPadding();
-            tpad = interp.getTopPadding();
-            bpad = interp.getBottomPadding();
-        } else {
-            lpad = rpad = tpad = bpad = 0;
-        }
 
-        int minX, maxX, minY, maxY;
-        RandomIter iter;
-        if (extender != null) {
-            minX = src.getMinX();
-            maxX = src.getMaxX();
-            minY = src.getMinY();
-            maxY = src.getMaxY();
-            Rectangle bounds = new Rectangle(src.getMinX() - lpad, src.getMinY() - tpad, src
-                    .getWidth()
-                    + lpad + rpad, src.getHeight() + tpad + bpad);
-            iter = RandomIterFactory.create(src.getExtendedData(bounds, extender), bounds);
-        } else {
-            minX = src.getMinX() + lpad;
-            maxX = src.getMaxX() - rpad;
-            minY = src.getMinY() + tpad;
-            maxY = src.getMaxY() - bpad;
-            iter = RandomIterFactory.create(src, src.getBounds());
-        }
-
-        int kwidth = interp.getWidth();
-        int kheight = interp.getHeight();
-
+        // -- prepare for cycling on the destination tile
         int dstWidth = dst.getWidth();
         int dstHeight = dst.getHeight();
         int dstBands = dst.getNumBands();
 
-        int lineStride = dst.getScanlineStride();
-        int pixelStride = dst.getPixelStride();
-        int[] bandOffsets = dst.getBandOffsets();
-        float[][] data = dst.getFloatDataArrays();
-
-        float[] warpData = new float[2 * dstWidth];
+        int dstLineStride = dst.getScanlineStride();
+        int dstPixelStride = dst.getPixelStride();
+        int[] dstBandOffsets = dst.getBandOffsets();
+        float[][] dstData = dst.getFloatDataArrays();
 
         float[][] samples = new float[kheight][kwidth];
-
         int lineOffset = 0;
-
-        float[] backgroundFloat = new float[dstBands];
-        for (int i = 0; i < dstBands; i++) {
-            backgroundFloat[i] = (float) backgroundValues[i];
-        }
-
+        
+        
+        // == cycle on destination image
+        int minx=dst.getX(),x=0;
+        int miny=dst.getY(),y=0;
+        final double coords[] = new double[2]; // temp point
+        // --- cycle on Y
         for (int h = 0; h < dstHeight; h++) {
             int pixelOffset = lineOffset;
-            lineOffset += lineStride;
-
-            // warp.warpRect(dst.getX(), dst.getY() + h, dstWidth, 1, warpData);
-            warpRect(dst.getX(), dst.getY() + h, dstWidth, 1, warpData);
-
-            int count = 0;
+            lineOffset += dstLineStride;
+            y=miny+h; // y coord in the position to set in dest space
+            
+            // --- cycle on X
             for (int w = 0; w < dstWidth; w++) {
-                float sx = warpData[count++];
-                float sy = warpData[count++];
-
-                int xint = floor(sx);
-                int yint = floor(sy);
-                float xfrac = sx - xint;
-                float yfrac = sy - yint;
-
-                if (xint < minX || xint >= maxX || yint < minY || yint >= maxY) {
+                x=minx+w; // x coord in the position to set in dest space
+                
+                // map destinaton point to source space for getting the values
+                try {
+                    coords[0]=x;
+                    coords[1]=y;
+                    mapDestPoint(coords);
+                } catch (TransformException e) {
+                    LOGGER.log(Level.FINER, e.getMessage(), e);
+                    throw new RuntimeException(e);
+                }
+                
+                // compute integer position in source space
+                int xint = floor(coords[0]);
+                int yint = floor(coords[1]);
+                float xfrac = (float)(coords[0] - xint);
+                float yfrac = (float)(coords[1] - yint);
+                if (xint < minX || xint > maxX || yint < minY || yint > maxY) {
                     /* Fill with a background color. */
                     if (setBackground) {
                         for (int b = 0; b < dstBands; b++) {
-                            data[b][pixelOffset + bandOffsets[b]] = backgroundFloat[b];
+                            dstData[b][pixelOffset + dstBandOffsets[b]] = (float)backgroundValues[b];
                         }
                     }
                 } else {
-                    xint -= lpad;
-                    yint -= tpad;
 
-                    for (int b = 0; b < dstBands; b++) {
-                        for (int j = 0; j < kheight; j++) {
-                            for (int i = 0; i < kwidth; i++) {
-                                samples[j][i] = iter.getSampleFloat(xint + i, yint + j, b);
+                    // --- optimize nearest interpolation
+                    if( interp instanceof InterpolationNearest){
+                        for (int b = 0; b < dstBands; b++) {
+                            dstData[b][pixelOffset + dstBandOffsets[b]] = iter.getSampleFloat(xint, yint, b);
+                        }                        
+                       
+                    } else {
+                        // generic  interpolation                        
+                        xint -= lpad;
+                        yint -= tpad;
+                        
+                        for (int b = 0; b < dstBands; b++) {
+                            for (int j = 0; j < kheight; j++) {
+                                for (int i = 0; i < kwidth; i++) {
+                                    samples[j][i] = iter.getSampleFloat(xint + i, yint + j, b);
+                                }
                             }
+    
+                            dstData[b][pixelOffset + dstBandOffsets[b]] = interp.interpolate(samples, xfrac,yfrac);
                         }
-
-                        data[b][pixelOffset + bandOffsets[b]] = interp.interpolate(samples, xfrac,
-                                yfrac);
                     }
                 }
 
-                pixelOffset += pixelStride;
+                pixelOffset += dstPixelStride;
             }
         }
     }
 
     private void computeRectDouble(PlanarImage src, RasterAccessor dst) {
-        int lpad, rpad, tpad, bpad;
-        if (interp != null) {
-            lpad = interp.getLeftPadding();
-            rpad = interp.getRightPadding();
-            tpad = interp.getTopPadding();
-            bpad = interp.getBottomPadding();
-        } else {
-            lpad = rpad = tpad = bpad = 0;
-        }
-
-        int minX, maxX, minY, maxY;
-        RandomIter iter;
-        if (extender != null) {
-            minX = src.getMinX();
-            maxX = src.getMaxX();
-            minY = src.getMinY();
-            maxY = src.getMaxY();
-            Rectangle bounds = new Rectangle(src.getMinX() - lpad, src.getMinY() - tpad, src
-                    .getWidth()
-                    + lpad + rpad, src.getHeight() + tpad + bpad);
-            iter = RandomIterFactory.create(src.getExtendedData(bounds, extender), bounds);
-        } else {
-            minX = src.getMinX() + lpad;
-            maxX = src.getMaxX() - rpad;
-            minY = src.getMinY() + tpad;
-            maxY = src.getMaxY() - bpad;
-            iter = RandomIterFactory.create(src, src.getBounds());
-        }
-
-        int kwidth = interp.getWidth();
-        int kheight = interp.getHeight();
 
         int dstWidth = dst.getWidth();
         int dstHeight = dst.getHeight();
@@ -1024,30 +1105,38 @@ public class GridCoverage2DRIA extends GeometricOpImage {
         int[] bandOffsets = dst.getBandOffsets();
         double[][] data = dst.getDoubleDataArrays();
 
-        float[] warpData = new float[2 * dstWidth];
-
         double[][] samples = new double[kheight][kwidth];
 
         int lineOffset = 0;
-
+        // == cycle on destination image
+        int minx=dst.getX(),x=0;
+        int miny=dst.getY(),y=0;
+        final double coords[] = new double[2];        // temp point
+        // --- cycle on Y
         for (int h = 0; h < dstHeight; h++) {
             int pixelOffset = lineOffset;
             lineOffset += lineStride;
 
-            // warp.warpRect(dst.getX(), dst.getY() + h, dstWidth, 1, warpData);
-            warpRect(dst.getX(), dst.getY() + h, dstWidth, 1, warpData);
-
-            int count = 0;
+            y=miny+h;
+            // --- cycle on X
             for (int w = 0; w < dstWidth; w++) {
-                float sx = warpData[count++];
-                float sy = warpData[count++];
-
-                int xint = floor(sx);
-                int yint = floor(sy);
-                float xfrac = sx - xint;
-                float yfrac = sy - yint;
-
-                if (xint < minX || xint >= maxX || yint < minY || yint >= maxY) {
+                x=minx+w;
+                // map destinaton point to source point
+                try {
+                    coords[0]=x;
+                    coords[1]=y;
+                    mapDestPoint(coords);
+                } catch (TransformException e) {
+                    LOGGER.log(Level.FINER, e.getMessage(), e);
+                    throw new RuntimeException(e);
+                }
+                
+                // compute integer position in source space
+                int xint = floor(coords[0]);
+                int yint = floor(coords[1]);
+                float xfrac = (float)(coords[0] - xint);
+                float yfrac = (float)(coords[1] - yint);
+                if (xint < minX || xint > maxX || yint < minY || yint > maxY) {
                     /* Fill with a background color. */
                     if (setBackground) {
                         for (int b = 0; b < dstBands; b++) {
@@ -1055,37 +1144,37 @@ public class GridCoverage2DRIA extends GeometricOpImage {
                         }
                     }
                 } else {
-                    xint -= lpad;
-                    yint -= tpad;
-
-                    for (int b = 0; b < dstBands; b++) {
-                        for (int j = 0; j < kheight; j++) {
-                            for (int i = 0; i < kwidth; i++) {
-                                samples[j][i] = iter.getSampleDouble(xint + i, yint + j, b);
+                    // --- optimize nearest interpolation
+                    if( interp instanceof InterpolationNearest){
+                        for (int b = 0; b < dstBands; b++) {
+                            data[b][pixelOffset + bandOffsets[b]] = iter.getSampleDouble(xint, yint, b);
+                        }                        
+                       
+                    } else {                    
+                        xint -= lpad;
+                        yint -= tpad;
+    
+                        for (int b = 0; b < dstBands; b++) {
+                            for (int j = 0; j < kheight; j++) {
+                                for (int i = 0; i < kwidth; i++) {
+                                    samples[j][i] = iter.getSampleDouble(xint + i, yint + j, b);
+                                }
                             }
+    
+                            data[b][pixelOffset + bandOffsets[b]] = interp.interpolate(samples, xfrac, yfrac);
                         }
-
-                        data[b][pixelOffset + bandOffsets[b]] = interp.interpolate(samples, xfrac,
-                                yfrac);
                     }
                 }
-
                 pixelOffset += pixelStride;
             }
         }
     }
 
-    /** Returns the "floor" value of a float. */
-    private static final int floor(float f) {
+    /** Returns the "floor" value of a double. */
+    private static final int floor(double f) {
         return f >= 0 ? (int) f : (int) f - 1;
     }
 
-    public float[] warpRect(int x, int y, int width, int height, float[] destRect) {
-        if (destRect != null && destRect.length < (width * height * 2)) {
-            throw new IllegalArgumentException("warpRect: bad destRect");// JaiI18N.getString("Warp0"));
-        }
-        return warpSparseRect(x, y, width, height, 1, 1, destRect);
-    }
 
     /**
      * @param x0
@@ -1115,8 +1204,7 @@ public class GridCoverage2DRIA extends GeometricOpImage {
 
         // XXX: This method should do its calculations in doubles
         if (destRect == null) {
-            destRect = new float[((width + periodX - 1) / periodX)
-                    * ((height + periodY - 1) / periodY) * 2];
+            destRect = new float[((width + periodX - 1) / periodX) * ((height + periodY - 1) / periodY) * 2];
         }
 
         width += x0;
@@ -1130,7 +1218,7 @@ public class GridCoverage2DRIA extends GeometricOpImage {
                 xy[0] = x;
                 xy[1] = y;
                 try {
-                    mapSrcPoint(xy);
+                    mapSourcePoint(xy);
                     destRect[index++] = (float) xy[0];
                     destRect[index++] = (float) xy[1];
                 } catch (TransformException e) {
@@ -1142,6 +1230,20 @@ public class GridCoverage2DRIA extends GeometricOpImage {
         }
 
         return destRect;
+    }
+
+    @Override
+    public synchronized void dispose() {
+        super.dispose();
+        
+        // dispose iterator
+        if(iter!=null){
+            iter.done();
+        }
+        
+        // remove from cache
+        // TODO improve cache management
+        JAI.getDefaultInstance().getTileCache().removeTiles(this);
     }
 
 }

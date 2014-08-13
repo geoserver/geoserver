@@ -27,6 +27,7 @@ import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ProjectionPolicy;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.util.CoverageStoreUtils;
@@ -451,8 +452,8 @@ public class LegacyCatalogImporter {
         featureType.setMaxFeatures(ftInfoReader.maxFeatures());
         featureType.getMetadata().put( "dirName", ftInfoReader.parentDirectoryName() );
         featureType.getMetadata().put( "indexingEnabled", ftInfoReader.searchable() );
-        featureType.getMetadata().put( "cachingEnabled", ftInfoReader.cachingEnabled() );
-        featureType.getMetadata().put( "cacheAgeMax", ftInfoReader.cacheAgeMax() );
+        featureType.getMetadata().put( ResourceInfo.CACHING_ENABLED, ftInfoReader.cachingEnabled() );
+        featureType.getMetadata().put( ResourceInfo.CACHE_AGE_MAX, ftInfoReader.cacheAgeMax() );
         featureType.getMetadata().put( "kml.regionateAttribute", ftInfoReader.regionateAttribute() );
         featureType.getMetadata().put( "kml.regionateStrategy", ftInfoReader.regionateStrategy() );
         featureType.getMetadata().put( "kml.regionateFeatureLimit", ftInfoReader.regionateFeatureLimit());

@@ -9,7 +9,7 @@
 	<key>CFBundleIdentifier</key>
 	<string>org.geoserver</string>
 	<key>CFBundleVersion</key>
-	<string>2.4-SNAPSHOT</string>
+	<string>2.5-SNAPSHOT</string>
 	<key>CFBundleAllowMixedLocalizations</key>
 	<string>true</string>
 	<key>CFBundleDevelopmentRegion</key>
@@ -17,7 +17,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.4-SNAPSHOT</string>
+	<string>2.5-SNAPSHOT</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleGetInfoString</key>
@@ -46,7 +46,7 @@
 		<key>Properties</key>
 		<dict>
 			<key>apple.laf.useScreenMenuBar</key>
-			<string>false</string>
+			<string>true</string>
 		</dict>
 	</dict>
 </dict>

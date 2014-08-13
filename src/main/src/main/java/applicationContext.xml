@@ -7,14 +7,27 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
  
 <beans>
-
-    <!--  
-        resources
-     -->
-    <bean id="resourceLoader" class="org.geoserver.platform.GeoServerResourceLoader"/>
+    <!--  lock providers -->
+    <bean id="nullLockProvider" class="org.geoserver.platform.resource.NullLockProvider"/>
+    <bean id="memoryLockProvider" class="org.geoserver.platform.resource.MemoryLockProvider"/>
+    <bean id="fileLockProvider" class="org.geoserver.platform.resource.FileLockProvider"/>
+    <bean id="lockProvider" class="org.geoserver.platform.resource.GlobalLockProvider">
+        <property name="delegate" ref="nullLockProvider"/>
+    </bean>
+    <bean id="lockProviderInitializer" class="org.geoserver.config.LockProviderInitializer"/>
+    
+	<!-- resources -->
+    <bean id="resourceStore" class="org.geoserver.platform.resource.DataDirectoryResourceStore">
+      <property name="lockProvider" ref="lockProvider"/>
+    </bean>
+    <bean id="resourceLoader" class="org.geoserver.platform.GeoServerResourceLoader">
+	    <constructor-arg ref="resourceStore"/>
+    </bean>
+    
     <bean id="dataDirectory" class="org.geoserver.config.GeoServerDataDirectory">
        <constructor-arg ref="resourceLoader"/>
     </bean>
+    
     <bean id="manifestLoader" class="org.geoserver.ManifestLoader">
        <constructor-arg ref="resourceLoader"/>
     </bean>
@@ -93,9 +106,7 @@
      class="org.springframework.beans.factory.config.CustomEditorConfigurer">
         <property name="customEditors">
           <map>
-              <entry key="org.geotools.util.Version">
-                <bean class="org.geoserver.platform.util.VersionPropertyEditor"/>
-             </entry>
+              <entry key="org.geotools.util.Version" value="org.geoserver.platform.util.VersionPropertyEditor"/>
           </map>
         </property>
     </bean>
@@ -211,4 +222,18 @@
   
   <!-- Automatically injects a env map into the env function -->
   <bean id="enviromentInjector" class="org.geoserver.ows.EnviromentInjectionCallback"/>
+  
+  <!-- Thread local transfers -->
+  <bean id="dispatcherRequestTransfer" class="org.geoserver.threadlocals.PublicThreadLocalTransfer">
+    <constructor-arg index="0" value="org.geoserver.ows.Dispatcher"/>
+    <constructor-arg index="1" value="REQUEST"/>
+  </bean>
+  <bean id="adminRequestTransfer" class="org.geoserver.threadlocals.AdminRequestThreadLocalTransfer"/>
+  <bean id="authenticationTransfer" class="org.geoserver.threadlocals.AuthenticationThreadLocalTransfer"/>
+  <bean id="localLayerTransfer" class="org.geoserver.threadlocals.LocalLayerThreadLocalTransfer"/>
+  <bean id="localWorkspaceTransfer" class="org.geoserver.threadlocals.LocalWorkspaceThreadLocalTransfer"/>
+
+  <!-- default style handlers -->
+  <bean id="sldHandler" class="org.geoserver.catalog.SLDHandler"/>
+
 </beans>

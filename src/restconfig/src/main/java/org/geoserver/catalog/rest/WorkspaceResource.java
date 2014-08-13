@@ -50,8 +50,6 @@ public class WorkspaceResource extends AbstractCatalogResource {
             @Override
             protected void postEncodeWorkspace(WorkspaceInfo ws,
                     HierarchicalStreamWriter writer, MarshallingContext context) {
-                PageInfo pg = getPageInfo();
-                
                 //add a link to the stores
                 writer.startNode( "dataStores");
                 encodeCollectionLink("datastores", writer);

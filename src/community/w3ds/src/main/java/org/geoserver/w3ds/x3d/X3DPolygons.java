@@ -10,7 +10,6 @@ package org.geoserver.w3ds.x3d;
 import java.io.IOException;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Polygon;
 
 

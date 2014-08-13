@@ -1,4 +1,5 @@
-GEOSERVER 2.4+ DATA STORE EXTRAS README
+GEOSERVER 2.6 DATA STORE EXTRAS README
+--------------------------------------
 
 This package contains a DB2 DataStore implementation that is
 distributed as a separate plug-in.
@@ -6,8 +7,6 @@ distributed as a separate plug-in.
 Please report any bugs with jira (http://jira.codehaus.org/browse/GEOS).
 
 Any other issues can be discussed on the mailing list (http://lists.sourceforge.net/lists/listinfo/geoserver-users).
-
-Contains the following data stores:
 
 INSTALLATION
 
@@ -22,10 +21,10 @@ $DB2PATH/java to your GeoServer library directory.
 3. Restart GeoServer.
 
 DB2 should now show up as an option in the web admin tool at
-Config -> Data -> DataStores -> New. Fill out the appropriate params. For more
-information see http://geoserver.org/display/GEOSDOC/DB2+DataStore
+Config -> Data -> DataStores -> New. Fill out the appropriate params.
+For more information http://docs.geoserver.org/latest/en/user/data/database/db2.html
 
 COMPATIBILITY
 
-This jar should work with any version of GeoServer based on GeoTools 10.x.
-Currently this is anything in 2.4.x
+This jar should work with any version of GeoServer based on GeoTools 12.x
+Currently this is anything in 2.6.x

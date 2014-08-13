@@ -25,8 +25,8 @@ import org.geoserver.wcs.WCSInfo;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.DecimationPolicy;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.OverviewPolicy;
 import org.geotools.coverage.processing.CoverageProcessor;
 import org.geotools.coverage.processing.operation.Interpolate;
@@ -43,6 +43,9 @@ import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.processing.Operation;
 import org.opengis.filter.Filter;
 import org.opengis.geometry.Envelope;
+import org.opengis.parameter.GeneralParameterValue;
+import org.opengis.parameter.ParameterDescriptor;
+import org.opengis.parameter.ParameterValue;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
@@ -326,7 +329,7 @@ public class WCSUtils {
     /**
      * Checks the coverage read is below the input limits. Mind, at this point the reader might have
      * have subsampled the original image in some way so it is expected the coverage is actually
-     * smaller than what computed but {@link #checkInputLimits(CoverageInfo, AbstractGridCoverage2DReader, GeneralEnvelope)},
+     * smaller than what computed but {@link #checkInputLimits(CoverageInfo, GridCoverage2DReader, GeneralEnvelope)},
      * however that method might have failed the computation due to lack of metadata (or wrong metadata)
      * so it's safe to double check the actual coverage wit this one.
      * Mind, this method might cause the coverage to be fully read in memory (if that is the case,
@@ -381,7 +384,7 @@ public class WCSUtils {
      * @throws WcsException if the coverage size exceeds the configured limits
      */
     public static void checkInputLimits(WCSInfo info, CoverageInfo meta, 
-            AbstractGridCoverage2DReader reader, GridGeometry2D gridGeometry) throws WcsException {
+            GridCoverage2DReader reader, GridGeometry2D gridGeometry) throws WcsException {
         // do we have to check a limit at all?
         long limit = info.getMaxInputMemory() * 1024;
         if(limit <= 0) {
@@ -394,9 +397,9 @@ public class WCSUtils {
             // if necessary reproject back to the original CRS
             GeneralEnvelope requestedEnvelope = new GeneralEnvelope(gridGeometry.getEnvelope());
             final CoordinateReferenceSystem requestCRS = requestedEnvelope.getCoordinateReferenceSystem();
-            final CoordinateReferenceSystem nativeCRS = reader.getCrs();
+            final CoordinateReferenceSystem nativeCRS = reader.getCoordinateReferenceSystem();
             if(!CRS.equalsIgnoreMetadata(requestCRS, nativeCRS)) {
-                requestedEnvelope = CRS.transform(CRS.findMathTransform(requestCRS, nativeCRS, true), requestedEnvelope);
+                requestedEnvelope = CRS.transform(requestedEnvelope, nativeCRS);
             }
             // intersect with the native envelope, we cannot read outside of it
             requestedEnvelope.intersect(reader.getOriginalEnvelope());
@@ -599,5 +602,31 @@ public class WCSUtils {
             pixelsNumber *= rasterEnvelope.getSpan(i);
         }
         return pixelsNumber;
+    }
+
+    /**
+    * Replace or add the provided parameter in the read parameters
+    */
+    public static <T> GeneralParameterValue[] replaceParameter(
+            GeneralParameterValue[] readParameters, Object value, ParameterDescriptor<T> pd) {
+    
+        // scan all the params looking for the one we want to add
+        for (GeneralParameterValue gpv : readParameters) {
+            // in case of match of any alias add a param value to the lot
+            if (gpv.getDescriptor().getName().equals(pd.getName())) {
+                ((ParameterValue) gpv).setValue(value);
+                // leave
+                return readParameters;
+            }
+        }
+    
+        // add it to the array
+        // add to the list
+        GeneralParameterValue[] readParametersClone = new GeneralParameterValue[readParameters.length + 1];
+        System.arraycopy(readParameters, 0, readParametersClone, 0, readParameters.length);
+        final ParameterValue<T> pv = pd.createValue();
+        pv.setValue(value);
+        readParametersClone[readParameters.length] = pv;
+        return readParametersClone;
     }
 }

@@ -97,9 +97,6 @@ public class GeoServerDigestAuthenticationFilter extends GeoServerCompositeFilte
         
         if (request.getSession(false)!=null) // no caching if there is an HTTP session
             return null;
-        if (Boolean.TRUE.equals(request.getAttribute(GeoServerSecurityContextPersistenceFilter.ALLOWSESSIONCREATION_ATTR)))
-            return null;
-
 
         String header = request.getHeader("Authorization");
 

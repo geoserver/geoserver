@@ -70,6 +70,10 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
      * List of process groups/factories.
      */
     List<ProcessGroupInfo> processGroups = new ArrayList<ProcessGroupInfo>();
+    
+    public WPSInfoImpl() {
+        
+    }
 
     /**
      * Returns the connection timeout (in seconds). It represents the timeout to be used 

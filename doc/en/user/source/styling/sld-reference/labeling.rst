@@ -401,6 +401,10 @@ followLine
 
 The ``followLine`` option forces a label to follow the curve of the line. To use this option add the following to the ``<TextSymbolizer>``.
 
+.. note:: **Straight Lines**
+
+  You don't need to use followLine for straight lines. GeoServer will automatically follow the orientation of the line. However in this case ``followLine`` can be used to ensure the text isn't rendered if longer than the line.
+
 .. code-block:: xml
   
   <VendorOption name="followLine">true</VendorOption>  
@@ -418,12 +422,13 @@ It is required to use ``<LinePlacement>`` along with this option to ensure that 
 maxDisplacement
 ^^^^^^^^^^^^^^^
 
-The ``maxDisplacement`` option controls the displacement of the label along a line. 
-Normally GeoServer labels a line at its center point only.
-If this label conflicts with another one it may not be displayed at all. 
-When this option is enabled the labeller will attempt to avoid conflict by using an alternate location within **maxDisplacement** pixels along the line from the pre-computed label point.
+The ``maxDisplacement`` option controls the displacement of the label along a line, around a point and inside a polygon.
+
+For lines, normally GeoServer labels a line at its center point only. If this label conflicts with another one it may not be displayed at all. When this option is enabled the labeller will attempt to avoid conflic by using an alternate location within **maxDisplacement** pixels along the line from the pre-computed label point.
 
 If used in conjunction with :ref:`labeling_repeat`, the value for ``maxDisplacement`` should always be **lower** than the value for ``repeat``.
+
+For points this causes the renderer to start circling around the point in search of a empty stop to place the label, step by step increasing the size of the circle until the max displacement is reached. The same happens for polygons, around the polygon labelling point (normally the centroid).
 
 .. code-block:: xml
 
@@ -577,9 +582,8 @@ If this option is used the ``graphic-margin`` option may also be specified.
      
 .. cssclass:: no-border
 
-   =============================================  ================================================
-   .. figure:: img/label_graphic-resize_none.png  .. figure:: img/label_graphic-resize_stretch.png
-   =============================================  ================================================
+   .. figure:: img/label_graphic-resize_none.png  
+   .. figure:: img/label_graphic-resize_stretch.png
   
 *Labeling with a Graphic Mark "square" - L) at native size; R) with "graphic-resize"=stretch and "graphic-margin"=3* 
      
@@ -595,4 +599,3 @@ when the ``graphic-resize`` option is specified.
 
   <VendorOption name="graphic-margin">margin</VendorOption>
 
-     

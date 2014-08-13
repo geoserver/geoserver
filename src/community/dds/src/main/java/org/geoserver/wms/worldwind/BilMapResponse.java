@@ -37,8 +37,8 @@ import org.geotools.coverage.grid.GeneralGridEnvelope;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.coverage.grid.GridGeometry2D;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
@@ -129,7 +129,7 @@ public final class BilMapResponse extends RenderedImageMapResponse {
 		GridCoverage2D subCov = null;
 		try {
 			subCov = getFinalCoverage(request,
-					mapLayerInfo, (AbstractGridCoverage2DReader)coverageReader);
+					mapLayerInfo, (GridCoverage2DReader)coverageReader);
 		} catch (IndexOutOfBoundsException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -222,7 +222,7 @@ public final class BilMapResponse extends RenderedImageMapResponse {
 	 * @throws TransformException
 	 */
 	private static GridCoverage2D getFinalCoverage(GetMapRequest request, MapLayerInfo meta,
-	    AbstractGridCoverage2DReader coverageReader /*GridCoverage coverage*/)
+	    GridCoverage2DReader coverageReader /*GridCoverage coverage*/)
 	    throws WcsException, IOException, IndexOutOfBoundsException, FactoryException,
 	        TransformException {
 	    // This is the final Response CRS
@@ -279,10 +279,8 @@ public final class BilMapResponse extends RenderedImageMapResponse {
 	    destinationEnvelope.setCoordinateReferenceSystem(sourceCRS);
 	
 	    // this is the destination envelope in the coverage crs
-	    final GeneralEnvelope destinationEnvelopeInSourceCRS = (!deviceCRSToGCCRSTransform
-	        .isIdentity()) ? CRS.transform(deviceCRSToGCCRSTransform, destinationEnvelope)
-	                       : new GeneralEnvelope(destinationEnvelope);
-	    destinationEnvelopeInSourceCRS.setCoordinateReferenceSystem(cvCRS);
+        final GeneralEnvelope destinationEnvelopeInSourceCRS = CRS.transform(destinationEnvelope,
+                cvCRS);
 	
 	    /**
 	     * Reading Coverage on Requested Envelope

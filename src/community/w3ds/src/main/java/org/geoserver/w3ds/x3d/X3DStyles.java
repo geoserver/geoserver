@@ -11,12 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.geotools.styling.FeatureTypeStyle;
-import org.geotools.styling.PolygonSymbolizerImpl;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
-import org.geotools.styling.Symbolizer;
-import org.opengis.filter.Filter;
 import org.opengis.feature.Feature;
+import org.opengis.filter.Filter;
 
 public class X3DStyles {
 	

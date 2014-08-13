@@ -7,6 +7,7 @@ package org.geoserver.wfs.xml.gml3;
 import javax.xml.namespace.QName;
 
 import org.geoserver.wfs.WFSException;
+import org.geotools.gml3.Circle;
 import org.geotools.gml3.GML;
 import org.geotools.xml.AbstractComplexBinding;
 import org.geotools.xml.ElementInstance;
@@ -53,7 +54,7 @@ public class CircleTypeBinding extends AbstractComplexBinding {
      * @generated modifiable
      */
     public Class getType() {
-        return null;
+        return Circle.class;
     }
 
     /**

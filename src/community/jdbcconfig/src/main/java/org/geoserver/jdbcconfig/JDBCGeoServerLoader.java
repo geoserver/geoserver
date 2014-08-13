@@ -30,6 +30,7 @@ import com.google.common.base.Stopwatch;
 
 public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
 
+    @SuppressWarnings("unused")
     private static final Logger LOGGER = Logging.getLogger(JDBCGeoServerLoader.class);
 
     private CatalogFacade catalogFacade;
@@ -72,7 +73,7 @@ public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
             return;
         }
 
-        Stopwatch sw = new Stopwatch().start();
+        Stopwatch sw = Stopwatch.createStarted();
         loadCatalogInternal(catalog, xp);
         sw.stop();
         //System.err.println("Loaded catalog in " + sw.toString());
@@ -89,6 +90,7 @@ public class JDBCGeoServerLoader extends DefaultGeoServerLoader {
         }
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     protected void loadGeoServer(GeoServer geoServer, XStreamPersister xp) throws Exception {
         if (!config.isEnabled()) {

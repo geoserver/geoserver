@@ -40,6 +40,14 @@
     <param-value>50</param-value>
   </context-param>
   
+  <!--Can be true or false (defaults to: false). -->
+  <!--When true the JSONP (text/javascript) output format is enabled -->
+  <!--
+  <context-param>
+    <param-name>ENABLE_JSONP</param-name>
+    <param-value>true</param-value>
+  </context-param>
+  -->
     <!-- 
     <context-param>
       <param-name>PROXY_BASE_URL</param-name>
@@ -61,6 +69,20 @@
     </context-param>
     
     <filter>
+     <filter-name>FlushSafeFilter</filter-name>
+     <filter-class>org.geoserver.filters.FlushSafeFilter</filter-class>
+    </filter>
+     
+    <filter>
+      <filter-name>Set Character Encoding</filter-name>
+      <filter-class>org.vfny.geoserver.filters.SetCharacterEncodingFilter</filter-class>
+      <init-param>
+        <param-name>encoding</param-name>
+        <param-value>UTF-8</param-value>
+      </init-param>
+    </filter>
+
+    <filter>
      <filter-name>SessionDebugger</filter-name>
      <filter-class>org.geoserver.filters.SessionDebugFilter</filter-class>
     </filter>
@@ -68,23 +90,7 @@
     <filter>
     <filter-name>filterChainProxy</filter-name>     
      <filter-class> org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-     
-<!-- <filter-name>Spring Security Filter Chain Proxy</filter-name> 
-    <init-param>
-       <param-name>targetClass</param-name>
-       <param-value>org.springframework.security.util.FilterChainProxy</param-value>
-     </init-param>
--->
     </filter>
-    
-   <filter>
-    <filter-name>Set Character Encoding</filter-name>
-    <filter-class>org.vfny.geoserver.filters.SetCharacterEncodingFilter</filter-class>
-    <init-param>
-      <param-name>encoding</param-name>
-      <param-value>UTF-8</param-value>
-    </init-param>
-  </filter>
 
    <filter>
      <filter-name>GZIP Compression Filter</filter-name>
@@ -154,6 +160,21 @@
      -->
    </filter>
 
+    <!-- 
+      THIS FILTER MUST BE THE FIRST ONE, otherwise we end up with ruined chars in the input from the GUI
+      See the "Note" in the Tomcat character encoding guide:
+      http://wiki.apache.org/tomcat/FAQ/CharacterEncoding
+    -->
+    <filter-mapping>
+      <filter-name>Set Character Encoding</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
+   
+    <filter-mapping>
+      <filter-name>FlushSafeFilter</filter-name>
+      <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
     <filter-mapping>
       <filter-name>SessionDebugger</filter-name>
       <url-pattern>/*</url-pattern>
@@ -174,11 +195,6 @@
     -->
     <filter-mapping>
       <filter-name>filterChainProxy</filter-name>
-      <url-pattern>/*</url-pattern>
-    </filter-mapping>
-    
-      <filter-mapping>
-      <filter-name>Set Character Encoding</filter-name>
       <url-pattern>/*</url-pattern>
     </filter-mapping>
     

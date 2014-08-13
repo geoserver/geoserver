@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2014 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -122,6 +122,11 @@ public class GetFeatureInfoResponse extends Response {
         if (format == null) {
             format = defaultOutputFormat;
         }
+        
+        if (wms.isAllowedGetFeatureInfoFormat(format)==false) {
+            throw wms.unallowedGetFeatureInfoFormatException(requestFormat);
+        }
+        
         return format;
 
     }

@@ -20,4 +20,31 @@ public class GeoServerBasePageTest extends GeoServerWicketTestSupport {
         login();
         tester.startPage(GeoServerHomePage.class);
     }
+    
+    @Test
+    public void testDefaultNodeInfoLoggedOut() throws Exception {
+        logout();
+        System.setProperty(DefaultGeoServerNodeInfo.GEOSERVER_NODE_OPTS, "id=test");
+        DefaultGeoServerNodeInfo.initializeFromEnviroment();
+
+        tester.startPage(GeoServerHomePage.class);
+        tester.assertInvisible("nodeIdContainer");
+    }
+
+    @Test
+    public void testDefaultNodeInfoLoggedIn() throws Exception {
+        login();
+        System.setProperty(DefaultGeoServerNodeInfo.GEOSERVER_NODE_OPTS,
+                "id:test;background:red;color:black");
+        DefaultGeoServerNodeInfo.initializeFromEnviroment();
+
+        tester.startPage(GeoServerHomePage.class);
+        tester.assertVisible("nodeIdContainer");
+        tester.assertModelValue("nodeIdContainer:nodeId", "test");
+        // this does not work, damn wicket tester...
+        // TagTester tags = tester.getTagByWicketId("nodeIdContainer");
+        // String style = tags.getAttribute("style");
+        // assertTrue(style.contains("background:red;"));
+        // assertTrue(style.contains("color:black;"));
+    }
 }

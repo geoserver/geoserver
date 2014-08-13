@@ -38,9 +38,9 @@ The following table lists the default assumptions:
    * - ``format``
      - ``applcation/vnd.google-earth.kmz+xml``
    * - ``width``
-     - ``256``
+     - ``2048``
    * - ``height``
-     - ``256``
+     - ``2048``
    * - ``bbox``
      - ``<layer bounds>``
    * - ``kmattr``
@@ -48,7 +48,7 @@ The following table lists the default assumptions:
    * - ``kmplacemark``
      - ``false``
    * - ``kmscore``
-     - ``50``
+     - ``40``
    * - ``styles``
      - [default style for the featuretype]
 

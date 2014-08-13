@@ -29,7 +29,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.wps.WPSException;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
 import org.geotools.data.DataStore;
@@ -351,7 +351,7 @@ public class ImportProcess implements GSProcess {
                 
                 cb.setStore( (CoverageStoreInfo)storeInfo );
                 
-                AbstractGridCoverage2DReader reader = new GeoTiffReader(file);
+                GridCoverage2DReader reader = new GeoTiffReader(file);
                 if ( reader == null ) {
                     throw new ProcessException( "Could not aquire reader for coverage." );
                 }

@@ -7,12 +7,15 @@ package org.vfny.geoserver.crs;
 import java.io.File;
 import java.net.URL;
 
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
 import org.geotools.data.DataUtilities;
 import org.geotools.factory.AbstractFactory;
 import org.geotools.metadata.iso.citation.Citations;
 import org.geotools.referencing.factory.gridshift.GridShiftLocator;
 import org.opengis.metadata.citation.Citation;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 /**
  * Provides a hook to locate grid shift files, such as NTv1, NTv2 and NADCON ones.
@@ -45,12 +48,15 @@ public class GeoserverGridShiftLocator extends AbstractFactory implements GridSh
     public URL locateGrid(String grid) {
         if (grid == null)
             return null;
+        
+        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        if( loader == null ){
+            return null; // must be test case still loading
+        }
+        Resource gridfile = loader.get("user_projections/" + grid);
 
-        File gridfile = new File(GeoserverDataDirectory.getGeoserverDataDirectory(),
-                "user_projections/" + grid);
-
-        if (gridfile.exists()) {
-            return DataUtilities.fileToURL(gridfile);
+        if (gridfile.getType() == Type.RESOURCE ) {
+            return DataUtilities.fileToURL(gridfile.file());
         } else {
             return null;
         }

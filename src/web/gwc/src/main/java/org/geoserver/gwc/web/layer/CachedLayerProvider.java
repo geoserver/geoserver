@@ -77,7 +77,11 @@ class CachedLayerProvider extends GeoServerDataProvider<TileLayer> {
         @Override
         public Object getPropertyValue(TileLayer item) {
             GWC gwc = GWC.get();
-            return gwc.getUsedQuota(item.getName());
+            if(gwc.isDiskQuotaEnabled()) {
+                return gwc.getUsedQuota(item.getName());
+            } else {
+                return null;
+            }
         }
     };
 

@@ -15,6 +15,9 @@ Tutorials
    animreflector.rst
    cql/cql_tutorial.rst
    image_mosaic_plugin/imagemosaic.rst
+   imagemosaic_timeseries/imagemosaic_timeseries.rst
+   imagemosaic_timeseries/imagemosaic_time-elevationseries.rst
+   imagemosaic_footprint/imagemosaic_footprint.rst
    imagepyramid/imagepyramid.rst
    imagemosaic-jdbc/imagemosaic-jdbc_tutorial.rst
    feature-pregeneralized/feature-pregeneralized_tutorial.rst

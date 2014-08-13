@@ -10,9 +10,6 @@ import org.geoserver.w3ds.service.W3DSInfo;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.util.MapModel;
 
-/**
- * Edits the WMS service details
- */
 @SuppressWarnings("serial")
 public class W3DSAdminPage extends BaseServiceAdminPage<W3DSInfo> {
 

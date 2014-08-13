@@ -2,6 +2,7 @@ package org.geoserver.jdbcconfig.internal;
 
 import static org.junit.Assert.*;
 import static org.geoserver.jdbcconfig.JDBCConfigTestSupport.*;
+import static org.hamcrest.CoreMatchers.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -11,6 +12,7 @@ import java.util.Properties;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.data.DataUtilities;
+import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,8 +36,13 @@ public class JDBCConfigPropertiesTest {
         JDBCConfigPropertiesFactoryBean factory = new JDBCConfigPropertiesFactoryBean(loader);
         JDBCConfigProperties props = (JDBCConfigProperties) factory.createProperties();
 
+        assertFalse(props.isEnabled());
         assertTrue(props.isInitDb());
         assertTrue(props.isImport());
+
+        //assert files copied over
+        assertNotNull(loader.find("jdbcconfig", "jdbcconfig.properties"));
+        assertNotNull(loader.find("jdbcconfig", "scripts", "initdb.postgres.sql"));
     }
 
     private File createDummyConfigFile() throws IOException {
@@ -101,7 +108,7 @@ public class JDBCConfigPropertiesTest {
             JDBCConfigPropertiesFactoryBean factory = new JDBCConfigPropertiesFactoryBean(loader);
             JDBCConfigProperties props = (JDBCConfigProperties) factory.createProperties();
     
-            assertEquals("jdbc:h2:nofile", props.getJdbcUrl());
+            assertEquals("jdbc:h2:nofile", props.getJdbcUrl().get());
             assertFalse(props.isInitDb());
             assertFalse(props.isImport());
         }
@@ -116,8 +123,8 @@ public class JDBCConfigPropertiesTest {
     public void testDataDirPlaceholder() throws Exception {
         JDBCConfigPropertiesFactoryBean factory = new JDBCConfigPropertiesFactoryBean(loader);
         JDBCConfigProperties props = (JDBCConfigProperties) factory.createProperties();
+        props.setJdbcUrl("jdbc:h2:file:${GEOSERVER_DATA_DIR}");
 
-        
-        assertTrue(props.getJdbcUrl().contains(loader.getBaseDirectory().getAbsolutePath()));
+        assertThat(props.getJdbcUrl().get(), containsString(loader.getBaseDirectory().getAbsolutePath()));
     }
 }

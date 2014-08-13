@@ -8,6 +8,8 @@ import static org.geoserver.data.test.MockData.TASMANIA_BM;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -25,6 +27,7 @@ import javax.xml.namespace.QName;
 import net.opengis.wcs10.GetCoverageType;
 
 import org.apache.commons.io.IOUtils;
+import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
@@ -36,7 +39,7 @@ import org.geoserver.wcs.test.WCSTestSupport;
 import org.geoserver.wcs.xml.v1_0_0.WcsXmlReader;
 import org.geotools.coverage.grid.GeneralGridEnvelope;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.DataSourceException;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffReader;
@@ -88,8 +91,8 @@ public class GetCoverageTest extends WCSTestSupport {
         super.onSetUp(testData);
         testData.addRasterLayer(MOSAIC, "raster-filter-test.zip", null, getCatalog());
         // enable dimensions on the water temperature layer
-        setupRasterDimension(ResourceInfo.TIME, DimensionPresentation.LIST, null);
-        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
+        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
     }
 
     private Map<String, Object> baseMap() {
@@ -290,7 +293,7 @@ public class GetCoverageTest extends WCSTestSupport {
         assertEquals("image/tiff", response.getContentType());
         
         GeoTiffFormat format = new GeoTiffFormat();
-        AbstractGridCoverage2DReader reader = format.getReader(getBinaryInputStream(response));
+        GridCoverage2DReader reader = format.getReader(getBinaryInputStream(response));
         
         assertEquals(CRS.decode("EPSG:3857"), reader.getOriginalEnvelope().getCoordinateReferenceSystem());
     }
@@ -331,72 +334,74 @@ public class GetCoverageTest extends WCSTestSupport {
         String request = getWaterTempTimeRequest("2008-10-31T00:00:00.000Z");
      
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
-        checkTimeFirst(response);
+        
+        /*
+        gdallocationinfo NCOM_wattemp_000_20081031T0000000_12.tiff 10 10
+       Report:
+         Location: (10P,10L)
+         Band 1:
+           Value: 18.2659999176394
+       */
+        
+        checkPixelValue(response, 10, 10, 18.2659999176394);
     }
     
     @Test
     public void testTimeFirstKVP() throws Exception {
-        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
-        setupRasterDimension(ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
-        
         String queryString ="request=getcoverage&service=wcs&version=1.0.0&format=image/geotiff" +
         		"&bbox=0.237,40.562,14.593,44.558&crs=EPSG:4326&width=25&height=25&time=2008-10-31T00:00:00.000Z" +
         		"&coverage=" + getLayerId(WATTEMP);
         MockHttpServletResponse response = getAsServletResponse("wcs?" + queryString);
         
-        checkTimeFirst(response);
-    }
-
-    private void checkTimeFirst(MockHttpServletResponse response) throws IOException,
-            FileNotFoundException, DataSourceException {
-        // save
-        File tiffFile = File.createTempFile("wcs", "", new File("target"));
-        IOUtils.copy(getBinaryInputStream(response), new FileOutputStream(tiffFile));
-
-        // make sure we can read the coverage back
-        GeoTiffReader reader = new GeoTiffReader(tiffFile);
-        GridCoverage2D result = reader.read(null);
-
-        /*
-         gdallocationinfo NCOM_wattemp_000_20081031T0000000_12.tiff 10 10
-        Report:
-          Location: (10P,10L)
-          Band 1:
-            Value: 18.2659999176394
-        */
-        
-        // check a pixel
-        double[] pixel = new double[1];
-        result.getRenderedImage().getData().getPixel(10, 10, pixel);
-        assertEquals(18.2659999176394, pixel[0], 1e-6);
-        
-        tiffFile.delete();
+        checkPixelValue(response, 10, 10, 18.2659999176394);
     }
     
-    private void checkTimeCurrent(MockHttpServletResponse response) throws IOException,
+    @Test
+    public void testTimeRangeKVP() throws Exception {
+        setupRasterDimension(TIMERANGES, ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        setupRasterDimension(TIMERANGES, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
+        
+        String baseUrl ="wcs?request=getcoverage&service=wcs&version=1.0.0&format=image/geotiff" +
+                "&bbox=0.237,40.562,14.593,44.558&crs=EPSG:4326&width=25&height=25" +
+                "&coverage=" + getLayerId(TIMERANGES);
+
+        // last range
+        MockHttpServletResponse response = getAsServletResponse(baseUrl + "&TIME=2008-11-05T00:00:00.000Z/2008-11-06T12:00:00.000Z");
+        assertEquals("image/tiff", response.getContentType());
+        checkPixelValue(response, 10, 10, 13.337999683572);
+        
+
+        // middle hole, no data --> we should get back an exception
+        Document dom = getAsDOM(baseUrl + "&TIME=2008-11-04T12:00:00.000Z/2008-11-04T16:00:00.000Z");
+        // print(dom);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//ServiceExceptionReport)", dom);
+        
+        // first range
+        response = getAsServletResponse(baseUrl + "&TIME=2008-10-31T12:00:00.000Z/2008-10-31T16:00:00.000Z");
+        assertEquals("image/tiff", response.getContentType());
+        checkPixelValue(response, 10, 10, 18.2659999176394);
+    }
+
+    private void checkPixelValue(MockHttpServletResponse response, int x, int y, double value) throws IOException,
             FileNotFoundException, DataSourceException {
         // save
         File tiffFile = File.createTempFile("wcs", "", new File("target"));
-        IOUtils.copy(getBinaryInputStream(response), new FileOutputStream(tiffFile));
-
-        // make sure we can read the coverage back
-        GeoTiffReader reader = new GeoTiffReader(tiffFile);
-        GridCoverage2D result = reader.read(null);
-
-        /*
-         gdallocationinfo NCOM_wattemp_000_20081101T0000000_12.tiff 10 10
-         Report:
-             Location: (10P,10L)
-             Band 1:
-               Value: 18.2849999185419
-         */
-
-        // check a pixel
-        double[] pixel = new double[1];
-        result.getRenderedImage().getData().getPixel(10, 10, pixel);
-        assertEquals(18.2849999185419, pixel[0], 1e-6);
-
-        tiffFile.delete();
+        try {
+            IOUtils.copy(getBinaryInputStream(response), new FileOutputStream(tiffFile));
+    
+            // make sure we can read the coverage back
+            GeoTiffReader reader = new GeoTiffReader(tiffFile);
+            GridCoverage2D result = reader.read(null);
+    
+            
+            
+            // check a pixel
+            double[] pixel = new double[1];
+            result.getRenderedImage().getData().getPixel(x, y, pixel);
+            assertEquals(value, pixel[0], 1e-6);
+        } finally {
+            tiffFile.delete();
+        }
     }
     
     @Test
@@ -405,7 +410,7 @@ public class GetCoverageTest extends WCSTestSupport {
      
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
         
-        checkTimeCurrent(response);
+        checkPixelValue(response, 10, 10, 18.2849999185419);
     }
     
     @Test
@@ -415,7 +420,7 @@ public class GetCoverageTest extends WCSTestSupport {
                         "&coverage=" + getLayerId(WATTEMP);
         MockHttpServletResponse response = getAsServletResponse("wcs?" + queryString);
         
-        checkTimeCurrent(response);
+        checkPixelValue(response, 10, 10, 18.2849999185419);
     }
     
     @Test
@@ -426,7 +431,7 @@ public class GetCoverageTest extends WCSTestSupport {
         assertEquals("image/tiff", response.getContentType());
         
         // same result as time first
-        checkTimeCurrent(response);
+        checkPixelValue(response, 10, 10, 18.2849999185419);
     }
     
     @Test
@@ -436,28 +441,15 @@ public class GetCoverageTest extends WCSTestSupport {
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
         assertEquals("image/tiff", response.getContentType());
         
-        // save
-        File tiffFile = File.createTempFile("wcs", "", new File("target"));
-        IOUtils.copy(getBinaryInputStream(response), new FileOutputStream(tiffFile));
-
-        // make sure we can read the coverage back
-        GeoTiffReader reader = new GeoTiffReader(tiffFile);
-        GridCoverage2D result = reader.read(null);
-
         /*
-         gdallocationinfo NCOM_wattemp_100_20081101T0000000_12.tiff  10 10
-         Report:
-          Location: (10P,10L)
-          Band 1:
-          Value: 13.337999683572
-        */
+        gdallocationinfo NCOM_wattemp_100_20081101T0000000_12.tiff  10 10
+        Report:
+         Location: (10P,10L)
+         Band 1:
+         Value: 13.337999683572
+       */
         
-        // check a pixel
-        double[] pixel = new double[1];
-        result.getRenderedImage().getData().getPixel(10, 10, pixel);
-        assertEquals(13.337999683572, pixel[0], 1e-6);
-        
-        tiffFile.delete();
+        checkPixelValue(response, 10, 10, 13.337999683572);
     }
 
     private String getWaterTempElevationRequest(String elevation) {

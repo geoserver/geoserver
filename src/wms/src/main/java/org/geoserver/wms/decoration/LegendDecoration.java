@@ -111,6 +111,14 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
 
                 Font oldFont = g2d.getFont();
                 g2d.setFont(newFont);
+                if (LegendUtils.isFontAntiAliasing(legend.request)) {
+                    g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                            RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                } else {
+                    g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                            RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+                }
+
                 BufferedImage titleImage = LegendUtils.renderLabel(title, g2d, request);
                 g2d.setFont(oldFont);
 
@@ -198,14 +206,6 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
                     finalLegend,
                     new HashMap<RenderingHints.Key, Object>()
                 );
-
-            if (LegendUtils.isFontAntiAliasing(legend.request)) {
-                finalGraphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-                        RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-            } else {
-                finalGraphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-                        RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-            }
 
             // title
             int titleHeightOffset = 0;

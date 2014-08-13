@@ -3,11 +3,19 @@ package org.geoserver.w3ds.styles;
 
 
 	import javax.measure.quantity.Length;
-	import javax.measure.unit.Unit;
+import javax.measure.unit.Unit;
 
-import org.geotools.styling.*;
-	import org.opengis.filter.expression.Expression;
-	import org.opengis.style.StyleVisitor;
+import org.geotools.styling.AbstractSymbolizer;
+import org.geotools.styling.Description;
+import org.geotools.styling.Displacement;
+import org.geotools.styling.DisplacementImpl;
+import org.geotools.styling.Fill;
+import org.geotools.styling.PolygonSymbolizer;
+import org.geotools.styling.PolygonSymbolizerImpl;
+import org.geotools.styling.Stroke;
+import org.geotools.styling.StrokeImpl;
+import org.opengis.filter.expression.Expression;
+import org.opengis.style.StyleVisitor;
 import org.opengis.util.Cloneable;
 
 

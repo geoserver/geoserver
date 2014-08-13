@@ -48,7 +48,7 @@
 				<AttributeMapping>
 					<targetAttribute>gsml:Borehole</targetAttribute>					
 					<idExpression>
-                        <OCQL>getId()</OCQL>
+                        <OCQL>ID</OCQL>
                     </idExpression>
 				</AttributeMapping>
 				<AttributeMapping>

@@ -9,17 +9,17 @@
  <parent>
   <groupId>org.geoserver</groupId>
   <artifactId>community</artifactId>
-  <version>2.4-SNAPSHOT</version>
+  <version>2.6-SNAPSHOT</version>
  </parent>
  <groupId>org.geoserver.community</groupId>
- <artifactId>script</artifactId>
+ <artifactId>gs-script</artifactId>
  <packaging>pom</packaging>
  <name>GeoServer Scripting Extensions</name>
 
  <dependencies>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>rest</artifactId>
+   <artifactId>gs-rest</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
@@ -28,17 +28,22 @@
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>main</artifactId>
+   <artifactId>gs-main</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>wfs</artifactId>
+   <artifactId>gs-wfs</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>wms</artifactId>
+   <artifactId>gs-wms</artifactId>
+   <version>${project.version}</version>
+  </dependency>
+  <dependency>
+   <groupId>org.geoserver.extension</groupId>
+   <artifactId>gs-wps-core</artifactId>
    <version>${project.version}</version>
   </dependency>
   <dependency>
@@ -48,14 +53,14 @@
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>main</artifactId>
+   <artifactId>gs-main</artifactId>
    <version>${project.version}</version>
    <scope>test</scope>
    <classifier>tests</classifier>
   </dependency>
   <dependency>
    <groupId>org.geoserver</groupId>
-   <artifactId>wms</artifactId>
+   <artifactId>gs-wms</artifactId>
    <version>${project.version}</version>
    <scope>test</scope>
    <classifier>tests</classifier>
@@ -68,6 +73,11 @@
   <dependency>
    <groupId>org.easymock</groupId>
    <artifactId>easymock</artifactId>
+   <scope>test</scope>
+  </dependency>
+  <dependency>
+   <groupId>org.easymock</groupId>
+   <artifactId>easymockclassextension</artifactId>
    <scope>test</scope>
   </dependency>
   <dependency>
@@ -87,11 +97,63 @@
 
  <modules>
   <module>core</module>
-  <module>bsh</module>
-  <module>groovy</module>
-  <module>js</module>
-  <module>py</module>
-  <module>rb</module>
  </modules>
+
+ <profiles>
+   <profile>
+     <id>script-web</id>
+     <activation>
+       <activeByDefault>true</activeByDefault>
+     </activation>
+     <modules>
+       <module>web</module>
+     </modules>
+   </profile>
+   <profile>
+     <id>script-bsh</id>
+     <activation>
+       <activeByDefault>true</activeByDefault>
+     </activation>
+     <modules>
+       <module>bsh</module>
+     </modules>
+   </profile>
+   <profile>
+     <id>script-groovy</id>
+     <activation>
+       <activeByDefault>true</activeByDefault>
+     </activation>
+     <modules>
+       <module>groovy</module>
+     </modules>
+   </profile>
+   <profile>
+     <id>script-py</id>
+     <activation>
+       <activeByDefault>true</activeByDefault>
+     </activation>
+     <modules>
+       <module>py</module>
+     </modules>
+   </profile>
+   <profile>
+     <id>script-js</id>
+     <activation>
+       <activeByDefault>true</activeByDefault>
+     </activation>
+     <modules>
+       <module>js</module>
+     </modules>
+   </profile>
+   <profile>
+     <id>script-rb</id>
+     <activation>
+       <activeByDefault>true</activeByDefault>
+     </activation>
+     <modules>
+       <module>rb</module>
+     </modules>
+   </profile>
+ </profiles>
 
 </project>

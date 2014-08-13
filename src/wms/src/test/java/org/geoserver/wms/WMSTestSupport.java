@@ -433,7 +433,7 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
      * @see #checkImage(MockHttpServletResponse, String)
      */
     protected void checkImage(MockHttpServletResponse response) {
-        checkImage(response, "image/png");
+        checkImage(response, "image/png", -1, -1);
     }
     
     /**
@@ -441,31 +441,21 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
      * actual image into a buffered image.
      * 
      */
-    protected void checkImage(MockHttpServletResponse response, String mimeType) {
+    protected void checkImage(MockHttpServletResponse response, String mimeType, int width, int height) {
         assertEquals(mimeType, response.getContentType());
         try {
             BufferedImage image = ImageIO.read(getBinaryInputStream(response));
             assertNotNull(image);
-            assertEquals(image.getWidth(), 550);
-            assertEquals(image.getHeight(), 250);
+            if(width > 0) {
+                assertEquals(width, image.getWidth());
+            }
+            if(height > 0) {
+                assertEquals(height, image.getHeight());
+            }
         } catch (Throwable t) {
             t.printStackTrace();
             fail("Could not read image returned from GetMap:" + t.getLocalizedMessage());
         }
-    }
-    
-    /**
-     * Retries the request result as a BufferedImage, checking the mime type is the expected one
-     * @param path
-     * @param mime
-     * @return
-     * @throws Exception
-     */
-    protected BufferedImage getAsImage(String path, String mime) throws Exception {
-        MockHttpServletResponse resp = getAsServletResponse(path);
-        assertEquals(mime, resp.getContentType());
-        InputStream is = getBinaryInputStream(resp);
-        return ImageIO.read(is);
     }
     
     /**
@@ -480,6 +470,17 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
         
 
         assertEquals(color, actual);
+    }
+    
+    /**
+     * Checks the pixel i/j is fully transparent
+     * @param image
+     * @param i
+     * @param j
+     */
+    protected void assertPixelIsTransparent(BufferedImage image, int i, int j) {
+  	    int pixel = image.getRGB(i,j);
+        assertEquals(true, (pixel>>24) == 0x00);
     }
 
     /**

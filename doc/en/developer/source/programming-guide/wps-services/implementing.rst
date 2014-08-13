@@ -44,18 +44,18 @@ For this example the project will be called "hello_wps".
        <groupId>org.geoserver</groupId>  
        <artifactId>hello_wps</artifactId>
        <packaging>jar</packaging>
-       <version>2.2-SNAPSHOT</version>
+       <version>2.6-SNAPSHOT</version>
        <name>hello_wps</name>
        <dependencies>
-	<dependency>
-	  <groupId>org.geotools</groupId>
-     	  <artifactId>gt-process</artifactId>
-     	  <version>8-SNAPSHOT</version>
-   	</dependency>
-	<dependency>
+         <dependency>
+           <groupId>org.geotools</groupId>
+           <artifactId>gt-process</artifactId>
+           <version>12-SNAPSHOT</version>
+         </dependency>
+         <dependency>
            <groupId>org.geoserver</groupId>
            <artifactId>main</artifactId>
-           <version>2.2-SNAPSHOT</version>
+           <version>2.6-SNAPSHOT</version>
            <classifier>tests</classifier>
            <scope>test</scope>
          </dependency>
@@ -78,19 +78,19 @@ For this example the project will be called "hello_wps".
            <plugin>
              <artifactId>maven-compiler-plugin</artifactId>
              <configuration>
-               <source>1.5</source>
-               <target>1.5</target>
+               <source>1.6</source>
+               <target>1.6</target>
              </configuration>
           </plugin>
         </plugins>
        </build>
 
        <repositories>
-	 <repository>
-	   <id>opengeo</id>
+         <repository>
+           <id>opengeo</id>
        	   <name>opengeo</name>
        	   <url>http://repo.opengeo.org</url>
-    	 </repository>
+        </repository>
        </repositories>
 
     </project>  
@@ -104,9 +104,8 @@ For this example the project will be called "hello_wps".
      hello_wps/
       + pom.xml
        + src/	
-	 + main/
-	   + java/ 
-
+         + main/
+           + java/ 
 
 
 Create the process class
@@ -114,15 +113,10 @@ Create the process class
 
 #. Create the package that will contain the custom WPS process.
 
-   Package naming plays an important role in creating a WPS process. The rightmost
-   part of the package name is the **namespace** for the WPS process.
-   For this example,
-   create a package named ``org.geoserver.wps.gs`` inside the *src/main/java* directory
-   structure. The namespace for the new WPS process is ``gs``::
-   
-   [hello_wps]% mkdir -p src/main/java/org/geoserver/wps/gs
+   For this example, create a package named ``org.geoserver.hello.wps`` inside the 
+   *src/main/java* directory structure.
 
-
+   [hello_wps]% mkdir -p src/main/java/org/geoserver/hello/wps
 
 #. Create the Java class that implements the custom WPS process.
 
@@ -130,30 +124,29 @@ Create the process class
 
   .. code-block:: java
  
-     package org.geoserver.wps.gs;
+     package org.geoserver.hello.wps;
  
      import org.geotools.process.factory.DescribeParameter;
      import org.geotools.process.factory.DescribeProcess;
      import org.geotools.process.factory.DescribeResult;
-     import org.geotools.process.gs.GSProcess;	
+     import org.geoserver.wps.gs.GeoServerProcess;
      	
      @DescribeProcess(title="helloWPS", description="Hello WPS Sample")
-     public class HelloWPS implements GSProcess {
+     public class HelloWPS implements GeoServerProcess {
   
-	@DescribeResult(name="result", description="output result")
-	public String execute(@DescribeParameter(name="name", description="name to return") String name) {
-	  return "Hello, " + name;
-	}
-  
+        @DescribeResult(name="result", description="output result")
+        public String execute(@DescribeParameter(name="name", description="name to return") String name) {
+             return "Hello, " + name;
+        }
      }
 
 
 Register the process in GeoServer
 ---------------------------------
 
-GeoServer uses the `Spring Framework <http://www.springsource.org/spring-framework/>`_ to manage instantiation of components.  
-This mechanism is used to register the process with GeoServer when it starts, 
-which will make it discoverable via the WPS service interface. 
+GeoServer uses the `Spring Framework <http://www.springsource.org/spring-framework/>`_ to manage 
+instantiation of components. This mechanism is used to register the process with GeoServer when it 
+starts, which will make it discoverable via the WPS service interface. 
 
 #. Create a directory ``src/main/resources`` under the root of the new module::
 
@@ -177,9 +170,11 @@ which will make it discoverable via the WPS service interface.
       <?xml version="1.0" encoding="UTF-8"?>
         <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
         <beans>
-          <bean id="helloWPS" class="org.geoserver.wps.gs.HelloWPS"/>
+          <bean id="helloWPS" class="org.geoserver.hello.wps.HelloWPS"/>
         </beans>
 
+.. note:: A process registered in the GeoServer spring context will be assigned to the "gs" 
+          process namespace.
 
 Build and Deploy
 ----------------
@@ -192,7 +187,7 @@ To build the custom process, run the following command from the root of the proj
 
 This cleans the build area, compiles the code, and creates a JAR file in the ``target`` directory.
 The JAR file name is determined by the name and version given to the project in the ``pom.xml`` file.
-(for this example it is ``hello_wps-2.2-SNAPSHOT.jar``).
+(for this example it is ``hello_wps-2.6-SNAPSHOT.jar``).
 
 
 To deploy the process module, copy this JAR file into the ``/WEB-INF/lib`` directory of GeoServer and then restart the instance.
@@ -223,4 +218,75 @@ Enter the desired parameter and click on **Execute process** to run it. A window
 
      *WPS Request Builder, showing gs:HelloWPS process parameters*
 
+Accepting or returning raw data
+-------------------------------
 
+The basic GeoServer WPS architecture is meant to offload and centralize input decoding and output encoding, leaving
+the processes to work against Java objects, and automatically creating new input and output types for all processes
+as soon as a new matching PPIO is registered.
+
+It is however also possible to leave the process to accept both raw inputs and outputs, and do the parsing encoding itself.
+This suits well binding to external network or command line tools that are already doing parsing and encoding as their
+normal activities.
+
+Raw inputs and outputs are represented by the RawData interface:
+
+  .. code-block:: java
+    
+    public interface RawData {
+    
+        /**
+         * Returns the mime type of the stream's contents
+         * 
+         * @return
+         */
+        public String getMimeType();
+    
+        /**
+         * Gives access to the raw data contents. 
+         * 
+         * @return
+         * @throws FileNotFoundException
+         */
+        public InputStream getInputStream() throws IOException;
+    
+        /**
+         * Optional field for output raw data, used by 
+         * WPS to generate a file extension
+         * 
+         * @return
+         */
+        public String getFileExtension();
+    }
+
+
+ As an input, the RawData will be provided to the process, that will discover the mimeType chosen by the user,
+ and will get access to the raw input stream of the data.
+ As an output, the process will return a RawData and the WPS will see what mimeType the result will be in, get access
+ to the raw contents, and grab a file extension to build file names for the user file downloads. 
+ 
+ The process using RawData will also have to provide some extra metadata in the annotations, in order to declare
+ which mime types are supported and to allow the process to know which output mime types were chosen in the Execute request.
+ The extra annotations ``mimeTypes`` and ``chosenMimeType`` are placed in the ``meta`` section of the result and parameter annotations: 
+ 
+    .. code-block:: java
+    
+        @DescribeResult(name = "result", description = "Output raster", 
+                        meta = {"mimeTypes=application/json,text/xml", 
+                                "chosenMimeType=outputMimeType" })
+        public RawData execute(
+                @DescribeParameter(name = "data",  
+                                   meta = { "mimeTypes=text/plain" }) 
+                                   final RawData input,
+                @DescribeParameter(name = "outputMimeType", min = 0) 
+                                   final String outputMimeType) {
+                
+ The above instructs GeoServer WPS about raw data handling:
+ 
+ * The ``result`` output can be returned in ``application/json`` or ``text/xml``, with ``application/json`` as the default one
+ * The mime type chosen by the user for the output will be provided to the process as the ``outputMimeType`` parameter (and this parameter will be 
+   hidden from the DescribeProcess output)
+ * The ``input`` parameter will be advertised as supporting the ``text/plain`` mime type
+
+ In terms of building a ``RawData``, the process is free to create its own class if needed, 
+ or it can use one of the existing ``FileRawData``, ``StringRawData``, ``StreamRawData`` implementations.

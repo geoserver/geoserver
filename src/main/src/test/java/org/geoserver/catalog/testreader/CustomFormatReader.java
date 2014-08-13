@@ -5,6 +5,7 @@
 package org.geoserver.catalog.testreader;
 
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReaderSpi;
+
 import java.awt.Color;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;
@@ -15,10 +16,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
+
 import javax.imageio.spi.ImageInputStreamSpi;
 import javax.imageio.stream.ImageInputStream;
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
+
 import org.geotools.coverage.Category;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -142,17 +146,21 @@ public final class CustomFormatReader extends AbstractGridCoverage2DReader {
     }
     
     private String dimensionValueList() {
-        final StringBuilder sb = new StringBuilder();
+        final TreeSet<String>elements= new TreeSet<String>();
         for (String filename : this.dataDirectory.list()) {
             if (isDataFile(filename)) {
-                sb.append(getDimensionValue(filename));
-                sb.append(',');
+                elements.add(getDimensionValue(filename));
             }
         }
-        final int len = sb.length();
-        if (len == 0) {
+        if(elements.size()<=0){
             return null;
         }
+
+        final StringBuilder sb = new StringBuilder();
+        for(String item:elements){
+            sb.append(item).append(',');
+        }
+        final int len = sb.length();
         return sb.substring(0, len - 1);
     }
     

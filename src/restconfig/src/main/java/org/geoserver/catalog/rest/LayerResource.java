@@ -27,7 +27,6 @@ public class LayerResource extends AbstractCatalogResource {
     public LayerResource(Context context, Request request, Response response,
          Catalog catalog) {
         super(context, request, response, LayerInfo.class, catalog);
-        
     }
     
     @Override
@@ -105,7 +104,11 @@ public class LayerResource extends AbstractCatalogResource {
                     StyleInfo style = (StyleInfo) obj;
                     StringBuffer link = new StringBuffer();
                     if (style.getWorkspace() != null) {
-                        link.append("/workspaces/").append(encode(style.getWorkspace().getName()));
+                        String wsName = style.getWorkspace().getName();
+                        writer.startNode("workspace");
+                        writer.setValue(wsName);
+                        writer.endNode();
+                        link.append("/workspaces/").append(encode(wsName));
                     }
                     link.append("/styles/").append(encode(style.getName()));
                     encodeLink(link.toString(), writer);

@@ -65,27 +65,27 @@
                    <!-- Test gml:name from another table, but ClientProperty from this table -->
                    <targetAttribute>gml:name[3]</targetAttribute>
                    <sourceExpression>
-                       <OCQL>getID()</OCQL>
+                       <OCQL>ID</OCQL>
                        <linkElement>NAME_TWO</linkElement>
                        <linkField>FEATURE_LINK</linkField>
                    </sourceExpression>        
                    <isMultiple>true</isMultiple>           
                    <ClientProperty>
                        <name>codeSpace</name>
-                       <value>strConcat('some:uri:', getID())</value>
+                       <value>strConcat('some:uri:', ID)</value>
                    </ClientProperty>
                 </AttributeMapping>
                 <AttributeMapping>
                    <!-- Test xlink:href with values from another table -->
                    <targetAttribute>gml:name[4]</targetAttribute>
                    <sourceExpression>
-                       <OCQL>getID()</OCQL>
+                       <OCQL>ID</OCQL>
                        <linkElement>NAME_TWO</linkElement>
                        <linkField>FEATURE_LINK</linkField>
                    </sourceExpression>                   
                    <ClientProperty>
                        <name>xlink:href</name>
-                       <value>strConcat('some:uri:', getID())</value>
+                       <value>strConcat('some:uri:', ID)</value>
                    </ClientProperty>
                 </AttributeMapping>
                 <AttributeMapping>                    

@@ -71,36 +71,47 @@ public class WMSTest extends WMSTestSupport {
         /* Reference for test assertions
         TimeElevation.0=0|2012-02-11|2012-02-12|1|2
         TimeElevation.1=1|2012-02-12|2012-02-13|2|3
-        TimeElevation.2=2|2012-02-11|2011-05-13|1|3
+        TimeElevation.2=2|2012-02-11|2012-02-14|1|3
          */
         
         doTimeElevationFilter( Date.valueOf("2012-02-10"), null);
         doTimeElevationFilter( Date.valueOf("2012-02-11"), null, 0, 2);
         doTimeElevationFilter( Date.valueOf("2012-02-12"), null, 0, 1, 2);
         doTimeElevationFilter( Date.valueOf("2012-02-13"), null, 1, 2);
-        doTimeElevationFilter( Date.valueOf("2012-02-14"), null);
-        
+        doTimeElevationFilter( Date.valueOf("2012-02-15"), null);
+       
+        //Test start and end before all ranges.
         doTimeElevationFilter( 
                 new DateRange(Date.valueOf("2012-02-09"), Date.valueOf("2012-02-10")), null
         );
+        //Test start before and end during a range.
         doTimeElevationFilter( 
                 new DateRange(Date.valueOf("2012-02-09"), Date.valueOf("2012-02-11")), null,
                 0, 2
         );
+        //Test start on and end after or during a range.
         doTimeElevationFilter( 
                 new DateRange(Date.valueOf("2012-02-11"), Date.valueOf("2012-02-13")), null,
                 0, 1, 2
         );
+        //Test start before and end after all ranges.
         doTimeElevationFilter( 
                 new DateRange(Date.valueOf("2012-02-09"), Date.valueOf("2012-02-14")), null,
                 0, 1, 2
         );
+       	//Test start during and end after a range.
         doTimeElevationFilter( 
                 new DateRange(Date.valueOf("2012-02-13"), Date.valueOf("2012-02-14")), null,
-                1, 2
+                1,2
         );
+        //Test start during and end during a range.
+        doTimeElevationFilter(
+                new DateRange(Date.valueOf("2012-02-12"), Date.valueOf("2012-02-13")), null,
+                0,1,2
+        );
+        //Test start and end after all ranges.
         doTimeElevationFilter( 
-                new DateRange(Date.valueOf("2012-02-14"), Date.valueOf("2012-02-15")), null
+                new DateRange(Date.valueOf("2012-02-15"), Date.valueOf("2012-02-16")), null
         );
         
         doTimeElevationFilter( null, 0);
@@ -119,7 +130,7 @@ public class WMSTest extends WMSTestSupport {
         // combined date/elevation - this should be an 'and' filter
         doTimeElevationFilter( Date.valueOf("2012-02-12"), 2, 0, 1, 2);
         // disjunct verification
-        doTimeElevationFilter( Date.valueOf("2012-02-11"), 3);
+        doTimeElevationFilter( Date.valueOf("2012-02-11"), 3, 2);
     }
     
     public void doTimeElevationFilter( Object time, Object elevation, Integer... expectedIds) throws Exception {
@@ -140,6 +151,8 @@ public class WMSTest extends WMSTestSupport {
         }
         assertTrue("expected " + Arrays.toString(expectedIds) + " but got " + results,
                 results.containsAll(Arrays.asList(expectedIds)));
+        assertTrue("expected " + Arrays.toString(expectedIds) + " but got " + results,
+                Arrays.asList(expectedIds).containsAll(results));
     }
     
 }

@@ -46,8 +46,7 @@ public class DescribeLayerModel {
             String owsType = null;
             URL owsURL = null;
             if (MapLayerInfo.TYPE_VECTOR == layer.getType()) {
-                // REVISIT: not sure why we need WfsDispatcher, "wfs?" should suffice imho
-                owsUrl = buildURL(baseURL, "wfs/WfsDispatcher", null, URLType.SERVICE);
+                owsUrl = buildURL(baseURL, "wfs", null, URLType.SERVICE);
                 owsUrl = appendQueryString(owsUrl, "");
                 try {
                     owsURL = new URL(owsUrl);

@@ -124,8 +124,8 @@
  
 
     <!-- HTTP URL Mapping -->
-    <bean id="wpsURLMapping"
-        class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+	<bean id="wpsURLMapping" class="org.geoserver.ows.OWSHandlerMapping">
+		<constructor-arg ref="catalog"/>
         <property name="alwaysUseFullPath" value="true" />
         <property name="mappings">
             <props>
@@ -172,7 +172,9 @@
     <bean id="sldStylePPIO" class="org.geoserver.wps.ppio.SLDStylePPIO" />
     <bean id="urlPPIO" class="org.geoserver.wps.ppio.URLPPIO" />
     <bean id="jaitoolsRangePPIO" class="org.geoserver.wps.ppio.JAIToolsRangePPIO"/>
-    
+    <bean id="rawDataPPIO" class="org.geoserver.wps.ppio.RawDataPPIO">
+      <constructor-arg ref="wpsResourceManager" />
+    </bean>
     
     <!-- Register the GeoServer factory and processes -->
     <bean id="geoserverProcessFactory" class="org.geoserver.wps.jts.SpringBeanProcessFactory">
@@ -183,6 +185,10 @@
     <bean id="importProcess" class="org.geoserver.wps.gs.ImportProcess">
       <constructor-arg index="0" ref="catalog"/>
     </bean>
+    
+    <bean id="pagedUniqueProcess" class="org.geoserver.wps.gs.PagedUniqueProcess">
+    </bean>
+    <bean id="pagedUniquePPIO" class="org.geoserver.wps.gs.PagedUniqueProcessPPIO"/>
 
     <bean id="aggregateProcessResultPPIO" class="org.geoserver.wps.gs.AggregateProcessPPIO"/>
 
@@ -214,7 +220,8 @@
     
     <!-- Map dispatcher in order to publish the wcsTempStorage directory -->
     <bean id="wpsTempDirDispatcherMapping"
-      class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+      		class="org.geoserver.ows.OWSHandlerMapping">
+  	  <constructor-arg ref="catalog"/>
       <property name="alwaysUseFullPath" value="true" />
       <property name="mappings">
         <props>
@@ -265,4 +272,10 @@
     <!-- The default process filters -->
     <bean id="unsupportedParameterTypeProcessFilter" class="org.geoserver.wps.UnsupportedParameterTypeProcessFilter"/>
     <bean id="configuredProcessesFilter" class="org.geoserver.wps.DisabledProcessesSelector"/>
+
+    <bean id="wpsLocalWorkspaceURLManger" class="org.geoserver.ows.LocalWorkspaceURLMangler">
+      <constructor-arg value="wps"/>
+    </bean>
+
+
 </beans>

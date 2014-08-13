@@ -149,8 +149,15 @@ public class HttpDigestUserDetailsServiceWrapper implements UserDetailsService {
             pos++;
     
             System.arraycopy(password, 0, array, pos, password.length);
+                        
+            MessageDigest md=null;
+            try {
+                md = (MessageDigest) digest.clone(); // thread safe
+            } catch (CloneNotSupportedException e) {
+                throw new RuntimeException(e);
+            }
+            return new String(Hex.encode(md.digest(SecurityUtils.toBytes(array, charSet))));
             
-            return new String(Hex.encode(digest.digest(SecurityUtils.toBytes(array, charSet))));
         } finally {
             if (array!=null)
                 manager.disposePassword(array);

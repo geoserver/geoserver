@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2014 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -29,7 +29,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.map.MetatileMapOutputFormat;
 import org.geoserver.wms.map.RenderedImageMap;
 import org.geoserver.wms.map.RenderedImageMapOutputFormat;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.data.QueryCapabilities;
@@ -41,6 +41,7 @@ import org.geotools.factory.GeoTools;
 import org.geotools.factory.Hints;
 import org.geotools.filter.Filters;
 import org.geotools.filter.function.EnvFunction;
+import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.WMSLayer;
@@ -55,8 +56,10 @@ import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.filter.And;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
+import org.opengis.filter.Or;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -326,7 +329,7 @@ public class GetMap {
             }
 
             final Style layerStyle = styles[i];
-            final Filter layerFilter = filters[i];
+            final Filter layerFilter = SimplifyingFilterVisitor.simplify(filters[i]);
 
             final org.geotools.map.Layer layer;
 
@@ -381,7 +384,7 @@ public class GetMap {
                     throw new ServiceException("Internal error", exp);
                 }
                 FeatureLayer featureLayer = new FeatureLayer(source, layerStyle);
-                featureLayer.setTitle(mapLayerInfo.getFeature().getPrefixedName());
+                featureLayer.setTitle(mapLayerInfo.getFeature().prefixedName());
                 featureLayer.getUserData().put("abstract", mapLayerInfo.getDescription());
                 
                 // mix the dimension related filter with the layer filter
@@ -426,7 +429,7 @@ public class GetMap {
                 // Adding a coverage layer
                 //
                 // /////////////////////////////////////////////////////////
-                final AbstractGridCoverage2DReader reader = (AbstractGridCoverage2DReader) mapLayerInfo
+                final GridCoverage2DReader reader = (GridCoverage2DReader) mapLayerInfo
                         .getCoverageReader();
                 if (reader != null) {
 
@@ -441,7 +444,7 @@ public class GetMap {
                             throw new RuntimeException(e);
                         }
 
-                        layer.setTitle(mapLayerInfo.getCoverage().getPrefixedName());
+                        layer.setTitle(mapLayerInfo.getCoverage().prefixedName());
 
                         mapContent.addLayer(layer);
                     } catch (IllegalArgumentException e) {
@@ -481,7 +484,7 @@ public class GetMap {
                 }
                 if (!merged) {
                     WMSLayer Layer = new WMSLayer(wms, gt2Layer);
-                    Layer.setTitle(wmsLayer.getPrefixedName());
+                    Layer.setTitle(wmsLayer.prefixedName());
                     mapContent.addLayer(Layer);
                 }
             } else {
@@ -489,19 +492,7 @@ public class GetMap {
             }
         }
 
-        // setup some SLD variable substitution environment used by rendering transformations
-        EnvFunction.setLocalValue("wms_bbox", mapContent.getRenderingArea());
-        EnvFunction.setLocalValue("wms_crs", mapContent.getRenderingArea().getCoordinateReferenceSystem());
-        EnvFunction.setLocalValue("wms_srs", mapContent.getRequest().getSRS());
-        EnvFunction.setLocalValue("wms_width", mapContent.getMapWidth());
-        EnvFunction.setLocalValue("wms_height", mapContent.getMapHeight());
-        try {
-            double scaleDenominator = RendererUtilities.calculateOGCScale(mapContent.getRenderingArea(),
-                    mapContent.getMapWidth(), null);
-            EnvFunction.setLocalValue("wms_scale_denominator", scaleDenominator);
-        } catch(Exception e) {
-            LOGGER.log(Level.SEVERE, "Failed to compute the scale denominator, wms_scale_denominator env variable is unset", e);
-        }
+        RenderingVariables.setupEnvironmentVariables(mapContent);
         
         // set the buffer value if the admin has set a specific value for some layers
         // in this map
@@ -734,7 +725,8 @@ public class GetMap {
      * 
      * @throws ServiceException
      *             if no specialization is configured for the output format specified in
-     *             <code>request</code> or if it can't be instantiated
+     *             <code>request</code> or if it can't be instantiated or the format is not
+     *             allowed
      */
     private GetMapOutputFormat getDelegate(final String outputFormat) throws ServiceException {
 
@@ -744,6 +736,9 @@ public class GetMap {
                     + outputFormat + " format", "InvalidFormat");
             e.setCode("InvalidFormat");
             throw e;
+        }
+        if (wms.isAllowedGetMapFormat(producer)==false) {
+            throw wms.unallowedGetMapFormatException(outputFormat);
         }
         return producer;
     }

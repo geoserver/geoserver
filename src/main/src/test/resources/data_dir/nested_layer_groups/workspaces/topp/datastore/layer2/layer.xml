@@ -1,0 +1,18 @@
+<layer>
+  <name>layer2</name>
+  <id>LayerInfoImpl-2bc80f29:12cef718474:-7fc9</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--6308ea04:13d350bb416:-7ffe</id>
+  </defaultStyle>
+  
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-2bc80f29:12cef718474:-7fca</id>
+  </resource>
+  <enabled>true</enabled>
+  <queryable>false</queryable>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>

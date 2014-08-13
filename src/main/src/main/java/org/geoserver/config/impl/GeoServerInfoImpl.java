@@ -43,6 +43,10 @@ public class GeoServerInfoImpl implements GeoServerInfo {
 
     protected Integer xmlPostRequestLogBufferSize = 1024;
 
+    protected Boolean xmlExternalEntitiesEnabled = Boolean.FALSE;
+    
+    protected String lockProviderName;
+    
     //deprecated members, kept around to maintain xstream persistence backward compatability
     @Deprecated
     protected ContactInfo contact;
@@ -206,7 +210,7 @@ public class GeoServerInfoImpl implements GeoServerInfo {
     public void setAdminUsername(String adminUsername) {
         this.adminUsername = adminUsername;
     }
-    
+
     public int getFeatureTypeCacheSize() {
         return featureTypeCacheSize;
     }
@@ -232,6 +236,24 @@ public class GeoServerInfoImpl implements GeoServerInfo {
         return this.xmlPostRequestLogBufferSize;
     }
 
+    /**
+     * If true it enables evaluation of XML entities contained in XML files received in a service (WMS, WFS, ...) request.
+     * Default is FALSE.
+     * Enabling this feature is a security risk.
+     */
+    public void setXmlExternalEntitiesEnabled(Boolean xmlExternalEntitiesEnabled) {
+        this.xmlExternalEntitiesEnabled = xmlExternalEntitiesEnabled;
+    }
+    
+    /**
+     * If true it enables evaluation of XML entities contained in XML files received in a service (WMS, WFS, ...) request.
+     * Default is FALSE.
+     * Enabling this feature is a security risk.
+     */
+    public Boolean isXmlExternalEntitiesEnabled() {
+        return this.xmlExternalEntitiesEnabled;
+    }
+    
     public MetadataMap getMetadata() {
         return metadata;
     }
@@ -246,6 +268,14 @@ public class GeoServerInfoImpl implements GeoServerInfo {
     
     public void setClientProperties(Map<Object, Object> properties) {
         this.clientProperties = properties;
+    }
+    
+    public String getLockProviderName() {
+        return this.lockProviderName;
+    }
+    
+    public void setLockProviderName(String lockProviderName) {
+        this.lockProviderName = lockProviderName;
     }
     
     public void dispose() {
@@ -274,6 +304,7 @@ public class GeoServerInfoImpl implements GeoServerInfo {
         result = prime * result + xmlPostRequestLogBufferSize;
         result = prime * result + 
                 ((resourceErrorHandling == null) ? 0 : resourceErrorHandling.hashCode());
+        result = prime * result + ((lockProviderName == null) ? 0 : lockProviderName.hashCode());
         return result;
     }
 
@@ -326,6 +357,12 @@ public class GeoServerInfoImpl implements GeoServerInfo {
             if (!resourceErrorHandling.equals(other.getResourceErrorHandling())) return false;
         }
         
+        if (lockProviderName == null) {
+            if (other.getLockProviderName() != null) return false;
+        } else {
+            if (!lockProviderName.equals(other.getLockProviderName())) return false;
+        }
+
         return true;
     }
 

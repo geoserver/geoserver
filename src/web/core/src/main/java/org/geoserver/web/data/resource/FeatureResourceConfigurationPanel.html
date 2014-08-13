@@ -2,6 +2,20 @@
 <head></head>
 <body>
 <wicket:panel>
+    <div>
+      <fieldset><legend><span><wicket:message key="curves">curves</wicket:message></span></legend>
+        <ul>
+           <li>
+              <input id="linestrings-are-curves" class="field checkbox" wicket:id="circularArcPresent" type="checkbox"></input>
+              <label for="linestrings-are-curves" class="choice"><wicket:message key="linestrings-are-curves">Enabled</wicket:message></label>
+            </li>
+            <li>
+              <label for="tolerance"><wicket:message key="tolerance">tolerance</wicket:message></label>
+              <input type="text" wicket:id="linearizationTolerance" class="field text" />
+            </li>
+         </ul>
+      </fieldset>
+    </div>
     <div wicket:id="attributePanel"></div>
     <wicket:fragment wicket:id="attributePanelFragment">
       <div>

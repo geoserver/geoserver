@@ -40,7 +40,7 @@
 						ex:geomContainer
 					</targetAttribute>
 					<idExpression>
-                        <OCQL>getId()</OCQL>
+                        <OCQL>ID</OCQL>
                     </idExpression>
                 </AttributeMapping>
                 <AttributeMapping>
@@ -92,7 +92,7 @@
 						ex:nestedGeom
 					</targetAttribute>
                     <idExpression>
-                        <OCQL>strConcat('nested.', getId())</OCQL>
+                        <OCQL>strConcat('nested.', ID)</OCQL>
                     </idExpression>
                 </AttributeMapping>
                 <AttributeMapping>
@@ -106,7 +106,7 @@
 		                FEATURE_LINK
 		            </targetAttribute>
                     <sourceExpression>
-                        <OCQL>getId()</OCQL>
+                        <OCQL>ID</OCQL>
                     </sourceExpression>
                 </AttributeMapping>
             </attributeMappings>
@@ -124,7 +124,7 @@
 						ex:nestedGeom
 					</targetAttribute>
                     <idExpression>
-                        <OCQL>strConcat('secondNested.', getId())</OCQL>
+                        <OCQL>strConcat('secondNested.', ID)</OCQL>
                     </idExpression>
                 </AttributeMapping>
                 <AttributeMapping>
@@ -146,7 +146,7 @@
 		                FEATURE_LINK
 		            </targetAttribute>
                     <sourceExpression>
-                        <OCQL>getId()</OCQL>
+                        <OCQL>ID</OCQL>
                     </sourceExpression>
                 </AttributeMapping>
             </attributeMappings>
@@ -164,7 +164,7 @@
 						ex:nestedGeom
 					</targetAttribute>
                     <idExpression>
-                        <OCQL>strConcat('thirdNested.', getId())</OCQL>
+                        <OCQL>strConcat('thirdNested.', ID)</OCQL>
                     </idExpression>
                 </AttributeMapping>
                 <AttributeMapping>
@@ -178,7 +178,7 @@
 		                FEATURE_LINK
 		            </targetAttribute>
                     <sourceExpression>
-                        <OCQL>getId()</OCQL>
+                        <OCQL>ID</OCQL>
                     </sourceExpression>
                 </AttributeMapping>
             </attributeMappings>

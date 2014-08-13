@@ -4,16 +4,18 @@
  */
 package org.geoserver.wms.eo;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapCallback;
 import org.geoserver.wms.GetMapCallbackAdapter;
 import org.geoserver.wms.WMSMapContent;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.gce.imagemosaic.MergeBehavior;
 import org.geotools.map.GridReaderLayer;
@@ -54,21 +56,28 @@ public class EOGetMapCallback extends GetMapCallbackAdapter implements GetMapCal
             throw new IllegalStateException("Layer "+layer.getTitle()+" does nto resolve to a coverage");
         }
         final GridReaderLayer gridReaderLayer = (GridReaderLayer)layer;
-        final AbstractGridCoverage2DReader reader=gridReaderLayer.getReader();
+        final GridCoverage2DReader reader=gridReaderLayer.getReader();
         
         // === assuming now it is an EO BAND layer we must have either 1 or 3 values for the additional domain
         
         // enforce one dimension
-        Set<ParameterDescriptor<List>> dimensions =reader.getDynamicParameters();
-        if(dimensions.size()!=1){
-            throw new IllegalStateException("Coverage "+cinfo.getName()+" has a number of dimensions different than 1");
-        }
-        // extract curent values and enforce 1 or 3 values
-        final GeneralParameterValue[] params = gridReaderLayer.getParams();
-        enforceParamCardinality(params,dimensions);
+        Set<ParameterDescriptor<List>> dimensions;
+        try {
+            dimensions = reader.getDynamicParameters();
         
-        // enforce stacking order
-        enforceStackingOrder(params);
+            if (dimensions.size() != 1) {
+                throw new IllegalStateException("Coverage " + cinfo.getName()
+                        + " has a number of dimensions different than 1");
+            }
+            // extract curent values and enforce 1 or 3 values
+            final GeneralParameterValue[] params = gridReaderLayer.getParams();
+            enforceParamCardinality(params,dimensions);
+            
+            // enforce stacking order
+            enforceStackingOrder(params);
+        } catch (IOException e) {
+            throw new ServiceException(e);
+        }
         
         return layer;
     }

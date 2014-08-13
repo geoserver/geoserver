@@ -57,7 +57,11 @@ public class ReadOnlyDataAccess<T extends FeatureType, F extends Feature> extend
     public void updateSchema(Name typeName, T featureType) throws IOException {
         throw notifyUnsupportedOperation();
     }
-    
+
+    @Override
+    public void removeSchema(Name typeName) throws IOException {
+        throw notifyUnsupportedOperation();
+    }
     /**
      * Notifies the caller the requested operation is not supported, using a plain {@link UnsupportedOperationException}
      * in case we have to conceal the fact the data is actually writable, using an Spring Security security exception otherwise

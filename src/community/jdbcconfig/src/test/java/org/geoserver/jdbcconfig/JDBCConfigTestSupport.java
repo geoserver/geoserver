@@ -9,36 +9,41 @@ import static org.easymock.classextension.EasyMock.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
+import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
-import org.apache.commons.io.FileUtils;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.util.XStreamPersisterFactory;
-import org.geoserver.jdbcconfig.JDBCGeoServerLoader;
 import org.geoserver.jdbcconfig.internal.ConfigDatabase;
 import org.geoserver.jdbcconfig.internal.DbMappings;
+import org.geoserver.jdbcconfig.internal.Dialect;
+import org.geoserver.jdbcconfig.internal.Util;
 import org.geoserver.jdbcconfig.internal.XStreamInfoSerialBinding;
-import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.GeoServerResourceLoader;
-import org.springframework.context.ApplicationContext;
-import org.springframework.dao.DataAccessException;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.WebApplicationContext;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
-import com.google.common.collect.Lists;
-import com.google.common.io.Resources;
-
+@SuppressWarnings("unused")
 public class JDBCConfigTestSupport {
 
     public static File createTempDir() throws IOException {
@@ -48,24 +53,140 @@ public class JDBCConfigTestSupport {
         return f;
     }
 
-//     String driver = "org.postgresql.Driver";
-//    
-//     String connectionUrl = "jdbc:postgresql://localhost:5432/geoserver";
-//    
-//     String initScriptName = "initdb.postgres.sql";
-//    
-//     String dropScriptName = "dropdb.postgres.sql";
+    public static class DBConfig {
+        String name;
+        String driver;
+        String connectionUrl;
+        String dbUser;
+        String dbPasswd;
+        BasicDataSource dataSource;
+        boolean initialized = false;
 
-    String driver = "org.h2.Driver";
+        public DBConfig(String name, String driver, String connectionUrl, String dbUser, String dbPasswd) {
+            this.name = name;
+            this.driver = driver;
+            this.connectionUrl = connectionUrl;
+            this.dbUser = dbUser;
+            this.dbPasswd = dbPasswd;
+        }
 
-    String connectionUrl = "jdbc:h2:file:${DATA_DIR}/geoserver";
+        DBConfig() {
+        }
 
-    String initScriptName = "initdb.h2.sql";
+        BasicDataSource dataSource() throws Exception {
+            if (dataSource != null) return dataSource;
 
-    String dropScriptName = "dropdb.h2.sql";
+            dataSource = new BasicDataSource() {
 
-     String dbUser = System.getProperty("user.name");
-     String dbPasswd = "";
+                @Override
+                public synchronized void close() throws SQLException {
+                    // do nothing
+                }
+
+            };
+            dataSource.setDriverClassName(driver);
+            dataSource.setUrl(connectionUrl.replace("${DATA_DIR}", createTempDir().getAbsolutePath()));
+            dataSource.setUsername(dbUser);
+            dataSource.setPassword(dbPasswd);
+
+            dataSource.setMinIdle(3);
+            dataSource.setMaxActive(10);
+            Connection connection = dataSource.getConnection();
+            connection.close();
+            return dataSource;
+        }
+
+        public String getInitScript() {
+            return "initdb." + name + ".sql";
+
+        }
+
+        public String getDropScript() {
+            return "dropdb." + name + ".sql";
+        }
+
+        public String getResetScript() {
+            return "resetdb." + name + ".sql";
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+
+        public String detailString() {
+            return "DBConfig{" + "name=" + name + ", driver=" + driver + ", connectionUrl=" + connectionUrl + ", dbUser=" + dbUser + ", dbPasswd=" + dbPasswd + '}';
+        }
+
+    }
+
+    private static List<Object[]> parameterizedDBConfigs;
+    public static final List<Object[]> parameterizedDBConfigs() {
+        if (parameterizedDBConfigs == null) {
+            parameterizedDBConfigs = new ArrayList<Object[]>();
+            for (DBConfig conf: getDBConfigurations()) {
+                parameterizedDBConfigs.add(new Object[] {conf});
+            }
+        }
+        return parameterizedDBConfigs;
+    }
+
+    static List<DBConfig> getDBConfigurations() {
+        ArrayList<DBConfig> configs = new ArrayList<DBConfig>();
+
+        dbConfig(configs, "h2", "org.h2.Driver", "jdbc:h2:file:${DATA_DIR}/geoserver");
+        dbConfig(configs, "postgres", "org.postgresql.Driver", "jdbc:postgresql://localhost:5432/geoserver");
+        dbConfig(configs, "oracle", "oracle.jdbc.OracleDriver", "jdbc:oracle:thin:@//localhost:49161/xe");
+
+        return configs;
+    }
+
+    static String getProperty(String dbName, String property) {
+        return System.getProperty("jdbcconfig." + dbName + "." + property);
+    }
+
+    public static void dbConfig(List<DBConfig> configs, String name, String driver, String connectionUrl) {
+        try {
+            Class.forName(driver);
+        } catch (ClassNotFoundException cnfe) {
+            System.err.println("skipping " + name + " tests, enable via maven profile");
+            return;
+        }
+        if ("true".equals(System.getProperty("jdbcconfig." + name + ".skip"))) {
+            System.err.println("skipping " + name + " tests, enable via maven profile");
+            return;
+        }
+        DBConfig conf = new DBConfig();
+        conf.name = name;
+        conf.driver = driver;
+        conf.connectionUrl = connectionUrl;
+        conf.dbUser = System.getProperty("user.name");
+        conf.dbPasswd = "";
+
+        connectionUrl = getProperty(name, "connectionUrl");
+        if (connectionUrl != null) {
+            conf.connectionUrl = connectionUrl;
+        }
+        String dbUser = getProperty(name, "dbUser");
+        if (dbUser != null) {
+            conf.dbUser = dbUser;
+        }
+        String dbPass = getProperty(name, "dbPasswd");
+        if (dbPass != null) {
+            conf.dbPasswd = dbPass;
+        }
+        try {
+            conf.dataSource();
+        } catch (Exception ex) {
+            System.err.println("Unable to connect to datastore, either disable test or specify correct configuration:");
+            System.out.println(ex.getMessage());
+            System.out.println("Current configuration : " + conf.detailString());
+            return;
+        }
+        configs.add(conf);
+    }
+
+    private final DBConfig dbConfig;
 
     private WebApplicationContext appContext;
 
@@ -77,16 +198,19 @@ public class JDBCConfigTestSupport {
 
     private ConfigDatabase configDb;
 
+    public JDBCConfigTestSupport(DBConfig dbConfig) {
+        this.dbConfig = dbConfig;
+    }
+
     public void setUp() throws Exception {
         ConfigDatabase.LOGGER.setLevel(Level.FINER);
 
         resourceLoader = new GeoServerResourceLoader(createTempDir());
-        GeoserverDataDirectory.loader = resourceLoader;
 
         // just to avoid hundreds of warnings in the logs about extension lookups with no app
         // context set
         appContext = createNiceMock(WebApplicationContext.class);
-        new GeoServerExtensions().setApplicationContext(appContext);
+        GeoServerExtensionsHelper.init(appContext);
 
         configureAppContext(appContext);
         replay(appContext);
@@ -95,33 +219,19 @@ public class JDBCConfigTestSupport {
 //        FileUtils.deleteDirectory(testDbDir);
 //        testDbDir.mkdirs();
 
-        dataSource = new BasicDataSource();
-        dataSource.setDriverClassName(driver);
-        dataSource.setUrl(connectionUrl.replace("${DATA_DIR}",
-            resourceLoader.getBaseDirectory().getAbsolutePath()));
-        dataSource.setUsername(dbUser);
-        dataSource.setPassword(dbPasswd);
+        dataSource = dbConfig.dataSource();
 
-        dataSource.setMinIdle(3);
-        dataSource.setMaxActive(10);
-        try {
-            Connection connection = dataSource.getConnection();
-            connection.close();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        dropDb();
+        initDb();
 
-        try {
-            dropDb(dataSource);
-        } catch (Exception ignored) {
-        }
-        initDb(dataSource);
-
-        XStreamInfoSerialBinding binding = new XStreamInfoSerialBinding(
-                new XStreamPersisterFactory());
+        // use a context to initialize the ConfigDatabase as this will enable
+        // transaction management making the tests much faster (and correcter)
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
+        // use the dataSource we just created
+        context.getBean(Config.class).real = dataSource;
+        configDb = context.getBean(ConfigDatabase.class);
 
         catalog = new CatalogImpl();
-        configDb = new ConfigDatabase(dataSource, binding);
         configDb.setCatalog(catalog);
         configDb.initDb(null);
     }
@@ -139,9 +249,6 @@ public class JDBCConfigTestSupport {
     }
 
     public void tearDown() throws Exception {
-        if (dataSource != null) {
-            dropDb(dataSource);
-        }
         try {
             if (configDb != null) {
                 configDb.dispose();
@@ -165,43 +272,53 @@ public class JDBCConfigTestSupport {
         return configDb;
     }
 
-    private void initDb(DataSource dataSource) throws Exception {
-        runScript(initScriptName);
-    }
-
-    private void dropDb(DataSource dataSource) throws Exception {
-        runScript(dropScriptName);
-    }
-
-    private void runScript(String dbScriptName) throws IOException {
-        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(dataSource);
-
-        String[] initScript = readDbScript(dbScriptName);
-        JdbcOperations jdbcOperations = template.getJdbcOperations();
-        for (String sentence : initScript) {
-            try {
-                jdbcOperations.update(sentence);
-            } catch (DataAccessException e) {
-                // e.printStackTrace();
-                throw e;
-            }
+    private void initDb() throws Exception {
+        if (!dbConfig.initialized) {
+            runScript(dbConfig.getInitScript(), null, true);
+            dbConfig.initialized = true;
         }
     }
 
-    private String[] readDbScript(final String scriptName) throws IOException {
+    private void dropDb() throws Exception {
+        URL url = JDBCGeoServerLoader.class.getResource(dbConfig.getResetScript());
+        if (url != null && dbConfig.initialized) {
+            runScript(dbConfig.getResetScript(), null, true);
+        } else {
+            // drop script cannot be run in a transaction - if a statement fails
+            // the whole thing aborts
+            runScript(dbConfig.getDropScript(), null, false);
+            dbConfig.initialized = false;
+        }
+    }
 
-        URL url = JDBCGeoServerLoader.class.getResource(scriptName);
+    public void runScript(String dbScriptName, Logger logger, boolean tx) throws IOException {
+        final URL url = JDBCGeoServerLoader.class.getResource(dbScriptName);
         if (url == null) {
             throw new IllegalArgumentException("Script not found: " + getClass().getName() + "/"
-                    + scriptName);
+                    + dbScriptName);
         }
-        List<String> lines = Lists.newArrayList(Resources.readLines(url, Charset.forName("UTF-8")));
-        for (Iterator<String> it = lines.iterator(); it.hasNext();) {
-            if (it.next().trim().length() == 0) {
-                it.remove();
-            }
+
+        if (!tx) {
+            NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(dataSource);
+            Util.runScript(url, template.getJdbcOperations(), null);
+        } else {
+            DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
+            NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(transactionManager.getDataSource());
+            TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+            final JdbcOperations jdbcOperations = template.getJdbcOperations();
+            transactionTemplate.execute(new TransactionCallback<Object>() {
+
+                @Override
+                public Object doInTransaction(TransactionStatus ts) {
+                    try {
+                        Util.runScript(url, jdbcOperations, null);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    return null;
+                }
+            });
         }
-        return lines.toArray(new String[lines.size()]);
     }
 
     public DataSource getDataSource() {
@@ -214,5 +331,37 @@ public class JDBCConfigTestSupport {
 
     public CatalogImpl getCatalog() {
         return catalog;
+    }
+
+    @Configuration
+    @EnableTransactionManagement
+    public static class Config {
+        DataSource real;
+        // we need a datasource immediately, but don't have one so use this as
+        // a delegate that uses the 'real' DataSource
+        DataSource lazy = new BasicDataSource() {
+
+            @Override
+            protected synchronized DataSource createDataSource() throws SQLException {
+                return real;
+            }
+
+        };
+
+        @Bean
+        public PlatformTransactionManager transactionManager() {
+            return new DataSourceTransactionManager(dataSource());
+        }
+
+        @Bean
+        public ConfigDatabase configDatabase() {
+            return new ConfigDatabase(dataSource(), new XStreamInfoSerialBinding(
+                new XStreamPersisterFactory()));
+        }
+
+        @Bean
+        public DataSource dataSource() {
+            return lazy;
+        }
     }
 }

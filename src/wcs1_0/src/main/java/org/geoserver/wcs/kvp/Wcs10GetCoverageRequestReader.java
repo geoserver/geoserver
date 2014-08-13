@@ -4,8 +4,7 @@
  */
 package org.geoserver.wcs.kvp;
 
-import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.InvalidParameterValue;
-import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.MissingParameterValue;
+import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.*;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -25,10 +24,12 @@ import net.opengis.gml.VectorType;
 import net.opengis.wcs10.AxisSubsetType;
 import net.opengis.wcs10.DomainSubsetType;
 import net.opengis.wcs10.GetCoverageType;
+import net.opengis.wcs10.InterpolationMethodType;
 import net.opengis.wcs10.IntervalType;
 import net.opengis.wcs10.OutputType;
 import net.opengis.wcs10.RangeSubsetType;
 import net.opengis.wcs10.SpatialSubsetType;
+import net.opengis.wcs10.TimePeriodType;
 import net.opengis.wcs10.TimeSequenceType;
 import net.opengis.wcs10.TypedLiteralType;
 import net.opengis.wcs10.Wcs10Factory;
@@ -36,14 +37,15 @@ import net.opengis.wcs10.Wcs10Factory;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.ows.kvp.EMFKvpRequestReader;
 import org.geoserver.ows.util.KvpUtils;
-import org.geoserver.ows.util.RequestUtils;
 import org.geoserver.ows.util.KvpUtils.Tokenizer;
+import org.geoserver.ows.util.RequestUtils;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.resources.i18n.ErrorKeys;
 import org.geotools.resources.i18n.Errors;
+import org.geotools.util.DateRange;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -100,6 +102,11 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
                     WcsExceptionCode.InvalidParameterValue, "version");
         }
         getCoverage.setVersion(Wcs10GetCoverageRequestReader.VERSION);
+
+        // build interpolation
+        if (!getCoverage.isSetInterpolationMethod()) {
+            getCoverage.setInterpolationMethod(parseInterpolation(kvp));
+        }
 
         // build the domain subset
         getCoverage.setDomainSubset(parseDomainSubset(kvp));
@@ -169,8 +176,8 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
         } else if (time != null) {
             timeSequence = Wcs10Factory.eINSTANCE.createTimeSequenceType();
             if (time instanceof Collection) {
-                for (Date tPos : (Collection<Date>) time) {
-                    addTimePosition(timeSequence, tPos);
+                for (Object tPos : (Collection<Object>) time) {
+                    addToTimeSequence(timeSequence, tPos);
                 }
             }
         }
@@ -321,11 +328,23 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
      * @param timeSequence
      * @param tPos
      */
-    private void addTimePosition(TimeSequenceType timeSequence, Date tPos) {
-        final TimePositionType timePosition = 
-            Gml4wcsFactory.eINSTANCE.createTimePositionType();
-        timePosition.setValue(tPos);
-        timeSequence.getTimePosition().add(timePosition);
+    private void addToTimeSequence(TimeSequenceType timeSequence, Object tPos) {
+        if(tPos instanceof Date) {
+            final TimePositionType timePosition = 
+                Gml4wcsFactory.eINSTANCE.createTimePositionType();
+            timePosition.setValue(tPos);
+            timeSequence.getTimePosition().add(timePosition);
+        } else if(tPos instanceof DateRange){
+            DateRange range = (DateRange) tPos;
+            final TimePeriodType timePeriod = Wcs10Factory.eINSTANCE.createTimePeriodType();
+            final TimePositionType start = Gml4wcsFactory.eINSTANCE.createTimePositionType();
+            start.setValue(range.getMinValue());
+            timePeriod.setBeginPosition(start);
+            final TimePositionType end = Gml4wcsFactory.eINSTANCE.createTimePositionType();
+            end.setValue(range.getMaxValue());
+            timePeriod.setEndPosition(end);
+            timeSequence.getTimePeriod().add(timePeriod);
+        }
     }
 
     private RangeSubsetType parseRangeSubset(Map kvp, String coverageName) {
@@ -476,4 +495,16 @@ public class Wcs10GetCoverageRequestReader extends EMFKvpRequestReader {
 
     }
 
+    /**
+     * Parses the interpolation parameter from the kvp. If nothing is present the default nearest neighbor is set.
+     * 
+     * @param kvp
+     * @return
+     */
+    private InterpolationMethodType parseInterpolation(Map kvp) {
+        if (kvp.containsKey("interpolation")) {
+            return (InterpolationMethodType) kvp.get("interpolation");
+        }
+        return InterpolationMethodType.NEAREST_NEIGHBOR_LITERAL;
+    }
 }

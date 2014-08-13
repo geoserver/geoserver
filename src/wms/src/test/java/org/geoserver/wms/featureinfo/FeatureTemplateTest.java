@@ -4,6 +4,7 @@
  */
 package org.geoserver.wms.featureinfo;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -106,5 +107,15 @@ public class FeatureTemplateTest extends WMSTestSupport {
         } finally {
         	features.close();
         }
+    }
+    
+    @Test
+    public void testEmptyTemplate() throws Exception {
+        SimpleFeatureSource source = getFeatureSource(MockData.PRIMITIVEGEOFEATURE);
+
+        FeatureTemplate template = new FeatureTemplate();
+        assertTrue(template.isTemplateEmpty(source.getSchema(), "height.ftl", FeatureTemplate.class, "0" + System.getProperty("line.separator")));
+        assertTrue(template.isTemplateEmpty(source.getSchema(), "time.ftl", FeatureTemplate.class, null));
+        assertFalse(template.isTemplateEmpty(source.getSchema(), "title.ftl", FeatureTemplate.class, null));
     }
 }

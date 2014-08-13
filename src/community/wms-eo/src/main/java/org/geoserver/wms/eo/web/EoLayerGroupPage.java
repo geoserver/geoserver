@@ -42,8 +42,7 @@ public class EoLayerGroupPage extends GeoServerSecuredPage {
         Fragment header = new Fragment(HEADER_PANEL, "header", this);
         
         // the add button
-        // header.add(new BookmarkablePageLink("addNew", EoLayerGroupNewPage.class));
-        header.add(new BookmarkablePageLink("addNew", CreateEoGroupPage.class));
+        header.add(new BookmarkablePageLink("addNew", EoLayerGroupNewPage.class));
                 
         // the removal button
         removalLink = new DeleteEoGroupLink("removeSelected", table, dialog);        

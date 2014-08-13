@@ -10,12 +10,10 @@ import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
-import org.junit.Test;
-
 import org.geotools.data.DataUtilities;
 import org.geotools.image.test.ImageAssert;
+import org.junit.Test;
 import org.w3c.dom.Document;
-
 
 /**
  * 
@@ -27,7 +25,7 @@ public class WmsGetMapTest extends AbstractAppSchemaTestSupport {
     public WmsGetMapTest() throws Exception {
         super();
     }
-    
+
     @Override
     protected WmsSupportMockData createTestData() {
         WmsSupportMockData mockData = new WmsSupportMockData();
@@ -36,59 +34,48 @@ public class WmsGetMapTest extends AbstractAppSchemaTestSupport {
         mockData.addStyle("positionalaccuracy", "styles/positionalaccuracy.sld");
         return mockData;
     }
-     
+
     @Test
-    public void testGetMapOutcropCharacter() throws Exception
-    {
-        InputStream is = getBinary("wms?request=GetMap&SRS=EPSG:4326&layers=gsml:MappedFeature&styles=outcropcharacter&BBOX=-2,52,0,54&X=0&Y=0&width=20&height=20&FORMAT=image/jpeg");
+    public void testGetMapOutcropCharacter() throws Exception {
+        InputStream is = getBinary("wms?request=GetMap&SRS=EPSG:4326&layers=gsml:MappedFeature&styles=outcropcharacter&BBOX=-2,52,0,54&X=0&Y=0&width=20&height=20&FORMAT=image/png");
         BufferedImage imageBuffer = ImageIO.read(is);
-                
-        assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);   
-        ImageAssert.assertEquals(DataUtilities.urlToFile(getClass().getResource("/test-data/img/outcrop.tiff")), imageBuffer, 250);
+        assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);
+        ImageAssert.assertEquals(
+                DataUtilities.urlToFile(getClass().getResource("/test-data/img/outcrop.png")),
+                imageBuffer, 10);
     }
-    
+
     @Test
-    public void testGetMapOutcropCharacterReprojection() throws Exception
-    {
-        InputStream is = getBinary("wms?request=GetMap&SRS=EPSG:4283&layers=gsml:MappedFeature&styles=outcropcharacter&BBOX=-2,52,0,54&X=0&Y=0&width=20&height=20&FORMAT=image/jpeg");
+    public void testGetMapOutcropCharacterReprojection() throws Exception {
+        InputStream is = getBinary("wms?request=GetMap&SRS=EPSG:3857&layers=gsml:MappedFeature&styles=outcropcharacter&BBOX=-222638.981586547,6800125.45439731,0,7170156.29399995&X=0&Y=0&width=20&height=20&FORMAT=image/png");
         BufferedImage imageBuffer = ImageIO.read(is);
-                
-        assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);   
-        ImageAssert.assertEquals(DataUtilities.urlToFile(getClass().getResource("/test-data/img/outcrop.tiff")), imageBuffer, 250);
+        assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);
+        ImageAssert.assertEquals(
+                DataUtilities.urlToFile(getClass().getResource("/test-data/img/outcrop_3857.png")),
+                imageBuffer, 10);
 
     }
-    
+
     @Test
-    public void testGetMapPositionalAccuracy() throws Exception
-    {
-        InputStream is = getBinary("wms?request=GetMap&SRS=EPSG:4326&layers=gsml:MappedFeature&styles=positionalaccuracy&BBOX=-2,52,0,54&X=0&Y=0&width=20&height=20&FORMAT=image/jpeg");
+    public void testGetMapPositionalAccuracy() throws Exception {
+        InputStream is = getBinary("wms?request=GetMap&SRS=EPSG:4326&layers=gsml:MappedFeature&styles=positionalaccuracy&BBOX=-2,52,0,54&X=0&Y=0&width=20&height=20&FORMAT=image/png");
         BufferedImage imageBuffer = ImageIO.read(is);
-        
         assertNotBlank("app-schema test getmap positional accuracy", imageBuffer, Color.WHITE);
-        ImageAssert.assertEquals(DataUtilities.urlToFile(getClass().getResource("/test-data/img/posacc.tiff")), imageBuffer, 250);
-        
-        /*DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(new File("/home/niels/Desktop/outcrop.jpg"))));
-        int data;
-        while((data = is.read()) >= 0) {
-                out.writeByte(data);
-        }
-        is.close();
-        out.close();*/
-    }  
-    
-   
+        ImageAssert.assertEquals(
+                DataUtilities.urlToFile(getClass().getResource("/test-data/img/posacc.png")),
+                imageBuffer, 10);
+    }
+
     @Test
-    public void testGetMapAfterWFS() throws Exception
-    {
+    public void testGetMapAfterWFS() throws Exception {
         Document doc = getAsDOM("wfs?version=1.1.0&request=getFeature&typeName=gsml:MappedFeature&maxFeatures=1");
         LOGGER.info(prettyString(doc));
-        
-        InputStream is = getBinary("wms?request=GetMap&SRS=EPSG:4326&layers=gsml:MappedFeature&styles=outcropcharacter&BBOX=-2,52,0,54&X=0&Y=0&width=20&height=20&FORMAT=image/jpeg");
+        InputStream is = getBinary("wms?request=GetMap&SRS=EPSG:4326&layers=gsml:MappedFeature&styles=outcropcharacter&BBOX=-2,52,0,54&X=0&Y=0&width=20&height=20&FORMAT=image/png");
         BufferedImage imageBuffer = ImageIO.read(is);
-                
-        assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);   
-        ImageAssert.assertEquals(DataUtilities.urlToFile(getClass().getResource("/test-data/img/outcrop.tiff")), imageBuffer, 250);
-
+        assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);
+        ImageAssert.assertEquals(
+                DataUtilities.urlToFile(getClass().getResource("/test-data/img/outcrop.png")),
+                imageBuffer, 10);
     }
 
 }

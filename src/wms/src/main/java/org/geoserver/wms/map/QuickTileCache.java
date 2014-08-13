@@ -115,7 +115,7 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
         // since this will be used for thread synchronization, we have to make
         // sure two thread asking for the same meta tile will get the same key
         // object
-        return (MetaTileKey) metaTileKeys.unique(key);
+        return metaTileKeys.unique(key);
     }
 
     private ReferencedEnvelope getMetaTileEnvelope(ReferencedEnvelope bbox, Point tileCoords, Point metaTileCoords) {
@@ -159,6 +159,24 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
         double centery = env.getMinY() + env.getHeight() / 2;
         int x = (int) Math.floor((centerx - origin.getX()) / env.getWidth());
         int y = (int) Math.floor((centery - origin.getY()) / env.getWidth());
+
+        return new Point(x, y);
+    }
+    
+    /**
+     * Given an envelope and the metatile envelope, locate the tile inside the metatile
+     * 
+     * @param env
+     * @param origin
+     * @return
+     */
+    Point getTileOffsetsInMeta(Envelope bbox, Envelope metatileBox) {
+        // compute using local coordinates, the previous math was using global one that
+        // broke at zoom level 23-24 in the global mercator projection (yes, at scale 1:33)
+        double dx = bbox.getMinX() - metatileBox.getMinX();
+        double dy = bbox.getMinY() - metatileBox.getMinY();
+        int x = (int) Math.round(dx / bbox.getWidth());
+        int y = (int) Math.round(dy / bbox.getHeight());
 
         return new Point(x, y);
     }
@@ -338,11 +356,10 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
         if(CRS.getAxisOrder(request.getCrs()) == AxisOrder.NORTH_EAST) {
             bbox = new Envelope(bbox.getMinY(), bbox.getMaxY(), bbox.getMinX(), bbox.getMaxX());
         }
-        Point tileCoord = getTileCoordinates(bbox, key.mapKey.origin);
-        Point metaCoord = key.metaTileCoords;
+        
+        Point tileCoord = getTileOffsetsInMeta(bbox, key.getMetaTileEnvelope());
 
-        return tiles[tileCoord.x - metaCoord.x
-                + ((tileCoord.y - metaCoord.y) * key.getMetaFactor())];
+        return tiles[tileCoord.x + (tileCoord.y * key.getMetaFactor())];
     }
 
     /**
@@ -382,6 +399,10 @@ public class QuickTileCache implements TransactionListener, GeoServerLifecycleHa
     @Override
     public void onDispose() {
         tileCache.clear();
+    }
+
+    public void beforeReload() {
+        // nothing to do
     }
 
     @Override

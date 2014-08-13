@@ -7,12 +7,6 @@
 
 package org.geoserver.w3ds.types;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class LOD {
 	

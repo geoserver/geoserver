@@ -5,7 +5,7 @@
   <xsl:param name="DTDDeclaration">
     <xsl:comment>
       The value for this parameter is passed by GetCapabilitiesResponse and contains
-      the full DTD delcaration including
+      the full DTD declaration including
       SYSTEM identifiers and internal DTD elements
     </xsl:comment>
   </xsl:param>

@@ -20,10 +20,7 @@ import org.geoserver.w3ds.types.GetSceneRequest;
 import org.geoserver.w3ds.types.W3DSLayerInfo;
 import org.geoserver.w3ds.utilities.Format;
 import org.geoserver.w3ds.utilities.Operation;
-import org.geoserver.w3ds.utilities.X3DInfoExtract;
-import org.geotools.referencing.CRS;
 import org.opengis.geometry.Envelope;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.xml.sax.SAXException;
 

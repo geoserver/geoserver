@@ -4,6 +4,7 @@
  */
 package org.geoserver.ows;
 
+import static org.geoserver.ows.util.ResponseUtils.stripRemainingPath;
 import java.util.Map;
 
 /**
@@ -35,7 +36,7 @@ public class LocalWorkspaceURLMangler implements URLMangler {
     public void mangleURL(StringBuilder baseURL, StringBuilder path, Map<String, String> kvp,
             URLType type) {
         
-        if (type == URLType.SERVICE && path.toString().equalsIgnoreCase(ows)) {
+        if (type == URLType.SERVICE && stripRemainingPath(path.toString()).equalsIgnoreCase(ows)) {
             if (LocalWorkspace.get() != null) {
                 path.insert(0, LocalWorkspace.get().getName()+"/");
                 

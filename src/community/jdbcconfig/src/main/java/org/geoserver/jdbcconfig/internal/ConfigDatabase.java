@@ -11,7 +11,6 @@ import static org.geoserver.jdbcconfig.internal.DbUtils.logStatement;
 import static org.geoserver.jdbcconfig.internal.DbUtils.params;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Proxy;
 import java.net.URL;
@@ -33,14 +32,28 @@ import javax.annotation.Nullable;
 import javax.sql.DataSource;
 
 import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.CatalogVisitorAdapter;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.event.CatalogAddEvent;
+import org.geoserver.catalog.event.CatalogListener;
+import org.geoserver.catalog.event.CatalogModifyEvent;
+import org.geoserver.catalog.event.CatalogPostModifyEvent;
+import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.ClassMappings;
 import org.geoserver.catalog.impl.ModificationProxy;
@@ -49,11 +62,14 @@ import org.geoserver.catalog.impl.StoreInfoImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
+import org.geoserver.config.ConfigurationListener;
+import org.geoserver.config.ConfigurationListenerAdapter;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.CoverageAccessInfoImpl;
-import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.impl.GeoServerInfoImpl;
 import org.geoserver.config.impl.JAIInfoImpl;
 import org.geoserver.ows.util.OwsUtils;
@@ -88,6 +104,9 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import org.springframework.jdbc.core.RowMapper;
 
 /**
  * 
@@ -95,6 +114,10 @@ import com.google.common.collect.Lists;
 public class ConfigDatabase {
 
     public static final Logger LOGGER = Logging.getLogger(ConfigDatabase.class);
+
+    private Dialect dialect;
+
+    private DataSource dataSource;
 
     private DbMappings dbMappings;
 
@@ -111,6 +134,10 @@ public class ConfigDatabase {
     private InfoRowMapper<CatalogInfo> catalogRowMapper;
 
     private InfoRowMapper<Info> configRowMapper;
+    
+    private CatalogClearingListener catalogListener;
+    private ConfigClearingListener configListener;
+    
 
     /**
      * Protected default constructor needed by spring-jdbc instrumentation
@@ -128,8 +155,9 @@ public class ConfigDatabase {
 
         this.binding = binding;
         this.template = new NamedParameterJdbcTemplate(dataSource);
-
-        this.dbMappings = new DbMappings();
+        // cannot use dataSource at this point due to spring context config hack
+        // in place to support tx during testing
+        this.dataSource = dataSource;
 
         this.catalogRowMapper = new InfoRowMapper<CatalogInfo>(CatalogInfo.class, binding);
         this.configRowMapper = new InfoRowMapper<Info>(Info.class, binding);
@@ -140,8 +168,16 @@ public class ConfigDatabase {
         cache = cacheProvider.getCache("catalog");
     }
 
+    private Dialect dialect() {
+        if (dialect == null) {
+            this.dialect = Dialect.detect(dataSource);
+        }
+        return dialect;
+    }
+
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void initDb(@Nullable URL initScript) throws IOException {
+        this.dbMappings = new DbMappings(dialect());
         if (null != initScript) {
             runInitScript(initScript);
         }
@@ -153,32 +189,8 @@ public class ConfigDatabase {
         LOGGER.info("------------- Running catalog database init script " + initScript
                 + " ------------");
 
-        InputStream stream = initScript.openStream();
-        List<String> lines;
-        try {
-            lines = org.apache.commons.io.IOUtils.readLines(stream);
-        } finally {
-            stream.close();
-        }
-
-        StringBuilder buf = new StringBuilder();
-        for (String sql : lines) {
-            sql = sql.trim();
-            if (sql.isEmpty()) {
-                continue;
-            }
-            if (sql.startsWith("--")) {
-                continue;
-            }
-            buf.append(sql).append(" ");
-            if (sql.endsWith(";")) {
-                String stmt = buf.toString();
-                LOGGER.info("Running: " + stmt);
-                template.getJdbcOperations().update(stmt);
-
-                buf.setLength(0);
-            }
-        }
+        Util.runScript(initScript, template.getJdbcOperations(), LOGGER);
+        
         LOGGER.info("Initialization SQL script run sucessfully");
     }
 
@@ -189,6 +201,9 @@ public class ConfigDatabase {
     public void setCatalog(CatalogImpl catalog) {
         this.catalog = catalog;
         this.binding.setCatalog(catalog);
+        
+        catalog.removeListeners(CatalogClearingListener.class);
+        catalog.addListener(new CatalogClearingListener());
     }
 
     public CatalogImpl getCatalog() {
@@ -197,6 +212,10 @@ public class ConfigDatabase {
 
     public void setGeoServer(GeoServer geoServer) {
         this.geoServer = geoServer;
+        
+        if(configListener!=null) geoServer.removeListener(configListener);
+        configListener = new ConfigClearingListener();
+        geoServer.addListener(configListener);
     }
 
     public GeoServer getGeoServer() {
@@ -205,7 +224,7 @@ public class ConfigDatabase {
     
     public <T extends CatalogInfo> int count(final Class<T> of, final Filter filter) {
 
-        QueryBuilder<T> sqlBuilder = QueryBuilder.forCount(of, dbMappings).filter(filter);
+        QueryBuilder<T> sqlBuilder = QueryBuilder.forCount(dialect, of, dbMappings).filter(filter);
 
         final StringBuilder sql = sqlBuilder.build();
         final Filter unsupportedFilter = sqlBuilder.getUnsupportedFilter();
@@ -224,7 +243,7 @@ public class ConfigDatabase {
         } else {
             LOGGER.fine("Filter is not fully supported, doing scan of supported part to return the number of matches");
             // going the expensive route, filtering as much as possible
-            CloseableIterator<T> iterator = query(of, filter, null, null, null);
+            CloseableIterator<T> iterator = query(of, filter, null, null, (SortBy)null);
             try {
                 return Iterators.size(iterator);
             } finally {
@@ -233,16 +252,25 @@ public class ConfigDatabase {
         }
         return count;
     }
-
+    
     public <T extends Info> CloseableIterator<T> query(final Class<T> of, final Filter filter,
             @Nullable Integer offset, @Nullable Integer limit, @Nullable SortBy sortOrder) {
+        if(sortOrder == null) {
+            return query(of, filter, offset, limit, new SortBy[]{});
+        } else {
+            return query(of, filter, offset, limit, new SortBy[]{sortOrder});
+        }
+    }
+    
+    public <T extends Info> CloseableIterator<T> query(final Class<T> of, final Filter filter,
+            @Nullable Integer offset, @Nullable Integer limit, @Nullable SortBy... sortOrder) {
 
         checkNotNull(of);
         checkNotNull(filter);
         checkArgument(offset == null || offset.intValue() >= 0);
         checkArgument(limit == null || limit.intValue() >= 0);
 
-        QueryBuilder<T> sqlBuilder = QueryBuilder.forIds(of, dbMappings).filter(filter)
+        QueryBuilder<T> sqlBuilder = QueryBuilder.forIds(dialect, of, dbMappings).filter(filter)
                 .offset(offset).limit(limit).sortOrder(sortOrder);
 
         final StringBuilder sql = sqlBuilder.build();
@@ -257,8 +285,15 @@ public class ConfigDatabase {
         }
         logStatement(sql, namedParameters);
 
-        Stopwatch sw = new Stopwatch().start();
-        List<String> ids = template.queryForList(sql.toString(), namedParameters, String.class);
+        Stopwatch sw = Stopwatch.createStarted();
+        // the oracle offset/limit implementation returns a two column result set
+        // with rownum in the 2nd - queryForList will throw an exception
+        List<String> ids = template.query(sql.toString(), namedParameters, new RowMapper<String>() {
+            @Override
+            public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return rs.getString(1);
+            }
+        });
         sw.stop();
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine(Joiner.on("").join("query returned ", ids.size(), " records in ",
@@ -279,18 +314,27 @@ public class ConfigDatabase {
             result = new CloseableIteratorAdapter<T>(iterator);
         } else {
             Iterator<T> iterator = lazyTransformed.iterator();
-            if (offset != null) {
-                Iterators.skip(iterator, offset.intValue());
-            }
-            if (limit != null) {
-                iterator = Iterators.limit(iterator, limit.intValue());
-            }
+            // Apply the filter
             result = CloseableIteratorAdapter.filter(iterator, filter);
+            // The offset and limit should not have been applied as part of the query
+            assert(!sqlBuilder.isOffsetLimitApplied());
+            // Apply offset and limits after filtering
+            result = applyOffsetLimit(result, offset, limit);
         }
 
         return result;
     }
 
+    private <T extends Info> CloseableIterator<T> applyOffsetLimit(CloseableIterator<T> iterator, Integer offset, Integer limit){
+        if (offset != null) {
+            Iterators.advance(iterator, offset.intValue());
+        }
+        if (limit != null) {
+            iterator = CloseableIteratorAdapter.limit(iterator, limit.intValue());
+        }
+        return iterator;
+    }
+    
     public <T extends Info> List<T> queryAsList(final Class<T> of, final Filter filter,
             Integer offset, Integer count, SortBy sortOrder) {
 
@@ -333,10 +377,11 @@ public class ConfigDatabase {
         final Integer typeId = dbMappings.getTypeId(interf);
 
         Map<String, ?> params = params("type_id", typeId, "id", id, "blob", blob);
-        final String statement = "insert into object (type_id, id, blob) values (:type_id, :id, :blob)";
+        final String statement = String.format("insert into object (oid, type_id, id, blob) values (%s, :type_id, :id, :blob)",
+                dialect.nextVal("seq_OBJECT"));
         logStatement(statement, params);
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        int updateCount = template.update(statement, new MapSqlParameterSource(params), keyHolder);
+        int updateCount = template.update(statement, new MapSqlParameterSource(params), keyHolder, new String[] {"oid"});
         checkState(updateCount == 1, "Insert statement failed");
         // looks like some db's return the pk different than others, so lets try both ways
         Number key = (Number) keyHolder.getKeys().get("oid");
@@ -930,4 +975,125 @@ public class ConfigDatabase {
         return !propertyTypes.isEmpty();
     }
 
+    void clear(Info info) {
+        cache.invalidate(info.getId());
+    }
+    
+    /**
+     * Listens to catalog events clearing cache entires when resources are modified.
+     */
+    // Copied from org.geoserver.catalog.ResourcePool
+    public class CatalogClearingListener extends CatalogVisitorAdapter implements CatalogListener {
+
+        public void handleAddEvent(CatalogAddEvent event) {
+        }
+
+        public void handleModifyEvent(CatalogModifyEvent event) {
+        }
+
+        public void handlePostModifyEvent(CatalogPostModifyEvent event) {
+            event.getSource().accept( this );
+        }
+
+        public void handleRemoveEvent(CatalogRemoveEvent event) {
+            event.getSource().accept( this );
+        }
+
+        public void reloaded() {
+        }
+       
+        @Override
+        public void visit(DataStoreInfo dataStore) {
+            clear(dataStore);
+        }
+        
+        @Override
+        public void visit(CoverageStoreInfo coverageStore) {
+            clear(coverageStore);
+        }
+        
+        @Override
+        public void visit(FeatureTypeInfo featureType) {
+            clear(featureType);
+        }
+
+        @Override
+        public void visit(WMSStoreInfo wmsStore) {
+            clear(wmsStore);
+        }
+
+        @Override
+        public void visit(StyleInfo style) {
+            clear(style);
+        }
+
+        @Override
+        public void visit(WorkspaceInfo workspace) {
+            clear(workspace);
+        }
+
+        @Override
+        public void visit(NamespaceInfo workspace) {
+            clear(workspace);
+        }
+
+        @Override
+        public void visit(CoverageInfo coverage) {
+            clear(coverage);
+        }
+
+        @Override
+        public void visit(LayerInfo layer) {
+            clear(layer);
+        }
+
+        @Override
+        public void visit(LayerGroupInfo layerGroup) {
+            clear(layerGroup);
+        }
+
+        @Override
+        public void visit(WMSLayerInfo wmsLayerInfoImpl) {
+            clear(wmsLayerInfoImpl);
+        }
+        
+        
+    }
+    /**
+     * Listens to configuration events clearing cache entires when resources are modified.
+     */
+    public class ConfigClearingListener extends ConfigurationListenerAdapter {
+
+        @Override
+        public void handlePostGlobalChange(GeoServerInfo global) {
+            clear(global);
+        }
+
+        @Override
+        public void handleSettingsPostModified(SettingsInfo settings) {
+            clear(settings);
+        }
+
+        @Override
+        public void handleSettingsRemoved(SettingsInfo settings) {
+            clear(settings);
+        }
+
+        @Override
+        public void handlePostLoggingChange(LoggingInfo logging) {
+            clear(logging);
+        }
+
+        @Override
+        public void handlePostServiceChange(ServiceInfo service) {
+            clear(service);
+        }
+
+        @Override
+        public void handleServiceRemove(ServiceInfo service) {
+            clear(service);
+        }
+    }
+
+    
 }

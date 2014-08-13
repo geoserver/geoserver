@@ -14,9 +14,9 @@ import java.util.List;
 
 import javax.measure.unit.SI;
 import javax.measure.unit.Unit;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.w3ds.types.FeatureInfo;
 import org.geoserver.w3ds.types.GetFeatureInfoRequest;
@@ -32,22 +32,16 @@ import org.geotools.filter.spatial.ReprojectingFilterVisitor;
 import org.geotools.geometry.GeometryBuilder;
 import org.geotools.geometry.jts.LiteCoordinateSequenceFactory;
 import org.geotools.referencing.CRS;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.resources.CRSUtilities;
-import org.geotools.styling.Style;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
-import org.opengis.filter.expression.Expression;
-import org.opengis.geometry.PositionFactory;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Point;
 
 public class GetFeatureInfo {
 	private GeoServer geoServer;

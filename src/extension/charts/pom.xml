@@ -3,12 +3,12 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>extension</artifactId>
-    <version>2.4-SNAPSHOT</version>
+    <version>2.6-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.geoserver.extension</groupId>
-  <artifactId>charts</artifactId>
+  <artifactId>gs-charts</artifactId>
   <packaging>jar</packaging>
   <name>Chart external graphics support</name>
 

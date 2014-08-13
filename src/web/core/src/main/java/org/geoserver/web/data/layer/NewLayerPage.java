@@ -44,6 +44,7 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geotools.data.DataAccess;
+import org.geotools.data.DataStore;
 import org.geotools.data.wms.WebMapServer;
 import org.geotools.jdbc.JDBCDataStore;
 
@@ -64,6 +65,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
     private Label storeName;
     private WebMarkupContainer createTypeContainer;
     private WebMarkupContainer createSQLViewContainer;
+    private WebMarkupContainer createCoverageViewContainer;
     private WebMarkupContainer createWMSLayerImportContainer;
     
     public NewLayerPage() {
@@ -143,6 +145,11 @@ public class NewLayerPage extends GeoServerSecuredPage {
         createSQLViewContainer.add(newSQLViewLink());
         selectLayersContainer.add(createSQLViewContainer);
         
+        createCoverageViewContainer = new WebMarkupContainer("createCoverageViewContainer");
+        createCoverageViewContainer.setVisible(false);
+        createCoverageViewContainer.add(newCoverageViewLink());
+        selectLayersContainer.add(createCoverageViewContainer);
+
         createWMSLayerImportContainer = new WebMarkupContainer("createWMSLayerImportContainer");
         createWMSLayerImportContainer.setVisible(false);
         createWMSLayerImportContainer.add(newWMSImportLink());
@@ -175,6 +182,18 @@ public class NewLayerPage extends GeoServerSecuredPage {
                 DataStoreInfo ds = getCatalog().getStore(storeId, DataStoreInfo.class);
                 PageParameters pp = new PageParameters("wsName=" + ds.getWorkspace().getName() + ",storeName=" + ds.getName());
                 setResponsePage(SQLViewNewPage.class, pp);
+            }
+        };
+    }
+    
+    Component newCoverageViewLink() {
+        return new AjaxLink("createCoverageView") {
+            
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                CoverageStoreInfo cs = getCatalog().getStore(storeId, CoverageStoreInfo.class);
+                PageParameters pp = new PageParameters("wsName=" + cs.getWorkspace().getName() + ",storeName=" + cs.getName());
+                setResponsePage(CoverageViewNewPage.class, pp);
             }
         };
     }
@@ -247,7 +266,11 @@ public class NewLayerPage extends GeoServerSecuredPage {
     
     void updateSpecialFunctionPanels(StoreInfo store) {
         // at the moment just assume every store can create types
-        createTypeContainer.setVisible(store instanceof DataStoreInfo);
+        try {
+            createTypeContainer.setVisible(store instanceof DataStoreInfo && ((DataStoreInfo)store).getDataStore(null) instanceof DataStore);
+        } catch (IOException e) {
+            LOGGER.log(Level.FINEST, e.getMessage());
+        }
 
         // reset to default first, to avoid the container being displayed if store is not a
         // DataStoreInfo
@@ -257,8 +280,12 @@ public class NewLayerPage extends GeoServerSecuredPage {
                 DataAccess da = ((DataStoreInfo) store).getDataStore(null);
                 createSQLViewContainer.setVisible(da instanceof JDBCDataStore);
             } catch (IOException e) {
-
+                LOGGER.log(Level.FINEST, e.getMessage());
             }
+        }
+        createCoverageViewContainer.setVisible(false);
+        if (store instanceof CoverageStoreInfo) {
+            createCoverageViewContainer.setVisible(true);
         }
 
         // reset to default first, to avoid the container being displayed if store is not a
@@ -269,7 +296,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
                 WebMapServer wms = ((WMSStoreInfo) store).getWebMapServer(null);
                 createWMSLayerImportContainer.setVisible(wms != null);
             } catch (IOException e) {
-
+                LOGGER.log(Level.FINEST, e.getMessage());
             }
         }
     }
@@ -289,7 +316,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
             CatalogBuilder builder = new CatalogBuilder(catalog);
             builder.setStore(store);
             if (store instanceof CoverageStoreInfo) {
-                CoverageInfo ci = builder.buildCoverage();
+                CoverageInfo ci = builder.buildCoverage(resource.getName().getLocalPart());
                 return builder.buildLayer(ci);
             } else if (store instanceof DataStoreInfo) {
                 FeatureTypeInfo fti = builder.buildFeatureType(resource.getName());

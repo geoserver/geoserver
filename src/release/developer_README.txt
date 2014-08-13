@@ -1,5 +1,5 @@
 For a comprehensive guide for developers, go the main documentation site: 
-http://geoserver.org/display/GEOSDOC/Developers+Guide
+http://docs.geoserver.org/latest/en/developer/
 
 ---------------------------
 

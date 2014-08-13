@@ -12,26 +12,22 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>2.4-SNAPSHOT</version>
+    <version>2.6-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
-  <artifactId>wms</artifactId>
+  <artifactId>gs-wms</artifactId>
   <packaging>jar</packaging>
   <name>Web Map Service Module</name>
 
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
+      <artifactId>gs-main</artifactId>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>wfs</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>wcs</artifactId>
+      <artifactId>gs-wfs</artifactId>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
@@ -53,15 +49,11 @@
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
-      <artifactId>gt-shapefile-renderer</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.geotools</groupId>
       <artifactId>gt-geotiff</artifactId>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
-      <artifactId>gt-wfs</artifactId>
+      <artifactId>gt-wfs-ng</artifactId>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
@@ -83,18 +75,27 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>it.geosolutions.imageio-ext</groupId>
+      <artifactId>imageio-ext-png</artifactId>
+      <version>${imageio-ext.version}</version>
+    </dependency>
+    <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId> 
     </dependency>
+    <dependency>
+      <groupId>ar.com.hjg</groupId>
+      <artifactId>pngj</artifactId>
+    </dependency>
 	<dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>ows</artifactId>
+      <artifactId>gs-ows</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
+      <artifactId>gs-main</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>

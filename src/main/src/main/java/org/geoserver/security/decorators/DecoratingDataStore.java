@@ -104,4 +104,12 @@ public abstract class DecoratingDataStore extends AbstractDecorator<DataStore> i
         delegate.updateSchema(typeName, featureType);
     }
 
+    public void removeSchema(Name typeName) throws IOException {
+        delegate.removeSchema(typeName);
+    }
+
+    public void removeSchema(String typeName) throws IOException {
+        delegate.removeSchema(typeName);
+    }
+
 }

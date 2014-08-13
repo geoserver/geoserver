@@ -12,54 +12,54 @@
   <parent>
     <groupId>org.geoserver</groupId>    
     <artifactId>web</artifactId>
-    <version>2.4-SNAPSHOT</version>
+    <version>2.6-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.web</groupId>
-  <artifactId>web-wcs</artifactId>
+  <artifactId>gs-web-wcs</artifactId>
   <packaging>jar</packaging>
-  <version>2.4-SNAPSHOT</version>
+  <version>2.6-SNAPSHOT</version>
   <name>WCS UI Module</name>
   
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>wcs</artifactId>
+      <artifactId>gs-wcs</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>wcs1_1</artifactId>
+      <artifactId>gs-wcs1_1</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>
-      <artifactId>web-core</artifactId>
+      <artifactId>gs-web-core</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>
-      <artifactId>web-demo</artifactId>
+      <artifactId>gs-web-demo</artifactId>
       <version>${project.version}</version>
     </dependency>
     <!--  test dependecies -->
     <dependency>
       <groupId>org.geoserver.web</groupId>
-      <artifactId>web-core</artifactId>
+      <artifactId>gs-web-core</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>main</artifactId>
+      <artifactId>gs-main</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>wcs1_1</artifactId>
+      <artifactId>gs-wcs1_1</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
@@ -72,10 +72,6 @@
 		<dependency>
 			<groupId>org.geotools</groupId>
 			<artifactId>gt-coverage</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.geotools</groupId>
-			<artifactId>gt-validation</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.geotools</groupId>

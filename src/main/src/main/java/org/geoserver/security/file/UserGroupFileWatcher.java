@@ -5,15 +5,17 @@
 
 package org.geoserver.security.file;
 
+import java.io.File;
 import java.io.IOException;
 
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.event.UserGroupLoadedEvent;
 import org.geoserver.security.event.UserGroupLoadedListener;
 
 /**
  * Watches a file storing user/group information
- * and triggers a load on an external file change
+ * and triggers a load on an external file change.
  * 
  * @author christian
  *
@@ -21,19 +23,28 @@ import org.geoserver.security.event.UserGroupLoadedListener;
 public class UserGroupFileWatcher extends FileWatcher implements UserGroupLoadedListener {
 
     
-    public UserGroupFileWatcher(String fileName,GeoServerUserGroupService service) {
-        super(fileName);
+    public UserGroupFileWatcher(Resource resource,GeoServerUserGroupService service) {
+        super(resource);
         this.service=service;
         checkAndConfigure();
     }
-    
-    public UserGroupFileWatcher(String fileName,GeoServerUserGroupService service, long lastModified) {
-        super(fileName);
+    public UserGroupFileWatcher(File file,GeoServerUserGroupService service) {
+        super(file);
+        this.service=service;
+        checkAndConfigure();
+    }    
+    public UserGroupFileWatcher(Resource resource,GeoServerUserGroupService service, long lastModified) {
+        super(resource);
         this.service=service;
         this.lastModified=lastModified;
         checkAndConfigure();
     }
-
+    public UserGroupFileWatcher(File file,GeoServerUserGroupService service, long lastModified) {
+        super(file);
+        this.service=service;
+        this.lastModified=lastModified;
+        checkAndConfigure();
+    }
 
     
     protected GeoServerUserGroupService service;
@@ -78,8 +89,8 @@ public class UserGroupFileWatcher extends FileWatcher implements UserGroupLoaded
     @Override
     public void usersAndGroupsChanged(UserGroupLoadedEvent event) {
         // avoid unnecessary reloads
-        setLastModified(file.lastModified());
-        LOGGER.info("Adjusted last modified for file: " +filename);
+        setLastModified(resource.lastmodified());
+        LOGGER.info("Adjusted last modified for file: " +path);
     }
 
 }

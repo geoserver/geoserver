@@ -58,7 +58,7 @@ public class ServiceAccessRuleDAO extends AbstractAccessRuleDAO<ServiceAccessRul
      * @param rawCatalog
      */
     public ServiceAccessRuleDAO() throws IOException {
-        super(org.vfny.geoserver.global.GeoserverDataDirectory.accessor(), SERVICES);
+        super(GeoServerExtensions.bean(GeoServerDataDirectory.class), SERVICES);
     }
     
     /**

@@ -1,5 +1,5 @@
-GeoServer 2.4+ CAS Extension
-----------------------------
+GeoServer 2.6 CAS Extension
+---------------------------
 
 This package contains a CAS Security implementation that is 
 distributed as a separate plug-in. 
@@ -11,7 +11,7 @@ Any other issues can be discussed on the mailing list (http://lists.sourceforge.
 Installation
 ------------
 
-1. Copy cas and spring-security-cas jars into the WEB-INF/lib directory of your
+1. Copy the included jar files into the WEB-INF/lib directory of your
    GeoServer installation.
 
 2. Restart GeoServer.

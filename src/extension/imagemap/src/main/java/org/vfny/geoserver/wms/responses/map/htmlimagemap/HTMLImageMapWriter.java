@@ -657,15 +657,10 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
      * Currently supports circle WellKnownName Marks. 
      */
     private class PointWriter extends HTMLImageMapFeatureWriter {
+        // size of the symbol
+        double size = 2;
         
-    	// encodes as a circle shape?
-    	boolean asCircle=true;
-    	// encodes as a different shape? (currently not supported--> empty rendering)
-    	String symbol=null;
-    	// radius of the circle
-    	double size=2;
-    	
-    	/**
+        /**
          * Creates a new PointWriter object.
          */
         public PointWriter() {
@@ -684,21 +679,19 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
          * It also uses the Size parameter to define circle radius.
          */
               
-        protected void processSymbolizer(SimpleFeature ft, Rule rule,Symbolizer symbolizer) throws IOException{
-        	super.processSymbolizer(ft, rule,symbolizer);
-        	if(symbolizer instanceof PointSymbolizer) {
-        		Mark mark=SLD.mark((PointSymbolizer)symbolizer);
-        		Graphic graphic=SLD.graphic((PointSymbolizer)symbolizer);
-        		if(graphic!=null && mark!=null) {
-        			Object oSize=graphic.getSize().evaluate(null);
-        			if(oSize!=null)
-        				size=Double.parseDouble(oSize.toString());
-        			asCircle=SLD.wellKnownName(mark).toLowerCase().equals("circle");
-        			if(!asCircle)
-        				symbol=SLD.wellKnownName(mark).toLowerCase();
-        		}
-        		
-    		}
+        protected void processSymbolizer(SimpleFeature ft, Rule rule,
+                Symbolizer symbolizer) throws IOException {
+            super.processSymbolizer(ft, rule, symbolizer);
+            if (symbolizer instanceof PointSymbolizer) {
+                Mark mark = SLD.mark((PointSymbolizer) symbolizer);
+                Graphic graphic = SLD.graphic((PointSymbolizer) symbolizer);
+                if (graphic != null && mark != null) {
+                    Object oSize = graphic.getSize().evaluate(null);
+                    if (oSize != null)
+                        size = Double.parseDouble(oSize.toString());
+                }
+        
+            }
         }
         
 
@@ -711,22 +704,22 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
          *
          * @throws IOException if an error occures during encoding
          */
-        protected void writeGeometry(Geometry geom,StringBuffer buf) throws IOException {
-        	if(geom instanceof Point) {
-	            Point p = (Point) geom;
-	            if(p.getCoordinate()!=null) {
-		            if(asCircle) {
-		            	writeToBuffer(getPoint(p.getCoordinate())+","+(int)Math.round(size),buf);
-		            } else{
-		            	throw new IOException("Nothing to encode");
-		            	//TODO: manage different shapes
-		            }
-	            } else
-	            	throw new IOException("null point coordinate");
-        	} else
-        		throw new IOException("Wrong geometry: it should be a Point");
+        protected void writeGeometry(Geometry geom, StringBuffer buf)
+                throws IOException {
+            if (geom instanceof Point) {
+                Point p = (Point) geom;
+                if (p.getCoordinate() != null) {
+        
+                    writeToBuffer(
+                            getPoint(p.getCoordinate()) + "," + (int) Math.round(size),
+                            buf);
+        
+                } else
+                    throw new IOException("null point coordinate");
+            } else
+                throw new IOException("Wrong geometry: it should be a Point");
         }
-    }
+        }
 
     /**
      * FeatureWriter for multipoint geometry features.

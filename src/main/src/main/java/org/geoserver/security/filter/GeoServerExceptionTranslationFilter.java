@@ -11,6 +11,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.config.ExceptionTranslationFilterConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.springframework.security.core.AuthenticationException;
@@ -101,11 +102,17 @@ public class GeoServerExceptionTranslationFilter extends GeoServerCompositeFilte
         cache.setCreateSessionAllowed(false);
         ExceptionTranslationFilter filter = new ExceptionTranslationFilter(ep,cache); 
                                 
+        AccessDeniedHandlerImpl accessDeniedHandler = new AccessDeniedHandlerImpl();
+        
         if (StringUtils.hasLength(authConfig.getAccessDeniedErrorPage())) {
-            AccessDeniedHandlerImpl accessDeniedHandler = new AccessDeniedHandlerImpl();
-            accessDeniedHandler.setErrorPage(authConfig.getAccessDeniedErrorPage());
-            filter.setAccessDeniedHandler(accessDeniedHandler);
+            // check if page exists
+            if (GeoServerExtensions.file(authConfig.getAccessDeniedErrorPage())!=null)
+                accessDeniedHandler.setErrorPage(authConfig.getAccessDeniedErrorPage());
+            else
+                LOGGER.warning("Cannot find: "+ authConfig.getAccessDeniedErrorPage());
         }
+            
+        filter.setAccessDeniedHandler(accessDeniedHandler);
         
         filter.afterPropertiesSet();
         getNestedFilters().add(filter);        

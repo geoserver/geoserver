@@ -863,18 +863,20 @@ public class ExecuteTest extends WPSTestSupport {
         String statusLocation = submitMonkey("x3");
         
         // we move the clock forward, but we asked no status, nothing should change
-        MonkeyProcess.progress("x3", 0.1f, true);
+        MonkeyProcess.progress("x3", 10f, true);
         Document dom = getAsDOM(statusLocation);
         print(dom);
         assertXpathExists("//wps:ProcessStarted", dom);
         assertXpathEvaluatesTo("" + Math.round(0.66 * 10), "//wps:ProcessStarted/@percentCompleted", dom);
         
         // we move the clock forward, but we asked no status, nothing should change
-        MonkeyProcess.progress("x3", 0.5f, true);
+        MonkeyProcess.progress("x3", 50f, true);
         dom = getAsDOM(statusLocation);
-        // print(dom);
+         print(dom);
         assertXpathExists("//wps:ProcessStarted", dom);
         assertXpathEvaluatesTo("" + Math.round(0.66 * 50), "//wps:ProcessStarted/@percentCompleted", dom);
+        assertXpathEvaluatesTo("Currently at 50.0", "//wps:ProcessStarted", dom);
+
         
         // now schedule the exit and wait for it to exit
         MonkeyProcess.exit("x3", collectionOfThings(), true);
@@ -924,7 +926,7 @@ public class ExecuteTest extends WPSTestSupport {
         		"  </wps:ResponseForm>\n" + 
         		"</wps:Execute>";
         
-        MonkeyProcess.progress("chained-monkey", 0.1f, false);
+        MonkeyProcess.progress("chained-monkey", 10f, false);
         MonkeyProcess.exit("chained-monkey", collectionOfThings(), false);
         MockHttpServletResponse response = postAsServletResponse("wfs", request);
         assertEquals("application/wkt", response.getContentType());
@@ -950,8 +952,8 @@ public class ExecuteTest extends WPSTestSupport {
         String statusLocation2 = submitMonkey("two");
         
         // make the report progress
-        MonkeyProcess.progress("one", 0.1f, true);
-        MonkeyProcess.progress("two", 0.1f, true);
+        MonkeyProcess.progress("one", 10f, true);
+        MonkeyProcess.progress("two", 10f, true);
         
         // make sure both were started and are running (the 
         assertProgress(statusLocation1, "7");

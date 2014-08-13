@@ -19,6 +19,8 @@ import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.config.GeoServerPersister;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.SystemTest;
 import org.geoserver.test.TestSetup;
@@ -34,6 +36,11 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
         testData.setUpDefaultRasterLayers();
+        
+        GeoServerExtensions extension = GeoServerExtensions.bean(GeoServerExtensions.class);
+        if( extension == null ){
+            GeoServerExtensionsHelper.init( this.applicationContext );
+        }
     }
     
     @Test
@@ -140,14 +147,15 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
         assertSame(ModificationProxy.unwrap(ci.getStore()), ModificationProxy.unwrap(ci.getStore()));
         
         // style
-        StyleInfo si = catalog.getStyleByName("default");
-        StyleInfo si2 = serialize(si);
-        assertSame(ModificationProxy.unwrap(si), ModificationProxy.unwrap(si2));
+        StyleInfo streamsStyle = catalog.getStyleByName("Streams");
+        StyleInfo si2 = serialize(streamsStyle);
+        assertSame(ModificationProxy.unwrap(streamsStyle), ModificationProxy.unwrap(si2));
 
         // layer and related objects
         LayerInfo li = catalog.getLayerByName(getLayerId(MockData.BRIDGES));
         // ... let's add an extra style
-        li.getStyles().add(catalog.getStyleByName("default"));
+        
+        li.getStyles().add(streamsStyle);
         catalog.save(li);
         LayerInfo li2 = serialize(li);
         assertSame(ModificationProxy.unwrap(li), ModificationProxy.unwrap(li2));
@@ -173,8 +181,8 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
         // now check a half modified proxy
         LayerInfo lim = catalog.getLayerByName(getLayerId(MockData.BRIDGES));
         // ... let's add an extra style
-        lim.setDefaultStyle(catalog.getStyleByName("default"));
-        lim.getStyles().add(catalog.getStyleByName("default"));
+        lim.setDefaultStyle(streamsStyle);
+        lim.getStyles().add(streamsStyle);
         // clone and check
         LayerInfo lim2 = serialize(lim);
         assertSame(ModificationProxy.unwrap(lim.getDefaultStyle()), ModificationProxy.unwrap(lim2.getDefaultStyle()));

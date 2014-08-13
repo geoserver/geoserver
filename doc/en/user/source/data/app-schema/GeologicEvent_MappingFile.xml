@@ -94,7 +94,7 @@
 				<AttributeMapping>
 					<targetAttribute>gsml:eventEnvironment</targetAttribute>
 					<sourceExpression>
-						<OCQL>getID()</OCQL>
+						<OCQL>id</OCQL>
 						<linkElement>gsml:CGI_TermValue</linkElement>
 						<linkField>FEATURE_LINK[1]</linkField>
 					</sourceExpression>
@@ -104,7 +104,7 @@
 				<AttributeMapping>
 					<targetAttribute>gsml:eventProcess</targetAttribute>
 					<sourceExpression>
-						<OCQL>getID()</OCQL>
+						<OCQL>id</OCQL>
 						<linkElement>gsml:CGI_TermValue</linkElement>
 						<linkField>FEATURE_LINK[2]</linkField>
 					</sourceExpression>

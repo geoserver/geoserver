@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2014 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -9,16 +9,23 @@ import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.Collections;
 
 import javax.xml.namespace.QName;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.platform.ServiceException;
+import org.geoserver.wms.GetMapOutputFormat;
+import org.geoserver.wms.WMS;
+import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
+import org.geoserver.wms.map.OpenLayersMapOutputFormat;
+import org.geoserver.wms.map.RenderedImageMapOutputFormat;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -154,7 +161,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
          "  </UserStyle> "+
          " </NamedLayer> "+
          "</StyledLayerDescriptor>";
-    
+     
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
@@ -207,13 +214,13 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         Document dom = getAsDOM("wms?bbox=" + bbox + "&styles="
                 + "&layers=" + layers + "&Format=image/png" + "&request=GetMap" + "&width=550"
                 + "&height=250" + "&srs=EPSG:4326" + "&SLD_VERSION=1.0.0" + "&SLD_BODY="
-                + STATES_SLD10_INVALID.replaceAll("=", "%3D") + "&VALIDATESCHEMA=true");
+                + STATES_SLD10_INVALID.replaceAll("=", "%3D") + "&VALIDATESCHEMA=true", Charset.defaultCharset().displayName());
         assertEquals("ServiceExceptionReport", dom.getDocumentElement().getNodeName());
         
         dom = getAsDOM("wms?bbox=" + bbox + "&styles="
                 + "&layers=" + layers + "&Format=image/png" + "&request=GetMap" + "&width=550"
                 + "&height=250" + "&srs=EPSG:4326" + "&SLD_VERSION=1.0.0" + "&SLD_BODY="
-                + STATES_SLD11.replaceAll("=", "%3D") + "&VALIDATESCHEMA=true");
+                + STATES_SLD11.replaceAll("=", "%3D") + "&VALIDATESCHEMA=true", Charset.defaultCharset().displayName());
         assertEquals("ServiceExceptionReport", dom.getDocumentElement().getNodeName());
     }
     
@@ -237,7 +244,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         Document dom = getAsDOM("wms?bbox=" + bbox + "&styles="
                 + "&layers=" + layers + "&Format=image/png" + "&request=GetMap" + "&width=550"
                 + "&height=250" + "&srs=EPSG:4326" + "&SLD_VERSION=1.1.0" + "&SLD_BODY="
-                + STATES_SLD11_INVALID.replaceAll("=", "%3D") + "&VALIDATESCHEMA=true");
+                + STATES_SLD11_INVALID.replaceAll("=", "%3D") + "&VALIDATESCHEMA=true", Charset.defaultCharset().displayName());
         assertEquals("ServiceExceptionReport", dom.getDocumentElement().getNodeName());
     }
     
@@ -247,7 +254,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         Document dom = getAsDOM("wms?bbox=" + bbox + "&styles="
                 + "&layers=" + layers + "&Format=image/png" + "&request=GetMap" + "&width=550"
                 + "&height=250" + "&srs=EPSG:4326" + "&SLD_VERSION=1.0.0" + "&SLD_BODY="
-                + STATES_SLD11.replaceAll("=", "%3D") + "&VALIDATESCHEMA=true");
+                + STATES_SLD11.replaceAll("=", "%3D") + "&VALIDATESCHEMA=true", Charset.defaultCharset().displayName());
         assertEquals("ServiceExceptionReport", dom.getDocumentElement().getNodeName());
         
         MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox + "&styles="
@@ -340,5 +347,86 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         } finally {
             catalog.remove(group);
         }
-    }       
+    }   
+    
+    @Test
+    public void testSldExternalEntities() throws Exception {
+        URL sldUrl = GetMapIntegrationTest.class.getResource("../externalEntities.sld");
+        String url = "wms?bbox=" + bbox + "&styles="
+                + "&layers=" + layers + "&Format=image/png" + "&request=GetMap" + "&width=550"
+                + "&height=250" + "&srs=EPSG:4326" + "&sld=" + sldUrl.toString();
+
+        WMS wms = new WMS(getGeoServer());
+        GeoServerInfo geoserverInfo = wms.getGeoServer().getGlobal();
+        try {
+            // enable entities in external SLD files
+            geoserverInfo.setXmlExternalEntitiesEnabled(true);
+            getGeoServer().save(geoserverInfo);
+            
+            // if entities evaluation is enabled
+            // the parser will try to read a file on the local file system
+            // if the file is found, its content will be used to replace the entity
+            // if the file is not found the parser will throw a FileNotFoundException
+            String response = getAsString(url);            
+            assertTrue(response.indexOf("java.io.FileNotFoundException") > -1);
+            
+            // disable entities
+            geoserverInfo.setXmlExternalEntitiesEnabled(false);
+            getGeoServer().save(geoserverInfo);
+
+            // if entities evaluation is disabled
+            // the parser will throw a MalformedURLException when it finds an entity
+            response = getAsString(url);
+            assertTrue(response.indexOf("java.net.MalformedURLException") > -1);
+
+            // try default: disabled entities
+            geoserverInfo.setXmlExternalEntitiesEnabled(null);
+            getGeoServer().save(geoserverInfo);
+
+            // if entities evaluation is disabled
+            // the parser will throw a MalformedURLException when it finds an entity
+            response = getAsString(url);
+            assertTrue(response.indexOf("java.net.MalformedURLException") > -1);            
+            
+        } finally {
+            // default
+            geoserverInfo.setXmlExternalEntitiesEnabled(null);
+            getGeoServer().save(geoserverInfo);             
+        }
+    }  
+    
+    @Test
+    public void testAllowedMimeTypes() throws Exception {
+        
+        WMSInfo wms = getWMS().getServiceInfo();
+        GetMapOutputFormat format = new RenderedImageMapOutputFormat(getWMS());        
+        wms.getGetMapMimeTypes().add(format.getMimeType());
+        wms.setGetMapMimeTypeCheckingEnabled(true);
+        getGeoServer().save(wms);
+
+     // check mime type allowed
+        MockHttpServletResponse response = getAsServletResponse("wms?bbox=" + bbox
+                + "&styles=&layers=" + layers + "&Format=image/png" + "&request=GetMap"
+                + "&width=550" + "&height=250" + "&srs=EPSG:4326&version=1.3.0");
+        checkImage(response);
+        
+        
+     // check mime type not allowed                
+        String result = getAsString("wms?bbox=" + bbox
+                + "&styles=&layers=" + layers + "&Format="+OpenLayersMapOutputFormat.MIME_TYPE+ "&request=GetMap"
+                + "&width=550" + "&height=250" + "&srs=EPSG:4326&version=1.3.0");
+        assertTrue(result.indexOf("ForbiddenFormat") > 0);        
+                      
+        wms.getGetMapMimeTypes().clear();
+        wms.setGetMapMimeTypeCheckingEnabled(false);
+        getGeoServer().save(wms);
+        
+        result = getAsString("wms?bbox=" + bbox
+                + "&styles=&layers=" + layers + "&Format="+OpenLayersMapOutputFormat.MIME_TYPE+ "&request=GetMap"
+                + "&width=550" + "&height=250" + "&srs=EPSG:4326&version=1.3.0");
+
+        assertTrue(result.indexOf("OpenLayers") > 0);
+ 
+    }
+
 }

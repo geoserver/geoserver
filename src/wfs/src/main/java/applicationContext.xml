@@ -185,7 +185,7 @@
 		<constructor-arg ref="wfsXsd-1.1"/>
 	</bean>
 	<alias name="xmlConfiguration-1.1" alias="wfsXmlConfiguration-1.1"/>
-	
+   
 	<!-- responses -->
 	<bean id="getCapabilitiesResponse"
 		class="org.geoserver.wfs.response.GetCapabilitiesResponse" singleton="false"/>
@@ -410,6 +410,10 @@
     <constructor-arg value="resolve"/>
     <constructor-arg value="net.opengis.wfs20.ResolveValueType"/>
   </bean>
+  <bean id="resolveTimeOutKvpParser" class="org.geoserver.ows.util.NumericKvpParser">
+		<constructor-arg index="0" value="resolveTimeOut"/>
+		<constructor-arg index="1" value="java.math.BigInteger"/>
+</bean>
     
 	<!-- kvp request readers -->
 	<bean id="wfsGetCapabilitiesKvpReader"  
@@ -642,6 +646,16 @@
     </bean>
     <bean id="wfsLocalWorkspaceURLManger" class="org.geoserver.ows.LocalWorkspaceURLMangler">
       <constructor-arg value="wfs"/>
+    </bean>
+    
+    <!-- inject the static method with the KVP parser -->
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod" value="org.geoserver.wfs.xml.SqlViewParamsExtractor.setWfsSqlViewKvpParser"/>
+        <property name="arguments">
+            <list>
+                <ref bean="wfsSqlViewKvpParser"/>
+            </list>
+       </property>
     </bean>
     
 </beans>

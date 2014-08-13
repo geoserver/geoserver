@@ -50,9 +50,7 @@
 	</bean>
 		
 	<bean id="wmsGetFeatureInfo"
-		class="org.geoserver.wms.GetFeatureInfo">
-      <constructor-arg ref="wms"/>
-	</bean>
+		class="org.geoserver.wms.GetFeatureInfo"/>
 		
 	<bean id="wmsGetLegendGraphic"
 		class="org.geoserver.wms.GetLegendGraphic">
@@ -312,14 +310,6 @@
 			class="org.geoserver.wms.legendgraphic.GetLegendGraphicKvpReader">
       	<constructor-arg ref="wms" />
 	</bean>
-  <!-- 
-	<bean id="putStylesKvpReader"
-		class="org.geoserver.wms.kvp.WMSKvpRequestReaderAdapter">
-		<constructor-arg index="0" value="org.vfny.geoserver.sld.requests.PutStylesRequest" />
-      	<constructor-arg index="1" value="org.vfny.geoserver.sld.requests.PutStylesKvpReader" />
-      	<constructor-arg index="2" ref="wms" />
-	</bean>
-   -->
 	
 	<bean id="getStylesKvpReader" class="org.geoserver.sld.GetStylesKvpRequestReader">
 		<constructor-arg ref="wms"/> 
@@ -388,17 +378,6 @@
 	
 	<bean id="stylesResponse" class="org.geoserver.sld.GetStylesResponse"/>
 	
-	<!-- Wrapping the PutStyles servlet in a controller while we wait to rewrite it for good -->
-    <!-- GR: commenting out, putStyles is not being used nor maintained? -->
-	<!-- bean id="putStylesWrapper" class="org.springframework.web.servlet.mvc.ServletWrappingController">
-	   <property name="servletClass">
-	     <value>org.vfny.geoserver.sld.servlets.PutStyles</value>
-	   </property>
-	   <property name="servletName">
-	     <value>putstyles</value>
-       </property>
-	</bean-->
-	
 	<!-- http url mapping -->
 	<bean id="wmsURLMapping" 
 		class="org.geoserver.ows.OWSHandlerMapping">
@@ -407,7 +386,6 @@
 		<property name="mappings">
 			<props>
 				<prop key="/wms">dispatcher</prop>
-				<!-- prop key="/wms/putstyles">putStylesWrapper</prop-->
 				<prop key="/wms/*">dispatcher</prop>
 			</props>
 		</property>
@@ -625,6 +603,8 @@
       <value>wms</value>
     </constructor-arg>
   </bean>
+ 		
+	<bean id="animateFilter" class="org.geoserver.wms.animate.AnimatorFilter"/>
  	
 	<bean id="animateURLMapping" 
 		class="org.geoserver.ows.OWSHandlerMapping">
@@ -697,4 +677,77 @@
        </props>
      </property>
   </bean>
+  
+  <!-- Pluggable layer identifiers -->
+  <bean id="basicVectorLayerIdentifier" class="org.geoserver.wms.featureinfo.VectorBasicLayerIdentifier">
+      <constructor-arg ref="wms"/>
+  </bean>
+  <bean id="renderVectorLayerIdentifier" class="org.geoserver.wms.featureinfo.VectorRenderingLayerIdentifier">
+      <constructor-arg ref="wms"/>
+      <constructor-arg ref="basicVectorLayerIdentifier"/>
+  </bean>
+  <bean id="rasterLayerIdentifier" class="org.geoserver.wms.featureinfo.RasterLayerIdentifier">
+      <constructor-arg ref="wms"/>
+  </bean>
+  <bean id="wmsLayerIdentifier" class="org.geoserver.wms.featureinfo.WMSLayerIdentifier"/>
+    
+    
+  <!-- Dimension default value factory -->  
+  <bean id="dimensionDefaultValueStrategyFactory" class="org.geoserver.wms.dimension.impl.DimensionDefaultValueSelectionStrategyFactoryImpl">
+    <property name="featureTimeMinimumStrategy">
+      <bean class="org.geoserver.wms.dimension.impl.FeatureMinimumValueSelectionStrategyImpl"/>
+    </property>
+    <property name="featureTimeMaximumStrategy">
+      <bean class="org.geoserver.wms.dimension.impl.FeatureMaximumValueSelectionStrategyImpl"/>
+    </property>    
+    <property name="coverageTimeMinimumStrategy">
+      <bean class="org.geoserver.wms.dimension.impl.CoverageMinimumValueSelectionStrategyImpl"/>
+    </property>
+    <property name="coverageTimeMaximumStrategy">
+      <bean class="org.geoserver.wms.dimension.impl.CoverageMaximumValueSelectionStrategyImpl"/>
+    </property>
+    
+    <property name="featureElevationMinimumStrategy">
+      <bean class="org.geoserver.wms.dimension.impl.FeatureMinimumValueSelectionStrategyImpl"/>
+    </property>
+    <property name="featureElevationMaximumStrategy">
+      <bean class="org.geoserver.wms.dimension.impl.FeatureMaximumValueSelectionStrategyImpl"/>
+    </property>
+     <property name="coverageElevationMinimumStrategy">
+      <bean class="org.geoserver.wms.dimension.impl.CoverageMinimumValueSelectionStrategyImpl"/>
+    </property>
+    <property name="coverageElevationMaximumStrategy">
+      <bean class="org.geoserver.wms.dimension.impl.CoverageMaximumValueSelectionStrategyImpl"/>
+    </property>
+    
+    <property name="featureCustomDimensionMinimumStrategy">
+      <bean class="org.geoserver.wms.dimension.impl.FeatureMinimumValueSelectionStrategyImpl"/>
+    </property>
+    <property name="featureCustomDimensionMaximumStrategy">
+      <bean class="org.geoserver.wms.dimension.impl.FeatureMaximumValueSelectionStrategyImpl"/>
+    </property>
+    <property name="coverageCustomDimensionMinimumStrategy">
+      <bean class="org.geoserver.wms.dimension.impl.CoverageMinimumValueSelectionStrategyImpl"/>
+    </property>
+    <property name="coverageCustomDimensionMaximumStrategy">
+      <bean class="org.geoserver.wms.dimension.impl.CoverageMaximumValueSelectionStrategyImpl"/>
+    </property>
+    
+    <property name="featureNearestValueStrategyFactory">
+      <bean class="org.geoserver.wms.dimension.DefaultFeatureNearestValueSelectionStrategyFactory"/>
+    </property>
+    <property name="coverageNearestValueStrategyFactory">
+      <bean class="org.geoserver.wms.dimension.DefaultCoverageNearestValueSelectionStrategyFactory"/>
+    </property>
+    
+    <property name="fixedValueStrategyFactory">
+      <bean class="org.geoserver.wms.dimension.DefaultFixedValueStrategyFactory"/>
+    </property>    
+  </bean>
+  
+  <bean id="legendSample" class="org.geoserver.wms.capabilities.LegendSampleImpl">
+    <constructor-arg ref="catalog"/>
+    <constructor-arg ref="resourceLoader"/>
+  </bean>
+  
 </beans>

@@ -8,33 +8,26 @@
 package org.geoserver.w3ds.utilities;
 
 import static org.geoserver.ows.util.ResponseUtils.appendQueryString;
-import static org.geoserver.ows.util.ResponseUtils.buildURL;
-import static org.geoserver.ows.util.ResponseUtils.params;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.config.GeoServer;
-import org.geoserver.config.ServiceInfo;
-import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.w3ds.service.W3DSInfo;
 import org.geoserver.w3ds.types.LOD;
 import org.geoserver.w3ds.types.LODSet;
 import org.geoserver.w3ds.types.TileSet;
-import org.geotools.filter.v1_0.OGC;
 import org.geotools.referencing.CRS;
-import org.geotools.resources.CRSUtilities;
 import org.geotools.styling.Description;
-import org.geotools.styling.Style;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
 import org.opengis.util.InternationalString;

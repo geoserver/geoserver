@@ -5,20 +5,21 @@
 package org.geoserver.kml;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.geoserver.kml.builder.StreamingKMLBuilder;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
-import org.geoserver.wms.map.XMLTransformerMap;
 import org.geotools.util.logging.Logging;
+
+import de.micromata.opengis.kml.v_2_2_0.Kml;
 
 /**
  * Handles a GetMap request that spects a map in KML format.
@@ -28,24 +29,32 @@ import org.geotools.util.logging.Logging;
 public class KMLMapOutputFormat implements GetMapOutputFormat {
     /** standard logger */
     protected static final Logger LOGGER = Logging.getLogger(KMLMapOutputFormat.class);
-    
-    static final MapProducerCapabilities KML_CAPABILITIES = new MapProducerCapabilities(false, false, true, true, null);
+
+    static final MapProducerCapabilities KML_CAPABILITIES = new MapProducerCapabilities(false,
+            false, true, true, null);
 
     /**
      * Official KML mime type
      */
     public static final String MIME_TYPE = "application/vnd.google-earth.kml+xml";
+    
+    /**
+     * Format tweaked to force the generation of per layer network links
+     */
+    public static final String NL_KML_MIME_TYPE = KMLMapOutputFormat.MIME_TYPE + ";mode=networklink";
 
     private Set<String> OUTPUT_FORMATS = Collections.unmodifiableSet(new HashSet<String>(Arrays
-            .asList(MIME_TYPE, "application/vnd.google-earth.kml", "kml",
+            .asList(MIME_TYPE, /* NL_KML_MIME_TYPE, */ "application/vnd.google-earth.kml", "kml",
                     "application/vnd.google-earth.kml xml")));
 
     private WMS wms;
+    
+    StreamingKMLBuilder builder = new StreamingKMLBuilder();
 
     public KMLMapOutputFormat(WMS wms) {
         this.wms = wms;
     }
-    
+
     /**
      * @see org.geoserver.wms.GetMapOutputFormat#getOutputFormatNames()
      */
@@ -62,26 +71,22 @@ public class KMLMapOutputFormat implements GetMapOutputFormat {
     }
 
     /**
-     * Produce the actual map ready for outputing.
+     * Produce the actual map ready for output.
      * 
-     * @param map
-     *            WMSMapContext describing what layers, styles, area of interest etc are to be used
-     *            when producing the map.
+     * @param map WMSMapContext describing what layers, styles, area of interest etc are to be used
+     *        when producing the map.
      * 
      * @see GetMapOutputFormat#produceMap(WMSMapContent)
      */
-    public XMLTransformerMap produceMap(WMSMapContent mapContent) throws ServiceException,
-            IOException {
+    public KMLMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
+        // initialize the kml encoding context
+        KmlEncodingContext context = new KmlEncodingContext(mapContent, wms, false);
 
-        KMLTransformer transformer = new KMLTransformer(wms);
+        // build the kml document
+        Kml kml = builder.buildKMLDocument(context);
 
-        // TODO: use GeoServer.isVerbose() to determine if we should indent?
-        transformer.setIndentation(3);
-        Charset encoding = wms.getCharSet();
-        transformer.setEncoding(encoding);
-
-        XMLTransformerMap map = new XMLTransformerMap(mapContent, transformer, mapContent,
-                MIME_TYPE);
+        // return the map
+        KMLMap map = new KMLMap(mapContent, context, kml, MIME_TYPE);
         map.setContentDispositionHeader(mapContent, ".kml");
         return map;
     }

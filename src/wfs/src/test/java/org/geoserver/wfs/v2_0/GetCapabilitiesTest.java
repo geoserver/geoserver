@@ -13,15 +13,22 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+
 import javax.servlet.ServletResponse;
+
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.MetadataLinkInfo;
+import org.geoserver.data.test.MockData;
+import org.geoserver.data.test.MockTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
+import org.geoserver.wfs.WFSInfo;
 import org.geotools.wfs.v2_0.WFSConfiguration;
 import org.geotools.xml.Parser;
+import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -31,6 +38,12 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class GetCapabilitiesTest extends WFS20TestSupport {
        
+    @Before
+    public void revert() throws Exception {
+        revertLayer(MockData.MPOLYGONS);
+    }
+
+    
     @Test
     public void testGet() throws Exception {
         Document doc = getAsDOM("wfs?service=WFS&request=getCapabilities&version=2.0.0");
@@ -283,5 +296,89 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
 
         response = getAsServletResponse("wfs?request=GetCapabilities&version=2.0.0&acceptformats=text/xml");
         assertEquals("text/xml", response.getContentType());
+    }
+    
+    @Test
+    public void testMetadataLinks() throws Exception {
+        FeatureTypeInfo mpolys = getCatalog().getFeatureTypeByName(getLayerId(MockTestData.MPOLYGONS));
+        MetadataLinkInfo ml = getCatalog().getFactory().createMetadataLink();
+        ml.setMetadataType("FGDC");
+        ml.setType("text/html");
+        ml.setContent("http://www.geoserver.org");
+        mpolys.getMetadataLinks().add(ml);
+        getCatalog().save(mpolys);
+        
+        Document doc = getAsDOM("wfs?service=WFS&version=2.0.0&request=getCapabilities");
+        // print(doc);
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        assertEquals(1, xpath.getMatchingNodes("//wfs:FeatureType[wfs:Name='cgf:MPolygons']/wfs:MetadataURL", doc).getLength());
+        assertEquals(1, xpath.getMatchingNodes("//wfs:FeatureType[wfs:Name='cgf:MPolygons']/wfs:MetadataURL[@xlink:href='http://www.geoserver.org']", doc).getLength());
+    }
+    
+    @Test
+    public void testOtherCRS() throws Exception {
+        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
+        wfs.getSRS().add("4326"); // this one corresponds to the native one, should not be generated
+        wfs.getSRS().add("3857");
+        wfs.getSRS().add("3003");
+        try {
+            getGeoServer().save(wfs);
+            
+            // perform get caps
+            Document doc = getAsDOM("wfs?service=WFS&version=2.0.0&request=getCapabilities");
+            // for each enabled type, check we added the otherSRS
+            final List<FeatureTypeInfo> enabledTypes = getCatalog().getFeatureTypes();
+            for (Iterator<FeatureTypeInfo> it = enabledTypes.iterator(); it.hasNext();) {
+                FeatureTypeInfo ft = it.next();
+                if (ft.enabled()) {
+                    String prefixedName = ft.prefixedName();
+    
+                    String base = "//wfs:FeatureType[wfs:Name =\"" + prefixedName + "\"]";
+                    XMLAssert.assertXpathExists(base, doc);
+                    // we generate the other SRS only if it's not equal to native
+                    boolean wgs84Native = "EPSG:4326".equals(ft.getSRS());
+                    if(wgs84Native) {
+                        XMLAssert.assertXpathEvaluatesTo("2", "count(" + base + "/wfs:OtherCRS)", doc);
+                    } else {
+                        XMLAssert.assertXpathEvaluatesTo("3", "count(" + base + "/wfs:OtherCRS)", doc);
+                        XMLAssert.assertXpathExists(base + "[wfs:OtherCRS = 'urn:ogc:def:crs:EPSG::4326']", doc);
+                    }
+                    XMLAssert.assertXpathExists(base + "[wfs:OtherCRS = 'urn:ogc:def:crs:EPSG::3003']", doc);
+                    XMLAssert.assertXpathExists(base + "[wfs:OtherCRS = 'urn:ogc:def:crs:EPSG::3857']", doc);
+                }
+            }
+        } finally {
+            wfs.getSRS().clear();
+            getGeoServer().save(wfs);
+        }
+    }
+    
+    @Test
+    public void testOtherSRSSingleTypeOverride() throws Exception {
+        WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
+        wfs.getSRS().add("4326"); // this one corresponds to the native one, should not be generated
+        wfs.getSRS().add("3857");
+        wfs.getSRS().add("3003");
+        String polygonsName = getLayerId(MockData.POLYGONS);
+        FeatureTypeInfo polygons = getCatalog().getFeatureTypeByName(polygonsName);
+        polygons.getResponseSRS().add("32632");
+        polygons.setOverridingServiceSRS(true);
+        try {
+            getGeoServer().save(wfs);
+            getCatalog().save(polygons);
+            
+            // check for this layer we have a different list
+            Document doc = getAsDOM("wfs?service=WFS&version=2.0.0&request=getCapabilities");
+            String base = "//wfs:FeatureType[wfs:Name =\"" + polygonsName + "\"]";
+            XMLAssert.assertXpathExists(base, doc);
+            XMLAssert.assertXpathEvaluatesTo("1", "count(" + base + "/wfs:OtherCRS)", doc);
+            XMLAssert.assertXpathExists(base + "[wfs:OtherCRS = 'urn:ogc:def:crs:EPSG::32632']", doc);
+        } finally {
+            wfs.getSRS().clear();
+            getGeoServer().save(wfs);
+            polygons.setOverridingServiceSRS(false);
+            polygons.getResponseSRS().clear();
+            getCatalog().save(polygons);
+        }
     }
 }

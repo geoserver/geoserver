@@ -492,6 +492,26 @@
             <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/coverages/{coverage}/templates/{template}.ftl</value></key>
             <value>freemarkerTemplateFinder</value>
         </entry>
+        <entry>
+            <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/coverages/{coverage}/index</value></key>
+            <value>structuredCoverageFinder</value>
+        </entry>
+        <entry>
+            <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/coverages/{coverage}/index.{format}</value></key>
+            <value>structuredCoverageFinder</value>
+        </entry>
+        <entry>
+            <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/coverages/{coverage}/index/granules</value></key>
+            <value>structuredCoverageFinder</value>
+        </entry>
+        <entry>
+            <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/coverages/{coverage}/index/granules.{format}</value></key>
+            <value>structuredCoverageFinder</value>
+        </entry>
+        <entry>
+            <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/coverages/{coverage}/index/granules/{granule}</value></key>
+            <value>structuredCoverageFinder</value>
+        </entry>
   </map>
 </property>
 </bean>
@@ -513,6 +533,7 @@
   <bean id="layerFinder2" class="org.geoserver.catalog.rest.LayerFinder" parent="abstractCatalogFinder"/>
   <bean id="layerGroupFinder2" class="org.geoserver.catalog.rest.LayerGroupFinder" parent="abstractCatalogFinder"/>
   <bean id="freemarkerTemplateFinder" class="org.geoserver.catalog.rest.FreemarkerTemplateFinder" parent="abstractCatalogFinder"/>
+  <bean id="structuredCoverageFinder" class="org.geoserver.catalog.rest.StructuredGridCoverageFinder" parent="abstractCatalogFinder"/>
   <bean id="catalogReloader" class="org.geoserver.catalog.rest.CatalogReloader">
      <constructor-arg index="0" ref="geoServer"/>
      <constructor-arg index="1" value="false"/>

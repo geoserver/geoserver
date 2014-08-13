@@ -34,6 +34,7 @@ import org.geoserver.rest.util.RESTUtils;
 import org.geotools.data.DataAccessFactory;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFactorySpi;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.DefaultTransaction;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.DataAccessFactory.Param;
@@ -53,7 +54,7 @@ import org.vfny.geoserver.util.DataStoreUtils;
 
 public class DataStoreFileResource extends StoreFileResource {
 
-    protected static HashMap<String,String> formatToDataStoreFactory = new HashMap();
+    protected static final HashMap<String,String> formatToDataStoreFactory = new HashMap();
     static {
         formatToDataStoreFactory.put( "shp", "org.geotools.data.shapefile.ShapefileDataStoreFactory");
         formatToDataStoreFactory.put( "properties", "org.geotools.data.property.PropertyDataStoreFactory");
@@ -61,7 +62,7 @@ public class DataStoreFileResource extends StoreFileResource {
         formatToDataStoreFactory.put( "spatialite", "org.geotools.data.spatialite.SpatiaLiteDataStoreFactory");
     }
     
-    protected static HashMap<String,Map> dataStoreFactoryToDefaultParams = new HashMap();
+    protected static final HashMap<String,Map> dataStoreFactoryToDefaultParams = new HashMap();
     static {
         HashMap map = new HashMap();
         map.put("database", "@DATA_DIR@/@NAME@");
@@ -139,7 +140,6 @@ public class DataStoreFileResource extends StoreFileResource {
     public void handleGet() {
         String workspace = getAttribute("workspace");
         String datastore = getAttribute("datastore");
-        String format = getAttribute("format");
 
         //find the directory from teh datastore connection parameters
         DataStoreInfo info = catalog.getDataStoreByName(workspace, datastore);
@@ -213,7 +213,7 @@ public class DataStoreFileResource extends StoreFileResource {
         getResponse().setStatus(Status.SUCCESS_ACCEPTED);
         Form form = getRequest().getResourceRef().getQueryAsForm();
 
-        File uploadedFile = doFileUpload(method, workspace, datastore, format);
+        File uploadedFile = doFileUpload(method, workspace, datastore, format).get(0);
         
         //look up the target datastore type specified by user
         String sourceDataStoreFormat = dataStoreFormat; 
@@ -457,23 +457,23 @@ public class DataStoreFileResource extends StoreFileResource {
         catch (Exception e) {
             //TODO: report a proper error code
             throw new RuntimeException ( e );
-        }
-        
-        //dispose the datastore
-        source.dispose();
-        
-        //clean up the files if we can
-        if (isInlineUpload(method) && canRemoveFiles) {
-            if (uploadedFile.isFile()) uploadedFile = uploadedFile.getParentFile();
-            try {
-                FileUtils.deleteDirectory(uploadedFile);
-            } 
-            catch (IOException e) {
-                LOGGER.info("Unable to delete " + uploadedFile.getAbsolutePath());
-                if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.log(Level.FINE, "", e);
-                }
-            }
+        } finally {
+            //dispose the datastore
+            source.dispose();
+            
+            //clean up the files if we can
+            if (isInlineUpload(method) && canRemoveFiles) {
+        		if (uploadedFile.isFile()) uploadedFile = uploadedFile.getParentFile();
+        		try {
+        			FileUtils.deleteDirectory(uploadedFile);
+        		} 
+        		catch (IOException ie) {
+        			LOGGER.info("Unable to delete " + uploadedFile.getAbsolutePath());
+        			if (LOGGER.isLoggable(Level.FINE)) {
+        				LOGGER.log(Level.FINE, "", ie);
+        			}
+        		}
+            }        	
         }
     }
 
@@ -521,13 +521,8 @@ public class DataStoreFileResource extends StoreFileResource {
                     converted = f.toURI();
                 }
                 else if ( URL.class.equals( p.type ) ) {
-                    try {
-                        converted = f.toURL();
-                    } 
-                    catch (MalformedURLException e) {
-                    }
+                    converted = DataUtilities.fileToURL(f);
                 }
-                //Converters.convert( f.getAbsolutePath(), p.type );
                 
                 if ( converted != null ) {
                     connectionParameters.put( p.key, converted );    

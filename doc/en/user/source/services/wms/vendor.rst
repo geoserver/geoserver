@@ -48,7 +48,7 @@ Automatic buffer sizing cannot be computed if:
 In this event, the following defaults are used:
 
 * 0 pixels for :ref:`wms_getmap` requests
-* 2 pixels for :ref:`wms_getfeatureinfo` requests
+* 5 pixels for :ref:`wms_getfeatureinfo` requests (a different min value can be set via the ``org.geoserver.wms.featureinfo.minBuffer`` system variable, e.g., add ``-Dorg.geoserver.wms.featureinfo.minBuffer=10`` to make the min buffer be 10 pixels)
   
 If these are not sufficiently large, the explicit parameter can be used.
 
@@ -102,6 +102,8 @@ An example of an OGC filter encoded in a GET request is::
 
    filter=%3CFilter%20xmlns:gml=%22http://www.opengis.net/gml%22%3E%3CIntersects%3E%3CPropertyName%3Ethe_geom%3C/PropertyName%3E%3Cgml:Point%20srsName=%224326%22%3E%3Cgml:coordinates%3E-74.817265,40.5296504%3C/gml:coordinates%3E%3C/gml:Point%3E%3C/Intersects%3E%3C/Filter%3E
    
+.. _format_options:
+
 format_options
 --------------
 

@@ -77,7 +77,7 @@ Controls a particular coverage store in a given workspace.
      -
      -
      -
-     - :ref:`recurse <rest_api_coveragestores_recurse>`
+     - :ref:`recurse <rest_api_coveragestores_recurse>`, :ref:`purge <rest_api_coveragestores_purge>`
 
 Exceptions
 ~~~~~~~~~~
@@ -107,10 +107,23 @@ Parameters
 The ``recurse`` parameter recursively deletes all layers referenced by the coverage store. Allowed values for this parameter are "true" or "false". The default value is "false".
 
 
+.. _rest_api_coveragestores_purge:
+
+``purge``
+^^^^^^^^^
+
+The ``purge`` parameter is used to customize the delete of files on disk (in case the underlying reader implements a delete method).
+It can take one of the three values:
+
+* ``none``-(*Default*) Do not delete any store's file from disk.
+* ``metadata``-Delete only auxiliary files and metadata. It's recommended when data files (such as granules) should not be deleted from disk.
+* ``all``-Purge everything related to that store (metadata and granules).
+
+
 ``/workspaces/<ws>/coveragestores/<cs>/file[.<extension>]``
 -----------------------------------------------------------
 
-This end point allows a file containing spatial data to be added (via a POST or PUT) into an existing coverage store, or will create a new coverage store if it doesn't already exist.
+This end point allows a file containing spatial data to be added (via a POST or PUT) into an existing coverage store, or will create a new coverage store if it doesn't already exist. In case of coverage stores containing multiple coverages (e.g., mosaic of NetCDF files) all the coverages will be configured unless ``configure=false`` is specified as a parameter.
 
 .. list-table::
    :header-rows: 1
@@ -128,8 +141,8 @@ This end point allows a file containing spatial data to be added (via a POST or 
      - 
      - 
    * - POST
-     - 
-     - 405
+     - If the coverage store is a simple one (e.g. GeoTiff) it will return a 405, if the coverage store is a structured one (e.g., mosaic) it will harvest the specified files into it, which in turn will integrate the files into the store. Harvest meaning is store dependent, for mosaic the new files will be added as new granules of the mosaic, and existing files will get their attribute updated, other stores might have a different behavior.
+     - 405 if the coverage store is a simple one, 200 if structured and the harvest operation succeded
      - 
      - 
      - :ref:`recalculate <rest_api_coveragestores_recalculate>`
@@ -137,7 +150,7 @@ This end point allows a file containing spatial data to be added (via a POST or 
      - Creates or overwrites the files for coverage store ``cs``
      - 200
      - :ref:`See note below <rest_api_coveragestores_file_put>`
-     - 
+     - :set spell spelllang=en_us
      - :ref:`configure <rest_api_coveragestores_configure>`, :ref:`coverageName <rest_api_coveragestores_coveragename>`
    * - DELETE
      -

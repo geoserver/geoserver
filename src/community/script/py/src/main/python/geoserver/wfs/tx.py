@@ -16,13 +16,13 @@ def postInsert(f):
   
 def preUpdate(f):
   def wrapped(updated, props, req, context):
-    return f(core.map(updated), dict(props), req, context)
+    return f(core.map(updated), dict(props) if props is not None else {}, req, context)
   wrapped.__decorator__ = preUpdate
   return wrapped
 
 def postUpdate(f):
   def wrapped(updated, props, req, context):
-    return f(core.map(updated), dict(props), req, context)
+    return f(core.map(updated),  dict(props) if props is not None else {}, req, context)
   wrapped.__decorator__ = postUpdate
   return wrapped
   

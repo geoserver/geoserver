@@ -21,6 +21,7 @@ package org.geoserver.sldservice.utils.classifier.impl;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.geoserver.sldservice.utils.classifier.ColorRamp;
@@ -42,7 +43,7 @@ public class RedColorRamp implements ColorRamp {
 	}
 
 	public void revert() {
-
+        Collections.reverse(colors);
 	}
 
 	public void setNumClasses(int numClass) {
@@ -59,7 +60,6 @@ public class RedColorRamp implements ColorRamp {
 	private void createRamp() {
 
 		double step = (225.0 / (double) classNum-1);
-		colors.add(new Color(0, 0, 0));
 		for (int i = 1; i < classNum; i++)
 			colors.add(new Color((int) (step * i + 30), 0, 0));
 	}

@@ -7,6 +7,7 @@ Tutorials
    :maxdepth: 1
 
    ldap/index
+   activedirectory/index
    digest/index
    cert/index
    j2ee/index

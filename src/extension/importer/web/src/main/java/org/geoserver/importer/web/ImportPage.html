@@ -1,0 +1,106 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+<wicket:head>
+  <wicket:link>
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+  </wicket:link>
+ </wicket:head>
+</head>
+<body>
+<wicket:extend>
+   <h1><wicket:message key="import"></wicket:message> <span wicket:id="id"></span></h1>
+
+   <span class="rightwise">
+     <a href="#" wicket:id="raw"><wicket:message key="raw">Raw</wicket:message>...</a>
+   </span>
+   <div wicket:id="header">
+   </div>
+
+   <ul class="plain" style="padding-top: 3em;">
+    <li>
+      <fieldset>
+       <span style="float: right; margin-top:-1.5em;">
+         <ul class="plain horizontal" wicket:id="select">
+           <li>Select:</li>
+           <li style="border-left: none;"><a href="" wicket:id="select-all"><wicket:message key="all">All</wicket:message></a></li>
+           <li><a href="" wicket:id="select-none"><wicket:message key="none">None</wicket:message></a></li>
+           <li><a href="" wicket:id="select-ready"><wicket:message key="ready">Ready</wicket:message></a></li>
+         </ul>
+       </span>
+       <legend>
+           <span class="no-border" wicket:id="icon"></span>
+           <span class="no-border" wicket:id="title" style="margin-left: 20px; white-space:nowrap; font-weight:normal;"></span>
+       </legend>
+       <div wicket:id="tasks">
+      </div>
+     </fieldset>
+
+    </li>
+    <li>
+       <div class="button-group selfclear" style="padding-top: 1em;">
+         <a href="" wicket:id="import">
+           <span><wicket:message key="import"></wicket:message></span>
+         </a>
+         <a href="" wicket:id="cancel">
+           <span wicket:id="text"></span>
+         </a>
+       </div>
+     </li>
+   </ul>
+   
+    <!--
+   <ul class="plain" wicket:id="tasks" style="padding-top: 3em;">
+     <li>
+     <fieldset>
+       <span style="float: right; margin-top:-1.5em;">
+         <ul class="plain horizontal">
+           <li>Select:</li>
+           <li style="border-left: none;"><a href="" wicket:id="select-all"><wicket:message key="all">All</wicket:message></a></li>
+           <li><a href="" wicket:id="select-none"><wicket:message key="none">None</wicket:message></a></li>
+           <li><a href="" wicket:id="select-ready"><wicket:message key="ready">Ready</wicket:message></a></li>
+         </ul>
+       </span>
+       <legend>
+         <span class="no-border" wicket:id="icon"></span>
+         <span class="no-border" wicket:id="title" style="margin-left: 20px; white-space:nowrap; font-weight:normal;"></span>
+       </legend>
+       <ul class="plain">
+         <li>
+           <span wicket:id="target"></span>
+           <a href="#" wicket:id="targetLink"><span wicket:id="store"></span></a>
+         </li>
+         <li>
+           <div wicket:id="items"></div>
+         </li>
+         <li>
+           <div class="button-group selfclear" style="padding-top: 1em;">
+             <a href="" wicket:id="import">
+               <span><wicket:message key="import"></wicket:message></span>
+             </a>
+             <a href="" wicket:id="cancel">
+               <span wicket:id="text"></span>
+             </a>
+           </div>
+         </li>
+       </ul>
+     </fieldset>
+     </li>
+   </ul>
+   <ul class="plain" style="padding-top: 3em;">
+     <li>
+        <fieldset>
+        <legend>
+           <span class="no-border"><wicket:message key="filesIgnored">filesIgnored</wicket:message>:</span>
+        </legend>
+        <ul wicket:id="emptyTasks" >
+          <li><span wicket:id="title"></span></li>
+        </ul>
+        </fieldset>
+     </li>
+     
+   </ul>
+   -->
+   <div wicket:id="dialog"></div>
+</wicket:extend>
+</body>
+</html>

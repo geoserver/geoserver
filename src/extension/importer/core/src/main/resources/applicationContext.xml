@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+  <!-- 
+   core importer setup
+    -->
+  
+  <bean id="importer" class="org.geoserver.importer.Importer">
+    <constructor-arg ref="catalog"/>
+  </bean>
+  
+  <!--  format beans -->
+  <bean id="kmlFormat" class="org.geoserver.importer.format.KMLFileFormat" />
+  <bean id="geoJsonFormat" class="org.geoserver.importer.format.GeoJSONFormat" />
+
+</beans>

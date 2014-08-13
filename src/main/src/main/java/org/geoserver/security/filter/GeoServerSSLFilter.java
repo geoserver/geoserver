@@ -18,7 +18,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.security.config.SSLFilterConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
@@ -56,19 +55,21 @@ public class GeoServerSSLFilter extends GeoServerSecurityFilter {
         }
         
         HttpServletRequest httpRequest = (HttpServletRequest) request;
-        
+                
         StringBuffer buff = new StringBuffer("https://");
         buff.append(httpRequest.getServerName()).append(":")
-            .append(sslPort).append(httpRequest.getServletPath());
+            .append(sslPort).append(httpRequest.getContextPath()).append(httpRequest.getServletPath());
         
         Map<String,String> kvp = new HashMap<String,String>();
-        for (String kvpString : httpRequest.getQueryString().split("&")) {
-            String[] kvpArray = kvpString.split("=");
-            if (kvpArray == null || kvpArray.length!=2) {
-                LOGGER.warning("Unknown query parameter: "+kvpString);
-                continue;
+        if (httpRequest.getQueryString()!=null) {
+            for (String kvpString : httpRequest.getQueryString().split("&")) {
+                String[] kvpArray = kvpString.split("=");
+                if (kvpArray == null || kvpArray.length!=2) {
+                    LOGGER.warning("Unknown query parameter: "+kvpString);
+                    continue;
+                }
+                kvp.put(kvpArray[0],kvpArray[1]);
             }
-            kvp.put(kvpArray[0],kvpArray[1]);
         }
         String redirectURL = ResponseUtils.buildURL(buff.toString(), httpRequest.getPathInfo(),
                 kvp, null);

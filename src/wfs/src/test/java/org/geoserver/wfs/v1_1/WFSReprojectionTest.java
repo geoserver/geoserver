@@ -6,7 +6,9 @@ package org.geoserver.wfs.v1_1;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
 import java.util.StringTokenizer;
+
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSTestSupport;
@@ -21,12 +23,13 @@ import org.w3c.dom.Element;
 public class WFSReprojectionTest extends WFSTestSupport {
     private static final String TARGET_CRS_CODE = "EPSG:900913";
     MathTransform tx;
+    CoordinateReferenceSystem epsg32615;
     
     @Before
     public void init() throws Exception {
 
         CoordinateReferenceSystem epsgTarget = CRS.decode(TARGET_CRS_CODE);
-        CoordinateReferenceSystem epsg32615 = CRS.decode("urn:x-ogc:def:crs:EPSG:6.11.2:32615");
+        epsg32615 = CRS.decode("urn:x-ogc:def:crs:EPSG:6.11.2:32615");
               
         tx = CRS.findMathTransform(epsg32615, epsgTarget);
     }
@@ -83,6 +86,51 @@ public class WFSReprojectionTest extends WFSTestSupport {
     }
     
     @Test
+    public void testGetFeatureWithAutoBoxGet() throws Exception {
+        WFSInfo wfs = getWFS();
+        boolean oldFeatureBounding = wfs.isFeatureBounding();
+        wfs.setFeatureBounding(true);
+        getGeoServer().save(wfs);
+
+        try {
+            String q = "wfs?request=getfeature&service=wfs&version=1.1&typeName="
+                    + SystemTestData.POLYGONS.getLocalPart();
+            Document dom = getAsDOM(q);
+            // print(dom);
+            Element envelope = getFirstElementByTagName(dom, "gml:Envelope");
+            String lc = getFirstElementByTagName(envelope, "gml:lowerCorner").getFirstChild()
+                    .getNodeValue();
+            String uc = getFirstElementByTagName(envelope, "gml:upperCorner").getFirstChild()
+                    .getNodeValue();
+            double[] c = new double[] { Double.parseDouble(lc.split(" ")[0]),
+                    Double.parseDouble(lc.split(" ")[1]), Double.parseDouble(uc.split(" ")[0]),
+                    Double.parseDouble(uc.split(" ")[1]) };
+
+            // use an equirectangular projection
+            String targetCrsCode = "AUTO:42004,9001,0,33";
+            CoordinateReferenceSystem epsgAUTO = CRS.decode(targetCrsCode);
+            MathTransform txAuto = CRS.findMathTransform(epsg32615, epsgAUTO);
+
+            System.out.println(Arrays.toString(c));
+
+            double[] cr = new double[4];
+            txAuto.transform(c, 0, cr, 0, 2);
+
+            q += "&bbox=" + cr[0] + "," + cr[1] + "," + cr[2] + "," + cr[3] + "," + targetCrsCode;
+            dom = getAsDOM(q);
+
+            assertEquals(
+                    1,
+                    dom.getElementsByTagName(
+                            SystemTestData.POLYGONS.getPrefix() + ":"
+                                    + SystemTestData.POLYGONS.getLocalPart()).getLength());
+        } finally {
+            wfs.setFeatureBounding(oldFeatureBounding);
+            getGeoServer().save(wfs);
+        }
+    }
+    
+    @Test
     public void testGetFeatureWithProjectedBoxGet() throws Exception {
         WFSInfo wfs = getWFS();
         boolean oldFeatureBounding = wfs.isFeatureBounding();
@@ -93,7 +141,7 @@ public class WFSReprojectionTest extends WFSTestSupport {
             String q = "wfs?request=getfeature&service=wfs&version=1.1&typeName=" + 
                 SystemTestData.POLYGONS.getLocalPart();
             Document dom = getAsDOM( q );
-    //        print(dom);
+            //        print(dom);
             Element envelope = getFirstElementByTagName(dom, "gml:Envelope" );
             String lc = getFirstElementByTagName(envelope, "gml:lowerCorner" )
                 .getFirstChild().getNodeValue();

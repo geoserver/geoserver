@@ -10,8 +10,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.wicket.model.IModel;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Files;
 import org.geotools.util.logging.Logging;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 /**
  * Makes sure the file path for files do start with file:// otherwise
@@ -20,17 +22,17 @@ import org.vfny.geoserver.global.GeoserverDataDirectory;
  * @author Andrea Aime - GeoSolutions
  *
  */
-class FileModel implements IModel {
+public class FileModel implements IModel {
     static final Logger LOGGER = Logging.getLogger(FileModel.class);
     
     IModel delegate;
     File rootDir;
     
-    FileModel(IModel delegate) {
-        this(delegate, GeoserverDataDirectory.getGeoserverDataDirectory());
+    public FileModel(IModel delegate) {
+        this(delegate, GeoServerExtensions.bean(GeoServerResourceLoader.class).getBaseDirectory());
     }
 
-    FileModel(IModel delegate, File rootDir) {
+    public FileModel(IModel delegate, File rootDir) {
         this.delegate = delegate;
         this.rootDir = rootDir;
     }
@@ -57,27 +59,32 @@ class FileModel implements IModel {
     public void setObject(Object object) {
         String location = (String) object;
         
-        File dataDirectory = canonicalize(rootDir);
-        File file = canonicalize(new File(location));
-        if(isSubfile(dataDirectory, file)) {
-            File curr = file;
-            String path = null;
-            // paranoid check to avoid infinite loops
-            while(curr != null && !curr.equals(dataDirectory)){
-                if(path == null) {
-                    path = curr.getName();
+        if(location != null) {
+            File dataDirectory = canonicalize(rootDir);
+            File file = canonicalize(new File(location));
+            if(isSubfile(dataDirectory, file)) {
+                File curr = file;
+                String path = null;
+                // paranoid check to avoid infinite loops
+                while(curr != null && !curr.equals(dataDirectory)){
+                    if(path == null) {
+                        path = curr.getName();
+                    } else {
+                        path = curr.getName() + "/" + path;
+                    }
+                    curr = curr.getParentFile();
+                } 
+                location = "file:" + path;
+            }
+            else {
+                File dataFile = Files.url( rootDir, location );
+                if( dataFile != null && !dataFile.equals(file)) {
+                    // relative to the data directory, does not need fixing
                 } else {
-                    path = curr.getName() + "/" + path;
+                    location = "file://" + file.getAbsolutePath();
                 }
-                curr = curr.getParentFile();
-            } 
-            location = "file:" + path;
-        } else if(!GeoserverDataDirectory.findDataFile(location).equals(file)) {
-            // relative to the data directory, does not need fixing
-        } else {
-            location = "file://" + file.getAbsolutePath();
+            }
         }
-        
         delegate.setObject(location);
     }
 

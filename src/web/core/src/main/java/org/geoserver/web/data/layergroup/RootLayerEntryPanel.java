@@ -20,7 +20,6 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.GeoServerApplication;
-import org.geoserver.web.data.layergroup.AbstractLayerGroupPage.LayerListPanel;
 import org.geoserver.web.wicket.ParamResourceModel;
 
 

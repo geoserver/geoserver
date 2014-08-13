@@ -4,11 +4,16 @@
  */
 package org.geoserver.security;
 
+import javax.annotation.Nullable;
+
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.opengis.filter.Filter;
 import org.springframework.security.core.Authentication;
 
 /**
@@ -49,5 +54,15 @@ public interface ResourceAccessManager {
      * Returns the access limits for the specified layer group, or null if there are no limits.
      */
     public LayerGroupAccessLimits getAccessLimits(Authentication user, LayerGroupInfo layerGroup);
+    
+    /**
+     * Returns a filter selecting only the objects authorized by the manager.  May return 
+     * {@code null} in which case the caller is responsible for building a filter based on calls to
+     * the manager's other methods.
+     * @param user
+     * @param clazz
+     * @return
+     */
+    public @Nullable Filter getSecurityFilter(Authentication user, final Class<? extends CatalogInfo> clazz);
 
 }

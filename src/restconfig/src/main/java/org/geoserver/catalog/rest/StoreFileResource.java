@@ -6,17 +6,27 @@ package org.geoserver.catalog.rest;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.RestletException;
+import org.geoserver.rest.util.RESTUploadPathMapper;
 import org.geoserver.rest.util.RESTUtils;
+import org.geotools.data.DataUtilities;
 import org.geotools.util.logging.Logging;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -75,25 +85,76 @@ public abstract class StoreFileResource extends Resource {
       * @param storeName The name of the store being added
       * @param format The store format.
       */
-     protected File doFileUpload(String method, String workspaceName, String storeName, String format) {
+     protected List<File> doFileUpload(String method, String workspaceName, String storeName, String format) {
          File directory = null;
          
          // Prepare the directory only in case this is not an external upload
          if (isInlineUpload(method)){ 
-             try {
-                  directory = catalog.getResourceLoader()
-                      .findOrCreateDirectory("data", workspaceName, storeName);
-//                  directory = File.createTempFile(storeName + "_", "", data);
-//                  directory.delete();
-//                  directory.mkdir();
+             try {                 
+                 // Mapping of the input directory
+                 if(method.startsWith("url.")){
+                     // For URL upload method, workspace and StoreName are not considered
+                     directory = createFinalRoot(null, null);
+                 }else{
+                     directory = createFinalRoot(workspaceName, storeName);
+                 }
              } 
              catch (IOException e) {
                  throw new RestletException( e.getMessage(), Status.SERVER_ERROR_INTERNAL, e );
              }
          }
-         return handleFileUpload(storeName, format, directory);
+         return handleFileUpload(storeName, workspaceName, format, directory);
      }
-     
+
+    private File createFinalRoot(String workspaceName, String storeName) throws IOException {
+        // Check if the Request is a POST request, in order to search for an existing coverage
+        Method method = getRequest().getMethod();
+        boolean isPost = method.equals(Method.POST);
+        File directory = null;
+        if (isPost && storeName != null) {
+            // Check if the coverage already exists
+            CoverageStoreInfo coverage = catalog.getCoverageStoreByName(storeName);
+            if (coverage != null) {
+                if (workspaceName == null
+                        || (workspaceName != null && coverage.getWorkspace().getName()
+                                .equalsIgnoreCase(workspaceName))) {
+                    // If the coverage exists then the associated directory is defined by its URL
+                    File dirFile = DataUtilities.urlToFile(new URL(coverage.getURL()));
+                    // If the directory does not exists, it means that the path is relative and then
+                    // the directory is searched inside the data directory
+                    if (!dirFile.exists()) {
+                        directory = catalog.getResourceLoader().findOrCreateDirectory(dirFile, "");
+                    } else {
+                        // Else the directory is used
+                        directory = dirFile;
+                    }
+                }
+            }
+        }
+        // If the directory has not been found then it is created directly
+        if (directory == null) {
+            directory = catalog.getResourceLoader().findOrCreateDirectory("data", workspaceName,
+                    storeName);
+        }
+
+        // Selection of the original ROOT directory path
+        StringBuilder root = new StringBuilder(directory.getAbsolutePath());
+        // StoreParams to use for the mapping.
+        Map<String, String> storeParams = new HashMap<String, String>();
+        // Listing of the available pathMappers
+        List<RESTUploadPathMapper> mappers = GeoServerExtensions
+                .extensions(RESTUploadPathMapper.class);
+        // Mapping of the root directory
+        for (RESTUploadPathMapper mapper : mappers) {
+            mapper.mapStorePath(root, workspaceName, storeName, storeParams);
+        }
+        // Creation of a new File pointing to the new root
+        directory = new File(root.toString());
+        // Creation of the new directory
+        directory.mkdirs();
+        return directory;
+    }
+
     /**
      * 
      * @param store
@@ -101,24 +162,28 @@ public abstract class StoreFileResource extends Resource {
      * @param directory
      * @return
      */
-    protected File handleFileUpload(String store, String format, File directory) {
+    protected List<File> handleFileUpload(String store, String workspace, String format, File directory) {
         getResponse().setStatus(Status.SUCCESS_ACCEPTED);
 
         MediaType mediaType = getRequest().getEntity().getMediaType();
         if(LOGGER.isLoggable(Level.INFO))
             LOGGER.info("PUT file, mimetype: " + mediaType );
 
+        List<File> files = new ArrayList<File>();
+        
         File uploadedFile = null;
+        boolean external = false;
         try {
             String method = (String) getRequest().getResourceRef().getLastSegment();
             if (method != null && method.toLowerCase().startsWith("file.")) {
-                uploadedFile = RESTUtils.handleBinUpload(store + "." + format, directory, getRequest());
+                uploadedFile = RESTUtils.handleBinUpload(store + "." + format, workspace, directory, getRequest());
             }
             else if (method != null && method.toLowerCase().startsWith("url.")) {
-                uploadedFile = RESTUtils.handleURLUpload(store, format, getRequest());
+                uploadedFile = RESTUtils.handleURLUpload(store + "." + format, workspace, directory, getRequest());
             }    
             else if (method != null && method.toLowerCase().startsWith("external.")) {
                 uploadedFile = RESTUtils.handleEXTERNALUpload(getRequest());
+                external = true;
             }
             else{
                 final StringBuilder builder = 
@@ -127,7 +192,11 @@ public abstract class StoreFileResource extends Resource {
             }
         } 
         catch (Throwable t) {
-            throw new RestletException( "Error while storing uploaded file:", Status.SERVER_ERROR_INTERNAL, t );
+            if(t instanceof RestletException) {
+                throw (RestletException) t;
+            } else {
+                throw new RestletException( "Error while storing uploaded file:", Status.SERVER_ERROR_INTERNAL, t );
+            }
         }
         
         //handle the case that the uploaded file was a zip file, if so unzip it
@@ -135,12 +204,19 @@ public abstract class StoreFileResource extends Resource {
             //rename to .zip if need be
             if ( !uploadedFile.getName().endsWith( ".zip") ) {
                 File newUploadedFile = new File( uploadedFile.getParentFile(), FilenameUtils.getBaseName(uploadedFile.getAbsolutePath()) + ".zip" );
-                uploadedFile.renameTo( newUploadedFile );
+                String oldFileName = uploadedFile.getName();
+                if (!uploadedFile.renameTo( newUploadedFile )) {
+                    String errorMessage = "Error renaming zip file from " + oldFileName
+                            + " -> " + newUploadedFile.getName();
+                    throw new RestletException(errorMessage, Status.SERVER_ERROR_INTERNAL);
+                }
                 uploadedFile = newUploadedFile;
             }
             //unzip the file 
             try {
-                RESTUtils.unzipFile(uploadedFile, directory );
+                // Unzipping of the file and, if it is a POST request, filling of the File List
+                RESTUtils.unzipFile(uploadedFile, directory, workspace , store, getRequest(), files, external);
+
                 
                 //look for the "primary" file
                 //TODO: do a better check
@@ -159,8 +235,12 @@ public abstract class StoreFileResource extends Resource {
                 throw new RestletException( "Error occured unzipping file", Status.SERVER_ERROR_INTERNAL, e );
             }
         }
+        // If the File List is empty then the uploaded file must be added    
+        if(files.isEmpty() && uploadedFile != null){
+            files.add(uploadedFile);
+        }
         
-        return uploadedFile;
+        return files;
     }
 
     /**
@@ -170,14 +250,10 @@ public abstract class StoreFileResource extends Resource {
      * @return
      */
     protected File findPrimaryFile(File directory, String format) {
-        File[] files = directory.listFiles();
-        
-        Iterator f = FileUtils.listFiles(directory, new String[]{ format }, false ).iterator(); f.hasNext();
-        if ( f.hasNext() ) {
-            //assume the first
-            return (File) f.next();
+        for (File f : FileUtils.listFiles(directory, new String[] { format }, true)) {
+            // assume the first
+            return f;
         }
-        
         return null;
     }
 

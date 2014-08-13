@@ -80,7 +80,6 @@ public class DataStoreResource extends AbstractCatalogResource {
         
         //if no namespace parameter set, set it
         //TODO: we should really move this sort of thing to be something central
-        Map params = ds.getConnectionParameters();
         if (!ds.getConnectionParameters().containsKey("namespace")) {
             WorkspaceInfo ws = ds.getWorkspace();
             NamespaceInfo ns = catalog.getNamespaceByPrefix(ws.getName());

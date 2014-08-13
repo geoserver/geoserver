@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -82,6 +83,7 @@ public class FilePublisher extends AbstractURLPublisher {
     protected URL getUrl(HttpServletRequest request) throws IOException {
         String ctxPath = request.getContextPath();
         String reqPath = request.getRequestURI();
+        reqPath = URLDecoder.decode(reqPath, "UTF-8");
         reqPath = reqPath.substring(ctxPath.length());
 
         if ((reqPath.length() > 1) && reqPath.startsWith("/")) {

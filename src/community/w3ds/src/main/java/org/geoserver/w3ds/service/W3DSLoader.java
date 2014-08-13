@@ -9,14 +9,11 @@ package org.geoserver.w3ds.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.util.LegacyServiceLoader;
 import org.geoserver.config.util.LegacyServicesReader;
-import org.geoserver.wfs.GMLInfo.SrsNameStyle;
-import org.geotools.util.Version;
 
 public class W3DSLoader extends LegacyServiceLoader<ServiceInfo> {
 

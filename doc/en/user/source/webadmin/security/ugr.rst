@@ -296,7 +296,51 @@ In addition to the parameters listed above, the following additional parameter w
      - Description
    * - JNDI resource name
      - JNDI name used to locate the database connection.
+     
+Add new LDAP role service
+-------------------------
 
+To add a new LDAP role service, click the :guilabel:`Add new` link, and then the :guilabel:`LDAP` option at the top of the following form. The following figure shows the configuration options for a LDAP role service.
+
+.. figure:: images/ugr_roleldapsettings.png
+   :align: center
+
+   *Adding a role service via LDAP*
+
+.. list-table::
+   :widths: 40 60
+   :header-rows: 1
+
+   * - Option
+     - Description
+   * - Name
+     - Name of the LDAP role service in GeoServer
+   * - Administrator role
+     - The name of the role that performs the administrator function
+   * - Group administrator role
+     - The name of the role that performs the group administrator function
+   * - Server URL
+     - URL for the LDAP server connection. It must include the protocol, host, and port, as well as the “distinguished name” (DN) for the root of the LDAP tree.
+   * - TLS
+     - Enables a STARTTLS connection. (See the section on :ref:`sec_auth_provider_ldap_secure`.)
+   * - Group search base
+     - Relative name of the node in the tree to use as the base for LDAP groups. Example: ``ou=groups``. The root DN specified as port of the *Server URL* is automatically appended.
+   * - Group user membership search filter
+     - Search pattern for extracting users of a LDAP group a user belongs to. This may contain some placeholder values:
+       ``{0}``, the ``username`` of the user, for example ``bob``.
+       ``{1}``, the  full DN of the user, for example ``uid=bob,ou=users``. To use this placeholder, the *Filter used to lookup user* needs to be defined, so that the dn of a user can be extracted from its username.
+   * - All groups search filter
+     - Search pattern for locating the LDAP groups to be mapped to GeoServer roles inside the *Group search base* root node
+   * - Filter used to lookup user. 
+     - optional filter used to extract a user dn, to be used together with *Group user membership search filter* when the {1} placeholder is specified. This may contain a placeholder value:
+       ``{0}``, the ``username`` of the user, for example ``bob``.
+     
+   * - Authenticate to extract roles
+     - When checked all LDAP searches will be done in authenticated mode, using the credentials given with the *Username* and *Password* options
+   * - Username
+     - Username to use when connecting to the LDAP server. Only applicable when the *Authenticate to extract roles* parameter is **checked**.
+   * - Password
+     - Password to use when connecting to the LDAP server. Only applicable when the *Authenticate to extract roles* parameter is **checked**.
 
 Edit role service
 -----------------

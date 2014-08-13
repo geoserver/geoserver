@@ -9,8 +9,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
 
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resource.Type;
+import org.geotools.data.DataUtilities;
 import org.geotools.referencing.factory.epsg.FactoryUsingWKT;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 
 
 /**
@@ -27,26 +31,30 @@ public class GeoserverCustomWKTFactory extends FactoryUsingWKT {
      */
     protected URL getDefinitionsURL() {
         String cust_proj_file = System.getProperty(SYSTEM_DEFAULT_USER_PROJ_FILE);
-
         if (cust_proj_file == null) {
-            cust_proj_file = new File(GeoserverDataDirectory.getGeoserverDataDirectory(),
-                    "user_projections/epsg.properties").getAbsolutePath();
-        }
-
-        // Attempt to load user-defined projections
-        File proj_file = new File(cust_proj_file);
-
-        if (proj_file.exists()) {
-            try {
-                return proj_file.toURL();
-            } catch (MalformedURLException e) {
-                LOGGER.log(Level.SEVERE, "Had troubles converting file name to URL", e);
+            GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+            if( loader != null ){ // not available during construction SystemTestData - call CRS reset to fix
+                Resource custom_proj = loader.get("user_projections/epsg.properties");
+                if( custom_proj.getType() == Type.RESOURCE ){
+                    cust_proj_file = custom_proj.file().getAbsolutePath();
+                }
             }
         }
-
+        if( cust_proj_file != null ){
+            // Attempt to load user-defined projections
+            File proj_file = new File(cust_proj_file);
+            if (proj_file.exists()) {
+                URL url = DataUtilities.fileToURL(proj_file);
+                if( url != null ){
+                    return url;
+                }
+                else {
+                    LOGGER.log(Level.SEVERE, "Had troubles converting file name to URL");
+                }
+            }
+        }
         // Use the built-in property defintions
         cust_proj_file = "user_epsg.properties";
-
         return GeoserverCustomWKTFactory.class.getResource(cust_proj_file);
     }
 }

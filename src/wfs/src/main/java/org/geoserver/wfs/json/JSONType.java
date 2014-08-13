@@ -24,6 +24,7 @@ import net.sf.json.util.JSONBuilder;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.util.OwsUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 
 /**
@@ -42,6 +43,14 @@ public enum JSONType {
      * The key value into the optional FORMAT_OPTIONS map
      */
     public final static String CALLBACK_FUNCTION_KEY = "callback";
+    
+    /**
+     * The key value into the optional FORMAT_OPTIONS map.
+     * 
+     * Use <code>null</null> for default feature id generation. Use string to nominate an attribute to use.
+     */
+    public final static String ID_POLICY = "id_policy";
+    
 
     /**
      * The default value of the callback function
@@ -59,7 +68,7 @@ public enum JSONType {
      */
     public final static String ENABLE_JSONP_KEY = "ENABLE_JSONP";
 
-    private static boolean jsonpEnabled = isJsonpEnabledByEnv() || isJsonpEnabledByProperty();
+    private static boolean jsonpEnabled = isJsonpPropertyEnabled();
 
     /**
      * Check if the passed MimeType is a valid jsonp
@@ -114,24 +123,13 @@ public enum JSONType {
     }
 
     /**
-     * Parses the ENABLE_JSONP value as a boolean from properties.
+     * Parses the ENABLE_JSONP value as a boolean.
      * 
      * @return The boolean returned represents the value true if the string argument of the ENABLE_JSONP property is not null and is equal, ignoring
      *         case, to the string "true".
      */
-    private static boolean isJsonpEnabledByProperty() {
-        String jsonp = System.getProperty(ENABLE_JSONP_KEY);
-        return Boolean.parseBoolean(jsonp);
-    }
-
-    /**
-     * Parses the ENABLE_JSONP value as a boolean from environment.
-     * 
-     * @return The boolean returned represents the value true if the string argument of the ENABLE_JSONP property is not null and is equal, ignoring
-     *         case, to the string "true".
-     */
-    private static boolean isJsonpEnabledByEnv() {
-        String jsonp = System.getenv(ENABLE_JSONP_KEY);
+    private static boolean isJsonpPropertyEnabled() {
+        String jsonp = GeoServerExtensions.getProperty(ENABLE_JSONP_KEY);
         return Boolean.parseBoolean(jsonp);
     }
 
@@ -209,7 +207,36 @@ public enum JSONType {
             }
         }
     }
-
+    
+    /**
+     * Can be used when {@link #json} format is specified to resolve the id_policy parameter from FORMAT_OPTIONS map
+     * 
+     * GeoJSON does not require use of an id for each feature, this format option can be used to surpress the use of id (or nominate
+     * an specifc attribtue to use).
+     *  
+     * @param kvp request key value pair map possibly including format options
+     * @return null to use generated feature id, empty string to surpress id generation, or attribute to use
+     */
+    public static String getIdPolicy(Map kvp) {
+        if (!(kvp.get("FORMAT_OPTIONS") instanceof Map)) {
+            return null;
+        } else {
+            Map<String, String> formatOptions = (Map<String, String>) kvp.get("FORMAT_OPTIONS");
+            if (formatOptions == null || formatOptions.isEmpty()) {
+                return null; // use fid as id in output
+            }
+            String id_policy = formatOptions.get(ID_POLICY);
+    
+            if (id_policy == null || "true".equals(id_policy)) {
+                return null; // use fid as id in output
+            }
+            if ("false".equals(id_policy) || id_policy.length() == 0) {
+                return ""; // suppress id from output
+            }
+            return id_policy;
+        }
+    }
+    
     /**
      * Handle Exception in JSON and JSONP format
      * 

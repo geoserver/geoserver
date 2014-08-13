@@ -17,6 +17,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
+import org.geoserver.config.GeoServer;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.LocalWorkspaceCatalogFilter;
 import org.geotools.feature.NameImpl;
@@ -37,9 +38,15 @@ import com.google.common.base.Function;
  */
 public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements Catalog {
 
+	private GeoServer geoServer;
+
     public LocalWorkspaceCatalog(Catalog delegate) {
         super(delegate);
     }
+
+	public void setGeoServer(GeoServer geoServer ) {
+		this.geoServer = geoServer;
+	}
 
     @Override
     public StyleInfo getStyleByName(String name) {
@@ -95,10 +102,18 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
 
     @Override
     public List<LayerInfo> getLayers() {
-        if (LocalWorkspace.get() != null) {
-            return NameDequalifyingProxy.createList(super.getLayers(), LayerInfo.class);
+        if (useNameDequalifyingProxy()) {
+            return NameDequalifyingProxy.createList(super.getLayers(),
+                    LayerInfo.class);
         }
         return super.getLayers();
+    }
+
+    private boolean useNameDequalifyingProxy() {
+        WorkspaceInfo workspaceInfo = LocalWorkspace.get();
+        boolean hidePrefix = geoServer == null || !geoServer.getSettings().isLocalWorkspaceIncludesPrefix();
+        boolean useNameDequalifyingProxy = workspaceInfo != null && hidePrefix;
+        return useNameDequalifyingProxy;
     }
 
     @Override
@@ -222,7 +237,7 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
         if (obj == null) {
             return null;
         }
-        if (LocalWorkspace.get() != null) {
+        if (useNameDequalifyingProxy()) {
             return NameDequalifyingProxy.create(obj, clazz);
         }
         return obj;

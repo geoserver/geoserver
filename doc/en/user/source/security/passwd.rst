@@ -19,7 +19,7 @@ As these passwords are typically stored on disk it is strongly recommended that 
 
 The password encryption scheme is specified as a global setting that affects the encryption of passwords used for external resources, and as an encryption scheme for each :ref:`user/group service <sec_rolesystem_usergroupservices>`. The encryption scheme for external resources has to be be :ref:`reversible <sec_passwd_reversible>`, while the user/group services can use any scheme.
 
-Empty 
+Empty
 ~~~~~
 
 The scheme is not reversible. Any password is encoded as an empty string, and as a consequence it is not possible to recalculate the plain text password. This scheme is used for user/group services in combination with an authentication mechanism using a back end system. Examples are user name/password authentication against a LDAP server or a JDBC database. In these scenarios, storing passwords locally to Geoserver does not make sense.
@@ -61,11 +61,7 @@ As an example, the password ``geoserver`` is encrypted to ``crypt1:KWhO7jrTz/Gi0
 
 .. note::
 
-   Strong PBE is not natively available on all Java virtual machines and may require the installation of some additional `JCE Unlimited Strength Jurisdiction <http://www.oracle.com/technetwork/java/javase/downloads/jce-6-download-429243.html>`_ policy files:
-
-   * `Oracle JCE policy jars <http://www.oracle.com/technetwork/java/javase/downloads/jce-6-download-429243.html>`_ for Oracle JVM
-   * `IBM JCE policy jars <https://www14.software.ibm.com/webapp/iwm/web/preLogin.do?source=jcesdk>`_ for IBM JVM
-
+   Strong PBE is not natively available on all Java virtual machines and may require :ref:`java_policyfiles`
 
 .. _sec_passwd_reversible:
 

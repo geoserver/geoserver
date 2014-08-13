@@ -14,3 +14,4 @@ GeoServer has a robust :ref:`security subsystem <security>`, modeled on `Spring 
    ugr
    data
    services
+   filebrowse

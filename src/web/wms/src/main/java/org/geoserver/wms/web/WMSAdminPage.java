@@ -1,15 +1,22 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* Copyright (c) 2001 - 2014 OpenPlans - www.openplans.org. All rights reserved.
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.wms.web;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
@@ -17,20 +24,30 @@ import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.model.util.CollectionModel;
+import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.validation.validator.MinimumValidator;
 import org.apache.wicket.validation.validator.RangeValidator;
+import org.geoserver.catalog.impl.ModificationProxy;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.FileExistsValidator;
 import org.geoserver.web.wicket.LiveCollectionModel;
+import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SRSListTextArea;
+import org.geoserver.web.wicket.browser.GeoServerFileChooser;
+import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSInfo.WMSInterpolation;
 import org.geoserver.wms.WatermarkInfo.Position;
+import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
 import org.geoserver.wms.web.publish.LayerAuthoritiesAndIdentifiersPanel;
+import org.geoserver.web.data.store.panel.FileModel;
 
 /**
  * Edits the WMS service details 
@@ -45,7 +62,12 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
     
     static final List<String> KML_SUPEROVERLAY_MODES = Arrays.asList(new String[] {WMS.KML_SUPEROVERLAY_MODE_AUTO, 
             WMS.KML_SUPEROVERLAY_MODE_RASTER, WMS.KML_SUPEROVERLAY_MODE_OVERVIEW, WMS.KML_SUPEROVERLAY_MODE_HYBRID, WMS.KML_SUPEROVERLAY_MODE_CACHED});
-
+    
+    ModalWindow modal;
+    MimeTypesFormComponent getMapMimeTypesComponent,getFeatureInfoMimeTypesComponent;
+    TreeSet<String> getMapAvailable;
+    TreeSet<String> getFeatureInfoAvailable;
+    
     public WMSAdminPage() {
         super();
     }
@@ -64,6 +86,9 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
     
     @SuppressWarnings("unchecked")
     protected void build(IModel info, Form form) {
+        // popups support
+        form.add(modal = new ModalWindow("modal"));
+        
         // authority URLs and Identifiers for the root layer
         LayerAuthoritiesAndIdentifiersPanel authAndIds;
         authAndIds = new LayerAuthoritiesAndIdentifiersPanel("authoritiesAndIds", true, info);
@@ -96,7 +121,11 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         form.add(maxErrors);
     	// watermark
     	form.add(new CheckBox("watermark.enabled"));
-    	form.add(new TextField("watermark.uRL").add(new FileExistsValidator(true)));
+    	TextField watermarkUrlField = new TextField("watermark.uRL", new FileModel(new PropertyModel<String>(form.getModel(), "watermark.URL")));
+    	watermarkUrlField.add(new FileExistsValidator(true));
+    	watermarkUrlField.setOutputMarkupId(true);
+        form.add(watermarkUrlField);
+        form.add(chooserButton("chooser", new ParamResourceModel("chooseWatermark", this).getString(), watermarkUrlField));
     	TextField<Integer> transparency = new TextField<Integer>("watermark.transparency");
     	transparency.add(new RangeValidator<Integer>(0,100));
         form.add(transparency);
@@ -153,7 +182,97 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         TextField<Integer> kmScoreField = new TextField<Integer>("kml.kmscore", kmScore, Integer.class);
         kmScoreField.add(new RangeValidator<Integer>(0, 100));
         form.add(kmScoreField);
+        
+        //scalehint
+        form.add(new CheckBox("scalehint.mapunitsPixel",defaultedModel(metadataModel, WMS.SCALEHINT_MAPUNITS_PIXEL, WMS.SCALEHINT_MAPUNITS_PIXEL_DEFAULT)));
+        
+        // mime types for GetMap
+        getMapAvailable = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        for (GetMapOutputFormat format : GeoServerExtensions.extensions(GetMapOutputFormat.class)) {
+            getMapAvailable.add(format.getMimeType());
+        }        
+        
+        List<String> getMapSelected = new ArrayList<String>();
+        getMapSelected.addAll(new PropertyModel<Set<String>>(info, "getMapMimeTypes").getObject());
+        List<String> getMapChoices = new ArrayList<String>();
+        getMapChoices.addAll(getMapAvailable);
+                               
+        form.add(getMapMimeTypesComponent= new MimeTypesFormComponent("getMapMimeTypes",
+                new ListModel<String>(getMapSelected),new CollectionModel<String>(getMapChoices),
+                new PropertyModel<Boolean>(info, "getMapMimeTypeCheckingEnabled").getObject()));
+        
+        // mime types for GetFeatueInfo
+        getFeatureInfoAvailable = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        for (GetFeatureInfoOutputFormat format : GeoServerExtensions.extensions(GetFeatureInfoOutputFormat.class)) {
+            getFeatureInfoAvailable.add(format.getContentType());
+        }
+                    
+        List<String> getFeatureInfoSelected = new ArrayList<String>();
+        getFeatureInfoSelected.addAll(new PropertyModel<Set<String>>(info, "getFeatureInfoMimeTypes").getObject());
+        List<String> getFeatureInfoChoices = new ArrayList<String>();
+        getFeatureInfoChoices.addAll(getFeatureInfoAvailable);
+                               
+        form.add(getFeatureInfoMimeTypesComponent =new MimeTypesFormComponent("getFeatureInfoMimeTypes",
+                new ListModel<String>(getFeatureInfoSelected),new CollectionModel<String>(getFeatureInfoChoices),
+                new PropertyModel<Boolean>(info, "getFeatureInfoMimeTypeCheckingEnabled").getObject()));                                                           
+        
     }
+    
+    @Override
+    protected void handleSubmit(WMSInfo info) {
+
+        info.setGetMapMimeTypeCheckingEnabled(getMapMimeTypesComponent.isMimeTypeCheckingEnabled());
+        if (info.isGetMapMimeTypeCheckingEnabled())
+            info.getGetMapMimeTypes().addAll(getMapMimeTypesComponent.getPalette().getModelCollection());
+        else 
+            info.getGetMapMimeTypes().clear();
+        
+        info.setGetFeatureInfoMimeTypeCheckingEnabled(getFeatureInfoMimeTypesComponent.isMimeTypeCheckingEnabled());
+        if (info.isGetFeatureInfoMimeTypeCheckingEnabled())
+            info.getGetFeatureInfoMimeTypes().addAll(getFeatureInfoMimeTypesComponent.getPalette().getModelCollection());
+        else
+            info.getGetFeatureInfoMimeTypes().clear();
+        
+        super.handleSubmit(info);
+    }
+    
+    protected Component chooserButton(String linkId, final String windowTitle, final TextField<String> textField) {
+        AjaxSubmitLink link = new AjaxSubmitLink(linkId) {
+            
+            @Override
+            public boolean getDefaultFormProcessing() {
+                return false;
+            }
+            
+            @Override
+            public void onSubmit(AjaxRequestTarget target, Form form) {
+                File file = null;
+                textField.processInput();
+                String input = (String) textField.getConvertedInput();
+                if (input != null && !input.equals("")) {
+                    file = new File(input);
+                }
+
+                GeoServerFileChooser chooser = new GeoServerFileChooser(modal.getContentId(), new Model(file)) {
+                    protected void fileClicked(File file, AjaxRequestTarget target) {
+                      // clear the raw input of the field won't show the new model value
+                      textField.clearInput();
+                      textField.setModelObject(file.getAbsolutePath());
+
+                      target.addComponent(textField);
+                      dialog.close(target);
+                    };
+                };
+                chooser.setFileTableHeight(null);
+                modal.setContent(chooser);
+                modal.setTitle(windowTitle);
+                modal.show(target);
+            }
+
+        };
+        return link;
+    }
+
     
     MapModel defaultedModel(IModel baseModel, String key, Object defaultValue) {
         MapModel model = new MapModel(baseModel, key);

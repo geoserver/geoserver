@@ -1,18 +1,6 @@
-/*
- *    GeoTools - The Open Source Java GIS Toolkit
- *    http://geotools.org
- *
- *    (C) 2002-2011, Open Source Geospatial Foundation (OSGeo)
- *
- *    This library is free software; you can redistribute it and/or
- *    modify it under the terms of the GNU Lesser General Public
- *    License as published by the Free Software Foundation;
- *    version 2.1 of the License.
- *
- *    This library is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *    Lesser General Public License for more details.
+/* Copyright (c) 2013 OpenPlans - www.openplans.org. All rights reserved.
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
  */
 package org.geoserver.wms.eo;
 
@@ -37,7 +25,7 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.MapLayerInfo;
-import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.factory.GeoTools;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.gce.imagemosaic.MergeBehavior;
@@ -71,7 +59,7 @@ public class EOGetFeatureInfoChecker extends AbstractDispatcherCallback implemen
             return super.operationDispatched(request, operation);
         }
         
-        // === k, this is a getfeatureinfo request let's check if it is 13.0
+        // === k, this is a getfeatureinfo request let's check if it is 1.3.0
         org.geoserver.wms.GetFeatureInfoRequest featureinfoReq = (GetFeatureInfoRequest) o;
         if(!featureinfoReq.getVersion().equalsIgnoreCase("1.3.0")){
             return super.operationDispatched(request, operation);
@@ -126,7 +114,7 @@ public class EOGetFeatureInfoChecker extends AbstractDispatcherCallback implemen
                     // check the #of requested values
                     // get the read parameters for this reader
                     final GridCoverageReader gridCoverageReader = cInfo.getGridCoverageReader(new NullProgressListener(), GeoTools.getDefaultHints());
-                    final Set<ParameterDescriptor<List>> dynamicParameters = ((AbstractGridCoverage2DReader)gridCoverageReader).getDynamicParameters();
+                    final Set<ParameterDescriptor<List>> dynamicParameters = ((GridCoverage2DReader)gridCoverageReader).getDynamicParameters();
                     if(dynamicParameters.isEmpty()){
                         throw new IllegalStateException("Layer "+cInfo.getTitle()+ " has no additional dimensions which are required for an EO BANDS layer");
                     }

@@ -6,7 +6,6 @@ package org.geoserver.catalog.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.*;
-
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
@@ -15,6 +14,7 @@ import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ProjectionPolicy;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.data.test.SystemTestData;
@@ -22,10 +22,9 @@ import org.geoserver.test.RemoteOWSTestSupport;
 import org.geotools.feature.NameImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Document;
 
@@ -67,7 +66,27 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
             catalog.add(wml);
         }
     }
+    
+    @After
+    public void removeLayer() throws Exception {
+        LayerInfo l = catalog.getLayerByName(new NameImpl("sf", "states"));
+        if(l != null) {
+            catalog.remove(l);
+        }
+    }
 
+    @Before
+    public void removeBugsites() throws Exception {
+        LayerInfo l = catalog.getLayerByName(new NameImpl("sf", "bugsites"));
+        if(l != null) {
+            catalog.remove(l);
+        }
+
+        ResourceInfo r = catalog.getResourceByName("sf", "bugsites", WMSLayerInfo.class);
+        if (r != null) {
+            catalog.remove(r);
+        }
+    }
     @Test
     public void testGetAllByWorkspace() throws Exception {
         Document dom = getAsDOM( "/rest/workspaces/sf/wmslayers.xml");
@@ -295,7 +314,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         Document doc = getAsDOM( "/rest/layers/states.xml");
         
         XpathEngine xpath = XMLUnit.newXpathEngine();
-        String resourceUrl = xpath.evaluate("//atom:link/@href", doc);
+        String resourceUrl = xpath.evaluate("//resource/atom:link/@href", doc);
         resourceUrl = resourceUrl.substring(resourceUrl.indexOf("/rest"));
         
         doc = getAsDOM(resourceUrl);

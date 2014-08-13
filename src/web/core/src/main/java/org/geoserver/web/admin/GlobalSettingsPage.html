@@ -49,9 +49,23 @@
       <input id="xmlPostRequestLogBufferSize"class="field text" type="text" wicket:id="xmlPostRequestLogBufferSize" />
     </li>
     <li>
+      <label for="xmlExternalEntitiesEnabled"><wicket:message key="xmlExternalEntities">XML Entities</wicket:message></label>    
+      <input id="xmlExternalEntitiesEnabled" class="field checkbox" type="checkbox" wicket:id="xmlExternalEntitiesEnabled" />
+      <label for="xmlExternalEntitiesEnabled" class="choice"><wicket:message key="xmlExternalEntitiesEnabled">Evaluate XML Entities</wicket:message></label>
+    </li>    
+    <li>
       <label for="featureTypeCacheSize"><wicket:message key="featureTypeCacheSize">Feature Type Cache Size</wicket:message></label>
       <input id="featureTypeCacheSize"class="field text" type="text" wicket:id="featureTypeCacheSize" />
     </li>
+	<li>
+	   <label><wicket:message key="lockProvider">lockProvider:</wicket:message></label>
+	   <select class="select" id="lockProvider" wicket:id="lockProvider"></select>
+	</li>
+	<li>
+	    <div wicket:id="extensions">
+			 <div wicket:id="content"></div>
+		</div>
+	</li>
     <li class="button-group selfclear">
       <button type="submit" wicket:id="submit"><wicket:message key="submit">submit</wicket:message></button>
       <button type="submit" wicket:id="cancel"><wicket:message key="cancel">cancel</wicket:message></button>

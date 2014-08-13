@@ -6,6 +6,7 @@ package org.geoserver.catalog.impl;
 
 import java.math.BigDecimal;
 
+import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 
@@ -34,6 +35,32 @@ public class DimensionInfoImpl implements DimensionInfo {
     String units;
     
     String unitSymbol;
+
+    DimensionDefaultValueSetting defaultValue;
+    
+    /**
+     * The default constructor
+     */
+    public DimensionInfoImpl(){
+        super();
+    }
+    
+    /**
+     * Creates a shallow copy of the given Dimension object
+     * @param info
+     */
+    public DimensionInfoImpl(DimensionInfo info){
+        super();
+        this.enabled = info.isEnabled();
+        this.attribute = info.getAttribute();
+        this.endAttribute = info.getEndAttribute();
+        this.presentation = info.getPresentation();
+        this.resolution = info.getResolution();
+        this.units = info.getUnits();
+        this.unitSymbol = info.getUnitSymbol();
+        this.defaultValue = info.getDefaultValue();
+        this.enabled = info.isEnabled();
+    }
     
     public boolean isEnabled() {
         return enabled;
@@ -160,6 +187,16 @@ public class DimensionInfoImpl implements DimensionInfo {
         } else if (!endAttribute.equals(other.endAttribute))
             return false;
         return true;
+    }
+
+    @Override
+    public DimensionDefaultValueSetting getDefaultValue() {
+        return this.defaultValue;
+    }
+
+    @Override
+    public void setDefaultValue(DimensionDefaultValueSetting defaultValue) {
+       this.defaultValue = defaultValue;        
     }
 
 }

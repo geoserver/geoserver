@@ -176,6 +176,12 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
 
     @Override
     protected <T extends CatalogInfo> Filter securityFilter(Class<T> infoType, Filter filter) {
+        if(!isOgcCapabilitiesRequest()) {
+            // Not needed for other kinds of request
+            // TODO use a common implementation for GetCapabilities and Layer Preview
+            return filter;
+        }
+        
         if (!ResourceInfo.class.isAssignableFrom(infoType) && 
             !LayerInfo.class.isAssignableFrom(infoType) &&
             !LayerGroupInfo.class.isAssignableFrom(infoType)) 

@@ -12,11 +12,9 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
-import org.geoserver.platform.OWS20Exception;
 
 import org.geoserver.platform.ServiceException;
 import org.geotools.util.Version;

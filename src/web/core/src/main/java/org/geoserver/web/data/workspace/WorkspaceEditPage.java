@@ -7,6 +7,7 @@ package org.geoserver.web.data.workspace;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.wicket.AttributeModifier;
@@ -17,7 +18,6 @@ import org.apache.wicket.ResourceReference;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -57,6 +57,7 @@ import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.admin.ContactPanel;
 import org.geoserver.web.admin.GlobalSettingsPage;
 import org.geoserver.web.data.namespace.NamespaceDetachableModel;
+import org.geoserver.web.data.settings.SettingsPluginPanelInfo;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.services.ServiceMenuPageInfo;
 import org.geoserver.web.wicket.GeoServerDialog;
@@ -116,7 +117,8 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                 try {
                     saveWorkspace();
                 } catch (RuntimeException e) {
-                    error(e.getMessage());
+                    LOGGER.log(Level.WARNING, "Failed to save workspace", e);
+                    error(e.getMessage() == null ? "Failed to save workspace, no error message available, see logs for details" : e.getMessage());
                 }
             }
         };
@@ -322,9 +324,16 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
             otherSettingsPanel.setVisible(set.enabled);
             otherSettingsPanel.add(new CheckBox("verbose"));
             otherSettingsPanel.add(new CheckBox("verboseExceptions"));
+            otherSettingsPanel.add(new CheckBox("localWorkspaceIncludesPrefix"));
             otherSettingsPanel.add(new TextField<Integer>("numDecimals").add(new MinimumValidator<Integer>(0)));
             otherSettingsPanel.add(new DropDownChoice("charset", GlobalSettingsPage.AVAILABLE_CHARSETS));
             otherSettingsPanel.add(new TextField("proxyBaseUrl").add(new UrlValidator()));
+            
+            // Addition of pluggable extension points
+            ListView extensions = SettingsPluginPanelInfo.createExtensions("extensions", set.model, 
+                    getGeoServerApplication());
+            otherSettingsPanel.add(extensions);
+            
             settingsContainer.add(otherSettingsPanel);
 
         }

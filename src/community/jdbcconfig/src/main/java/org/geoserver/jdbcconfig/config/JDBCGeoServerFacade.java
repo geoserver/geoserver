@@ -5,14 +5,18 @@
 package org.geoserver.jdbcconfig.config;
 
 import static org.geoserver.catalog.CatalogFacade.ANY_WORKSPACE;
-import static org.geoserver.catalog.Predicates.acceptAll;
 import static org.geoserver.catalog.Predicates.and;
 import static org.geoserver.catalog.Predicates.equal;
+import static org.geoserver.catalog.Predicates.isNull;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.rmi.server.UID;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -22,6 +26,7 @@ import org.geoserver.catalog.Info;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerFacade;
 import org.geoserver.config.GeoServerInfo;
@@ -29,13 +34,22 @@ import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.jdbcconfig.internal.ConfigDatabase;
+import org.geoserver.logging.LoggingStartupContextListener;
+import org.geoserver.logging.LoggingUtils;
 import org.geoserver.ows.util.OwsUtils;
+import org.geoserver.ows.util.ClassProperties;
+import org.geoserver.platform.GeoServerResourceLoader;
+import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
+import org.opengis.filter.sort.SortBy;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Predicate;
 
 @ParametersAreNonnullByDefault
 public class JDBCGeoServerFacade implements GeoServerFacade {
+
+    static final Logger LOGGER = Logging.getLogger(JDBCGeoServerFacade.class);
 
     private static final String GLOBAL_ID = "GeoServerInfo.global";
 
@@ -44,11 +58,67 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
     private GeoServer geoServer;
 
     private final ConfigDatabase db;
+    
+    private GeoServerResourceLoader resourceLoader;
+
+    public void setResourceLoader(GeoServerResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
+    }
 
     public JDBCGeoServerFacade(final ConfigDatabase db) {
         this.db = db;
     }
 
+    @SuppressWarnings("deprecation")
+    private void reinitializeLogging() {
+        try {
+            LoggingInfo realLogInfo = this.getLogging();
+            if (realLogInfo == null) {
+                return;
+            }
+            LoggingInfo startLogInfo = LoggingStartupContextListener.getLogging(resourceLoader);
+            
+            // Doing this reflectively so that if LoggingInfo gets new properties, this should still
+            // work. KS
+            
+            ClassProperties properties = OwsUtils.getClassProperties(LoggingInfo.class);
+            
+            List<String> propertyNames = new ArrayList<String>(properties.properties().size());
+            List<Object> newValues = new ArrayList<Object>(properties.properties().size());
+            List<Object> oldValues = new ArrayList<Object>(properties.properties().size());
+            
+            final Level propertyTableLevel = Level.FINE;
+            LOGGER.log(propertyTableLevel, "Checking Logging configuration in case it neeeds to be reinitialized");
+            for (String propName : properties.properties()) {
+                
+                // Don't care about the return type
+                Method read = properties.getter(propName, null);
+                
+                Object newVal = read.invoke(realLogInfo);
+                Object oldVal = read.invoke(startLogInfo);
+                
+                if((newVal==null && oldVal==null) || (newVal!=null && newVal.equals(oldVal))) {
+                    // Values the same
+                    LOGGER.log(propertyTableLevel, "=== {0} (logging.xml: {1}, JDBCConfig: {2})", new Object[] {read.getName(), oldVal, newVal});
+                } else {
+                    // Values different
+                    propertyNames.add(propName);
+                    newValues.add(newVal);
+                    oldValues.add(oldVal);
+                    LOGGER.log(propertyTableLevel, "=/= {0} (logging.xml: {1}, JDBCConfig: {2})", new Object[] {read.getName(), oldVal, newVal});
+                }
+            }
+            // If there's a difference other than the ID
+            if(!(propertyNames.isEmpty() || (propertyNames.size()==1 && propertyNames.get(0).equals("Id")))) {
+                LOGGER.log(Level.WARNING, "Start up logging config does not match that in JDBCConfig.  Reconfiguring now.  Logs preceding this message may reflect a different configuration.");
+                LoggingUtils.initLogging(resourceLoader, realLogInfo.getLevel(), !realLogInfo.isStdOutLogging(), realLogInfo.getLocation());
+            } 
+        } catch (Exception ex) {
+            // If something bad happens, log it and keep going with the wrong logging config
+            LOGGER.log(Level.SEVERE, "Problem while reinitializing Logging from JDBC Config.  Log configuration may not be correct.", ex);
+        }
+    }
+    
     @Override
     public GeoServer getGeoServer() {
         return geoServer;
@@ -58,6 +128,7 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
     public void setGeoServer(GeoServer geoServer) {
         this.geoServer = geoServer;
         this.db.setGeoServer(geoServer);
+        reinitializeLogging();
     }
 
     @Override
@@ -197,19 +268,40 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
         return getServices((WorkspaceInfo) null);
     }
 
+    private Filter filterForWorkspace(WorkspaceInfo workspace) {
+        if (workspace != null && workspace != ANY_WORKSPACE) {
+            return equal("workspace.id", workspace.getId());
+        } else {
+            return filterForGlobal();
+        }
+    }
+    private Filter filterForGlobal() {
+        return isNull("workspace.id");
+    }
+    
+    @SuppressWarnings("unchecked")
+    private <T extends ServiceInfo> CloseableIterator<T> filterServices(final Class<T> clazz, CloseableIterator<ServiceInfo> it) {
+        return (CloseableIterator<T>) CloseableIteratorAdapter.filter(it, new Predicate<ServiceInfo>(){
+            
+            @Override
+            public boolean apply(@Nullable ServiceInfo input) {
+                return clazz.isAssignableFrom(input.getClass());
+            }
+            
+        });
+    }
+    
     @Override
     public Collection<? extends ServiceInfo> getServices(WorkspaceInfo workspace) {
-
-        Filter filter = acceptAll();
-        if (workspace != null && workspace != ANY_WORKSPACE) {
-            filter = equal("workspace.id", workspace.getId());
-        }
+        
+        Filter filter = filterForWorkspace(workspace);
         return db.queryAsList(ServiceInfo.class, filter, null, null, null);
     }
 
     @Override
     public <T extends ServiceInfo> T getService(final Class<T> clazz) {
-        List<ServiceInfo> all = db.getAll(ServiceInfo.class);
+        Filter filter = filterForGlobal();
+        List<ServiceInfo> all = db.queryAsList(ServiceInfo.class, filter, null, null, null);
         for (ServiceInfo si : all) {
             if (clazz.isAssignableFrom(si.getClass())) {
                 return clazz.cast(si);
@@ -220,16 +312,27 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
 
     @Override
     public <T extends ServiceInfo> T getService(final WorkspaceInfo workspace, final Class<T> clazz) {
-
-        Filter filter = acceptAll();
-        if (workspace != null && workspace != ANY_WORKSPACE) {
-            filter = equal("workspace.id", workspace.getId());
-        }
-        try {
-            return get(clazz, filter);
-        } catch (IllegalArgumentException multipleResults) {
+        
+        Filter filter = filterForWorkspace(workspace);
+        
+        // In order to handle new service types, get all services, deserialize them, and then filter
+        // by checking if the implement the given interface.  Since there shouldn't be too many per
+        // workspace, this shouldn't be a significant performance problem.
+        CloseableIterator<T> it = filterServices(clazz, db.query(ServiceInfo.class, filter, null, null, (SortBy)null));
+        
+        T service;
+        if (it.hasNext()){
+            service = it.next();
+        } else {
+            if(LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Could not find service of type "+clazz+" in "+workspace);
             return null;
         }
+        
+        if(it.hasNext()) {
+            LOGGER.log(Level.WARNING, "Found multiple services of type "+clazz+" in "+ workspace);
+            return null;
+        }
+        return service;
     }
 
     @Override
@@ -268,7 +371,7 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
 
     public <T extends Info> T get(Class<T> type, Filter filter) throws IllegalArgumentException {
 
-        CloseableIterator<T> it = db.query(type, filter, null, 2, null);
+        CloseableIterator<T> it = db.query(type, filter, null, 2, (org.opengis.filter.sort.SortBy)null);
         T result = null;
         try {
             if (it.hasNext()) {

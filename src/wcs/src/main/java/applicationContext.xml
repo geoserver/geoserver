@@ -14,14 +14,6 @@
 	  <constructor-arg ref="resourceLoader"/>
 	</bean>
 	
-	<!-- the abstract base bean -->
-	<bean id="wcsAbstractService" abstract="true"
-		class="org.vfny.geoserver.servlets.AbstractService">
-		<!--  reference to geoserver bean defined in the 'main' context -->
-		<property name="geoServer" ref="geoServer"/>
-		<property name="catalog" ref="catalog"/>
-	</bean>
-
     <bean id="wcsFactoryExtension" class="org.geoserver.wcs.WCSFactoryExtension"/>
 
 	<!-- http url mapping -->

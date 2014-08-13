@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- GetData request.-->
+<!-- Equivalent GET request is http://foo.bar/foo?Service=TJS&Request=GetData&Version=1.0&Language=en-CA&FrameworkURI=http%3A%2F%2Fwww.statcan.ca%2Fprovinces%2F2001&DatasetURI=http%3A%2F%2Fwww.statcan.ca%2F2001AgCensus&Attributes=cattlecalves,cows&GeolinkIds=10,11,12,13,24,35,46-48,59&aid=true&xsl=http%3A%2F%2Fwww.ogcnetwork.net%2Fschemas%2Ftjs%2F1.0%2Fexamples_xslt%2Fgdas2html2.xsl-->
+<GetData service="TJS" version="1.0" language="en-CA" aid="true" xmlns="http://www.opengis.net/tjs/1.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.opengis.net/tjs/1.0  http://schemas.opengis.net/tjs/1.0/tjsGetData_request.xsd">
+    <FrameworkURI>http://www.statcan.ca/provinces/2001</FrameworkURI>
+    <DatasetURI>http://www.statcan.ca/2001AgCensus</DatasetURI>
+    <Attributes>cattlecalves,cows</Attributes>
+    <LinkageKeys>10,11,12,13,24,35,46-48,59</LinkageKeys>
+    <XSL>http://www.ogcnetwork.net/schemas/tjs/1.0/examples_xslt/gdas2html2.xsl</XSL>
+</GetData>

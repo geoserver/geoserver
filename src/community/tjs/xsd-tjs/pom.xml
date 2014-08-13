@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- =======================================================================
+        Maven Project Configuration File
+
+        The Geotools Project
+            http://www.geotools.org/
+
+        Version: $Id: pom.xml 38443 2011-12-21 15:17:43Z jdeolive $
+======================================================================= -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--parent>
+        <groupId>org.geotools.xsd</groupId>
+        <artifactId>xsd</artifactId>
+        <version>8.4</version>
+    </parent-->
+
+    <!-- =========================================================== -->
+    <!--     Module Description                                      -->
+    <!-- =========================================================== -->
+    <groupId>org.geotools.xsd</groupId>
+    <artifactId>gt-xsd-tjs</artifactId>
+    <version>8.6</version>
+    <packaging>jar</packaging>
+    <name>TJS XML Support(xsd-tjs)</name>
+
+    <scm>
+        <connection>
+            scm:svn:http://svn.osgeo.org/geotools/trunk/modules/extension/xsd/xsd-ows/
+        </connection>
+        <url>http://svn.osgeo.org/geotools/trunk/modules/extension/xsd/xsd-ows/</url>
+    </scm>
+
+    <description>
+        TJS support for Geotools.
+    </description>
+
+    <licenses>
+        <license>
+            <name>Lesser General Public License (LGPL)</name>
+            <url>http://www.gnu.org/copyleft/lesser.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+
+<repositories>
+  <repository>
+   <id>opengeo</id>
+   <name>OpenGeo Maven Repository</name>
+   <url>http://repo.opengeo.org/</url>
+   <snapshots>
+     <enabled>true</enabled>
+   </snapshots>
+  </repository>
+  
+  <repository>
+    <id>osgeo</id>
+    <name>Open Source Geospatial Foundation Repository</name>
+    <url>http://download.osgeo.org/webdav/geotools/</url>
+    <snapshots>
+      <enabled>true</enabled>
+    </snapshots>
+  </repository>
+
+  <repository>
+    <id>maven-restlet</id>
+    <name>Restlet Maven Repository</name>
+    <url>http://maven.restlet.org</url>
+    <snapshots>
+      <enabled>false</enabled>
+    </snapshots>
+  </repository>
+ </repositories>
+
+ <pluginRepositories>
+  <pluginRepository>
+   <id>codehaus-snapshot-plugins</id>
+   <name>codehaus-shapshot-plugins</name>
+   <url>http://snapshots.repository.codehaus.org/</url>
+   <snapshots>
+    <enabled>true</enabled>
+   </snapshots>
+   <releases>
+    <enabled>false</enabled>
+   </releases>
+  </pluginRepository>
+  <!-- Thijs: add the osgeo repo to the plugin repos -->
+  <pluginRepository>
+    <id>osgeo</id>
+    <name>Open Source Geospatial Foundation Repository</name>
+    <url>http://download.osgeo.org/webdav/geotools/</url>
+    <snapshots>
+      <enabled>true</enabled>
+    </snapshots>
+   <releases>
+    <enabled>false</enabled>
+   </releases>
+  </pluginRepository>
+  <pluginRepository>
+   <id>opengeo</id>
+   <name>OpenGeo Maven Repository</name>
+   <url>http://repo.opengeo.org/</url>
+   <snapshots>
+     <enabled>true</enabled>
+   </snapshots>
+   <releases>
+    <enabled>false</enabled>
+   </releases>
+  </pluginRepository>
+ </pluginRepositories>
+
+    <!-- =========================================================== -->
+    <!--     Developers and Contributors                             -->
+    <!-- =========================================================== -->
+    <developers>
+        <developer>
+            <name>Jose Luis Capote</name>
+            <id>capote</id>
+            <email>capote@geomix.geocuba.cu</email>
+            <organization>GeoMIX</organization>
+            <roles>
+                <role>Java Developer</role>
+            </roles>
+        </developer>
+    </developers>
+
+
+    <!-- =========================================================== -->
+    <!--     Dependency Management                                   -->
+    <!-- =========================================================== -->
+    <dependencies>
+        <dependency>
+            <groupId>org.geotools.ogc</groupId>
+            <artifactId>net.opengis.tjs</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools.xsd</groupId>
+            <artifactId>gt-xsd-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools.xsd</groupId>
+            <artifactId>gt-xsd-ows</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!--dependency>
+            <groupId>org.geotools.maven</groupId>
+            <artifactId>xmlcodegen</artifactId>
+            <version>8.4</version>
+        </dependency-->
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.geotools.maven</groupId>
+                <artifactId>xmlcodegen</artifactId>
+                <version>${project.version}</version>
+                <configuration>
+                    <schemaLocation>tjsAll.xsd</schemaLocation>
+                    <schemaSourceDirectory>${basedir}/src/main/resources/org/geotools/tjs/v1_0</schemaSourceDirectory>
+                    <schemaLookupDirectories>
+                        <schemaLookupDirectory>${basedir}/../xsd-core/src/main/resources/org/geotools/xs
+                        </schemaLookupDirectory>
+                        <schemaLookupDirectory>${basedir}/../xsd-core/src/main/resources/org/geotools/xml
+                        </schemaLookupDirectory>
+                        <schemaLookupDirectory>${basedir}/../xsd-core/src/main/resources/org/geotools/xlink
+                        </schemaLookupDirectory>
+                        <schemaLookupDirectory>${basedir}/../xsd-ows/src/main/resources/org/geotools/ows/v1_1
+                        </schemaLookupDirectory>
+                    </schemaLookupDirectories>
+                    <generateElementBindings>true</generateElementBindings>
+                    <generateAttributeBindings>true</generateAttributeBindings>
+                    <generateConfiguration>true</generateConfiguration>
+                    <!--generateTypeBindings>true</generateTypeBindings-->
+                    <destinationPackage>org.geotools.tjs.bindings</destinationPackage>
+                    <complexBindingBaseClass>org.geotools.xml.AbstractComplexEMFBinding</complexBindingBaseClass>
+                    <bindingConstructorArguments>
+                        <bindingConstructorArgument>
+                            <name>factory</name>
+                            <type>net.opengis.tjs10.Tjs10Factory</type>
+                            <mode>parent</mode>
+                        </bindingConstructorArgument>
+                    </bindingConstructorArguments>
+                    <imports>
+                        <import>org.geotools.xs.XSSchema</import>
+                    </imports>
+                    <!--
+                    <relativeSchemaReference>true</relativeSchemaReference>
+                    <printRecursionPaths>true</printRecursionPaths>
+
+                    <generateConfiguration>true</generateConfiguration>
+                    <generateBindingConfiguration>true</generateBindingConfiguration>
+                    <generateBindingInterface>true</generateBindingInterface>
+                    <generateSchemaLocationResolver>true</generateSchemaLocationResolver>
+                    <generateElementBindings>true</generateElementBindings>
+                    <generateTypeBindings>true</generateTypeBindings>
+                    <generateXsd>true</generateXsd>
+                    <targetPrefix>tjs</targetPrefix>
+
+                    <followComplexTypes>true</followComplexTypes>
+                    <cyclicTypeSupport>true</cyclicTypeSupport>
+                    <maxRecrusionDepth>20</maxRecrusionDepth>
+                    -->
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.0.2</version>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <inherited>true</inherited>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <configuration>
+                    <attach>true</attach>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+
+

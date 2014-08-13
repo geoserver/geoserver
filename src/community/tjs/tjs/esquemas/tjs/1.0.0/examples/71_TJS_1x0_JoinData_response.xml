@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<JoinDataResponse service="TJS" version="1.0" capabilities="http://foo.bar/foo" xml:lang="en-CA"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xmlns="http://www.opengis.net/tjs/1.0" xmlns:xlink="http://www.w3.org/1999/xlink"
+                  xsi:schemaLocation="http://www.opengis.net/tjs/1.0 http://schemas.opengis.net/tjs/1.0/tjsJoinData_response.xsd">
+    <Status xlink:href="http://foo.bar/foo" creationTime="2010-01-29T20:44:19Z">
+        <Completed/>
+    </Status>
+    <DataInputs>
+        <Framework>
+            <FrameworkURI>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1</FrameworkURI>
+            <Organization>Environment Canada</Organization>
+            <Title>Ecozones of Canada</Title>
+            <Abstract>Ecozones of Canada, forming part of the Terrestrial Ecological Stratification of Canada</Abstract>
+            <ReferenceDate startDate="1995-01-01">1995-06-03</ReferenceDate>
+            <Version>1</Version>
+            <Documentation>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/hierarchy.html</Documentation>
+            <FrameworkKey>
+                <Column name="ecozone" type="http://www.w3.org/TR/xmlschema-2/#integer" length="2" decimals="0"/>
+            </FrameworkKey>
+            <BoundingCoordinates>
+                <North>90</North>
+                <South>43</South>
+                <East>-50</East>
+                <West>-145</West>
+            </BoundingCoordinates>
+            <DescribeDatasetsRequest
+                    xlink:href="http://metamapper.com/tjs/service?Service=TJS&amp;Version=1.0&amp;Request=DescribeDatasets&amp;FrameworkURI=http%3A%2F%2Fsis.agr.gc.ca%2Fcansis%2Fnsdb%2Fecostrat%2Fzone%2Fv1"/>
+            <Dataset>
+                <DatasetURI>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1/temperature_1961-1990</DatasetURI>
+                <Organization>Agriculture and Agri-Food Canada</Organization>
+                <Title>Ecozones of Canada - Temperature Normals 1961-1990</Title>
+                <Abstract>The 1961-1990 data for temperature and precipitation included only stations with averages
+                    based on more than 19 years of data (Appendix 1). Data from additional stations which had
+                    temperature and precipitation normals for the 1951-1980 period were also used to provide maximum
+                    station density, but these normals were first adjusted to the 1961-1990 period by comparison with
+                    nearby stations. TMAX, TMIN, TMEAN, RAIN, SNOW and TOTALP were interpolated using the Thiessen
+                    polygon method. The Thiessen
+                </Abstract>
+                <ReferenceDate startDate="">1999-09-16</ReferenceDate>
+                <Version/>
+                <Documentation/>
+                <DescribeDataRequest
+                        xlink:href="http://metamapper.com/tjs/service?Service=TJS&amp;Version=1.0&amp;Request=DescribeData&amp;FrameworkURI=http%3A%2F%2Fsis.agr.gc.ca%2Fcansis%2Fnsdb%2Fecostrat%2Fzone%2Fv1&amp;DatasetURI=http%3A%2F%2Fsis.agr.gc.ca%2Fcansis%2Fnsdb%2Fecostrat%2Fzone%2Fv1%2Ftemperature_1961-1990"/>
+                <Columnset>
+                    <FrameworkKey relationship="one" complete="true">
+                        <Column name="zone" type="http://www.w3.org/TR/xmlschema-2/#integer" length="2" decimals="0"/>
+                    </FrameworkKey>
+                    <Attributes>
+                        <Column type="http://www.w3.org/TR/xmlschema-2/#decimal" name="tmin_may" length="10"
+                                decimals="5" purpose="Attribute">
+                            <Title>May Minimum Air Temperature</Title>
+                            <Abstract>Average Daily Minimum Air Temperature</Abstract>
+                            <Documentation>
+                                http://sis.agr.gc.ca/cansis/nsdb/ecostrat/climate_normals_1961-90.html#temperature
+                            </Documentation>
+                            <Values>
+                                <Measure>
+                                    <UOM>
+                                        <ShortForm>°C</ShortForm>
+                                        <LongForm>degrees centigrade</LongForm>
+                                    </UOM>
+                                </Measure>
+                            </Values>
+                            <GetDataRequest
+                                    xlink:href="http://metamapper.com/tjs/service?Service=TJS&amp;Version=1.0&amp;Request=GetData&amp;FrameworkURI=http%3A%2F%2Fsis.agr.gc.ca%2Fcansis%2Fnsdb%2Fecostrat%2Fzone%2Fv1&amp;DatasetURI=http%3A%2F%2Fsis.agr.gc.ca%2Fcansis%2Fnsdb%2Fecostrat%2Fzone%2Fv1%2Ftemperature_1961-1990&amp;Attributes=tmin_may"/>
+                        </Column>
+                    </Attributes>
+                </Columnset>
+            </Dataset>
+        </Framework>
+    </DataInputs>
+    <JoinedOutputs>
+        <Output>
+            <Mechanism>
+                <Identifier>shapefile</Identifier>
+                <Title>ESRI shapefile</Title>
+                <Abstract>ESRI shapefile currently unavailable</Abstract>
+                <Reference>http://en.wikipedia.org/wiki/Shapefile</Reference>
+            </Mechanism>
+            <Resource>
+                <URL>http://metamapper.com/theURLfortheShapefile</URL>
+            </Resource>
+        </Output>
+        <Output>
+            <Mechanism>
+                <Identifier>WMS</Identifier>
+                <Title>Web Map Server v1.1.1</Title>
+                <Abstract>The OpenGIS® Web Map Service Interface Standard (WMS) provides a simple HTTP interface for
+                    requesting geo-registered map images from one or more distributed geospatial databases. A WMS
+                    request defines the geographic layer(s) and area of interest to be processed. The response to the
+                    request is one or more geo-registered map images (returned as JPEG, PNG, etc) that can be displayed
+                    in a browser application. The interface also supports the ability to specify whether the returned
+                    images should be transparent so that layers from multiple servers can be combined or not.
+                </Abstract>
+                <Reference>http://schemas.opengis.net/wms/1.1.1/</Reference>
+            </Mechanism>
+            <Resource>
+                <URL>http://metamapper.com/cgi-bin/2010012920/44181140/wms</URL>
+                <Parameter name="domainName">metamapper.com</Parameter>
+                <Parameter name="layerName">ca_all_ecozones_v1</Parameter>
+                <Parameter name="tmpDirName">2010012920/44181140</Parameter>
+            </Resource>
+        </Output>
+    </JoinedOutputs>
+</JoinDataResponse>

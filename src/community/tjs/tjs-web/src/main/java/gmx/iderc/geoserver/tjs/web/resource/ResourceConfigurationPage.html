@@ -1,0 +1,40 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+</head>
+<body>
+<wicket:extend>
+    <h1><span wicket:id="resourcename"/></h1>
+
+    <p>
+        <wicket:message key="configureTheResourceAndPublishingInformation">Configure the resource and publishing
+            information for the current layer
+        </wicket:message>
+    </p>
+    <form wicket:id="resource" name="resource">
+        <div wicket:id="tabs" class="tabpanel"></div>
+        <!-- <div wicket:id="resources">
+           <div wicket:id="content"/>
+       </div>
+       <div wicket:id="layers">
+           <div wicket:id="content"/>
+       </div> -->
+        <!-- [FIXME] this should be updated to use the submit pattern we're using elsewhere (<input> tags for submit and cancel. Basically, the following (I've stripped the trailing colon after "wicket" to avoid errors
+       <ul>
+         <li class="button-group selfclear">
+           <input class="btnTxt" wicketid="submit" type="submit"><wicketmessage key="submit"/></input>
+           <input class="btnTxt" wicketid="cancel" type="submit"><wicketmessage key="cancel"/></input>
+         </li>
+       </ul>
+        -->
+        <div class="button-group selfclear">
+            <a href="#" wicket:id="save">
+                <wicket:message key="save">Save</wicket:message>
+            </a>
+            <a href="#" wicket:id="cancel">
+                <wicket:message key="cancel">Cancel</wicket:message>
+            </a>
+        </div>
+    </form>
+</wicket:extend>
+</body>
+</html>

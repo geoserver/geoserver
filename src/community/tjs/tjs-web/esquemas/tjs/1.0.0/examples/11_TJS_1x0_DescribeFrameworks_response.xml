@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<FrameworkDescriptions service="TJS" version="1.0" capabilities="http://sis.agr.gc.ca/pls/meta/tjs_1x0_getcapabilities"
+                       xml:lang="en" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.opengis.net/tjs/1.0"
+                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                       xsi:schemaLocation="http://www.opengis.net/tjs/1.0 http://schemas.opengis.net/tjs/1.0/tjsDescribeFrameworks_response.xsd">
+    <Framework>
+        <FrameworkURI>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1</FrameworkURI>
+        <Organization>Environment Canada</Organization>
+        <Title>Ecozones of Canada</Title>
+        <Abstract>Ecozones of Canada, forming part of the Terrestrial Ecological Stratification of Canada</Abstract>
+        <ReferenceDate startDate="1995-01-01">1995-06-03</ReferenceDate>
+        <Version>1</Version>
+        <Documentation>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/hierarchy.html</Documentation>
+        <FrameworkKey>
+            <Column name="ecozone" type="http://www.w3.org/TR/xmlschema-2/#integer" length="2" decimals="0"/>
+        </FrameworkKey>
+        <BoundingCoordinates>
+            <North>90</North>
+            <South>43</South>
+            <East>-50</East>
+            <West>-145</West>
+        </BoundingCoordinates>
+        <DescribeDatasetsRequest
+                xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_describedatasets?Service=TJS&amp;Version=1.0&amp;Request=DescribeDatasets&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/zone/v1&amp;AcceptLanguages=en"/>
+    </Framework>
+    <Framework>
+        <FrameworkURI>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/province/v1</FrameworkURI>
+        <Organization>Environment Canada</Organization>
+        <Title>Ecoprovinces of Canada</Title>
+        <Abstract>Ecoprovinces of Canada, forming part of the Terrestrial Ecological Stratification of Canada.
+        </Abstract>
+        <ReferenceDate startDate="1995">2005</ReferenceDate>
+        <Version>1</Version>
+        <Documentation>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/hierarchy.html</Documentation>
+        <FrameworkKey>
+            <Column name="ecoprovinc" type="http://www.w3.org/TR/xmlschema-2/#float" length="4" decimals="1"/>
+        </FrameworkKey>
+        <BoundingCoordinates>
+            <North>90</North>
+            <South>43</South>
+            <East>-50</East>
+            <West>-145</West>
+        </BoundingCoordinates>
+        <DescribeDatasetsRequest
+                xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_describedatasets?Service=TJS&amp;Version=1.0&amp;Request=DescribeDatasets&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/province/v1&amp;AcceptLanguages=en"/>
+    </Framework>
+    <Framework>
+        <FrameworkURI>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/region/v1</FrameworkURI>
+        <Organization>Environment Canada</Organization>
+        <Title>Ecoregions of Canada</Title>
+        <Abstract>Ecoregions of Canada, forming part of the Terrestrial Ecological Stratification of Canada.</Abstract>
+        <ReferenceDate>1995-06-03</ReferenceDate>
+        <Version>1</Version>
+        <Documentation>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/hierarchy.html</Documentation>
+        <FrameworkKey>
+            <Column name="ecoregion" type="http://www.w3.org/TR/xmlschema-2/#integer" length="3" decimals="0"/>
+        </FrameworkKey>
+        <BoundingCoordinates>
+            <North>90</North>
+            <South>43</South>
+            <East>-50</East>
+            <West>-145</West>
+        </BoundingCoordinates>
+        <DescribeDatasetsRequest
+                xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_describedatasets?Service=TJS&amp;Version=1.0&amp;Request=DescribeDatasets&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/region/v1&amp;AcceptLanguages=en"/>
+    </Framework>
+    <Framework>
+        <FrameworkURI>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/district/v1</FrameworkURI>
+        <Organization>Environment Canada</Organization>
+        <Title>Ecodistricts of Canada</Title>
+        <Abstract>Ecodistricts of Canada, forming part of the Terrestrial Ecological Stratification of Canada.
+        </Abstract>
+        <ReferenceDate>1995-06-03</ReferenceDate>
+        <Version>1</Version>
+        <Documentation>http://sis.agr.gc.ca/cansis/nsdb/ecostrat/hierarchy.html</Documentation>
+        <FrameworkKey>
+            <Column name="ecodistric" type="http://www.w3.org/TR/xmlschema-2/#integer" length="4" decimals="0"/>
+        </FrameworkKey>
+        <BoundingCoordinates>
+            <North>90</North>
+            <South>43</South>
+            <East>-50</East>
+            <West>-145</West>
+        </BoundingCoordinates>
+        <DescribeDatasetsRequest
+                xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_describedatasets?Service=TJS&amp;Version=1.0&amp;Request=DescribeDatasets&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/ecostrat/district/v1&amp;AcceptLanguages=en"/>
+    </Framework>
+    <Framework>
+        <FrameworkURI>http://sis.agr.gc.ca/cansis/nsdb/slc/v2.2</FrameworkURI>
+        <Organization>Agriculture and Agri-Food Canada</Organization>
+        <Title>Soil Landscapes of Canada version 2.2</Title>
+        <Abstract>The Soil Landscapes of Canada (SLC) is a series of GIS coverages that show the major characteristics
+            of soil and land for the whole country. SLCs were compiled at a scale of 1:1 million, and information is
+            organized according to a uniform national set of soil and landscape criteria based on permanent natural
+            attributes.
+        </Abstract>
+        <ReferenceDate>1996-12-31</ReferenceDate>
+        <Version>2.2</Version>
+        <Documentation>http://sis.agr.gc.ca/cansis/nsdb/slc/v2.2/</Documentation>
+        <FrameworkKey>
+            <Column name="sl" type="http://www.w3.org/TR/xmlschema-2/#integer" length="6" decimals="0"/>
+        </FrameworkKey>
+        <BoundingCoordinates>
+            <North>90</North>
+            <South>43</South>
+            <East>-50</East>
+            <West>-145</West>
+        </BoundingCoordinates>
+        <DescribeDatasetsRequest
+                xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_describedatasets?Service=TJS&amp;Version=1.0&amp;Request=DescribeDatasets&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/slc/v2.2&amp;AcceptLanguages=en"/>
+    </Framework>
+    <Framework>
+        <FrameworkURI>http://sis.agr.gc.ca/cansis/nsdb/slc/v3.1.1</FrameworkURI>
+        <Organization>Agriculture and Agri-Food Canada</Organization>
+        <Title>Soil Landscapes of Canada version 3.1.1</Title>
+        <Abstract>The Soil Landscapes of Canada (SLC) is a series of GIS coverages that show the major characteristics
+            of soil and land for the whole country. SLCs were compiled at a scale of 1:1 million, and information is
+            organized according to a uniform national set of soil and landscape criteria based on permanent natural
+            attributes.
+        </Abstract>
+        <ReferenceDate>2004-06-15</ReferenceDate>
+        <Version>3.1.1</Version>
+        <Documentation>http://sis.agr.gc.ca/cansis/nsdb/slc/v3.1.1/</Documentation>
+        <FrameworkKey>
+            <Column name="sl" type="http://www.w3.org/TR/xmlschema-2/#integer" length="9" decimals="0"/>
+        </FrameworkKey>
+        <BoundingCoordinates>
+            <North>90</North>
+            <South>43</South>
+            <East>-50</East>
+            <West>-145</West>
+        </BoundingCoordinates>
+        <DescribeDatasetsRequest
+                xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_describedatasets?Service=TJS&amp;Version=1.0&amp;Request=DescribeDatasets&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/slc/v3.1.1&amp;AcceptLanguages=en"/>
+    </Framework>
+    <Framework>
+        <FrameworkURI>http://sis.agr.gc.ca/cansis/nsdb/slc/v3.2</FrameworkURI>
+        <Organization>Agriculture and Agri-Food Canada</Organization>
+        <Title>Soil Landscapes of Canada version 3.2</Title>
+        <Abstract>The Soil Landscapes of Canada (SLC) is a series of GIS coverages that show the major characteristics
+            of soil and land for the whole country. SLCs were compiled at a scale of 1:1 million, and information is
+            organized according to a uniform national set of soil and landscape criteria based on permanent natural
+            attributes.
+        </Abstract>
+        <ReferenceDate>2009-12-01</ReferenceDate>
+        <Version>3.2</Version>
+        <Documentation>http://sis.agr.gc.ca/cansis/nsdb/slc/v3.2/</Documentation>
+        <FrameworkKey>
+            <Column name="sl" type="http://www.w3.org/TR/xmlschema-2/#integer" length="9" decimals="0"/>
+        </FrameworkKey>
+        <BoundingCoordinates>
+            <North>90</North>
+            <South>43</South>
+            <East>-50</East>
+            <West>-145</West>
+        </BoundingCoordinates>
+        <DescribeDatasetsRequest
+                xlink:href="http://sis.agr.gc.ca/pls/meta/tjs_1x0_describedatasets?Service=TJS&amp;Version=1.0&amp;Request=DescribeDatasets&amp;FrameworkURI=http://sis.agr.gc.ca/cansis/nsdb/slc/v3.2&amp;AcceptLanguages=en"/>
+    </Framework>
+</FrameworkDescriptions>

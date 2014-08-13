@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+    <bean id="frameworkMenuPage" class="org.geoserver.web.MenuPageInfo">
+        <property name="id" value="frameworks"/>
+        <property name="titleKey" value="FrameworkPage.title"/>
+        <property name="descriptionKey" value="FrameworkPage.description"/>
+        <property name="componentClass" value="gmx.iderc.geoserver.tjs.web.framework.FrameworkPage"/>
+        <property name="category" ref="dataCategory"/>
+        <property name="icon" value="../img/framework.png"/>
+    </bean>
+
+    <bean id="tjsServicePage" class="org.geoserver.web.MenuPageInfo">
+        <property name="id" value="tjs"/>
+        <property name="titleKey" value="tjs.title"/>
+        <property name="descriptionKey" value="tjs.description"/>
+        <property name="componentClass" value="gmx.iderc.geoserver.tjs.web.TJSAdminPage"/>
+        <property name="icon" value="./img/tjsservice.png"/>
+        <property name="category" ref="servicesCategory"/>
+    </bean>
+
+    <bean id="dataStoreMenuPage" class="org.geoserver.web.MenuPageInfo">
+        <property name="id" value="dataStores"/>
+        <property name="titleKey" value="DataStorePage.title"/>
+        <property name="descriptionKey" value="DataStorePage.description"/>
+        <property name="componentClass" value="gmx.iderc.geoserver.tjs.web.data.DataStorePage"/>
+        <property name="category" ref="dataCategory"/>
+        <property name="icon" value="../img/datastore.png"/>
+    </bean>
+
+    <bean id="datasetMenuPage" class="org.geoserver.web.MenuPageInfo">
+        <property name="id" value="dataset"/>
+        <property name="titleKey" value="DatasetPage.title"/>
+        <property name="descriptionKey" value="DatasetPage.description"/>
+        <property name="componentClass" value="gmx.iderc.geoserver.tjs.web.dataset.DatasetPage"/>
+        <property name="category" ref="dataCategory"/>
+        <property name="icon" value="../img/dataset.png"/>
+    </bean>
+
+    <!--
+        <bean id="defaultFrameworkPanel" class="gmx.iderc.geoserver.tjs.web.framework.FrameworkPanelInfo">
+            <property name="id" value="defaultFramework"/>
+            <property name="factoryClass" value="gmx.iderc.geoserver.tjs.web.framework.FrameworkEditPanel"/>
+            <property name="iconBase" value="org.geoserver.web.GeoServerApplication"/>
+            <property name="icon" value="img/icons/geosilk/page_white_raster.png"/>
+            <property name="componentClass" value="gmx.iderc.geoserver.tjs.web.framework.FrameworkEditPanel"/>
+        </bean>
+      <bean id="wfsServicePage" class="org.geoserver.web.MenuPageInfo">
+        <property name="id" value="wfs"/>
+        <property name="titleKey" value="wfs.title"/>
+        <property name="descriptionKey" value="wfs.description"/>
+        <property name="componentClass" value="org.geoserver.wfs.web.WFSAdminPage"/>
+        <property name="icon" value="server_vector.png"/>
+        <property name="category" ref="servicesCategory"/>
+      </bean>
+
+      <bean id="wfsLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
+        <property name="id" value="wfsLayerConfig"/>
+        <property name="titleKey" value="data.resource.config.wfs"/>
+        <property name="componentClass" value="org.geoserver.wfs.web.publish.WFSLayerConfig"/>
+        <property name="supportedTypes">
+          <list>
+            <value>org.geoserver.catalog.FeatureTypeInfo</value>
+          </list>
+        </property>
+      </bean>
+    -->
+
+</beans>

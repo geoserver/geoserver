@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- DescribeJoinAbilities operation.-->
+<!-- Equivalent GET request is http://foo.bar/foo?Service=TJS&Request=DescribeJoinAbilities&Version=1.0&Language=en-CA -->
+<DescribeJoinAbilities service="TJS" version="1.0" language="en-CA" xmlns="http://www.opengis.net/tjs/1.0"
+                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                       xsi:schemaLocation="http://www.opengis.net/tjs/1.0  http://schemas.opengis.net/tjs/1.0/tjsDescribeJoinAbilities_request.xsd"/>

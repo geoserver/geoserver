@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2009 sp1 (http://www.altova.com) by Peter Schut (Agriculture Canada) -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:tjs="http://www.opengis.net/tjs/1.0" targetNamespace="http://www.opengis.net/tjs/1.0"
+        elementFormDefault="qualified" version="1.0.0" xml:lang="en">
+    <annotation>
+        <appinfo>$Id: tjsJoinData_request.xsd 2010-12-23 $</appinfo>
+        <documentation>
+            <description>This XML Schema specifies the content of the TJS JoinData request.</description>
+            <copyright>
+                TJS is an OGC Standard.
+                Copyright (c) 2010 Open Geospatial Consortium, Inc. All Rights Reserved.
+                To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+            </copyright>
+        </documentation>
+    </annotation>
+    <!-- ========= includes and imports ================================ -->
+    <include schemaLocation="tjsAll.xsd"/>
+    <!-- ========= top level element =================================== -->
+    <element name="JoinData">
+        <annotation>
+            <documentation>Request to a tjs to perform the JoinData operation. This operation allows a client to join
+                attribute data to a spatial framework. In this XML encoding, no "request" parameter is included, since
+                the element name specifies the specific operation.
+            </documentation>
+        </annotation>
+        <complexType>
+            <complexContent>
+                <extension base="tjs:RequestBaseType">
+                    <sequence>
+                        <element name="AttributeData">
+                            <annotation>
+                                <documentation>Attribute data to be joined to the spatial framework.</documentation>
+                            </annotation>
+                            <complexType>
+                                <choice>
+                                    <element name="GetDataURL" type="anyURI">
+                                        <annotation>
+                                            <documentation>URL which returns a valid tjs 0.12 GetData response. Note
+                                                that this may be a tjs GetData request (via HTTP GET), a stored response
+                                                to a GetData request, or a web process that returns content compliant
+                                                with the GetData response schema.
+                                            </documentation>
+                                        </annotation>
+                                    </element>
+                                    <element name="GetDataXML">
+                                        <annotation>
+                                            <documentation>GetData request in XML encoding, including the name of the
+                                                tjs server to be queried. Note that since XML encoding of the GetData
+                                                request is optional for tjs servers, this choice should not be used
+                                                unless it is known that the tjs server supports this request method.
+                                            </documentation>
+                                        </annotation>
+                                        <complexType>
+                                            <sequence>
+                                                <element ref="tjs:FrameworkURI"/>
+                                                <element ref="tjs:DatasetURI"/>
+                                                <element ref="tjs:Attributes" minOccurs="0"/>
+                                                <element ref="tjs:LinkageKeys" minOccurs="0"/>
+                                            </sequence>
+                                            <attribute name="getDataHost" type="anyURI">
+                                                <annotation>
+                                                    <documentation>Base URL of the tjs server to which the attached
+                                                        GetData request shall be passed.
+                                                    </documentation>
+                                                </annotation>
+                                            </attribute>
+                                            <attribute name="language" type="string" use="optional">
+                                                <annotation>
+                                                    <documentation>Value of the language parameter to be included in the
+                                                        GetData request.
+                                                    </documentation>
+                                                </annotation>
+                                            </attribute>
+                                        </complexType>
+                                    </element>
+                                </choice>
+                            </complexType>
+                        </element>
+                        <element name="MapStyling" minOccurs="0">
+                            <annotation>
+                                <documentation>Styling that shall be applied if the AccessMechanisms of the requested
+                                    output includes WMS. If WMS is not supported, this element shall not be present. If
+                                    WMS is supported and this element is not present, a default styling will be applied
+                                    to the WMS layer.
+                                </documentation>
+                            </annotation>
+                            <complexType>
+                                <sequence>
+                                    <element name="StylingIdentifier">
+                                        <annotation>
+                                            <documentation>Name that identifies the type of styling to be invoked. Must
+                                                be a styling Identifier listed in the DescribeJoinAbilities response.
+                                            </documentation>
+                                        </annotation>
+                                    </element>
+                                    <element name="StylingURL" type="anyURI">
+                                        <annotation>
+                                            <documentation>Reference to a web-accessible resource that contains the
+                                                styling information to be applied. This attribute shall contain a URL
+                                                from which this input can be electronically retrieved.
+                                            </documentation>
+                                        </annotation>
+                                    </element>
+                                </sequence>
+                            </complexType>
+                        </element>
+                        <element name="ClassificationURL" minOccurs="0">
+                            <annotation>
+                                <documentation>URL that returns a file describing a data classification to be applied to
+                                    the output (e.g. the classification to be used for a legend in the case where the
+                                    output is a WMS). This file must be encoded in compliance with the XML Schema
+                                    identified in the ClassificationSchemaURL element of the DescribeJoinAbilities
+                                    response.
+                                </documentation>
+                            </annotation>
+                        </element>
+                    </sequence>
+                    <attribute name="update" use="optional">
+                        <annotation>
+                            <documentation>Flag to indicate if the Rowset content would be used to update/replace any
+                                equivalent attribute data that currently exists on the server.
+                            </documentation>
+                        </annotation>
+                        <simpleType>
+                            <restriction base="string">
+                                <enumeration value="true"/>
+                                <enumeration value="false"/>
+                            </restriction>
+                        </simpleType>
+                    </attribute>
+                </extension>
+            </complexContent>
+        </complexType>
+    </element>
+</schema>

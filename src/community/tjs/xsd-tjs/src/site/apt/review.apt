@@ -1,0 +1,17 @@
+Module XML OWS Bindings
+~~~~~~~~~~~~~~~~~~~~~~~
+
+  Module Maintainer: Justin Deoliveira
+
+  IP Review:
+ 
+    * Gabriel Roldan, July 23th, 2008
+
+  STATUS as of July 2008: CLEAN
+
+    * All classes created for the geotools project by the module maintainer 
+      have been updated to assign (c) to OSGEO in the header.
+      
+    * Much of the binding classes (marked with a @generated tag and then modified by hand)
+      lack the @author attribution tag. 
+ 

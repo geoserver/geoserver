@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xml="http://www.w3.org/XML/1998/namespace"
+        targetNamespace="http://www.opengis.net/tjs/1.0" elementFormDefault="qualified" version="1.0.0" xml:lang="en">
+    <annotation>
+        <appinfo>$Id: tjsService.xsd 2010-12-23 $</appinfo>
+        <documentation>
+            <description>This XML Schema Document encodes elements and types that are common to the TJS service
+                operations, but not the GDAS data encoding schema.
+            </description>
+            <copyright>
+                TJS is an OGC Standard.
+                Copyright (c) 2010 Open Geospatial Consortium, Inc. All Rights Reserved.
+                To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+            </copyright>
+        </documentation>
+    </annotation>
+    <!-- ==============================================================
+         Import or include schema
+     ============================================================== -->
+    <import namespace="http://www.opengis.net/ows/1.1"
+            schemaLocation="http://schemas.opengis.net/ows/1.1.0/owsAll.xsd"/>
+    <import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/xml.xsd"/>
+    <!-- ==============================================================
+         elements and types
+     ============================================================== -->
+    <complexType name="RequestBaseType">
+        <annotation>
+            <documentation>TJS operation request base, for all TJS operations except GetCapabilities. In this XML
+                encoding, no "request" parameter is included, since the element name specifies the specific operation.
+            </documentation>
+        </annotation>
+        <attribute name="service" use="required" fixed="TJS">
+            <annotation>
+                <documentation>Service type identifier requested by the client.</documentation>
+            </annotation>
+        </attribute>
+        <attribute name="version" use="optional">
+            <annotation>
+                <documentation>Two-part version identifier requested by the client. Must map to a version supported by
+                    the server.
+                </documentation>
+            </annotation>
+            <simpleType>
+                <restriction base="string">
+                    <enumeration value="1"/>
+                    <enumeration value="1.0"/>
+                    <enumeration value="1.0.0"/>
+                </restriction>
+            </simpleType>
+        </attribute>
+        <attribute name="language" type="string" use="optional">
+            <annotation>
+                <documentation>Language requested by the client for all human readable text in the response. Consists of
+                    a two or five character RFC 4646 language code. Must map to a language supported by the server.
+                </documentation>
+            </annotation>
+        </attribute>
+    </complexType>
+    <!-- =========================================================== -->
+</schema>

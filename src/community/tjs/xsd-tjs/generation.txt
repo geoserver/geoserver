@@ -1,0 +1,694 @@
+[INFO]
+NOTE: Maven is executing in offline mode. Any artifacts not already in your local
+repository will be inaccessible.
+
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Building TJS XML Support
+[INFO]    task-segment: [xmlcodegen:generateSchema]
+[INFO] ------------------------------------------------------------------------
+[INFO] [xmlcodegen:generateSchema {execution: default-cli}]
+[INFO] org.apache.maven.artifact.factory.DefaultArtifactFactory@137c60d
+[INFO] Parsing schema: /media/Work/PublicoDatos/geotools-8.4/modules/extension/xsd/xsd-tjs/src/main/resources/org/geotools/tjs/v1_0/tjsAllsingle.xsd
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Null location for http://www.w3.org/XML/1998/namespace
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[INFO] Loading import schema: org.geotools.xs.XSSchema
+[INFO] Loading import schema: org.geotools.xlink.XLINKSchema
+AbstractType
+-anyType
+DescribeFrameworkKeyType
+-anyType
+-AbstractType
+-_ReferenceDate
+-_FrameworkKey
+--anyType
+--null
+---anyType
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@199f8e6 (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: <unset>, final: [], abstract: <unset>, contentTypeCategory: empty, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+-_BoundingCoordinates
+--anyType
+-DescribeFrameworkKeyType_Rowset
+--anyType
+--null
+---anyType
+---_K
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@12fc02 (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: <unset>, final: [], abstract: <unset>, contentTypeCategory: elementOnly, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+FrameworkDatasetDescribeDataType
+-anyType
+-AbstractType
+-_ReferenceDate
+-_FrameworkKey
+-_BoundingCoordinates
+-_DescribeDatasetsRequest
+--anyType
+MeasureCountExceptions
+-anyType
+-MeasureCountExceptions_Null
+--anyType
+--AbstractType
+NominalOrdinalExceptions
+-anyType
+-NominalOrdinalExceptions_Null
+--anyType
+--AbstractType
+OutputMechanismsType
+-anyType
+-_Mechanism
+--anyType
+OutputStylingsType
+-anyType
+-_Styling
+--anyType
+RequestBaseType
+-anyType
+tjsCapabilitiesType
+-anyType
+-_ServiceIdentification
+_BoundingCoordinates
+_Columnset
+-anyType
+-null
+--anyType
+--null
+---anyType
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@1bef987 (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: <unset>, final: [], abstract: <unset>, contentTypeCategory: empty, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@2f4813 (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: <unset>, final: [], abstract: <unset>, contentTypeCategory: elementOnly, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+-null
+--anyType
+--null
+---anyType
+---AbstractType
+---_Values
+----anyType
+----_Nominal
+-----anyType
+-----null
+------anyType
+------AbstractType
+------null
+-------anyType
+-------AbstractType
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@16fdcc1 (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: <unset>, final: [], abstract: <unset>, contentTypeCategory: elementOnly, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@a0a36 (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: <unset>, final: [], abstract: <unset>, contentTypeCategory: elementOnly, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+-----NominalOrdinalExceptions
+----_Ordinal
+-----anyType
+-----null
+------anyType
+------AbstractType
+------null
+-------anyType
+-------AbstractType
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@15e00b7 (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: <unset>, final: [], abstract: <unset>, contentTypeCategory: elementOnly, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@b05fcb (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: <unset>, final: [], abstract: <unset>, contentTypeCategory: elementOnly, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+-----NominalOrdinalExceptions
+----_Count
+-----anyType
+-----_UOM
+------anyType
+------anyType
+------anyType
+-----_Uncertainty
+-----MeasureCountExceptions
+----_Measure
+-----anyType
+-----_UOM
+-----_Uncertainty
+-----MeasureCountExceptions
+---_GetDataRequest
+----anyType
+_Count
+_DataDescriptions
+-anyType
+-FrameworkDatasetDescribeDataType
+--anyType
+--AbstractType
+--_ReferenceDate
+--_FrameworkKey
+--_BoundingCoordinates
+--_DescribeDatasetsRequest
+---anyType
+_Dataset
+-anyType
+-AbstractType
+-_ReferenceDate
+-_Columnset
+--anyType
+--null
+--null
+---anyType
+---null
+----anyType
+----AbstractType
+----_Values
+----_GetDataRequest
+-----anyType
+_DatasetDescriptions
+-anyType
+-null
+--anyType
+--AbstractType
+--_ReferenceDate
+--_FrameworkKey
+--_BoundingCoordinates
+--_DescribeDatasetsRequest
+---anyType
+_DescribeData
+-RequestBaseType
+_DescribeDataRequest
+-anyType
+_DescribeDatasets
+-RequestBaseType
+_DescribeDatasetsRequest
+-anyType
+_DescribeFrameworks
+-RequestBaseType
+_DescribeKey
+-RequestBaseType
+_Framework
+-anyType
+-AbstractType
+-_ReferenceDate
+-_FrameworkKey
+-_BoundingCoordinates
+-_Dataset
+--anyType
+--AbstractType
+--_ReferenceDate
+--_Columnset
+---anyType
+---null
+---null
+----anyType
+----null
+-----anyType
+-----AbstractType
+-----_Values
+-----_GetDataRequest
+------anyType
+_FrameworkDescriptions
+-anyType
+-null
+--anyType
+--AbstractType
+--_ReferenceDate
+--_FrameworkKey
+--_BoundingCoordinates
+--_DescribeDatasetsRequest
+---anyType
+_FrameworkKey
+_FrameworkKeyDescription
+-anyType
+-DescribeFrameworkKeyType
+_GDAS
+-anyType
+-null
+--anyType
+--AbstractType
+--_ReferenceDate
+--_FrameworkKey
+--_BoundingCoordinates
+--_DescribeDatasetsRequest
+---anyType
+_GetCapabilities
+-anyType
+-null
+--anyType
+org.eclipse.xsd.impl.XSDSimpleTypeDefinitionImpl@1ed688f (element: [simpleType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (variety: atomic, final: [], lexicalFinal: null, validFacets: [length, minLength, maxLength, pattern, enumeration, whiteSpace])
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@320399 (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: <unset>, final: [], abstract: <unset>, contentTypeCategory: elementOnly, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+-SectionsType
+_GetData
+-RequestBaseType
+-anyType
+-anyType
+-anyType
+_GetDataRequest
+-anyType
+_JoinAbilities
+-anyType
+-_SpatialFrameworks
+--anyType
+--null
+---anyType
+---AbstractType
+---_ReferenceDate
+---_FrameworkKey
+---_BoundingCoordinates
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@5364 (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: <unset>, final: [], abstract: <unset>, contentTypeCategory: elementOnly, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+-OutputMechanismsType
+-null
+--OutputStylingsType
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@870e2f (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: extension, final: [], abstract: <unset>, contentTypeCategory: elementOnly, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+-anyType
+_JoinData
+-RequestBaseType
+-null
+--anyType
+--null
+---anyType
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@a1c582 (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: <unset>, final: [], abstract: <unset>, contentTypeCategory: elementOnly, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@f70ee1 (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: <unset>, final: [], abstract: <unset>, contentTypeCategory: elementOnly, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+-null
+--anyType
+--anyType
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@ae1393 (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: <unset>, final: [], abstract: <unset>, contentTypeCategory: elementOnly, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+-anyType
+_JoinDataResponse
+-anyType
+-null
+--anyType
+--anyType
+--anyType
+--null
+---anyType
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@179c7cf (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: <unset>, final: [], abstract: <unset>, contentTypeCategory: empty, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+_K
+_Measure
+_Mechanism
+_Nominal
+_Ordinal
+_ReferenceDate
+_Rowset
+-anyType
+-null
+--anyType
+--_K
+--null
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@ea7549 (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: extension, final: [], abstract: <unset>, contentTypeCategory: simple, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@e0420b (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: <unset>, final: [], abstract: <unset>, contentTypeCategory: elementOnly, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+_SpatialFrameworks
+_Styling
+_Uncertainty
+_UOM
+_Values
+DescribeFrameworkKeyType_Rowset
+FrameworkDatasetDescribeDataType_Dataset
+-anyType
+-AbstractType
+-_ReferenceDate
+-_DescribeDataRequest
+--anyType
+MeasureCountExceptions_Null
+NominalOrdinalExceptions_Null
+tjsCapabilitiesType_Languages
+-anyType
+tjsCapabilitiesType_WSDL
+-anyType
+[ERROR]
+java.lang.NullPointerException
+	at org.geotools.maven.xmlcodegen.SchemaGenerator.generate(SchemaGenerator.java:387)
+	at org.geotools.maven.xmlcodegen.SchemaGeneratorMojo.execute(SchemaGeneratorMojo.java:150)
+	at org.apache.maven.plugin.DefaultPluginManager.executeMojo(DefaultPluginManager.java:490)
+	at org.apache.maven.lifecycle.DefaultLifecycleExecutor.executeGoals(DefaultLifecycleExecutor.java:694)
+	at org.apache.maven.lifecycle.DefaultLifecycleExecutor.executeStandaloneGoal(DefaultLifecycleExecutor.java:569)
+	at org.apache.maven.lifecycle.DefaultLifecycleExecutor.executeGoal(DefaultLifecycleExecutor.java:539)
+	at org.apache.maven.lifecycle.DefaultLifecycleExecutor.executeGoalAndHandleFailures(DefaultLifecycleExecutor.java:387)
+	at org.apache.maven.lifecycle.DefaultLifecycleExecutor.executeTaskSegments(DefaultLifecycleExecutor.java:348)
+	at org.apache.maven.lifecycle.DefaultLifecycleExecutor.execute(DefaultLifecycleExecutor.java:180)
+	at org.apache.maven.DefaultMaven.doExecute(DefaultMaven.java:328)
+	at org.apache.maven.DefaultMaven.execute(DefaultMaven.java:138)
+	at org.apache.maven.cli.MavenCli.main(MavenCli.java:362)
+	at org.apache.maven.cli.compat.CompatibleMain.main(CompatibleMain.java:60)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.codehaus.classworlds.Launcher.launchEnhanced(Launcher.java:315)
+	at org.codehaus.classworlds.Launcher.launch(Launcher.java:255)
+	at org.codehaus.classworlds.Launcher.mainWithExitCode(Launcher.java:430)
+	at org.codehaus.classworlds.Launcher.main(Launcher.java:375)
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESSFUL
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 26 seconds
+[INFO] Finished at: Thu Aug 09 17:05:02 CDT 2012
+[INFO] Final Memory: 17M/41M
+[INFO] ------------------------------------------------------------------------
+[INFO]
+NOTE: Maven is executing in offline mode. Any artifacts not already in your local
+repository will be inaccessible.
+
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Building TJS XML Support
+[INFO]    task-segment: [xmlcodegen:generateSchema]
+[INFO] ------------------------------------------------------------------------
+[INFO] [xmlcodegen:generateSchema {execution: default-cli}]
+[INFO] org.apache.maven.artifact.factory.DefaultArtifactFactory@1f6f0bf
+[INFO] Parsing schema: /media/Work/PublicoDatos/geotools-8.4/modules/extension/xsd/xsd-tjs/src/main/resources/org/geotools/tjs/v1_0/tjsAllsingle.xsd
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Null location for http://www.w3.org/XML/1998/namespace
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[WARNING] Could not locate schema for: http://www.opengis.net/ows/1.1
+[INFO] Loading import schema: org.geotools.xs.XSSchema
+[INFO] Loading import schema: org.geotools.xlink.XLINKSchema
+AbstractType
+-anyType
+DescribeFrameworkKeyType
+-anyType
+-AbstractType
+-_ReferenceDate
+-_FrameworkKey
+--anyType
+--null
+---anyType
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@3461d1 (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: <unset>, final: [], abstract: <unset>, contentTypeCategory: empty, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+-_BoundingCoordinates
+--anyType
+-DescribeFrameworkKeyType_Rowset
+--anyType
+--null
+---anyType
+---_K
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@3c35fd (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: <unset>, final: [], abstract: <unset>, contentTypeCategory: elementOnly, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+FrameworkDatasetDescribeDataType
+-anyType
+-AbstractType
+-_ReferenceDate
+-_FrameworkKey
+-_BoundingCoordinates
+-_DescribeDatasetsRequest
+--anyType
+MeasureCountExceptions
+-anyType
+-MeasureCountExceptions_Null
+--anyType
+--AbstractType
+NominalOrdinalExceptions
+-anyType
+-NominalOrdinalExceptions_Null
+--anyType
+--AbstractType
+OutputMechanismsType
+-anyType
+-_Mechanism
+--anyType
+OutputStylingsType
+-anyType
+-_Styling
+--anyType
+RequestBaseType
+-anyType
+tjsCapabilitiesType
+-anyType
+-_ServiceIdentification
+_BoundingCoordinates
+_Columnset
+-anyType
+-null
+--anyType
+--null
+---anyType
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@bc312f (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: <unset>, final: [], abstract: <unset>, contentTypeCategory: empty, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@1e40274 (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: <unset>, final: [], abstract: <unset>, contentTypeCategory: elementOnly, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+-null
+--anyType
+--null
+---anyType
+---AbstractType
+---_Values
+----anyType
+----_Nominal
+-----anyType
+-----null
+------anyType
+------AbstractType
+------null
+-------anyType
+-------AbstractType
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@1a0d346 (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: <unset>, final: [], abstract: <unset>, contentTypeCategory: elementOnly, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@35dc95 (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: <unset>, final: [], abstract: <unset>, contentTypeCategory: elementOnly, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+-----NominalOrdinalExceptions
+----_Ordinal
+-----anyType
+-----null
+------anyType
+------AbstractType
+------null
+-------anyType
+-------AbstractType
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@16fdcc1 (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: <unset>, final: [], abstract: <unset>, contentTypeCategory: elementOnly, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@a0a36 (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: <unset>, final: [], abstract: <unset>, contentTypeCategory: elementOnly, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+-----NominalOrdinalExceptions
+----_Count
+-----anyType
+-----_UOM
+------anyType
+------anyType
+------anyType
+-----_Uncertainty
+-----MeasureCountExceptions
+----_Measure
+-----anyType
+-----_UOM
+-----_Uncertainty
+-----MeasureCountExceptions
+---_GetDataRequest
+----anyType
+_Count
+_DataDescriptions
+-anyType
+-FrameworkDatasetDescribeDataType
+--anyType
+--AbstractType
+--_ReferenceDate
+--_FrameworkKey
+--_BoundingCoordinates
+--_DescribeDatasetsRequest
+---anyType
+_Dataset
+-anyType
+-AbstractType
+-_ReferenceDate
+-_Columnset
+--anyType
+--null
+--null
+---anyType
+---null
+----anyType
+----AbstractType
+----_Values
+----_GetDataRequest
+-----anyType
+_DatasetDescriptions
+-anyType
+-null
+--anyType
+--AbstractType
+--_ReferenceDate
+--_FrameworkKey
+--_BoundingCoordinates
+--_DescribeDatasetsRequest
+---anyType
+_DescribeData
+-RequestBaseType
+_DescribeDataRequest
+-anyType
+_DescribeDatasets
+-RequestBaseType
+_DescribeDatasetsRequest
+-anyType
+_DescribeFrameworks
+-RequestBaseType
+_DescribeKey
+-RequestBaseType
+_Framework
+-anyType
+-AbstractType
+-_ReferenceDate
+-_FrameworkKey
+-_BoundingCoordinates
+-_Dataset
+--anyType
+--AbstractType
+--_ReferenceDate
+--_Columnset
+---anyType
+---null
+---null
+----anyType
+----null
+-----anyType
+-----AbstractType
+-----_Values
+-----_GetDataRequest
+------anyType
+_FrameworkDescriptions
+-anyType
+-null
+--anyType
+--AbstractType
+--_ReferenceDate
+--_FrameworkKey
+--_BoundingCoordinates
+--_DescribeDatasetsRequest
+---anyType
+_FrameworkKey
+_FrameworkKeyDescription
+-anyType
+-DescribeFrameworkKeyType
+_GDAS
+-anyType
+-null
+--anyType
+--AbstractType
+--_ReferenceDate
+--_FrameworkKey
+--_BoundingCoordinates
+--_DescribeDatasetsRequest
+---anyType
+_GetCapabilities
+-anyType
+-null
+--anyType
+org.eclipse.xsd.impl.XSDSimpleTypeDefinitionImpl@6e3e5e (element: [simpleType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (variety: atomic, final: [], lexicalFinal: null, validFacets: [length, minLength, maxLength, pattern, enumeration, whiteSpace])
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@329572 (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: <unset>, final: [], abstract: <unset>, contentTypeCategory: elementOnly, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+-SectionsType
+_GetData
+-RequestBaseType
+-anyType
+-anyType
+-anyType
+_GetDataRequest
+-anyType
+_JoinAbilities
+-anyType
+-_SpatialFrameworks
+--anyType
+--null
+---anyType
+---AbstractType
+---_ReferenceDate
+---_FrameworkKey
+---_BoundingCoordinates
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@1f88fbd (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: <unset>, final: [], abstract: <unset>, contentTypeCategory: elementOnly, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+-OutputMechanismsType
+-null
+--OutputStylingsType
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@566633 (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: extension, final: [], abstract: <unset>, contentTypeCategory: elementOnly, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+-anyType
+_JoinData
+-RequestBaseType
+-null
+--anyType
+--null
+---anyType
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@b44eb4 (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: <unset>, final: [], abstract: <unset>, contentTypeCategory: elementOnly, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@5364 (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: <unset>, final: [], abstract: <unset>, contentTypeCategory: elementOnly, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+-null
+--anyType
+--anyType
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@19b2faf (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: <unset>, final: [], abstract: <unset>, contentTypeCategory: elementOnly, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+-anyType
+_JoinDataResponse
+-anyType
+-null
+--anyType
+--anyType
+--anyType
+--null
+---anyType
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@39ea58 (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: <unset>, final: [], abstract: <unset>, contentTypeCategory: empty, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+_K
+_Measure
+_Mechanism
+_Nominal
+_Ordinal
+_ReferenceDate
+_Rowset
+-anyType
+-null
+--anyType
+--_K
+--null
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@4d28c7 (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: extension, final: [], abstract: <unset>, contentTypeCategory: simple, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+org.eclipse.xsd.impl.XSDComplexTypeDefinitionImpl@33c3e6 (element: [complexType: null]) (name: null, targetNamespace: http://www.opengis.net/tjs/1.0) (derivationMethod: <unset>, final: [], abstract: <unset>, contentTypeCategory: elementOnly, prohibitedSubstitutions: [], lexicalFinal: null, block: null, mixed: <unset>)
+_SpatialFrameworks
+_Styling
+_Uncertainty
+_UOM
+_Values
+DescribeFrameworkKeyType_Rowset
+FrameworkDatasetDescribeDataType_Dataset
+-anyType
+-AbstractType
+-_ReferenceDate
+-_DescribeDataRequest
+--anyType
+MeasureCountExceptions_Null
+NominalOrdinalExceptions_Null
+tjsCapabilitiesType_Languages
+-anyType
+tjsCapabilitiesType_WSDL
+-anyType
+[ERROR]
+java.lang.NullPointerException
+	at org.geotools.maven.xmlcodegen.SchemaGenerator.generate(SchemaGenerator.java:387)
+	at org.geotools.maven.xmlcodegen.SchemaGeneratorMojo.execute(SchemaGeneratorMojo.java:150)
+	at org.apache.maven.plugin.DefaultPluginManager.executeMojo(DefaultPluginManager.java:490)
+	at org.apache.maven.lifecycle.DefaultLifecycleExecutor.executeGoals(DefaultLifecycleExecutor.java:694)
+	at org.apache.maven.lifecycle.DefaultLifecycleExecutor.executeStandaloneGoal(DefaultLifecycleExecutor.java:569)
+	at org.apache.maven.lifecycle.DefaultLifecycleExecutor.executeGoal(DefaultLifecycleExecutor.java:539)
+	at org.apache.maven.lifecycle.DefaultLifecycleExecutor.executeGoalAndHandleFailures(DefaultLifecycleExecutor.java:387)
+	at org.apache.maven.lifecycle.DefaultLifecycleExecutor.executeTaskSegments(DefaultLifecycleExecutor.java:348)
+	at org.apache.maven.lifecycle.DefaultLifecycleExecutor.execute(DefaultLifecycleExecutor.java:180)
+	at org.apache.maven.DefaultMaven.doExecute(DefaultMaven.java:328)
+	at org.apache.maven.DefaultMaven.execute(DefaultMaven.java:138)
+	at org.apache.maven.cli.MavenCli.main(MavenCli.java:362)
+	at org.apache.maven.cli.compat.CompatibleMain.main(CompatibleMain.java:60)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.codehaus.classworlds.Launcher.launchEnhanced(Launcher.java:315)
+	at org.codehaus.classworlds.Launcher.launch(Launcher.java:255)
+	at org.codehaus.classworlds.Launcher.mainWithExitCode(Launcher.java:430)
+	at org.codehaus.classworlds.Launcher.main(Launcher.java:375)
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESSFUL
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 10 seconds
+[INFO] Finished at: Fri Aug 10 11:29:47 CDT 2012
+[INFO] Final Memory: 17M/41M
+[INFO] ------------------------------------------------------------------------

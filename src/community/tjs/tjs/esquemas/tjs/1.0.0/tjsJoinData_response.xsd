@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink"
+        xmlns:ows="http://www.opengis.net/ows/1.1"
+        xmlns:tjs="http://www.opengis.net/tjs/1.0" targetNamespace="http://www.opengis.net/tjs/1.0"
+        elementFormDefault="qualified" version="1.0.0" xml:lang="en">
+    <annotation>
+        <appinfo>$Id: tjsJoinData_response.xsd 2010-12-23 $</appinfo>
+        <documentation>
+            <description>This XML Schema specifies the content of the TJS JoinData response.</description>
+            <copyright>
+                TJS is an OGC Standard.
+                Copyright (c) 2010 Open Geospatial Consortium, Inc. All Rights Reserved.
+                To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+            </copyright>
+        </documentation>
+    </annotation>
+    <!-- ========= includes and imports ================================ -->
+    <include schemaLocation="tjsAll.xsd"/>
+    <import namespace="http://www.opengis.net/ows/1.1"
+            schemaLocation="http://schemas.opengis.net/ows/1.1.0/owsAll.xsd"/>
+    <import namespace="http://www.w3.org/1999/xlink"
+            schemaLocation="http://schemas.opengis.net/xlink/1.0.0/xlinks.xsd"/>
+    <!-- ========= top level element =================================== -->
+    <element name="JoinDataResponse">
+        <annotation>
+            <documentation>Response to a tjs JoinData request. Includes the original JoinData request.</documentation>
+        </annotation>
+        <complexType>
+            <sequence>
+                <element name="Status">
+                    <annotation>
+                        <documentation>Execution status of the JoinData request.</documentation>
+                    </annotation>
+                    <complexType>
+                        <choice>
+                            <element name="Accepted">
+                                <annotation>
+                                    <documentation>Indicates that this request has been accepted by the server, but has
+                                        not yet completed. The contents of this human-readable text string is left open
+                                        to definition by each server implementation, but is expected to include any
+                                        messages the server may wish to let the clients know. Such information could
+                                        include when completion is expected, or any warning conditions that may have
+                                        been encountered. The client may display this text to a human user.
+                                    </documentation>
+                                </annotation>
+                            </element>
+                            <element name="Completed">
+                                <annotation>
+                                    <documentation>Indicates that this request has completed execution with at lease
+                                        partial success. The contents of this human-readable text string is left open to
+                                        definition by each server, but is expected to include any messages the server
+                                        may wish to let the client know, such as how long the operation took to execute,
+                                        or any warning conditions that may have been encountered. The client may display
+                                        this text string to a human user. The client should make use of the presence of
+                                        this element to trigger automated or manual access to the results of the
+                                        operation. If manual access is intended, the client should use the presence of
+                                        this element to present the results as downloadable links to the user.
+                                    </documentation>
+                                </annotation>
+                            </element>
+                            <element name="Failed">
+                                <annotation>
+                                    <documentation>Indicates that execution of the JoinData operation failed, and
+                                        includes error information. The client may display this text string to a human
+                                        user. The presence of this element indicates that the operation completely
+                                        failed and no Outputs were produced.
+                                    </documentation>
+                                </annotation>
+                                <complexType/>
+                            </element>
+                        </choice>
+                        <attribute ref="xlink:href" use="required">
+                            <annotation>
+                                <documentation>HTTP reference to location where current JoinDataResponse document is
+                                    stored.
+                                </documentation>
+                            </annotation>
+                        </attribute>
+                        <attribute name="creationTime" use="required">
+                            <annotation>
+                                <documentation>The time (UTC) that the JoinData operation finished. If the operation is
+                                    still in progress, this element shall contain the creation time of this document.
+                                </documentation>
+                            </annotation>
+                        </attribute>
+                    </complexType>
+                </element>
+                <element name="DataInputs">
+                    <annotation>
+                        <documentation>Descriptions of the framework, dataset, and attributes used to generate the
+                            outputs of the JoinData operation.
+                        </documentation>
+                    </annotation>
+                    <complexType>
+                        <sequence>
+                            <element name="Framework" type="tjs:FrameworkDatasetDescribeDataType"/>
+                        </sequence>
+                    </complexType>
+                </element>
+                <element name="JoinedOutputs">
+                    <annotation>
+                        <documentation>List of outputs resulting from the JoinData operation. There must be at least one
+                            output when the operation has completed successfully. Each output mechanism advertised for
+                            this framework in the DescribeJoinAbiities response shall be represented here.
+                        </documentation>
+                    </annotation>
+                    <complexType>
+                        <sequence>
+                            <element name="Output" maxOccurs="unbounded">
+                                <annotation>
+                                    <documentation>Unordered list of all the outputs that have been or will be produced
+                                        by this operation.
+                                    </documentation>
+                                </annotation>
+                                <complexType>
+                                    <sequence>
+                                        <element ref="tjs:Mechanism">
+                                            <annotation>
+                                                <documentation>The access mechanism by which the joined data has been
+                                                    made available.
+                                                </documentation>
+                                            </annotation>
+                                        </element>
+                                        <choice>
+                                            <element name="Resource">
+                                                <annotation>
+                                                    <documentation>Reference to a web-accessible resource that was
+                                                        created by the JoinData operation. This element shall be
+                                                        populated once the output has been successfully produced. Prior
+                                                        to that time the content of the subelements may be empty.
+                                                    </documentation>
+                                                </annotation>
+                                                <complexType>
+                                                    <sequence>
+                                                        <element name="URL">
+                                                            <annotation>
+                                                                <documentation>URL from which this resource can be
+                                                                    electronically retrieved, or from which a document
+                                                                    can be retrieved that indicates access details for
+                                                                    the resource (such as a OGC Capabilities document).
+                                                                    For OGC web services this shall be the complete
+                                                                    GetCapabilities URL.
+                                                                </documentation>
+                                                            </annotation>
+                                                        </element>
+                                                        <element name="Parameter" minOccurs="0" maxOccurs="unbounded">
+                                                            <annotation>
+                                                                <documentation>Parameter that may need to be included
+                                                                    the HTTP requests to a web service identified by the
+                                                                    URL parameter above. For a WMS output there shall be
+                                                                    one occurance of this element, and it shall be
+                                                                    populated with the name of the layer produced by the
+                                                                    JoinData operation.
+                                                                </documentation>
+                                                            </annotation>
+                                                            <complexType>
+                                                                <simpleContent>
+                                                                    <extension base="string">
+                                                                        <attribute name="name" use="required">
+                                                                            <annotation>
+                                                                                <documentation>Identifier for this
+                                                                                    parameter as defined by the service
+                                                                                    delivering the output of the
+                                                                                    JoinData operation. For a WMS output
+                                                                                    this attribute shall be populated
+                                                                                    with the string "layers", thus
+                                                                                    providing sufficient information to
+                                                                                    allow the client to construct the
+                                                                                    "Layers=" parameter of a GetMap
+                                                                                    request.
+                                                                                </documentation>
+                                                                            </annotation>
+                                                                        </attribute>
+                                                                    </extension>
+                                                                </simpleContent>
+                                                            </complexType>
+                                                        </element>
+                                                    </sequence>
+                                                </complexType>
+                                            </element>
+                                            <element name="ExceptionReport">
+                                                <annotation>
+                                                    <documentation>Unordered list of one or more errors encountered
+                                                        during the JoinData operation for this output. These Exception
+                                                        elements shall be interpreted by clients as being independent of
+                                                        one another (not hierarchical). This element is populated when
+                                                        the production of this output did not succeed.
+                                                    </documentation>
+                                                </annotation>
+                                                <complexType>
+                                                    <sequence>
+                                                        <element ref="ows:Exception">
+                                                            <annotation>
+                                                                <documentation>Error encountered during processing that
+                                                                    prevented successful production of this output.
+                                                                </documentation>
+                                                            </annotation>
+                                                        </element>
+                                                    </sequence>
+                                                </complexType>
+                                            </element>
+                                        </choice>
+                                    </sequence>
+                                </complexType>
+                            </element>
+                        </sequence>
+                    </complexType>
+                </element>
+            </sequence>
+            <attributeGroup ref="tjs:RootAttributesGroup"/>
+        </complexType>
+    </element>
+</schema>

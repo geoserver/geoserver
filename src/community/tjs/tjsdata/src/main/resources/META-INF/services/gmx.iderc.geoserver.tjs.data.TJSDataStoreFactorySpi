@@ -1,0 +1,3 @@
+gmx.iderc.geoserver.tjs.data.jdbc.postgre.Postgre_TJSDataStoreFactory
+gmx.iderc.geoserver.tjs.data.jdbc.mysql.MySQL_TJSDataStoreFactory
+

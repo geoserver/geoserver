@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:tjs="http://www.opengis.net/tjs/1.0"
+        targetNamespace="http://www.opengis.net/tjs/1.0" elementFormDefault="qualified" xml:lang="en" version="1.0.0">
+    <annotation>
+        <appinfo>$Id: tjsDescribeJoinAbilities_response.xsd 2010-12-23 $</appinfo>
+        <documentation>
+            <description>This XML Schema specifies the content of the TJS DescribeJoinAbilities response.</description>
+            <copyright>
+                TJS is an OGC Standard.
+                Copyright (c) 2010 Open Geospatial Consortium, Inc. All Rights Reserved.
+                To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
+            </copyright>
+        </documentation>
+    </annotation>
+    <!-- ========= includes and imports ================================ -->
+    <include schemaLocation="tjsAll.xsd"/>
+    <!-- ========= top level element =================================== -->
+    <element name="JoinAbilities">
+        <annotation>
+            <documentation>Response describing all joining abilities of the tjs instance.</documentation>
+        </annotation>
+        <complexType>
+            <sequence>
+                <element ref="tjs:SpatialFrameworks"/>
+                <element ref="tjs:AttributeLimit"/>
+                <element name="OutputMechanisms" type="tjs:OutputMechanismsType">
+                    <annotation>
+                        <documentation>List of mechanisms by which the attribute data will be accessible once it has
+                            been joined to the spatial framework.
+                        </documentation>
+                    </annotation>
+                </element>
+                <element name="OutputStylings" minOccurs="0">
+                    <annotation>
+                        <documentation>Unordered list of display or content styling instructions supported by the server
+                            and that can be applied if the AccessMechanisms of the requested output includes WMS. If WMS
+                            is not supported by the server then this element shall not be present. If WMS is supported
+                            and this element is not present, a default styling will be applied to the WMS layer.
+                        </documentation>
+                    </annotation>
+                    <complexType>
+                        <complexContent>
+                            <extension base="tjs:OutputStylingsType"/>
+                        </complexContent>
+                    </complexType>
+                </element>
+                <element name="ClassificationSchemaURL" minOccurs="0">
+                    <annotation>
+                        <documentation>URL that returns an XML Schema document that specifying an XML structure for
+                            describing data classifications. When included with a JoinData request, the contents of such
+                            an XML file can be applied by the server in order to produce the data classes used in the
+                            JoinData output.
+                        </documentation>
+                    </annotation>
+                </element>
+            </sequence>
+            <attribute name="updateSupported" type="boolean" use="required">
+                <annotation>
+                    <documentation>Boolean that identifies if existing JoinData products can be updated by this service.
+                        If "true" then subsequent identical JoinData requests will update existing JoinData products
+                        that were created by this service. These updated products will then be available via the
+                        existing URLs of those products.
+                    </documentation>
+                </annotation>
+            </attribute>
+            <attributeGroup ref="tjs:RootAttributesGroup"/>
+        </complexType>
+    </element>
+    <!-- ========= other elements and types ============================ -->
+    <element name="SpatialFrameworks">
+        <annotation>
+            <documentation>Full description of all spatial frameworks to which attribute data can be joined.
+            </documentation>
+        </annotation>
+        <complexType>
+            <sequence>
+                <element name="Framework" maxOccurs="unbounded">
+                    <complexType>
+                        <sequence>
+                            <element ref="tjs:FrameworkURI"/>
+                            <element ref="tjs:Organization"/>
+                            <element ref="tjs:Title"/>
+                            <element ref="tjs:Abstract"/>
+                            <element ref="tjs:ReferenceDate"/>
+                            <element ref="tjs:Version"/>
+                            <element ref="tjs:Documentation" minOccurs="0"/>
+                            <element ref="tjs:FrameworkKey"/>
+                            <element ref="tjs:BoundingCoordinates"/>
+                        </sequence>
+                    </complexType>
+                </element>
+            </sequence>
+        </complexType>
+    </element>
+    <!-- =========================================================== -->
+    <element name="AttributeLimit" type="positiveInteger">
+        <annotation>
+            <documentation>Maximum number of attributes that can be joined simultaneously as part of a JoinData
+                request.
+            </documentation>
+        </annotation>
+    </element>
+    <!-- =========================================================== -->
+    <complexType name="OutputMechanismsType">
+        <sequence>
+            <element ref="tjs:Mechanism" maxOccurs="unbounded"/>
+        </sequence>
+    </complexType>
+    <element name="Mechanism">
+        <annotation>
+            <documentation>Mechanism by which the attribute data can be accessed once it has been joined to the spatial
+                framework.
+            </documentation>
+        </annotation>
+        <complexType>
+            <sequence>
+                <element name="Identifier" type="string">
+                    <annotation>
+                        <documentation>Name which uniquely identifies this type of access mechanism supported by this
+                            server.
+                        </documentation>
+                    </annotation>
+                </element>
+                <element name="Title" type="string">
+                    <annotation>
+                        <documentation>Human-readable title which uniquely identifies the type of access mechanism
+                            supported by this server. Must be suitable for display in a pick-list to a user.
+                        </documentation>
+                    </annotation>
+                </element>
+                <element name="Abstract" type="string">
+                    <annotation>
+                        <documentation>Human-readable description of the type of access mechanism, suitable for display
+                            to a user seeking information about this type of access mechanism.
+                        </documentation>
+                    </annotation>
+                </element>
+                <element name="Reference" type="anyURI">
+                    <annotation>
+                        <documentation>URL that defines the access mechanism.</documentation>
+                    </annotation>
+                </element>
+            </sequence>
+        </complexType>
+    </element>
+    <!-- =========================================================== -->
+    <complexType name="OutputStylingsType">
+        <sequence>
+            <element ref="tjs:Styling" maxOccurs="unbounded">
+                <annotation>
+                    <documentation>Describes a form of styling instruction supported by this server. (e.g. SLD)
+                    </documentation>
+                </annotation>
+            </element>
+        </sequence>
+    </complexType>
+    <element name="Styling">
+        <annotation>
+            <documentation>Describes a form of styling instruction supported by this server.</documentation>
+        </annotation>
+        <complexType>
+            <sequence>
+                <element name="Identifier" type="string">
+                    <annotation>
+                        <documentation>Name that uniquely identifies this type of styling instructions supported by this
+                            server.
+                        </documentation>
+                    </annotation>
+                </element>
+                <element name="Title" type="string">
+                    <annotation>
+                        <documentation>Human-readable title that uniquely identifies the type of styling instructions
+                            supported by this server. Must be suitable for display in a pick-list to a user.
+                        </documentation>
+                    </annotation>
+                </element>
+                <element name="Abstract" type="string">
+                    <annotation>
+                        <documentation>Human-readable description of the type of styling instructions, suitable for
+                            display to a user seeking information about this type of styling instruction.
+                        </documentation>
+                    </annotation>
+                </element>
+                <element name="Reference" type="anyURI">
+                    <annotation>
+                        <documentation>URL that defines the styling instructions.</documentation>
+                    </annotation>
+                </element>
+                <element name="Schema" type="anyURI" minOccurs="0">
+                    <annotation>
+                        <documentation>Reference to a definition of XML elements or types supported for this styling
+                            instruction (e.g., a URL which returns the XSD for SLD 1.0). This parameter shall be
+                            included when the styling instructions are XML encoded using an XML schema. When included,
+                            the input/output shall validate against the referenced XML Schema. This element shall be
+                            omitted if Schema does not apply to this form of styling instruction. Note: If this styling
+                            instruction uses a profile of a larger schema, the server administrator should provide that
+                            schema profile for validation purposes.
+                        </documentation>
+                    </annotation>
+                </element>
+            </sequence>
+        </complexType>
+    </element>
+</schema>

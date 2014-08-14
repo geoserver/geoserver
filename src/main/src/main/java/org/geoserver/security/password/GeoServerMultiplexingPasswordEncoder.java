@@ -8,27 +8,34 @@ package org.geoserver.security.password;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
+import org.geotools.util.logging.Logging;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.util.StringUtils;
 
 /**
  * Multiplexing password encoder.
  * <p>
- * This password encoder actually only decodes password, it does not encode them. The purpose of 
- * which is to decode a previously encoded password without knowing before hand which password 
+ * The purpose of this class is to decode a previously encoded password without knowing before hand which password
  * encoder was used. The prefix contained in the encoded password is used to route to the appropriate
  * delegate encoder. Therefore only {@link GeoserverPasswordEncoder} implementations that use a 
  * prefix in the encoded password are valid for this encoder.  
+ * </p>
+ * <p>
+ * This class can also encode (although not typically used to do so). Encoding simply returns the first
+ * avaialble and successful encoder.
  * </p>
  * 
  * @author christian
  *
  */
 public class GeoServerMultiplexingPasswordEncoder implements PasswordEncoder {
-    
+
+    static Logger LOG = Logging.getLogger(GeoServerMultiplexingPasswordEncoder.class);
+
     protected Set<GeoServerPasswordEncoder> encoders;
 
     public GeoServerMultiplexingPasswordEncoder(GeoServerSecurityManager secMgr) {
@@ -66,6 +73,14 @@ public class GeoServerMultiplexingPasswordEncoder implements PasswordEncoder {
     
     @Override
     public String encodePassword(String rawPass, Object salt) throws UnsupportedOperationException{
+        for (GeoServerPasswordEncoder enc : encoders) {
+            try {
+                return enc.encodePassword(rawPass, salt);
+            }
+            catch(Exception e) {
+                LOG.fine("Password encode failed with " + enc.getName());
+        }
+            }
         throw new UnsupportedOperationException();
     }
 

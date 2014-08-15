@@ -25,9 +25,18 @@ import org.geoserver.rest.format.DataFormat;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureSource;
+import org.geotools.data.Transaction;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.data.store.ContentDataStore;
+import org.geotools.data.store.ContentEntry;
+import org.geotools.data.store.ContentFeatureSource;
+import org.geotools.data.store.ContentState;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.Name;
 import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -297,6 +306,27 @@ public class FeatureTypeResource extends AbstractCatalogResource {
         if( siblings.size() == 0 ){
             // clean up cached DataAccess if no longer in use
             catalog.getResourcePool().clear(ds);
+        }
+        else {
+            boolean flush = false;
+            try {
+                DataAccess<?,?> dataStore = catalog.getResourcePool().getDataStore( ds );
+                if( dataStore instanceof ContentDataStore ){
+                    // ask JDBC DataStore to forget cached column information
+                    Name name = ft.getQualifiedNativeName();
+                    ContentDataStore contentDataStore = (ContentDataStore) dataStore;
+                    ContentFeatureSource featureSource = contentDataStore.getFeatureSource(name,Transaction.AUTO_COMMIT);
+                    featureSource.getState().flush();
+                    flush = true;
+                }
+            } catch( Exception e ) {
+                LOGGER.warning( "Unable to flush '" + ft.getQualifiedNativeName() );
+                LOGGER.log(Level.FINE, "", e );
+            }
+            if( !flush ){
+                 // Original heavy handed way to force "flush"? seems a bad idea
+                 catalog.getResourcePool().clear(ds);     
+            }
         }
         LOGGER.info( "DELETE feature type" + datastore + "," + featuretype );
     }

@@ -10,12 +10,14 @@ import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
+import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Keyword;
@@ -368,13 +370,27 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
    
     @Test
     public void testDelete() throws Exception {
-        assertNotNull( catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature"));
-        for (LayerInfo l : catalog.getLayers( catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature") ) ) {
+        FeatureTypeInfo featureType = catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature");
+        String featureTypeId = featureType.getId();
+        String dataStoreId = featureType.getStore().getId();
+        
+        assertNotNull( "PrmitiveGeoFeature available", featureType );
+        for (LayerInfo l : catalog.getLayers( featureType ) ) {
             catalog.remove(l);
         }
         assertEquals( 200,  
             deleteAsServletResponse( "/rest/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature").getStatusCode());
         assertNull( catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature"));
+        
+        if( catalog.getResourcePool().getFeatureTypeAttributeCache().containsKey( featureTypeId ) ){
+             List<AttributeTypeInfo> attributesList = catalog.getResourcePool().getFeatureTypeAttributeCache().get( featureTypeId );
+             assertNull( "attributes cleared", attributesList );
+        }
+        if( catalog.getResourcePool().getDataStoreCache().containsKey( dataStoreId ) ){
+            DataAccess dataStore = catalog.getResourcePool().getDataStoreCache().get( dataStoreId );
+            List<String> names = dataStore.getNames();
+            assertTrue( names.contains("PrimativeGeoFeature"));
+        }
     }
     
     @Test

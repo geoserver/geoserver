@@ -348,7 +348,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
                 : Integer.MAX_VALUE;
         definitionQuery.setMaxFeatures(maxFeatures);
 
-        FeatureLayer result = new FeatureLayer(new AllAttributesFeatureSource(featureSource,
+        FeatureLayer result = new FeatureLayer(new FeatureInfoFeatureSource(featureSource,
                 params.getPropertyNames()), style);
         result.setQuery(definitionQuery);
 
@@ -628,11 +628,11 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
      * @param <T>
      * @param <F>
      */
-    static class AllAttributesFeatureSource extends DecoratingFeatureSource<FeatureType, Feature> {
+    static class FeatureInfoFeatureSource extends DecoratingFeatureSource<FeatureType, Feature> {
 
         String[] propertyNames;
 
-        public AllAttributesFeatureSource(FeatureSource delegate, String[] propertyNames) {
+        public FeatureInfoFeatureSource(FeatureSource delegate, String[] propertyNames) {
             super(delegate);
             this.propertyNames = propertyNames;
         }
@@ -640,6 +640,13 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
         @Override
         public FeatureCollection getFeatures(Query query) throws IOException {
             Query q = new Query(query);
+            // we made the renderer believe we support the screenmap, but we don't want
+            // it really be applied, so remove it
+            if(query.getHints() != null) {
+                Hints newHints = new Hints(query.getHints());
+                newHints.remove(Hints.SCREENMAP);
+                q.setHints(newHints);
+            }
             if (propertyNames == null || propertyNames.length == 0) {
                 // no property selection, we return them all
                 q.setProperties(Query.ALL_PROPERTIES);
@@ -659,14 +666,18 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
         
         @Override
         public Set<Key> getSupportedHints() {
+            // force cloning, and make streaming renderer believe we do support
+            // the screenmap
             Set<Key> hints = delegate.getSupportedHints();
-            if(hints == null || !hints.contains(Hints.FEATURE_DETACHED)) {
-                return hints;
+            Set<Key> result;
+            if(hints == null) {
+                result = new HashSet<RenderingHints.Key>();
             } else {
-                Set<Key> result = new HashSet<RenderingHints.Key>(hints);
-                result.remove(Hints.FEATURE_DETACHED);
-                return result;
+                result = new HashSet<RenderingHints.Key>(hints);
             }
+            result.remove(Hints.FEATURE_DETACHED);
+            result.add(Hints.SCREENMAP);
+            return result;
         }
         
     }

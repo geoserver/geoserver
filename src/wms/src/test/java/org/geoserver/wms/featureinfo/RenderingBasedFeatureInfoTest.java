@@ -19,7 +19,9 @@ import org.junit.Test;
 public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
 
     public static QName GRID = new QName(MockData.CITE_URI, "grid", MockData.CITE_PREFIX);
-	
+    public static QName REPEATED = new QName(MockData.CITE_URI, "repeated", MockData.CITE_PREFIX);
+
+    
 	@Override
 	protected String getLogConfiguration() {
         return "/DEFAULT_LOGGING.properties";
@@ -36,7 +38,9 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
         
         testData.addVectorLayer(GRID, Collections.EMPTY_MAP, "grid.properties",
                 RenderingBasedFeatureInfoTest.class, getCatalog());
-
+        testData.addVectorLayer(REPEATED, Collections.EMPTY_MAP, "repeated_lines.properties",
+                RenderingBasedFeatureInfoTest.class, getCatalog());
+        
         testData.addStyle("ranged", "ranged.sld",this.getClass(), getCatalog());
         testData.addStyle("dynamic", "dynamic.sld",this.getClass(), getCatalog());
         testData.addStyle("symbol-uom", "symbol-uom.sld", this.getClass(), getCatalog());
@@ -207,4 +211,20 @@ public class RenderingBasedFeatureInfoTest extends WMSTestSupport {
         assertEquals(1, result.getJSONArray("features").size());
     }
 
+    @Test
+    public void testRepeatedLine() throws Exception {
+        String layer = getLayerId(REPEATED);
+        String request = "wms?REQUEST=GetFeatureInfo&&BBOX=499900,499900,500100,500100&SERVICE=WMS"
+                + "&INFO_FORMAT=application/json&FEATURE_COUNT=50&QUERY_LAYERS="
+                + layer
+                + "&Layers="
+                + layer
+                + "&WIDTH=11&HEIGHT=11&format=image%2Fpng&styles=line&srs=EPSG%3A32615&version=1.1.1&x=5&y=5";
+        JSONObject result = (JSONObject) getAsJSON(request);
+        print(result);
+        // we used to get two results
+        assertEquals(2, result.getJSONArray("features").size());
+    }
+
+    
 }

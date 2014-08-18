@@ -20,6 +20,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.geoserver.config.GeoServerInfo;
+
 @SuppressWarnings("rawtypes")
 class FakeHttpServletRequest implements HttpServletRequest {
 
@@ -36,14 +38,21 @@ class FakeHttpServletRequest implements HttpServletRequest {
             return null;
         }
     };
+    
+    private String workspace;
 
     private Map<String, String> parameterMap = new HashMap<String, String>(10);
 
     private Cookie[] cookies;
 
     public FakeHttpServletRequest(Map<String, String> parameterMap, Cookie[] cookies) {
+        this(parameterMap, cookies, null);
+    }
+    
+    public FakeHttpServletRequest(Map<String, String> parameterMap, Cookie[] cookies, String workspace) {
         this.parameterMap = parameterMap;
         this.cookies = cookies;
+        this.workspace = workspace;
     }
 
     /**
@@ -103,7 +112,11 @@ class FakeHttpServletRequest implements HttpServletRequest {
     }
 
     public String getRequestURI() {
-        return "geoserver/gwc";
+        if(workspace != null && !workspace.isEmpty()) {
+            return "/geoserver/"+workspace+"/wms";
+        } else {
+            return "/geoserver/wms";
+        }
     }
 
     public StringBuffer getRequestURL() {

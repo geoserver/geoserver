@@ -270,11 +270,13 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
 
             // Coordinate Referense System
             try {
-                if ("true".equals(GeoServerExtensions.getProperty("GEOSERVER_GEOJSON_LEGACY_CRS"))){
+                // Default to the incorrect legacy behaviour in 2.5.x, 2.6+ defaults to the
+                // new behaviour
+                if ("false".equals(GeoServerExtensions.getProperty("GEOSERVER_GEOJSON_LEGACY_CRS"))){
+                    writeCrs(jsonWriter, crs);
+                } else {
                     // This is wrong, but GeoServer used to do it this way.
                     writeCrsLegacy(jsonWriter, crs);
-                } else {
-                    writeCrs(jsonWriter, crs);
                 }
             } catch (FactoryException e) {
                 throw (IOException) new IOException("Error looking up crs identifier").initCause(e);

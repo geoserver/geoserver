@@ -2,7 +2,7 @@
 
 ; Define your application name
 !define APPNAME "GeoServer"
-!define VERSION "2.6-SNAPSHOT"
+!define VERSION "2.6-RC1"
 ;!define LONGVERSION "2.0.0.0"
 !define APPNAMEANDVERSION "${APPNAME} ${VERSION}"
 

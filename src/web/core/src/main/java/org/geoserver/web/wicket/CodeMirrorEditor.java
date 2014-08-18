@@ -119,60 +119,72 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
     }
 
     private ClientProperties extractIEVersion(String userAgent) {
-        String userAgencyLc = userAgent.toLowerCase();
         ClientProperties props = new ClientProperties();
         props.setBrowserVersionMajor(-1);
         props.setBrowserVersionMinor(-1);
-        String pattern;
-        if (userAgencyLc.contains("like gecko")) {
-            pattern = "rv:(\\d+)\\.(\\d+)";
-        } else {
-            pattern = "msie (\\d+)\\.(\\d+)";
+        if (userAgent != null ) {
+            String userAgencyLc = userAgent.toLowerCase();
+            String pattern;
+            if (userAgencyLc.contains("like gecko")) {
+                pattern = "rv:(\\d+)\\.(\\d+)";
+            } else {
+                pattern = "msie (\\d+)\\.(\\d+)";
+            }
+            setMajorMinorVersionByPattern(userAgencyLc, pattern, props);
         }
-        setMajorMinorVersionByPattern(userAgencyLc, pattern, props);
         return props;
     }
 
 
     private ClientProperties extractFirefoxVersion(String userAgent) {
-        String userAgencyLc = userAgent.toLowerCase();
         ClientProperties props = new ClientProperties();
         props.setBrowserVersionMajor(-1);
         props.setBrowserVersionMinor(-1);
-        setMajorMinorVersionByPattern(userAgencyLc, "firefox/(\\d+)\\.(\\d+)", props);
+        if (userAgent != null) {
+            String userAgencyLc = userAgent.toLowerCase();
+            props.setBrowserVersionMajor(-1);
+            props.setBrowserVersionMinor(-1);
+            setMajorMinorVersionByPattern(userAgencyLc, "firefox/(\\d+)\\.(\\d+)", props);
+        }
         return props;
     }
 
     private ClientProperties extractOperaVersion(String userAgent) {
-        String userAgencyLc = userAgent.toLowerCase();
         ClientProperties props = new ClientProperties();
         props.setBrowserVersionMajor(-1);
         props.setBrowserVersionMinor(-1);
-        if (userAgencyLc.startsWith("opera/") && userAgencyLc.contains("version/")) {
-            setMajorMinorVersionByPattern(userAgencyLc, "version/(\\d+)\\.(\\d+)",props);
-        } else if (userAgencyLc.startsWith("opera/") && !userAgencyLc.contains("version/")) {
-            setMajorMinorVersionByPattern(userAgencyLc, "opera/(\\d+)\\.(\\d+)",props);
-        } else {
-            setMajorMinorVersionByPattern(userAgencyLc, "opera (\\d+)\\.(\\d+)",props);
+        if (userAgent != null) {
+            String userAgencyLc = userAgent.toLowerCase();
+            if (userAgencyLc.startsWith("opera/") && userAgencyLc.contains("version/")) {
+                setMajorMinorVersionByPattern(userAgencyLc, "version/(\\d+)\\.(\\d+)", props);
+            } else if (userAgencyLc.startsWith("opera/") && !userAgencyLc.contains("version/")) {
+                setMajorMinorVersionByPattern(userAgencyLc, "opera/(\\d+)\\.(\\d+)", props);
+            } else {
+                setMajorMinorVersionByPattern(userAgencyLc, "opera (\\d+)\\.(\\d+)", props);
+            }
         }
         return props;
     }
 
     private ClientProperties extractSafariVersion(String userAgent) {
-        String userAgencyLc = userAgent.toLowerCase();
         ClientProperties props = new ClientProperties();
         props.setBrowserVersionMajor(-1);
         props.setBrowserVersionMinor(-1);
-        setMajorMinorVersionByPattern(userAgencyLc, "version/(\\d+)\\.(\\d+)", props);
+        if (userAgent != null) {
+            String userAgencyLc = userAgent.toLowerCase();
+            setMajorMinorVersionByPattern(userAgencyLc, "version/(\\d+)\\.(\\d+)", props);
+        }
         return props;
     }
 
     private ClientProperties extractChromeVersion(String userAgent) {
-        String userAgencyLc = userAgent.toLowerCase();
         ClientProperties props = new ClientProperties();
         props.setBrowserVersionMajor(-1);
         props.setBrowserVersionMinor(-1);
-        setMajorMinorVersionByPattern(userAgencyLc, "chrome/(\\d+)\\.(\\d+)", props);
+        if (userAgent != null) {
+            String userAgencyLc = userAgent.toLowerCase();
+            setMajorMinorVersionByPattern(userAgencyLc, "chrome/(\\d+)\\.(\\d+)", props);
+        }
         return props;
     }
 

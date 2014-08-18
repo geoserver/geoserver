@@ -37,6 +37,7 @@
 	  	<list>
 	  		<value>wfsLogger</value>
 	  		<value>wfsServiceTarget</value>
+                        <value>wfsServiceInterceptor*</value>
 	  	</list>
 	  </property>
 	</bean>

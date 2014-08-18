@@ -13,9 +13,11 @@ import org.geoserver.console.GeoServerConsole.ProductionHandler;
  * 
  * @author Justin Deoliveira, OpenGEO
  */
-public class Main {
+public class GeoServer {
 
     public static void main(String[] args) throws Exception {
+        // System.out.println(System.getProperty("user.dir"));
+        System.out.println(System.getProperty("java.class.path"));
         Handler h = null;
         for ( int i = 0; args != null && i < args.length; i++) {
             if ( "--debug".equalsIgnoreCase( args[i] ) ) {

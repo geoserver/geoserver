@@ -242,35 +242,38 @@ import java.lang.reflect.Method;
         loadedWithoutErrors = true;
         String osName = System.getProperty ("os.name");
         if (osName.startsWith ("Mac OS")) {
-          String mrjVersion = System.getProperty("mrj.version");
-          String majorMRJVersion = mrjVersion.substring(0, 3);
-          try {
-            double version = Double.valueOf(majorMRJVersion).doubleValue();
-            if (version == 2) {
-              jvm = MRJ_2_0;
-            } 
-            else if (version >= 2.1 && version < 3) {
-              // Assume that all 2.x versions of MRJ work the same.  
-              // MRJ 2.1 actually works via Runtime.exec() and 2.2 supports that 
-              // but has an openURL() method as well that we currently ignore.
-              jvm = MRJ_2_1;
-            } 
-            else if (version == 3.0) {
-              jvm = MRJ_3_0;
-            } 
-            else if (version >= 3.1) {
-              // Assume that all 3.1 and later versions of MRJ work the same.
-              jvm = MRJ_3_1;
-            } 
-            else {
-              loadedWithoutErrors = false;
-              errorMessage = "Unsupported MRJ version: " + version;
-            }
-          } 
-          catch (NumberFormatException nfe) {
-            loadedWithoutErrors = false;
-            errorMessage = "Invalid MRJ version: " + mrjVersion;
-          }
+          //JD: Oracle JDK's >= 7 don't seem to set mrj.version anymore, just 
+          // assuming latest
+          jvm = MRJ_3_1;
+          // String mrjVersion = System.getProperty("mrj.version");
+          // String majorMRJVersion = mrjVersion.substring(0, 3);
+          // try {
+          //   double version = Double.valueOf(majorMRJVersion).doubleValue();
+          //   if (version == 2) {
+          //     jvm = MRJ_2_0;
+          //   } 
+          //   else if (version >= 2.1 && version < 3) {
+          //     // Assume that all 2.x versions of MRJ work the same.  
+          //     // MRJ 2.1 actually works via Runtime.exec() and 2.2 supports that 
+          //     // but has an openURL() method as well that we currently ignore.
+          //     jvm = MRJ_2_1;
+          //   } 
+          //   else if (version == 3.0) {
+          //     jvm = MRJ_3_0;
+          //   } 
+          //   else if (version >= 3.1) {
+          //     // Assume that all 3.1 and later versions of MRJ work the same.
+          //     jvm = MRJ_3_1;
+          //   } 
+          //   else {
+          //     loadedWithoutErrors = false;
+          //     errorMessage = "Unsupported MRJ version: " + version;
+          //   }
+          // } 
+          // catch (NumberFormatException nfe) {
+          //   loadedWithoutErrors = false;
+          //   errorMessage = "Invalid MRJ version: " + mrjVersion;
+          // }
         } 
         else if (osName.startsWith("Windows")) {
           if (osName.indexOf("9") != -1) {

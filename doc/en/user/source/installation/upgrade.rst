@@ -9,8 +9,8 @@ previous version. See :ref:`migrating_data_directory` for more details.
 
 This section contains details about upgrading to specific GeoServer versions.
 
-Upgrade to 2.2
---------------
+Upgrade to 2.2+
+---------------
 
 Security configuration
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -84,3 +84,7 @@ The solution to this problem is to reduce the administrative access role to that
 
 
 
+Upgrade to 2.6+
+---------------
+
+Before 2.6, the GeoJSON produced by the WFS service used a non-standard encoding for the CRS.  Setting ``GEOSERVER_GEOJSON_LEGACY_CRS=true`` as a system property, context parameter, or environment variable will enable the old behaviour.

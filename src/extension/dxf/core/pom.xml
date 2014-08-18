@@ -13,13 +13,13 @@
   <parent>
     <groupId>org.geoserver.extension</groupId>
     <artifactId>dxf</artifactId>
-    <version>2.4-SNAPSHOT</version>
+    <version>2.4.8</version>
   </parent>
 
   <groupId>org.geoserver.extension</groupId>
   <artifactId>dxf-core</artifactId>
   <packaging>jar</packaging>
-  <version>2.4-SNAPSHOT</version>
+  <version>2.4.8</version>
   <name>DXF output format</name>
 
     <dependencies>

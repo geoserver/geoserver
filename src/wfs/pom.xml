@@ -80,10 +80,15 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.easymock</groupId>
-      <artifactId>easymockclassextension</artifactId>
-      <version>2.3</version>
-      <scope>test</scope>
+     <groupId>org.easymock</groupId>
+     <artifactId>easymockclassextension</artifactId>
+     <version>2.3</version>
+     <scope>test</scope>
+    </dependency>
+    <dependency>
+     <groupId>org.hamcrest</groupId>
+     <artifactId>hamcrest-library</artifactId>
+     <scope>test</scope>
     </dependency>
   </dependencies>
 

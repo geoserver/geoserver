@@ -35,6 +35,8 @@ import org.geoserver.wfs.WFSTestSupport;
 import org.geotools.referencing.CRS;
 import org.hamcrest.Description;
 import org.hamcrest.Matchers;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -80,6 +82,22 @@ public class GeoJSONTest extends WFSTestSupport {
         pointLatLon.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
         getCatalog().save(pointLonLat);
 
+    }
+    
+    static String propValue;
+    @BeforeClass
+    static public void setUp() {
+        propValue = System.getProperty("GEOSERVER_GEOJSON_LEGACY_CRS");
+        System.setProperty("GEOSERVER_GEOJSON_LEGACY_CRS", "false");
+    }
+    
+    @AfterClass
+    static public void tearDown() {
+        if(propValue==null) {
+            System.clearProperty("GEOSERVER_GEOJSON_LEGACY_CRS");
+        } else {
+            System.setProperty("GEOSERVER_GEOJSON_LEGACY_CRS", propValue);
+        }
     }
 	
     @Test

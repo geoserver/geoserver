@@ -109,7 +109,7 @@
         <dependency>
             <groupId>org.geotools.xsd</groupId>
             <artifactId>gt-xsd-tjs</artifactId>
-            <version>8.6</version>
+            <version>12-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -125,7 +125,7 @@
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-main</artifactId>
-            <version>8.6</version>
+            <version>12-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>commons-dbcp</groupId>

@@ -7,7 +7,14 @@ package gmx.iderc.geoserver.tjs.catalog;
 
 import com.thoughtworks.xstream.XStream;
 import gmx.iderc.geoserver.tjs.catalog.impl.TJSCatalogImpl;
-import org.vfny.geoserver.global.GeoserverDataDirectory;
+// for 2.2.x branch?
+// import org.vfny.geoserver.global.GeoserverDataDirectory;
+
+//for later branches
+import org.geoserver.catalog.Catalog;
+import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.config.GeoServerInfo;
+import org.geoserver.platform.GeoServerExtensions;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,7 +42,11 @@ public class TJSCatalogPersistence {
     }
 
     public static File getGeoserverDataDirectory() {
-        return GeoserverDataDirectory.getGeoserverDataDirectory();
+        // TODO: how to get the Geoserverdatadriectory properly? Seems to be changed for Geoserver 2.6.x or earlier
+        // return GeoserverDataDirectory.getGeoserverDataDirectory();
+        Catalog cat = (Catalog) GeoServerExtensions.bean("catalog");
+        GeoServerDataDirectory dd = new GeoServerDataDirectory(cat.getResourceLoader());
+        return dd.root();
     }
 
     public static TJSCatalog load(File dataDirectory) {

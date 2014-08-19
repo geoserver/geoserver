@@ -6,7 +6,7 @@ package gmx.iderc.geoserver.tjs;
 
 
 import net.opengis.tjs10.*;
-import org.geotools.data.wfs.protocol.wfs.WFSException;
+//import org.geotools.data.wfs.protocol.wfs.WFSException;
 import org.geotools.xml.transform.TransformerBase;
 
 /**
@@ -25,12 +25,12 @@ public interface TableJoiningService {
     TJSInfo getServiceInfo();
 
     /**
-     * WFS GetCapabilities operation.
+     * TJD GetCapabilities operation.
      *
      * @param request The get capabilities request.
-     * @return A transformer instance capable of serializing a wfs capabilities
+     * @return A transformer instance capable of serializing a TJS capabilities
      *         document.
-     * @throws WFSException Any service exceptions.
+     * @throws TJSException Any service exceptions.
      */
     TransformerBase getCapabilities(GetCapabilitiesType request)
             throws TJSException;

@@ -11,7 +11,7 @@ import gmx.iderc.geoserver.tjs.catalog.impl.JoinedMapInfoImpl;
 import gmx.iderc.geoserver.tjs.catalog.impl.TJSCatalogImpl;
 import gmx.iderc.geoserver.tjs.data.TJSFeatureSource;
 import gmx.iderc.geoserver.tjs.data.TJS_1_0_0_DataStore;
-import gmx.iderc.geoserver.tjs.data.TJS_WebMapServer;
+
 import gmx.iderc.geoserver.tjs.data.TJSStore;
 import gmx.iderc.geoserver.tjs.data.gdas.GDAS_DatasetInfo;
 import gmx.iderc.geoserver.tjs.data.jdbc.hsql.HSQLDB_GDAS_Cache;
@@ -76,7 +76,6 @@ import com.vividsolutions.jts.geom.Geometry;
 
 // import org.vfny.geoserver.global.GeoserverDataDirectory;
 
-import org.vfny.geoserver.global.GeoserverDataDirectory;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
@@ -275,11 +274,8 @@ public abstract class JoinDataTransformer extends TransformerBase {
 
                         start("JoinedOutputs");
 
-                        // setUpWMSMechanism(frameworkInfo, gdas.getFramework().getDataset().getDatasetURI());
-                        // setUpWMSMechanism(frameworkInfo, gdas_datasetInfo);
-                        
                         // Thijs: create a WMS and WFS mechanism here. For output in all kinds of formats.
-                        // this also means that the TJS_WebMapServer is nog longer needed
+
                         // TODO: refactor for new stylename? Causes an stack overflow if handled in the handleMapStyling alone
                         // Needs some more research
                         setUpWFSandWMSMechanism(frameworkInfo, gdas_datasetInfo, newStyleName);
@@ -573,7 +569,11 @@ public abstract class JoinDataTransformer extends TransformerBase {
                 handleFramework(frameworkInfo);
 
                 start("JoinedOutputs");
-                setUpWMSMechanism(frameworkInfo, getDataXML.getDatasetURI());
+
+                // Thijs: setupWMSMechanism is deprecated, with the new setup of WFS and WMS at once
+
+                // setUpWMSMechanism(frameworkInfo, getDataXML.getDatasetURI());
+
                 end("JoinedOutputs");
             }
 
@@ -846,144 +846,6 @@ public abstract class JoinDataTransformer extends TransformerBase {
                     // TODO: proper logging
                 }
                 return null;
-            }
-
-            /*Prepara el mecanismo de WMS como resultado de un JoinData. Para ello crea un workspace temporal
-            donde poner los mapas que va vinculando con los datos. Crea el TJS_WebMapServer que enlaza la capa
-            WMS en cascada y los datos del dataset.
-            * */
-            private void setUpWMSMechanism(FrameworkInfo frameworkInfo, String datasetURI) throws IOException {
-                start("Output");
-
-                handleWMSMechanism();
-                WorkspaceInfo tempWorkspaceInfo = createTempWorkspace();
-                try {
-                    CatalogBuilder builder = new CatalogBuilder(getGeoserverCatalog());
-
-                    String tempWms = getTempWMSUrl(tempWorkspaceInfo) + "?request=GetCapabilities&service=WMS";
-                    URL tempWmsUrl = new URL(tempWms);
-                    DatasetInfo datasetInfo = catalog.getDatasetByUri(datasetURI);
-                    WMSStoreInfo tempWmsStore = getGeoserverCatalog().getStoreByName(TJSExtension.TJS_TEMP_WORKSPACE, WMSStoreInfo.class);
-                    if (tempWmsStore == null) {
-                        tempWmsStore = builder.buildWMSStore(TJSExtension.TJS_TEMP_WORKSPACE);
-                        tempWmsStore.setWorkspace(tempWorkspaceInfo);
-                        getGeoserverCatalog().add(tempWmsStore);
-                        WebMapServer wms = createWebMapServer(frameworkInfo);
-                        TJS_WebMapServer tjswms = new TJS_WebMapServer(tempWmsUrl, wms, datasetInfo);
-                        getGeoserverCatalog().getResourcePool().setWebMapServer(tempWmsStore, tjswms);
-                    } else {
-                        Object wms = null;
-                        try {
-                            wms = tempWmsStore.getWebMapServer(new NullProgressListener());
-                            if (!(wms instanceof TJS_WebMapServer)) {
-                                wms = createWebMapServer(frameworkInfo);
-                                TJS_WebMapServer tjswms = new TJS_WebMapServer(tempWmsUrl, (WebMapServer) wms, datasetInfo);
-                                getGeoserverCatalog().getResourcePool().setWebMapServer(tempWmsStore, tjswms);
-                            } else {
-                                TJS_WebMapServer tjswms = (TJS_WebMapServer) tempWmsStore.getWebMapServer(new NullProgressListener());
-                                tjswms.update((WebMapServer) wms, datasetInfo);
-                            }
-                        } catch (MalformedURLException ex) {
-                            wms = createWebMapServer(frameworkInfo);
-                            TJS_WebMapServer tjswms = new TJS_WebMapServer(tempWmsUrl, (WebMapServer) wms, datasetInfo);
-                            getGeoserverCatalog().getResourcePool().setWebMapServer(tempWmsStore, tjswms);
-                        }
-                    }
-
-                    //tengo en tempWmsStore el almacen con el servidor de TJS.
-                    //Falta publicar la capa del datasetInfo
-                    List<WMSLayerInfo> wmsLayers = getGeoserverCatalog().getResourcesByStore(tempWmsStore, WMSLayerInfo.class);
-                    WMSLayerInfo exists = getIfExists(wmsLayers, datasetInfo.getName());
-                    if (exists == null) {
-                        builder.setStore(tempWmsStore);
-                        exists = builder.buildWMSLayer(datasetInfo.getName());
-                        LayerInfo layer = builder.buildLayer(exists);
-                        getGeoserverCatalog().add(exists);
-                        getGeoserverCatalog().add(layer);
-                    }
-
-                    start("Resource");
-                    element("URL", TJSExtension.TJS_TEMP_WORKSPACE + "/wms");
-
-                    AttributesImpl attributes = attributes(new String[]{"name", "domainName"});
-                    element("Parameter", "www.iderc.co.cu/geomix/tjs", attributes);
-
-                    attributes = attributes(new String[]{"name", "layerName"});
-                    element("Parameter", datasetInfo.getName(), attributes);
-
-                    end("Resource");
-
-                } catch (ServiceException ex) {
-
-                }
-
-                end("Output");
-            }
-
-            private void setUpWMSMechanism(FrameworkInfo frameworkInfo, DatasetInfo datasetInfo) throws IOException {
-                start("Output");
-
-                handleWMSMechanism();
-                WorkspaceInfo tempWorkspaceInfo = createTempWorkspace();
-                try {
-                    CatalogBuilder builder = new CatalogBuilder(getGeoserverCatalog());
-
-                    String tempWms = getTempWMSUrl(tempWorkspaceInfo) + "?request=GetCapabilities&service=WMS";
-                    URL tempWmsUrl = new URL(tempWms);
-                    WMSStoreInfo tempWmsStore = getGeoserverCatalog().getStoreByName(TJSExtension.TJS_TEMP_WORKSPACE, WMSStoreInfo.class);
-                    if (tempWmsStore == null) {
-                        tempWmsStore = builder.buildWMSStore(TJSExtension.TJS_TEMP_WORKSPACE);
-                        tempWmsStore.setWorkspace(tempWorkspaceInfo);
-                        getGeoserverCatalog().add(tempWmsStore);
-                        WebMapServer wms = createWebMapServer(frameworkInfo);
-                        TJS_WebMapServer tjswms = new TJS_WebMapServer(tempWmsUrl, wms, datasetInfo);
-                        getGeoserverCatalog().getResourcePool().setWebMapServer(tempWmsStore, tjswms);
-                    } else {
-                        Object wms = null;
-                        try {
-                            wms = tempWmsStore.getWebMapServer(new NullProgressListener());
-                            if (!(wms instanceof TJS_WebMapServer)) {
-                                wms = createWebMapServer(frameworkInfo);
-                                TJS_WebMapServer tjswms = new TJS_WebMapServer(tempWmsUrl, (WebMapServer) wms, datasetInfo);
-                                getGeoserverCatalog().getResourcePool().setWebMapServer(tempWmsStore, tjswms);
-                            } else {
-                                TJS_WebMapServer tjswms = (TJS_WebMapServer) tempWmsStore.getWebMapServer(new NullProgressListener());
-                                tjswms.update((WebMapServer) wms, datasetInfo);
-                            }
-                        } catch (MalformedURLException ex) {
-                            wms = createWebMapServer(frameworkInfo);
-                            TJS_WebMapServer tjswms = new TJS_WebMapServer(tempWmsUrl, (WebMapServer) wms, datasetInfo);
-                            getGeoserverCatalog().getResourcePool().setWebMapServer(tempWmsStore, tjswms);
-                        }
-                    }
-
-                    //tengo en tempWmsStore el almacen con el servidor de TJS.
-                    //Falta publicar la capa del datasetInfo
-                    List<WMSLayerInfo> wmsLayers = getGeoserverCatalog().getResourcesByStore(tempWmsStore, WMSLayerInfo.class);
-                    WMSLayerInfo exists = getIfExists(wmsLayers, datasetInfo.getName());
-                    if (exists == null) {
-                        builder.setStore(tempWmsStore);
-                        exists = builder.buildWMSLayer(datasetInfo.getName());
-                        LayerInfo layer = builder.buildLayer(exists);
-                        getGeoserverCatalog().add(exists);
-                        getGeoserverCatalog().add(layer);
-                    }
-
-                    start("Resource");
-                    element("URL", getServerURL().concat("/"+TJSExtension.TJS_TEMP_WORKSPACE + "/wms"));
-
-                    AttributesImpl attributes = attributes(new String[]{"name", "domainName"});
-                    element("Parameter", "www.iderc.co.cu/geomix/tjs", attributes);
-
-                    attributes = attributes(new String[]{"name", "layerName"});
-                    element("Parameter", datasetInfo.getName(), attributes);
-
-                    end("Resource");
-
-                } catch (ServiceException ex) {
-
-                }
-                end("Output");
             }
 
             public String getServerURL() {

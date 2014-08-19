@@ -98,7 +98,4 @@
     <bean id="tjsJoinDataKvpReader" class="gmx.iderc.geoserver.tjs.kvp.JoinDataKvpRequestReader"/>
     <bean id="JoinDataResponse" class="gmx.iderc.geoserver.tjs.response.JoinDataResponse" singleton="false"/>
 
-    <bean id="getMapKvpReader" class="gmx.iderc.geoserver.tjs.kvp.TJSGetMapKvpRequestReader">
-        <constructor-arg ref="wms"/>
-    </bean>
 </beans>

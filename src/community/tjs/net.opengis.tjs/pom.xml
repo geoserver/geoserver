@@ -8,7 +8,8 @@
     </parent-->
     <groupId>org.geotools.ogc</groupId>
     <artifactId>net.opengis.tjs</artifactId>
-    <version>8.6</version>
+	<!-- Thijs: should this be another version than 8.6? -->
+    <version>12-SNAPSHOT</version>
     <name>Table Joining Service Model(net.opengis.tjs)</name>
     <description>Table Joining Service Model</description>
 

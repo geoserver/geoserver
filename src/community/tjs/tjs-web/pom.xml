@@ -76,7 +76,7 @@
     <parent>
         <groupId>org.geoserver</groupId>
         <artifactId>web</artifactId>
-        <version>2.2.4</version>
+        <version>2.6-SNAPSHOT</version>
     </parent>
     <dependencies>
         <dependency>
@@ -98,20 +98,20 @@
         </dependency>
         <dependency>
             <groupId>org.geoserver.web</groupId>
-            <artifactId>web-core</artifactId>
-            <version>2.2.4</version>
+            <artifactId>gs-web-core</artifactId>
+            <version>2.6-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.geoserver.web</groupId>
-            <artifactId>web-core</artifactId>
-            <version>2.2.4</version>
+            <artifactId>gs-web-core</artifactId>
+            <version>2.6-SNAPSHOT</version>
             <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.geoserver</groupId>
-            <artifactId>main</artifactId>
-            <version>2.2.4</version>
+            <artifactId>gs-main</artifactId>
+            <version>2.6-SNAPSHOT</version>
             <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>

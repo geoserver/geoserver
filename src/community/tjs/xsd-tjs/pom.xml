@@ -24,7 +24,7 @@
     <!-- =========================================================== -->
     <groupId>org.geotools.xsd</groupId>
     <artifactId>gt-xsd-tjs</artifactId>
-    <version>8.6</version>
+    <version>12-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>TJS XML Support(xsd-tjs)</name>
 

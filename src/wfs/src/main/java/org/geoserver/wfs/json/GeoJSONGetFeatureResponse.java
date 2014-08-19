@@ -184,16 +184,21 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
                             Object value = feature.getAttribute(id_option);
                             jsonWriter.key("id").value(value);
                         }
+                        
                         GeometryDescriptor defaultGeomType = fType.getGeometryDescriptor();
+                        if(defaultGeomType != null) {
+                            CoordinateReferenceSystem featureCrs =
+                                    defaultGeomType.getCoordinateReferenceSystem();
+                            
+                            jsonWriter.setAxisOrder(CRS.getAxisOrder(featureCrs));
+                            
+                            if (crs == null)
+                                crs = featureCrs;
+                        } else  {
+                            // If we don't know, assume EAST_NORTH so that no swapping occurs
+                            jsonWriter.setAxisOrder(CRS.AxisOrder.EAST_NORTH);
+                        }
                         
-                        CoordinateReferenceSystem featureCrs =
-                                fType.getGeometryDescriptor().getCoordinateReferenceSystem();
-                        
-                        jsonWriter.setAxisOrder(CRS.getAxisOrder(featureCrs));
-                        
-                        if (crs == null && defaultGeomType != null)
-                            crs = fType.getGeometryDescriptor().getCoordinateReferenceSystem();
-
                         jsonWriter.key("geometry");
                         Geometry aGeom = (Geometry) feature.getDefaultGeometry();
 

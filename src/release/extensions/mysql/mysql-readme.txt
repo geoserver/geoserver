@@ -25,5 +25,5 @@ Config -> Data -> DataStores -> New.  Fill out the appropriate params.
 
 COMPATIBILITY
 
-This jar should work with any version of GeoServer based on GeoTools 12.x  
-Currently this is anything in 2.6.x.
+This jar should work with any version of GeoServer based on GeoTools 13.x  
+Currently this is anything in 2.7.x.

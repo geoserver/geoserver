@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
+import org.w3c.dom.Document;
 
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -76,12 +77,24 @@ public class CSVOutputFormatTest extends AbstractAppSchemaTestSupport {
     @Test
     public void testFilter() throws Exception {
         String IDENTIFIER = "borehole.GA.17338";
-        MockHttpServletResponse resp = getAsServletResponse("wfs?service=WFS&request=GetFeature&version=1.1.0&typename=gsmlp:BoreholeView&outputFormat=csv&filter=<Filter><PropertyIsEqualTo><PropertyName>gsmlp:identifier</PropertyName><Literal>"
-                + IDENTIFIER + "</Literal></PropertyIsEqualTo></Filter>");
-
+        
+        String xml = "<wfs:GetFeature service=\"WFS\" " //
+                + "version=\"1.1.0\" " //
+                + "xmlns:ogc=\"http://www.opengis.net/ogc\" " //
+                + "xmlns:wfs=\"http://www.opengis.net/wfs\" " //
+                + "xmlns:gsmlp=\"http://xmlns.geosciml.org/geosciml-portrayal/2.0\" >" //
+                + "    <wfs:Query typeName=\"gsmlp:BoreholeView\" outputFormat=\"csv\">" //
+                + "        <ogc:Filter>"//
+                + "            <ogc:PropertyIsEqualTo>" //
+                + "                <ogc:Literal>" + IDENTIFIER + "</ogc:Literal>" //
+                + "                <ogc:PropertyName>gsmlp:identifier</ogc:PropertyName>" //
+                + "            </ogc:PropertyIsEqualTo>" //
+                + "        </ogc:Filter>" //
+                + "    </wfs:Query> " //
+                + "</wfs:GetFeature>";
+        MockHttpServletResponse resp = postAsServletResponse("wfs?service=WFS&request=GetFeature&version=1.1.0&typeName=gsmlp:BoreholeView&outputFormat=csv", xml, "text/csv");
         // check the mime type
         assertEquals("text/csv", resp.getContentType());
-
         // check the content disposition
         assertEquals("attachment; filename=BoreholeView.csv", resp.getHeader("Content-Disposition"));
 
@@ -146,7 +159,7 @@ public class CSVOutputFormatTest extends AbstractAppSchemaTestSupport {
      * @return
      * @throws IOException
      */
-    private List<String[]> readLines(String csvContent) throws IOException {
+    static List<String[]> readLines(String csvContent) throws IOException {
         CSVReader reader = new CSVReader(new StringReader(csvContent));
 
         List<String[]> result = new ArrayList<String[]>();

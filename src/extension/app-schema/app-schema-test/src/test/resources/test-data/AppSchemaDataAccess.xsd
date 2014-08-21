@@ -242,9 +242,7 @@
               <annotation>
                 <documentation>
                   <![CDATA[
-                  Flag to indicate if the data is denormalised or not.  If data is not denormalised
-                  (flag = false) then its safe for us to apply the system configured maxFeatures
-                  value when building the SQL query to run ]]>
+                  Flag to indicate if the data is denormalised or not. The value will determine how the SQL query to handle maxFeatures and startIndex will be built. ]]>
                 </documentation>
               </annotation>
             </element>

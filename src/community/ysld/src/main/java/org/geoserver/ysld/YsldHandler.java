@@ -44,14 +44,7 @@ public class YsldHandler extends StyleHandler {
 
     @Override
     public List<Exception> validate(Object input, Version version, EntityResolver entityResolver) throws IOException {
-        List<Exception> errors = new ArrayList();
-        try {
-            Ysld.parse(toReader(input));
-        }
-        catch(Exception e) {
-            errors.add(e);
-        }
-        return errors;
+        return (List) Ysld.validate(toReader(input));
     }
 
     @Override

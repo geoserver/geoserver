@@ -46,6 +46,9 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
     public static final boolean DEFAULT_MosaicNative = false;
     boolean allowNativeMosaic = DEFAULT_MosaicNative;
     
+    public static final boolean DEFAULT_WarpNative = false;
+    boolean allowNativeWarp = DEFAULT_WarpNative;
+    
     PngEncoderType pngEncoderType = PngEncoderType.PNGJ;
 
     /**
@@ -186,12 +189,21 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
         this.allowNativeMosaic = allowNativeMosaic;
     }
     
+    public boolean isAllowNativeWarp() {
+        return allowNativeWarp;
+    }
+
+    public void setAllowNativeWarp(boolean allowNativeWarp) {
+        this.allowNativeWarp = allowNativeWarp;
+    }
+    
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + (allowInterpolation ? 1231 : 1237);
         result = prime * result + (allowNativeMosaic ? 1231 : 1237);
+        result = prime * result + (allowNativeWarp ? 1231 : 1237);
         result = prime * result + (imageIOCache ? 1231 : 1237);
         result = prime * result + (jpegAcceleration ? 1231 : 1237);
         long temp;
@@ -219,6 +231,8 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
         if (allowInterpolation != other.allowInterpolation)
             return false;
         if (allowNativeMosaic != other.allowNativeMosaic)
+            return false;
+        if (allowNativeWarp != other.allowNativeWarp)
             return false;
         if (imageIOCache != other.imageIOCache)
             return false;

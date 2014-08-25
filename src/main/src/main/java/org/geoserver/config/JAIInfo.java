@@ -80,6 +80,12 @@ public interface JAIInfo extends Cloneable, Serializable {
     void setAllowNativeMosaic(boolean allowNativeMosaic);
     
     /**
+     * Flag controlling native warping operations.
+     */
+    boolean isAllowNativeWarp();
+    void setAllowNativeWarp(boolean allowNativeWarp);
+    
+    /**
      * Flag controlling the image io cache.
      * @deprecated Replaced by {@link CoverageAccessInfo#getImageIOCacheThreshold()}
      */

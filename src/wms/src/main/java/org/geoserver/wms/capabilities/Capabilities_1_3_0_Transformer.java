@@ -1316,8 +1316,8 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
                 Map<String, String> params = params("service", "WMS", "request",
                         "GetLegendGraphic", "format", defaultFormat, "width",
-                        String.valueOf(legendWidth), "height",
-                        String.valueOf(legendHeight), "layer", layerName);
+                        String.valueOf(GetLegendGraphicRequest.DEFAULT_WIDTH), "height",
+                        String.valueOf(GetLegendGraphicRequest.DEFAULT_HEIGHT), "layer", layerName);
                 if (style != null) {
                     params.put("style", style.getName());
                 }

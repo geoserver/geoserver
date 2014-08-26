@@ -17,6 +17,7 @@ import java.sql.Statement;
 import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executor;
 
 /** Placeholder connection for testing */
 class TestConnection implements Connection {
@@ -36,6 +37,10 @@ class TestConnection implements Connection {
     private boolean closed = false;
 
     private boolean autoCommit = true;
+
+    private String schema;
+
+    private int networkTimeout;
 
     @Override
     public <T> T unwrap(Class<T> iface) throws SQLException {
@@ -291,6 +296,27 @@ class TestConnection implements Connection {
         throw new SQLException("Not implemented");
     }
 
+    // Java 7 Overrides
+    public void setSchema(String schema) throws SQLException {
+        this.schema = schema; 
+    }
+    // Java 7 Overrides
+    public String getSchema() throws SQLException {
+        return schema;
+    }
+    // Java 7 Overrides
+    public void abort(Executor executor) throws SQLException {
+    }
+    // Java 7 Overrides
+    public void setNetworkTimeout(Executor executor, int milliseconds)
+            throws SQLException {
+        this.networkTimeout = milliseconds;        
+    }
+    // Java 7 Overrides
+    public int getNetworkTimeout() throws SQLException {
+        return this.networkTimeout;
+    }
+    
     @Override
     public String toString() {
         return getClass().getSimpleName();

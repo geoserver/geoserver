@@ -17,11 +17,14 @@ import java.sql.Statement;
 import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executor;
 
 /** Sample wrapper for testing */
 class WrapperConnection implements Connection {
 
     private WrapperConnectionData data = new WrapperConnectionData();
+    private String schema;
+    private int networkTimeout;
 
     WrapperConnection(Connection conn) {
         this.data.conn = conn;
@@ -238,15 +241,25 @@ class WrapperConnection implements Connection {
     public Struct createStruct(String typeName, Object[] attributes) throws SQLException {
         return data.conn.createStruct(typeName, attributes);
     }
-
-    
-
-    
-
-    
-
-    
-
-    
+    // Java 7 Overrides
+    public void setSchema(String schema) throws SQLException {
+        this.schema = schema; 
+    }
+    // Java 7 Overrides
+    public String getSchema() throws SQLException {
+        return schema;
+    }
+    // Java 7 Overrides
+    public void abort(Executor executor) throws SQLException {
+    }
+    // Java 7 Overrides
+    public void setNetworkTimeout(Executor executor, int milliseconds)
+            throws SQLException {
+        this.networkTimeout = milliseconds;        
+    }
+    // Java 7 Overrides
+    public int getNetworkTimeout() throws SQLException {
+        return this.networkTimeout;
+    }
 
 }

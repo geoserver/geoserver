@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wcs:GetCoverage xmlns:wcs="http://www.opengis.net/wcs/2.0"
+  xmlns:wcscrs="http://www.opengis.net/wcs/service-extension/crs/1.0"
+  xmlns:wcsgeotiff="http://www.opengis.net/wcs/geotiff/1.0" xmlns:crs="http://www.opengis.net/wcs/crs/1.0"
+  xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/wcs/2.0 
+                  http://schemas.opengis.net/wcs/2.0/wcsAll.xsd 
+                  http://www.opengis.net/wcs/geotiff/1.0 
+                  http://schemas.opengis.net/wcs/geotiff/1.0/wcsGeotiff.xsd"
+  service="WCS" version="2.0.1">
+  <wcs:CoverageId>sf__rain</wcs:CoverageId>
+  <wcs:DimensionTrim>
+    <wcs:Dimension>N</wcs:Dimension>
+    <wcs:TrimLow>0</wcs:TrimLow>
+    <wcs:TrimHigh>4838471</wcs:TrimHigh>
+  </wcs:DimensionTrim>
+  <wcs:DimensionTrim>
+    <wcs:Dimension>E</wcs:Dimension>
+    <wcs:TrimLow>1113195</wcs:TrimLow>
+    <wcs:TrimHigh>5565975</wcs:TrimHigh>
+  </wcs:DimensionTrim>
+  <wcs:format>image/tiff</wcs:format>
+  <wcs:Extension>
+     <!-- Mercator centered on 150°, request is roughly for long(160,-160),lat(0, 40)-->
+    <wcscrs:subsettingCrs>http://www.opengis.net/def/crs/EPSG/0/3832</wcscrs:subsettingCrs>
+    <wcscrs:outputCrs>http://www.opengis.net/def/crs/EPSG/0/4326</wcscrs:outputCrs>
+  </wcs:Extension>
+</wcs:GetCoverage>

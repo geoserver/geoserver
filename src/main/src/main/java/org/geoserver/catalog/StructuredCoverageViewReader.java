@@ -222,7 +222,8 @@ public class StructuredCoverageViewReader extends CoverageViewReader implements
 
         @Override
         public void dispose() throws IOException {
-            reader.dispose();
+            // TODO: check if we need to dispose it or not
+            // Does nothing, the catalog should be disposed by the user
         }
 
         @Override

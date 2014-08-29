@@ -38,7 +38,7 @@
         <dependency>
             <groupId>org.geoserver.web</groupId>
             <artifactId>gs-web-sec-core</artifactId>
-            <version>${gs.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.geoserver</groupId>
@@ -64,7 +64,6 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>11.0.2</version>
         </dependency>
 
         <!-- test dependencies -->
@@ -84,7 +83,7 @@
         <dependency>
             <groupId>org.geoserver.web</groupId>
             <artifactId>gs-web-core</artifactId>
-            <version>${gs.version}</version>
+            <version>${project.version}</version>
             <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>
@@ -121,7 +120,27 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+	<repositories>
+		<!-- our own first to get the geofence snaphosts-->
+		<repository>
+			<id>geosolutions</id>
+			<name>GeoSolutions Maven Repository</name>
+			<url>http://maven.geo-solutions.it/</url>
+			<snapshots>
+			 <enabled>true</enabled>
+			</snapshots>
+		</repository>  
 
+		<repository>
+			<id>boundless</id>
+			<name>Boundless Maven Repository</name>
+			<url>http://repo.boundlessgeo.com/main</url>
+			<snapshots>
+			 <enabled>true</enabled>
+			</snapshots>
+		</repository>
+
+	</repositories>
     <build>
         <resources>
             <resource>

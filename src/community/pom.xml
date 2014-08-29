@@ -150,6 +150,7 @@
       <modules>
         <module>authkey</module>
         <module>dds</module>
+		<module>geofence</module>
         <module>printing</module>
         <module>release</module>
         <module>ftp</module>

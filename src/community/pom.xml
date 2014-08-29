@@ -33,7 +33,6 @@
         <descriptors>
           <descriptor>release/ext-authkey.xml</descriptor>
           <descriptor>release/ext-ftp.xml</descriptor>
-		  <descriptor>release/ext-geofence.xml</descriptor>
           <descriptor>release/ext-python.xml</descriptor>
           <descriptor>release/ext-groovy.xml</descriptor>
           <descriptor>release/ext-javascript.xml</descriptor>
@@ -148,7 +147,7 @@
       <modules>
         <module>authkey</module>
         <module>dds</module>
-		<module>geofence</module>
+	<module>geofence</module>
         <module>release</module>
         <module>ftp</module>
         <module>spatialite</module>
@@ -162,9 +161,9 @@
         <module>netcdf-out</module>
         <module>mbtiles</module>
         <module>geopkg</module>
-		<module>grib</module>
+	<module>grib</module>
         <module>dyndimension</module>
-		<module>rest-ext</module>
+	<module>rest-ext</module>
       </modules>
     </profile>
     <profile>

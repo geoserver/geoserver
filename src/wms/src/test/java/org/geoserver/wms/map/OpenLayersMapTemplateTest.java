@@ -42,7 +42,7 @@ public class OpenLayersMapTemplateTest extends WMSTestSupport {
         cfg.setClassForTemplateLoading(OpenLayersMapOutputFormat.class, "");
         cfg.setObjectWrapper(new BeansWrapper());
 
-        Template template = cfg.getTemplate("OpenLayersMapTemplate.ftl");
+        Template template = cfg.getTemplate("OpenLayers2MapTemplate.ftl");
         assertNotNull(template);
 
         GetMapRequest request = createGetMapRequest(MockData.BASIC_POLYGONS);

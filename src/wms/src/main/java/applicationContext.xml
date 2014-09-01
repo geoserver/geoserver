@@ -673,6 +673,7 @@
      <property name="mappings">
        <props>
         <prop key="/openlayers/**">classpathPublisher</prop>
+        <prop key="/openlayers3/**">classpathPublisher</prop>
         <prop key="/options.png">classpathPublisher</prop>
        </props>
      </property>

@@ -17,6 +17,7 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs2_0.util.NCNameResourceCodec;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.factory.GeoTools;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.filter.Filter;
@@ -63,9 +64,9 @@ public class EOCoverageResourceCodec {
         Boolean dataset = ci.getMetadata().get(WCSEOMetadata.DATASET.key, Boolean.class);
         DimensionInfo time = ci.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
         try {
-            GridCoverageReader reader = ci.getGridCoverageReader(null, null);
+            GridCoverageReader reader = ci.getGridCoverageReader(null, GeoTools.getDefaultHints());
             boolean structured = reader instanceof StructuredGridCoverage2DReader;
-            return dataset != null && dataset && time != null & time.isEnabled()
+            return dataset != null && dataset && time != null && time.isEnabled()
                     && structured;
         } catch (IOException e) {
             throw new ServiceException("Failed to locate the grid coverage reader for coverage " + ci.prefixedName());

@@ -884,7 +884,7 @@ public class WCSDimensionsSubsetHelper {
 
     /**
      * Split the current GridCoverageRequest by creating a list of new GridCoverageRequests: A query will be performed
-     * with the current specified subsets, returnin N granules (if any).
+     * with the current specified subsets, returning N granules (if any).
      * Then new N GridCoverageRequests will be created (one for each granule) having subsets setup on top
      * of the specific values of the dimensions for that N-th granule.
      * 
@@ -924,23 +924,25 @@ public class WCSDimensionsSubsetHelper {
         final SimpleFeatureCollection collection = source.getGranules(query);
         final SimpleFeatureIterator iterator = collection.features();
         final List<GridCoverageRequest> requests = new ArrayList<GridCoverageRequest>();
-        while (iterator.hasNext()) {
+        try {
+            while (iterator.hasNext()) {
+                final SimpleFeature feature = iterator.next();
 
-            final SimpleFeature feature = iterator.next();
+                // Prepare subRequest setting up dimensions matching the values of the current granule
+                final GridCoverageRequest subRequest = new GridCoverageRequest();
 
-            // Prepare subRequest setting up dimensions matching the values of the current granule
-            final GridCoverageRequest subRequest = new GridCoverageRequest();
+                // Setting up constant elements (outputCRS, spatial subset, interpolation
+                subRequest.setOutputCRS(gridCoverageRequest.getOutputCRS());
+                subRequest.setSpatialInterpolation(gridCoverageRequest.getSpatialInterpolation());
+                subRequest.setSpatialSubset(gridCoverageRequest.getSpatialSubset());
+                subRequest.setTemporalInterpolation(gridCoverageRequest.getTemporalInterpolation());
 
-            // Setting up constant elements (outputCRS, spatial subset, interpolation
-            subRequest.setOutputCRS(gridCoverageRequest.getOutputCRS());
-            subRequest.setSpatialInterpolation(gridCoverageRequest.getSpatialInterpolation());
-            subRequest.setSpatialSubset(gridCoverageRequest.getSpatialSubset());
-            subRequest.setTemporalInterpolation(gridCoverageRequest.getTemporalInterpolation());
-
-            //Setting up specific dimensions subset
-            updateDimensions(subRequest, feature, structuredReader, coverageName);
-            requests.add(subRequest);
-
+                //Setting up specific dimensions subset
+                updateDimensions(subRequest, feature, structuredReader, coverageName);
+                requests.add(subRequest);
+            }
+        } finally {
+            iterator.close();
         }
         return requests;
     }

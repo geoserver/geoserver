@@ -276,7 +276,7 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
 
         // exception locator
         if ((exception.getLocator() != null) && !exception.getLocator().equals("")) {
-            sb.append(" locator=\"" + exception.getLocator() + "\"");
+            sb.append(" locator=\"" + ResponseUtils.encodeXML(exception.getLocator()) + "\"");
         }
 
         sb.append(">");

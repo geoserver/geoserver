@@ -13,12 +13,13 @@ import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.GeoTools;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.renderer.lite.RendererUtilities;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.Style;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
+import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * Wraps the large number of information normally extracted from a feature info request into a
@@ -85,12 +86,29 @@ public class FeatureInfoRequestParameters {
         this.width = getMapReq.getWidth();
         this.height = getMapReq.getHeight();
         this.bbox = new ReferencedEnvelope(getMapReq.getBbox(), getMapReq.getCrs());
-        this.scaleDenominator = RendererUtilities.calculateOGCScale(bbox, width, null);
+        this.scaleDenominator = getScaleDenominator(request.getGetMapRequest());
         this.elevations = request.getGetMapRequest().getElevation();
         this.times = request.getGetMapRequest().getTime();
         this.ff = CommonFactoryFinder.getFilterFactory2(GeoTools.getDefaultHints());
 
         this.propertyNames = request.getPropertyNames();
+    }
+
+    private double getScaleDenominator(GetMapRequest request) {
+        final Envelope envelope = request.getBbox();
+        final CoordinateReferenceSystem mapcrs = request.getCrs();
+        WMSMapContent mapContent = new WMSMapContent(request);
+        if (mapcrs != null) {
+            mapContent.getViewport().setBounds(new ReferencedEnvelope(envelope, mapcrs));
+        } else {
+            mapContent.getViewport().setBounds(
+                    new ReferencedEnvelope(envelope, DefaultGeographicCRS.WGS84));
+        }
+        mapContent.setMapWidth(request.getWidth());
+        mapContent.setMapHeight(request.getHeight());
+        mapContent.setAngle(request.getAngle());
+
+        return mapContent.getScaleDenominator(true);
     }
     
     /**
@@ -169,7 +187,7 @@ public class FeatureInfoRequestParameters {
             return Query.ALL_NAMES;
         } else {
             List<String> layerPropNames = propertyNames.get(currentLayer);
-            return (String[]) layerPropNames.toArray(new String[layerPropNames.size()]);
+            return layerPropNames.toArray(new String[layerPropNames.size()]);
         }
     }
 

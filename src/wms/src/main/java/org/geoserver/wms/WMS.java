@@ -1336,8 +1336,8 @@ public class WMS implements ApplicationContextAware {
                 mapExtent.getMinX(), mapExtent.getMaxX(), null);
         }
         
-        double scaleX = (double) width / mapExtent.getWidth();
-        double scaleY = (double) height / mapExtent.getHeight();
+        double scaleX = width / mapExtent.getWidth();
+        double scaleY = height / mapExtent.getHeight();
     
         double tx = -mapExtent.getMinX() * scaleX;
         double ty = (mapExtent.getMinY() * scaleY) + height;
@@ -1355,4 +1355,5 @@ public class WMS implements ApplicationContextAware {
     public static WMS get() {
         return GeoServerExtensions.bean(WMS.class);
     }
+
 }

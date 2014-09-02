@@ -157,6 +157,9 @@ public class PDFMapResponse extends AbstractMapResponse {
             if (DefaultWebMapService.isLineWidthOptimizationEnabled()) {
                 rendererParams.put(StreamingRenderer.LINE_WIDTH_OPTIMIZATION_KEY, true);
             }
+            rendererParams.put(StreamingRenderer.SCALE_COMPUTATION_METHOD_KEY,
+                    mapContent.getRendererScaleMethod());
+
             renderer.setRendererHints(rendererParams);
 
             Envelope dataArea = mapContent.getRenderingArea();

@@ -253,3 +253,16 @@ The following code shows how to specify the meta-tiling parameters:
         {buffer: 0} 
     );
 
+scaleMethod
+-----------
+
+The ``scaleMethod`` parameter controls how the scale denominator is computed by GeoServer
+The two possible values are:
+
+  * ``OGC`` (default): the scale denominator is computed according to the OGC SLD specification, which
+                       imposes simplified formulas for the sake of interoperability
+  * ``Accurate``: use the full expressions for computing the scale denominator against geographic
+                   data, taking into account the ellipsoidal shape of Earth
+                   
+The two methods tend to return values rather close to each other near the equator, but they
+do diverge to larger differences as the latitude approaches the poles.

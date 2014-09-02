@@ -410,7 +410,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         rendererParams.put("renderingBuffer", new Integer(mapContent.getBuffer()));
         rendererParams.put("maxFiltersToSendToDatastore", DefaultWebMapService.getMaxFilterRules());
         rendererParams.put(StreamingRenderer.SCALE_COMPUTATION_METHOD_KEY,
-                StreamingRenderer.SCALE_OGC);
+                mapContent.getRendererScaleMethod());
         if (AA_NONE.equals(antialias)) {
             rendererParams.put(StreamingRenderer.TEXT_RENDERING_KEY,
                     StreamingRenderer.TEXT_RENDERING_STRING);
@@ -754,7 +754,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         //
         // extract the raster symbolizers and the eventual rendering transformation
         //
-        double scaleDenominator = mapContent.getScaleDenominator();
+        double scaleDenominator = mapContent.getScaleDenominator(true);
         Layer layer = mapContent.layers().get(layerIndex);
         FeatureType featureType = layer.getFeatureSource().getSchema();
         Style style = layer.getStyle();

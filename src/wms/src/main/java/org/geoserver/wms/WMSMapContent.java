@@ -13,11 +13,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import org.geoserver.platform.ServiceException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
+import org.geotools.referencing.operation.matrix.XAffineTransform;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.renderer.lite.StreamingRenderer;
 
@@ -341,14 +342,48 @@ public class WMSMapContent extends MapContent {
     }
 
     public double getScaleDenominator(boolean considerDPI) {
-        Map<String, Object> hints = new HashMap<String, Object>();
+        java.util.Map hints = new HashMap();
         if(considerDPI) {
-            double dpi = RendererUtilities.getDpi(getRequest().getFormatOptions());
-            hints.put(StreamingRenderer.DPI_KEY, dpi);
+            // compute the DPI
+            if (request.getFormatOptions().get("dpi") != null) {
+                hints.put(StreamingRenderer.DPI_KEY, (request.getFormatOptions().get("dpi")));
+            }
         }
-        return RendererUtilities.calculateOGCScale(
-                getRenderingArea(),
-                getRequest().getWidth(),
-                hints);
+        if (request.getScaleMethod() == ScaleComputationMethod.Accurate) {
+            if (request.getAngle() != 0) {
+                throw new ServiceException(
+                        "Accurate scale computation is not supported when using the angle parameter. "
+                                + "This functionality could be added, please provide a pull request for it ;-)");
+            }
+            try {
+                return RendererUtilities.calculateScale(getViewport().getBounds(), getMapWidth(),
+                        getMapHeight(), hints);
+            } catch (Exception e) {
+                throw new ServiceException("Failed to compute accurate scale denominator", e);
+            }
+        } else {
+            AffineTransform at = getRenderingTransform();
+            if (Math.abs(XAffineTransform.getRotation(at)) != 0.0) {
+                return RendererUtilities.calculateOGCScaleAffine(getCoordinateReferenceSystem(),
+                        at, hints);
+            } else {
+                return RendererUtilities.calculateOGCScale(getViewport().getBounds(),
+                        getMapWidth(), hints);
+            }
+        }
+    }
+
+    /**
+     * Computes the StreamingRenderer scale computation method hint based on the current request
+     * 
+     * @param request
+     * @return
+     */
+    public String getRendererScaleMethod() {
+        if (request.getScaleMethod() == ScaleComputationMethod.Accurate) {
+            return StreamingRenderer.SCALE_ACCURATE;
+        } else {
+            return StreamingRenderer.SCALE_OGC;
+        }
     }
 }

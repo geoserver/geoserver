@@ -635,6 +635,19 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
         this.optionalParams.angle = rotation;
     }
 
+    public ScaleComputationMethod getScaleMethod() {
+        return this.optionalParams.scaleMethod;
+    }
+
+    /**
+     * Sets the scale computation method ({@link ScaleComputationMethod#OGC} by default)
+     * 
+     * @param rotation
+     */
+    public void setScaleMethod(ScaleComputationMethod scaleMethod) {
+        this.optionalParams.scaleMethod = scaleMethod;
+    }
+
     private class MandatoryParameters implements Cloneable {
         /** ordered list of requested layers */
         List<MapLayerInfo> layers = Collections.emptyList();
@@ -770,6 +783,9 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
         /** map rotation */
         double angle;
         
+        /** scale computation method */
+        ScaleComputationMethod scaleMethod;
+
         @Override
         public Object clone() throws CloneNotSupportedException {
         	return super.clone();

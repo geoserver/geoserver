@@ -24,6 +24,7 @@
       <list>
         <value>wcsLogger</value>
         <value>wcs100ServiceTarget</value>
+        <value>wcs100ServiceInterceptor*</value>
       </list>
     </property>
   </bean>

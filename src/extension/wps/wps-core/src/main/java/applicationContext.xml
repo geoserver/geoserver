@@ -55,7 +55,6 @@
         <list>
           <value>wpsLogger</value>
           <value>wpsServiceTarget</value>
-          <value>wpsServiceInterceptor*</value>
         </list>
       </property>
     </bean>

@@ -24,7 +24,6 @@
         <list>
           <value>cswLogger</value>
           <value>cswServiceTarget</value>
-          <value>cswServiceInterceptor*</value>
         </list>
       </property>
     </bean>

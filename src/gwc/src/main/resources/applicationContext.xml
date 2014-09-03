@@ -12,7 +12,6 @@
 
   <bean id="GWCLifeCycleHandler" class="org.geoserver.gwc.config.GWCLifeCycleHandler">
     <description>Reloads the GWC config when GeoServer is called for a reload</description>
-    <constructor-arg ref="gwcFacade" />
   </bean>
   
   <bean id="gwcJdbcConfigurationStorage" class="org.geoserver.gwc.JDBCConfigurationStorage">

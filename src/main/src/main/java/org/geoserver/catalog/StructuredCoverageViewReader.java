@@ -135,7 +135,8 @@ public class StructuredCoverageViewReader extends CoverageViewReader implements
                             propName = prop.getName();
                             if (
                             !propName.getLocalPart().equalsIgnoreCase("imageIndex")
-                                    && !propName.getLocalPart().equalsIgnoreCase("the_geom")) {
+                                    && !propName.getLocalPart().equalsIgnoreCase("the_geom")
+                                    && !propName.getLocalPart().equalsIgnoreCase("location")) {
                                 propValue = prop.getValue();
                                 Filter updatedFilter = Utils.FF.equal(Utils.FF.property(propName),
                                         Utils.FF.literal(propValue), true);

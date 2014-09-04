@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2007 - 2013 OpenPlans
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2007 - 2013 OpenPlans
  * Copyright 2003 Jayson Falkner (jayson@jspinsider.com)
  * This code is from "Servlets and JavaServer pages; the J2EE Web Tier",
  * http://www.jspbook.com. You may freely use the code both commercially

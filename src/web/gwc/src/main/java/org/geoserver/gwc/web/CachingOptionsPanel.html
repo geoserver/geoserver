@@ -2,14 +2,8 @@
 <body>
 <wicket:panel>
 <fieldset>
-  <legend><span><wicket:message key="GWCSettingsPage.defaultCacheOptions">Default Caching Options</wicket:message></span></legend>
+  <legend><span><wicket:message key="cacheOptions">Caching Options</wicket:message></span></legend>
   <ul>
-    <li>
-      <input id="cacheLayersByDefault" class="field checkbox" type="checkbox" wicket:id="cacheLayersByDefault" /> 
-      <label for="cacheLayersByDefault" class="choice">
-        <wicket:message key="GWCSettingsPage.cacheLayersByDefault">Automatically cache newly added layers</wicket:message>
-      </label>
-    </li>
     <li wicket:id="container">
       <div wicket:id="configs">
         <ul>
@@ -21,70 +15,6 @@
               <select class="select" id="lockProvider" wicket:id="lockProvider"></select>
             </div>
             <br>
-          </li>
-          <li>
-            <input id="cacheNonDefaultStyles" class="field checkbox" type="checkbox" wicket:id="cacheNonDefaultStyles" /> 
-            <label for="cacheNonDefaultStyles" class="choice">
-              <wicket:message key="GWCSettingsPage.cacheNonDefaultStyles">Automatically cache non default styles</wicket:message>
-            </label>
-          </li>
-          <li>
-            <div style="width: 50%">
-              <label><wicket:message key="GWCSettingsPage.metaTiling">Default meta tiling factors:</wicket:message></label>
-            </div>
-            <div>
-              <select class="select" id="metaTilingX" wicket:id="metaTilingX"></select>
-              <wicket:message key="GWCSettingsPage.metaTilingX">Tiles wide by </wicket:message>
-              <select class="select" id="metaTilingY" wicket:id="metaTilingY"></select>
-              <wicket:message key="GWCSettingsPage.metaTilingY">Tiles high</wicket:message>
-            </div>
-          </li>
-          <li>
-            <div style="width: 50%">
-              <label><wicket:message key="GWCSettingsPage.gutter">Default gutter size:</wicket:message></label>
-            </div>
-            <div>
-              <select class="select" id="gutter" wicket:id="gutter"></select>
-            </div>
-            <br>
-          </li>
-          <li>
-            <label><wicket:message key="GWCSettingsPage.defaultCacheFormats">Default Cache Formats</wicket:message></label>
-            <table>
-              <tr>
-              <td>
-              <div wicket:id="vectorFormatsGroup">
-                <label><wicket:message key="GWCSettingsPage.defaultCacheFormatsVector">Vector Layers</wicket:message></label>
-                <span wicket:id="vectorFromats" style="padding: 2px;">            
-                  <input wicket:id="vectorFormatsOption" type="checkbox" style="margin: 1px;"/>
-                  <label wicket:id="name" class="choice" style="padding: 1px;">[this is where name will be]</label>
-                </span>
-              </div>
-              </td>
-              <td>
-              <div wicket:id="rasterFormatsGroup">
-                <label><wicket:message key="GWCSettingsPage.defaultCacheFormatsRaster">Raster Layers</wicket:message></label>
-                <span wicket:id="rasterFromats" style="padding: 2px;">            
-                  <input wicket:id="rasterFormatsOption" type="checkbox" style="margin: 1px;"/>
-                  <label wicket:id="name" class="choice" style="padding: 1px;">[this is where name will be]</label>
-                </span>
-              </div>
-              </td>
-              <td>
-              <div wicket:id="otherFormatsGroup">
-                <label><wicket:message key="GWCSettingsPage.defaultCacheFormatsOther">Other Layers</wicket:message></label>
-                <span wicket:id="otherFromats" style="padding: 2px;">            
-                  <input wicket:id="otherFormatsOption" type="checkbox" style="margin: 1px;"/>
-                  <label wicket:id="name" class="choice" style="padding: 1px;">[this is where name will be]</label>
-                </span>
-              </div>
-              </td>
-              </tr>
-            </table>
-          </li>
-          <li>
-            <label><wicket:message key="cachedGridsets">Cached Grid Sets:</wicket:message></label>
-            <span wicket:id="cachedGridsets"></span>
           </li>
         </ul>
       </div>

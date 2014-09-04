@@ -90,8 +90,8 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         gwc.saveConfig(config);
         assertFalse(gwc.getConfig().isCacheLayersByDefault());
 
-        testEditCheckboxOption("form:cachingOptionsPanel:cacheLayersByDefault",
-                "cachingOptionsPanel:cacheLayersByDefault", false);
+        testEditCheckboxOption("form:layerDefaultsPanel:cacheLayersByDefault",
+                "layerDefaultsPanel:cacheLayersByDefault", false);
 
         assertTrue(gwc.getConfig().isCacheLayersByDefault());
     }
@@ -104,8 +104,8 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         gwc.saveConfig(config);
         assertTrue(gwc.getConfig().isCacheLayersByDefault());
 
-        testEditCheckboxOption("form:cachingOptionsPanel:cacheLayersByDefault",
-                "cachingOptionsPanel:cacheLayersByDefault", true);
+        testEditCheckboxOption("form:layerDefaultsPanel:cacheLayersByDefault",
+                "layerDefaultsPanel:cacheLayersByDefault", true);
 
         assertFalse(gwc.getConfig().isCacheLayersByDefault());
     }
@@ -119,8 +119,8 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         gwc.saveConfig(config);
         assertFalse(gwc.getConfig().isCacheNonDefaultStyles());
 
-        testEditCheckboxOption("form:cachingOptionsPanel:container:configs:cacheNonDefaultStyles",
-                "cachingOptionsPanel:container:configs:cacheNonDefaultStyles", false);
+        testEditCheckboxOption("form:layerDefaultsPanel:container:configs:cacheNonDefaultStyles",
+                "layerDefaultsPanel:container:configs:cacheNonDefaultStyles", false);
 
         assertTrue(gwc.getConfig().isCacheNonDefaultStyles());
     }
@@ -134,8 +134,8 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         gwc.saveConfig(config);
         assertTrue(gwc.getConfig().isCacheNonDefaultStyles());
 
-        testEditCheckboxOption("form:cachingOptionsPanel:container:configs:cacheNonDefaultStyles",
-                "cachingOptionsPanel:container:configs:cacheNonDefaultStyles", true);
+        testEditCheckboxOption("form:layerDefaultsPanel:container:configs:cacheNonDefaultStyles",
+                "layerDefaultsPanel:container:configs:cacheNonDefaultStyles", true);
 
         assertFalse(gwc.getConfig().isCacheNonDefaultStyles());
     }
@@ -156,22 +156,22 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
                 "image/gif");
 
         tester.assertListView(
-                "form:cachingOptionsPanel:container:configs:vectorFormatsGroup:vectorFromats",
+                "form:layerDefaultsPanel:container:configs:vectorFormatsGroup:vectorFromats",
                 formats);
         tester.assertListView(
-                "form:cachingOptionsPanel:container:configs:rasterFormatsGroup:rasterFromats",
+                "form:layerDefaultsPanel:container:configs:rasterFormatsGroup:rasterFromats",
                 formats);
         tester.assertListView(
-                "form:cachingOptionsPanel:container:configs:otherFormatsGroup:otherFromats",
+                "form:layerDefaultsPanel:container:configs:otherFormatsGroup:otherFromats",
                 formats);
 
         FormTester form = tester.newFormTester("form");
         final boolean replace = true;// tell selectMultiple to first set all options to false
-        form.selectMultiple("cachingOptionsPanel:container:configs:vectorFormatsGroup", new int[] {
+        form.selectMultiple("layerDefaultsPanel:container:configs:vectorFormatsGroup", new int[] {
                 1, 3 }, replace);
-        form.selectMultiple("cachingOptionsPanel:container:configs:rasterFormatsGroup", new int[] {
+        form.selectMultiple("layerDefaultsPanel:container:configs:rasterFormatsGroup", new int[] {
                 1, 3 }, replace);
-        form.selectMultiple("cachingOptionsPanel:container:configs:otherFormatsGroup", new int[] {
+        form.selectMultiple("layerDefaultsPanel:container:configs:otherFormatsGroup", new int[] {
                 1, 3 }, replace);
         // print(page, true, true);
         form.submit("submit");
@@ -249,11 +249,11 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         // Ensure the page is correctly rendered
         tester.assertRenderedPage(GWCSettingsPage.class);
         // Ensure the component cachedGridsets belongs to the DefaultGridsetsEditor class
-        tester.assertComponent("form:cachingOptionsPanel:container:configs:cachedGridsets",
+        tester.assertComponent("form:layerDefaultsPanel:container:configs:cachedGridsets",
                 DefaultGridsetsEditor.class);
         // Get the available GridSets
         DropDownChoice<String> availableItems = (DropDownChoice<String>) tester
-                .getComponentFromLastRenderedPage("form:cachingOptionsPanel:container:configs:cachedGridsets:availableGridsets");
+                .getComponentFromLastRenderedPage("form:layerDefaultsPanel:container:configs:cachedGridsets:availableGridsets");
         // Ensure the component is present
         assertNotNull(availableItems);
         // Get the first item
@@ -265,9 +265,9 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
 
         // Selection of the form tests
         FormTester form = tester.newFormTester("form");
-        form.select("cachingOptionsPanel:container:configs:cachedGridsets:availableGridsets", 0);
+        form.select("layerDefaultsPanel:container:configs:cachedGridsets:availableGridsets", 0);
         tester.executeAjaxEvent(
-                "form:cachingOptionsPanel:container:configs:cachedGridsets:addGridset", "onclick");
+                "form:layerDefaultsPanel:container:configs:cachedGridsets:addGridset", "onclick");
         // Check that the page is correctly rendered
         tester.assertRenderedPage(GWCSettingsPage.class);
         // Save the changes
@@ -280,7 +280,7 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(GWCSettingsPage.class);
         // Get the list of available elements
         availableItems = (DropDownChoice<String>) tester
-                .getComponentFromLastRenderedPage("form:cachingOptionsPanel:container:configs:cachedGridsets:availableGridsets");
+                .getComponentFromLastRenderedPage("form:layerDefaultsPanel:container:configs:cachedGridsets:availableGridsets");
         // Ensure that the one used above is no more present
         assertFalse(availableItems.getChoices().contains(item));
     }

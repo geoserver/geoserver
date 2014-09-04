@@ -8,11 +8,15 @@ Getting commit access
 
 All contributors are asked to provide an assignment agreement for working on the project:
 
-* :download:`assignment_agreement.pdf`
+* `corporate_contributor.txt <http://www.osgeo.org/sites/osgeo.org/files/Page/corporate_contributor.tx>`_
+* `individual_contributor.txt <http://www.osgeo.org/sites/osgeo.org/files/Page/individual_contributor.txt>`_
 
-This agreement can be printed, signed, scanned and emailed to `Ellen McDermott <mailto:emcdermott@openplans.org>`_ at OpenPlans. `OpenPlans <http://openplans.org/about/>`_
+
+This agreement can be printed, signed, scanned and emailed to `info@osgeo.org <mailto:info@osgeo.org>`_ at Open Source Geospatial Foundation (OSGeo). `OSGeo <http://www.osgeo.org/content/foundation/about.html>`_
 is the  non-profit which holds the GeoServer codebase for the community.
 
+The `contribution licenses <http://www.osgeo.org/content/foundation/legal/licenses.html>`_ are used by OSGeo projects seeking to assign copyright directly to the foundation. These licenses are directly derived from the Apache code contribution licenses (CLA V2.0 and CCLA v r190612).
+   
 Community commit access
 ^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -88,17 +92,31 @@ in GeoServer. But over time some rules and conventions have emerged:
    When adding new source files to the repository remember to add the standard
    copyright header::
 
-     /* Copyright (c) 2014 OpenPlans - www.openplans.org. All rights reserved.
-      * This code is licensed under the GPL 2.0 license, available at the root
-      * application directory.
-      */
+      /* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+       * This code is licensed under the GPL 2.0 license, available at the root
+       * application directory.
+       */
 
-   When updating a file update the header::
+   When updating a file .. update the header::
 
-     /* Copyright (c) 2003-2014 OpenPlans - www.openplans.org. All rights reserved.
-      * This code is licensed under the GPL 2.0 license, available at the root
-      * application directory.
-      */
+      /* (c) 2013-2014 Open Source Geospatial Foundation - all rights reserved
+       * This code is licensed under the GPL 2.0 license, available at the root
+       * application directory.
+       */
+
+   When adding content from another organisation maintain copyright history and original license. Only add (c) OSGeo if you have made modifications to the file for GeoServer::
+   
+      /* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+       * (c) 2014 OpenPlans
+       * (c) 2008-2010 GeoSolutions
+       * 
+       * This code is licensed under the GPL 2.0 license, available at the root
+       * application directory.
+       * 
+       * Original from GeoWebCache 1.5.1 under a LGPL license 
+       */
+
+   In a rare case (as when asking to migrate content from GeoTools) you can obtain permission to change the license to our GPL 2.0 license.
 
 #. **Do not commit large amounts of binary data**
 

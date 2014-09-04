@@ -40,9 +40,10 @@ The process of getting community commit access is as follows:
 
 #. **Print, sign, scan and send the contributor agreement**
    
-   * :download:`assignment_agreement.pdf`
+   * `corporate_contributor.txt <http://www.osgeo.org/sites/osgeo.org/files/Page/corporate_contributor.tx>`_
+   * `individual_contributor.txt <http://www.osgeo.org/sites/osgeo.org/files/Page/individual_contributor.txt>`_
    
-   Scanned assignment agreement can be emailed to `Ellen McDermott <mailto:emcdermott@openplans.org>`_ at OpenPlans.
+   Scanned assignment agreement can be emailed `info@osgeo.org <mailto:info@osgeo.org>`_ at OSGeo.
 
 #. **Notify the developer list**
 

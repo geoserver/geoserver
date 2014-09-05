@@ -483,11 +483,23 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         }
         @Override
         public double getMinimumValue() {
-            return getRange().getMinimum();
+            NumberRange<? extends Number> range = getRange();
+            // Check if the range exists, otherwise use the sample dimension values
+            if(range != null){
+                return range.getMinimum();
+            }else{
+                return sampleDim.getMinimumValue();
+            }
         }
         @Override
         public double getMaximumValue() {
-            return getRange().getMaximum();
+            NumberRange<? extends Number> range = getRange();
+            // Check if the range exists, otherwise use the sample dimension values
+            if(range != null){
+                return range.getMaximum();
+            }else{
+                return sampleDim.getMaximumValue();
+            }
         }
         @Override
         public NumberRange<? extends Number> getRange() {

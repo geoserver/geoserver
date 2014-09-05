@@ -171,6 +171,7 @@
         <module>dyndimension</module>
 		<module>rest-ext</module>
 		<module>gpxppio</module>
+		<module>kmlppio</module>
       </modules>
     </profile>
     <profile>
@@ -344,7 +345,6 @@
       <modules>
         <module>kmlppio</module>
       </modules>
-    </profile>
     </profile>
   </profiles>
 </project>

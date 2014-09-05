@@ -144,3 +144,23 @@ To add a pre-existing grid set, select it from the :guilabel:`Add default grid s
    *Adding an existing gridset to the list of defaults*
 
 These definitions are described in more detail on the :ref:`webadmin_tilecaching_gridsets` page.
+
+General Caching Options
+-----------------------
+
+Options applying to GeoWebCache as a whole.
+
+.. figure:: img/general_options.png
+   :align: center
+
+   *General Caching Options*
+
+Tile locking mechanism
+~~~~~~~~~~~~~~~~~~~~~~
+
+Selects the mechanism used to prevent simultaneous modification of a tile.    
+
+* In Process Locking will lock tiles in memory so that other threads within the GeoWebCache instance can respect the lock.
+* NIO File based locking will lock the file in the filesystem so that the cache can be shared by multiple GeoWebCache instances.
+* Global will use the default mechanism specified for locking in GeoServer. 
+* Locking can also be disabled.

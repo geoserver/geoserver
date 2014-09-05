@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+  elementFormDefault="qualified"
+  targetNamespace="http://www.w3.org/2005/Atom"
+  xmlns:atom="http://www.w3.org/2005/Atom" version="1.0.0">
+
+  <annotation>
+    <appinfo>atom-author-link.xsd 2008-01-23</appinfo>
+    <documentation>There is no official atom XSD. This XSD is created based on:
+      http://atompub.org/2005/08/17/atom.rnc. A subset of Atom as used in the
+      ogckml22.xsd is defined here. </documentation>
+  </annotation>
+
+  <!-- Person Construct -->
+  <complexType name="atomPersonConstruct">
+    <choice minOccurs="0" maxOccurs="unbounded">
+      <element ref="atom:name"/>
+      <element ref="atom:uri"/>
+      <element ref="atom:email"/>
+    </choice>
+  </complexType>
+
+  <element name="name" type="string"/>
+  <element name="uri" type="string"/>
+  <element name="email" type="atom:atomEmailAddress"/>
+
+  <!-- atom:author -->
+  <element name="author" type="atom:atomPersonConstruct"/>
+
+  <!-- atom:link -->
+  <element name="link">
+    <complexType>
+
+      <attribute name="href" use="required"/>
+      <attribute name="rel"/>
+      <attribute name="type" type="atom:atomMediaType"/>
+      <attribute name="hreflang" type="atom:atomLanguageTag"/>
+      <attribute name="title"/>
+      <attribute name="length"/>
+
+    </complexType>
+
+  </element>
+
+  <!-- Whatever a media type is, it contains at least one slash -->
+  <simpleType name="atomMediaType">
+    <restriction base="string">
+      <pattern value=".+/.+"/>
+    </restriction>
+  </simpleType>
+
+  <!-- As defined in RFC 3066 -->
+  <simpleType name="atomLanguageTag">
+    <restriction base="string">
+      <pattern value="[A-Za-z]{1,8}(-[A-Za-z0-9]{1,8})*"/>
+    </restriction>
+  </simpleType>
+
+  <!-- Whatever an email address is, it contains at least one @ -->
+  <simpleType name="atomEmailAddress">
+    <restriction base="string">
+      <pattern value=".+@.+"/>
+    </restriction>
+  </simpleType>
+
+</schema>

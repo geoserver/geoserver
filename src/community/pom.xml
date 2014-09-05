@@ -51,6 +51,7 @@
           <descriptor>release/ext-pgraster.xml</descriptor>
           <descriptor>release/ext-dyndimension.xml</descriptor>
 		  <descriptor>release/ext-rest-ext.xml</descriptor>
+		  <descriptor>release/ext-kmlppio.xml</descriptor>
 		  <descriptor>release/ext-gpx.xml</descriptor>
         </descriptors>
       </configuration>
@@ -170,6 +171,7 @@
         <module>dyndimension</module>
 		<module>rest-ext</module>
 		<module>gpxppio</module>
+		<module>kmlppio</module>
       </modules>
     </profile>
     <profile>
@@ -336,6 +338,12 @@
       <id>validation</id>
       <modules>
         <module>validation</module>
+      </modules>
+    </profile>
+    <profile>      
+      <id>kmlppio</id>
+      <modules>
+        <module>kmlppio</module>
       </modules>
     </profile>
   </profiles>

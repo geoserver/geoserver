@@ -3,7 +3,7 @@
 PostGIS
 =======
 
-`PostGIS <http://postgis.org>`_ is an open source spatial database based on `PostgreSQL <http://postgresql.com/>`_, and is currently one of the most popular open source spatial databases today.
+`PostGIS <http://postgis.net>`_ is an open source spatial database based on `PostgreSQL <http://postgresql.com/>`_, and is currently one of the most popular open source spatial databases today.
 
 Adding a PostGIS database
 -------------------------

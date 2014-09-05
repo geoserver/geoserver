@@ -52,7 +52,7 @@
           <descriptor>release/ext-dyndimension.xml</descriptor>
 		  <descriptor>release/ext-rest-ext.xml</descriptor>
 		  <descriptor>release/ext-kmlppio.xml</descriptor>
-		  <descriptor>release/ext-gpxppio.xml</descriptor>
+		  <descriptor>release/ext-gpx.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -118,8 +118,12 @@
         <module>dds</module>
       </modules>
     </profile>
-    
-    
+    <profile>
+      <id>gpx</id>
+      <modules>
+        <module>gpxppio</module>
+      </modules>
+    </profile>
     <profile>
       <id>dbconfig</id>
       <modules>
@@ -166,6 +170,7 @@
         <module>pgraster</module>
         <module>dyndimension</module>
 		<module>rest-ext</module>
+		<module>gpxppio</module>
       </modules>
     </profile>
     <profile>
@@ -340,11 +345,6 @@
         <module>kmlppio</module>
       </modules>
     </profile>
-    <profile>      
-      <id>gpxppio</id>
-      <modules>
-        <module>gpxppio</module>
-      </modules>
     </profile>
   </profiles>
 </project>

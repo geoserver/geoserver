@@ -28,6 +28,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  */
 public class GPXPPIO extends CDataPPIO {
     private static final Logger LOGGER = Logging.getLogger(GPXPPIO.class);
+    
     private GeoServer geoServer;
 
     protected GPXPPIO(GeoServer geoServer) {

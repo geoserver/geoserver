@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2014 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -41,8 +42,7 @@ import com.vividsolutions.jts.geom.Point;
 
 /**
  * Encoder class to encode SimpleFeatureCollection to GPX The encoder uses only a XMLStreamWriter for simplicity and performance sake.
- * 
- * @author Peter Hopfgartner (R3 GIS)
+ *
  */
 public class GpxEncoder {
     boolean writeExtendedData = false;

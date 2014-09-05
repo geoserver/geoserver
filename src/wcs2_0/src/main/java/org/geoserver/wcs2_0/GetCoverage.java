@@ -41,6 +41,7 @@ import net.opengis.wcs20.ScalingType;
 
 import org.eclipse.emf.common.util.EList;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageDimensionCustomizerReader.GridCoverageWrapper;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.util.CoverageUtils;
@@ -327,6 +328,7 @@ public class GetCoverage {
         // TODO elevation
         coverages = readCoverage(helper.getCoverageInfo(), gridCoverageRequest, reader, hints,
                 incrementalInputSize);
+        GridSampleDimension[] sampleDimensions = collectDimensions(coverages);
         if (coverages == null || coverages.isEmpty()) {
             throw new IllegalStateException("Unable to read a coverage for the current request" + coverageType.toString());
         }
@@ -411,8 +413,22 @@ public class GetCoverage {
             // Need to recreate the coverage in order to update the properties since the getProperties method returns a copy
             coverage = coverageFactory.create(coverage.getName(), coverage.getRenderedImage(), coverage.getEnvelope(), coverage.getSampleDimensions(), null, map);
         }
-        
+        if (sampleDimensions != null && sampleDimensions.length > 0) {
+            coverage = GridCoverageWrapper.wrapCoverage(coverage, coverage, sampleDimensions, null, true);
+        }
         return coverage;
+    }
+
+    private GridSampleDimension[] collectDimensions(List<GridCoverage2D> coverages) {
+        List<GridSampleDimension> dimensions = new ArrayList<GridSampleDimension>();
+        for (GridCoverage2D coverage : coverages) {
+            if (coverage instanceof GridCoverageWrapper) {
+                for (GridSampleDimension dimension: coverage.getSampleDimensions()) {
+                    dimensions.add(dimension);
+                }
+            }
+        };
+        return dimensions.toArray(new GridSampleDimension[dimensions.size()]);
     }
 
     private GridCoverage2D mosaicCoverages(final List<GridCoverage2D> coverages, final Hints hints)
@@ -1260,6 +1276,7 @@ public class GetCoverage {
         }
 
         GridCoverage2D cropped = WCSUtils.crop(coverage, cropEnvelope);
+        cropped = GridCoverageWrapper.wrapCoverage(cropped, coverage, null, null, false);
         return cropped;
     }
 

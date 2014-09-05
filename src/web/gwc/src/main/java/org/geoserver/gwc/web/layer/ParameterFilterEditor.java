@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.MissingResourceException;
 import java.util.Set;
@@ -26,12 +25,14 @@ import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
@@ -39,8 +40,6 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.repeater.RepeatingView;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.gwc.GWC;
@@ -305,27 +304,30 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                 availableFilterTypes.processInput();
                 newFilterKey.processInput();
                 String key = newFilterKey.getModelObject();
-                Class<? extends ParameterFilter> type = availableFilterTypes.getModelObject();
-                
-                try {
-                    ParameterFilter newFilter = type.getConstructor().newInstance();
-                    newFilter.setKey(key);
-                    addFilter(newFilter);
-                    newFilterKey.setModel(Model.of("")); // Reset the key field
-                } catch (NoSuchMethodException ex) {
-                    LOGGER.log(Level.WARNING, "No Default Constructor for "+type ,ex);
-                } catch (InvocationTargetException ex) {
-                    LOGGER.log(Level.WARNING, "Could not execute default Constructor for "+type ,ex);
-                } catch (SecurityException ex) {
-                    LOGGER.log(Level.WARNING, "Could not execute default Constructor for "+type ,ex);
-                } catch (InstantiationException ex) {
-                    LOGGER.log(Level.WARNING, "Could not execute default Constructor for "+type ,ex);
-                } catch (IllegalAccessException ex) {
-                    LOGGER.log(Level.WARNING, "Could not execute default Constructor for "+type ,ex);
-                }
+                if(key == null || key.isEmpty()){
+                    ParamResourceModel rm = new ParamResourceModel("ParameterFilterEditor.nonEmptyFilter", null, "");
+                    error(rm.getString());
+                }else{
+                    Class<? extends ParameterFilter> type = availableFilterTypes.getModelObject();
 
+                    try {
+                        ParameterFilter newFilter = type.getConstructor().newInstance();
+                        newFilter.setKey(key);
+                        addFilter(newFilter);
+                        newFilterKey.setModel(Model.of("")); // Reset the key field
+                    } catch (NoSuchMethodException ex) {
+                        LOGGER.log(Level.WARNING, "No Default Constructor for "+type ,ex);
+                    } catch (InvocationTargetException ex) {
+                        LOGGER.log(Level.WARNING, "Could not execute default Constructor for "+type ,ex);
+                    } catch (SecurityException ex) {
+                        LOGGER.log(Level.WARNING, "Could not execute default Constructor for "+type ,ex);
+                    } catch (InstantiationException ex) {
+                        LOGGER.log(Level.WARNING, "Could not execute default Constructor for "+type ,ex);
+                    } catch (IllegalAccessException ex) {
+                        LOGGER.log(Level.WARNING, "Could not execute default Constructor for "+type ,ex);
+                    }
+                }
                 target.addComponent(container);
-                
             }
         };
         addFilterLink.add(new Icon("addIcon", GWCIconFactory.ADD_ICON));

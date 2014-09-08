@@ -17,6 +17,10 @@ public class ContactInfoImpl implements ContactInfo {
 
     String addressCountry;
 
+    String addressDeliveryPoint;
+
+    String addressElectronicMailAddress;
+
     String addressPostalCode;
 
     String addressState;
@@ -67,6 +71,26 @@ public class ContactInfoImpl implements ContactInfo {
 
     public void setAddressCountry(String addressCountry) {
         this.addressCountry = addressCountry;
+    }
+
+    @Override
+    public String getAddressDeliveryPoint() {
+        return addressDeliveryPoint;
+    }
+
+    @Override
+    public void setAddressDeliveryPoint(String addressDeliveryPoint) {
+        this.addressDeliveryPoint = addressDeliveryPoint;
+    }
+
+    @Override
+    public String getAddressElectronicMailAddress() {
+        return addressElectronicMailAddress;
+    }
+
+    @Override
+    public void setAddressElectronicMailAddress(String addressElectronicMailAddress) {
+        this.addressElectronicMailAddress = addressElectronicMailAddress;
     }
 
     public String getAddressPostalCode() {

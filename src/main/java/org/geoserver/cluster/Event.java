@@ -1,7 +1,7 @@
 package org.geoserver.cluster;
 
 import java.io.Serializable;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.UUID;
 
 import com.google.common.base.Objects;
 
@@ -15,7 +15,17 @@ public class Event implements Serializable {
     private static final long serialVersionUID = 1L;
     
     Serializable source;
-    
+
+    private UUID uuid;
+
+    public Event() {
+        this.uuid = UUID.randomUUID();
+    }
+
+    public UUID getUUID() {
+        return uuid;
+    }
+
     /**
      * Set an identifier for the node on which the event originates.
      * @param source

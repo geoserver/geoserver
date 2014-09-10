@@ -56,18 +56,18 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer implements
 
     protected static Logger LOGGER = Logging.getLogger("org.geoserver.cluster.hazelcast");
 
-    HzCluster cluster;
+    protected final HzCluster cluster;
 
-    ITopic<Event> topic;
+    protected final ITopic<Event> topic;
 
     /** event queue */
-    Queue<Event> queue;
+    protected final Queue<Event> queue;
 
     /** event processor */
-    ScheduledExecutorService executor;
+    private final ScheduledExecutorService executor;
 
     /** geoserver configuration */
-    protected GeoServer gs;
+    protected final GeoServer gs;
 
     private volatile boolean started;
 
@@ -93,8 +93,8 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer implements
     @Override
     public void onMessage(Message<Event> message) {
         Event e = message.getMessageObject();
-        if(!isStarted()){
-            //wait for service to be fully started before processing events.
+        if (!isStarted()) {
+            // wait for service to be fully started before processing events.
             if (LOGGER.isLoggable(Level.FINER)) {
                 LOGGER.finer(format("%s - Ignoring message: %s. Service is not yet started.",
                         nodeId(), e));
@@ -133,16 +133,7 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer implements
         }, syncDelay, TimeUnit.SECONDS);
     }
 
-    protected void dispatch(Event e) {
-        if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine(format("%s - Publishing event %s", nodeId(), e));
-        }
-
-        e.setSource(localAddress(cluster.getHz()));
-        topic.publish(e);
-
-        Metrics.newCounter(getClass(), "dispatched").inc();
-    }
+    protected abstract void dispatch(Event e);
 
     /**
      * Processes the event queue.

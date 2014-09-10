@@ -111,6 +111,7 @@ public class ConfigChangeEvent extends Event {
     Type type;
 
     public ConfigChangeEvent(String id, String name, Class<? extends Info> clazz, Type type) {
+        super();
         this.id = id;
         this.name = name;
         this.clazz = clazz;

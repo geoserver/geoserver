@@ -15,6 +15,7 @@ import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
+import com.google.common.base.Optional;
 import com.hazelcast.config.Config;
 import com.hazelcast.config.XmlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
@@ -39,6 +40,8 @@ public class HzCluster implements DisposableBean, InitializingBean {
 
     private Catalog rawCatalog;
 
+    private static HzCluster CLUSTER;
+    
     /**
      * Get a file from the cluster config directory. Create it by copying a template from the
      * classpath if it doesn't exist.
@@ -57,6 +60,10 @@ public class HzCluster implements DisposableBean, InitializingBean {
             rl.copyFromClassPath(fileName, file, scope);
         }
         return file;
+    }
+    
+    static Optional<HzCluster> getInstanceIfAvailable(){
+        return Optional.fromNullable(CLUSTER);
     }
     
     /**
@@ -97,15 +104,18 @@ public class HzCluster implements DisposableBean, InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         watcher = loadConfig();
-        if(watcher.get().isEnabled())
+        if(watcher.get().isEnabled()){
             hz = Hazelcast.newHazelcastInstance(loadHazelcastConfig(rl));
+            CLUSTER = this;
+        }
     }
 
     @Override
     public void destroy() throws Exception {
-        if(hz!=null) {
+        if (hz != null) {
+            CLUSTER = null;
             hz.getLifecycleService().shutdown();
-            hz=null;
+            hz = null;
         }
     }
     

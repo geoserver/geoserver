@@ -20,9 +20,9 @@ import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WebMapService;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.mbtiles.MBTilesTile;
 import org.geotools.mbtiles.MBTilesFile;
 import org.geotools.mbtiles.MBTilesMetadata;
+import org.geotools.mbtiles.MBTilesTile;
 import org.geotools.referencing.CRS;
 import org.geowebcache.grid.GridSubset;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -59,6 +59,10 @@ public class MBTilesGetMapOutputFormat extends AbstractTilesGetMapOutputFormat {
         public MbTilesFileWrapper() throws IOException {
             mbTiles = new MBTilesFile();
             mbTiles.init();
+        }
+        
+        public MbTilesFileWrapper(MBTilesFile file) throws IOException {
+            mbTiles = file;
         }
 
         @Override
@@ -135,13 +139,12 @@ public class MBTilesGetMapOutputFormat extends AbstractTilesGetMapOutputFormat {
 
     @Override
     protected ReferencedEnvelope bounds(GetMapRequest req) {
-        if (convertedBounds == null) {
+        ReferencedEnvelope convertedBounds = null;
             try {
                 convertedBounds = new ReferencedEnvelope(req.getBbox(), req.getCrs()).transform(SPHERICAL_MERCATOR, true);
             } catch (Exception e) {
                 throw new ServiceException(e);
             } 
-        }
         return convertedBounds;
     }
 
@@ -153,6 +156,17 @@ public class MBTilesGetMapOutputFormat extends AbstractTilesGetMapOutputFormat {
     @Override
     protected String getSRS(GetMapRequest req) {
         return "EPSG:900913";
+    }
+    
+    /**
+     * Add tiles to an existing MBtile file
+     * 
+     * @param mbtiles
+     * @param map
+     * @throws IOException
+     */
+    public void addTiles(MBTilesFile mbtiles, GetMapRequest req, String name) throws IOException{
+        addTiles(new MbTilesFileWrapper(mbtiles), req, name);
     }
 
 }

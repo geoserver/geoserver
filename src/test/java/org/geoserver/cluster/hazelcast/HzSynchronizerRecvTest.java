@@ -2,7 +2,14 @@ package org.geoserver.cluster.hazelcast;
 
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
+import static org.hamcrest.Matchers.hasItems;
+import static org.junit.Assert.assertThat;
 
+import java.util.UUID;
+
+import org.easymock.Capture;
+import org.easymock.EasyMock;
+import org.easymock.IAnswer;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -21,6 +28,8 @@ import org.geoserver.config.impl.LoggingInfoImpl;
 import org.geoserver.config.impl.SettingsInfoImpl;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSInfoImpl;
+import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.hazelcast.core.Message;
@@ -47,6 +56,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
             expect(info.getId()).andStubReturn(layerId);
             
             expectationTestDisableLayer(info, layerName, layerId);
+            
         }
         replay(info);
         {
@@ -59,6 +69,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
             
             mockMessage(evt);
         }
+        
         waitForSync();
         verify(info);
     }
@@ -175,6 +186,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
             mockMessage(evtLayer);
             
             waitForSync();
+            
         }
         verify(gsInfo, layerInfo);
     }

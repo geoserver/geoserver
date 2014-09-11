@@ -2,6 +2,7 @@ package org.geoserver.cluster.hazelcast;
 
 import static org.easymock.EasyMock.*;
 
+import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.geoserver.catalog.DataStoreInfo;

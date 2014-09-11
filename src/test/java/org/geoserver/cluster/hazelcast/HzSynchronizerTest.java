@@ -5,11 +5,13 @@ import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.easymock.Capture;
 import org.easymock.EasyMock;
+import org.easymock.IAnswer;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.cluster.ClusterConfig;
@@ -19,35 +21,47 @@ import org.geoserver.config.ConfigurationListener;
 import org.geoserver.config.GeoServer;
 import org.junit.Before;
 
+import com.google.common.collect.Sets;
 import com.hazelcast.core.Cluster;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ITopic;
 import com.hazelcast.core.Member;
+import com.hazelcast.core.Message;
 import com.hazelcast.core.MessageListener;
+
 import static org.easymock.EasyMock.*;
+import static org.hamcrest.Matchers.hasItems;
+import static org.junit.Assert.assertThat;
 
 public abstract class HzSynchronizerTest {
 
     final public static String TOPIC_NAME = "geoserver.config";
+    final public static String ACK_TOPIC_NAME = "geoserver.config.ack";
     final public static int SYNC_DELAY = 1;
     //protected void setUpSpring(List<String> springContextLocations) {
-        // We're going to set up the synchronizer manually so ignore the spring context.
+
+	// We're going to set up the synchronizer manually so ignore the spring context.
     //}
     @Before
+    @SuppressWarnings("unchecked")
     public void setUp() throws Exception {
         hz = createMock(HazelcastInstance.class);
         cluster = createMock(HzCluster.class);
         topic = createMock(ITopic.class);
+        ackTopic = createMock(ITopic.class);
         configWatcher = createMock(ClusterConfigWatcher.class);
         clusterConfig = createMock(ClusterConfig.class);
         
         captureTopicListener = new Capture<MessageListener<Event>>();
-
+        captureAckTopicListener = new Capture<MessageListener<UUID>>();
+        captureAckTopicPublish = new Capture<UUID>();
+        
         localAddress = new InetSocketAddress( localAddress(42) , 5000);
         remoteAddress = new InetSocketAddress( localAddress(54) , 5000);
         
         Cluster cluster = createMock(Cluster.class);
-        Member member = createMock(Member.class);
+        Member localMember = createMock(Member.class);
+        Member remoteMember = createMock(Member.class);
         
         expect(this.cluster.getHz()).andStubReturn(hz);
         expect(this.cluster.isEnabled()).andStubReturn(true);
@@ -56,10 +70,36 @@ public abstract class HzSynchronizerTest {
         expect(hz.<Event>getTopic(TOPIC_NAME)).andReturn(topic);
         topic.addMessageListener(capture(captureTopicListener)); expectLastCall();
         
-        expect(cluster.getLocalMember()).andStubReturn(member);
-        expect(member.getInetSocketAddress()).andStubReturn(localAddress);
+        expect(hz.<UUID>getTopic(ACK_TOPIC_NAME)).andReturn(ackTopic);
+        ackTopic.addMessageListener(capture(captureAckTopicListener)); expectLastCall();
         
-        EasyMock.replay(cluster, member);
+
+        ackTopic.publish(EasyMock.capture(captureAckTopicPublish));EasyMock.expectLastCall().andStubAnswer(new IAnswer<Object>() {
+
+			@Override
+			public Object answer() throws Throwable {
+				Message<UUID> message = createMock(Message.class);
+				expect(message.getMessageObject()).andStubReturn(captureAckTopicPublish.getValue());
+				replay(message);
+				for(MessageListener<UUID> listener: captureAckTopicListener.getValues()) {
+					listener.onMessage(message);
+				}
+				return null;
+			}
+        	
+        });
+        
+        expect(cluster.getLocalMember()).andStubReturn(localMember);
+        expect(localMember.getInetSocketAddress()).andStubReturn(localAddress);
+        expect(remoteMember.getInetSocketAddress()).andStubReturn(remoteAddress);
+        expect(localMember.isLiteMember()).andStubReturn(false);
+        expect(remoteMember.isLiteMember()).andStubReturn(false);
+        expect(localMember.localMember()).andStubReturn(true);
+        expect(remoteMember.localMember()).andStubReturn(false);
+        
+        expect(cluster.getMembers()).andStubReturn(Sets.newHashSet(localMember, remoteMember));
+        
+        EasyMock.replay(cluster, localMember, remoteMember);
         
         expect(hz.getCluster()).andStubReturn(cluster);
         
@@ -94,6 +134,7 @@ public abstract class HzSynchronizerTest {
     protected HazelcastInstance hz;
     protected HzCluster cluster;
     protected ITopic<Event> topic;
+    protected ITopic<UUID> ackTopic;
     protected GeoServer geoServer;
     protected Catalog catalog;
     protected ClusterConfigWatcher configWatcher;
@@ -106,10 +147,12 @@ public abstract class HzSynchronizerTest {
     protected Capture<ConfigurationListener> gsListenerCapture;
     protected Capture<CatalogListener> catListenerCapture;
     protected Capture<MessageListener<Event>> captureTopicListener;
+	protected Capture<MessageListener<UUID>> captureAckTopicListener;
     protected Capture<Runnable> captureExecutor;
+	protected Capture<UUID> captureAckTopicPublish;
     
     public List<Object> myMocks() {
-        return Arrays.asList(topic, configWatcher, clusterConfig, geoServer, catalog, hz, executor, cluster);
+        return Arrays.asList(topic, ackTopic, configWatcher, clusterConfig, geoServer, catalog, hz, executor, cluster);
     }
     
     public HzSynchronizerTest() {
@@ -173,5 +216,9 @@ public abstract class HzSynchronizerTest {
             i.remove();
             task.run();
         }
+    }
+    
+    void assertAcked(UUID... eventId) {
+        assertThat(captureAckTopicPublish.getValues(), hasItems(eventId));
     }
 }

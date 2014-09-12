@@ -54,8 +54,8 @@
       <property name="interceptorNames">
         <list>
           <value>wpsLogger</value>
-          <value>wpsServiceTarget</value>
           <value>wpsServiceInterceptor*</value>
+          <value>wpsServiceTarget</value>        
         </list>
       </property>
     </bean>

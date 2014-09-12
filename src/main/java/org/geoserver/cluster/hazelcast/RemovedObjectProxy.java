@@ -8,6 +8,7 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.CoverageInfo;
@@ -96,6 +97,8 @@ class RemovedObjectProxy implements InvocationHandler {
             catalogVisitor.visit((LayerInfo) proxy);
         } else if (LayerGroupInfo.class.equals(infoInterface)) {
             catalogVisitor.visit((LayerGroupInfo) proxy);
+        } else if (Catalog.class.equals(infoInterface)) {
+            catalogVisitor.visit((Catalog) proxy);
         }
     }
 

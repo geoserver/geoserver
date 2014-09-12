@@ -36,6 +36,7 @@
 	  <property name="interceptorNames">
 	  	<list>
 	  		<value>wfsLogger</value>
+            <value>wfsServiceInterceptor*</value>
 	  		<value>wfsServiceTarget</value>
 	  	</list>
 	  </property>

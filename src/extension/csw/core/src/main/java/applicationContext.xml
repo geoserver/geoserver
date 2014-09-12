@@ -23,6 +23,7 @@
       <property name="interceptorNames">
         <list>
           <value>cswLogger</value>
+          <value>cswServiceInterceptor*</value>
           <value>cswServiceTarget</value>
         </list>
       </property>

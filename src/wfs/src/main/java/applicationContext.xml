@@ -36,8 +36,8 @@
 	  <property name="interceptorNames">
 	  	<list>
 	  		<value>wfsLogger</value>
-	  		<value>wfsServiceTarget</value>
-                        <value>wfsServiceInterceptor*</value>
+	  		<value>wfsServiceInterceptor*</value>
+                        <value>wfsServiceTarget</value>
 	  	</list>
 	  </property>
 	</bean>

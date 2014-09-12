@@ -10,6 +10,8 @@ import java.io.File;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInitializer;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.platform.resource.Paths;
+import org.geoserver.platform.resource.Resource;
 import org.springframework.util.Assert;
 
 public class InspireInitializer implements GeoServerInitializer {
@@ -17,7 +19,8 @@ public class InspireInitializer implements GeoServerInitializer {
     public void initialize(GeoServer geoServer) throws Exception {
         // copy over the schema
         GeoServerResourceLoader l = geoServer.getCatalog().getResourceLoader();
-        File target = l.createFile("www", "inspire", "inspire_vs.xsd");
+        Resource resource = l.get(Paths.path("www", "inspire", "inspire_vs.xsd"));
+        File target = resource.file();
         l.copyFromClassPath("inspire_vs.xsd", target, InspireInitializer.class);
         Assert.isTrue(target.exists());
     }

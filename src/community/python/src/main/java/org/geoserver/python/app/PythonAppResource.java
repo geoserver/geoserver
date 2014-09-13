@@ -209,7 +209,7 @@ public class PythonAppResource extends Resource {
                 });
             }
             else {
-                LOGGER.warning( "Unsure how to handle " + ret + ". Resorting to outputing string " +
+                LOGGER.warning( "Unsure how to handle " + ret + ". Resorting to outputting string " +
                     "representation.");
                 getResponse().setEntity(ret.toString(), mediaType);
             }

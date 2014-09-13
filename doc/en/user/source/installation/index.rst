@@ -7,7 +7,8 @@ There are many ways to install GeoServer on your system.  This section will disc
 
 .. toctree::
    :maxdepth: 2
-
+   
+   java
    windows/index
    osx/index
    linux/index

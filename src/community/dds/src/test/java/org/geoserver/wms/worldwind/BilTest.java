@@ -43,7 +43,7 @@ public class BilTest extends WMSTestSupport {
         super.onSetUp(testData);
 
         testData.addStyle("raster", "raster.sld", BilTest.class, getCatalog());
-        testData.addRasterLayer(AUS_DEM, "aus_dem.tif", "tiff", null, BilTest.class, getCatalog());
+        testData.addRasterLayer(AUS_DEM, "aus_dem.tiff", "tiff", null, BilTest.class, getCatalog());
         
         WMSInfo wmsInfo = getGeoServer().getService(WMSInfo.class);
         wmsInfo.setMaxBuffer(50);

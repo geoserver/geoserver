@@ -189,7 +189,9 @@ in units of the specified spatial reference system. -->
 <!ATTLIST Extent
           name CDATA #REQUIRED
           default CDATA #IMPLIED
-          nearestValue (0 | 1) "0">
+          nearestValue (0 | 1) "0"
+          multipleValues (0 | 1) "0"
+          current (0 | 1) "0">
 
 <!-- Attribution indicates the provider of a Layer or collection of Layers.
 The provider's URL, descriptive title string, and/or logo image URL may be

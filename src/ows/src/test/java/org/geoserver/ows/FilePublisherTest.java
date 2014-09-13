@@ -56,7 +56,7 @@ public class FilePublisherTest {
         File file = new File(parent, fname);
         file.deleteOnExit();
         FileOutputStream fout = new FileOutputStream(file);
-        fout.write(fname.getBytes());
+        fout.write(fname.getBytes("UTF-8"));
         fout.close();
         return path;
     }

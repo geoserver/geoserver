@@ -490,7 +490,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         in = style.in();
         try {
             out = new StringWriter();
-            IOUtils.copy(style.in(), out);
+            IOUtils.copy(in, out);
             assertFalse(out.toString().startsWith("#comment!"));
         }
         finally {
@@ -518,7 +518,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         InputStream in = style.in();
         try {
             out = new StringWriter();
-            IOUtils.copy(style.in(), out);
+            IOUtils.copy(in, out);
             assertTrue(out.toString().startsWith("#comment!"));
         }
         finally {
@@ -563,7 +563,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         in = style.in();
         try {
             out = new StringWriter();
-            IOUtils.copy(style.in(), out);
+            IOUtils.copy(in, out);
             assertFalse(out.toString().startsWith("#comment!"));
         }
         finally {
@@ -600,7 +600,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         in = style.in();
         try {
             out = new StringWriter();
-            IOUtils.copy(style.in(), out);
+            IOUtils.copy(in, out);
             assertTrue(out.toString().startsWith("#comment!"));
         }
         finally {

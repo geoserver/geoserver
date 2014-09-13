@@ -18,6 +18,7 @@ import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.map.RenderedImageMapOutputFormat;
 import org.junit.Test;
 
+import com.mockrunner.mock.web.MockHttpServletResponse;
 
 /**
  * Test case for producing Raw bil images out of an elevation model.
@@ -36,7 +37,8 @@ public class BilTest extends WMSTestSupport {
     public static String WCS_URI = "http://www.opengis.net/wcs/1.1.1";
     public static QName AUS_DEM = new QName(WCS_URI, "Ausdem", WCS_PREFIX);
     
-    private RenderedImageMapOutputFormat rasterMapProducer;
+    private final int width = 64;
+    private final int height = 64;
     
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -50,41 +52,48 @@ public class BilTest extends WMSTestSupport {
         getGeoServer().save(wmsInfo);
     }
 
-    
     @Test
-	public void testStandardRequest() throws Exception {
-	    String layer = getLayerId(AUS_DEM);
-	    
-	    String request = "wms?service=wms&request=GetMap&version=1.1.1" +
-		"&layers=" + layer + "&styles=&bbox=108.3,-46.3,160.3,-4.2&width=64&height=64" + 
-		"&format=application/bil&srs=EPSG:4326";
-		String response = getAsString(request);
-		// Check response length in bytes
-		assertEquals("testStandardRequest",9377,response.getBytes().length);
-	    
-	    
-	    request = "wms?service=wms&request=GetMap&version=1.1.1" +
-	    		"&layers=" + layer + "&styles=&bbox=108.3,-46.3,160.3,-4.2&width=64&height=64" + 
-	    		"&format=application/bil8&srs=EPSG:4326";
-	    response = getAsString(request);
-	    // Check response length in bytes
-	    assertEquals("testStandardRequest",4097,response.getBytes().length);
-	    
-	    request = "wms?service=wms&request=GetMap&version=1.1.1" +
-		"&layers=" + layer + "&styles=&bbox=108.3,-46.3,160.3,-4.2&width=64&height=64" + 
-		"&format=application/bil16&srs=EPSG:4326";
-	    response = getAsString(request);
-	    // Check response length in bytes
-	    assertEquals("testStandardRequest",8193,response.getBytes().length);
-	    
-	    request = "wms?service=wms&request=GetMap&version=1.1.1" +
-		"&layers=" + layer + "&styles=&bbox=108.3,-46.3,160.3,-4.2&width=64&height=64" + 
-		"&format=application/bil32&srs=EPSG:4326";
-	    response = getAsString(request);
-	    // Check response length in bytes
-	    assertEquals("testStandardRequest",16385,response.getBytes().length);
+	public void testBil() throws Exception {
+        byte[] response = getStandardRequest("application/bil");
+
+        // TODO why is expected content here different than for bil16 below?
+        assertEquals("testStandardRequest", 9377, response.length);
+    }
+
+    @Test
+    public void testBil8() throws Exception {
+        byte[] response = getStandardRequest("application/bil8");
+
+        int expected = width * height; // 1 byte/pixel
+        assertEquals("testStandardRequest", expected, response.length);
+    }
+
+    @Test
+    public void testBil16() throws Exception {
+        byte[] response = getStandardRequest("application/bil16");
+
+        int expected = width * height * 2; // 2 bytes/pixel
+        assertEquals("testStandardRequest", expected, response.length);
+    }
+
+    @Test
+    public void testBil32() throws Exception {
+        byte[] response = getStandardRequest("application/bil32");
+
+        int expected = width * height * 4; // 4 bytes/pixel
+        assertEquals("testStandardRequest", expected, response.length);
 	}
-	
+
+    private byte[] getStandardRequest(String mimeType) throws Exception {
+        String layer = getLayerId(AUS_DEM);
+        String request = "wms?service=wms&request=GetMap&version=1.1.1" +
+                "&layers=" + layer + "&styles=&bbox=108.3,-46.3,160.3,-4.2&width=64&height=64" +
+                "&format=" + mimeType + "&srs=EPSG:4326";
+
+      MockHttpServletResponse servletResponse = getAsServletResponse(request);
+      return getBinary(servletResponse);
+    }
+
     @Test
 	public void testLargeRequest() throws Exception {
 	    String layer = getLayerId(AUS_DEM);

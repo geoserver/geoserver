@@ -116,7 +116,7 @@ You can use ``extshape://`` for a few additional built-in shapes:
    * - ``extshape://sarrow``
      - South Arrow
 
-More complex symbols like Wind Barbs can be created with the ``windbarbs://`` prefix. This is an example:
+More complex symbols like Wind Barbs can be created with the ``windbarbs://`` prefix. There are some examples:
 
 .. list-table::
    :widths: 50 50
@@ -125,6 +125,8 @@ More complex symbols like Wind Barbs can be created with the ``windbarbs://`` pr
      - **Description**
    * - ``windbarbs://default(15)[kts]``
      - *15* wind intensity with *[kts]* unit of measure
+   * - ``windbarbs://default(9)[m/s]?hemisphere=s``
+     - *9* wind intensity with *[m/s]* unit of measure, in the south hemisphere
    
 Custom WKT Shapes
 ~~~~~~~~~~~~~~~~~

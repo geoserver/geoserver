@@ -154,7 +154,7 @@ public class WCSCapsTransformer extends TransformerBase {
             final String locationAtt = new StringBuffer(XSI_PREFIX).append(":schemaLocation")
                     .toString();
 
-            final String locationDef = buildSchemaURL(request.getBaseUrl(), "wcs/1.1.1/wcsGetCapabilities.xsd");
+            final String locationDef = WCS_URI + " " + buildSchemaURL(request.getBaseUrl(), "wcs/1.1.1/wcsGetCapabilities.xsd");
             
             attributes.addAttribute("", locationAtt, locationAtt, "", locationDef);
             attributes.addAttribute("", "updateSequence", "updateSequence", "", String

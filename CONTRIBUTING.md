@@ -1,39 +1,38 @@
 # Contributing
 
-Contributors are asked to provide an assignment agreement for working on the project:
+Contributors are asked to provide a Contributor License Agreement for working on the project:
 
-* [corporate_contributor.txt](http://www.osgeo.org/sites/osgeo.org/files/Page/corporate_contributor.tx)
+* [corporate_contributor.txt](http://www.osgeo.org/sites/osgeo.org/files/Page/corporate_contributor.txt)
 * [individual_contributor.txt](http://www.osgeo.org/sites/osgeo.org/files/Page/individual_contributor.txt)
 
+This agreement can be printed, signed, scanned, and emailed to [info@osgeo.org](mailto:info@osgeo.org) at the Open Source Geospatial Foundation (OSGeo). [OSGeo](http://www.osgeo.org/content/foundation/about.html)
+is the non-profit which holds the GeoServer codebase for the community.
 
-This agreement can be printed, signed, scanned and emailed to [info@osgeo.org](mailto:info@osgeo.org) at the Open Source Geospatial Foundation (OSGeo). [OOSGeo](http://www.osgeo.org/content/foundation/about.html)
-is the  non-profit which holds the GeoServer codebase for the community.
-
-For more information please review our developers guide on  [submitting patches](http://docs.geoserver.org/latest/en/developer/policies/patches.html) and [committing](http://docs.geoserver.org/latest/en/developer/policies/committing.html).
+For more information, please review the section on  [submitting patches](http://docs.geoserver.org/latest/en/developer/policies/patches.html) and [making commits](http://docs.geoserver.org/latest/en/developer/policies/committing.html).
 
 ## Pull Requests
 
-To issue a pull request 
-requires that you [fork the GeoServer git repo ](https://github.com/geoserver/geoserver/fork_select) into 
+Issuing a pull request requires that you [fork the GeoServer git repository ](https://github.com/geoserver/geoserver/fork_select) into 
 your own account.
 
-Assuming that `origin` points to your github repo then the patch workflow then becomes:
+Assuming that `origin` points to your GitHub repository then the workflow becomes:
 
 1. Make the change.
+
 `````
    git checkout -b my_bugfix master
    git add .
    git commit -m "fixed bug xyz"
 ````
-2. Push the change up to your github repository.
+2. Push the change up to your GitHub repository.
 ````
    git push origin my_bugfix
 ````
-3. Visit your github repo page and issue the pull request. 
+3. Visit your GitHub repository page and issue the pull request. 
 
-4. At this point the core developers will be notified of the pull request and review it at the earliest convenience. Core developers will review the patch and might require changes or improvements to it, it will be up to the submitter to amend the pull request and keep it alive until it gets merged.
+4. At this point the core developers will be notified of the pull request and review it at the earliest convenience. Core developers will review the patch and might require changes or improvements to it; it will be up to the submitter to amend the pull request and keep it alive until it gets merged.
 
-   Please be patient, pull requests are often reviewed in spare time so turn-around can be a little slow. If a pull request becomes stale with no feedback from the submitter for a couple of months long, it will linked to from a JIRA issue (to avoid losing the partial work) and then be closed.
+   Please be patient, pull requests are often reviewed in spare time so turn-around can be a little slow. If a pull request becomes stale with no feedback from the submitter for a couple of months, it will linked to from a JIRA issue (to avoid losing the partial work) and then be closed.
 
 ## Pull Request Guidelines
 

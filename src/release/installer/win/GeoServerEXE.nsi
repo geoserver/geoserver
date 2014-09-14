@@ -2,7 +2,7 @@
 
 ; Define your application name
 !define APPNAME "GeoServer"
-!define VERSION "2.6-SNAPSHOT"
+!define VERSION "2.7-SNAPSHOT"
 ;!define LONGVERSION "2.0.0.0"
 !define APPNAMEANDVERSION "${APPNAME} ${VERSION}"
 
@@ -802,7 +802,8 @@ Section "Main" SectionMain
 
   ; Security (of sorts)
   ${If} $IsManual == 1 ; manual
-    AccessControl::GrantOnFile "$INSTDIR\" "(BU)" "FullAccess"
+    AccessControl::GrantOnFile "$INSTDIR\logs" "(S-1-5-32-545)" "FullAccess"
+    AccessControl::GrantOnFile "$INSTDIR\data_dir" "(S-1-5-32-545)" "FullAccess"
   ${ElseIf} $IsManual == 0 ; service
     AccessControl::GrantOnFile "$INSTDIR\logs" "NT AUTHORITY\Network Service" "FullAccess"
     AccessControl::GrantOnFile "$DataDir" "NT AUTHORITY\Network Service" "FullAccess"

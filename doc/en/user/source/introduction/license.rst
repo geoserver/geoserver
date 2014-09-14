@@ -6,8 +6,8 @@ License
 GeoServer is free software and is licensed under the :download:`GNU General Public License <../gpl-2.0.txt>`.::
 
     GeoServer, open geospatial information server
-    Copyright (C) 2001 - 2011 The Open Planning Project dba OpenPlans
-    http://openplans.org
+    Copyright (C) 2014 - Open Source Geospatial Foundation
+    Copyright (C) 2001 - 2014 OpenPlans
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -11,6 +12,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -93,41 +96,105 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         WebClientInfo clientInfo = (WebClientInfo) WebRequestCycle.get().getClientInfo();
         ClientProperties clientProperties = clientInfo.getProperties();
         if (clientProperties.isBrowserInternetExplorer()) {
-            enableCodeMirror = clientProperties.getBrowserVersionMajor() >= 8;
+            ClientProperties props = extractIEVersion(clientProperties.getNavigatorUserAgent());
+            enableCodeMirror = clientProperties.getBrowserVersionMajor() >= 8
+                || props.getBrowserVersionMajor() >= 8;
         } else if (clientProperties.isBrowserMozillaFirefox()) {
-            enableCodeMirror = clientProperties.getBrowserVersionMajor() >= 3;
+            ClientProperties props = extractFirefoxVersion(clientProperties.getNavigatorUserAgent());
+            enableCodeMirror = clientProperties.getBrowserVersionMajor() >= 3
+                || props.getBrowserVersionMajor() >= 3;
         } else if (clientProperties.isBrowserSafari()) {
-            ClientProperties props = extractVersion(clientProperties.getNavigatorAppVersion());
+            ClientProperties props = extractSafariVersion(clientProperties.getNavigatorAppVersion());
             enableCodeMirror = clientProperties.getBrowserVersionMajor() > 5
-                    || (clientProperties.getBrowserVersionMajor() == 5 && clientProperties
-                            .getBrowserVersionMinor() >= 2)
-                    // Wicket is unable to parse version for safari
+                    || (clientProperties.getBrowserVersionMajor() == 5
+                    && clientProperties.getBrowserVersionMinor() >= 2)
                     || props.getBrowserVersionMajor() > 5
-                    || (props.getBrowserVersionMajor() == 5 && props.getBrowserVersionMinor() >= 2);
+                    || (props.getBrowserVersionMajor() == 5
+                    && props.getBrowserVersionMinor() >= 2);
         } else if (clientProperties.isBrowserOpera()) {
-            enableCodeMirror = clientProperties.getBrowserVersionMajor() >= 9;
+            ClientProperties props = extractOperaVersion(clientProperties.getNavigatorAppVersion());
+            enableCodeMirror = clientProperties.getBrowserVersionMajor() >= 9
+                || props.getBrowserVersionMajor() >= 9;
         }
         return enableCodeMirror;
     }
 
-    private ClientProperties extractVersion(String appVersion) {
+    private ClientProperties extractIEVersion(String userAgent) {
         ClientProperties props = new ClientProperties();
         props.setBrowserVersionMajor(-1);
         props.setBrowserVersionMinor(-1);
-        String versionStr = "Version/";
-        int start = appVersion.indexOf(versionStr);
-        if (start > -1) {
-            int end = appVersion.indexOf(" ", start);
-            String version = appVersion.substring(start + versionStr.length(), end);
-            String[] versions = version.split("\\.");
-            if (versions.length > 0) {
-                props.setBrowserVersionMajor(Integer.parseInt(versions[0]));
+        if (userAgent != null ) {
+            String userAgencyLc = userAgent.toLowerCase();
+            String pattern;
+            if (userAgencyLc.contains("like gecko")) {
+                pattern = "rv:(\\d+)\\.(\\d+)";
+            } else {
+                pattern = "msie (\\d+)\\.(\\d+)";
             }
-            if (versions.length > 1) {
-                props.setBrowserVersionMinor(Integer.parseInt(versions[1]));
+            setMajorMinorVersionByPattern(userAgencyLc, pattern, props);
+        }
+        return props;
+    }
+
+
+    private ClientProperties extractFirefoxVersion(String userAgent) {
+        ClientProperties props = new ClientProperties();
+        props.setBrowserVersionMajor(-1);
+        props.setBrowserVersionMinor(-1);
+        if (userAgent != null) {
+            String userAgencyLc = userAgent.toLowerCase();
+            props.setBrowserVersionMajor(-1);
+            props.setBrowserVersionMinor(-1);
+            setMajorMinorVersionByPattern(userAgencyLc, "firefox/(\\d+)\\.(\\d+)", props);
+        }
+        return props;
+    }
+
+    private ClientProperties extractOperaVersion(String userAgent) {
+        ClientProperties props = new ClientProperties();
+        props.setBrowserVersionMajor(-1);
+        props.setBrowserVersionMinor(-1);
+        if (userAgent != null) {
+            String userAgencyLc = userAgent.toLowerCase();
+            if (userAgencyLc.startsWith("opera/") && userAgencyLc.contains("version/")) {
+                setMajorMinorVersionByPattern(userAgencyLc, "version/(\\d+)\\.(\\d+)", props);
+            } else if (userAgencyLc.startsWith("opera/") && !userAgencyLc.contains("version/")) {
+                setMajorMinorVersionByPattern(userAgencyLc, "opera/(\\d+)\\.(\\d+)", props);
+            } else {
+                setMajorMinorVersionByPattern(userAgencyLc, "opera (\\d+)\\.(\\d+)", props);
             }
         }
         return props;
+    }
+
+    private ClientProperties extractSafariVersion(String userAgent) {
+        ClientProperties props = new ClientProperties();
+        props.setBrowserVersionMajor(-1);
+        props.setBrowserVersionMinor(-1);
+        if (userAgent != null) {
+            String userAgencyLc = userAgent.toLowerCase();
+            setMajorMinorVersionByPattern(userAgencyLc, "version/(\\d+)\\.(\\d+)", props);
+        }
+        return props;
+    }
+
+    private ClientProperties extractChromeVersion(String userAgent) {
+        ClientProperties props = new ClientProperties();
+        props.setBrowserVersionMajor(-1);
+        props.setBrowserVersionMinor(-1);
+        if (userAgent != null) {
+            String userAgencyLc = userAgent.toLowerCase();
+            setMajorMinorVersionByPattern(userAgencyLc, "chrome/(\\d+)\\.(\\d+)", props);
+        }
+        return props;
+    }
+
+    private void setMajorMinorVersionByPattern(String userAgent, String patternString, ClientProperties properties) {
+        Matcher matcher = Pattern.compile(patternString).matcher(userAgent);
+        if (matcher.find()) {
+            properties.setBrowserVersionMajor(Integer.parseInt(matcher.group(1)));
+            properties.setBrowserVersionMinor(Integer.parseInt(matcher.group(2)));
+        }
     }
 
     public CodeMirrorEditor(String id, IModel<String> model) {
@@ -175,7 +242,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
             public CharSequence decorateScript(CharSequence script) {
                 // textarea.value = codemirrorinstance.getCode()
                 String id = getTextAreaMarkupId();
-                return "document.getElementById('" + id + "').value = document.gsEditors." + id + ".getValue();" + script;
+                return "if (document.gsEditors) { document.getElementById('" + id + "').value = document.gsEditors." + id + ".getValue(); }" + script;
             }
         };
     }

@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
@@ -38,6 +40,10 @@ public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
     
     public WPSAdminPage(WPSInfo service) {
         super(service);
+    }
+
+    public WPSAdminPage(PageParameters pageParams) {
+        super(pageParams);
     }
 
     protected Class<WPSInfo> getServiceClass() {

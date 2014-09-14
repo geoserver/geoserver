@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -10,20 +11,25 @@ import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 
+import org.geoserver.catalog.AttributeTypeInfo;
+import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geotools.data.DataAccess;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -291,8 +297,19 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         assertEquals( "new title", ft.getTitle() );
     }
     
+    /**
+     * Check feature type modification involving calculation of bounds.
+     * 
+     * Update: Ensure feature type modification does not reset ResourcePool DataStoreCache
+     */
+    @SuppressWarnings("rawtypes")
     @Test
     public void testPutWithCalculation() throws Exception {
+        DataStoreInfo dataStoreInfo = getCatalog().getDataStoreByName("sf","sf");
+        String dataStoreId = dataStoreInfo.getId();
+        DataAccess dataAccessBefore = dataStoreInfo.getDataStore(null);
+        assertSame("ResourcePool DataStoreCache", dataAccessBefore, getCatalog().getResourcePool().getDataStoreCache().get( dataStoreId ));
+        
         String clearLatLonBoundingBox =
               "<featureType>"
                 + "<nativeBoundingBox>"
@@ -312,6 +329,11 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         Document dom = getAsDOM(path + ".xml");
         assertXpathEvaluatesTo("0.0", "/featureType/latLonBoundingBox/minx", dom);
         
+        // confirm ResourcePoool cache of DataStore is unchanged
+        DataAccess dataAccessAfter = getCatalog().getDataStoreByName("sf","sf").getDataStore(null);
+        assertSame( "ResourcePool DataStoreCache check 1", dataAccessBefore, dataAccessAfter );
+        assertSame("ResourcePool DataStoreCache", dataAccessBefore, getCatalog().getResourcePool().getDataStoreCache().get( dataStoreId ));
+        
         String updateNativeBounds =
                 "<featureType>"
                   + "<srs>EPSG:3785</srs>"
@@ -330,6 +352,10 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
         dom = getAsDOM(path + ".xml");
         print(dom);
         assertXpathExists("/featureType/latLonBoundingBox/minx[text()!='0.0']", dom);
+
+        dataAccessAfter = getCatalog().getDataStoreByName("sf","sf").getDataStore(null);
+        assertSame( "ResourcePool DataStoreCache check 2", dataAccessBefore, dataAccessAfter );
+        assertSame("ResourcePool DataStoreCache", dataAccessBefore, getCatalog().getResourcePool().getDataStoreCache().get( dataStoreId ));
     }
 
     @Test
@@ -345,13 +371,27 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
    
     @Test
     public void testDelete() throws Exception {
-        assertNotNull( catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature"));
-        for (LayerInfo l : catalog.getLayers( catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature") ) ) {
+        FeatureTypeInfo featureType = catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature");
+        String featureTypeId = featureType.getId();
+        String dataStoreId = featureType.getStore().getId();
+        
+        assertNotNull( "PrmitiveGeoFeature available", featureType );
+        for (LayerInfo l : catalog.getLayers( featureType ) ) {
             catalog.remove(l);
         }
         assertEquals( 200,  
             deleteAsServletResponse( "/rest/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature").getStatusCode());
         assertNull( catalog.getFeatureTypeByName("sf", "PrimitiveGeoFeature"));
+        
+        if( catalog.getResourcePool().getFeatureTypeAttributeCache().containsKey( featureTypeId ) ){
+             List<AttributeTypeInfo> attributesList = catalog.getResourcePool().getFeatureTypeAttributeCache().get( featureTypeId );
+             assertNull( "attributes cleared", attributesList );
+        }
+        if( catalog.getResourcePool().getDataStoreCache().containsKey( dataStoreId ) ){
+            DataAccess dataStore = catalog.getResourcePool().getDataStoreCache().get( dataStoreId );
+            List<String> names = dataStore.getNames();
+            assertTrue( names.contains("PrimativeGeoFeature"));
+        }
     }
     
     @Test

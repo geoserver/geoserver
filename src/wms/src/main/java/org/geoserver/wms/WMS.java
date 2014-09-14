@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2014 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -1336,8 +1337,8 @@ public class WMS implements ApplicationContextAware {
                 mapExtent.getMinX(), mapExtent.getMaxX(), null);
         }
         
-        double scaleX = (double) width / mapExtent.getWidth();
-        double scaleY = (double) height / mapExtent.getHeight();
+        double scaleX = width / mapExtent.getWidth();
+        double scaleY = height / mapExtent.getHeight();
     
         double tx = -mapExtent.getMinX() * scaleX;
         double ty = (mapExtent.getMinY() * scaleY) + height;
@@ -1355,4 +1356,5 @@ public class WMS implements ApplicationContextAware {
     public static WMS get() {
         return GeoServerExtensions.bean(WMS.class);
     }
+
 }

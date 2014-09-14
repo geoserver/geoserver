@@ -1,4 +1,4 @@
-GeoServer 2.6+ Teradata Extension
+GeoServer 2.7+ Teradata Extension
 ---------------------------------
 
 This package contains a Teradata DataStore implementation that is 

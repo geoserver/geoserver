@@ -1,4 +1,5 @@
-/* Copyright (c) 2014 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -6,6 +7,7 @@ package org.geoserver.wms.capabilities;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -339,8 +341,34 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         sldResource.file().setLastModified(previousTime);
     }
     
+    /**
+     * Tests that already cached icons are read from disk and
+     * used to calculate size.
+     * @throws Exception
+     */
+    @Test
+    public void testOnlineResourceWidthHeight() throws Exception {
+        
+        TransformerBase tr = createTransformer();
+        tr.setIndentation(2);
+        Document dom = WMSTestSupport.transform(req, tr);
+        
+        NodeList onlineResources = XPATH.getMatchingNodes(
+                getOnlineResourceXPath("cite:BasicPolygons"), dom);
+        assertEquals(1, onlineResources.getLength());
+        Element onlineResource = (Element) onlineResources.item(0);
+        String href = onlineResource.getAttribute("xlink:href");
+        assertNotNull(href);
+        assertTrue(href.contains("width=20"));
+        assertTrue(href.contains("height=20"));
+    }
+    
     private String getLegendURLXPath(String layerName) {
         return "/"+ getElementPrefix() + getRootElement() + "/"+ getElementPrefix() + "Capability/"+ getElementPrefix() + "Layer/"+ getElementPrefix() + "Layer["+ getElementPrefix() + "Name/text()='"+layerName+"']/"+ getElementPrefix() + "Style/"+ getElementPrefix() + "LegendURL";
+    }
+    
+    private String getOnlineResourceXPath(String layerName) {
+        return "/"+ getElementPrefix() + getRootElement() + "/"+ getElementPrefix() + "Capability/"+ getElementPrefix() + "Layer/"+ getElementPrefix() + "Layer["+ getElementPrefix() + "Name/text()='"+layerName+"']/"+ getElementPrefix() + "Style/"+ getElementPrefix() + "LegendURL/"+getElementPrefix()+"OnlineResource";
     }
 
     private void removeFileOrFolder(File file) {

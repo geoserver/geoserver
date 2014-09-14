@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -152,7 +153,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 target.appendJavascript(String.format(
-                    "document.gsEditors.editor.setOption('mode', '%s');", styleHandler().getCodeMirrorEditMode()));
+                    "if (document.gsEditors) { document.gsEditors.editor.setOption('mode', '%s'); }", styleHandler().getCodeMirrorEditMode()));
             }
         });
         styleForm.add(formatChoice);
@@ -417,9 +418,10 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
                     @Override
                     public CharSequence preDecorateScript(CharSequence script) {
-                        return "if(event.view.document.gsEditors."
-                                + editor.getTextAreaMarkupId()
-                                + ".getValue() != '' &&"
+                        return "var val = event.view.document.gsEditors ? "
+                                + "event.view.document.gsEditors." + editor.getTextAreaMarkupId() + ".getValue() : "
+                                + "event.view.document.getElementById(\"" + editor.getTextAreaMarkupId() + "\").value; "
+                                + "if(val != '' &&"
                                 + "!confirm('"
                                 + new ParamResourceModel("confirmOverwrite", AbstractStylePage.this)
                                         .getString() + "')) return false;" + script;

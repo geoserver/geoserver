@@ -1,4 +1,5 @@
-/* Copyright (c) 2014 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -8,7 +9,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.geotools.filter.function.EnvFunction;
-import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -29,8 +29,7 @@ public class RenderingVariables {
         EnvFunction.setLocalValue("wms_width", mapContent.getMapWidth());
         EnvFunction.setLocalValue("wms_height", mapContent.getMapHeight());
         try {
-            double scaleDenominator = RendererUtilities.calculateOGCScale(
-                    mapContent.getRenderingArea(), mapContent.getMapWidth(), null);
+            double scaleDenominator = mapContent.getScaleDenominator(true);
             EnvFunction.setLocalValue("wms_scale_denominator", scaleDenominator);
         } catch (Exception e) {
             LOGGER.log(

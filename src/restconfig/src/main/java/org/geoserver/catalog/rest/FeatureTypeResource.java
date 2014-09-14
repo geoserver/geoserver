@@ -1,12 +1,15 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog.rest;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 import org.geoserver.catalog.AttributeTypeInfo;
@@ -23,9 +26,18 @@ import org.geoserver.rest.format.DataFormat;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureSource;
+import org.geotools.data.Transaction;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.data.store.ContentDataStore;
+import org.geotools.data.store.ContentEntry;
+import org.geotools.data.store.ContentFeatureSource;
+import org.geotools.data.store.ContentState;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.Name;
 import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -229,20 +241,33 @@ public class FeatureTypeResource extends AbstractCatalogResource {
 
     @Override
     protected void handleObjectPut(Object object) throws Exception {
-        FeatureTypeInfo ft = (FeatureTypeInfo) object;
+        FeatureTypeInfo featureTypeUpdate = (FeatureTypeInfo) object;
         
         String workspace = getAttribute("workspace");
         String datastore = getAttribute("datastore");
         String featuretype = getAttribute("featuretype");
         
         DataStoreInfo ds = catalog.getDataStoreByName(workspace, datastore);
-        FeatureTypeInfo original = catalog.getFeatureTypeByDataStore( ds,  featuretype );
-        new CatalogBuilder(catalog).updateFeatureType(original,ft);
-        calculateOptionalFields(ft, original);
-        catalog.save( original );
+        FeatureTypeInfo featureTypeInfo = catalog.getFeatureTypeByDataStore( ds,  featuretype );
+        Map<String, Serializable> parametersCheck = featureTypeInfo.getStore().getConnectionParameters();
         
-        clear(original);
-        LOGGER.info( "PUT feature type" + datastore + "," + featuretype );
+        CatalogBuilder helper = new CatalogBuilder(catalog);
+        helper.updateFeatureType(featureTypeInfo,featureTypeUpdate);
+        calculateOptionalFields(featureTypeUpdate, featureTypeInfo);
+        catalog.save( featureTypeInfo );
+        catalog.getResourcePool().clear(featureTypeInfo);
+        
+        Map<String, Serializable> parameters = featureTypeInfo.getStore().getConnectionParameters();
+        MetadataMap mdm = featureTypeInfo.getMetadata();
+        boolean virtual = mdm != null && mdm.containsKey(FeatureTypeInfo.JDBC_VIRTUAL_TABLE);
+        
+        if( !virtual && parameters.equals(parametersCheck)){
+            LOGGER.info( "PUT FeatureType" + datastore + "," + featuretype + " updated metadata only");
+        }
+        else {
+            LOGGER.info( "PUT featureType" + datastore + "," + featuretype + " updated metadata and data access" );
+            catalog.getResourcePool().clear(featureTypeInfo.getStore());
+        }
     }
     
     @Override
@@ -275,14 +300,36 @@ public class FeatureTypeResource extends AbstractCatalogResource {
         }
         
         catalog.remove( ft );
-        clear(ft);
         
+        // clear from resource pool
+        catalog.getResourcePool().clear(ft);        
+        List<FeatureTypeInfo> siblings = catalog.getFeatureTypesByDataStore(ds);
+        if( siblings.size() == 0 ){
+            // clean up cached DataAccess if no longer in use
+            catalog.getResourcePool().clear(ds);
+        }
+        else {
+            boolean flush = false;
+            try {
+                DataAccess<?,?> dataStore = catalog.getResourcePool().getDataStore( ds );
+                if( dataStore instanceof ContentDataStore ){
+                    // ask JDBC DataStore to forget cached column information
+                    Name name = ft.getQualifiedNativeName();
+                    ContentDataStore contentDataStore = (ContentDataStore) dataStore;
+                    ContentFeatureSource featureSource = contentDataStore.getFeatureSource(name,Transaction.AUTO_COMMIT);
+                    featureSource.getState().flush();
+                    flush = true;
+                }
+            } catch( Exception e ) {
+                LOGGER.warning( "Unable to flush '" + ft.getQualifiedNativeName() );
+                LOGGER.log(Level.FINE, "", e );
+            }
+            if( !flush ){
+                 // Original heavy handed way to force "flush"? seems a bad idea
+                 catalog.getResourcePool().clear(ds);     
+            }
+        }
         LOGGER.info( "DELETE feature type" + datastore + "," + featuretype );
-    }
-    
-    void clear(FeatureTypeInfo info) {
-        catalog.getResourcePool().clear(info);
-        catalog.getResourcePool().clear(info.getStore());
     }
 
     @Override

@@ -1,32 +1,43 @@
-/*
- * Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 
 package org.geoserver.wfs.json;
 
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
 
-import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
 
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.util.IOUtils;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSTestSupport;
+import org.geotools.referencing.CRS;
+import org.hamcrest.Description;
+import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
@@ -38,14 +49,37 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
 public class GeoJSONTest extends WFSTestSupport {
        
     public static QName LINE3D = new QName(SystemTestData.CITE_URI, "Line3D", SystemTestData.CITE_PREFIX);
+    public static QName POINT_LATLON = new QName(SystemTestData.CITE_URI, "PointLatLon", SystemTestData.CITE_PREFIX);
+    public static QName POINT_LONLAT = new QName(SystemTestData.CITE_URI, "PointLonLat", SystemTestData.CITE_PREFIX);
     
     @Override
+    @SuppressWarnings("unchecked")
     protected void setUpInternal(SystemTestData data) throws Exception {
+        super.setUpInternal(data);
         File security = new File(getTestData().getDataDirectoryRoot(), "security");
         security.mkdir();
         File layers = new File(security, "layers.properties");
         IOUtils.copy(GeoJSONTest.class.getResourceAsStream("layers_ro.properties"), layers);
         data.addVectorLayer (LINE3D, Collections.EMPTY_MAP, getClass(), getCatalog());
+
+        // A feature type with Lat-Lon/North-East axis ordering.
+        data.addVectorLayer (POINT_LATLON, Collections.EMPTY_MAP, getClass(), getCatalog());
+        CoordinateReferenceSystem crsLatLon = CRS.decode("urn:ogc:def:crs:EPSG::4326");
+        FeatureTypeInfo pointLatLon = getCatalog().getFeatureTypeByName(POINT_LATLON.getPrefix(), POINT_LATLON.getLocalPart());
+        pointLatLon.setNativeCRS(crsLatLon);
+        pointLatLon.setSRS("urn:ogc:def:crs:EPSG::4326");
+        pointLatLon.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
+        getCatalog().save(pointLatLon);
+        
+        // A feature type with Lon-Lat/East-North axis ordering.
+        data.addVectorLayer (POINT_LONLAT, Collections.EMPTY_MAP, getClass(), getCatalog());
+        CoordinateReferenceSystem crsLonLat = CRS.decode("EPSG:4326", true);
+        FeatureTypeInfo pointLonLat = getCatalog().getFeatureTypeByName(POINT_LONLAT.getPrefix(), POINT_LONLAT.getLocalPart());
+        pointLatLon.setNativeCRS(crsLonLat);
+        pointLatLon.setSRS("EPSG:4326");
+        pointLatLon.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
+        getCatalog().save(pointLonLat);
+
     }
 	
     @Test
@@ -192,6 +226,10 @@ public class GeoJSONTest extends WFSTestSupport {
     	geomArray = geomArray.getJSONArray(0);
     	geomArray = geomArray.getJSONArray(0);
     	assertEquals(geomArray.getString(0), "55.174");
+    	CoordinateReferenceSystem expectedCrs = getCatalog().getLayerByName(getLayerId(SystemTestData.AGGREGATEGEOFEATURE)).getResource().getCRS();
+    	JSONObject aCRS = rootObject.getJSONObject("crs");
+    	assertThat(aCRS.getString("type"), equalTo("name"));
+    	assertThat(aCRS, encodesCRS(expectedCrs));
     }
     
     @Test
@@ -303,7 +341,7 @@ public class GeoJSONTest extends WFSTestSupport {
                 + "&outputformat=" + JSONType.json);
         // print(collection);
         assertEquals(1, collection.getInt("totalFeatures"));
-        assertEquals("4327", collection.getJSONObject("crs").getJSONObject("properties").getString("code"));
+        //assertEquals("4327", collection.getJSONObject("crs").getJSONObject("properties").getString("code"));
         JSONArray features = collection.getJSONArray("features");
         assertEquals(1, features.size());
         JSONObject feature = features.getJSONObject(0);
@@ -318,5 +356,108 @@ public class GeoJSONTest extends WFSTestSupport {
         assertEquals(120, c2.getInt(0));
         assertEquals(0, c2.getInt(1));
         assertEquals(100, c2.getInt(2));
+        
+        CoordinateReferenceSystem expectedCrs = CRS.decode("EPSG:4327");
+        JSONObject aCRS = collection.getJSONObject("crs");
+        assertThat(aCRS, encodesCRS(expectedCrs));
+    }
+    
+    // Checks that the result is in EAST_NORTH/LON_LAT order regardless of the source order
+    protected void doAxisSwapTest(QName layer, CRS.AxisOrder sourceOrder) throws Exception {
+        // Failure here means the setup for the test is broken and would invalidate the test
+        assertThat(CRS.getAxisOrder(
+                getCatalog().getFeatureTypeByName(layer.getPrefix(), layer.getLocalPart()).getCRS()
+                ), is(sourceOrder));
+
+        JSONObject collection = (JSONObject) getAsJSON("wfs?request=GetFeature&version=1.0.0&typename=" + getLayerId(layer)
+                + "&outputformat=" + JSONType.json);
+        // print(collection);
+        assertThat(collection.getInt("totalFeatures"), is(3));
+        //assertEquals("4327", collection.getJSONObject("crs").getJSONObject("properties").getString("code"));
+        JSONArray features = collection.getJSONArray("features");
+        assertThat((Collection<?>)features, Matchers.hasSize(3));
+        JSONObject feature = features.getJSONObject(0);
+        
+        JSONObject geometry = feature.getJSONObject("geometry");
+        assertThat(geometry.getString("type"), is("Point"));
+        
+        JSONArray coords = geometry.getJSONArray("coordinates");
+        assertThat((Iterable<?>)coords, contains((Object)120, 0));
+        
+        JSONArray bbox = collection.getJSONArray("bbox");
+        assertThat((Iterable<?>)bbox, Matchers.contains((Object)(-170), -30, 120, 45));
+        
+        CoordinateReferenceSystem expectedCrs = CRS.decode("EPSG:4326");
+        JSONObject aCRS = collection.getJSONObject("crs");
+        assertThat(aCRS, encodesCRS(expectedCrs));
+    }
+    
+    @Test
+    public void testGetFeatureAxisSwap() throws Exception {
+        // Check that a NORTH_EAST source is swapped
+        doAxisSwapTest(POINT_LATLON, CRS.AxisOrder.NORTH_EAST);
+     }
+    
+    @Test
+    public void testGetFeatureNoAxisSwap() throws Exception {
+        // Check that an EAST_NORTH source is not swapped
+        doAxisSwapTest(POINT_LONLAT, CRS.AxisOrder.EAST_NORTH);
+     }
+    
+    @Test
+    public void testGetFeatureCRS() throws Exception {
+        QName layer = SystemTestData.LINES;
+        JSONObject collection = (JSONObject) getAsJSON("wfs?request=GetFeature&version=1.0.0&typename=" + getLayerId(layer)
+                + "&outputformat=" + JSONType.json);
+        CoordinateReferenceSystem expectedCrs = getCatalog().getLayerByName(getLayerId(layer)).getResource().getCRS();
+        JSONObject aCRS = collection.getJSONObject("crs");
+        assertThat(aCRS, encodesCRS(expectedCrs));
+    }
+    
+    private org.hamcrest.Matcher<JSONObject> encodesCRS(final CoordinateReferenceSystem crs) {
+        return new org.hamcrest.BaseMatcher<JSONObject>(){
+            
+            @Override
+            public boolean matches(Object item) {
+                // Try to decode the CRS with both axis orders and check if either matches against
+                // the expected CRS.  Sorry, this is a horrible hack. KS
+                CoordinateReferenceSystem decodedDefault = decodeCRS((JSONObject)item, false);
+                if(CRS.equalsIgnoreMetadata(crs, decodedDefault)) return true;
+                CoordinateReferenceSystem decodedXY = decodeCRS((JSONObject)item, true);
+                if(CRS.equalsIgnoreMetadata(crs, decodedXY)) return true;
+                String identifier = ((JSONObject)item).getJSONObject("properties").getString("name");
+                Pattern p = Pattern.compile("^urn:ogc:def:crs:EPSG:[^:]*:(\\d+)$");
+                Matcher m = p.matcher(identifier);
+                if(m.matches()){
+                    String code = "EPSG:"+m.group(1);
+                    CoordinateReferenceSystem decodedStripped;
+                    try {
+                        decodedStripped = CRS.decode(code, true);
+                    } catch (FactoryException e) {
+                        throw new IllegalStateException(e);
+                    }
+                    if(CRS.equalsIgnoreMetadata(crs, decodedStripped)) return true;
+                }
+                
+                return false;
+            }
+            
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("JSON representation of CRS ");
+                description.appendValue(crs);
+            }
+            
+        };
+    }
+    
+    static private CoordinateReferenceSystem decodeCRS(JSONObject json, boolean forceXY) {
+        if(!json.getString("type").equals("name")) throw new IllegalArgumentException();
+        String identifier = json.getJSONObject("properties").getString("name");
+        try {
+            return CRS.decode(identifier, forceXY);
+        }catch (FactoryException e) {
+            throw new IllegalStateException(e);
+        }
     }
 }

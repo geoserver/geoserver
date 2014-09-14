@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -6,9 +7,7 @@ package org.geoserver.wms.featureinfo;
 
 
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -129,6 +128,36 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         JSONObject aFeature = featureCol.getJSONObject(0);
         assertEquals(aFeature.getString("geometry_name"), "the_geom");
 
+    }
+
+    @Test
+    public void testPropertySelection() throws Exception {
+        String layer = getLayerId(MockData.FORESTS);
+        String request = "wms?service=wms&version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
+                + "&request=GetFeatureInfo&layers=" + layer + "&query_layers=" + layer
+                + "&width=20&height=20&x=10&y=10" + "&info_format=" + JSONType.json
+                + "&propertyName=NAME";
+
+        // JSON
+        MockHttpServletResponse response = getAsServletResponse(request);
+
+        // MimeType
+        assertEquals(JSONType.json, response.getContentType());
+
+        // Content
+        String result = response.getOutputStreamContent();
+
+        assertNotNull(result);
+
+        JSONObject rootObject = JSONObject.fromObject(result);
+        print(rootObject);
+        assertEquals(rootObject.get("type"), "FeatureCollection");
+        JSONArray featureCol = rootObject.getJSONArray("features");
+        JSONObject aFeature = featureCol.getJSONObject(0);
+        assertTrue(aFeature.getJSONObject("geometry").isNullObject());
+        JSONObject properties = aFeature.getJSONObject("properties");
+        assertTrue(properties.getJSONObject("FID").isNullObject());
+        assertEquals("Green Forest", properties.get("NAME"));
     }
 
     @Test

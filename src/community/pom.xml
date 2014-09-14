@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>2.6-SNAPSHOT</version>
+    <version>2.7-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
@@ -48,8 +48,11 @@
           <descriptor>release/ext-mbtiles.xml</descriptor>
           <descriptor>release/ext-geopkg.xml</descriptor>
           <descriptor>release/ext-grib.xml</descriptor>
+          <descriptor>release/ext-pgraster.xml</descriptor>
           <descriptor>release/ext-dyndimension.xml</descriptor>
 		  <descriptor>release/ext-rest-ext.xml</descriptor>
+		  <descriptor>release/ext-kmlppio.xml</descriptor>
+		  <descriptor>release/ext-gpx.xml</descriptor>
         </descriptors>
       </configuration>
      </plugin>
@@ -115,8 +118,12 @@
         <module>dds</module>
       </modules>
     </profile>
-    
-    
+    <profile>
+      <id>gpx</id>
+      <modules>
+        <module>gpxppio</module>
+      </modules>
+    </profile>
     <profile>
       <id>dbconfig</id>
       <modules>
@@ -159,9 +166,12 @@
         <module>netcdf-out</module>
         <module>mbtiles</module>
         <module>geopkg</module>
-		<module>grib</module>
+        <module>grib</module>
+        <module>pgraster</module>
         <module>dyndimension</module>
 		<module>rest-ext</module>
+		<module>gpxppio</module>
+		<module>kmlppio</module>
       </modules>
     </profile>
     <profile>
@@ -239,6 +249,15 @@
         <module>netcdf</module>
       </modules>
     </profile>
+        <profile>
+      <id>pgraster</id>
+      <activation>
+        <property><name>pgraster</name></property>
+      </activation>
+      <modules>
+        <module>pgraster</module>
+      </modules>
+    </profile>
     <profile>
       <id>w3ds</id>
       <modules>
@@ -313,6 +332,18 @@
       </activation>
       <modules>
         <module>rest-ext</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>validation</id>
+      <modules>
+        <module>validation</module>
+      </modules>
+    </profile>
+    <profile>      
+      <id>kmlppio</id>
+      <modules>
+        <module>kmlppio</module>
       </modules>
     </profile>
   </profiles>

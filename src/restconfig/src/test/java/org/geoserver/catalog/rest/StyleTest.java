@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -489,7 +490,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         in = style.in();
         try {
             out = new StringWriter();
-            IOUtils.copy(style.in(), out);
+            IOUtils.copy(in, out);
             assertFalse(out.toString().startsWith("#comment!"));
         }
         finally {
@@ -517,7 +518,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         InputStream in = style.in();
         try {
             out = new StringWriter();
-            IOUtils.copy(style.in(), out);
+            IOUtils.copy(in, out);
             assertTrue(out.toString().startsWith("#comment!"));
         }
         finally {
@@ -562,7 +563,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         in = style.in();
         try {
             out = new StringWriter();
-            IOUtils.copy(style.in(), out);
+            IOUtils.copy(in, out);
             assertFalse(out.toString().startsWith("#comment!"));
         }
         finally {
@@ -599,7 +600,7 @@ public class StyleTest extends CatalogRESTTestSupport {
         in = style.in();
         try {
             out = new StringWriter();
-            IOUtils.copy(style.in(), out);
+            IOUtils.copy(in, out);
             assertTrue(out.toString().startsWith("#comment!"));
         }
         finally {

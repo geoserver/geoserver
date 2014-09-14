@@ -1,14 +1,17 @@
-/* Copyright (c) 2014 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
 package org.geoserver.catalog;
 
-import static org.junit.Assert.assertEquals;
-
+import static org.junit.Assert.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.measure.quantity.Quantity;
+import javax.measure.unit.BaseUnit;
 
 import org.geoserver.catalog.CoverageDimensionCustomizerReader.WrappedSampleDimension;
 import org.geoserver.catalog.impl.CoverageDimensionImpl;
@@ -65,5 +68,47 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
         assertEquals(newMaximum, wrappedRange.getMaximum(), DELTA);
 
         assertEquals(wrappedName, wrappedDim.getDescription().toString());
+    }
+
+    /**
+     * Test that if no range is defined, Category values or Default values are used
+     * 
+     * @throws IOException
+     */
+    @Test
+    public void testNoRange() throws IOException {
+        GridSampleDimension sampleDim = new GridSampleDimension("original",
+                SampleDimensionType.REAL_64BITS, ColorInterpretation.GRAY_INDEX, null, null,
+                new double[] { -9999.0 }, -1000d, 1000d, 1d, 0d, null);
+
+        // Setting coverage dimension
+        final CoverageDimensionImpl coverageDim = new CoverageDimensionImpl();
+        final String wrappedName = "wrapped";
+        coverageDim.setName(wrappedName);
+        coverageDim.setDimensionType(SampleDimensionType.REAL_64BITS);
+        // Creation of the WrappedSampleDimension
+        SampleDimension wrappedDim = new WrappedSampleDimension(sampleDim, coverageDim);
+        // Get the range
+        NumberRange<? extends Number> wrappedRange = ((WrappedSampleDimension) wrappedDim)
+                .getRange();
+        // Ensure the range is not present
+        assertNull(wrappedRange);
+        // Check if min and max are taken from the categories
+        assertEquals(-9999, wrappedDim.getMinimumValue(), DELTA);
+        assertEquals(1000, wrappedDim.getMaximumValue(), DELTA);
+        // Check that the description is equal to the sample dimension name
+        assertEquals(wrappedName, wrappedDim.getDescription().toString());
+
+        // Configure a new GridSampleDimension without categories
+        sampleDim = new GridSampleDimension("original", null, new BaseUnit<Quantity>("test"));
+        // New wrapped sample dimension
+        wrappedDim = new WrappedSampleDimension(sampleDim, coverageDim);
+        // Get the range
+        wrappedRange = ((WrappedSampleDimension) wrappedDim).getRange();
+        // Ensure the range is not present
+        assertNull(wrappedRange);
+        // Check if min and max are taken from the categories
+        assertEquals(Double.NEGATIVE_INFINITY, wrappedDim.getMinimumValue(), DELTA);
+        assertEquals(Double.POSITIVE_INFINITY, wrappedDim.getMaximumValue(), DELTA);
     }
 }

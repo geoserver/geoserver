@@ -11,7 +11,7 @@
  <parent>
   <groupId>org.geoserver</groupId>
   <artifactId>community</artifactId>
-  <version>2.6-SNAPSHOT</version>
+  <version>2.7-SNAPSHOT</version>
  </parent>
  <groupId>org.geoserver.community</groupId>
  <artifactId>gs-release</artifactId>
@@ -23,6 +23,11 @@
      <artifactId>gs-authkey</artifactId>
      <version>${project.version}</version>
    </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-gpxppio</artifactId>
+     <version>${project.version}</version>
+   </dependency>   
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-netcdf</artifactId>
@@ -106,6 +111,21 @@
    <dependency>
      <groupId>org.geoserver.community</groupId>
      <artifactId>gs-rest-ext</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-pgraster</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-kmlppio</artifactId>
+     <version>${project.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.geoserver.community</groupId>
+     <artifactId>gs-gpxppio</artifactId>
      <version>${project.version}</version>
    </dependency>
  </dependencies>

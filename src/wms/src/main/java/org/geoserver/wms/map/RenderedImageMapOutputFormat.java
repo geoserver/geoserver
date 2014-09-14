@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -350,8 +351,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 palette, useAlpha);
         final Map<RenderingHints.Key, Object> hintsMap = new HashMap<RenderingHints.Key, Object>();
 
-        final Graphics2D graphic = ImageUtils.prepareTransparency(transparent, bgColor,
-                preparedImage, hintsMap);
+        final Graphics2D graphic = getGraphics(transparent, bgColor, preparedImage, hintsMap);
 
         // set up the antialias hints
         if (AA_NONE.equals(antialias)) {
@@ -411,7 +411,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         rendererParams.put("renderingBuffer", new Integer(mapContent.getBuffer()));
         rendererParams.put("maxFiltersToSendToDatastore", DefaultWebMapService.getMaxFilterRules());
         rendererParams.put(StreamingRenderer.SCALE_COMPUTATION_METHOD_KEY,
-                StreamingRenderer.SCALE_OGC);
+                mapContent.getRendererScaleMethod());
         if (AA_NONE.equals(antialias)) {
             rendererParams.put(StreamingRenderer.TEXT_RENDERING_KEY,
                     StreamingRenderer.TEXT_RENDERING_STRING);
@@ -530,6 +530,12 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
         RenderedImageMap map = buildMap(mapContent, image);
         return map;
+    }
+
+    protected Graphics2D getGraphics(final boolean transparent, final Color bgColor,
+            final RenderedImage preparedImage, final Map<RenderingHints.Key, Object> hintsMap) {
+        return ImageUtils.prepareTransparency(transparent, bgColor,
+                preparedImage, hintsMap);
     }
 
     /**
@@ -749,7 +755,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         //
         // extract the raster symbolizers and the eventual rendering transformation
         //
-        double scaleDenominator = mapContent.getScaleDenominator();
+        double scaleDenominator = mapContent.getScaleDenominator(true);
         Layer layer = mapContent.layers().get(layerIndex);
         FeatureType featureType = layer.getFeatureSource().getSchema();
         Style style = layer.getStyle();

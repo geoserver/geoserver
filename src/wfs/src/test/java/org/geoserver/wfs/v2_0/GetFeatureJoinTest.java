@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -288,6 +289,39 @@ public class GetFeatureJoinTest extends WFS20TestSupport {
            
            XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Forests/gs:NAME[text() = 'Foo Forest']", dom);
            XMLAssert.assertXpathExists("//wfs:Tuple/wfs:member/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
+    }
+
+    @Test
+    public void testStandardJoinThreeWays() throws Exception {
+        String xml = 
+            "<wfs:GetFeature xmlns:wfs='" + WFS.NAMESPACE + "' xmlns:fes='" + FES.NAMESPACE + "'" +
+              " xmlns:gs='" + SystemTestData.DEFAULT_URI + "' version='2.0.0'>" + 
+               "<wfs:Query typeNames='gs:Forests gs:Lakes gs:Lakes' aliases='a b c'>" +
+                "<fes:Filter> " +
+                    "<And>" +
+                        "<PropertyIsEqualTo>" +
+                          "<ValueReference>a/FID</ValueReference>" +
+                          "<ValueReference>b/FID</ValueReference>" + 
+                        "</PropertyIsEqualTo>" +
+                        "<PropertyIsEqualTo>" +
+                          "<ValueReference>b/FID</ValueReference>" +
+                          "<ValueReference>c/FID</ValueReference>" + 
+                        "</PropertyIsEqualTo>" +
+                    "</And>" + 
+                "</fes:Filter> " + 
+               "</wfs:Query>" + 
+             "</wfs:GetFeature>";
+
+        Document dom = postAsDOM("wfs", xml);
+        // print(dom);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:Tuple)", dom);
+
+        XMLAssert.assertXpathExists(
+                "//wfs:Tuple/wfs:member[1]/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
+        XMLAssert.assertXpathExists(
+                "//wfs:Tuple/wfs:member[2]/gs:Forests/gs:NAME[text() = 'Foo Forest']", dom);
+        XMLAssert.assertXpathExists(
+                "//wfs:Tuple/wfs:member[3]/gs:Lakes/gs:NAME[text() = 'Black Lake']", dom);
     }
 
     @Test

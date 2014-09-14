@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2014 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2014 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -1316,8 +1317,8 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
                 Map<String, String> params = params("service", "WMS", "request",
                         "GetLegendGraphic", "format", defaultFormat, "width",
-                        String.valueOf(legendWidth), "height",
-                        String.valueOf(legendHeight), "layer", layerName);
+                        String.valueOf(GetLegendGraphicRequest.DEFAULT_WIDTH), "height",
+                        String.valueOf(GetLegendGraphicRequest.DEFAULT_HEIGHT), "layer", layerName);
                 if (style != null) {
                     params.put("style", style.getName());
                 }

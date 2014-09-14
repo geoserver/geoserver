@@ -11,7 +11,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>2.6-SNAPSHOT</version>
+    <version>2.7-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
@@ -163,13 +163,6 @@
     </profile>
 
     <profile>
-      <id>validation</id>
-      <modules>
-        <module>validation</module>
-      </modules>
-    </profile>
-
-    <profile>
       <id>charts</id>
       <modules>
         <module>charts</module>
@@ -310,7 +303,6 @@
         <module>jp2k</module>
         <module>ogr</module>
         <module>excel</module>
-        <module>validation</module>
         <module>charts</module>
         <module>feature-pregeneralized</module>
         <module>imagemosaic-jdbc</module>
@@ -349,7 +341,6 @@
         <module>jp2k</module>
         <module>ogr</module>
         <module>excel</module>
-        <module>validation</module>
         <module>charts</module>
         <module>feature-pregeneralized</module>
         <module>imagemosaic-jdbc</module>

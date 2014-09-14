@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -6,7 +7,9 @@ package org.geoserver.wfs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geotools.data.Join;
@@ -18,7 +21,6 @@ import org.opengis.filter.BinaryComparisonOperator;
 import org.opengis.filter.BinaryLogicOperator;
 import org.opengis.filter.ExcludeFilter;
 import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.Id;
 import org.opengis.filter.IncludeFilter;
@@ -41,23 +43,27 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
     List<FeatureTypeInfo> featureTypes;
     List<String> aliases;
 
+    boolean hadAliases;
+
     List<Filter> joinFilters = new ArrayList<Filter>();
     List<Filter> filters = new ArrayList<Filter>();
 
     public JoinExtractingVisitor(List<FeatureTypeInfo> featureTypes, List<String> aliases) {
-        this.primaryFeatureType = featureTypes.get(0);
-        this.featureTypes = featureTypes.subList(1, featureTypes.size());
+        this.primaryFeatureType = null;
+        this.featureTypes = new ArrayList<>(featureTypes);
         
         if (aliases == null || aliases.isEmpty()) {
+            hadAliases = false;
             //assign prefixes
             aliases = new ArrayList<String>();
             for (int i = 0; i < featureTypes.size(); i++) {
                 aliases.add(String.valueOf((char)('a' + i)));
             }
+        } else {
+            hadAliases = true;
         }
         
-        this.primaryAlias = aliases.get(0);
-        this.aliases = aliases.subList(1, aliases.size());
+        this.aliases = new ArrayList(aliases);
     }
 
     public Object visitNullFilter(Object extraData) {
@@ -171,7 +177,9 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
 
     public List<Join> getJoins() {
         List<Join> joins = new ArrayList();
- 
+
+        setupPrimary();
+
         //unroll the contents of the join filters and rewrite them and and assign to correct 
         //feature type
         List<Filter> joinFilters = rewriteAndSort(unroll(this.joinFilters), true);
@@ -180,7 +188,8 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
         List<Filter> otherFilters = rewriteAndSort(unroll(this.filters), false);
         
         for (int i = 0; i < featureTypes.size(); i++) {
-            Join join = new Join(featureTypes.get(i).getNativeName(), joinFilters.get(i+1));
+            String nativeName = featureTypes.get(i).getNativeName();
+            Join join = new Join(nativeName, joinFilters.get(i+1));
             if (aliases != null) {
                 join.setAlias(aliases.get(i));
             }
@@ -193,11 +202,36 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
         return joins;
     }
 
+    /**
+     * Find the center of the star join, and remove it from the feature types and aliases arrays the
+     * rest of the algorithm is setup to have only the secondary types in these arrays
+     */
+    private void setupPrimary() {
+        if (primaryFeatureType == null) {
+            int idx = getPrimaryFeatureTypeIndex(this.joinFilters);
+            primaryFeatureType = featureTypes.get(idx);
+            primaryAlias = aliases.get(idx);
+            featureTypes.remove(idx);
+            aliases.remove(idx);
+        }
+    }
+
     public Filter getPrimaryFilter() {
+        setupPrimary();
         List<Filter> otherFilters = rewriteAndSort(unroll(this.filters), false);
         return otherFilters.get(0);
     }
     
+    public String getPrimaryAlias() {
+        setupPrimary();
+        return primaryAlias;
+    }
+
+    public FeatureTypeInfo getPrimaryFeatureType() {
+        setupPrimary();
+        return primaryFeatureType;
+    }
+
     List<Filter> unroll(List<Filter> filters) {
         JoinFilterUnroller unroller = new JoinFilterUnroller();
         for (Filter f : filters) {
@@ -207,7 +241,7 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
     }
 
     List<Filter> rewriteAndSort(List<Filter> filters, boolean prefix) {
-        Filter[] sorted = new Filter[featureTypes.size()+1];
+        Filter[] sorted = new Filter[featureTypes.size() + 1];
 O:      for (Filter f : filters) {
             PropertyName[] names = names(f);
             
@@ -233,6 +267,63 @@ O:      for (Filter f : filters) {
             }
         }
         return Arrays.asList(sorted);
+    }
+
+    /**
+     * Geotools only support "star" joins with a primary being the center of the join. Figure out if
+     * we have one feature type that is acting as the center of the star, or throw an exception if
+     * we don't have one.
+     * 
+     * @param filters2
+     * @return
+     */
+    private int getPrimaryFeatureTypeIndex(List<Filter> filters) {
+        if (featureTypes.size() == 2) {
+            return 0;
+        }
+
+        List<Integer> connecteds = new ArrayList<>();
+        for (int i = 0; i < featureTypes.size(); i++) {
+            connecteds.add(i);
+        }
+        for (Filter filter : filters) {
+            PropertyName[] names = names(filter);
+            Set<Integer> nameTypes = getPropertyNameTypeIndexes(names);
+            connecteds.retainAll(nameTypes);
+        }
+
+        if (connecteds.isEmpty()) {
+            throw new WFSException(
+                    "Cannot run this type of join, at the moment GeoServer only supports "
+                            + "joins having a single central feature type joined to all others");
+        } else {
+            return connecteds.iterator().next();
+        }
+    }
+
+    private Set<Integer> getPropertyNameTypeIndexes(PropertyName[] names) {
+        Set<Integer> result = new HashSet<Integer>();
+        for (PropertyName pn : names) {
+            String n = pn.getPropertyName();
+            int idx = n.indexOf("/");
+            if (idx > 0) {
+                String typeName = n.substring(0, idx);
+                int aliasIdx = aliases.indexOf(typeName);
+                if (aliasIdx >= 0) {
+                    result.add(aliasIdx);
+                } else {
+                    for (int i = 0; i < featureTypes.size(); i++) {
+                        FeatureTypeInfo ft = featureTypes.get(i);
+                        if (typeName.equals(ft.prefixedName()) || typeName.equals(ft.getName())) {
+                            result.add(i);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        return result;
     }
 
     void updateFilter(Filter[] filters, int i, Filter filter) {
@@ -270,8 +361,8 @@ O:      for (Filter f : filters) {
 
     PropertyName rewrite(FeatureTypeInfo featureType, String alias, PropertyName name, boolean prefix) {
         String n = name.getPropertyName();
-        if (n.startsWith(featureType.getPrefixedName()+"/")) {
-            n = n.substring((featureType.getPrefixedName()+"/").length());
+        if (n.startsWith(featureType.prefixedName() + "/")) {
+            n = n.substring((featureType.prefixedName() + "/").length());
         }
         else if (n.startsWith(featureType.getName()+"/")) {
             n = n.substring((featureType.getName()+"/").length());
@@ -432,4 +523,5 @@ O:      for (Filter f : filters) {
             return super.visit(expression, extraData);
         }
     }
+
 }

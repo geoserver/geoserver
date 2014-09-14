@@ -12,7 +12,7 @@ Get commit rights
 
 The documentation is now under version control, just like the source code.  Also, like the source code, one must be granted "commit rights" before being able to make changes.  This helps keep the quality of the documentation as high as possible.
 
-To gain documentation commit rights, the process is similar to gaining commit rights for code.  One should submit some documentation (see the section on how to :ref:`file_an_issue_with_patch` below).  If one demonstrates quality work, then a `contributor <http://rancor.boundlessgeo.com:8080/display/GEOS/Contributors>`_ can nominate this person for commit rights.
+To gain documentation commit rights, the process is similar to gaining commit rights for code.  One should submit some documentation (see the section on how to :ref:`file_an_issue_with_patch` below).  If one demonstrates quality work, then a `contributor <https://github.com/orgs/geoserver/teams/team-geoserver>`_ can nominate this person for commit rights.
 
 To request commit rights, please send an email to the `GeoServer developers list <https://lists.sourceforge.net/lists/listinfo/geoserver-devel>`_.  Please note that this access may only be to the documentation, and not the source code.
 
@@ -23,7 +23,11 @@ Once you have commit rights, please see the section on :ref:`workflow` for creat
 File an issue and include a documentation patch
 -----------------------------------------------
 
-GeoServer uses `JIRA <http://jira.codehaus.org/browse/GEOS>`_ for issue tracking.  New documentation is treated like part of the code, so those who want to submit content (patches etc) can file an issue with JIRA and attach the content to the issue.  If the content is deemed satisfactory, a contributor with commit rights will add the content to the documentation.
+GeoServer uses `JIRA <http://jira.codehaus.org/browse/GEOS>`_ for issue tracking.  New documentation is treated like part of the code, so those who want to submit content (patches etc) can use a pull request or file an issue with JIRA and attach the content to the issue.  If the content is deemed satisfactory, a contributor with commit rights will add the content to the documentation.
+
+For more information see `CONTRIBUTING.md <https://github.com/geoserver/geoserver/blob/master/CONTRIBUTING.md>`_ in GitHub.
+
+GitHub supports direct reviewing and editing of documentation pages, any edit you make will be automatically forked and submitted to the project team as a pull request.
 
 File an issue
 -------------

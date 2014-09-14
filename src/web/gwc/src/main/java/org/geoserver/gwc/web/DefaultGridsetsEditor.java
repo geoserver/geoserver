@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -158,7 +159,8 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
 
                 List<String> selectedIds = selection.getObject();
                 selectedIds.add(selectedGridset);
-
+                // Execute setPageable() in order to re-create the inner record list updated.
+                defaultGridsetsTable.setPageable(false);
                 target.addComponent(defaultGridsetsTable);
                 target.addComponent(availableGridSets);
             }

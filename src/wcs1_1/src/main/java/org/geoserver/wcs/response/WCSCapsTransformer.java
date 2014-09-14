@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -153,7 +154,7 @@ public class WCSCapsTransformer extends TransformerBase {
             final String locationAtt = new StringBuffer(XSI_PREFIX).append(":schemaLocation")
                     .toString();
 
-            final String locationDef = buildSchemaURL(request.getBaseUrl(), "wcs/1.1.1/wcsGetCapabilities.xsd");
+            final String locationDef = WCS_URI + " " + buildSchemaURL(request.getBaseUrl(), "wcs/1.1.1/wcsGetCapabilities.xsd");
             
             attributes.addAttribute("", locationAtt, locationAtt, "", locationDef);
             attributes.addAttribute("", "updateSequence", "updateSequence", "", String

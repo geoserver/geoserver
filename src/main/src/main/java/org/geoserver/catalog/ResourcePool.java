@@ -1,4 +1,5 @@
-/* Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+/* (c) 2014 Open Source Geospatial Foundation - all rights reserved
+ * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
@@ -120,11 +121,20 @@ import org.vfny.geoserver.util.DataStoreUtils;
  * Provides access to resources such as datastores, coverage readers, and 
  * feature types.
  * <p>
- * 
+ * Provides caches for:
+ * <ul>
+ * <li>{@link #crsCache} - quick lookup of CoorrdinateReferenceSystem by srs name</li>
+ * <li>{@link #dataStoreCache} - live {@link DataAccess} connections. Responsible for maintaining lifecycle with an
+ * appropriate call to {@link DataAccess#dispose()} when no longer in use.</li>
+ * <li>{@link #featureTypeCache} </li>
+ * <li>{@link #featureTypeAttributeCache} </li>
+ * <li>{@link #wmsCache} </li>
+ * <li>{@link #coverageReaderCache} </li>
+ * <li>{@link #hintCoverageReaderCache} </li>
+ * <li>{@link #styleCache} </li>
  * </p>
  * 
- * @author Justin Deoliveira, The Open Planning Project
- *
+ * @author Justin Deoliveira, Boundless
  */
 public class ResourcePool {
 
@@ -150,8 +160,8 @@ public class ResourcePool {
     /** logging */
     static Logger LOGGER = Logging.getLogger( "org.geoserver.catalog");
     
-    static Class VERSIONING_FS = null;
-    static Class GS_VERSIONING_FS = null;
+    static Class<?> VERSIONING_FS = null;
+    static Class<?> GS_VERSIONING_FS = null;
     
     static {
         try {
@@ -173,7 +183,7 @@ public class ResourcePool {
 
     Catalog catalog;
     Map<String, CoordinateReferenceSystem> crsCache;
-    Map<String, DataAccess> dataStoreCache;
+    DataStoreCache dataStoreCache;
     Map<String, FeatureType> featureTypeCache;
     Map<String, List<AttributeTypeInfo>> featureTypeAttributeCache;
     Map<String, WebMapServer> wmsCache;
@@ -274,8 +284,14 @@ public class ResourcePool {
     public Map<String, DataAccess> getDataStoreCache() {
         return dataStoreCache;
     }
-
-    protected Map<String,DataAccess> createDataStoreCache() {
+    /**
+     * DataStoreCache implementation responsible for freeing DataAccess resources
+     * when they are no longer in use.
+     * 
+     * @return Cache used to look up DataAccess via id
+     * @see #getDataStoreCache()
+     */
+    protected DataStoreCache createDataStoreCache() {
         return new DataStoreCache();
     }
 
@@ -491,15 +507,15 @@ public class ResourcePool {
     }
     
     /**
-     * Returns the underlying resource for a datastore, caching the result.
+     * Returns the underlying resource for a DataAccess, caching the result.
      * <p>
      * In the result of the resource not being in the cache {@link DataStoreInfo#getConnectionParameters()}
-     * is used to connect to it.
+     * is used to create the connection.
      * </p>
-     * @param info the data store metadata.
-     * 
+     * @param info DataStoreMeta providing id used for cache lookup (and connection paraemters if a connection is needed)
      * @throws IOException Any errors that occur connecting to the resource.
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public DataAccess<? extends FeatureType, ? extends Feature> getDataStore( DataStoreInfo info ) throws IOException {
         DataAccess<? extends FeatureType, ? extends Feature> dataStore = null;
         try {
@@ -512,7 +528,7 @@ public class ResourcePool {
                         //create data store
                         Map<String, Serializable> connectionParameters = info.getConnectionParameters();
                         
-                        //call this methdo to execute the hack which recognizes 
+                        // call this method to execute the hack which recognizes 
                         // urls which are relative to the data directory
                         // TODO: find a better way to do this
                         connectionParameters = ResourcePool.getParams(connectionParameters, catalog.getResourceLoader() );
@@ -1933,27 +1949,48 @@ public class ResourcePool {
         protected void dispose(String key, FeatureType featureType) {
             String id = key.substring(0, key.indexOf(PROJECTION_POLICY_SEPARATOR));
         	FeatureTypeInfo info = catalog.getFeatureType(id);
-            LOGGER.info( "Disposing feature type '" + info.getName() + "'");
-            fireDisposed(info, featureType);
+            if(info != null){
+                LOGGER.info( "Disposing feature type '" + info.getName() + "'");
+                fireDisposed(info, featureType);
+            }
         }
     }
-    
+    /**
+     * Custom CatalogResourceCache responsible for disposing
+     * of DataAccess instances (allowing the recovery of operating
+     * system resources).
+     * 
+     * @see ResourcePool#dataStoreCache
+     */
+    @SuppressWarnings("rawtypes")
     class DataStoreCache extends CatalogResourceCache<String, DataAccess> {
-    	
-        protected void dispose(String id, DataAccess da) {
-        	DataStoreInfo info = catalog.getDataStore(id);
-        	String name = null;
-        	if(info != null) {
-	            name = info.getName();
-	            LOGGER.info( "Disposing datastore '" + name + "'" );
-	            
-	            fireDisposed(info, da);
-        	}
-            
+        /**
+         * Ensure data access entry is removed from catalog, and
+         * ensure DataAccess dispose is called to return system resources.
+         * <p>
+         * This method is used when cleaning up a weak reference and
+         * will immediately dispose of the indicated dataAccess.
+         * 
+         * @param id DataStore id, or null if not known
+         * @param dataAccess DataAccess to dispose 
+         */
+        protected void dispose(String id, final DataAccess dataAccess) {
+            DataStoreInfo info = catalog.getDataStore(id);
+            final String name;
+            if (info != null) {
+                name = info.getName();
+                LOGGER.info("Disposing datastore '" + name + "'");
+                fireDisposed(info, dataAccess);
+            }
+            else {
+                name = "Untracked";
+            }
+            final String implementation = dataAccess.getClass().getSimpleName();
             try {
-                da.dispose();
+                LOGGER.info("Dispose data access '" + name + "' "+implementation);
+                dataAccess.dispose();
             } catch( Exception e ) {
-                LOGGER.warning( "Error occured disposing datastore '" + name + "'");
+                LOGGER.warning( "Error occured disposing data access '" + name + "' "+implementation );
                 LOGGER.log(Level.FINE, "", e );
             }
         }
@@ -2115,7 +2152,15 @@ public class ResourcePool {
             clear(style);
         }
     }
-    
+    /**
+     * Used to clean up any outstanding data store listeners.
+     * <p>
+     * The DataStore is still active as the listeners are called allowing
+     * any required clean up to occur.
+     * 
+     * @param dataStoreInfo 
+     * @param da Data access 
+     */
     void fireDisposed(DataStoreInfo dataStore, DataAccess da) {
         for (Listener l : listeners) {
             try {

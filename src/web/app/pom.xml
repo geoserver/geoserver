@@ -10,12 +10,12 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>web</artifactId>
-    <version>2.6-SNAPSHOT</version>
+    <version>2.7-SNAPSHOT</version>
   </parent>
   <groupId>org.geoserver.web</groupId>
   <artifactId>gs-web-app</artifactId>
   <packaging>jar</packaging>
-  <version>2.6-SNAPSHOT</version>
+  <version>2.7-SNAPSHOT</version>
   <name>GeoServer Web Application</name>
   <dependencies>
     <dependency>
@@ -371,7 +371,7 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-arcsde</artifactId>
-          <version>2.6-SNAPSHOT</version>
+          <version>2.7-SNAPSHOT</version>
         </dependency>
       </dependencies>
     </profile>
@@ -400,7 +400,7 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-sqlserver</artifactId>
-          <version>2.6-SNAPSHOT</version>
+          <version>2.7-SNAPSHOT</version>
         </dependency>
       </dependencies>
     </profile>
@@ -410,7 +410,7 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-oracle</artifactId>
-          <version>2.6-SNAPSHOT</version>
+          <version>2.7-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.oracle</groupId>
@@ -425,7 +425,7 @@
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-mysql</artifactId>
-          <version>2.6-SNAPSHOT</version>
+          <version>2.7-SNAPSHOT</version>
         </dependency>
       </dependencies>
     </profile>
@@ -458,7 +458,7 @@
      <id>validation</id>
      <dependencies>
       <dependency>
-        <groupId>org.geoserver.extension</groupId>
+        <groupId>org.geoserver.community</groupId>
         <artifactId>gs-validation</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1019,26 +1019,14 @@
           <version>${project.version}</version>
         </dependency>
       </dependencies>
-		</profile>
+    </profile>
     <profile>
-			<id>netcdf</id>
+      <id>netcdf</id>
       <dependencies>
         <dependency>
-          <groupId>org.geotools</groupId>
-          <artifactId>gt-netcdf</artifactId>
-          <version>${gt.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-          </exclusion>
-
-
-        </exclusions>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-netcdf</artifactId>
+          <version>${gs.version}</version>
         </dependency>
       </dependencies>
 		</profile>        
@@ -1068,6 +1056,16 @@
       </dependencies>
     </profile>
     <profile>
+      <id>pgraster</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-pgraster</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+   <profile>
       <id>geopkg</id>
       <dependencies>
         <dependency>
@@ -1113,17 +1111,7 @@
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-grib</artifactId>
-		  <version>${project.version}</version>
-		  <exclusions>
-			<exclusion>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-api</artifactId>
-			</exclusion>
-			<exclusion>
-				<groupId>org.slf4j</groupId>
-				<artifactId>jcl-over-slf4j</artifactId>
-			</exclusion>
-		  </exclusions>
+          <version>${project.version}</version>
         </dependency>
       </dependencies>
     </profile>
@@ -1143,6 +1131,26 @@
         <dependency>
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-rest-ext</artifactId>
+		  <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+	<profile>
+      <id>kmlppio</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-kmlppio</artifactId>
+		  <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+	<profile>
+      <id>gpxppio</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-gpxppio</artifactId>
 		  <version>${project.version}</version>
         </dependency>
       </dependencies>

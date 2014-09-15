@@ -109,6 +109,12 @@ Configure Tomcat for SSL
 
    This enables SSL on port 8443.
 
+#. By default, Tomcat has APR enabled. To disable it so the above configuration can work, remove or comment out the following line in the server.xml configration file
+
+    .. code-block:: xml
+
+      <Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" />   
+
 #. Restart Tomcat.
 
 Install the client certificate
@@ -144,3 +150,9 @@ Test certificate login
 The result is that the user ``rod`` is now logged into the GeoServer admin interface.
 
     .. figure:: images/cert14.jpg
+
+.. note:: 
+
+  Starting with version 31, Firefox implements a new mechanism for using certificates, which will cause a *Issuer certificate is invalid error (sec_error_ca_cert_invalid)* error when trying to use a self-signed repository such as the one proposed. To avoid that, you can disable this mechanism by browsing to **about:config** and setting the **security.use_mozillapkix_verification** parameter to **false**.
+
+    .. figure:: images/mozilla_pki.jpg

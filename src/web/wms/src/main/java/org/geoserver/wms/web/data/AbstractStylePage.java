@@ -328,7 +328,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
             @Override
             protected void onClick(AjaxRequestTarget target, Form form) {
                 editor.processInput();
-                formatChoice.processInput();
+
                 List<Exception> errors = validateSLD();
                 
                 if ( errors.isEmpty() ) {

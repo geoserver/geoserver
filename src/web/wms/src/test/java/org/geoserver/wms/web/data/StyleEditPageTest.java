@@ -98,4 +98,23 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         assertNull(getCatalog().getStyleByName("Buildings"));
         assertNotNull(getCatalog().getStyleByName("BuildingsNew"));
     }
+
+    @Test
+    public void testValidate() throws Exception {
+        String xml =
+            "<StyledLayerDescriptor version='1.0.0' " +
+                " xsi:schemaLocation='http://www.opengis.net/sld StyledLayerDescriptor.xsd' " +
+                " xmlns='http://www.opengis.net/sld' " +
+                " xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>" +
+                "  <NamedLayer>" +
+                "    <Name>Style</Name>" +
+                "  </NamedLayer>" +
+            "</StyledLayerDescriptor>";
+
+        tester.debugComponentTrees();
+        tester.newFormTester("form").setValue("styleEditor:editorContainer:editorParent:editor", xml);
+
+        tester.executeAjaxEvent("validate", "onclick");
+        tester.assertNoErrorMessage();
+    }
 }

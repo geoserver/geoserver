@@ -11,6 +11,7 @@ scripts in languages other than Java.
 
    installation/
    supported/
+   ui/
    overview/
    hooks/
    reference/

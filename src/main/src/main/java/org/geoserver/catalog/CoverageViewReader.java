@@ -19,7 +19,6 @@ import java.util.logging.Logger;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.operator.BandMergeDescriptor;
 
-import org.geoserver.catalog.CoverageDimensionCustomizerReader.GridCoverageWrapper;
 import org.geoserver.catalog.CoverageView.CoverageBand;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
 import org.geoserver.catalog.impl.CoverageDimensionImpl;
@@ -340,9 +339,9 @@ public class CoverageViewReader implements GridCoverage2DReader {
         } else {
             image = sampleCoverage.getRenderedImage();
         }
-        GridSampleDimension[] sampleDimensions = dims.toArray(new GridSampleDimension[dims.size()]);
-        GridCoverage2D mergedCoverage = coverageFactory.create(coverageInfo.getName(), image, sampleCoverage.getGridGeometry(), sampleDimensions, null, null);
-        return new GridCoverageWrapper(coverageInfo.getName(), mergedCoverage, sampleDimensions, mergedCoverage.getProperties());
+        return coverageFactory.create(coverageInfo.getName(), image,
+                sampleCoverage.getGridGeometry(),
+                dims.toArray(new GridSampleDimension[dims.size()]), null, /* props */null);
     }
 
 

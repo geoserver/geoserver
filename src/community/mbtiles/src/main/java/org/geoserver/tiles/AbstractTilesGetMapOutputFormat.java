@@ -201,6 +201,9 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
             return;
         }
 
+        // Get the RasterCleaner object
+        RasterCleaner cleaner = GeoServerExtensions.bean(RasterCleaner.class);
+        
         // figure out a name for the file entry
         String tileEntryName = null;
         Map formatOpts = request.getFormatOptions();
@@ -277,12 +280,8 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
                     WebMap result = webMapService.getMap(req);
                     tiles.addTile(z, (int) x, (int) (flipy ? gridSubset.getNumTilesHigh(z)
                             - (y + 1) : y), toBytes(result));
-
-                    // images we encode are actually kept around, we need to clean them up
-                    if (ntiles++ == TILE_CLEANUP_INTERVAL) {
-                        cleanUpImages();
-                        ntiles = 0;
-                    }
+                    // Cleanup
+                    cleaner.finished(null);
                 }
             }
         }
@@ -504,10 +503,5 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         }
         bout.flush();
         return bout.toByteArray();
-    }
-
-    protected void cleanUpImages() {
-        RasterCleaner cleaner = GeoServerExtensions.bean(RasterCleaner.class);
-        cleaner.finished(null);
     }
 }

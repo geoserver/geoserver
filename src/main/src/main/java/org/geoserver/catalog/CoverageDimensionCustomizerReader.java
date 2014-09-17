@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.measure.unit.Unit;
 import javax.media.jai.ImageLayout;
@@ -33,6 +35,7 @@ import org.geotools.resources.Classes;
 import org.geotools.util.NumberRange;
 import org.geotools.util.SimpleInternationalString;
 import org.geotools.util.Utilities;
+import org.geotools.util.logging.Logging;
 import org.opengis.coverage.ColorInterpretation;
 import org.opengis.coverage.PaletteInterpretation;
 import org.opengis.coverage.SampleDimension;
@@ -57,6 +60,8 @@ import org.opengis.util.InternationalString;
  * @author Daniele Romagnoli - GeoSolutions SAS
  */
 public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
+
+    private static Logger LOGGER = Logging.getLogger(CoverageDimensionCustomizerReader.class);
 
     final static String LINE_SEPARATOR = System.getProperty("line.separator", "\n");
 
@@ -410,9 +415,9 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
     }
 
     /**
-     * Wraps a GridCoverage by overriding its sampleDimensions and properties 
+     * Utility class to wrap a GridCoverage by overriding its sampleDimensions and properties 
      */
-    static class GridCoverageWrapper extends GridCoverage2D {
+    public static class GridCoverageWrapper extends GridCoverage2D {
 
         /** A custom propertySource allowing to redefine properties (since getProperties return a clone) */
         private PropertySourceImpl wrappedPropertySource;
@@ -445,6 +450,15 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         @Override
         public Object getProperty(String arg0) {
             return wrappedPropertySource.getProperty(arg0);
+        }
+
+        public static GridCoverage2D wrapCoverage(GridCoverage2D coverage, GridCoverage2D sourceCoverage, GridSampleDimension[] wrappedDimensions, Map properties, boolean forceWrapping) {
+            if (coverage instanceof GridCoverageWrapper || forceWrapping) {
+                return new GridCoverageWrapper(coverage.getName().toString(), coverage, 
+                        wrappedDimensions == null ? coverage.getSampleDimensions() : wrappedDimensions, 
+                        properties == null ? sourceCoverage.getProperties() : properties);
+            }
+            return coverage;
         }
     }
 
@@ -485,9 +499,9 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         public double getMinimumValue() {
             NumberRange<? extends Number> range = getRange();
             // Check if the range exists, otherwise use the sample dimension values
-            if(range != null){
+            if (range != null){
                 return range.getMinimum();
-            }else{
+            } else {
                 return sampleDim.getMinimumValue();
             }
         }
@@ -495,9 +509,9 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         public double getMaximumValue() {
             NumberRange<? extends Number> range = getRange();
             // Check if the range exists, otherwise use the sample dimension values
-            if(range != null){
+            if (range != null) {
                 return range.getMaximum();
-            }else{
+            } else {
                 return sampleDim.getMaximumValue();
             }
         }
@@ -511,7 +525,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         }
         @Override
         public Unit<?> getUnits() {
-            return sampleDim.getUnits();
+            return configuredUnit;
         }
         @Override
         public double getOffset() throws IllegalStateException {
@@ -607,6 +621,9 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         /** The custom noDataValues */
         private double[] configuredNoDataValues;
 
+        /** The custom unit */
+        private Unit<?> configuredUnit;
+
         /** The custom range */
         private NumberRange<? extends Number> configuredRange;
 
@@ -627,6 +644,20 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
             final List<Category> categories = sampleDim.getCategories();
             this.configuredRange = info.getRange();
             this.customCategories = categories;
+            final String uom = info.getUnit();
+            Unit defaultUnit = sampleDim.getUnits();
+            Unit unit = defaultUnit;
+            try {
+                if (uom != null) {
+                    unit = Unit.valueOf(uom);
+                }
+            } catch (IllegalArgumentException iae) {
+                if (LOGGER.isLoggable(Level.WARNING) && defaultUnit != null) {
+                    LOGGER.warning("Unable to parse the specified unit (" + uom
+                            + "). Using the previous one: " + defaultUnit.toString());
+                }
+            }
+            this.configuredUnit = unit;
 
             // custom null values 
             final List<Double> nullValues = info.getNullValues();

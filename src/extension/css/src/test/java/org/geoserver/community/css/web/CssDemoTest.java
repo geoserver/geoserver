@@ -2,9 +2,12 @@ package org.geoserver.community.css.web;
 
 import static org.junit.Assert.*;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.tabs.AjaxTabbedPanel;
+import org.apache.wicket.util.tester.FormTester;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
@@ -13,13 +16,25 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+
 public class CssDemoTest extends GeoServerWicketTestSupport {
 
     @Before 
     public void setup() {
         login();
     }
-    
+
+    @Before
+    public void removeFooStyle() {
+        Catalog cat = getCatalog();
+        StyleInfo foo = cat.getStyleByName("foo");
+        if (foo != null) {
+            cat.remove(foo);
+        }
+    }
+
     @Test
     public void testBasicLayout() {
         tester.startPage(CssDemoPage.class);
@@ -102,5 +117,37 @@ public class CssDemoTest extends GeoServerWicketTestSupport {
         // though, that should be a better fix)
         // System.out.println(sld);
         assertTrue(sld.contains("workspaces/cite/styles/smiley.png"));
+    }
+
+    @Test
+    public void testEditPreConfiguredCSSStyle() throws IOException {
+        Catalog cat = getCatalog();
+        StyleInfo foo = cat.getFactory().createStyle();
+        foo.setName("foo");
+        foo.setFilename("foo.css");
+        foo.setFormat(CssHandler.FORMAT);
+
+        String css = "* { fill: #cccccc }";
+        cat.getResourcePool().writeStyle(foo, new ByteArrayInputStream(css.getBytes()));
+        cat.add(foo);
+
+        login();
+        PageParameters pp = new PageParameters();
+        String prefixedName = getLayerId(MockData.BASIC_POLYGONS);
+        pp.put("layer", prefixedName);
+        pp.put("style", "foo");
+        tester.startPage(CssDemoPage.class, pp);
+        tester.assertRenderedPage(CssDemoPage.class);
+        tester.assertModelValue("main-content:style.name", "foo");
+        tester.assertModelValue("main-content:layer.name", prefixedName);
+
+        tester.debugComponentTrees();
+        FormTester form = tester.newFormTester("main-content:style.editing:style-editor");
+        form.setValue("editor", "* { stroke: red; }");
+
+        tester.executeAjaxEvent("main-content:style.editing:style-editor:submit", "onclick");
+
+        String content = IOUtils.toString(cat.getResourcePool().readStyle(foo));
+        assertEquals("* { stroke: red; }", content);
     }
 }

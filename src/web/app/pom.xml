@@ -16,8 +16,8 @@
   <artifactId>gs-web-app</artifactId>
   <packaging>jar</packaging>
   <version>2.7-SNAPSHOT</version>
-  <name>GeoServer Web Application</name>
-  <dependencies>
+  <name>GeoServer Web Application</name>    
+  <dependencies>  
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>
@@ -1136,6 +1136,16 @@
       </dependencies>
     </profile>
 	<profile>
+      <id>wps-download</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-wps-download</artifactId>
+		  <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>    
+	<profile>
       <id>kmlppio</id>
       <dependencies>
         <dependency>
@@ -1156,5 +1166,4 @@
       </dependencies>
     </profile>
  </profiles>
-
 </project>

@@ -134,9 +134,6 @@ public class WCS20GetCoverageMultipartResponse extends Response {
         } catch (MessagingException e) {
             throw new WcsException("Error occurred while encoding the mime multipart response", e);
         }
-        
-        
-        delegate.encode(coverage, format, encodingParameters, output);
     }
 
     @Override

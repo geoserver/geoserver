@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.Styles;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -50,11 +51,13 @@ public class StyleNewPage extends AbstractStylePage {
         Catalog catalog = getCatalog();
         StyleInfo s = (StyleInfo) styleForm.getModelObject();
 
+        StyleHandler styleHandler = styleHandler();
+
         // write out the SLD before creating the style
         try {
             if (s.getFilename() == null) {
                 // TODO: check that this does not overriDe any existing files
-                s.setFilename(s.getName() + ".sld");
+                s.setFilename(s.getName() + "."+styleHandler.getFileExtension());
             }
             catalog.getResourcePool().writeStyle(s,
                     new ByteArrayInputStream(rawStyle.getBytes()));
@@ -64,7 +67,7 @@ public class StyleNewPage extends AbstractStylePage {
         
         // store in the catalog
         try {
-            Version version = styleHandler().version(rawStyle);
+            Version version = styleHandler.version(rawStyle);
             s.setSLDVersion(version);
             getCatalog().add(s);
         } catch (Exception e) {

@@ -99,7 +99,7 @@ Controls a particular feature type in a given data store and workspace.
      - 200
      - HTML, XML, JSON
      - HTML
-     -
+     - :ref:`quietOnNotFound <rest_api_featuretypes_quietOnNotFound>`	
    * - POST
      -
      - 405
@@ -155,3 +155,9 @@ The ``recalculate`` parameter specifies whether to recalculate any bounding boxe
 * ``recalculate=nativebbox``: Recalculate the native bounding box, but do not recalculate the lat/long bounding box.
 * ``recalculate=nativebbox,latlonbbox``: Recalculate both the native bounding box and the lat/long bounding box.
 
+.. _rest_api_featuretypes_quietOnNotFound:
+
+``quietOnNotFound``
+^^^^^^^^^^^^^^^^^^^^
+
+The ``quietOnNotFound`` parameter avoids to log an Exception when the feature type is not present. Note that 404 status code will be returned anyway.

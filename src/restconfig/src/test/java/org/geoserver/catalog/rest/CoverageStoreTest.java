@@ -123,6 +123,29 @@ public class CoverageStoreTest extends CatalogRESTTestSupport {
             assertTrue( link.getAttribute("href").endsWith("coverages/" + cov.getName() + ".html") );
         }
     }
+    
+    @Test
+    public void testGetWrongCoverageStore() throws Exception {
+        // Parameters for the request
+        String ws = "wcs";
+        String cs = "BlueMarblesssss";
+        // Request path
+        String requestPath = "/rest/workspaces/" + ws + "/coveragestores/" + cs + ".html";
+        // Exception path
+        String exception = "No such coverage store: " + ws + "," + cs;
+        // First request should thrown an exception
+        MockHttpServletResponse response = getAsServletResponse(requestPath);
+        assertEquals(404, response.getStatusCode());
+        assertTrue(response.getOutputStreamContent().contains(
+                exception));
+        // Same request with ?quietOnNotFound should not throw an exception
+        response = getAsServletResponse(requestPath + "?quietOnNotFound=true");
+        assertEquals(404, response.getStatusCode());
+        assertFalse(response.getOutputStreamContent().contains(
+                exception));
+        // No exception thrown
+        assertTrue(response.getOutputStreamContent().isEmpty());
+    }
 
     File setupNewCoverageStore() throws Exception {
         File dir = new File( "./target/usa" );

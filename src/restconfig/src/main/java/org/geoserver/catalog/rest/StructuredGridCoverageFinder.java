@@ -66,7 +66,26 @@ public class StructuredGridCoverageFinder extends AbstractCatalogFinder {
                     throw new RestletException( "Invalid path", Status.CLIENT_ERROR_NOT_FOUND);
                 }
             } else {
-                return new GranuleResource(getContext(), request, response, catalog, coverage, granule);
+                // Check if the quietOnNotFound parameter is set
+                boolean quietOnNotFound=quietOnNotFoundEnabled(request);
+                GranuleResource granuleResource = new GranuleResource(getContext(), request, response, catalog, coverage, granule);
+                try {
+                    // Check if the granule is present
+                    granuleResource.handleObjectGet();
+                } catch (Exception e) {
+                    // If it is a RestletException the granule is not present
+                    if(e instanceof RestletException && ((RestletException)e).getStatus().equals(Status.CLIENT_ERROR_NOT_FOUND)){
+                        // If true, no exception is returned
+                        if(quietOnNotFound){
+                            return null;
+                            
+                        }
+                        throw (RestletException)e;
+                    }else{
+                        throw new IOException(e);
+                    }
+                }
+                return granuleResource;
             }
         } catch(IOException e) {
             throw new RestletException( "Failed to load coverage information", Status.SERVER_ERROR_INTERNAL, e);

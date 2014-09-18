@@ -106,6 +106,26 @@ public class WorkspaceTest extends CatalogRESTTestSupport {
     }
     
     @Test
+    public void testGetWrongWorkspace() throws Exception {
+        // Parameters for the request
+        String workspace = "sfsssss";
+        // Request path
+        String requestPath = "/rest/workspaces/" + workspace + ".html";
+        // Exception path
+        String exception = "No such workspace: " + workspace;
+        // First request should thrown an exception
+        MockHttpServletResponse response = getAsServletResponse(requestPath);
+        assertEquals(404, response.getStatusCode());
+        assertTrue(response.getOutputStreamContent().contains(
+                exception));
+        // Same request with ?quietOnNotFound should not throw an exception
+        response = getAsServletResponse(requestPath + "?quietOnNotFound=true");
+        assertEquals(404, response.getStatusCode());
+        assertFalse(response.getOutputStreamContent().contains(
+                exception));
+    }
+    
+    @Test
     public void testGetNonExistant() throws Exception {
         assertEquals( 404, getAsServletResponse( "/rest/workspaces/none").getStatusCode() );
     }

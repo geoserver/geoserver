@@ -17,9 +17,11 @@ import java.util.logging.Logger;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.gwc.GWC;
 import org.geoserver.ows.util.OwsUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
+import org.geoserver.wms.RasterCleaner;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.WebMapService;
@@ -175,6 +177,9 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
             return;
         }
 
+        // Get the RasterCleaner object
+        RasterCleaner cleaner = GeoServerExtensions.bean(RasterCleaner.class);
+
         // figure out the actual bounds of the tiles to be renderered
         ReferencedEnvelope bbox = bounds(request);
         
@@ -243,9 +248,6 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
         if (formatOpts.containsKey("max_row")) {
             maxRow = Integer.parseInt(formatOpts.get("max_row").toString());
         }
-                
-        // count tiles as we generate them
-        int ntiles = 0;
 
         for (TileMatrix matrix : matrixSet.values()) {
 
@@ -268,26 +270,19 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
             
             for (long x = minX; x < maxX; x++) {
                 for (long y = minY; y < maxY; y++) {
-                    
                     req.setBbox(new Envelope( xOffset + x * resX , xOffset + (x+1) * resX, yOffset + y * resY, yOffset + (y+1) * resY));
-
                     WebMap result = webMapService.getMap(req);
-                    
                     Tile t = new Tile();
                     t.setZoom(matrix.getZoomLevel());
                     t.setColumn((int) x);
                     t.setRow((int) y);
                     t.setData(toBytes(result));
                     geopkg.add(e, t);
-
-                    // images we encode are actually kept around, we need to clean them up
-                    if (ntiles++ == TILE_CLEANUP_INTERVAL) {
-                        cleanUpImages();
-                        ntiles = 0;
-                    }
+                    // Cleanup
+                    cleaner.finished(null);
                 }
             }
         }
     }
-    
+
 }

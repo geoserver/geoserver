@@ -7,6 +7,7 @@ package org.geoserver.catalog.rest;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.rest.RestletException;
+import org.restlet.data.Form;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -28,9 +29,16 @@ public class NamespaceFinder extends AbstractCatalogFinder {
         }
         
         if ( namespace != null ) {
+            // If true, no exception is returned
+            boolean quietOnNotFound=quietOnNotFoundEnabled(request);           
             //ensure it exists
             if ( catalog.getNamespaceByPrefix( namespace ) == null ) {
-                throw new RestletException( "No such namespace: " + namespace, Status.CLIENT_ERROR_NOT_FOUND );
+                // If true, no exception is returned
+                if(quietOnNotFound){
+                    return null;
+                }else{
+                    throw new RestletException( "No such namespace: " + namespace, Status.CLIENT_ERROR_NOT_FOUND );
+                }
             }
         }
         

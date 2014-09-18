@@ -123,6 +123,29 @@ public class DataStoreTest extends CatalogRESTTestSupport {
         }
     }
     
+    @Test
+    public void testGetWrongDataStore() throws Exception {
+        // Parameters for the request
+        String ws = "sf";
+        String ds = "sfssssss";
+        // Request path
+        String requestPath = "/rest/workspaces/" + ws + "/datastores/" + ds + ".html";
+        // Exception path
+        String exception = "No such datastore: " + ws + "," + ds;
+        // First request should thrown an exception
+        MockHttpServletResponse response = getAsServletResponse(requestPath);
+        assertEquals(404, response.getStatusCode());
+        assertTrue(response.getOutputStreamContent().contains(
+                exception));
+        // Same request with ?quietOnNotFound should not throw an exception
+        response = getAsServletResponse(requestPath + "?quietOnNotFound=true");
+        assertEquals(404, response.getStatusCode());
+        assertFalse(response.getOutputStreamContent().contains(
+                exception));
+        // No exception thrown
+        assertTrue(response.getOutputStreamContent().isEmpty());
+    }
+    
     File setupNewDataStore() throws Exception {
         Properties props = new Properties();
         props.put( "_", "name:StringpointProperty:Point");

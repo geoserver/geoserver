@@ -203,7 +203,7 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
 
         // Get the RasterCleaner object
         RasterCleaner cleaner = GeoServerExtensions.bean(RasterCleaner.class);
-        
+
         // figure out a name for the file entry
         String tileEntryName = null;
         Map formatOpts = request.getFormatOptions();
@@ -260,9 +260,6 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         if (formatOpts.containsKey("max_row")) {
             maxRow = Integer.parseInt(formatOpts.get("max_row").toString());
         }
-        
-        // count tiles as we generate them
-        int ntiles = 0;
 
         // flag determining if tile row indexes we store in database should be inverted
         boolean flipy = Boolean.valueOf((String) formatOpts.get("flipy"));
@@ -276,7 +273,6 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
                 for (long y = minY; y <= maxY; y++) {
                     BoundingBox box = gridSubset.boundsFromIndex(new long[] { x, y, z });
                     req.setBbox(new Envelope(box.getMinX(), box.getMaxX(), box.getMinY(), box.getMaxY()));
-
                     WebMap result = webMapService.getMap(req);
                     tiles.addTile(z, (int) x, (int) (flipy ? gridSubset.getNumTilesHigh(z)
                             - (y + 1) : y), toBytes(result));

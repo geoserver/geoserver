@@ -596,13 +596,13 @@ public class DownloadProcessTest extends WPSTestSupport {
                     true, // cropToGeometry
                     new NullProgressListener() // progressListener
                     );
+            Assert.assertFalse(true);
         } catch (ProcessException e) {
             Assert.assertEquals(
                     "java.lang.IllegalArgumentException: Download Limits Exceeded. Unable to proceed!: Download Limits Exceeded. Unable to proceed!",
                     e.getMessage() + (e.getCause() != null ? ": " + e.getCause().getMessage() : ""));
         }
 
-        Assert.assertFalse(true);
     }
 
     /**
@@ -684,7 +684,6 @@ public class DownloadProcessTest extends WPSTestSupport {
                     "java.io.IOException: Download Exceeded the maximum HARD allowed size!: Download Exceeded the maximum HARD allowed size!",
                     e.getMessage() + (e.getCause() != null ? ": " + e.getCause().getMessage() : ""));
         }
-        ;
     }
 
     /**

@@ -1838,7 +1838,6 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
              */
             protected void operation(String name, Map.Entry[] parameters, Map.Entry[] constraints, boolean get, boolean post) {
                 start("ows:Operation", attributes(new String[] { "name", name }));
-
                 String serviceURL = buildURL(request.getBaseUrl(), "wfs", null, URLType.SERVICE);
                 
                 //dcp
@@ -1881,7 +1880,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 
                 
                 if (get) {
-                    element("ows:Get", null, attributes(new String[] { "xlink:href", serviceURL}));
+                    element("ows:Get", null, attributes(new String[] { "xlink:href", serviceURL + "?"}));
                 }
 
                 if (post) {

@@ -8,6 +8,7 @@ package org.geoserver.wps.jts;
 import static org.custommonkey.xmlunit.XMLAssert.*;
 
 import org.geoserver.wps.WPSTestSupport;
+import org.geotools.geojson.geom.GeometryJSON;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -83,6 +84,49 @@ public class GeometryProcessWPSTest extends WPSTestSupport {
           // System.out.println(response.getOutputStreamContent());
           assertEquals("application/wkt", response.getContentType());
           Geometry g = new WKTReader().read(response.getOutputStreamContent());
+          assertTrue(g instanceof Polygon);
+
+	}
+
+    @Test
+	public void testJsonResponse() throws Exception {
+        String xml =  
+            "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' " + 
+                "xmlns:ows='http://www.opengis.net/ows/1.1'>" + 
+              "<ows:Identifier>JTS:buffer</ows:Identifier>" + 
+               "<wps:DataInputs>" + 
+                  "<wps:Input>" + 
+                      "<ows:Identifier>geom</ows:Identifier>" + 
+                      "<wps:Data>" +
+                        "<wps:ComplexData mimeType=\"application/wkt\">" +
+                          "<![CDATA[POINT(0 0)]]>" +
+                        "</wps:ComplexData>" + 
+                      "</wps:Data>" +     
+                  "</wps:Input>" + 
+                  "<wps:Input>" + 
+                     "<ows:Identifier>distance</ows:Identifier>" + 
+                     "<wps:Data>" + 
+                       "<wps:LiteralData>1</wps:LiteralData>" + 
+                     "</wps:Data>" + 
+                  "</wps:Input>" +
+                  "<wps:Input>" + 
+                    "<ows:Identifier>capStyle</ows:Identifier>" + 
+                    "<wps:Data>" + 
+                      "<wps:LiteralData>Round</wps:LiteralData>" + 
+                    "</wps:Data>" + 
+                 "</wps:Input>" +
+             "</wps:DataInputs>" +
+             "<wps:ResponseForm>" + 
+             "    <wps:RawDataOutput mimeType=\"application/json\">" + 
+             "        <ows:Identifier>result</ows:Identifier>" + 
+             "    </wps:RawDataOutput>" + 
+             "  </wps:ResponseForm>" +
+             "</wps:Execute>";
+          
+          MockHttpServletResponse response = postAsServletResponse( "wps", xml );
+          // System.out.println(response.getOutputStreamContent());
+          assertEquals("application/json", response.getContentType());
+          Geometry g = new GeometryJSON().read(response.getOutputStreamContent());
           assertTrue(g instanceof Polygon);
 
 	}

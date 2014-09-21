@@ -1,6 +1,6 @@
 # GeoServer
 
-[GeoServer](http://geoserver.org) GeoServer is an open source software server written in Java that 
+[GeoServer](http://geoserver.org) is an open source software server written in Java that 
 allows users to share and edit geospatial data. Designed for interoperability, it publishes data from 
 any major spatial data source using open standards.
 
@@ -44,7 +44,7 @@ access to the various mailing list, as well as some indication of the [code of c
 
 ## Contributing
 
-Please read [the contribution guilelines](https://github.com/geoserver/geoserver/blob/master/CONTRIBUTING.md) before contributing pull requests to the GeoServer project.
+Please read [the contribution guidelines](https://github.com/geoserver/geoserver/blob/master/CONTRIBUTING.md) before contributing pull requests to the GeoServer project.
 
 ## More Information
 

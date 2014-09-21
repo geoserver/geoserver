@@ -7,6 +7,7 @@ package org.geoserver.wms.wms_1_1_1;
 
 import org.geoserver.wms.WMSCascadeTestSupport;
 import org.junit.Test;
+import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
@@ -30,6 +31,14 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
         checkImage(response, "image/png", 180, 90);
     }
     
+    
+    @Test
+    public void testCascadeCapabilitiesClientNoGetFeatureInfo() throws Exception {
+        Document dom = getAsDOM("wms?request=GetCapabilities&version=1.1.0&service=wms");
+        //print(dom);
+        
+        xpath.evaluate("//Layer[name='" + WORLD4326_110_NFI + "']", dom);
+    }
    
     
 }

@@ -11,6 +11,7 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.junit.Assert.*;
 
 import it.geosolutions.imageio.utilities.ImageIOUtilities;
 
@@ -112,6 +113,52 @@ public class CoverageTest extends CatalogRESTTestSupport {
   public void testGetAsHTML() throws Exception {
       Document dom = getAsDOM( "/rest/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble.html" );
       assertEquals( "html", dom.getDocumentElement().getNodeName() );
+  }
+  
+  @Test
+  public void testGetWrongCoverage() throws Exception {
+      // Parameters for the request
+      String ws = "wcs";
+      String cs = "BlueMarble";
+      String c = "BlueMarblesssss";
+      // Request path
+      String requestPath = "/rest/workspaces/" + ws + "/coverages/" + c + ".html";
+      String requestPath2 = "/rest/workspaces/" + ws + "/coveragestores/" + cs + "/coverages/" + c + ".html";
+      // Exception path
+      String exception = "No such coverage: "+ws+","+c;
+      String exception2 = "No such coverage: "+ws+","+cs+","+c;
+      
+      // CASE 1: No coveragestore set
+      
+      // First request should thrown an exception
+      MockHttpServletResponse response = getAsServletResponse(requestPath);
+      assertEquals(404, response.getStatusCode());
+      assertTrue(response.getOutputStreamContent().contains(
+              exception));
+      
+      // Same request with ?quietOnNotFound should not throw an exception
+      response = getAsServletResponse(requestPath + "?quietOnNotFound=true");
+      assertEquals(404, response.getStatusCode());
+      assertFalse(response.getOutputStreamContent().contains(
+              exception));
+      // No exception thrown
+      assertTrue(response.getOutputStreamContent().isEmpty());
+      
+      // CASE 2: coveragestore set
+      
+      // First request should thrown an exception
+      response = getAsServletResponse(requestPath2);
+      assertEquals(404, response.getStatusCode());
+      assertTrue(response.getOutputStreamContent().contains(
+              exception2));
+      
+      // Same request with ?quietOnNotFound should not throw an exception
+      response = getAsServletResponse(requestPath2 + "?quietOnNotFound=true");
+      assertEquals(404, response.getStatusCode());
+      assertFalse(response.getOutputStreamContent().contains(
+              exception2));
+      // No exception thrown
+      assertTrue(response.getOutputStreamContent().isEmpty());
   }
 
   @Test

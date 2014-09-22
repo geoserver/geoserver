@@ -5,9 +5,11 @@
  */
 package org.geoserver.catalog.rest;
 
+
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -95,6 +97,51 @@ public class LayerGroupTest extends CatalogRESTTestSupport {
     @Test
     public void testGetAsHTML() throws Exception {
         getAsDOM( "/rest/layergroups/sfLayerGroup.html");
+    }
+    
+    @Test
+    public void testGetWrongLayerGroup() throws Exception {
+        // Parameters for the request
+        String ws = "sf";
+        String lg = "foooooo";
+        // Request path
+        String requestPath = "/rest/layergroups/" + lg + ".html";
+        String requestPath2 = "/rest/workspaces/" + ws + "/layergroups/" + lg + ".html";
+        // Exception path
+        String exception = "No such layer group " + lg;
+        String exception2 = "No such layer group "+ lg +" in workspace " + ws;
+        
+        // CASE 1: No workspace set
+        
+        // First request should thrown an exception
+        MockHttpServletResponse response = getAsServletResponse(requestPath);
+        assertEquals(404, response.getStatusCode());
+        assertTrue(response.getOutputStreamContent().contains(
+                exception));
+        
+        // Same request with ?quietOnNotFound should not throw an exception
+        response = getAsServletResponse(requestPath + "?quietOnNotFound=true");
+        assertEquals(404, response.getStatusCode());
+        assertFalse(response.getOutputStreamContent().contains(
+                exception));
+        // No exception thrown
+        assertTrue(response.getOutputStreamContent().isEmpty());
+        
+        // CASE 2: workspace set
+        
+        // First request should thrown an exception
+        response = getAsServletResponse(requestPath2);
+        assertEquals(404, response.getStatusCode());
+        assertTrue(response.getOutputStreamContent().contains(
+                exception2));
+        
+        // Same request with ?quietOnNotFound should not throw an exception
+        response = getAsServletResponse(requestPath2 + "?quietOnNotFound=true");
+        assertEquals(404, response.getStatusCode());
+        assertFalse(response.getOutputStreamContent().contains(
+                exception2));
+        // No exception thrown
+        assertTrue(response.getOutputStreamContent().isEmpty());
     }
 
     @Test

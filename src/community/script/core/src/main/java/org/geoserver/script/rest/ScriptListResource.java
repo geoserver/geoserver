@@ -82,9 +82,11 @@ public class ScriptListResource extends ReflectiveResource {
             for (File f : dir.listFiles(filter)) {
                 if (path.equals("apps")) {
                     File mainScript = scriptMgr.findAppMainScript(f);
-                    String name = mainScript.getAbsolutePath().substring(
-                            f.getParentFile().getAbsolutePath().length() + 1).replace("\\", "/");
-                    scripts.add(new Script(name));
+                    if (mainScript != null) {
+                        String name = mainScript.getAbsolutePath().substring(
+                                f.getParentFile().getAbsolutePath().length() + 1).replace("\\", "/");
+                        scripts.add(new Script(name));
+                    }
                 } else if (path.equals("wps")) {
                     if (f.isDirectory()) {
                         String namespace = f.getName();

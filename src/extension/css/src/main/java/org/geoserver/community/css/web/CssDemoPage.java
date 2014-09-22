@@ -42,7 +42,9 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.Styles;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.web.GeoServerSecuredPage;
@@ -52,6 +54,7 @@ import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geotools.styling.SLDTransformer;
 import org.geotools.styling.Style;
+import org.geotools.styling.StyledLayerDescriptor;
 
 public class CssDemoPage extends GeoServerSecuredPage {
     
@@ -333,28 +336,34 @@ public class CssDemoPage extends GeoServerSecuredPage {
 
         final IModel<String> sldModel = new AbstractReadOnlyModel<String>() {
             public String getObject() {
-                File file = findStyleFile(style);
-                if (file != null && file.isFile()) {
-                    BufferedReader reader = null;
-                    try {
-                        reader = new BufferedReader(new FileReader(file));
-                        StringBuilder builder = new StringBuilder();
-                        char[] line = new char[4096];
-                        int len = 0;
-                        while ((len = reader.read(line, 0, 4096)) >= 0)
-                            builder.append(line, 0, len);
-                        return builder.toString();
-                    } catch (IOException e) {
-                        throw new WicketRuntimeException(e);
-                    } finally {
-                        try {
-                            if (reader != null) reader.close();
-                        } catch (IOException e) {
-                            throw new WicketRuntimeException(e);
+                try {
+                    // if file already in css format transform to sld, otherwise load the SLD file
+                    if (CssHandler.FORMAT.equals(style.getFormat())) {
+                        StyledLayerDescriptor sld = Styles.sld(style.getStyle());
+                        return Styles.string(sld, new SLDHandler(), SLDHandler.VERSION_10, true);
+                    } else {
+                        File file = findStyleFile(style);
+                        if (file != null && file.isFile()) {
+                            BufferedReader reader = null;
+                            try {
+                                reader = new BufferedReader(new FileReader(file));
+                                StringBuilder builder = new StringBuilder();
+                                char[] line = new char[4096];
+                                int len = 0;
+                                while ((len = reader.read(line, 0, 4096)) >= 0)
+                                    builder.append(line, 0, len);
+                                return builder.toString();
+                            }
+                            finally {
+                                if (reader != null) reader.close();
+                            }
+                        } else {
+                            return "No SLD file found for this style. One will be generated automatically if you save the CSS.";
                         }
                     }
-                } else {
-                    return "No SLD file found for this style. One will be generated automatically if you save the CSS.";
+                }
+                catch(IOException e) {
+                    throw new WicketRuntimeException(e);
                 }
             }
         };

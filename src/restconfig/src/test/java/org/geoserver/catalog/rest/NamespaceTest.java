@@ -7,6 +7,7 @@ package org.geoserver.catalog.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -106,6 +107,26 @@ public class NamespaceTest extends CatalogRESTTestSupport {
             
             assertTrue( listItem.getFirstChild().getNodeValue().endsWith( resource.getName() ) );
         }
+    }
+    
+    @Test
+    public void testGetWrongNamespace() throws Exception {
+        // Parameters for the request
+        String namespace = "sfsssss";
+        // Request path
+        String requestPath = "/rest/namespaces/" + namespace + ".html";
+        // Exception path
+        String exception = "No such namespace: " + namespace;
+        // First request should thrown an exception
+        MockHttpServletResponse response = getAsServletResponse(requestPath);
+        assertEquals(404, response.getStatusCode());
+        assertTrue(response.getOutputStreamContent().contains(
+                exception));
+        // Same request with ?quietOnNotFound should not throw an exception
+        response = getAsServletResponse(requestPath + "?quietOnNotFound=true");
+        assertEquals(404, response.getStatusCode());
+        assertFalse(response.getOutputStreamContent().contains(
+                exception));
     }
     
     @Test

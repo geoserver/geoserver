@@ -5,8 +5,10 @@
  */
 package org.geoserver.catalog.rest;
 
+import static junit.framework.Assert.assertEquals;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -150,6 +152,30 @@ public class StructuredCoverageStoresTest extends CatalogRESTTestSupport {
     public void testMissingGrandule() throws Exception {
         MockHttpServletResponse response = getAsServletResponse( "/rest/workspaces/wcs/coveragestores/watertemp/coverages/watertemp/index/granules/notThere.xml");
         assertEquals(404, response.getStatusCode());
+    }
+    
+    @Test
+    public void testGetWrongGranule() throws Exception {
+        // Parameters for the request
+        String ws = "wcs";
+        String cs = "watertemp";
+        String g = "notThere.html";
+        // Request path
+        String requestPath = "/rest/workspaces/" + ws + "/coveragestores/" + cs + "/coverages/" + cs + "/index/granules/" + g;
+        // Exception path
+        String exception = "Could not find a granule with id " + g + " in coveage " + ws + ":" + cs;
+        // First request should thrown an exception
+        MockHttpServletResponse response = getAsServletResponse(requestPath);
+        assertEquals(404, response.getStatusCode());
+        assertTrue(response.getOutputStreamContent().contains(
+                exception));
+        // Same request with ?quietOnNotFound should not throw an exception
+        response = getAsServletResponse(requestPath + "?quietOnNotFound=true");
+        assertEquals(404, response.getStatusCode());
+        assertFalse(response.getOutputStreamContent().contains(
+                exception));
+        // No exception thrown
+        assertTrue(response.getOutputStreamContent().isEmpty());
     }
     
     @Test

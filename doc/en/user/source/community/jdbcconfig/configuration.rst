@@ -14,7 +14,17 @@ The following properties may be set:
 
 - ``initScript``: Path to initialisation script .sql file. Only used if initdb = true.
 
+JNDI
+~~~~
+
+Get the database connection from the application server via JNDI lookup. 
+
 - ``jndiName``: The JNDI name for the data source. Only set this if you want to use JNDI, the JDBC configuration properties may still be set for in case the JNDI Lookup fails. 
+
+Direct JDBC Connection
+~~~~~~~~~~~~~~~~~~~~~~
+
+Provide the connection parameters directly in the configuration file. This includes the password in the clear which is a potential security risk.  To avoid this use JNDI instead.
 
 - ``jdbcUrl``: JDBC direct connection parameters. 
 

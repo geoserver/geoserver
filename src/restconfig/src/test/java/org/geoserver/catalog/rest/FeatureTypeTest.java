@@ -6,6 +6,9 @@
 package org.geoserver.catalog.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
@@ -278,6 +281,52 @@ public class FeatureTypeTest extends CatalogRESTTestSupport {
     @Test
     public void testGetAsHTML() throws Exception {
         Document dom = getAsDOM( "/rest/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature.html");
+    }
+    
+    @Test
+    public void testGetWrongFeatureType() throws Exception {
+        // Parameters for the request
+        String ws = "sf";
+        String ds = "sf";
+        String ft = "PrimitiveGeoFeaturessss";
+        // Request path
+        String requestPath = "/rest/workspaces/" + ws + "/featuretypes/" + ft + ".html";
+        String requestPath2 = "/rest/workspaces/" + ws + "/datastores/" + ds + "/featuretypes/" + ft + ".html";
+        // Exception path
+        String exception = "No such feature type: "+ws+","+ft;
+        String exception2 = "No such feature type: "+ws+","+ds+","+ft;
+        
+        // CASE 1: No datastore set
+        
+        // First request should thrown an exception
+        MockHttpServletResponse response = getAsServletResponse(requestPath);
+        assertEquals(404, response.getStatusCode());
+        assertTrue(response.getOutputStreamContent().contains(
+                exception));
+        
+        // Same request with ?quietOnNotFound should not throw an exception
+        response = getAsServletResponse(requestPath + "?quietOnNotFound=true");
+        assertEquals(404, response.getStatusCode());
+        assertFalse(response.getOutputStreamContent().contains(
+                exception));
+        // No exception thrown
+        assertTrue(response.getOutputStreamContent().isEmpty());
+        
+        // CASE 2: datastore set
+        
+        // First request should thrown an exception
+        response = getAsServletResponse(requestPath2);
+        assertEquals(404, response.getStatusCode());
+        assertTrue(response.getOutputStreamContent().contains(
+                exception2));
+        
+        // Same request with ?quietOnNotFound should not throw an exception
+        response = getAsServletResponse(requestPath2 + "?quietOnNotFound=true");
+        assertEquals(404, response.getStatusCode());
+        assertFalse(response.getOutputStreamContent().contains(
+                exception2));
+        // No exception thrown
+        assertTrue(response.getOutputStreamContent().isEmpty());
     }
     
     @Test

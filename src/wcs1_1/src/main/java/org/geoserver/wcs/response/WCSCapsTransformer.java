@@ -154,8 +154,7 @@ public class WCSCapsTransformer extends TransformerBase {
             final String locationAtt = new StringBuffer(XSI_PREFIX).append(":schemaLocation")
                     .toString();
 
-            final String locationDef = new StringBuffer("http://www.opengis.net/wcs/1.1.1 ").
-                    append(buildSchemaURL(request.getBaseUrl(), "wcs/1.1.1/wcsGetCapabilities.xsd")).toString();
+            final String locationDef = WCS_URI + " " + buildSchemaURL(request.getBaseUrl(), "wcs/1.1.1/wcsGetCapabilities.xsd");
             
             attributes.addAttribute("", locationAtt, locationAtt, "", locationDef);
             attributes.addAttribute("", "updateSequence", "updateSequence", "", String

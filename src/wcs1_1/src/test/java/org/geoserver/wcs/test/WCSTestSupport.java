@@ -71,6 +71,7 @@ public abstract class WCSTestSupport extends CoverageTestSupport {
         namespaces.put("wcs", "http://www.opengis.net/wcs/1.1.1");
         namespaces.put("ows", "http://www.opengis.net/ows/1.1");
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
+        namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
         xpath = XMLUnit.newXpathEngine();
     }

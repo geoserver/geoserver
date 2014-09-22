@@ -38,6 +38,7 @@ the Google Charts API).  However, there are a few symbols that are always availa
    * shape://slash
    * shape://plus
    * shape://times
+   * windbarbs://default(size)[unit]
 
 Symbol selectors
 ----------------
@@ -106,3 +107,16 @@ As an example, consider a situation where you are styling a layer that includes 
       size: 12px;
       fill: red;
     }
+
+Also an windbarb example where you get wind speed and direction from your data fields horSpeed and horDir (direction)::
+
+    * {
+    /* select windbard based on speed( here in meters per second, and south hemisphere) */
+     mark: symbol('windbarbs://default(${horSpeed})[m/s]?hemisphere=s');
+    
+    /* rotate windbarb based on horDir property (in degrees) */
+      mark-rotation: [horDir];
+    
+      mark-size: 20;
+    }
+

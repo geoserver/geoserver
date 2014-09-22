@@ -38,13 +38,23 @@ public class WMSLayerFinder extends AbstractCatalogFinder {
         }
         
         if ( wl != null ) {
+            // Check if the quietOnNotFound parameter is set
+            boolean quietOnNotFound=quietOnNotFoundEnabled(request);            
             if ( wms != null &&
-                    catalog.getResourceByStore(catalog.getStoreByName(ws, wms, WMSStoreInfo.class), wl, WMSLayerInfo.class) == null) {
+                    catalog.getResourceByStore(catalog.getStoreByName(ws, wms, WMSStoreInfo.class), wl, WMSLayerInfo.class) == null) {          
+                // If true, no exception is returned
+                if(quietOnNotFound){
+                    return null;
+                }                  
                 throw new RestletException( "No such cascaded wms layer: "+ws+","+wms+","+wl, Status.CLIENT_ERROR_NOT_FOUND );
             } else {
                 //look up by workspace/namespace
                 NamespaceInfo ns = catalog.getNamespaceByPrefix( ws );
                 if ( ns == null || catalog.getResourceByName( ns, wl , WMSLayerInfo.class ) == null ) {
+                    // If true, no exception is returned
+                    if(quietOnNotFound){
+                        return null;
+                    }     
                     throw new RestletException( "No such cascaded wms: "+ws+","+wl, Status.CLIENT_ERROR_NOT_FOUND );
                 }
             }

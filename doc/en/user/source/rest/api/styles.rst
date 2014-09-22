@@ -96,7 +96,7 @@ Controls a given style.
      - 200
      - SLD, HTML, XML, JSON
      - HTML
-     -
+     - :ref:`quietOnNotFound <rest_api_styles_quietOnNotFound>`
    * - POST
      - 
      - 405
@@ -140,6 +140,13 @@ Parameters
 ^^^^^^^^^
 
 The ``purge`` parameter specifies whether the underlying SLD file for the style should be deleted on disk. Allowable values for this parameter are "true" or "false". When set to "true" the underlying file will be deleted. 
+
+.. _rest_api_styles_quietOnNotFound:
+
+``quietOnNotFound``
+^^^^^^^^^^^^^^^^^^^^
+
+The ``quietOnNotFound`` parameter avoids to log an Exception when the style is not present. Note that 404 status code will be returned anyway.
 
 ``/workspaces/<ws>/styles[.<format>]``
 --------------------------------------
@@ -200,7 +207,7 @@ Controls a particular style in a given workspace.
      - 200
      - SLD, HTML, XML, JSON
      - HTML
-     - 
+     - :ref:`quietOnNotFound <rest_api_styles_quietOnNotFound>`
    * - POST
      - 
      - 405
@@ -221,3 +228,13 @@ Controls a particular style in a given workspace.
      -
      -
 
+Exceptions
+~~~~~~~~~~
+
+.. list-table::
+   :header-rows: 1
+
+   * - Exception
+     - Status code
+   * - GET for a style that does not exist for that workspace
+     - 404

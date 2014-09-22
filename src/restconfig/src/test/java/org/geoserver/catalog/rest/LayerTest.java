@@ -10,6 +10,9 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
@@ -57,6 +60,28 @@ public class LayerTest extends CatalogRESTTestSupport {
     @Test
     public void testGetAsHTML() throws Exception {
         getAsDOM("/rest/layers/cite:Buildings.html" );
+    }
+    
+    @Test
+    public void testGetWrongLayer() throws Exception {
+        // Parameters for the request
+        String layer = "cite:Buildingssssss";
+        // Request path
+        String requestPath = "/rest/layers/" + layer + ".html";
+        // Exception path
+        String exception = "No such layer: " + layer;
+        // First request should thrown an exception
+        MockHttpServletResponse response = getAsServletResponse(requestPath);
+        assertEquals(404, response.getStatusCode());
+        assertTrue(response.getOutputStreamContent().contains(
+                exception));
+        // Same request with ?quietOnNotFound should not throw an exception
+        response = getAsServletResponse(requestPath + "?quietOnNotFound=true");
+        assertEquals(404, response.getStatusCode());
+        assertFalse(response.getOutputStreamContent().contains(
+                exception));
+        // No exception thrown
+        assertTrue(response.getOutputStreamContent().isEmpty());
     }
     
     @Test

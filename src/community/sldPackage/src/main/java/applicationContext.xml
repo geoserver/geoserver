@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<bean id="sldPackageRestConfigMapping" class="org.geoserver.rest.RESTMapping">
+	<property name="routes">
+	  <map>
+      <entry>
+        <key><value>/sld/{workspace}/{style}</value></key>
+        <value>stylePackageFinder</value>
+      </entry>
+	  </map>
+	</property>
+	</bean>
+
+  <bean id="stylePackageFinder" class="org.geoserver.sldpackage.rest.finder.StylePackageFinder" parent="abstractCatalogFinder"/>
+
+</beans>

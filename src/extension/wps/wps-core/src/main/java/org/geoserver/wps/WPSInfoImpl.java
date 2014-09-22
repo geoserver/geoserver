@@ -7,14 +7,10 @@
 package org.geoserver.wps;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.impl.ServiceInfoImpl;
-import org.geotools.process.ProcessFactory;
-import org.geotools.process.Processors;
 
 /**
  * WPS information implementation
@@ -39,11 +35,6 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
     static final String KEY_MAX_ASYNCH = "maxAsynchronousProcesses";
     
     static final int DEFAULT_MAX_ASYNCH = Runtime.getRuntime().availableProcessors();
-    
-    @Override
-    public String getTitle() {
-        return "Prototype GeoServer WPS";
-    }
     
     /** 
      * Connection timeout in seconds. 
@@ -73,7 +64,7 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
     List<ProcessGroupInfo> processGroups = new ArrayList<ProcessGroupInfo>();
     
     public WPSInfoImpl() {
-        
+        title = "Prototype GeoServer WPS";
     }
 
     /**

@@ -1,4 +1,4 @@
-package org.geoserver.sldpackage.rest.finder;
+package org.geoserver.catalog.rest;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -135,9 +135,10 @@ public class StylePackageResource extends Resource {
             }
             catalog.add(sinfo);
 
-            LOGGER.info("Processed the style package " + name);
+            LOGGER.info("POST Style Package: " + name + ", workspace: " + workspaceName);
 
         } catch (Exception e) {
+            e.printStackTrace();
             LOGGER.severe("Error processing the style package (POST): " + e.getMessage());
             throw new RestletException( "Error processing the style", Status.SERVER_ERROR_INTERNAL, e );
         } finally {
@@ -208,16 +209,14 @@ public class StylePackageResource extends Resource {
             serializeSldFileInCatalog(f, uploadedFile);
 
             // update a style info object
-            StyleInfo sinfo = catalog.getStyleByName(name);
+            StyleInfo sinfo = catalog.getStyleByName(workspaceName, name);
             sinfo.setFilename(f.getName());
-            if (workspaceName != null) {
-                sinfo.setWorkspace(catalog.getWorkspaceByName(workspaceName));
-            }
             catalog.save(sinfo);
 
-            LOGGER.info("PUT SLD " + name);
+            LOGGER.info("PUT Style Package: " + name + ", workspace: " + workspaceName);
 
         } catch (Exception e) {
+            e.printStackTrace();
             LOGGER.severe("Error processing the style package (PUT): " + e.getMessage());
             throw new RestletException( "Error processing the style", Status.SERVER_ERROR_INTERNAL, e );
         } finally {
@@ -375,7 +374,7 @@ public class StylePackageResource extends Resource {
      * Save the image resources in the styles folder
      *
      * @param directory
-     * @throws IOException
+     * @throws java.io.IOException
      */
     private void saveImageResources(File directory, File stylesDir) throws IOException {
         File[] imageFiles = retrieveImageFiles(directory);
@@ -396,7 +395,7 @@ public class StylePackageResource extends Resource {
     private File[] retrieveImageFiles(File directory) {
         File[] matchingFiles = directory.listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {
-                return (name.endsWith("sld") || name.endsWith("svg") || name.endsWith("png") || name.endsWith("jpg"));
+                return (name.endsWith("svg") || name.endsWith("png") || name.endsWith("jpg"));
             }
         });
 

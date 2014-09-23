@@ -1,4 +1,4 @@
-package org.geoserver.sldpackage.rest.finder;
+package org.geoserver.catalog.rest;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.rest.RestletException;
@@ -13,16 +13,10 @@ import org.restlet.resource.Resource;
  * @author Jose García (josegar74@gmail.com)
  *
  */
-public class StylePackageFinder extends Finder {
-
-    /**
-     * reference to the catalog
-     */
-    protected Catalog catalog;
-
+public class StylePackageFinder extends AbstractCatalogFinder {
 
     public StylePackageFinder(Catalog catalog) {
-        this.catalog = catalog;
+        super(catalog);
     }
 
     @Override

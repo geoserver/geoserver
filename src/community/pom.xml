@@ -108,12 +108,6 @@
       </modules>
     </profile>
     <profile>
-      <id>sldPackage</id>
-      <modules>
-        <module>sldPackage</module>
-      </modules>
-    </profile>
-    <profile>
       <id>sldService</id>
       <modules> 
         <module>sldService</module>

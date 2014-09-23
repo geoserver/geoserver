@@ -58,7 +58,7 @@ public class GML2FeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
     /**
      * Constructor that can be used by inherited classes.
      */
-    protected GML2FeatureInfoOutputFormat(WMS wms, String contentType) {
+    public GML2FeatureInfoOutputFormat(WMS wms, String contentType) {
         super(contentType);
         this.wms = wms;
     }

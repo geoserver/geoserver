@@ -213,7 +213,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
      */
     @Test
     public void testXMLNoData() throws Exception {
-        this.testGMLNoData(XMLFeatureInfoOutputFormat.FORMAT);
+        this.testGMLNoData(XML2FeatureInfoOutputFormat.FORMAT);
     }
 
     /**

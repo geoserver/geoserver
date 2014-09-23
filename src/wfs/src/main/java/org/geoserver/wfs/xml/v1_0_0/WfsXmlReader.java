@@ -17,6 +17,7 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.XmlRequestReader;
 import org.geoserver.util.EntityResolverProvider;
+import org.geoserver.wfs.CatalogNamespaceSupport;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.xml.WFSURIHandler;
 import org.geotools.util.Version;
@@ -68,14 +69,8 @@ public class WfsXmlReader extends XmlRequestReader {
         parser.setEntityResolver(entityResolverProvider.getEntityResolver());
         
         //"inject" namespace mappings
-        List<NamespaceInfo> namespaces = catalog.getNamespaces();
-        for ( NamespaceInfo ns : namespaces ) {
-            //if ( namespaces[i].isDefault() ) 
-            //    continue;
-            
-            parser.getNamespaces().declarePrefix( 
-                ns.getPrefix(), ns.getURI());
-        }
+        parser.getNamespaces().add(new CatalogNamespaceSupport(catalog));
+
         //set validation based on strict or not
         parser.setValidating(strict.booleanValue());
         parser.getURIHandlers().add(0, new WFSURIHandler(geoServer));

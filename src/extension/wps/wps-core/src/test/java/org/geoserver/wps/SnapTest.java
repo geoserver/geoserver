@@ -5,13 +5,14 @@
  */
 package org.geoserver.wps;
 
-import static junit.framework.Assert.assertEquals;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
 
 import javax.xml.namespace.QName;
 
+import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
@@ -453,6 +454,23 @@ public class SnapTest extends WPSTestSupport {
         // print(d);
         
         assertXpathExists("//wps:Status/wps:ProcessFailed", d);
+    }
+
+    /** 
+     * Test setting a WPS title.
+     */
+    @Test
+    public void testWpsTitle() {
+        final GeoServer geoserver = getGeoServer();
+        WPSInfo wps = geoserver.getService(WPSInfo.class);
+        assertEquals("Prototype GeoServer WPS", wps.getTitle());
+
+        final String updatedTitle = "WPS latest title";
+        wps.setTitle(updatedTitle);
+        geoserver.save(wps);
+        wps = geoserver.getService(WPSInfo.class);
+        assertEquals(updatedTitle, wps.getTitle());
+
     }
 
 }

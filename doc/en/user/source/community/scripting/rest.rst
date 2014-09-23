@@ -5,6 +5,10 @@ Scripting Rest API
 
 Like other modules in GeoServer, you can add, update, read, and delete scripts using a restful interface.
 
+.. warning:: 
+
+    The scripting rest API will not work until you have changed the GeoServer default admin password. 
+
 WPS Scripts
 -----------
 
@@ -298,7 +302,7 @@ Scripting Sessions
 ------------------
 
 ``/scripts/sessions[.<format>]``
----------------------------
+--------------------------------
 
 .. list-table::
     :header-rows: 1

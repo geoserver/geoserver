@@ -72,9 +72,17 @@
     <bean id="wmsGetFeatureInfoGML2" class="org.geoserver.wms.featureinfo.GML2FeatureInfoOutputFormat">
       <constructor-arg ref="wms" />
     </bean>
+
+    <bean id="wmsGetFeatureInfoXML2" class="org.geoserver.wms.featureinfo.XML2FeatureInfoOutputFormat">
+      <constructor-arg ref="wms" />
+    </bean>
     
     <bean id="wmsGetFeatureInfoGML3" class="org.geoserver.wms.featureinfo.GML3FeatureInfoOutputFormat">
       <constructor-arg ref="wms" />
+    </bean>
+
+    <bean id="wmsGetFeatureInfoXML311" class="org.geoserver.wms.featureinfo.XML311FeatureInfoOutputFormat">
+        <constructor-arg ref="wms" />
     </bean>
     
     <bean id="wmsGetFeatureInfoHTML" class="org.geoserver.wms.featureinfo.HTMLFeatureInfoOutputFormat">

@@ -135,7 +135,8 @@ public class DescribeCoverageTransformer extends TransformerBase {
             final String locationAtt = new StringBuffer(XSI_PREFIX).append(":schemaLocation")
                     .toString();
 
-             final String locationDef = WCS_URI + " " + buildSchemaURL(request.getBaseUrl(),  "wcs/1.1.1/wcsDescribeCoverage.xsd");
+            final String locationDef = new StringBuffer("http://www.opengis.net/wcs/1.1.1 ").
+                    append(buildSchemaURL(request.getBaseUrl(), "wcs/1.1.1/wcsDescribeCoverage.xsd")).toString();
             
             attributes.addAttribute("", locationAtt, locationAtt, "", locationDef);
 

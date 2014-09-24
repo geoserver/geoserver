@@ -30,10 +30,7 @@ import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
-import org.geoserver.wms.featureinfo.GML3FeatureInfoOutputFormat;
-import org.geoserver.wms.featureinfo.GetFeatureInfoKvpReader;
-import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
-import org.geoserver.wms.featureinfo.TextFeatureInfoOutputFormat;
+import org.geoserver.wms.featureinfo.*;
 import org.geoserver.wms.wms_1_1_1.CapabilitiesTest;
 import org.geotools.util.logging.Logging;
 import org.junit.Test;
@@ -250,13 +247,18 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         wms.getGetFeatureInfoMimeTypes().clear();
         wms.setGetFeatureInfoMimeTypeCheckingEnabled(false);
         getGeoServer().save(wms);
-        
+
+        // GML 3.1.1 as application/vnd.ogc.gml/3.1.1
         request = "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg&info_format="+GML3FeatureInfoOutputFormat.FORMAT+"&request=GetFeatureInfo&layers="
                 + layer + "&query_layers=" + layer + "&width=20&height=20&i=10&j=10";
         result = getAsString(request);
-        assertTrue(result.indexOf("Green Forest") > 0);        
+        assertTrue(result.indexOf("Green Forest") > 0);
 
-
+        // GML 3.1.1 as text/xml; subtype=gml/3.1.1
+        request = "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg&info_format="+ XML311FeatureInfoOutputFormat.FORMAT+"&request=GetFeatureInfo&layers="
+                + layer + "&query_layers=" + layer + "&width=20&height=20&i=10&j=10";
+        result = getAsString(request);
+        assertTrue(result.indexOf("Green Forest") > 0);
     }
 
     

@@ -42,7 +42,7 @@ public abstract class WCSTestSupport extends CoverageTestSupport {
     static {
         try {
             final SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            WCS11_SCHEMA = factory.newSchema(new File("./schemas/wcs/1.1.1/wcsAll.xsd"));
+            WCS11_SCHEMA = factory.newSchema(new File("wcs1_1/schemas/wcs/1.1.1/wcsAll.xsd"));
         } catch(Exception e) {
             throw new RuntimeException("Could not parse the WCS 1.1.1 schemas", e);
         }

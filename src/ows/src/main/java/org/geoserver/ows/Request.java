@@ -101,6 +101,10 @@ public class Request {
      * Time when the request hit the server
      */
     protected Date timestamp;
+
+    protected String originalService;
+
+    protected String originalVersion;
     
     /**
      * The Operation used to call the service code. Available only after dispatching is done, it

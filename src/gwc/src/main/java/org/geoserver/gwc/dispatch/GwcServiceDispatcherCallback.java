@@ -40,6 +40,9 @@ public class GwcServiceDispatcherCallback extends AbstractDispatcherCallback imp
         kvp.put("service", "gwc");
         kvp.put("version", "1.0.0");
         kvp.put("request", "dispatch");
+        request.setService("gwc");
+        request.setVersion("1.0.0");
+        request.setRequest("dispatch");
         request.setKvp(kvp);
         request.setRawKvp(kvp);
 

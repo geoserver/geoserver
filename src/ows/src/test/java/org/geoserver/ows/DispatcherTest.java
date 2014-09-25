@@ -137,6 +137,7 @@ public class DispatcherTest extends TestCase {
         Request req = new Request();
         req.setHttpRequest(request);
 
+        dispatcher.preParseKVP(req);
         dispatcher.parseKVP(req);
 
         Message message = (Message) dispatcher.parseRequestKVP(Message.class, req);

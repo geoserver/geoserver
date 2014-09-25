@@ -14,7 +14,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -36,10 +35,7 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
@@ -246,7 +242,11 @@ public class Dispatcher extends AbstractController {
             // store it in the thread local
             REQUEST.set(request);
             
-            //find the service
+            if (request == null) {
+                return null;
+            }
+            
+            // find the service
             try {
                 service = service(request);
             } catch (Throwable t) {
@@ -317,9 +317,6 @@ public class Dispatcher extends AbstractController {
         request.setGet("GET".equalsIgnoreCase(httpRequest.getMethod())
             || "application/x-www-form-urlencoded".equals(httpRequest.getContentType()));
 
-        //create the kvp map
-        parseKVP(request);
-        
         if ( !request.isGet() ) { // && httpRequest.getInputStream().available() > 0) {
             //check for a SOAP request, if so we need to unwrap the SOAP stuff
             if (httpRequest.getContentType() != null && 
@@ -383,6 +380,19 @@ public class Dispatcher extends AbstractController {
         request.setContext(context);
         request.setPath(path);
         
+        // determine service and version, since those will make us decide on which kvp parsers to
+        // use
+        try {
+            initServiceVersionRequest(request);
+        } catch (Throwable t) {
+            exception(t, null, request);
+
+            return null;
+        }
+
+        // prepare the kvp map
+        parseKVP(request);
+
         return fireInitCallback(request);
     }
 
@@ -443,14 +453,105 @@ public class Dispatcher extends AbstractController {
     }
 
     Service service(Request req) throws Exception {
-        //check kvp
-        if (req.getKvp() != null) {
+        // if we are in cite compliant mode, do some additional checks to make
+        // sure the "mandatory" parameters are specified, even though we
+        // succesfully dispatched the request.
+        if (citeCompliant) {
+            // the service is mandatory for all requests instead
+            String rawService = req.isGet() ? KvpUtils.getSingleValue(req.getRawKvp(), "service")
+                    : req.getService();
+            if (rawService == null) {
+                // give up
+                throw new ServiceException("Could not determine service", "MissingParameterValue",
+                        "service");
+            }
 
-            req.setService(normalize(KvpUtils.getSingleValue(req.getKvp(), "service")));
-            req.setVersion(normalizeVersion(normalize(KvpUtils.getSingleValue(req.getKvp(), "version"))));
-            req.setRequest(normalize(KvpUtils.getSingleValue(req.getKvp(), "request")));
-            req.setOutputFormat(normalize(KvpUtils.getSingleValue(req.getKvp(), "outputFormat")));
-        } 
+            String rawVersion = req.isGet() ? KvpUtils.getSingleValue(req.getRawKvp(), "version")
+                    : req.getVersion();
+            if (rawVersion == null && req.isGet() && "WMS".equalsIgnoreCase(rawService)) {
+                rawVersion = KvpUtils.getSingleValue(req.getRawKvp(), "wmtver");
+            }
+            // the version is mandatory for all requests but GetCapabilities
+            if (!"GetCapabilities".equalsIgnoreCase(req.getRequest())) {
+                if (rawVersion == null) {
+                    // must be a version on non-capabilities requests
+                    throw new ServiceException("Could not determine version",
+                            "MissingParameterValue", "version");
+                } else {
+                    // version must be valid
+                    if (!rawVersion.matches("[0-99].[0-99].[0-99]")) {
+                        throw new ServiceException("Invalid version: " + rawVersion,
+                                "InvalidParameterValue", "version");
+                    }
+
+                    // make sure the version actually exists
+                    boolean found = false;
+                    Version version = new Version(rawVersion);
+
+                    for (Iterator s = loadServices().iterator(); s.hasNext();) {
+                        Service service = (Service) s.next();
+
+                        if (version.equals(service.getVersion())) {
+                            found = true;
+
+                            break;
+                        }
+                    }
+
+                    if (!found) {
+                        throw new ServiceException("Invalid version: " + rawVersion,
+                                "InvalidParameterValue", "version");
+                    }
+                }
+            }
+        }
+
+        // load from the context
+        String service = req.service;
+        Service serviceDescriptor = findService(service, req.getVersion(), req.getNamespace());
+        if (serviceDescriptor == null) {
+            // hack for backwards compatability, try finding the service with the context instead
+            // of the service
+            if (req.getContext() != null) {
+                serviceDescriptor = findService(req.getContext(), req.getVersion(),
+                        req.getNamespace());
+                if (serviceDescriptor != null) {
+                    // found, assume that the client is using <service>/<request>
+                    if (req.getRequest() == null) {
+                        req.setRequest(req.getService());
+                    }
+                    req.setService(req.getContext());
+                    req.setContext(null);
+                }
+            }
+            if (serviceDescriptor == null) {
+                String msg = "No service: ( " + service + " )";
+                throw new ServiceException(msg, "InvalidParameterValue", "service");
+            }
+        }
+        req.setServiceDescriptor(serviceDescriptor);
+        serviceDescriptor = fireServiceDispatchedCallback(req, serviceDescriptor);
+
+        return serviceDescriptor;
+    }
+
+    /**
+     * Looks up for the core three features of an OGC request, service, version and request, and
+     * sets them in the request and in the kvp map (for proper filtering and prioritizing of kvp
+     * parsers)
+     * 
+     * @param req
+     * @throws Exception
+     */
+    void initServiceVersionRequest(Request req) throws Exception {
+        // normalize the kvp maps
+        preParseKVP(req);
+
+        // check kvp
+        req.setService(normalize(KvpUtils.getSingleValue(req.getKvp(), "service")));
+        req.setVersion(normalizeVersion(normalize(KvpUtils.getSingleValue(req.getKvp(), "version"))));
+        req.setRequest(normalize(KvpUtils.getSingleValue(req.getKvp(), "request")));
+        req.setOutputFormat(normalize(KvpUtils.getSingleValue(req.getKvp(), "outputFormat")));
         //check the body
         if (req.getInput() != null) {
             Map xml = readOpPost(req.getInput());
@@ -471,6 +572,13 @@ public class Dispatcher extends AbstractController {
             }
         }
 
+
+
+        // setup the native service/version before we apply heuristics that might not
+        // be valid in pure cite compliance mode
+        req.originalService = req.getService();
+        req.originalVersion = req.getVersion();
+
         //try to infer from context
         //JD: for cite compliance, a service *must* be specified explicitley by 
         // either a kvp, or an xml attribute, however in reality the context 
@@ -483,7 +591,7 @@ public class Dispatcher extends AbstractController {
             if (service == null) {
                 service = normalize((String) map.get("service"));
 
-                if ((service != null) && !citeCompliant) {
+                if ((service != null)) {
                     req.setService(service);
                 }
             }
@@ -499,29 +607,22 @@ public class Dispatcher extends AbstractController {
                 "service");
         }
 
-        //load from teh context
-        Service serviceDescriptor = findService(service, req.getVersion(), req.getNamespace());
-        if (serviceDescriptor == null) {
-            //hack for backwards compatability, try finding the service with the context instead 
-            // of the service
-            if (req.getContext() != null) {
-                serviceDescriptor = findService(req.getContext(), req.getVersion(), req.getNamespace());
-                if (serviceDescriptor != null) {
-                    //found, assume that the client is using <service>/<request>
-                    if (req.getRequest() == null) {
-                        req.setRequest(req.getService());
-                    }
-                    req.setService(req.getContext());
-                    req.setContext(null);
-                }
-            }
-            if (serviceDescriptor == null) {
-                String msg = "No service: ( " + service + " )";
-                throw new ServiceException(msg, "InvalidParameterValue", "service");    
-            }
+        // set the information back so that service or version specific kvp parser
+        // can be properly filtered and prioritized
+        if (req.getService() != null) {
+            req.getKvp().put("service", req.getService());
         }
-        req.setServiceDescriptor(serviceDescriptor);
-        return fireServiceDispatchedCallback(req,serviceDescriptor);
+        if (req.getRequest() != null) {
+            req.getKvp().put("request", req.getRequest());
+        }
+        // only force in the inferred version if the request is not getcapabilities:
+        // for that one we want the negotiation mechanism to establish the "right" version to use
+        if (req.getVersion() != null && !"getCapabilities".equalsIgnoreCase(req.getRequest())) {
+            req.getKvp().put("version", req.getVersion());
+        }
+        if (req.getOutputFormat() != null) {
+            req.getKvp().put("outputFormat", req.getOutputFormat());
+        }
     }
     
     Service fireServiceDispatchedCallback(Request req, Service service ) {
@@ -689,52 +790,6 @@ public class Dispatcher extends AbstractController {
                     
                     parameters[i] = requestBean;
                 }
-            }
-        }
-
-        //if we are in cite compliant mode, do some additional checks to make
-        // sure the "mandatory" parameters are specified, even though we 
-        // succesfully dispatched the request.
-        if (citeCompliant) {
-            // the version is mandatory for all requests but GetCapabilities
-            if (!"GetCapabilities".equalsIgnoreCase(req.getRequest())) {
-                if (req.getVersion() == null) {
-                    //must be a version on non-capabilities requests
-                    throw new ServiceException("Could not determine version",
-                        "MissingParameterValue", "version");
-                } else {
-                    //version must be valid
-                    if (!req.getVersion().matches("[0-99].[0-99].[0-99]")) {
-                        throw new ServiceException("Invalid version: " + req.getVersion(),
-                            "InvalidParameterValue", "version");
-                    }
-
-                    //make sure the versoin actually exists
-                    boolean found = false;
-                    Version version = new Version(req.getVersion());
-
-                    for (Iterator s = loadServices().iterator(); s.hasNext();) {
-                        Service service = (Service) s.next();
-
-                        if (version.equals(service.getVersion())) {
-                            found = true;
-
-                            break;
-                        }
-                    }
-
-                    if (!found) {
-                        throw new ServiceException("Invalid version: " + req.getVersion(),
-                            "InvalidParameterValue", "version");
-                    }
-                }
-            }
-            
-            // the service is mandatory for all requests instead
-            if (req.getService() == null) {
-                //give up 
-                throw new ServiceException("Could not determine service",
-                    "MissingParameterValue", "service");
             }
         }
 
@@ -1392,9 +1447,10 @@ public class Dispatcher extends AbstractController {
         Map kvp = request.getParameterMap();
 
         if (kvp == null || kvp.isEmpty()) {
-            req.setKvp(Collections.EMPTY_MAP);
-            //req.kvp = null;
+            req.setKvp(new HashMap());
             return;
+        } else {
+            kvp = new HashMap(kvp);
         }
 
         //track parsed kvp and unparsd

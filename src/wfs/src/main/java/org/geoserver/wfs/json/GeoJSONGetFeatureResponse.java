@@ -127,15 +127,15 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat {
         boolean hasGeom = false;
 
         // get feature count for request
-        Integer featureCount = null; 
+        String featureCount = null;
         // for WFS 1.0.0 and WFS 1.1.0 a request with the query must be executed
         if(describeFeatureType != null) {
             if (describeFeatureType.getParameters()[0] instanceof GetFeatureType) {
-                featureCount = getFeatureCountFromWFS11Request(describeFeatureType, wfs);
+                featureCount = String.valueOf(getFeatureCountFromWFS11Request(describeFeatureType, wfs));
             }
             // for WFS 2.0.0 the total number of features is stored in the featureCollection
             else if (describeFeatureType.getParameters()[0] instanceof net.opengis.wfs20.GetFeatureType){
-                featureCount = featureCollection.getTotalNumberOfFeatures().intValue(); 
+                featureCount = featureCollection.getTotalNumberOfFeatures();
             }
         }
         

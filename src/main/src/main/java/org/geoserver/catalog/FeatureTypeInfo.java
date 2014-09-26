@@ -124,7 +124,20 @@ public interface FeatureTypeInfo extends ResourceInfo {
      * @return
      */
     void setOverridingServiceSRS(boolean overridingServiceSRS);
-    
+
+    /**
+     * True if this feature type info is overriding the counting of numberMatched.
+     *
+     * @return
+     */
+    boolean getSkipNumberMatched();
+
+    /**
+     * Set to true if this feature type info is overriding the default counting of numberMatched.
+     * @param skipNumberMatched
+     */
+    void setSkipNumberMatched(boolean skipNumberMatched);
+
     /**
      * The srs's that the WFS service will advertise in the capabilities document for this feature type
      * (overriding the global WFS settings)

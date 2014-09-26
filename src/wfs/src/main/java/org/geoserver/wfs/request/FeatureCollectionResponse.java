@@ -55,9 +55,9 @@ public abstract class FeatureCollectionResponse extends RequestObject {
 
     public abstract BigInteger getNumberOfFeatures();
     public abstract void setNumberOfFeatures(BigInteger n);
-    
-    public abstract BigInteger getTotalNumberOfFeatures();
-    public abstract void setTotalNumberOfFeatures(BigInteger n);
+
+    public abstract String getTotalNumberOfFeatures();
+    public abstract void setTotalNumberOfFeatures(String n);
 
     public abstract void setPrevious(String previous);
     public abstract String getPrevious();
@@ -92,12 +92,12 @@ public abstract class FeatureCollectionResponse extends RequestObject {
         }
 
         @Override
-        public BigInteger getTotalNumberOfFeatures() {
+        public String getTotalNumberOfFeatures() {
             //noop
             return null;
         }
         @Override
-        public void setTotalNumberOfFeatures(BigInteger n) {
+        public void setTotalNumberOfFeatures(String n) {
             //noop
         }
 
@@ -150,12 +150,12 @@ public abstract class FeatureCollectionResponse extends RequestObject {
         }
 
         @Override
-        public BigInteger getTotalNumberOfFeatures() {
-            return eGet(adaptee, "numberMatched", BigInteger.class);
+        public String getTotalNumberOfFeatures() {
+            return eGet(adaptee, "numberMatched", String.class);
         }
         @Override
-        public void setTotalNumberOfFeatures(BigInteger n) {
-            eSet(adaptee, "numberMatched", n);
+        public void setTotalNumberOfFeatures(String n) {
+            eSet(adaptee, "numberMatched", (n.equals("-1") ? "unknown" : BigInteger.valueOf(Long.valueOf(n))));
         }
 
         @Override

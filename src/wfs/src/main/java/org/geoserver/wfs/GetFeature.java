@@ -26,7 +26,6 @@ import net.opengis.wfs20.StoredQueryType;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.feature.TypeNameExtractingVisitor;
 import org.geoserver.ows.Dispatcher;
@@ -291,6 +290,7 @@ public class GetFeature {
             viewParams = request.getViewParams();
         }
 
+        boolean isNumberMatchedSkipped = false;
         int count = 0; // should probably be long
         int totalCount = 0;
 
@@ -317,7 +317,7 @@ public class GetFeature {
                 if (!query.getAliases().isEmpty()) {
                     if (query.getAliases().size() != query.getTypeNames().size()) {
                         throw new WFSException(request, String.format("Query specifies %d type names and %d " +
-                            "aliases, must be equal", query.getTypeNames().size(), query.getAliases().size())); 
+                            "aliases, must be equal", query.getTypeNames().size(), query.getAliases().size()));
                     }
                 }
 
@@ -535,13 +535,16 @@ public class GetFeature {
                 // collect queries required to return numberMatched/totalSize
                 // check maxFeatures and offset, if they are unset we can use the size we 
                 // calculated above
-                if (calculateSize && queryMaxFeatures == Integer.MAX_VALUE && offset == 0) {
-                    totalCountExecutors.add(new CountExecutor(size));
-                } else {
+                isNumberMatchedSkipped = meta.getSkipNumberMatched();
+                if (isNumberMatchedSkipped) {
+                    if (calculateSize && queryMaxFeatures == Integer.MAX_VALUE && offset == 0) {
+                        totalCountExecutors.add(new CountExecutor(size));
+                    } else {
                         org.geotools.data.Query qTotal = toDataQuery(query, filter, 0,
                                 Integer.MAX_VALUE, source, request, allPropNames.get(0), viewParam,
                                 joins, primaryTypeName, primaryAlias);
-                    totalCountExecutors.add(new CountExecutor(source, qTotal));
+                        totalCountExecutors.add(new CountExecutor(source, qTotal));
+                    }
                 }
 
                 // we may need to shave off geometries we did load only to make bounds
@@ -596,19 +599,23 @@ public class GetFeature {
             if (!request.getVersion().startsWith("2")) {
                 totalCount = -1;
             } else {
-                // optimization: if count < max features then total count == count
-                if(count < maxFeatures) {
-                    totalCount = count;
+                if (isNumberMatchedSkipped) {
+                    totalCount = -1;
                 } else {
-                    // ok, in this case we're forced to run the queries to discover the actual total count
-                    for (CountExecutor q : totalCountExecutors) {
-                        int result = q.getCount();
-                        // if the count is unknown for one, we don't know the total, period 
-                        if(result == -1) {
-                            totalCount = -1;
-                            break;
-                        } else {
-                            totalCount += result;
+                    // optimization: if count < max features then total count == count
+                    if(count < maxFeatures) {
+                        totalCount = count;
+                    } else {
+                        // ok, in this case we're forced to run the queries to discover the actual total count
+                        for (CountExecutor q : totalCountExecutors) {
+                            int result = q.getCount();
+                            // if the count is unknown for one, we don't know the total, period
+                            if(result == -1) {
+                                totalCount = -1;
+                                break;
+                            } else {
+                                totalCount += result;
+                            }
                         }
                     }
                 }
@@ -688,7 +695,7 @@ public class GetFeature {
 
         FeatureCollectionResponse result = request.createResponse();
         result.setNumberOfFeatures(BigInteger.valueOf(count));
-        result.setTotalNumberOfFeatures(BigInteger.valueOf(total));
+        result.setTotalNumberOfFeatures(String.valueOf(total));
         result.setTimeStamp(Calendar.getInstance());
         result.setLockId(lockId);
         result.getFeature().addAll(results);

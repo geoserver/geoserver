@@ -41,6 +41,7 @@ import net.opengis.wcs20.ScalingType;
 
 import org.eclipse.emf.common.util.EList;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageDimensionCustomizerReader.GridCoverageWrapper;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.util.CoverageUtils;
@@ -296,9 +297,10 @@ public class GetCoverage {
         // TODO elevation
         coverage = readCoverage(helper.getCoverageInfo(), gridCoverageRequest, reader, hints,
                 incrementalInputSize);
-        if(coverage == null) {
+        if (coverage == null) {
             throw new IllegalStateException("Unable to read a coverage for the current request" + coverageType.toString());
         }
+        GridSampleDimension[] sampleDimensions = collectDimensions(coverage);
 
         //
         // handle range subsetting
@@ -358,11 +360,23 @@ public class GetCoverage {
             // Need to recreate the coverage in order to update the properties since the getProperties method returns a copy
             coverage = coverageFactory.create(coverage.getName(), coverage.getRenderedImage(), coverage.getEnvelope(), coverage.getSampleDimensions(), null, map);
         }
-        
+        if (sampleDimensions != null && sampleDimensions.length > 0) {
+            coverage = GridCoverageWrapper.wrapCoverage(coverage, coverage, sampleDimensions, null, true);
+        }
         return coverage;
     }
 
-    private WCSDimensionsSubsetHelper parseGridCoverageRequest(CoverageInfo ci, GridCoverage2DReader reader,
+    private GridSampleDimension[] collectDimensions(GridCoverage2D coverage) {
+        List<GridSampleDimension> dimensions = new ArrayList<GridSampleDimension>();
+        if (coverage instanceof GridCoverageWrapper) {
+            for (GridSampleDimension dimension: coverage.getSampleDimensions()) {
+                dimensions.add(dimension);
+            }
+        }
+        return dimensions.toArray(new GridSampleDimension[dimensions.size()]);
+    }
+
+        private WCSDimensionsSubsetHelper parseGridCoverageRequest(CoverageInfo ci, GridCoverage2DReader reader,
             GetCoverageType request, Map<String, ExtensionItemType> extensions) throws IOException {
         //
         // Extract CRS values for relative extension
@@ -1035,8 +1049,10 @@ public class GetCoverage {
             GeneralEnvelope subset,
             Hints hints) {
 
-        if(subset!=null){
-            return WCSUtils.crop(coverage, subset); // TODO I hate this classes that do it all
+        if (subset != null) {
+            GridCoverage2D cropped = WCSUtils.crop(coverage, subset);
+            cropped = GridCoverageWrapper.wrapCoverage(cropped, coverage, null, null, false);
+            return cropped;
         }
         return coverage;
     }

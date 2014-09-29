@@ -61,7 +61,7 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
      */
     private boolean hideLayer(LayerInfo layer) {
         if (!layer.isAdvertised()) {
-            return isOgcCapabilitiesRequest();
+            return checkCapabilitiesRequest(layer.getResource());
         } else {
             return hideResource(layer.getResource());
         }
@@ -75,7 +75,7 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
      */
     private boolean hideResource(ResourceInfo resource) {
         if (!resource.isAdvertised()) {
-            return isOgcCapabilitiesRequest();
+            return checkCapabilitiesRequest(resource);
         } else {
             return false;
         }
@@ -84,6 +84,26 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
     private boolean isOgcCapabilitiesRequest() {
         Request request = Dispatcher.REQUEST.get();
         return request != null && "GetCapabilities".equalsIgnoreCase(request.getRequest());
+    }
+    
+    /**
+     * Returns true if the layer should be hidden, false otherwise
+     * <ol>
+     * <li>has a request</li>
+     * <li>is a GetCapabilities request</li>
+     * <li>is not for a layer-specific virtual service</li>
+     * </ol>
+     */
+    boolean checkCapabilitiesRequest(ResourceInfo resource) {
+        Request request = Dispatcher.REQUEST.get();
+        if (request != null) {
+            if ("GetCapabilities".equalsIgnoreCase(request.getRequest())) {
+                String resourceContext = resource.getNamespace().getPrefix() + "/"
+                        + resource.getName();
+                return !resourceContext.equalsIgnoreCase(request.getContext());
+            }
+        }
+        return false;
     }
 
     @Override

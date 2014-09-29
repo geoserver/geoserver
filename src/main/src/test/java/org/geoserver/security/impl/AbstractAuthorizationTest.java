@@ -5,10 +5,7 @@
  */
 package org.geoserver.security.impl;
 
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.createNiceMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +19,7 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
@@ -137,7 +135,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         states = (FeatureTypeInfo) statesLayer.getResource();
         statesStore = states.getStore();
         arcGrid = (CoverageInfo) arcGridLayer.getResource();
-        arcGridStore = (CoverageStoreInfo) arcGrid.getStore();
+        arcGridStore = arcGrid.getStore();
         roads = (FeatureTypeInfo) roadsLayer.getResource();
         roadsStore = roads.getStore();
         landmarks = (FeatureTypeInfo) landmarksLayer.getResource();
@@ -177,9 +175,16 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         expect(store.getWorkspace()).andReturn(ws).anyTimes();
         replay(store);
 
+        NamespaceInfo ns = createNiceMock(NamespaceInfo.class);
+        expect(ns.getName()).andReturn(ws.getName()).anyTimes();
+        expect(ns.getPrefix()).andReturn(ws.getName()).anyTimes();
+        expect(ns.getURI()).andReturn("http://www.geoserver.org/test/" + ws.getName()).anyTimes();
+        replay(ns);
+
         ResourceInfo resource = createNiceMock(resourceClass);
         expect(resource.getStore()).andReturn(store).anyTimes();
         expect(resource.getName()).andReturn(name).anyTimes();
+        expect(resource.getNamespace()).andReturn(ns).anyTimes();
         if (resource instanceof FeatureTypeInfo) {
             expect(
                     ((FeatureTypeInfo) resource).getFeatureSource((ProgressListener) anyObject(),
@@ -250,28 +255,28 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
 
         // prime the catalog
         catalog = createNiceMock(Catalog.class);
-        expect(catalog.getFeatureTypeByName("topp:states")).andReturn((FeatureTypeInfo) states)
+        expect(catalog.getFeatureTypeByName("topp:states")).andReturn(states)
                 .anyTimes();
         expect(catalog.getResourceByName("topp:states", FeatureTypeInfo.class)).andReturn(
-                (FeatureTypeInfo) states).anyTimes();
+                states).anyTimes();
         expect(catalog.getLayerByName("topp:states")).andReturn(statesLayer).anyTimes();
-        expect(catalog.getCoverageByName("nurc:arcgrid")).andReturn((CoverageInfo) arcGrid)
+        expect(catalog.getCoverageByName("nurc:arcgrid")).andReturn(arcGrid)
                 .anyTimes();
         expect(catalog.getResourceByName("nurc:arcgrid", CoverageInfo.class)).andReturn(
-                (CoverageInfo) arcGrid).anyTimes();
-        expect(catalog.getFeatureTypeByName("topp:roads")).andReturn((FeatureTypeInfo) roads)
+                arcGrid).anyTimes();
+        expect(catalog.getFeatureTypeByName("topp:roads")).andReturn(roads)
                 .anyTimes();
         expect(catalog.getLayerByName("topp:roads")).andReturn(roadsLayer).anyTimes();
         expect(catalog.getFeatureTypeByName("topp:landmarks")).andReturn(
-                (FeatureTypeInfo) landmarks).anyTimes();
-        expect(catalog.getFeatureTypeByName("topp:bases")).andReturn((FeatureTypeInfo) bases)
+                landmarks).anyTimes();
+        expect(catalog.getFeatureTypeByName("topp:bases")).andReturn(bases)
                 .anyTimes();
-        expect(catalog.getDataStoreByName("states")).andReturn((DataStoreInfo) statesStore)
+        expect(catalog.getDataStoreByName("states")).andReturn(statesStore)
                 .anyTimes();
-        expect(catalog.getDataStoreByName("roads")).andReturn((DataStoreInfo) roadsStore)
+        expect(catalog.getDataStoreByName("roads")).andReturn(roadsStore)
                 .anyTimes();
         expect(catalog.getCoverageStoreByName("arcGrid")).andReturn(
-                (CoverageStoreInfo) arcGridStore).anyTimes();
+                arcGridStore).anyTimes();
         expect(catalog.getLayers()).andReturn(layers).anyTimes();
         expect(catalog.getFeatureTypes()).andReturn(featureTypes).anyTimes();
         expect(catalog.getCoverages()).andReturn(coverages).anyTimes();

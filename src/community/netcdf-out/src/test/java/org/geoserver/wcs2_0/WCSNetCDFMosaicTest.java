@@ -44,7 +44,7 @@ import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class WCSNetCDFMosaicTest extends WCSTestSupport {
 
-    private static final String MIME_TYPE = "application/custom";
+    
     public static QName LATLONMOSAIC = new QName(CiteTestData.WCS_URI, "2DLatLonCoverage", CiteTestData.WCS_PREFIX);
     public static QName DUMMYMOSAIC = new QName(CiteTestData.WCS_URI, "DummyCoverage", CiteTestData.WCS_PREFIX);
 
@@ -79,7 +79,7 @@ public class WCSNetCDFMosaicTest extends WCSTestSupport {
         try {
             Field field = GetCoverage.class.getDeclaredField("mdFormats");
             field.setAccessible(true);
-            ((Set<String>) field.get(null)).add(MIME_TYPE);
+            ((Set<String>) field.get(null)).add(WCSResponseInterceptor.MIME_TYPE);
         } catch (NoSuchFieldException e) {
         } catch (SecurityException e) {
         } catch (IllegalArgumentException e) {

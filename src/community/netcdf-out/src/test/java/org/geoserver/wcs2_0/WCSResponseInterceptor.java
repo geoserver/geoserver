@@ -20,7 +20,7 @@ import org.geotools.coverage.grid.GridCoverage2D;
 public final class WCSResponseInterceptor extends BaseCoverageResponseDelegate implements
         CoverageResponseDelegate {
 
-    private static final String MIME_TYPE = "application/custom";
+    public static final String MIME_TYPE = "application/custom";
 
     private GridCoverage2D result;
 

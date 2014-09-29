@@ -184,11 +184,11 @@ public class DemoRequestsPage extends GeoServerBasePage {
                 final String service = reqFileName.substring(0, reqFileName.indexOf('_'))
                         .toLowerCase();
                 if (demoRequestIsHttpGet) {
-                    String url = baseUrl + contents;
+                    String url = ResponseUtils.appendPath(baseUrl, contents);
                     urlTextField.setModelObject(url);
                     body.setModelObject("");
                 } else {
-                    String serviceUrl = baseUrl + service;
+                    String serviceUrl = ResponseUtils.appendPath(baseUrl, service);
                     urlTextField.setModelObject(serviceUrl);
                     body.setModelObject(contents);
                 }

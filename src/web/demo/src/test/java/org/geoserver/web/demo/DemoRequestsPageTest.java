@@ -225,7 +225,7 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
             String requestUrl = req.getRequestUrl();
     
             assertEquals(requestName, requestFileName);
-            assertTrue(requestUrl.startsWith(proxyBaseUrl));
+            assertTrue(requestUrl.startsWith(proxyBaseUrl+"/wms"));
         } finally {
             global.getSettings().setProxyBaseUrl(null);
             getGeoServer().save(global);

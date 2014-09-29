@@ -5,13 +5,9 @@
  */
 package org.geoserver.wms.wms_1_1_1;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
-import static org.custommonkey.xmlunit.XMLUnit.newXpathEngine;
+import static junit.framework.Assert.*;
+import static org.custommonkey.xmlunit.XMLAssert.*;
+import static org.custommonkey.xmlunit.XMLUnit.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -137,6 +133,28 @@ public class CapabilitiesTest extends WMSTestSupport {
         }
     }
     
+    @Test
+    public void testNonAdvertisedLayerInLayerSpecificService() throws Exception {
+        String layerId = getLayerId(MockData.BUILDINGS);
+        LayerInfo layer = getCatalog().getLayerByName(layerId);
+        String context = layerId.replace(":", "/");
+        String localName = MockData.BUILDINGS.getLocalPart();
+        try {
+            // now you see me
+            Document dom = dom(get(context + "/wms?request=getCapabilities&version=1.1.1"), true);
+            assertXpathExists("//Layer[Name='" + localName + "']", dom);
+
+            // now you... still do :-)
+            layer.setAdvertised(false);
+            getCatalog().save(layer);
+            dom = dom(get(context + "/wms?request=getCapabilities&version=1.1.1"), true);
+            assertXpathExists("//Layer[Name='" + localName + "']", dom);
+        } finally {
+            layer.setAdvertised(true);
+            getCatalog().save(layer);
+        }
+    }
+
     @Test
     public void testWorkspaceQualified() throws Exception {
         Document dom = dom(get("cite/wms?request=getCapabilities&version=1.1.1"), true);

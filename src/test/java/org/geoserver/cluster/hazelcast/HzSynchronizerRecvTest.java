@@ -11,10 +11,12 @@ import org.easymock.Capture;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
+import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.cluster.ConfigChangeEvent;
 import org.geoserver.cluster.ConfigChangeEvent.Type;
@@ -111,6 +113,47 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         verify(info, wsInfo);
     }
     
+    protected abstract void expectationTestFTDelete(FeatureTypeInfo info, String ftName, String ftId, String dsId, Class clazz) throws Exception;
+
+    @Test
+    public void testFTDelete() throws Exception {
+        FeatureTypeInfo info;
+        final String ftName = "testFT";
+        final String ftId = "FeatureType-TEST";
+        DataStoreInfo dsInfo;
+        final String dsName = "testStore";
+        final String dsId = "DataStore-TEST";
+        
+        {
+            dsInfo = createMock(DataStoreInfo.class);
+            info = createMock(FeatureTypeInfo.class);
+    
+            expect(dsInfo.getName()).andStubReturn(dsName);
+            expect(dsInfo.getId()).andStubReturn(dsId);
+            
+            expect(info.getName()).andStubReturn(ftName);
+            expect(info.getId()).andStubReturn(ftId);
+            expect(info.getStore()).andStubReturn(dsInfo);
+            
+            expect(catalog.getStore(EasyMock.eq(dsId), EasyMock.anyObject(Class.class))).andStubReturn(dsInfo);;
+            
+            expectationTestFTDelete(info, ftName, ftId, dsId, FeatureTypeInfo.class);
+        }
+        replay(info, dsInfo);
+        {
+            sync = getSynchronizer();
+            sync.initialize(configWatcher);
+            ConfigChangeEvent evt = new ConfigChangeEvent(ftId, ftName, FeatureTypeInfoImpl.class, Type.REMOVE);
+            evt.setStoreId(dsId);
+            
+            // Mock a message coming in from the cluster
+            
+            mockMessage(evt);
+        }
+        waitForSync();
+        verify(info, dsInfo);
+    }
+  
     protected abstract void expectationTestContactChange(GeoServerInfo info, String storeId) throws Exception;
 
     @Test

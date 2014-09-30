@@ -99,6 +99,11 @@ public class ConfigChangeEvent extends Event {
      * name of workspace qualifying the object
      */
     String workspaceId;
+    
+    /**
+     * id of Store object if the modified object was a Resource
+     */
+    String storeId;
 
     /**
      * class of object
@@ -171,6 +176,14 @@ public class ConfigChangeEvent extends Event {
 
     public void setWorkspaceId(String workspaceId) {
         this.workspaceId = workspaceId;
+    }
+    
+    public String getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(String storeId) {
+        this.storeId = storeId;
     }
 
     public Class<? extends Info> getObjectClass() {

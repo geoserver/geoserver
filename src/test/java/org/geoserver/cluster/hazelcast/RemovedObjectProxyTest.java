@@ -5,6 +5,8 @@ import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.same;
 import static org.easymock.EasyMock.verify;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.Assert.assertThat;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -12,6 +14,10 @@ import java.lang.reflect.Proxy;
 
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CatalogVisitor;
+import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class RemovedObjectProxyTest {
@@ -47,6 +53,26 @@ public class RemovedObjectProxyTest {
 			}
 		}
 		
+	}
+	
+	@Test
+	public void testReturnsCollaborators() throws Exception {
+		DataStoreInfo ds = createMock(DataStoreInfo.class);
+		replay(ds);
+
+		RemovedObjectProxy handler = new RemovedObjectProxy("Test", "Test", (Class<? extends CatalogInfo>) FeatureTypeInfo.class);
+		
+		handler.addCatalogCollaborator("store", ds);
+		
+		FeatureTypeInfo info = (FeatureTypeInfo) Proxy.newProxyInstance(
+				FeatureTypeInfo.class.getClassLoader(),
+				new Class[] { FeatureTypeInfo.class },
+				handler);
+		
+		// Added collaborator is returned by appropriate accessor
+		assertThat(info.getStore(), sameInstance(ds));
+
+		verify(ds);
 	}
 
 }

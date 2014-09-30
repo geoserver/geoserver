@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 
 import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.Info;
+import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
 import org.geoserver.catalog.event.CatalogEvent;
@@ -152,10 +153,16 @@ public abstract class HzSynchronizer extends GeoServerSynchronizer implements
         String name = (String) (OwsUtils.has(subj, "name") ? OwsUtils.get(subj, "name") : null);
         WorkspaceInfo ws = (WorkspaceInfo) (OwsUtils.has(subj, "workspace") ? OwsUtils.get(subj,
                 "workspace") : null);
+        
+        StoreInfo store = (StoreInfo) (OwsUtils.has(subj, "store") ? OwsUtils.get(subj,
+                "store") : null);
 
         ConfigChangeEvent ev = new ConfigChangeEvent(subj.getId(), name, subj.getClass(), type);
         if (ws != null) {
             ev.setWorkspaceId(ws.getId());
+        }
+        if (store !=null) {
+        	ev.setStoreId(store.getId());
         }
         return ev;
     }

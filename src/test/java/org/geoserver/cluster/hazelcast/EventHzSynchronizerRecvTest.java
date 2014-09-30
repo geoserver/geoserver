@@ -14,8 +14,10 @@ import org.easymock.IAnswer;
 import org.easymock.IExpectationSetters;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
 import org.geoserver.catalog.event.CatalogEvent;
@@ -33,6 +35,7 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
+import org.hamcrest.Matchers;
 import org.hamcrest.integration.EasyMock2Adapter;
 import org.junit.Before;
 import org.junit.Test;
@@ -117,8 +120,17 @@ public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
     @Override
     protected void expectationTestStoreDelete(DataStoreInfo info, String storeName, String storeId, Class clazz)
             throws Exception {
-        expect(getCatalog().getStore(storeId, clazz) ).andReturn(info);
+        expect(getCatalog().getStore(storeId, clazz) ).andStubReturn(null); // It's been deleted so return null
         expectCatalogFire(info, storeId, Type.REMOVE);
+    }
+    @Override
+    protected void expectationTestFTDelete(FeatureTypeInfo info, String ftName, String ftId, String dsId, Class clazz)
+            throws Exception {
+        expect(getCatalog().getFeatureType(ftId)).andStubReturn(null); // It's been deleted so return null
+		final String id = ftId;
+		expectCatalogGetListeners();
+		CatalogRemoveEvent catEvent = (CatalogRemoveEvent)catResEvent(id, dsId); // Want to make sure the DS is included
+		catListener.handleRemoveEvent(catEvent);expectLastCall();
     }
 
     @Override
@@ -249,7 +261,16 @@ public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
         EasyMock2Adapter.adapt(hasProperty("source", hasProperty("id", is(id))));
         return null;
     }
-    
+    /**
+     * Matches a Catalog Event that has a source with the given ID, and a Store property, the value of which has the given ID.
+     * @param id id of the source
+     * @param storeId id of the source's store
+     */
+    CatalogEvent catResEvent(final String id, final String storeId) {
+        EasyMock2Adapter.adapt(hasProperty("source", allOf(hasProperty("id", is(id)), hasProperty("store", hasProperty("id", is(storeId))))));
+        return null;
+    }
+  
     protected IExpectationSetters<Object> expectCatalogFire(final CatalogInfo info, final String id, final ConfigChangeEvent.Type type){
         expectCatalogGetListeners();
         switch(type) {

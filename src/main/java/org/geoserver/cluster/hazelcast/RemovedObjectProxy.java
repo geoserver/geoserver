@@ -6,7 +6,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
@@ -24,6 +26,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.data.DataStore;
 
 /**
@@ -45,6 +48,8 @@ class RemovedObjectProxy implements InvocationHandler {
 
     private final Class<? extends Info> infoInterface;
 
+    private final Map<String, CatalogInfo> catalogCollaborators;
+    
     public RemovedObjectProxy(String id, String name, Class<? extends Info> infoInterface) {
         checkNotNull(id, "id");
         checkNotNull(name, "name");
@@ -53,8 +58,19 @@ class RemovedObjectProxy implements InvocationHandler {
         this.id = id;
         this.name = name;
         this.infoInterface = infoInterface;
+        this.catalogCollaborators = new HashMap<String, CatalogInfo>();
     }
 
+	/**
+	 * Makes the proxy return a catalog object
+	 * @param property 
+	 * @param id
+	 */
+    public void addCatalogCollaborator(String property, CatalogInfo info) {
+    	String accessor = "get" + property.substring(0, 1).toUpperCase() + property.substring(1);
+    	catalogCollaborators.put(accessor, info);
+    }
+    
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         if ("getid".equalsIgnoreCase(method.getName())) {
@@ -66,6 +82,11 @@ class RemovedObjectProxy implements InvocationHandler {
         if ("accept".equals(method.getName())) {
             proxyVisitory(proxy, method, (CatalogVisitor) args[0]);
         }
+        
+        if (catalogCollaborators.containsKey(method.getName())) {
+        	return catalogCollaborators.get(method.getName());
+        }
+        
         Class<?> returnType = method.getReturnType();
         if (List.class.isAssignableFrom(returnType)) {
             return Collections.EMPTY_LIST;
@@ -107,5 +128,12 @@ class RemovedObjectProxy implements InvocationHandler {
         return "RemovedObjectProxy[(" + infoInterface.getSimpleName() + "[id=" + id + ", name="
                 + name + "]]";
     }
+
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		// TODO Auto-generated method stub
+		return super.clone();
+		
+	}
 
 }

@@ -599,3 +599,15 @@ when the ``graphic-resize`` option is specified.
 
   <VendorOption name="graphic-margin">margin</VendorOption>
 
+partials
+^^^^^^^^
+
+The ``partials`` options instructs the renderer to render labels that cross the map extent, which
+are normally not painted since there is no guarantee that a map put on the side of the current one
+(tiled rendering) will contain the other half of the label. By enabling "partials" the style editor
+takes responsibility for the other half being there (maybe because the label points have been
+placed by hand and are assured not to conflict with each other, at all zoom levels).
+
+.. code-block:: xml
+
+  <VendorOption name="partials">true</VendorOption>

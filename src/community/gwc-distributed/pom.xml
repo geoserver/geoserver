@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.geoserver</groupId>
+		<artifactId>community</artifactId>
+		<version>2.7-SNAPSHOT</version>
+	</parent>
+	<groupId>org.geoserver.community</groupId>
+	<artifactId>gs-gwc-distributed</artifactId>
+	<name>GWC Distributed Caching Plugin</name>
+	<url>http://maven.apache.org</url>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.geoserver</groupId>
+			<artifactId>gs-gwc</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.geowebcache</groupId>
+			<artifactId>gwc-distributed</artifactId>
+			<version>${gwc.version}</version>
+		</dependency>
+		<!-- test dependencies -->
+		<dependency>
+			<groupId>org.geoserver</groupId>
+			<artifactId>gs-main</artifactId>
+			<classifier>tests</classifier>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.mockrunner</groupId>
+			<artifactId>mockrunner</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>

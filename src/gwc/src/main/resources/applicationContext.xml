@@ -53,6 +53,7 @@
     <constructor-arg ref="gwcGeoServervConfigPersister" />
     <constructor-arg ref="rawCatalog" />
     <constructor-arg ref="GeoSeverTileLayerCatalog" />
+    <property name="blobStore" ref="gwcConfigBlobStore" />
   </bean>
 
   <bean id="cachingWebMapService" class="org.geoserver.gwc.wms.CachingWebMapService">
@@ -121,5 +122,5 @@
   <bean id="gwcServiceMGMapsterceptorEnabledCheck" class="org.geoserver.gwc.config.GWCServiceEnablementInterceptor">
     <constructor-arg ref="gwcFacade" />
   </bean>
-
+ 
 </beans>

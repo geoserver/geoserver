@@ -60,6 +60,7 @@
           <descriptor>release/ext-solr.xml</descriptor>		  
           <descriptor>release/ext-geofence.xml</descriptor>
           <descriptor>release/ext-sldservice.xml</descriptor>
+          <descriptor>release/ext-gwc-distributed.xml</descriptor>	
         </descriptors>
       </configuration>
      </plugin>
@@ -185,6 +186,7 @@
         <module>solr</module>
         <module>geofence</module>
         <module>sldService</module>
+        <module>gwc-distributed</module>
       </modules>
     </profile>
     <profile>
@@ -396,6 +398,18 @@
       <id>gc-cache</id>
       <modules>
         <module>gridcoveragecache</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>gwc-distributed</id>
+      <activation>
+        <property>
+          <name>all</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <modules>
+        <module>gwc-distributed</module>
       </modules>
     </profile>
   </profiles>

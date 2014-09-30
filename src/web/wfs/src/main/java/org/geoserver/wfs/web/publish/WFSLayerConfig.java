@@ -69,6 +69,14 @@ public class WFSLayerConfig extends LayerConfigurationPanel {
                 target.addComponent(otherSrsContainer);
             }
         });
+        add(new AjaxLink("skipNumberMatchedHelp") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                dialog.showInfo(target,
+                        new StringResourceModel("skipNumberMatched", WFSLayerConfig.this, null),
+                        new StringResourceModel("skipNumberMatched.message", WFSLayerConfig.this, null));
+            }
+        });
         add(new AjaxLink("otherSRSHelp") {
             @Override
             public void onClick(AjaxRequestTarget target) {

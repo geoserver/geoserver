@@ -196,8 +196,14 @@ public class EventHzSynchronizer extends HzSynchronizer {
             notifyMethod = CatalogListener.class.getMethod("handleRemoveEvent",
                     CatalogRemoveEvent.class);
             evt = new CatalogRemoveEventImpl();
-            subj = (CatalogInfo) Proxy.newProxyInstance(getClass().getClassLoader(),
-                    new Class[] { clazz }, new RemovedObjectProxy(id, name, clazz));
+            RemovedObjectProxy proxy = new RemovedObjectProxy(id, name, clazz);
+            
+            if(ResourceInfo.class.isAssignableFrom(clazz) && event.getStoreId()!=null) {
+            	proxy.addCatalogCollaborator("store", cat.getStore(event.getStoreId(), StoreInfo.class));
+            }
+			subj = (CatalogInfo) Proxy.newProxyInstance(getClass().getClassLoader(),
+                    new Class[] { clazz }, proxy);
+
             break;
         default:
             throw new IllegalStateException("Should not happen");

@@ -6,6 +6,7 @@ import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServerInfo;
@@ -38,6 +39,11 @@ public class ReloadHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
 
     @Override
     protected void expectationTestStoreDelete(DataStoreInfo info, String storeName, String storeId, Class clazz)
+            throws Exception {
+        getGeoServer().reload(); expectLastCall();
+    }
+    @Override
+    protected void expectationTestFTDelete(FeatureTypeInfo info, String ftName, String ftId, String storeId, Class clazz)
             throws Exception {
         getGeoServer().reload(); expectLastCall();
     }

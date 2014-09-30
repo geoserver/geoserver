@@ -58,6 +58,8 @@ public abstract class HzSynchronizerTest {
         
         localAddress = new InetSocketAddress( localAddress(42) , 5000);
         remoteAddress = new InetSocketAddress( localAddress(54) , 5000);
+
+        catalog = createMock(Catalog.class);
         
         Cluster cluster = createMock(Cluster.class);
         Member localMember = createMock(Member.class);
@@ -65,13 +67,14 @@ public abstract class HzSynchronizerTest {
         
         expect(this.cluster.getHz()).andStubReturn(hz);
         expect(this.cluster.isEnabled()).andStubReturn(true);
+        expect(this.cluster.getRawCatalog()).andStubReturn(catalog);;
         
         
-        expect(hz.<Event>getTopic(TOPIC_NAME)).andReturn(topic);
-        topic.addMessageListener(capture(captureTopicListener)); expectLastCall();
+        expect(hz.<Event>getTopic(TOPIC_NAME)).andStubReturn(topic);
+        topic.addMessageListener(capture(captureTopicListener)); expectLastCall().anyTimes();
         
-        expect(hz.<UUID>getTopic(ACK_TOPIC_NAME)).andReturn(ackTopic);
-        ackTopic.addMessageListener(capture(captureAckTopicListener)); expectLastCall();
+        expect(hz.<UUID>getTopic(ACK_TOPIC_NAME)).andStubReturn(ackTopic);
+        ackTopic.addMessageListener(capture(captureAckTopicListener)); expectLastCall().anyTimes();
         
 
         ackTopic.publish(EasyMock.capture(captureAckTopicPublish));EasyMock.expectLastCall().andStubAnswer(new IAnswer<Object>() {
@@ -80,7 +83,7 @@ public abstract class HzSynchronizerTest {
 			public Object answer() throws Throwable {
 				Message<UUID> message = createMock(Message.class);
 				expect(message.getMessageObject()).andStubReturn(captureAckTopicPublish.getValue());
-				replay(message);
+				EasyMock.replay(message);
 				for(MessageListener<UUID> listener: captureAckTopicListener.getValues()) {
 					listener.onMessage(message);
 				}
@@ -107,7 +110,6 @@ public abstract class HzSynchronizerTest {
         
         expect(clusterConfig.getSyncDelay()).andStubReturn(SYNC_DELAY);
         
-        catalog = createMock(Catalog.class);
         geoServer = createMock(GeoServer.class);
         
         expect(geoServer.getCatalog()).andStubReturn(catalog);
@@ -193,7 +195,7 @@ public abstract class HzSynchronizerTest {
      * @param mocks
      */
     protected void reset(Object... mocks) {
-        //EasyMock.reset(myMocks().toArray());
+        EasyMock.reset(myMocks().toArray());
         EasyMock.reset(mocks);
     }
     /**
@@ -201,7 +203,7 @@ public abstract class HzSynchronizerTest {
      * @param mocks
      */
     protected void verify(Object... mocks) {
-        //EasyMock.verify(myMocks().toArray());
+        EasyMock.verify(myMocks().toArray());
         EasyMock.verify(mocks);
     }
     

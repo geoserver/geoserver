@@ -61,6 +61,7 @@
           <descriptor>release/ext-geofence.xml</descriptor>
           <descriptor>release/ext-sldservice.xml</descriptor>
           <descriptor>release/ext-rest-upload.xml</descriptor>
+          <descriptor>release/ext-gwc-distributed.xml</descriptor>	
         </descriptors>
       </configuration>
      </plugin>
@@ -187,6 +188,7 @@
         <module>geofence</module>
         <module>sldService</module>
         <module>release</module>
+	<module>gwc-distributed</module>
       </modules>
     </profile>
     <profile>
@@ -411,6 +413,18 @@
         <modules>
           <module>geomesa</module>
         </modules>
+    </profile>    
+    <profile>
+      <id>gwc-distributed</id>
+      <activation>
+        <property>
+          <name>all</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <modules>
+        <module>gwc-distributed</module>
+      </modules>
     </profile>
   </profiles>
 </project>

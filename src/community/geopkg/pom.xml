@@ -120,6 +120,19 @@
    <classifier>tests</classifier>
    <version>${project.version}</version>
   </dependency>
+  <dependency>
+	<groupId>org.geoserver.web</groupId>
+	<artifactId>gs-web-core</artifactId>
+	<classifier>tests</classifier>
+	<scope>test</scope>
+	<version>${project.version}</version>
+  </dependency>    
+  <dependency>
+	<groupId>org.geoserver.web</groupId>
+	<artifactId>gs-web-demo</artifactId>
+	<scope>test</scope>
+	<version>${project.version}</version>
+  </dependency>   
  </dependencies>
 
  <build>
